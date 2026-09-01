@@ -179,6 +179,50 @@ export const experimentEvents = sqliteTable(
   ],
 );
 
+export const experimentParameterVersions = sqliteTable(
+  "experiment_parameter_versions",
+  {
+    id: text("id").primaryKey(),
+    experimentId: text("experiment_id").notNull(),
+    userId: text("user_id").notNull(),
+    version: integer("version").notNull(),
+    effectiveFrom: text("effective_from").notNull(),
+    targetCondition: text("target_condition").notNull(),
+    alternativeBehaviour: text("alternative_behaviour").notNull(),
+    expectedReward: text("expected_reward").notNull(),
+    restartPlan: text("restart_plan").notNull(),
+    minimumVersion: text("minimum_version").notNull(),
+    failureSignal: text("failure_signal").notNull(),
+    changeReason: text("change_reason").notNull(),
+    createdAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_experiment_parameter_version").on(table.experimentId, table.version),
+    index("idx_experiment_parameter_user_id").on(table.userId),
+  ],
+);
+
+export const experimentCheckpoints = sqliteTable(
+  "experiment_checkpoints",
+  {
+    id: text("id").primaryKey(),
+    experimentId: text("experiment_id").notNull(),
+    userId: text("user_id").notNull(),
+    dayNumber: integer("day_number").notNull(),
+    surprise: text("surprise").notNull(),
+    observability: text("observability").notNull(),
+    evidenceSupport: text("evidence_support").notNull(),
+    evidenceChallenge: text("evidence_challenge").notNull(),
+    decision: text("decision").notNull(),
+    adjustmentSummary: text("adjustment_summary"),
+    createdAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_experiment_checkpoint_day").on(table.experimentId, table.dayNumber),
+    index("idx_experiment_checkpoint_user_id").on(table.userId),
+  ],
+);
+
 export const measurementValues = sqliteTable(
   "measurement_values",
   {
@@ -199,6 +243,59 @@ export const measurementValues = sqliteTable(
       table.code,
     ),
     index("idx_measurement_user_id").on(table.userId),
+  ],
+);
+
+export const measurementSources = sqliteTable(
+  "measurement_sources",
+  {
+    id: text("id").primaryKey(),
+    measurementId: text("measurement_id").notNull(),
+    userId: text("user_id").notNull(),
+    sourceObjectType: text("source_object_type").notNull(),
+    sourceObjectId: text("source_object_id").notNull(),
+    inputRole: text("input_role").notNull(),
+    inputValue: text("input_value"),
+    createdAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_measurement_source_role").on(
+      table.measurementId,
+      table.sourceObjectId,
+      table.inputRole,
+    ),
+    index("idx_measurement_source_user_id").on(table.userId),
+  ],
+);
+
+export const notificationPreferences = sqliteTable("notification_preferences", {
+  userId: text("user_id").primaryKey(),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
+  experimentStarted: integer("experiment_started", { mode: "boolean" }).notNull().default(true),
+  dailyObservation: integer("daily_observation", { mode: "boolean" }).notNull().default(true),
+  dayThreeCheckpoint: integer("day_three_checkpoint", { mode: "boolean" }).notNull().default(true),
+  experimentEnding: integer("experiment_ending", { mode: "boolean" }).notNull().default(true),
+  reviewReady: integer("review_ready", { mode: "boolean" }).notNull().default(true),
+  reminderTime: text("reminder_time").notNull().default("18:00"),
+  timezone: text("timezone").notNull().default("Africa/Johannesburg"),
+  updatedAt: timestamp(),
+});
+
+export const pilotEvents = sqliteTable(
+  "pilot_events",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    name: text("name").notNull(),
+    labVersion: text("lab_version").notNull().default("4.5.1"),
+    objectType: text("object_type").notNull(),
+    objectId: text("object_id").notNull(),
+    metadata: text("metadata").notNull().default("{}"),
+    occurredAt: timestamp(),
+  },
+  (table) => [
+    index("idx_pilot_event_user_name").on(table.userId, table.name),
+    index("idx_pilot_event_occurred_at").on(table.occurredAt),
   ],
 );
 

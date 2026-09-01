@@ -5,6 +5,7 @@ import {
   Archive,
   ArrowLeft,
   ArrowRight,
+  Bell,
   BookOpen,
   Bot,
   Brain,
@@ -23,6 +24,7 @@ import {
   NotebookTabs,
   RotateCcw,
   Search,
+  Settings2,
   ShieldCheck,
   Sparkles,
   Target,
@@ -79,6 +81,9 @@ type Snapshot = {
     predictedValue: number;
     startDate: string;
     plannedEndDate: string;
+    actualEndDate: string | null;
+    minimumEvidenceThreshold: number;
+    parameterVersion: number;
   };
   events: Array<{
     id: string;
@@ -89,7 +94,48 @@ type Snapshot = {
     alternativeUsed: boolean | null;
     notes: string | null;
   }>;
-  measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
+  checkpoints: Array<{
+    id: string;
+    dayNumber: number;
+    surprise: string;
+    observability: string;
+    evidenceSupport: string;
+    evidenceChallenge: string;
+    decision: string;
+    adjustmentSummary: string | null;
+  }>;
+  parameterVersions: Array<{
+    id: string;
+    version: number;
+    effectiveFrom: string;
+    targetCondition: string;
+    alternativeBehaviour: string;
+    changeReason: string;
+  }>;
+  measurements: Record<string, {
+    value: unknown;
+    status: string;
+    evidenceStrength: string;
+    formulaVersion: string;
+    calculatedAt: string;
+    sources: Array<{
+      sourceObjectType: string;
+      sourceObjectId: string;
+      inputRole: string;
+      inputValue: unknown;
+    }>;
+  }>;
+  notificationPreference: {
+    enabled: boolean;
+    experimentStarted: boolean;
+    dailyObservation: boolean;
+    dayThreeCheckpoint: boolean;
+    experimentEnding: boolean;
+    reviewReady: boolean;
+    reminderTime: string;
+    timezone: string;
+  };
+  reminders: Array<{ id: string; title: string; detail: string; priority: string }>;
   memories: Array<{
     id: string;
     statement: string;
@@ -107,7 +153,7 @@ type Snapshot = {
   }>;
 };
 
-type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "memory";
+type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "memory" | "settings";
 
 const nav = [
   { id: "home" as const, label: "Home", icon: Home },
@@ -197,6 +243,10 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
     );
   }
 
+  if (state.profile && state.consent?.status === "WITHDRAWN") {
+    return <PrivacyPaused state={state} saving={saving} error={error} onRestore={act} />;
+  }
+
   if (!state.profile || state.consent?.status !== "GRANTED") {
     return <Onboarding identity={initialIdentity ?? state.identity} saving={saving} error={error} onSubmit={act} />;
   }
@@ -249,6 +299,9 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
         <button className={`memory-link ${view === "memory" ? "active" : ""}`} onClick={() => { setView("memory"); setMenuOpen(false); }}>
           <Brain /> <span>What BIS remembers</span>
         </button>
+        <button className={`memory-link ${view === "settings" ? "active" : ""}`} onClick={() => { setView("settings"); setMenuOpen(false); }}>
+          <Settings2 /> <span>Settings & privacy</span>
+        </button>
         <div className="profile-chip">
           <span className="profile-avatar">{displayName.slice(0, 1).toUpperCase()}</span>
           <div><strong>{state.profile.displayName}</strong><small>{state.profile.mode === "FACILITATED" ? "Facilitated mode" : "Independent mode"}</small></div>
@@ -263,9 +316,14 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
         {view === "evidence" && <EvidenceView state={state} onView={setView} />}
         {view === "companion" && <CompanionView state={state} saving={saving} act={act} />}
         {view === "memory" && <MemoryView state={state} saving={saving} act={act} />}
+        {view === "settings" && <SettingsView state={state} saving={saving} act={act} />}
       </main>
     </div>
   );
+}
+
+function PrivacyPaused({ state, saving, error, onRestore }: { state: Snapshot; saving: boolean; error: string; onRestore: (payload: Record<string, unknown>) => Promise<unknown> }) {
+  return <main className="privacy-paused"><div className="surface-card privacy-paused-card"><div className="card-icon teal"><LockKeyhole /></div><p className="eyebrow">Investigation paused</p><h1>Your consent choice is active.</h1><p>BIS has stopped accepting new investigation activity. Your existing evidence remains private and unchanged, so you can inspect it again if you restore product consent.</p><dl><div><dt>Account</dt><dd>{state.identity.email}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion ?? "Current"}</dd></div><div><dt>Data status</dt><dd>Retained, no new collection</dd></div></dl>{error && <p className="field-error">{error}</p>}<Button size="lg" disabled={saving} onClick={() => void onRestore({ action: "restoreConsent" })}>{saving ? "Restoring…" : "Restore consent and continue"}</Button><p className="privacy-footnote">Restoring creates a new consent record. It does not rewrite your earlier withdrawal.</p></div></main>;
 }
 
 function Brand({ compact = false }: { compact?: boolean }) {
@@ -372,9 +430,11 @@ function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: 
   return (
     <div className="page-wrap home-view">
       <div className="page-intro">
-        <div><p className="eyebrow">Tuesday · Your investigation</p><h1>Good morning, {name}.</h1><p>Pick up where the evidence left you.</p></div>
+        <div><p className="eyebrow">{new Date().toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" })} · Your investigation</p><h1>Welcome back, {name}.</h1><p>Pick up where the evidence left you.</p></div>
         <Badge className="status-badge" variant="outline"><ShieldCheck /> Private investigation</Badge>
       </div>
+
+      {state.reminders.length > 0 && <section className="reminder-stack" aria-label="Experiment reminders">{state.reminders.map((reminder) => <article key={reminder.id} className="reminder-card"><Bell /><div><strong>{reminder.title}</strong><p>{reminder.detail}</p></div>{reminder.priority === "ACTION" && <Button variant="outline" onClick={() => onView("experiment")}>Open experiment</Button>}</article>)}</section>}
 
       <section className="continue-card">
         <div className="continue-main">
@@ -548,30 +608,66 @@ function ExperimentView({ state, saving, act, onView, embedded = false }: { stat
   }
 
   if (!experiment) return <EmptyExperiment onView={onView} embedded={embedded} />;
-  const start = new Date(`${experiment.startDate}T00:00:00`);
+  const start = new Date(`${experiment.startDate}T00:00:00Z`);
+  const end = new Date(`${experiment.plannedEndDate}T00:00:00Z`);
   const today = new Date();
   const elapsed = Math.floor((today.getTime() - start.getTime()) / 86_400_000) + 1;
-  const availableDay = Math.max(1, Math.min(7, elapsed));
+  const totalDays = Math.max(1, Math.min(21, Math.floor((end.getTime() - start.getTime()) / 86_400_000) + 1));
+  const availableDay = Math.max(1, Math.min(totalDays, elapsed));
   const nextMissing = Array.from({ length: availableDay }, (_, index) => index + 1).find((day) => !state.events.some((event) => event.dayNumber === day)) ?? availableDay;
   const opportunityCount = Number(state.measurements["HAB.EXPERIMENT.OPPORTUNITY_COUNT"]?.value ?? 0);
   const replacementCount = Number(state.measurements["HAB.EXPERIMENT.REPLACEMENT_COUNT"]?.value ?? 0);
   const adherence = state.measurements["HAB.BEI06"]?.value;
   const evidenceStrength = state.measurements["HAB.BEI06"]?.evidenceStrength ?? "NONE";
+  const active = experiment.status === "ACTIVE";
+  const canClose = active && (elapsed >= totalDays || state.events.length >= totalDays);
+  const selectedDate = new Date(start);
+  selectedDate.setUTCDate(start.getUTCDate() + selectedDay - 1);
 
   return <div className={`experiment-view ${embedded ? "embedded" : "page-wrap"}`}>
-    {!embedded && <div className="page-intro"><div><p className="eyebrow">Active experiment</p><h1>Notice what actually happens.</h1><p>One target opportunity per day. No opportunity is not failure.</p></div><Badge>{state.events.length} of 7 days recorded</Badge></div>}
-    <section className="experiment-hero"><div><p className="eyebrow">You are testing</p><h2>Whether <em>{experiment.targetCondition}</em> is connected to <em>{experiment.targetPattern}</em>.</h2></div><div className="alternative-chip"><span>Your alternative</span><strong>{experiment.alternativeBehaviour}</strong></div></section>
+    {!embedded && <div className="page-intro"><div><p className="eyebrow">{active ? "Active experiment" : "Experiment complete"}</p><h1>Notice what actually happens.</h1><p>One target opportunity per day. No opportunity is not failure.</p></div><Badge>{state.events.length} of {totalDays} days recorded</Badge></div>}
+    <section className="experiment-hero"><div><p className="eyebrow">You are testing · Version {experiment.parameterVersion}</p><h2>Whether <em>{experiment.targetCondition}</em> is connected to <em>{experiment.targetPattern}</em>.</h2></div><div className="alternative-chip"><span>Your alternative</span><strong>{experiment.alternativeBehaviour}</strong></div></section>
     <section className="experiment-grid">
-      <div className="surface-card days-card"><div className="section-title"><div><h3>Seven-day evidence</h3><p>Future days unlock only after they happen.</p></div><CalendarDays /></div><div className="day-list">{Array.from({ length: 7 }, (_, index) => index + 1).map((day) => {
+      <div className="surface-card days-card"><div className="section-title"><div><h3>{totalDays > 7 ? "Extended evidence window" : "Seven-day evidence"}</h3><p>Future days unlock only after they happen. Earlier days can be backfilled.</p></div><CalendarDays /></div><div className="day-list">{Array.from({ length: totalDays }, (_, index) => index + 1).map((day) => {
         const event = state.events.find((item) => item.dayNumber === day);
         const disabled = day > availableDay;
         return <button key={day} disabled={disabled} className={`${selectedDay === day ? "selected" : ""} ${event ? "recorded" : ""}`} onClick={() => chooseDay(day)}><span>{event ? <Check /> : day}</span><div><strong>Day {day}</strong><small>{disabled ? "Not experienced yet" : event ? event.targetConditionOccurred ? event.alternativeUsed ? "Alternative used" : "Cue observed" : "No target opportunity" : day === nextMissing ? "Ready to record" : "Available"}</small></div>{disabled ? <LockKeyhole /> : <ChevronRight />}</button>;
       })}</div></div>
-      <div className="surface-card checkin-card"><p className="eyebrow">Day {selectedDay} check-in</p><h3>Did your cue occur?</h3><div className="choice-grid two"><ChoiceButton active={cueOccurred === true} title="Yes" detail="A target opportunity occurred" onClick={() => setCueOccurred(true)} /><ChoiceButton active={cueOccurred === false} title="No" detail="No target opportunity today" onClick={() => { setCueOccurred(false); setAlternativeUsed(null); }} /></div>{cueOccurred === true && <><h3>Did you use your new routine?</h3><div className="choice-grid two"><ChoiceButton active={alternativeUsed === true} title="Yes" detail="I used the alternative" onClick={() => setAlternativeUsed(true)} /><ChoiceButton active={alternativeUsed === false} title="No" detail="I used the old routine" onClick={() => setAlternativeUsed(false)} /></div></>} {cueOccurred === false && <div className="no-opportunity"><Eye /><div><strong>No target opportunity today.</strong><p>This is valid evidence. It is not recorded as 0%.</p></div></div>}<label className="field-label">What happened? <span>Optional</span></label><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Add only what will help you remember the moment…" /><Button className="w-full" size="lg" disabled={saving || cueOccurred === null || (cueOccurred === true && alternativeUsed === null)} onClick={() => void act({ action: "saveEvent", experimentId: experiment.id, dayNumber: selectedDay, occurredAt: `${experiment.startDate}T12:00:00.000Z`, targetConditionOccurred: cueOccurred, alternativeUsed, notes })}>{saving ? "Saving evidence…" : "Save today's evidence"}</Button></div>
+      <div className="surface-card checkin-card"><p className="eyebrow">Day {selectedDay} check-in · {selectedDate.toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</p>{active ? <><h3>Did your cue occur?</h3><div className="choice-grid two"><ChoiceButton active={cueOccurred === true} title="Yes" detail="A target opportunity occurred" onClick={() => setCueOccurred(true)} /><ChoiceButton active={cueOccurred === false} title="No" detail="No target opportunity today" onClick={() => { setCueOccurred(false); setAlternativeUsed(null); }} /></div>{cueOccurred === true && <><h3>Did you use your new routine?</h3><div className="choice-grid two"><ChoiceButton active={alternativeUsed === true} title="Yes" detail="I used the alternative" onClick={() => setAlternativeUsed(true)} /><ChoiceButton active={alternativeUsed === false} title="No" detail="I used the old routine" onClick={() => setAlternativeUsed(false)} /></div></>} {cueOccurred === false && <div className="no-opportunity"><Eye /><div><strong>No target opportunity today.</strong><p>This is valid evidence. It is excluded from adherence rather than scored as 0%.</p></div></div>}<label className="field-label">What happened? <span>Optional</span></label><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Add only what will help you remember the moment…" /><Button className="w-full" size="lg" disabled={saving || cueOccurred === null || (cueOccurred === true && alternativeUsed === null)} onClick={() => void act({ action: "saveEvent", experimentId: experiment.id, dayNumber: selectedDay, occurredAt: selectedDate.toISOString(), targetConditionOccurred: cueOccurred, alternativeUsed, notes })}>{saving ? "Saving evidence…" : existing ? "Update this evidence" : "Save this evidence"}</Button></> : <div className="closed-checkin"><ShieldCheck /><h3>This evidence window is closed.</h3><p>You can inspect each day, the calculation trail and parameter history. New observations are paused for this experiment.</p><Button variant="outline" onClick={() => onView("evidence")}>Open evidence vault</Button></div>}</div>
     </section>
     <section className="measurement-strip"><div><span>Opportunities observed</span><strong>{opportunityCount}</strong></div><div><span>Alternative used</span><strong>{replacementCount}</strong></div><div><span>Adherence</span><strong>{adherence === null || adherence === undefined ? "N/A" : `${adherence}%`}</strong></div><div><span>Evidence strength</span><strong>{evidenceStrength.toLowerCase().replaceAll("_", " ")}</strong></div></section>
-    {state.events.length >= 3 && <div className="checkpoint-card"><div className="card-icon amber"><RotateCcw /></div><div><p className="eyebrow">Day 3 checkpoint</p><h3>Calibration is ready.</h3><p>What surprised you? Is the habit easier or harder to catch? Does the replacement need adjustment? What supports or challenges the equation?</p></div><Button variant="outline" onClick={() => onView("companion")}>Review with Companion</Button></div>}
+    {state.events.length >= 3 && <CheckpointPanel state={state} saving={saving} act={act} />}
+    {canClose && <ExperimentClosure state={state} saving={saving} act={act} />}
+    {!active && <div className="checkpoint-card complete"><div className="card-icon teal"><Check /></div><div><p className="eyebrow">Evidence review ready</p><h3>{experiment.status === "COMPLETED_INSUFFICIENT" ? "Finished with insufficient evidence." : "Experiment complete."}</h3><p>The record preserves missingness, every parameter version and the inputs behind each calculated value.</p></div><Button variant="outline" onClick={() => onView("evidence")}>Inspect evidence</Button></div>}
   </div>;
+}
+
+function CheckpointPanel({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+  const experiment = state.experiment!;
+  const checkpoint = state.checkpoints.find((item) => item.dayNumber === 3);
+  const [surprise, setSurprise] = useState("");
+  const [observability, setObservability] = useState("AS_EXPECTED");
+  const [support, setSupport] = useState("");
+  const [challenge, setChallenge] = useState("");
+  const [decision, setDecision] = useState("KEEP");
+  const [targetCondition, setTargetCondition] = useState(experiment.targetCondition);
+  const [alternativeBehaviour, setAlternativeBehaviour] = useState(experiment.alternativeBehaviour);
+
+  if (checkpoint) {
+    return <section className="surface-card checkpoint-summary"><div className="section-title"><div><p className="eyebrow">Day 3 checkpoint recorded</p><h3>{checkpoint.decision === "ADJUST" ? "The experiment was calibrated." : "The original parameters were kept."}</h3></div><Badge variant="outline">{state.parameterVersions.length} parameter version{state.parameterVersions.length === 1 ? "" : "s"}</Badge></div><div className="checkpoint-evidence"><div><span>What surprised you</span><p>{checkpoint.surprise}</p></div><div><span>Supported</span><p>{checkpoint.evidenceSupport}</p></div><div><span>Challenged</span><p>{checkpoint.evidenceChallenge}</p></div></div>{state.parameterVersions.length > 0 && <details className="version-history"><summary>Inspect parameter history</summary>{state.parameterVersions.map((version) => <div key={version.id}><strong>Version {version.version}</strong><span>Effective {new Date(version.effectiveFrom).toLocaleString("en-ZA")}</span><p>Cue: {version.targetCondition}</p><p>Alternative: {version.alternativeBehaviour}</p></div>)}</details>}</section>;
+  }
+
+  if (experiment.status !== "ACTIVE") return null;
+  const complete = surprise && support && challenge && (decision === "KEEP" || targetCondition !== experiment.targetCondition || alternativeBehaviour !== experiment.alternativeBehaviour);
+  return <section className="surface-card checkpoint-form"><div className="section-title"><div><p className="eyebrow">Day 3 checkpoint</p><h3>Calibrate without erasing version 1.</h3></div><RotateCcw /></div><div className="checkpoint-fields"><label>What surprised you?<Textarea value={surprise} onChange={(event) => setSurprise(event.target.value)} /></label><label>How observable is the cue now?<Select value={observability} onValueChange={setObservability}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EASIER">Easier to catch</SelectItem><SelectItem value="AS_EXPECTED">About as expected</SelectItem><SelectItem value="HARDER">Harder to catch</SelectItem></SelectContent></Select></label><label>What supports your equation?<Textarea value={support} onChange={(event) => setSupport(event.target.value)} /></label><label>What challenges it?<Textarea value={challenge} onChange={(event) => setChallenge(event.target.value)} /></label></div><div className="choice-grid two"><ChoiceButton active={decision === "KEEP"} title="Keep version 1" detail="Continue with the current cue and alternative" onClick={() => setDecision("KEEP")} /><ChoiceButton active={decision === "ADJUST"} title="Create version 2" detail="Change the cue or alternative from now on" onClick={() => setDecision("ADJUST")} /></div>{decision === "ADJUST" && <div className="checkpoint-adjust"><label>Updated cue<Input value={targetCondition} onChange={(event) => setTargetCondition(event.target.value)} /></label><label>Updated alternative<Input value={alternativeBehaviour} onChange={(event) => setAlternativeBehaviour(event.target.value)} /></label></div>}<Button size="lg" disabled={saving || !complete} onClick={() => void act({ action: "saveCheckpoint", experimentId: experiment.id, surprise, observability, evidenceSupport: support, evidenceChallenge: challenge, decision, targetCondition, alternativeBehaviour })}>{saving ? "Saving checkpoint…" : "Save checkpoint"}</Button></section>;
+}
+
+function ExperimentClosure({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+  const experiment = state.experiment!;
+  const opportunities = Number(state.measurements["HAB.EXPERIMENT.OPPORTUNITY_COUNT"]?.value ?? 0);
+  const sufficient = opportunities >= experiment.minimumEvidenceThreshold;
+  const [cue, setCue] = useState(experiment.targetCondition);
+  return <section className="surface-card closure-card"><div className="section-title"><div><p className="eyebrow">End-of-window decision</p><h3>{sufficient ? "Your review has enough lab evidence." : "The evidence is still limited."}</h3><p>{opportunities} eligible opportunit{opportunities === 1 ? "y" : "ies"} observed · minimum {experiment.minimumEvidenceThreshold}</p></div><Badge variant="outline">{sufficient ? "Review ready" : "Insufficient evidence"}</Badge></div>{sufficient ? <div className="closure-actions"><p>Finish the experiment to unlock the evidence review, or extend if another few days would answer a specific question.</p><Button disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "FINISH" })}>Finish and review</Button><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "EXTEND" })}>Extend 3 days</Button></div> : <div className="closure-options"><article><h4>Extend the window</h4><p>Keep the current cue and collect three more days.</p><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "EXTEND" })}>Extend 3 days</Button></article><article><h4>Use a more observable cue</h4><p>Version the cue, then collect three more days.</p><Input value={cue} onChange={(event) => setCue(event.target.value)} /><Button variant="outline" disabled={saving || cue.trim() === experiment.targetCondition} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "ADJUST_CUE", targetCondition: cue })}>Adjust and extend</Button></article><article><h4>Finish honestly</h4><p>Close the experiment with insufficient evidence. N/A values remain N/A.</p><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "FINISH_INSUFFICIENT" })}>Finish with insufficient evidence</Button></article></div>}</section>;
 }
 
 function EmptyExperiment({ onView, embedded }: { onView: (view: View) => void; embedded: boolean }) {
@@ -598,7 +694,13 @@ function InvestigationNine({ state, saving, act, onView }: { state: Snapshot; sa
 
 function EvidenceView({ state, onView }: { state: Snapshot; onView: (view: View) => void }) {
   const evidenceCount = Object.keys(state.responses).length + state.events.length;
-  return <div className="page-wrap evidence-view"><div className="page-intro"><div><p className="eyebrow">Evidence vault</p><h1>What your investigation has produced.</h1><p>Original wording, observations, calculations and hypotheses remain distinct.</p></div><Badge variant="outline">{evidenceCount} records</Badge></div><EvidenceColumns state={state} /><section className="surface-card vault-section"><div className="section-title"><div><p className="eyebrow">All evidence I added</p><h2>Registered Habit Lab fields</h2></div><Archive /></div><div className="evidence-list">{Object.entries(state.responses).map(([field, item]) => <div key={field}><span className="provenance-tag said">You said</span><div><strong>{fieldLabels[field] ?? field.replaceAll(".", " · ")}</strong><p>{item.status === "PASS" ? "Passed" : String(item.value)}</p></div><time>{new Date(item.recordedAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</time></div>)}</div></section><div className="companion-card evidence-companion"><div className="companion-mark"><Bot /></div><div><p className="eyebrow">Ask why</p><h3>Every behavioural statement should be traceable.</h3><p>Ask the Companion to retrieve your cue, evidence or challenge test.</p></div><Button variant="outline" onClick={() => onView("companion")}>Open Companion</Button></div></div>;
+  const formulas: Record<string, string> = {
+    "HAB.EXPERIMENT.OPPORTUNITY_COUNT": "Count events where eligible opportunity = true",
+    "HAB.EXPERIMENT.REPLACEMENT_COUNT": "Count eligible events where alternative used = true",
+    "HAB.BEI06": "Alternative used ÷ eligible opportunities × 100; N/A when opportunities = 0",
+    "HAB.BEI03": "100 − |predicted adherence − actual adherence|; N/A when adherence is N/A",
+  };
+  return <div className="page-wrap evidence-view"><div className="page-intro"><div><p className="eyebrow">Evidence vault</p><h1>What your investigation has produced.</h1><p>Original wording, observations, calculations and hypotheses remain distinct.</p></div><Badge variant="outline">{evidenceCount} records</Badge></div><EvidenceColumns state={state} /><section className="surface-card trace-section"><div className="section-title"><div><p className="eyebrow">Calculation trace</p><h2>Measure → evidence → source</h2><p>Every displayed calculation carries its formula version and linked inputs.</p></div><Search /></div><div className="trace-list">{Object.entries(state.measurements).map(([code, measure]) => <details key={code}><summary><span className="provenance-tag calculated">BIS calculated</span><strong>{code}</strong><b>{measure.status === "NA" ? "N/A" : String(measure.value)}</b></summary><div className="trace-body"><dl><div><dt>Formula</dt><dd>{formulas[code] ?? "Registered BIS calculation"}</dd></div><div><dt>Formula version</dt><dd>{measure.formulaVersion}</dd></div><div><dt>Evidence strength</dt><dd>{measure.evidenceStrength.toLowerCase().replaceAll("_", " ")}</dd></div><div><dt>Calculated</dt><dd>{new Date(measure.calculatedAt).toLocaleString("en-ZA")}</dd></div></dl><h4>Linked source inputs ({measure.sources.length})</h4>{measure.sources.length === 0 ? <p>No source inputs recorded yet.</p> : <ul>{measure.sources.map((source, index) => <li key={`${source.sourceObjectId}-${source.inputRole}-${index}`}><span>{source.sourceObjectType.toLowerCase().replaceAll("_", " ")}</span><strong>{source.inputRole.toLowerCase().replaceAll("_", " ")}</strong><code>{String(source.inputValue)}</code></li>)}</ul>}</div></details>)}</div></section><section className="surface-card vault-section"><div className="section-title"><div><p className="eyebrow">All evidence I added</p><h2>Registered Habit Lab fields</h2></div><Archive /></div><div className="evidence-list">{Object.entries(state.responses).map(([field, item]) => <div key={field}><span className="provenance-tag said">You said</span><div><strong>{fieldLabels[field] ?? field.replaceAll(".", " · ")}</strong><p>{item.status === "PASS" ? "Passed" : String(item.value)}</p></div><time>{new Date(item.recordedAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</time></div>)}</div></section><div className="companion-card evidence-companion"><div className="companion-mark"><Bot /></div><div><p className="eyebrow">Ask why</p><h3>Every behavioural statement should be traceable.</h3><p>Ask the Companion to retrieve your cue, evidence or challenge test.</p></div><Button variant="outline" onClick={() => onView("companion")}>Open Companion</Button></div></div>;
 }
 
 function EvidenceColumns({ state, compact = false }: { state: Snapshot; compact?: boolean }) {
@@ -631,6 +733,19 @@ function CompanionView({ state, saving, act }: { state: Snapshot; saving: boolea
 function MemoryView({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
   const active = state.memories.filter((memory) => memory.status === "ACTIVE");
   return <div className="page-wrap memory-view"><div className="page-intro"><div><p className="eyebrow">What BIS remembers</p><h1>Inspectable memory, under your control.</h1><p>Only user-stated or user-confirmed items appear here. A system suggestion never silently becomes fact.</p></div><Badge variant="outline"><Brain /> {active.length} active</Badge></div>{active.length === 0 ? <div className="empty-state surface-card"><Brain /><h2>No confirmed behavioural memories yet.</h2><p>When a pattern becomes useful for continuity, BIS will ask before remembering it.</p></div> : <div className="memory-list">{active.map((memory) => <article className="surface-card" key={memory.id}><div><Badge variant="outline">{memory.memoryType.toLowerCase().replaceAll("_", " ")}</Badge><Badge className="confirmed-badge"><Check /> User confirmed</Badge></div><h2>{memory.statement}</h2><dl><div><dt>Source</dt><dd>{memory.sourceType.toLowerCase()}</dd></div><div><dt>Status</dt><dd>{memory.status.toLowerCase()}</dd></div></dl><Button variant="outline" disabled={saving} onClick={() => void act({ action: "retireMemory", memoryId: memory.id })}>Retire memory</Button></article>)}</div>}<div className="memory-policy"><LockKeyhole /><div><h3>Memory is not identity.</h3><p>BIS may remember a pattern you are investigating. It does not turn that pattern into a label about who you are.</p></div></div></div>;
+}
+
+function SettingsView({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+  const [preference, setPreference] = useState(state.notificationPreference);
+  const [confirmWithdrawal, setConfirmWithdrawal] = useState(false);
+  const reminderOptions = [
+    ["experimentStarted", "Experiment started", "Acknowledge when a new evidence window begins"],
+    ["dailyObservation", "Daily observation", "Show a reminder when today's evidence has not been recorded"],
+    ["dayThreeCheckpoint", "Day 3 checkpoint", "Prompt for calibration after three recorded days"],
+    ["experimentEnding", "Experiment ending", "Flag the final two days and completion choices"],
+    ["reviewReady", "Review ready", "Show when the experiment is ready for evidence review"],
+  ] as const;
+  return <div className="page-wrap settings-view"><div className="page-intro"><div><p className="eyebrow">Settings & privacy</p><h1>Your controls, in one place.</h1><p>Configure in-app reminders and manage product consent without changing earlier records.</p></div><Badge variant="outline"><ShieldCheck /> Consent {state.consent?.status.toLowerCase()}</Badge></div><div className="settings-grid"><section className="surface-card settings-card"><div className="section-title"><div><p className="eyebrow">In-app reminders</p><h2>Experiment notifications</h2><p>This pilot does not send push notifications, email or SMS. Reminders appear only inside BIS.</p></div><Bell /></div><label className="preference-row master"><Checkbox checked={preference.enabled} onCheckedChange={(checked) => setPreference({ ...preference, enabled: checked === true })} /><span><strong>Enable experiment reminders</strong><small>Turn all in-app reminders on or off</small></span></label><div className={preference.enabled ? "preference-list" : "preference-list disabled"}>{reminderOptions.map(([key, title, detail]) => <label className="preference-row" key={key}><Checkbox disabled={!preference.enabled} checked={preference[key]} onCheckedChange={(checked) => setPreference({ ...preference, [key]: checked === true })} /><span><strong>{title}</strong><small>{detail}</small></span></label>)}</div><div className="reminder-schedule"><label>Reminder time<Input type="time" value={preference.reminderTime} disabled={!preference.enabled} onChange={(event) => setPreference({ ...preference, reminderTime: event.target.value })} /></label><label>Timezone<Input value={preference.timezone} disabled readOnly /></label></div><Button disabled={saving} onClick={() => void act({ action: "updateNotificationPreferences", ...preference })}>{saving ? "Saving…" : "Save reminder settings"}</Button></section><section className="surface-card settings-card privacy-card"><div className="section-title"><div><p className="eyebrow">Privacy control</p><h2>Pause product consent</h2><p>Pausing stops new investigation activity. Existing evidence remains private and is not deleted or rewritten.</p></div><LockKeyhole /></div><dl><div><dt>Signed-in account</dt><dd>{state.identity.email}</dd></div><div><dt>Product consent</dt><dd>{state.consent?.status.toLowerCase()}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion}</dd></div><div><dt>Current sharing</dt><dd>Private Site access only</dd></div></dl><label className="consent-row"><Checkbox checked={confirmWithdrawal} onCheckedChange={(checked) => setConfirmWithdrawal(checked === true)} /><span>I understand that new responses, experiment events and Companion turns will pause until I restore consent.</span></label><Button variant="outline" disabled={saving || !confirmWithdrawal} onClick={() => void act({ action: "withdrawConsent" })}>Pause consent and investigation</Button></section></div></div>;
 }
 
 function PromptSection({ number, title, prompt, children }: { number: string; title: string; prompt: string; children: React.ReactNode }) {
