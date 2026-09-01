@@ -1,0 +1,654 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  Archive,
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Bot,
+  Brain,
+  CalendarDays,
+  Check,
+  ChevronRight,
+  Compass,
+  Eye,
+  FileText,
+  FlaskConical,
+  Home,
+  Lightbulb,
+  LockKeyhole,
+  Menu,
+  MessageCircleQuestion,
+  NotebookTabs,
+  RotateCcw,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  X,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  baselineItems,
+  fieldLabels,
+  investigations,
+  responseScale,
+  storyEpisodeOne,
+  storyEpisodeTwo,
+} from "@/lib/habit-lab";
+
+type Snapshot = {
+  identity: { id: string; email: string; displayName: string };
+  profile: null | { displayName: string; ageBand: string; mode: string };
+  consent: null | { status: string; policyVersion: string };
+  enrolment: null | { currentInvestigation: number; status: string };
+  responses: Record<string, { value: unknown; status: string; responseId: string; recordedAt: string }>;
+  hypothesis: null | {
+    id: string;
+    statement: string;
+    falsificationStatement: string;
+    learnerConfidence: number;
+    status: string;
+  };
+  experiment: null | {
+    id: string;
+    status: string;
+    targetPattern: string;
+    targetCondition: string;
+    alternativeBehaviour: string;
+    expectedReward: string;
+    witness: string | null;
+    restartPlan: string;
+    minimumVersion: string;
+    failureSignal: string;
+    impactDomains: string[];
+    predictedValue: number;
+    startDate: string;
+    plannedEndDate: string;
+  };
+  events: Array<{
+    id: string;
+    dayNumber: number;
+    occurredAt: string;
+    targetConditionOccurred: boolean;
+    eligibleOpportunity: boolean;
+    alternativeUsed: boolean | null;
+    notes: string | null;
+  }>;
+  measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
+  memories: Array<{
+    id: string;
+    statement: string;
+    memoryType: string;
+    confirmationLevel: string;
+    status: string;
+    sourceType: string;
+  }>;
+  companionTurns: Array<{
+    id: string;
+    role: string;
+    content: string;
+    mode: string;
+    evidenceRefs: string;
+  }>;
+};
+
+type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "memory";
+
+const nav = [
+  { id: "home" as const, label: "Home", icon: Home },
+  { id: "lab" as const, label: "Habit Lab", icon: FlaskConical },
+  { id: "experiment" as const, label: "Experiment", icon: CalendarDays },
+  { id: "evidence" as const, label: "Evidence", icon: Archive },
+  { id: "companion" as const, label: "Companion", icon: Bot },
+];
+
+function valueOf(state: Snapshot, field: string, fallback = "") {
+  const value = state.responses[field]?.value;
+  return value === null || value === undefined ? fallback : String(value);
+}
+
+function numberOf(state: Snapshot, field: string, fallback = 1) {
+  const value = Number(state.responses[field]?.value);
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function localDate(offset = 0) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return date.toISOString().slice(0, 10);
+}
+
+export function BISApp({ initialIdentity }: { initialIdentity: { email: string; displayName: string } | null }) {
+  const [state, setState] = useState<Snapshot | null>(null);
+  const [view, setView] = useState<View>("home");
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("/api/bis", { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? "Unable to open your investigation.");
+      setState(data);
+      setStep(Math.max(1, Math.min(9, data.enrolment?.currentInvestigation || 1)));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Unable to open your investigation.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function act(payload: Record<string, unknown>, replaceSnapshot = true) {
+    setSaving(true);
+    setError("");
+    try {
+      const response = await fetch("/api/bis", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? "That change could not be saved.");
+      if (replaceSnapshot) setState(data);
+      return data;
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "That change could not be saved.");
+      throw cause;
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <LoadingState />;
+  if (!state) {
+    return (
+      <div className="grid min-h-screen place-items-center px-6">
+        <div className="surface-card max-w-md p-8 text-center">
+          <ShieldCheck className="mx-auto size-10 text-[var(--teal)]" />
+          <h1 className="mt-5 text-2xl font-semibold">Your private investigation could not open</h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{error || "Please sign in and try again."}</p>
+          <Button className="mt-6" onClick={() => void load()}>Try again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!state.profile || state.consent?.status !== "GRANTED") {
+    return <Onboarding identity={initialIdentity ?? state.identity} saving={saving} error={error} onSubmit={act} />;
+  }
+
+  const baselineComplete = Boolean(state.responses["HAB.CONTROL.PRE"]) && baselineItems.every(([field]) => Boolean(state.responses[field]));
+  if (!baselineComplete) {
+    return <BaselineScreen state={state} saving={saving} error={error} act={act} />;
+  }
+
+  const current = Math.max(1, state.enrolment?.currentInvestigation || 1);
+  const displayName = state.profile.displayName.split(" ")[0] || "Investigator";
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="mobile-header">
+        <button className="icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu /></button>
+        <Brand compact />
+        <button className="avatar-button" aria-label="Open memory" onClick={() => setView("memory")}>{displayName.slice(0, 1).toUpperCase()}</button>
+      </header>
+
+      {menuOpen && <div className="mobile-scrim" onClick={() => setMenuOpen(false)} />}
+      <aside className={`sidebar ${menuOpen ? "sidebar-open" : ""}`}>
+        <div className="sidebar-top">
+          <Brand />
+          <button className="icon-button sidebar-close" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X /></button>
+        </div>
+        <div className="lab-pill">
+          <div className="lab-mark"><FlaskConical /></div>
+          <div><span>Current Lab</span><strong>Habit Lab</strong></div>
+          <Badge variant="outline">4.5.1</Badge>
+        </div>
+        <nav className="sidebar-nav" aria-label="Primary navigation">
+          {nav.map((item) => {
+            const Icon = item.icon;
+            const disabled = item.id === "experiment" && !state.experiment;
+            return (
+              <button
+                key={item.id}
+                className={view === item.id ? "active" : ""}
+                disabled={disabled}
+                onClick={() => { setView(item.id); setMenuOpen(false); }}
+              >
+                <Icon /> <span>{item.label}</span>
+                {item.id === "lab" && <small>{current}/9</small>}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="sidebar-spacer" />
+        <button className={`memory-link ${view === "memory" ? "active" : ""}`} onClick={() => { setView("memory"); setMenuOpen(false); }}>
+          <Brain /> <span>What BIS remembers</span>
+        </button>
+        <div className="profile-chip">
+          <span className="profile-avatar">{displayName.slice(0, 1).toUpperCase()}</span>
+          <div><strong>{state.profile.displayName}</strong><small>{state.profile.mode === "FACILITATED" ? "Facilitated mode" : "Independent mode"}</small></div>
+        </div>
+      </aside>
+
+      <main className="app-main">
+        {error && <div className="error-banner"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
+        {view === "home" && <HomeView state={state} name={displayName} onView={setView} onContinue={() => { setStep(current); setView("lab"); }} />}
+        {view === "lab" && <LabRunner state={state} step={step} setStep={setStep} saving={saving} act={act} onView={setView} />}
+        {view === "experiment" && <ExperimentView state={state} saving={saving} act={act} onView={setView} />}
+        {view === "evidence" && <EvidenceView state={state} onView={setView} />}
+        {view === "companion" && <CompanionView state={state} saving={saving} act={act} />}
+        {view === "memory" && <MemoryView state={state} saving={saving} act={act} />}
+      </main>
+    </div>
+  );
+}
+
+function Brand({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`brand ${compact ? "brand-compact" : ""}`}>
+      <span className="brand-symbol">B</span>
+      <div><strong>BIS</strong><small>Behaviour Intelligence</small></div>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="loading-shell">
+      <Brand />
+      <div className="loading-line" /><div className="loading-line short" />
+      <div className="loading-grid"><div /><div /><div /></div>
+    </div>
+  );
+}
+
+function Onboarding({
+  identity,
+  saving,
+  error,
+  onSubmit,
+}: {
+  identity: { email: string; displayName: string } | null;
+  saving: boolean;
+  error: string;
+  onSubmit: (payload: Record<string, unknown>) => Promise<unknown>;
+}) {
+  const [ageBand, setAgeBand] = useState("");
+  const [mode, setMode] = useState("INDEPENDENT");
+  const [consent, setConsent] = useState(false);
+
+  return (
+    <main className="onboarding-shell">
+      <div className="onboarding-header"><Brand /><Badge variant="outline">Habit Lab 4.5.1</Badge></div>
+      <section className="onboarding-intro">
+        <div>
+          <p className="eyebrow">Your first investigation</p>
+          <h1>Understand a pattern in your behaviour by collecting evidence from your own life.</h1>
+          <p className="lede">This is not a personality test. You will notice a repeated pattern, build a working explanation, test it for seven days and review what actually happened.</p>
+          <div className="journey-line" aria-label="Investigation journey">
+            {["Notice", "Explain", "Test", "Review"].map((label, index) => <div key={label}><span>{index + 1}</span><strong>{label}</strong></div>)}
+          </div>
+        </div>
+        <div className="surface-card onboarding-card">
+          <div className="privacy-heading"><LockKeyhole /><div><h2>Before you begin</h2><p>Private by design. Evidence before judgment.</p></div></div>
+          <label className="field-label">How will you use Habit Lab?</label>
+          <div className="choice-grid two">
+            <ChoiceButton active={mode === "INDEPENDENT"} title="On my own" detail="Move at your own pace" onClick={() => setMode("INDEPENDENT")} />
+            <ChoiceButton active={mode === "FACILITATED"} title="With a facilitator" detail="Use it in a guided session" onClick={() => setMode("FACILITATED")} />
+          </div>
+          <label className="field-label" htmlFor="age-band">Age band</label>
+          <Select value={ageBand} onValueChange={setAgeBand}>
+            <SelectTrigger id="age-band" className="w-full"><SelectValue placeholder="Choose an age band" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="14-17">14–17</SelectItem>
+              <SelectItem value="18-21">18–21</SelectItem>
+              <SelectItem value="22-25">22–25</SelectItem>
+              <SelectItem value="26+">26 or older</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="privacy-copy">
+            <ShieldCheck />
+            <p><strong>What BIS collects:</strong> the evidence and reflections you choose to add, your experiment events and calculated results. You can pass a question. Your work is not a score about who you are.</p>
+          </div>
+          <label className="consent-row">
+            <Checkbox checked={consent} onCheckedChange={(value) => setConsent(value === true)} />
+            <span>I understand what is collected, why it is used, who may see it in my selected mode, and that safeguarding or legal duties may limit confidentiality.</span>
+          </label>
+          {error && <p className="field-error">{error}</p>}
+          <Button className="w-full" size="lg" disabled={saving || !ageBand || !consent} onClick={() => void onSubmit({ action: "setup", ageBand, mode, consent })}>
+            {saving ? "Preparing your Lab…" : <>Begin Habit Lab <ArrowRight /></>}
+          </Button>
+          <p className="signed-in-note">Signed in as {identity?.email ?? "your private account"}</p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ChoiceButton({ active, title, detail, onClick }: { active: boolean; title: string; detail: string; onClick: () => void }) {
+  return <button type="button" className={`choice-button ${active ? "selected" : ""}`} onClick={onClick}><span>{active ? <Check /> : null}</span><strong>{title}</strong><small>{detail}</small></button>;
+}
+
+function BaselineScreen({ state, saving, error, act }: { state: Snapshot; saving: boolean; error: string; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+  const [ratings, setRatings] = useState<Record<string, string>>(() => Object.fromEntries(baselineItems.map(([field]) => [field, valueOf(state, field)])));
+  const [control, setControl] = useState(numberOf(state, "HAB.CONTROL.PRE", 5));
+  const complete = baselineItems.every(([field]) => ratings[field]);
+  return <main className="baseline-shell"><div className="baseline-top"><Brand /><div><Badge variant="outline">Starting point</Badge><strong>Behaviour baseline</strong></div></div><section className="baseline-layout"><div className="baseline-copy"><p className="eyebrow">Before the investigation</p><h1>Create your starting point.</h1><p>This is evidence, not judgment. There is no overall Habit Score and no comparison with other people.</p><div className="baseline-principles"><div><ShieldCheck /><span><strong>Private</strong>Your responses stay tied to your account.</span></div><div><Eye /><span><strong>Editable</strong>You can correct an earlier response.</span></div><div><Compass /><span><strong>Descriptive</strong>This records frequency, not identity.</span></div></div></div><div className="surface-card baseline-card"><div className="section-title"><div><p className="eyebrow">Behaviour Baseline Profile</p><h2>How often do you…</h2></div><Badge>10 items</Badge></div><div className="baseline-items">{baselineItems.map(([field, label], index) => <div key={field}><span className="baseline-index">{String(index + 1).padStart(2, "0")}</span><label>{label}</label><Select value={ratings[field]} onValueChange={(value) => setRatings({ ...ratings, [field]: value })}><SelectTrigger className="baseline-select"><SelectValue placeholder="Choose" /></SelectTrigger><SelectContent>{responseScale.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select></div>)}</div><div className="control-rating"><div><p className="eyebrow">Habit Control Rating — before</p><h3>How much control do you feel you have over your habits?</h3><p>1 = my habits control me · 10 = I consciously design my habits</p></div><strong>{control}<span>/10</span></strong><Slider value={[control]} min={1} max={10} step={1} onValueChange={([value]) => setControl(value)} /></div>{error && <p className="field-error">{error}</p>}<Button className="w-full" size="lg" disabled={saving || !complete} onClick={() => void act({ action: "saveResponses", items: [...baselineItems.map(([semanticFieldId]) => ({ semanticFieldId, value: ratings[semanticFieldId], investigation: 0 })), { semanticFieldId: "HAB.CONTROL.PRE", value: control, investigation: 0 }] })}>{saving ? "Saving your starting point…" : <>Enter Habit Lab <ArrowRight /></>}</Button></div></section></main>;
+}
+
+function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: string; onContinue: () => void; onView: (view: View) => void }) {
+  const current = Math.max(1, state.enrolment?.currentInvestigation || 1);
+  const investigation = investigations[current - 1];
+  const evidenceCount = Object.values(state.responses).filter((item) => item.status === "ANSWERED").length + state.events.length;
+  const cue = valueOf(state, "HAB.CUE.TEXT", "Not mapped yet");
+  const hypothesis = state.hypothesis?.statement;
+  const adherence = state.measurements["HAB.BEI06"]?.value;
+
+  return (
+    <div className="page-wrap home-view">
+      <div className="page-intro">
+        <div><p className="eyebrow">Tuesday · Your investigation</p><h1>Good morning, {name}.</h1><p>Pick up where the evidence left you.</p></div>
+        <Badge className="status-badge" variant="outline"><ShieldCheck /> Private investigation</Badge>
+      </div>
+
+      <section className="continue-card">
+        <div className="continue-main">
+          <div className="continue-top"><Badge>Habit Lab</Badge><span>Investigation {current} of 9</span></div>
+          <h2>{investigation.title}</h2>
+          <p>{investigation.mission}</p>
+          <Progress value={(current / 9) * 100} />
+          <div className="continue-actions"><Button size="lg" onClick={onContinue}>Continue investigation <ArrowRight /></Button><span><NotebookTabs /> About {investigation.time}</span></div>
+        </div>
+        <div className="evidence-orbit" aria-hidden="true">
+          <div className="orbit-center"><Search /><span>Current focus</span><strong>{current < 4 ? "Notice" : current < 7 ? "Test the explanation" : "Review evidence"}</strong></div>
+          <span className="orbit-dot one" /><span className="orbit-dot two" /><span className="orbit-dot three" />
+        </div>
+      </section>
+
+      <section className="home-grid">
+        <article className="surface-card stat-card"><div className="card-icon coral"><Archive /></div><span>Evidence collected</span><strong>{evidenceCount}</strong><p>Responses and real-world observations</p><button onClick={() => onView("evidence")}>Open evidence vault <ChevronRight /></button></article>
+        <article className="surface-card stat-card"><div className="card-icon teal"><Target /></div><span>Cue you are watching</span><strong className="stat-copy">{cue}</strong><p>{state.experiment ? "Active in your seven-day experiment" : "Your current working entry"}</p><button onClick={() => onView(state.experiment ? "experiment" : "lab")}>View current test <ChevronRight /></button></article>
+        <article className="surface-card stat-card"><div className="card-icon amber"><FlaskConical /></div><span>Experiment evidence</span><strong>{state.events.length}<small> / 7 days</small></strong><p>{adherence === null || adherence === undefined ? "No calculated adherence yet" : `${adherence}% adherence — ${state.measurements["HAB.BEI06"]?.evidenceStrength.toLowerCase().replaceAll("_", " ")}`}</p><button onClick={() => onView(state.experiment ? "experiment" : "lab")}>{state.experiment ? "Record today" : "Prepare experiment"} <ChevronRight /></button></article>
+      </section>
+
+      <section className="home-lower-grid">
+        <article className="surface-card hypothesis-card">
+          <div className="section-title"><div><p className="eyebrow">Your current hypothesis</p><h3>A working explanation, not a verdict.</h3></div><Badge variant="outline">{state.hypothesis?.status ?? "Not formed"}</Badge></div>
+          <blockquote>{hypothesis || "Your working equation will appear after you map the pattern."}</blockquote>
+          {state.hypothesis && <p><Lightbulb /> The next seven days may support it, challenge it or make it more specific.</p>}
+        </article>
+        <article className="companion-card">
+          <div className="companion-mark"><Bot /></div>
+          <div><p className="eyebrow">BIS Companion</p><h3>What would you like to understand?</h3><p>I can retrieve your evidence, clarify a question or help examine your working explanation.</p></div>
+          <Button variant="outline" onClick={() => onView("companion")}>Open Companion <MessageCircleQuestion /></Button>
+        </article>
+      </section>
+    </div>
+  );
+}
+
+function LabRunner({ state, step, setStep, saving, act, onView }: { state: Snapshot; step: number; setStep: (step: number) => void; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void }) {
+  const info = investigations[step - 1];
+  const maxStep = Math.max(1, state.enrolment?.currentInvestigation || 1);
+  return (
+    <div className="runner-shell">
+      <div className="runner-topbar">
+        <button className="back-link" onClick={() => onView("home")}><ArrowLeft /> Back home</button>
+        <div className="runner-progress"><span>Investigation {step} of 9</span><Progress value={(step / 9) * 100} /></div>
+      </div>
+      <div className="runner-layout">
+        <aside className="investigation-rail" aria-label="Habit Lab investigations">
+          {investigations.map((item) => {
+            const available = item.number <= Math.max(maxStep, step);
+            const complete = item.number < maxStep;
+            return <button key={item.number} disabled={!available} className={step === item.number ? "current" : complete ? "complete" : ""} onClick={() => setStep(item.number)}><span>{complete ? <Check /> : item.number}</span><div><small>{item.phase}</small><strong>{item.title}</strong></div></button>;
+          })}
+        </aside>
+        <section className="runner-content">
+          <div className="mission-line"><div><p className="eyebrow">Mission</p><h1>{info.title}</h1><p>{info.mission}</p></div><Badge variant="outline">{info.time}</Badge></div>
+          {step === 1 && <InvestigationOne state={state} saving={saving} act={act} next={() => setStep(2)} />}
+          {step === 2 && <InvestigationTwo state={state} saving={saving} act={act} next={() => setStep(3)} />}
+          {step === 3 && <InvestigationThree state={state} saving={saving} act={act} next={() => setStep(4)} />}
+          {step === 4 && <InvestigationFour state={state} saving={saving} act={act} next={() => setStep(5)} />}
+          {step === 5 && <InvestigationFive state={state} saving={saving} act={act} next={() => setStep(6)} />}
+          {step === 6 && <InvestigationSix state={state} saving={saving} act={act} next={() => { setStep(7); onView("experiment"); }} />}
+          {step === 7 && <ExperimentView state={state} saving={saving} act={act} onView={onView} embedded />}
+          {step === 8 && <InvestigationEight state={state} saving={saving} act={act} next={() => setStep(9)} />}
+          {step === 9 && <InvestigationNine state={state} saving={saving} act={act} onView={onView} />}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function InvestigationOne({ state, saving, act, next }: StepProps) {
+  const [prediction, setPrediction] = useState(valueOf(state, "HAB.STORY1.PREDICTION"));
+  const choices = ["He gives up and goes back to his old habits", "He keeps wasting money and never changes", "Someone notices him and his path begins", "Nothing changes — he stays the same"];
+  return (
+    <div className="investigation-stack">
+      <article className="story-card"><div className="story-heading"><BookOpen /><div><small>Episode 1</small><h2>The Boy Who Kept Losing R20</h2></div></div>{storyEpisodeOne.map((paragraph, index) => <p key={index}>{paragraph}</p>)}</article>
+      <article className="prompt-card"><p className="prompt-kicker"><Compass /> Predict before the story explains</p><h3>What do you think happens next for Sipho?</h3><div className="answer-list">{choices.map((choice) => <button type="button" key={choice} className={prediction === choice ? "selected" : ""} onClick={() => setPrediction(choice)}><span>{prediction === choice ? <Check /> : null}</span>{choice}</button>)}</div><p className="method-note">This prediction stays in the story. Your own behaviour prediction comes later.</p></article>
+      <PauseCard question="What surprised me most so far?" />
+      <StepFooter saving={saving} disabled={!prediction} onSave={async () => { await act({ action: "saveResponse", semanticFieldId: "HAB.STORY1.PREDICTION", value: prediction, investigation: 1 }); next(); }} />
+    </div>
+  );
+}
+
+type StepProps = { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; next: () => void };
+
+function InvestigationTwo({ state, saving, act, next }: StepProps) {
+  const [form, setForm] = useState({
+    pattern: valueOf(state, "HAB.PATTERN.TARGET"),
+    evidence: valueOf(state, "HAB.EVIDENCE.INITIAL"),
+    evidenceMeaning: valueOf(state, "HAB.EVIDENCE.INITIAL_MEANING"),
+    obvious: valueOf(state, "HAB.REWARD.OBVIOUS"),
+    lessObvious: valueOf(state, "HAB.REWARD.LESS_OBVIOUS"),
+  });
+  const [examples, setExamples] = useState(false);
+  const ready = Object.values(form).every(Boolean);
+  return (
+    <div className="investigation-stack">
+      <PromptSection number="01" title="Name the repeated pattern" prompt="What habit feels hardest to change—the one that costs you more than you want to admit?"><TextField value={form.pattern} onChange={(pattern) => setForm({ ...form, pattern })} placeholder="Name one specific repeated behaviour…" /></PromptSection>
+      <PromptSection number="02" title="Find one piece of evidence" prompt="Think of one piece of evidence from the last seven days—a screenshot, object, message, photo, app history, calendar entry or something else."><TextField value={form.evidence} onChange={(evidence) => setForm({ ...form, evidence })} placeholder="Describe the evidence. Uploading anything is optional." /><TextField value={form.evidenceMeaning} onChange={(evidenceMeaning) => setForm({ ...form, evidenceMeaning })} placeholder="What does this show that memory alone might not?" /></PromptSection>
+      <PromptSection number="03" title="Investigate the reward" prompt="What does this pattern give you—even if it also costs you?"><TextField value={form.obvious} onChange={(obvious) => setForm({ ...form, obvious })} placeholder="The obvious reward…" /><TextField value={form.lessObvious} onChange={(lessObvious) => setForm({ ...form, lessObvious })} placeholder="The feeling or less-obvious reward…" />{!examples ? <Button variant="ghost" className="self-start" onClick={() => setExamples(true)}>Still stuck? Show me examples</Button> : <div className="example-box">Some people discover relief from boredom, escape from a difficult feeling, a sense of control, temporary numbness or avoiding something uncomfortable. These are examples, not answers about you.</div>}</PromptSection>
+      <StepFooter saving={saving} disabled={!ready} onSave={async () => { await act({ action: "saveResponses", items: [
+        { semanticFieldId: "HAB.PATTERN.TARGET", value: form.pattern, investigation: 2 },
+        { semanticFieldId: "HAB.EVIDENCE.INITIAL", value: form.evidence, investigation: 2 },
+        { semanticFieldId: "HAB.EVIDENCE.INITIAL_MEANING", value: form.evidenceMeaning, investigation: 2 },
+        { semanticFieldId: "HAB.REWARD.OBVIOUS", value: form.obvious, investigation: 2 },
+        { semanticFieldId: "HAB.REWARD.LESS_OBVIOUS", value: form.lessObvious, investigation: 2 },
+      ] }); next(); }} />
+    </div>
+  );
+}
+
+function InvestigationThree({ state, saving, act, next }: StepProps) {
+  const [correct, setCorrect] = useState(valueOf(state, "HAB.STORY1.CORRECT"));
+  const [assumption, setAssumption] = useState(valueOf(state, "HAB.STORY1.ASSUMPTION"));
+  return <div className="investigation-stack"><article className="story-card revelation"><div className="story-heading"><Sparkles /><div><small>Episode 2</small><h2>What Sipho Didn’t See</h2></div></div>{storyEpisodeTwo.map((paragraph, index) => <p key={index}>{paragraph}</p>)}<div className="loop-diagram"><div><small>Cue</small><strong>Something happens</strong></div><ArrowRight /><div><small>Routine</small><strong>You respond</strong></div><ArrowRight /><div><small>Reward</small><strong>You get something</strong></div></div></article><PromptSection number="01" title="Look back at your prediction" prompt="Was your prediction about Sipho correct?"><div className="choice-grid two"><ChoiceButton active={correct === "Yes"} title="Yes" detail="It matched what happened" onClick={() => setCorrect("Yes")} /><ChoiceButton active={correct === "No"} title="No" detail="The story challenged it" onClick={() => setCorrect("No")} /></div><TextField value={assumption} onChange={setAssumption} placeholder="What assumption did the story challenge?" /></PromptSection><StepFooter saving={saving} disabled={!correct || !assumption} onSave={async () => { await act({ action: "saveResponses", items: [{ semanticFieldId: "HAB.STORY1.CORRECT", value: correct, investigation: 3 }, { semanticFieldId: "HAB.STORY1.ASSUMPTION", value: assumption, investigation: 3 }] }); next(); }} /></div>;
+}
+
+function InvestigationFour({ state, saving, act, next }: StepProps) {
+  const [form, setForm] = useState({
+    cue: valueOf(state, "HAB.CUE.TEXT"), cueCertainty: numberOf(state, "HAB.CUE.CERTAINTY", 3), routine: valueOf(state, "HAB.ROUTINE.TEXT"), rewardCertainty: numberOf(state, "HAB.REWARD.CERTAINTY", 3), cost: valueOf(state, "HAB.COST.TEXT"), people: valueOf(state, "HAB.AFFECTED_PEOPLE.TEXT"), environment: valueOf(state, "HAB.ENVIRONMENT.TEXT"), alternative: valueOf(state, "HAB.ALTERNATIVE.TEXT"), emotion: valueOf(state, "HAB.EMOTION.TEXT"), person: valueOf(state, "HAB.SOCIAL_TRIGGER.TEXT"), frequency: valueOf(state, "HAB.FREQUENCY.YESTERDAY"),
+  });
+  const required = [form.cue, form.routine, form.cost, form.environment, form.alternative, form.emotion, form.frequency].every(Boolean);
+  return <div className="investigation-stack"><div className="mapping-banner"><div><Target /><span>Your target pattern</span><strong>{valueOf(state, "HAB.PATTERN.TARGET", "One repeated behaviour")}</strong></div><p>Map what happens. You can return and revise any working entry as your evidence changes.</p></div><div className="mapping-grid">
+    <PromptSection number="01" title="Cue" prompt="What happens right before this pattern—time, place, person, feeling, event or situation?"><TextField value={form.cue} onChange={(cue) => setForm({ ...form, cue })} /><ScaleField label="How certain are you?" value={form.cueCertainty} max={5} onChange={(cueCertainty) => setForm({ ...form, cueCertainty })} /></PromptSection>
+    <PromptSection number="02" title="Routine" prompt="Exactly what do you do? Walk through the steps."><TextField value={form.routine} onChange={(routine) => setForm({ ...form, routine })} /></PromptSection>
+    <PromptSection number="03" title="Reward" prompt="Review the obvious and less-obvious rewards you named."><div className="evidence-quote"><span>Obvious</span>{valueOf(state, "HAB.REWARD.OBVIOUS", "Not answered")}</div><div className="evidence-quote"><span>Less obvious</span>{valueOf(state, "HAB.REWARD.LESS_OBVIOUS", "Not answered")}</div><ScaleField label="How certain are you?" value={form.rewardCertainty} max={5} onChange={(rewardCertainty) => setForm({ ...form, rewardCertainty })} /></PromptSection>
+    <PromptSection number="04" title="Cost" prompt="What does this pattern cost you—time, money, energy, self-respect or relationships?"><TextField value={form.cost} onChange={(cost) => setForm({ ...form, cost })} /><TextField value={form.people} onChange={(people) => setForm({ ...form, people })} placeholder="Who else, if anyone, is affected?" /></PromptSection>
+    <PromptSection number="05" title="Environment" prompt="Where does this happen most, and what about that place makes it easier?"><TextField value={form.environment} onChange={(environment) => setForm({ ...form, environment })} /></PromptSection>
+    <PromptSection number="06" title="Replacement routine" prompt="What could give you a similar reward with a lower cost?"><TextField value={form.alternative} onChange={(alternative) => setForm({ ...form, alternative })} /></PromptSection>
+    <PromptSection number="07" title="Diagnostic layer" prompt="Add context. These are observations, not identity labels."><TextField value={form.emotion} onChange={(emotion) => setForm({ ...form, emotion })} placeholder="Emotion before the pattern" /><TextField value={form.person} onChange={(person) => setForm({ ...form, person })} placeholder="Person who may make it more likely (optional)" /><Input type="number" min={0} value={form.frequency} onChange={(event) => setForm({ ...form, frequency: event.target.value })} placeholder="How many times yesterday?" /></PromptSection>
+  </div><StepFooter saving={saving} disabled={!required} onSave={async () => { await act({ action: "saveResponses", items: [
+    ["HAB.CUE.TEXT", form.cue], ["HAB.CUE.CERTAINTY", form.cueCertainty], ["HAB.ROUTINE.TEXT", form.routine], ["HAB.REWARD.CERTAINTY", form.rewardCertainty], ["HAB.COST.TEXT", form.cost], ["HAB.AFFECTED_PEOPLE.TEXT", form.people], ["HAB.ENVIRONMENT.TEXT", form.environment], ["HAB.ALTERNATIVE.TEXT", form.alternative], ["HAB.EMOTION.TEXT", form.emotion], ["HAB.SOCIAL_TRIGGER.TEXT", form.person], ["HAB.FREQUENCY.YESTERDAY", Number(form.frequency)],
+  ].map(([semanticFieldId, value]) => ({ semanticFieldId, value, investigation: 4 })) }); next(); }} /></div>;
+}
+
+function InvestigationFive({ state, saving, act, next }: StepProps) {
+  const suggested = `${valueOf(state, "HAB.CUE.TEXT", "Cue")} + ${valueOf(state, "HAB.ROUTINE.TEXT", "old routine")} → ${valueOf(state, "HAB.COST.TEXT", "cost")}`;
+  const [equation, setEquation] = useState(state.hypothesis?.statement || valueOf(state, "HAB.EQUATION.TEXT", suggested));
+  const [falsification, setFalsification] = useState(state.hypothesis?.falsificationStatement || valueOf(state, "HAB.FALSIFICATION.TEXT"));
+  const [confidence, setConfidence] = useState(state.hypothesis?.learnerConfidence || numberOf(state, "HAB.EQUATION.CONFIDENCE_PRE", 5));
+  return <div className="investigation-stack"><div className="equation-card"><p className="eyebrow">Working Behaviour Equation</p><div className="equation-structure"><span>Cue + Old Routine</span><ArrowRight /><span>Cost</span></div><div className="equation-structure alternative"><span>Cue + New Routine</span><ArrowRight /><span>Similar Reward + Lower Cost</span></div><p>This is not a verdict. The next seven days may support it, challenge it or make it more specific.</p></div><PromptSection number="01" title="Write your current explanation" prompt="Based on what you have noticed so far, what is your working equation?"><TextField value={equation} onChange={setEquation} rows={4} /><ScaleField label="How confident are you that this explains the pattern?" value={confidence} max={10} onChange={setConfidence} /></PromptSection><PromptSection number="02" title="Make it challengeable" prompt="If you are wrong about this pattern, what would you see?"><TextField value={falsification} onChange={setFalsification} rows={4} placeholder="What evidence would make this explanation less convincing?" /></PromptSection><StepFooter saving={saving} disabled={!equation || !falsification} onSave={async () => { await act({ action: "saveHypothesis", statement: equation, falsificationStatement: falsification, learnerConfidence: confidence }); next(); }} /></div>;
+}
+
+function InvestigationSix({ state, saving, act, next }: StepProps) {
+  const [form, setForm] = useState({ targetPattern: valueOf(state, "HAB.PATTERN.TARGET"), targetCondition: valueOf(state, "HAB.CUE.TEXT"), alternativeBehaviour: valueOf(state, "HAB.ALTERNATIVE.TEXT"), expectedReward: valueOf(state, "HAB.REWARD.LESS_OBVIOUS"), witness: "", restartPlan: "Restart at the next opportunity without guilt", minimumVersion: "Pause for 30 seconds before the old routine", failureSignal: "The replacement does not answer the reward I am seeking", predictedValue: 60, startDate: localDate(), plannedEndDate: localDate(6) });
+  const [domains, setDomains] = useState<string[]>([]);
+  const allReady = [form.targetPattern, form.targetCondition, form.alternativeBehaviour, form.expectedReward, form.restartPlan, form.minimumVersion, form.failureSignal, form.startDate, form.plannedEndDate].every(Boolean);
+  return <div className="investigation-stack"><div className="contract-intro"><FlaskConical /><div><p className="eyebrow">Your investigation leaves the workbook</p><h2>Design a test you can actually observe.</h2><p>For seven days, notice the first time your cue appears. Record whether you used the replacement routine.</p></div></div><div className="contract-grid">
+    <PromptSection number="01" title="What you will test" prompt="Keep the target specific and observable."><TextField value={form.targetPattern} onChange={(targetPattern) => setForm({ ...form, targetPattern })} placeholder="One habit I will track" /><TextField value={form.targetCondition} onChange={(targetCondition) => setForm({ ...form, targetCondition })} placeholder="The cue I am watching for" /><TextField value={form.alternativeBehaviour} onChange={(alternativeBehaviour) => setForm({ ...form, alternativeBehaviour })} placeholder="What I will do instead" /><TextField value={form.expectedReward} onChange={(expectedReward) => setForm({ ...form, expectedReward })} placeholder="The reward the new routine should provide" /></PromptSection>
+    <PromptSection number="02" title="Make it resilient" prompt="Plan for a difficult day before one happens."><TextField value={form.witness} onChange={(witness) => setForm({ ...form, witness })} placeholder="Witness (optional)" /><TextField value={form.restartPlan} onChange={(restartPlan) => setForm({ ...form, restartPlan })} placeholder="Restart plan" /><TextField value={form.minimumVersion} onChange={(minimumVersion) => setForm({ ...form, minimumVersion })} placeholder="Smallest version on your worst day" /><TextField value={form.failureSignal} onChange={(failureSignal) => setForm({ ...form, failureSignal })} placeholder="How you will know the experiment needs adjustment" /></PromptSection>
+    <PromptSection number="03" title="Habit Impact Profile" prompt="Which parts of your life does this pattern affect? This is a profile, not a risk score."><div className="domain-grid">{["Health", "Money", "Relationships", "School", "Work", "Mental wellbeing"].map((domain) => <label key={domain}><Checkbox checked={domains.includes(domain)} onCheckedChange={(checked) => setDomains(checked === true ? [...domains, domain] : domains.filter((item) => item !== domain))} />{domain}</label>)}</div></PromptSection>
+    <PromptSection number="04" title="Predict your own behaviour" prompt="When your cue appears, how often do you predict you will use the replacement routine?"><div className="prediction-value">{form.predictedValue}<span>%</span></div><Slider value={[form.predictedValue]} min={0} max={100} step={5} onValueChange={([predictedValue]) => setForm({ ...form, predictedValue })} /><div className="date-grid"><label>Start date<Input type="date" value={form.startDate} onChange={(event) => setForm({ ...form, startDate: event.target.value })} /></label><label>Planned end date<Input type="date" value={form.plannedEndDate} onChange={(event) => setForm({ ...form, plannedEndDate: event.target.value })} /></label></div></PromptSection>
+  </div><div className="commitment-note"><ShieldCheck /><p>I understand that this experiment is for evidence, not perfection. If I miss a day, I will return without guilt—because guilt is not a strategy.</p></div><StepFooter label="Start seven-day experiment" saving={saving} disabled={!allReady} onSave={async () => { await act({ action: "startExperiment", ...form, impactDomains: domains }); next(); }} /></div>;
+}
+
+function ExperimentView({ state, saving, act, onView, embedded = false }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; embedded?: boolean }) {
+  const experiment = state.experiment;
+  const [selectedDay, setSelectedDay] = useState(1);
+  const existing = experiment ? state.events.find((event) => event.dayNumber === selectedDay) : undefined;
+  const [cueOccurred, setCueOccurred] = useState<boolean | null>(existing?.targetConditionOccurred ?? null);
+  const [alternativeUsed, setAlternativeUsed] = useState<boolean | null>(existing?.alternativeUsed ?? null);
+  const [notes, setNotes] = useState(existing?.notes ?? "");
+
+  function chooseDay(day: number) {
+    const event = state.events.find((item) => item.dayNumber === day);
+    setSelectedDay(day);
+    setCueOccurred(event?.targetConditionOccurred ?? null);
+    setAlternativeUsed(event?.alternativeUsed ?? null);
+    setNotes(event?.notes ?? "");
+  }
+
+  if (!experiment) return <EmptyExperiment onView={onView} embedded={embedded} />;
+  const start = new Date(`${experiment.startDate}T00:00:00`);
+  const today = new Date();
+  const elapsed = Math.floor((today.getTime() - start.getTime()) / 86_400_000) + 1;
+  const availableDay = Math.max(1, Math.min(7, elapsed));
+  const nextMissing = Array.from({ length: availableDay }, (_, index) => index + 1).find((day) => !state.events.some((event) => event.dayNumber === day)) ?? availableDay;
+  const opportunityCount = Number(state.measurements["HAB.EXPERIMENT.OPPORTUNITY_COUNT"]?.value ?? 0);
+  const replacementCount = Number(state.measurements["HAB.EXPERIMENT.REPLACEMENT_COUNT"]?.value ?? 0);
+  const adherence = state.measurements["HAB.BEI06"]?.value;
+  const evidenceStrength = state.measurements["HAB.BEI06"]?.evidenceStrength ?? "NONE";
+
+  return <div className={`experiment-view ${embedded ? "embedded" : "page-wrap"}`}>
+    {!embedded && <div className="page-intro"><div><p className="eyebrow">Active experiment</p><h1>Notice what actually happens.</h1><p>One target opportunity per day. No opportunity is not failure.</p></div><Badge>{state.events.length} of 7 days recorded</Badge></div>}
+    <section className="experiment-hero"><div><p className="eyebrow">You are testing</p><h2>Whether <em>{experiment.targetCondition}</em> is connected to <em>{experiment.targetPattern}</em>.</h2></div><div className="alternative-chip"><span>Your alternative</span><strong>{experiment.alternativeBehaviour}</strong></div></section>
+    <section className="experiment-grid">
+      <div className="surface-card days-card"><div className="section-title"><div><h3>Seven-day evidence</h3><p>Future days unlock only after they happen.</p></div><CalendarDays /></div><div className="day-list">{Array.from({ length: 7 }, (_, index) => index + 1).map((day) => {
+        const event = state.events.find((item) => item.dayNumber === day);
+        const disabled = day > availableDay;
+        return <button key={day} disabled={disabled} className={`${selectedDay === day ? "selected" : ""} ${event ? "recorded" : ""}`} onClick={() => chooseDay(day)}><span>{event ? <Check /> : day}</span><div><strong>Day {day}</strong><small>{disabled ? "Not experienced yet" : event ? event.targetConditionOccurred ? event.alternativeUsed ? "Alternative used" : "Cue observed" : "No target opportunity" : day === nextMissing ? "Ready to record" : "Available"}</small></div>{disabled ? <LockKeyhole /> : <ChevronRight />}</button>;
+      })}</div></div>
+      <div className="surface-card checkin-card"><p className="eyebrow">Day {selectedDay} check-in</p><h3>Did your cue occur?</h3><div className="choice-grid two"><ChoiceButton active={cueOccurred === true} title="Yes" detail="A target opportunity occurred" onClick={() => setCueOccurred(true)} /><ChoiceButton active={cueOccurred === false} title="No" detail="No target opportunity today" onClick={() => { setCueOccurred(false); setAlternativeUsed(null); }} /></div>{cueOccurred === true && <><h3>Did you use your new routine?</h3><div className="choice-grid two"><ChoiceButton active={alternativeUsed === true} title="Yes" detail="I used the alternative" onClick={() => setAlternativeUsed(true)} /><ChoiceButton active={alternativeUsed === false} title="No" detail="I used the old routine" onClick={() => setAlternativeUsed(false)} /></div></>} {cueOccurred === false && <div className="no-opportunity"><Eye /><div><strong>No target opportunity today.</strong><p>This is valid evidence. It is not recorded as 0%.</p></div></div>}<label className="field-label">What happened? <span>Optional</span></label><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Add only what will help you remember the moment…" /><Button className="w-full" size="lg" disabled={saving || cueOccurred === null || (cueOccurred === true && alternativeUsed === null)} onClick={() => void act({ action: "saveEvent", experimentId: experiment.id, dayNumber: selectedDay, occurredAt: `${experiment.startDate}T12:00:00.000Z`, targetConditionOccurred: cueOccurred, alternativeUsed, notes })}>{saving ? "Saving evidence…" : "Save today's evidence"}</Button></div>
+    </section>
+    <section className="measurement-strip"><div><span>Opportunities observed</span><strong>{opportunityCount}</strong></div><div><span>Alternative used</span><strong>{replacementCount}</strong></div><div><span>Adherence</span><strong>{adherence === null || adherence === undefined ? "N/A" : `${adherence}%`}</strong></div><div><span>Evidence strength</span><strong>{evidenceStrength.toLowerCase().replaceAll("_", " ")}</strong></div></section>
+    {state.events.length >= 3 && <div className="checkpoint-card"><div className="card-icon amber"><RotateCcw /></div><div><p className="eyebrow">Day 3 checkpoint</p><h3>Calibration is ready.</h3><p>What surprised you? Is the habit easier or harder to catch? Does the replacement need adjustment? What supports or challenges the equation?</p></div><Button variant="outline" onClick={() => onView("companion")}>Review with Companion</Button></div>}
+  </div>;
+}
+
+function EmptyExperiment({ onView, embedded }: { onView: (view: View) => void; embedded: boolean }) {
+  return <div className={embedded ? "empty-state" : "page-wrap empty-page"}><FlaskConical /><h2>Your experiment is not ready yet.</h2><p>Complete your Behaviour Equation and Behaviour Contract first.</p><Button onClick={() => onView("lab")}>Continue Habit Lab <ArrowRight /></Button></div>;
+}
+
+function InvestigationEight({ state, saving, act, next }: StepProps) {
+  const [control, setControl] = useState(numberOf(state, "HAB.CONTROL.POST", 5));
+  const [confidence, setConfidence] = useState(numberOf(state, "HAB.EQUATION.CONFIDENCE_POST", state.hypothesis?.learnerConfidence ?? 5));
+  const [supporting, setSupporting] = useState(valueOf(state, "HAB.EVIDENCE.SUPPORTING"));
+  const [challenging, setChallenging] = useState(valueOf(state, "HAB.EVIDENCE.CHALLENGING"));
+  const opportunityCount = Number(state.measurements["HAB.EXPERIMENT.OPPORTUNITY_COUNT"]?.value ?? 0);
+  const adherence = state.measurements["HAB.BEI06"]?.value;
+  const accuracy = state.measurements["HAB.BEI03"]?.value;
+  return <div className="investigation-stack"><section className="evidence-review-sequence"><div><small>Original hypothesis</small><strong>{state.hypothesis?.statement ?? "Not recorded"}</strong></div><div><small>Original prediction</small><strong>{state.experiment?.predictedValue ?? "—"}%</strong></div><div><small>Actual events</small><strong>{opportunityCount} opportunities</strong></div><div><small>Adherence</small><strong>{adherence === null || adherence === undefined ? "N/A" : `${adherence}%`}</strong></div><div><small>Prediction accuracy</small><strong>{accuracy === null || accuracy === undefined ? "N/A" : `${accuracy}/100`}</strong></div></section><div className="review-grid"><PromptSection number="01" title="What supported your equation?" prompt="Name the observations that made the original explanation more convincing."><TextField value={supporting} onChange={setSupporting} /></PromptSection><PromptSection number="02" title="What challenged it?" prompt="Give exceptions equal attention. What became less convincing or more complicated?"><TextField value={challenging} onChange={setChallenging} /></PromptSection></div><PromptSection number="03" title="Rate again after seeing the evidence" prompt="A lower rating is not failure. Observing closely can change how you judge the pattern."><ScaleField label="How much control do you feel you have over your habits now?" value={control} max={10} onChange={setControl} /><ScaleField label="How confident are you now that your equation explains the pattern?" value={confidence} max={10} onChange={setConfidence} /></PromptSection><StepFooter saving={saving} disabled={!supporting || !challenging} onSave={async () => { await act({ action: "saveResponses", items: [{ semanticFieldId: "HAB.CONTROL.POST", value: control, investigation: 8 }, { semanticFieldId: "HAB.EQUATION.CONFIDENCE_POST", value: confidence, investigation: 8 }, { semanticFieldId: "HAB.EVIDENCE.SUPPORTING", value: supporting, investigation: 8 }, { semanticFieldId: "HAB.EVIDENCE.CHALLENGING", value: challenging, investigation: 8 }] }); next(); }} /></div>;
+}
+
+function InvestigationNine({ state, saving, act, onView }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void }) {
+  const [agency, setAgency] = useState(valueOf(state, "HAB.AGENCY.REFLECTION"));
+  const [nextPattern, setNextPattern] = useState(valueOf(state, "HAB.NEXT_PATTERN.TEXT"));
+  const [remember, setRemember] = useState(false);
+  return <div className="investigation-stack"><div className="profile-preview"><div className="profile-preview-head"><div><p className="eyebrow">Behaviour Profile Summary</p><h2>Your investigation, with provenance.</h2></div><Badge variant="outline">Habit Lab 4.5.1</Badge></div><EvidenceColumns state={state} compact /></div><PromptSection number="01" title="Agency reflection" prompt="Given what you observed, what do you now believe you are capable of doing differently?"><TextField value={agency} onChange={setAgency} rows={5} /></PromptSection><PromptSection number="02" title="Your journey continues" prompt="What pattern would be worth investigating next?"><TextField value={nextPattern} onChange={setNextPattern} /><label className="consent-row memory-confirm"><Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} /><span>Remember my current hypothesis as a pattern I am still investigating. I can retire it later.</span></label></PromptSection><StepFooter label="Complete investigation" saving={saving} disabled={!agency} onSave={async () => { const updated = await act({ action: "saveResponses", items: [{ semanticFieldId: "HAB.AGENCY.REFLECTION", value: agency, investigation: 9 }, { semanticFieldId: "HAB.NEXT_PATTERN.TEXT", value: nextPattern, investigation: 9 }] }); if (remember && state.hypothesis) await act({ action: "remember", statement: state.hypothesis.statement, sourceId: state.hypothesis.id }); onView("evidence"); void updated; }} /></div>;
+}
+
+function EvidenceView({ state, onView }: { state: Snapshot; onView: (view: View) => void }) {
+  const evidenceCount = Object.keys(state.responses).length + state.events.length;
+  return <div className="page-wrap evidence-view"><div className="page-intro"><div><p className="eyebrow">Evidence vault</p><h1>What your investigation has produced.</h1><p>Original wording, observations, calculations and hypotheses remain distinct.</p></div><Badge variant="outline">{evidenceCount} records</Badge></div><EvidenceColumns state={state} /><section className="surface-card vault-section"><div className="section-title"><div><p className="eyebrow">All evidence I added</p><h2>Registered Habit Lab fields</h2></div><Archive /></div><div className="evidence-list">{Object.entries(state.responses).map(([field, item]) => <div key={field}><span className="provenance-tag said">You said</span><div><strong>{fieldLabels[field] ?? field.replaceAll(".", " · ")}</strong><p>{item.status === "PASS" ? "Passed" : String(item.value)}</p></div><time>{new Date(item.recordedAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</time></div>)}</div></section><div className="companion-card evidence-companion"><div className="companion-mark"><Bot /></div><div><p className="eyebrow">Ask why</p><h3>Every behavioural statement should be traceable.</h3><p>Ask the Companion to retrieve your cue, evidence or challenge test.</p></div><Button variant="outline" onClick={() => onView("companion")}>Open Companion</Button></div></div>;
+}
+
+function EvidenceColumns({ state, compact = false }: { state: Snapshot; compact?: boolean }) {
+  const observed = state.events.length;
+  const adherence = state.measurements["HAB.BEI06"]?.value;
+  const accuracy = state.measurements["HAB.BEI03"]?.value;
+  const cards = [
+    { type: "said", label: "You said", icon: FileText, title: valueOf(state, "HAB.PATTERN.TARGET", "No target pattern yet"), detail: valueOf(state, "HAB.CUE.TEXT", "Your cue will appear here") },
+    { type: "observed", label: "You observed", icon: Eye, title: `${observed} experiment day${observed === 1 ? "" : "s"}`, detail: observed ? `${state.events.filter((event) => event.eligibleOpportunity).length} target opportunities recorded` : "No real-world observations yet" },
+    { type: "calculated", label: "BIS calculated", icon: Search, title: adherence === null || adherence === undefined ? "Adherence N/A" : `${adherence}% adherence`, detail: accuracy === null || accuracy === undefined ? "Prediction accuracy needs an opportunity" : `${accuracy}/100 prediction accuracy` },
+    { type: "hypothesis", label: "Your current hypothesis", icon: Lightbulb, title: state.hypothesis?.statement ?? "Not formed yet", detail: state.hypothesis ? `Challenge test: ${state.hypothesis.falsificationStatement}` : "Build a working equation in Investigation 5" },
+  ];
+  return <section className={`provenance-grid ${compact ? "compact" : ""}`}>{cards.map((card) => { const Icon = card.icon; return <article key={card.label} className={`provenance-card ${card.type}`}><div><span className={`provenance-tag ${card.type}`}><Icon />{card.label}</span></div><h3>{card.title}</h3><p>{card.detail}</p></article>; })}</section>;
+}
+
+function CompanionView({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>, replaceSnapshot?: boolean) => Promise<unknown> }) {
+  const [message, setMessage] = useState("");
+  const [turns, setTurns] = useState(state.companionTurns);
+  const quick = ["What did I say my cue was?", "What does less obvious reward mean?", "Show me my evidence", "What could challenge my equation?"];
+  async function send(text = message) {
+    if (!text.trim()) return;
+    setTurns((items) => [...items, { id: crypto.randomUUID(), role: "USER", content: text, mode: "USER_MESSAGE", evidenceRefs: "[]" }]);
+    setMessage("");
+    const result = await act({ action: "companion", message: text }, false) as { reply: string; mode: string; evidenceRefs: string[] };
+    setTurns((items) => [...items, { id: crypto.randomUUID(), role: "ASSISTANT", content: result.reply, mode: result.mode, evidenceRefs: JSON.stringify(result.evidenceRefs) }]);
+  }
+  return <div className="companion-page"><div className="companion-page-head"><div className="companion-mark large"><Bot /></div><div><p className="eyebrow">BIS Companion</p><h1>Think with your evidence.</h1><p>I clarify, retrieve and question. I do not diagnose or decide what your behaviour means.</p></div></div><div className="companion-layout"><section className="surface-card chat-panel"><div className="chat-scroll">{turns.length === 0 && <div className="chat-welcome"><Sparkles /><h2>Where should we look?</h2><p>Ask about evidence already in your investigation, or ask for help understanding the current task.</p></div>}{turns.map((turn) => <div key={turn.id} className={`chat-turn ${turn.role === "USER" ? "user" : "assistant"}`}>{turn.role !== "USER" && <span className="mini-bot"><Bot /></span>}<div><p>{turn.content}</p>{turn.role !== "USER" && turn.evidenceRefs !== "[]" && <small><Search /> Grounded in your evidence</small>}</div></div>)}</div><div className="quick-prompts">{quick.map((prompt) => <button key={prompt} onClick={() => void send(prompt)}>{prompt}</button>)}</div><div className="chat-compose"><Textarea value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Ask about your investigation…" rows={2} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }} /><Button size="icon-lg" aria-label="Send message" disabled={saving || !message.trim()} onClick={() => void send()}><ArrowRight /></Button></div></section><aside className="companion-context"><div className="surface-card"><p className="eyebrow">Current context</p><h3>Habit Lab · Investigation {state.enrolment?.currentInvestigation ?? 1}</h3><dl><div><dt>Pattern</dt><dd>{valueOf(state, "HAB.PATTERN.TARGET", "Not named")}</dd></div><div><dt>Cue</dt><dd>{valueOf(state, "HAB.CUE.TEXT", "Not mapped")}</dd></div><div><dt>Evidence</dt><dd>{Object.keys(state.responses).length + state.events.length} records</dd></div></dl></div><div className="companion-boundary"><ShieldCheck /><p>Companion responses remain tentative and tied to your evidence. You can disagree, correct or retire a remembered pattern.</p></div></aside></div></div>;
+}
+
+function MemoryView({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+  const active = state.memories.filter((memory) => memory.status === "ACTIVE");
+  return <div className="page-wrap memory-view"><div className="page-intro"><div><p className="eyebrow">What BIS remembers</p><h1>Inspectable memory, under your control.</h1><p>Only user-stated or user-confirmed items appear here. A system suggestion never silently becomes fact.</p></div><Badge variant="outline"><Brain /> {active.length} active</Badge></div>{active.length === 0 ? <div className="empty-state surface-card"><Brain /><h2>No confirmed behavioural memories yet.</h2><p>When a pattern becomes useful for continuity, BIS will ask before remembering it.</p></div> : <div className="memory-list">{active.map((memory) => <article className="surface-card" key={memory.id}><div><Badge variant="outline">{memory.memoryType.toLowerCase().replaceAll("_", " ")}</Badge><Badge className="confirmed-badge"><Check /> User confirmed</Badge></div><h2>{memory.statement}</h2><dl><div><dt>Source</dt><dd>{memory.sourceType.toLowerCase()}</dd></div><div><dt>Status</dt><dd>{memory.status.toLowerCase()}</dd></div></dl><Button variant="outline" disabled={saving} onClick={() => void act({ action: "retireMemory", memoryId: memory.id })}>Retire memory</Button></article>)}</div>}<div className="memory-policy"><LockKeyhole /><div><h3>Memory is not identity.</h3><p>BIS may remember a pattern you are investigating. It does not turn that pattern into a label about who you are.</p></div></div></div>;
+}
+
+function PromptSection({ number, title, prompt, children }: { number: string; title: string; prompt: string; children: React.ReactNode }) {
+  return <section className="prompt-section"><div className="prompt-number">{number}</div><div className="prompt-body"><h2>{title}</h2><p>{prompt}</p><div className="prompt-controls">{children}</div></div></section>;
+}
+
+function TextField({ value, onChange, placeholder, rows = 3 }: { value: string; onChange: (value: string) => void; placeholder?: string; rows?: number }) {
+  return <Textarea value={value} rows={rows} onChange={(event) => onChange(event.target.value)} placeholder={placeholder ?? "Write what you actually notice…"} />;
+}
+
+function ScaleField({ label, value, max, onChange }: { label: string; value: number; max: number; onChange: (value: number) => void }) {
+  return <div className="scale-field"><div><span>{label}</span><strong>{value} / {max}</strong></div><Slider value={[value]} min={1} max={max} step={1} onValueChange={([next]) => onChange(next)} /></div>;
+}
+
+function PauseCard({ question }: { question: string }) {
+  return <div className="pause-card"><span>Pause</span><div><strong>Take 30 seconds.</strong><p>{question}</p></div></div>;
+}
+
+function StepFooter({ saving, disabled, onSave, label = "Save and continue" }: { saving: boolean; disabled: boolean; onSave: () => Promise<void>; label?: string }) {
+  return <div className="step-footer"><span><ShieldCheck /> Your work saves with provenance.</span><Button size="lg" disabled={saving || disabled} onClick={() => void onSave()}>{saving ? "Saving…" : label} {!saving && <ArrowRight />}</Button></div>;
+}
