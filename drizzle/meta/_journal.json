@@ -15,6 +15,13 @@
       "when": 1788262283536,
       "tag": "0001_yellow_sinister_six",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788269118160,
+      "tag": "0002_nebulous_luke_cage",
+      "breakpoints": true
     }
   ]
 }

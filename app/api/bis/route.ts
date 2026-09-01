@@ -18,7 +18,9 @@ import {
   notificationPreferences,
   pilotEvents,
   responses,
+  safeguardingCases,
 } from "../../../db/schema";
+import { getRoles, identityFrom } from "../../../lib/bis-access";
 import {
   baselineItems,
   fieldRegistry,
@@ -27,25 +29,7 @@ import {
 } from "../../../lib/habit-lab";
 import { computeHabitMetrics } from "../../../lib/bis-metrics.mjs";
 
-type Identity = { id: string; email: string; displayName: string };
-
-function identityFrom(request: Request): Identity | null {
-  const id = request.headers.get("oai-authenticated-user-id");
-  const email = request.headers.get("oai-authenticated-user-email");
-  if (!id || !email) return null;
-
-  const encodedName = request.headers.get("oai-authenticated-user-full-name");
-  const encoding = request.headers.get("oai-authenticated-user-full-name-encoding");
-  let displayName = email.split("@")[0];
-  if (encodedName && encoding === "percent-encoded-utf-8") {
-    try {
-      displayName = decodeURIComponent(encodedName);
-    } catch {
-      // Fall back to the local part of the verified email.
-    }
-  }
-  return { id, email, displayName };
-}
+import type { Identity } from "../../../lib/bis-access";
 
 function jsonValue(value: unknown) {
   return JSON.stringify(value ?? null);
@@ -173,6 +157,7 @@ function buildReminders(
 
 async function snapshot(identity: Identity) {
   const db = getDb();
+  const roles = await getRoles(identity);
   const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
   const [consent] = await db
     .select()
@@ -263,9 +248,26 @@ async function snapshot(identity: Identity) {
     .where(eq(companionTurns.userId, identity.id))
     .orderBy(desc(companionTurns.generatedAt))
     .limit(12);
+  const supportRequests = await db
+    .select({
+      id: safeguardingCases.id,
+      category: safeguardingCases.category,
+      status: safeguardingCases.status,
+      severity: safeguardingCases.severity,
+      openedAt: safeguardingCases.openedAt,
+      acknowledgedAt: safeguardingCases.acknowledgedAt,
+      resolvedAt: safeguardingCases.resolvedAt,
+    })
+    .from(safeguardingCases)
+    .where(and(
+      eq(safeguardingCases.learnerUserId, identity.id),
+      eq(safeguardingCases.sourceType, "LEARNER_REQUEST"),
+    ))
+    .orderBy(desc(safeguardingCases.openedAt));
 
   return {
     identity,
+    roles,
     profile: profile ?? null,
     consent: consent ?? null,
     enrolment: enrolment ?? null,
@@ -301,6 +303,7 @@ async function snapshot(identity: Identity) {
     reminders: buildReminders(experiment, events, checkpoints, notificationPreference),
     memories,
     companionTurns: turns.reverse(),
+    supportRequests,
   };
 }
 
@@ -545,6 +548,38 @@ export async function POST(request: Request) {
       .limit(1);
     if (currentConsent?.status !== "GRANTED") {
       throw new Error("This investigation is paused because product consent is not active.");
+    }
+
+    if (action === "requestSupport") {
+      const category = String(body.category ?? "");
+      const allowed = ["FACILITATOR_CHECK_IN", "SAFETY_CONCERN", "PRIVACY_QUESTION", "OTHER"];
+      if (!allowed.includes(category)) throw new Error("Choose the kind of human support you need.");
+      const note = String(body.note ?? "").trim();
+      if (note.length > 800) throw new Error("Keep the support note under 800 characters.");
+      const [existing] = await db
+        .select({ id: safeguardingCases.id })
+        .from(safeguardingCases)
+        .where(and(
+          eq(safeguardingCases.learnerUserId, identity.id),
+          eq(safeguardingCases.category, category),
+          eq(safeguardingCases.status, "OPEN"),
+        ))
+        .limit(1);
+      if (existing) throw new Error("An open request of this type is already in the restricted support queue.");
+      const id = crypto.randomUUID();
+      await db.insert(safeguardingCases).values({
+        id,
+        learnerUserId: identity.id,
+        learnerEmail: identity.email,
+        sourceType: "LEARNER_REQUEST",
+        category,
+        summary: note || "Learner requested a private human follow-up without adding further detail.",
+        openedBy: identity.id,
+        openedByEmail: identity.email,
+      });
+      await audit(identity.id, "HUMAN_SUPPORT_REQUESTED", "SAFEGUARDING_CASE", id, { category });
+      await pilotEvent(identity.id, "HUMAN_SUPPORT_REQUESTED", "SAFEGUARDING_CASE", id, { category });
+      return Response.json(await snapshot(identity), { status: 201 });
     }
 
     if (action === "saveResponse") {

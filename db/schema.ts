@@ -331,6 +331,144 @@ export const companionTurns = sqliteTable(
   (table) => [index("idx_companion_turns_user_id").on(table.userId)],
 );
 
+export const roleAssignments = sqliteTable(
+  "role_assignments",
+  {
+    id: text("id").primaryKey(),
+    principalEmail: text("principal_email").notNull(),
+    userId: text("user_id"),
+    role: text("role").notNull(),
+    scopeType: text("scope_type").notNull().default("GLOBAL"),
+    scopeId: text("scope_id").notNull().default("GLOBAL"),
+    status: text("status").notNull().default("ACTIVE"),
+    assignedBy: text("assigned_by").notNull(),
+    assignedAt: timestamp(),
+    revokedAt: text("revoked_at"),
+  },
+  (table) => [
+    uniqueIndex("uq_role_principal_scope").on(
+      table.principalEmail,
+      table.role,
+      table.scopeType,
+      table.scopeId,
+    ),
+    index("idx_role_user_status").on(table.userId, table.status),
+    index("idx_role_email_status").on(table.principalEmail, table.status),
+  ],
+);
+
+export const pilotCohorts = sqliteTable(
+  "pilot_cohorts",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    labCode: text("lab_code").notNull().default("HAB"),
+    labVersion: text("lab_version").notNull().default("4.5.1"),
+    facilitatorEmail: text("facilitator_email").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    startsOn: text("starts_on"),
+    endsOn: text("ends_on"),
+    createdBy: text("created_by").notNull(),
+    createdAt: timestamp(),
+    updatedAt: timestamp(),
+  },
+  (table) => [
+    index("idx_cohort_facilitator_status").on(table.facilitatorEmail, table.status),
+    index("idx_cohort_lab_version").on(table.labCode, table.labVersion),
+  ],
+);
+
+export const cohortMembers = sqliteTable(
+  "cohort_members",
+  {
+    id: text("id").primaryKey(),
+    cohortId: text("cohort_id").notNull(),
+    learnerUserId: text("learner_user_id").notNull(),
+    learnerEmail: text("learner_email").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    addedBy: text("added_by").notNull(),
+    joinedAt: timestamp(),
+    removedAt: text("removed_at"),
+  },
+  (table) => [
+    uniqueIndex("uq_cohort_learner").on(table.cohortId, table.learnerUserId),
+    index("idx_cohort_member_learner_status").on(table.learnerUserId, table.status),
+    index("idx_cohort_member_cohort_status").on(table.cohortId, table.status),
+  ],
+);
+
+export const facilitatorNotes = sqliteTable(
+  "facilitator_notes",
+  {
+    id: text("id").primaryKey(),
+    cohortId: text("cohort_id").notNull(),
+    learnerUserId: text("learner_user_id").notNull(),
+    authorId: text("author_id").notNull(),
+    authorEmail: text("author_email").notNull(),
+    category: text("category").notNull(),
+    content: text("content").notNull(),
+    visibility: text("visibility").notNull().default("FACILITATOR_TEAM"),
+    createdAt: timestamp(),
+  },
+  (table) => [
+    index("idx_facilitator_note_cohort_learner").on(table.cohortId, table.learnerUserId),
+    index("idx_facilitator_note_author").on(table.authorId),
+  ],
+);
+
+export const safeguardingCases = sqliteTable(
+  "safeguarding_cases",
+  {
+    id: text("id").primaryKey(),
+    learnerUserId: text("learner_user_id").notNull(),
+    learnerEmail: text("learner_email").notNull(),
+    cohortId: text("cohort_id"),
+    sourceType: text("source_type").notNull(),
+    category: text("category").notNull(),
+    summary: text("summary").notNull(),
+    status: text("status").notNull().default("OPEN"),
+    severity: text("severity").notNull().default("UNASSESSED"),
+    openedBy: text("opened_by").notNull(),
+    openedByEmail: text("opened_by_email").notNull(),
+    assignedToEmail: text("assigned_to_email"),
+    openedAt: timestamp(),
+    acknowledgedAt: text("acknowledged_at"),
+    acknowledgedBy: text("acknowledged_by"),
+    resolvedAt: text("resolved_at"),
+    resolvedBy: text("resolved_by"),
+    resolutionNote: text("resolution_note"),
+  },
+  (table) => [
+    index("idx_safeguarding_status_opened").on(table.status, table.openedAt),
+    index("idx_safeguarding_learner_status").on(table.learnerUserId, table.status),
+    index("idx_safeguarding_assignee_status").on(table.assignedToEmail, table.status),
+    index("idx_safeguarding_opened_by").on(table.openedBy),
+  ],
+);
+
+export const labAssignments = sqliteTable(
+  "lab_assignments",
+  {
+    id: text("id").primaryKey(),
+    learnerUserId: text("learner_user_id").notNull(),
+    learnerEmail: text("learner_email").notNull(),
+    labCode: text("lab_code").notNull().default("HAB"),
+    labVersion: text("lab_version").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    assignedBy: text("assigned_by").notNull(),
+    assignedAt: timestamp(),
+    revokedAt: text("revoked_at"),
+  },
+  (table) => [
+    uniqueIndex("uq_lab_assignment_learner_version").on(
+      table.learnerUserId,
+      table.labCode,
+      table.labVersion,
+    ),
+    index("idx_lab_assignment_learner_status").on(table.learnerUserId, table.status),
+  ],
+);
+
 export const auditEvents = sqliteTable(
   "audit_events",
   {

@@ -9,6 +9,7 @@ import {
   BookOpen,
   Bot,
   Brain,
+  BriefcaseBusiness,
   CalendarDays,
   Check,
   ChevronRight,
@@ -18,6 +19,7 @@ import {
   FlaskConical,
   Home,
   Lightbulb,
+  LifeBuoy,
   LockKeyhole,
   Menu,
   MessageCircleQuestion,
@@ -52,9 +54,11 @@ import {
   storyEpisodeOne,
   storyEpisodeTwo,
 } from "@/lib/habit-lab";
+import { OperationsView } from "./operations-view";
 
 type Snapshot = {
   identity: { id: string; email: string; displayName: string };
+  roles: string[];
   profile: null | { displayName: string; ageBand: string; mode: string };
   consent: null | { status: string; policyVersion: string };
   enrolment: null | { currentInvestigation: number; status: string };
@@ -151,9 +155,18 @@ type Snapshot = {
     mode: string;
     evidenceRefs: string;
   }>;
+  supportRequests: Array<{
+    id: string;
+    category: string;
+    status: string;
+    severity: string;
+    openedAt: string;
+    acknowledgedAt: string | null;
+    resolvedAt: string | null;
+  }>;
 };
 
-type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "memory" | "settings";
+type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "memory" | "settings" | "operations";
 
 const nav = [
   { id: "home" as const, label: "Home", icon: Home },
@@ -243,6 +256,14 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
     );
   }
 
+  const staffRoles = state.roles.filter((role) => ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role));
+  const hasStaffAccess = staffRoles.length > 0;
+  const baselineComplete = Boolean(state.responses["HAB.CONTROL.PRE"]) && baselineItems.every(([field]) => Boolean(state.responses[field]));
+
+  if (hasStaffAccess && (!state.profile || state.consent?.status !== "GRANTED" || !baselineComplete)) {
+    return <StaffOnlyShell state={state} staffRoles={staffRoles} saving={saving} error={error} act={act} />;
+  }
+
   if (state.profile && state.consent?.status === "WITHDRAWN") {
     return <PrivacyPaused state={state} saving={saving} error={error} onRestore={act} />;
   }
@@ -251,7 +272,6 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
     return <Onboarding identity={initialIdentity ?? state.identity} saving={saving} error={error} onSubmit={act} />;
   }
 
-  const baselineComplete = Boolean(state.responses["HAB.CONTROL.PRE"]) && baselineItems.every(([field]) => Boolean(state.responses[field]));
   if (!baselineComplete) {
     return <BaselineScreen state={state} saving={saving} error={error} act={act} />;
   }
@@ -296,6 +316,9 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
           })}
         </nav>
         <div className="sidebar-spacer" />
+        {hasStaffAccess && <button className={`memory-link ${view === "operations" ? "active" : ""}`} onClick={() => { setView("operations"); setMenuOpen(false); }}>
+          <BriefcaseBusiness /> <span>Restricted operations</span>
+        </button>}
         <button className={`memory-link ${view === "memory" ? "active" : ""}`} onClick={() => { setView("memory"); setMenuOpen(false); }}>
           <Brain /> <span>What BIS remembers</span>
         </button>
@@ -317,9 +340,14 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
         {view === "companion" && <CompanionView state={state} saving={saving} act={act} />}
         {view === "memory" && <MemoryView state={state} saving={saving} act={act} />}
         {view === "settings" && <SettingsView state={state} saving={saving} act={act} />}
+        {view === "operations" && <OperationsView initialRoles={staffRoles} />}
       </main>
     </div>
   );
+}
+
+function StaffOnlyShell({ state, staffRoles, saving, error, act }: { state: Snapshot; staffRoles: string[]; saving: boolean; error: string; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+  return <div className="staff-only-shell"><header><Brand /><div><Badge variant="outline"><LockKeyhole /> Restricted workspace</Badge><span>{state.identity.email}</span></div></header>{state.profile && state.consent?.status === "WITHDRAWN" && <div className="staff-consent-note"><div><strong>Your learner investigation is paused.</strong><p>Your staff role remains available and does not override that consent choice.</p></div><Button variant="outline" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>Restore learner consent</Button></div>}{error && <div className="error-banner"><span>{error}</span></div>}<OperationsView initialRoles={staffRoles} /></div>;
 }
 
 function PrivacyPaused({ state, saving, error, onRestore }: { state: Snapshot; saving: boolean; error: string; onRestore: (payload: Record<string, unknown>) => Promise<unknown> }) {
@@ -738,6 +766,8 @@ function MemoryView({ state, saving, act }: { state: Snapshot; saving: boolean; 
 function SettingsView({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
   const [preference, setPreference] = useState(state.notificationPreference);
   const [confirmWithdrawal, setConfirmWithdrawal] = useState(false);
+  const [supportCategory, setSupportCategory] = useState("FACILITATOR_CHECK_IN");
+  const [supportNote, setSupportNote] = useState("");
   const reminderOptions = [
     ["experimentStarted", "Experiment started", "Acknowledge when a new evidence window begins"],
     ["dailyObservation", "Daily observation", "Show a reminder when today's evidence has not been recorded"],
@@ -745,7 +775,7 @@ function SettingsView({ state, saving, act }: { state: Snapshot; saving: boolean
     ["experimentEnding", "Experiment ending", "Flag the final two days and completion choices"],
     ["reviewReady", "Review ready", "Show when the experiment is ready for evidence review"],
   ] as const;
-  return <div className="page-wrap settings-view"><div className="page-intro"><div><p className="eyebrow">Settings & privacy</p><h1>Your controls, in one place.</h1><p>Configure in-app reminders and manage product consent without changing earlier records.</p></div><Badge variant="outline"><ShieldCheck /> Consent {state.consent?.status.toLowerCase()}</Badge></div><div className="settings-grid"><section className="surface-card settings-card"><div className="section-title"><div><p className="eyebrow">In-app reminders</p><h2>Experiment notifications</h2><p>This pilot does not send push notifications, email or SMS. Reminders appear only inside BIS.</p></div><Bell /></div><label className="preference-row master"><Checkbox checked={preference.enabled} onCheckedChange={(checked) => setPreference({ ...preference, enabled: checked === true })} /><span><strong>Enable experiment reminders</strong><small>Turn all in-app reminders on or off</small></span></label><div className={preference.enabled ? "preference-list" : "preference-list disabled"}>{reminderOptions.map(([key, title, detail]) => <label className="preference-row" key={key}><Checkbox disabled={!preference.enabled} checked={preference[key]} onCheckedChange={(checked) => setPreference({ ...preference, [key]: checked === true })} /><span><strong>{title}</strong><small>{detail}</small></span></label>)}</div><div className="reminder-schedule"><label>Reminder time<Input type="time" value={preference.reminderTime} disabled={!preference.enabled} onChange={(event) => setPreference({ ...preference, reminderTime: event.target.value })} /></label><label>Timezone<Input value={preference.timezone} disabled readOnly /></label></div><Button disabled={saving} onClick={() => void act({ action: "updateNotificationPreferences", ...preference })}>{saving ? "Saving…" : "Save reminder settings"}</Button></section><section className="surface-card settings-card privacy-card"><div className="section-title"><div><p className="eyebrow">Privacy control</p><h2>Pause product consent</h2><p>Pausing stops new investigation activity. Existing evidence remains private and is not deleted or rewritten.</p></div><LockKeyhole /></div><dl><div><dt>Signed-in account</dt><dd>{state.identity.email}</dd></div><div><dt>Product consent</dt><dd>{state.consent?.status.toLowerCase()}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion}</dd></div><div><dt>Current sharing</dt><dd>Private Site access only</dd></div></dl><label className="consent-row"><Checkbox checked={confirmWithdrawal} onCheckedChange={(checked) => setConfirmWithdrawal(checked === true)} /><span>I understand that new responses, experiment events and Companion turns will pause until I restore consent.</span></label><Button variant="outline" disabled={saving || !confirmWithdrawal} onClick={() => void act({ action: "withdrawConsent" })}>Pause consent and investigation</Button></section></div></div>;
+  return <div className="page-wrap settings-view"><div className="page-intro"><div><p className="eyebrow">Settings & privacy</p><h1>Your controls, in one place.</h1><p>Configure in-app reminders and manage product consent without changing earlier records.</p></div><Badge variant="outline"><ShieldCheck /> Consent {state.consent?.status.toLowerCase()}</Badge></div><div className="settings-grid"><section className="surface-card settings-card"><div className="section-title"><div><p className="eyebrow">In-app reminders</p><h2>Experiment notifications</h2><p>This pilot does not send push notifications, email or SMS. Reminders appear only inside BIS.</p></div><Bell /></div><label className="preference-row master"><Checkbox checked={preference.enabled} onCheckedChange={(checked) => setPreference({ ...preference, enabled: checked === true })} /><span><strong>Enable experiment reminders</strong><small>Turn all in-app reminders on or off</small></span></label><div className={preference.enabled ? "preference-list" : "preference-list disabled"}>{reminderOptions.map(([key, title, detail]) => <label className="preference-row" key={key}><Checkbox disabled={!preference.enabled} checked={preference[key]} onCheckedChange={(checked) => setPreference({ ...preference, [key]: checked === true })} /><span><strong>{title}</strong><small>{detail}</small></span></label>)}</div><div className="reminder-schedule"><label>Reminder time<Input type="time" value={preference.reminderTime} disabled={!preference.enabled} onChange={(event) => setPreference({ ...preference, reminderTime: event.target.value })} /></label><label>Timezone<Input value={preference.timezone} disabled readOnly /></label></div><Button disabled={saving} onClick={() => void act({ action: "updateNotificationPreferences", ...preference })}>{saving ? "Saving…" : "Save reminder settings"}</Button></section><section className="surface-card settings-card privacy-card"><div className="section-title"><div><p className="eyebrow">Privacy control</p><h2>Pause product consent</h2><p>Pausing stops new investigation activity. Existing evidence remains private and is not deleted or rewritten.</p></div><LockKeyhole /></div><dl><div><dt>Signed-in account</dt><dd>{state.identity.email}</dd></div><div><dt>Product consent</dt><dd>{state.consent?.status.toLowerCase()}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion}</dd></div><div><dt>Current sharing</dt><dd>Private Site access only</dd></div></dl><label className="consent-row"><Checkbox checked={confirmWithdrawal} onCheckedChange={(checked) => setConfirmWithdrawal(checked === true)} /><span>I understand that new responses, experiment events and Companion turns will pause until I restore consent.</span></label><Button variant="outline" disabled={saving || !confirmWithdrawal} onClick={() => void act({ action: "withdrawConsent" })}>Pause consent and investigation</Button></section><section className="surface-card settings-card support-card"><div className="section-title"><div><p className="eyebrow">Human support</p><h2>Ask for a private follow-up</h2><p>Your request goes to the restricted safeguarding queue. BIS does not diagnose you or assign an automated risk score.</p></div><LifeBuoy /></div><div className="support-layout"><div className="ops-form-stack"><label>What kind of support?<Select value={supportCategory} onValueChange={setSupportCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR_CHECK_IN">Facilitator check-in</SelectItem><SelectItem value="SAFETY_CONCERN">Safety concern</SelectItem><SelectItem value="PRIVACY_QUESTION">Privacy question</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></label><label>Optional note<Textarea value={supportNote} onChange={(event) => setSupportNote(event.target.value)} maxLength={800} placeholder="Share only what you want the safeguarding officer to receive…" /></label><Button disabled={saving} onClick={async () => { const result = await act({ action: "requestSupport", category: supportCategory, note: supportNote }); if (result) setSupportNote(""); }}>Request human follow-up</Button><small className="support-warning">BIS is not an emergency service. If there is immediate danger, contact local emergency services or a trusted person now.</small></div><div className="support-status-list"><strong>Your requests</strong>{state.supportRequests.length === 0 ? <p>No support requests yet.</p> : state.supportRequests.map((request) => <div key={request.id}><span><b>{request.category.toLowerCase().replaceAll("_", " ")}</b><small>Opened {new Date(request.openedAt).toLocaleDateString("en-ZA")}</small></span><Badge variant="outline">{request.status.toLowerCase().replaceAll("_", " ")}</Badge></div>)}</div></div></section></div></div>;
 }
 
 function PromptSection({ number, title, prompt, children }: { number: string; title: string; prompt: string; children: React.ReactNode }) {
