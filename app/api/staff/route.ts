@@ -61,6 +61,7 @@ async function staffAudit(
     id: crypto.randomUUID(),
     userId: identity.id,
     name: action,
+    labVersion: LAB_VERSION,
     objectType,
     objectId,
     metadata: JSON.stringify(metadata),
@@ -97,6 +98,12 @@ async function assignLab(identity: Identity, learner: typeof learners.$inferSele
   }
   const db = getDb();
   const now = new Date().toISOString();
+  const [existingEnrolment] = await db
+    .select()
+    .from(labEnrollments)
+    .where(and(eq(labEnrollments.userId, learner.userId), eq(labEnrollments.labCode, "HAB")))
+    .orderBy(desc(labEnrollments.updatedAt))
+    .limit(1);
   await db
     .update(labAssignments)
     .set({ status: "REVOKED", revokedAt: now })
@@ -121,7 +128,19 @@ async function assignLab(identity: Identity, learner: typeof learners.$inferSele
     });
   await db
     .insert(labEnrollments)
-    .values({ id: crypto.randomUUID(), userId: learner.userId, labVersion })
+    .values({
+      id: crypto.randomUUID(),
+      userId: learner.userId,
+      labCode: "HAB",
+      labVersion,
+      status: existingEnrolment?.status ?? "IN_PROGRESS",
+      currentInvestigation: existingEnrolment?.currentInvestigation ?? 0,
+      startedAt: existingEnrolment?.startedAt ?? now,
+      phaseACompletedAt: existingEnrolment?.phaseACompletedAt ?? null,
+      experimentStartedAt: existingEnrolment?.experimentStartedAt ?? null,
+      completedAt: existingEnrolment?.completedAt ?? null,
+      updatedAt: now,
+    })
     .onConflictDoUpdate({
       target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
       set: { updatedAt: now },

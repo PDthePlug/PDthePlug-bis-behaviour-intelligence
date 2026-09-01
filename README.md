@@ -1,8 +1,19 @@
 # BIS Behaviour Intelligence
 
-BIS is a private, evidence-first behaviour investigation product. This repository currently ships Habit Lab 4.5.1 and the closed-pilot operations gate.
+BIS is a private, evidence-first behaviour investigation product. This repository currently ships Habit Lab 4.5.2 and the closed-pilot operations gate.
 
-## Current milestone — Release 1.1 refinement
+## Current milestone — Habit Lab 4.5.2 production master
+
+Habit Lab 4.5.2 preserves the frozen 4.5.1 object and measurement architecture while applying the registered experience patch:
+
+- Investigation 4 now asks learners to map one real habit carefully, without confrontational framing;
+- the Behaviour Contract accepts a cue described by time, place, person, feeling, event, or situation;
+- the Investigation 6 insight asks what feels different about the learner’s approach to the pattern;
+- repetition-specific working-equation examples replace generic identity-oriented examples;
+- both Sipho story episodes and the authored reflection sequence are restored to the supplied production master;
+- existing 4.5.1 evidence, progress, hypotheses, and experiment records remain intact while new records carry the 4.5.2 experience version.
+
+## Previous milestone — Release 1.1 refinement
 
 Release 1.1 preserves the frozen Habit Lab 4.5.1 architecture while refining the learner experience from pilot feedback:
 

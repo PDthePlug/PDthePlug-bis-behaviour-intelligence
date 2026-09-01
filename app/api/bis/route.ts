@@ -82,8 +82,19 @@ async function pilotEvent(
     name,
     objectType,
     objectId,
+    labVersion: LAB_VERSION,
     metadata: JSON.stringify(metadata),
   });
+}
+
+async function currentHabitEnrollment(userId: string) {
+  const [enrolment] = await getDb()
+    .select()
+    .from(labEnrollments)
+    .where(and(eq(labEnrollments.userId, userId), eq(labEnrollments.labCode, "HAB")))
+    .orderBy(desc(labEnrollments.updatedAt))
+    .limit(1);
+  return enrolment;
 }
 
 async function ensureInitialParameterVersion(experiment: typeof experiments.$inferSelect) {
@@ -165,11 +176,7 @@ async function snapshot(identity: Identity) {
     .where(eq(consentRecords.userId, identity.id))
     .orderBy(desc(consentRecords.createdAt))
     .limit(1);
-  const [enrolment] = await db
-    .select()
-    .from(labEnrollments)
-    .where(and(eq(labEnrollments.userId, identity.id), eq(labEnrollments.labVersion, LAB_VERSION)))
-    .limit(1);
+  const enrolment = await currentHabitEnrollment(identity.id);
   const responseRows = await db
     .select()
     .from(responses)
@@ -267,6 +274,7 @@ async function snapshot(identity: Identity) {
 
   return {
     identity,
+    experienceVersion: LAB_VERSION,
     roles,
     profile: profile ?? null,
     consent: consent ?? null,
@@ -319,7 +327,7 @@ async function saveResponse(
 ) {
   const baselineField = baselineItems.some(([id]) => id === payload.semanticFieldId);
   const definition = fieldRegistry[payload.semanticFieldId as keyof typeof fieldRegistry];
-  if (!definition && !baselineField) throw new Error("That evidence field is not registered for Habit Lab 4.5.1.");
+  if (!definition && !baselineField) throw new Error(`That evidence field is not registered for Habit Lab ${LAB_VERSION}.`);
 
   const db = getDb();
   const now = new Date().toISOString();
@@ -350,6 +358,7 @@ async function saveResponse(
     userId: identity.id,
     promptId,
     semanticFieldId: payload.semanticFieldId,
+    labVersion: LAB_VERSION,
     value: responseStatus === "PASS" ? null : jsonValue(payload.value),
     responseStatus,
     occurredAt: payload.occurredAt ?? now,
@@ -358,6 +367,8 @@ async function saveResponse(
   await db.insert(evidenceRecords).values({
     id: crypto.randomUUID(),
     userId: identity.id,
+    labCode: "HAB",
+    labVersion: LAB_VERSION,
     investigationId: `HAB.I${investigation}`,
     semanticFieldId: payload.semanticFieldId,
     sourceObjectType: "RESPONSE",
@@ -369,16 +380,20 @@ async function saveResponse(
     sensitivity,
     occurredAt: payload.occurredAt ?? now,
   });
+  const enrolment = await currentHabitEnrollment(identity.id);
+  if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
   await db
     .update(labEnrollments)
     .set({
       currentInvestigation: sql`MAX(${labEnrollments.currentInvestigation}, ${investigation})`,
       updatedAt: now,
     })
-    .where(and(eq(labEnrollments.userId, identity.id), eq(labEnrollments.labVersion, LAB_VERSION)));
+    .where(eq(labEnrollments.id, enrolment.id));
   await audit(identity.id, previous ? "RESPONSE_CORRECTED" : "RESPONSE_CREATED", "RESPONSE", responseId, {
     semanticFieldId: payload.semanticFieldId,
     responseStatus,
+    experienceVersion: LAB_VERSION,
+    enrolmentVersion: enrolment.labVersion,
   });
 }
 
@@ -510,13 +525,13 @@ export async function POST(request: Request) {
       });
       await db
         .insert(labEnrollments)
-        .values({ id: crypto.randomUUID(), userId: identity.id })
+        .values({ id: crypto.randomUUID(), userId: identity.id, labCode: "HAB", labVersion: LAB_VERSION })
         .onConflictDoUpdate({
           target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
           set: { status: "IN_PROGRESS", updatedAt: now },
         });
       await audit(identity.id, "CONSENT_CHANGED", "CONSENT_RECORD", consentId, { status: "GRANTED" });
-      await pilotEvent(identity.id, "ONBOARDING_COMPLETED", "CONSENT_RECORD", consentId, { mode, ageBand });
+      await pilotEvent(identity.id, "ONBOARDING_COMPLETED", "CONSENT_RECORD", consentId, { mode, ageBand, experienceVersion: LAB_VERSION });
       return Response.json(await snapshot(identity), { status: 201 });
     }
 
@@ -608,16 +623,12 @@ export async function POST(request: Request) {
         });
       }
       if (items.some((item) => item && typeof item === "object" && Number((item as Record<string, unknown>).investigation ?? 0) === 9)) {
-        const [enrolment] = await db
-          .select()
-          .from(labEnrollments)
-          .where(and(eq(labEnrollments.userId, identity.id), eq(labEnrollments.labVersion, LAB_VERSION)))
-          .limit(1);
+        const enrolment = await currentHabitEnrollment(identity.id);
         if (enrolment && enrolment.status !== "COMPLETED") {
           const now = new Date().toISOString();
           await db.update(labEnrollments).set({ status: "COMPLETED", currentInvestigation: 9, completedAt: now, updatedAt: now }).where(eq(labEnrollments.id, enrolment.id));
-          await audit(identity.id, "LAB_COMPLETED", "LAB_ENROLLMENT", enrolment.id, { labVersion: LAB_VERSION });
-          await pilotEvent(identity.id, "HABIT_LAB_COMPLETED", "LAB_ENROLLMENT", enrolment.id, { labVersion: LAB_VERSION });
+          await audit(identity.id, "LAB_COMPLETED", "LAB_ENROLLMENT", enrolment.id, { enrolmentVersion: enrolment.labVersion, experienceVersion: LAB_VERSION });
+          await pilotEvent(identity.id, "HABIT_LAB_COMPLETED", "LAB_ENROLLMENT", enrolment.id, { enrolmentVersion: enrolment.labVersion, experienceVersion: LAB_VERSION });
         }
       }
       return Response.json(await snapshot(identity));
@@ -629,6 +640,14 @@ export async function POST(request: Request) {
       const confidence = Number(body.learnerConfidence ?? 0);
       if (!statement || !falsification || confidence < 1 || confidence > 10) {
         throw new Error("Your working equation, challenge test and confidence rating are all needed.");
+      }
+      const authoredReflections = [
+        ["HAB.FALSIFICATION.MISUNDERSTOOD", String(body.misunderstood ?? "").trim()],
+        ["HAB.I5.OBSERVER.TEXT", String(body.observer ?? "").trim()],
+        ["HAB.I5.INSIGHT.TEXT", String(body.insight ?? "").trim()],
+      ] as const;
+      if (authoredReflections.some(([, value]) => !value)) {
+        throw new Error("Complete every authored reflection before continuing.");
       }
       const [previous] = await db
         .select()
@@ -643,6 +662,8 @@ export async function POST(request: Request) {
       await db.insert(hypotheses).values({
         id,
         userId: identity.id,
+        labCode: "HAB",
+        labVersion: LAB_VERSION,
         statement,
         falsificationStatement: falsification,
         learnerConfidence: confidence,
@@ -650,13 +671,16 @@ export async function POST(request: Request) {
       await saveResponse(identity, { semanticFieldId: "HAB.EQUATION.TEXT", value: statement, investigation: 5 });
       await saveResponse(identity, { semanticFieldId: "HAB.FALSIFICATION.TEXT", value: falsification, investigation: 5 });
       await saveResponse(identity, { semanticFieldId: "HAB.EQUATION.CONFIDENCE_PRE", value: confidence, investigation: 5 });
+      for (const [semanticFieldId, value] of authoredReflections) {
+        await saveResponse(identity, { semanticFieldId, value, investigation: 5 });
+      }
       await audit(identity.id, previous ? "HYPOTHESIS_REVISED" : "HYPOTHESIS_CREATED", "HYPOTHESIS", id);
       return Response.json(await snapshot(identity), { status: 201 });
     }
 
     if (action === "startExperiment") {
       const prediction = Number(body.predictedValue ?? -1);
-      const required = ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "restartPlan", "minimumVersion", "failureSignal"];
+      const required = ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "restartPlan", "minimumVersion", "failureSignal", "insight"];
       for (const key of required) if (!String(body[key] ?? "").trim()) throw new Error("Complete every experiment field before starting.");
       if (prediction < 0 || prediction > 100) throw new Error("Prediction must be between 0% and 100%.");
       const id = crypto.randomUUID();
@@ -683,6 +707,7 @@ export async function POST(request: Request) {
       await db.insert(experiments).values({
         id,
         userId: identity.id,
+        labVersion: LAB_VERSION,
         hypothesisId: activeHypothesis?.id ?? null,
         targetPattern: String(body.targetPattern),
         targetCondition: String(body.targetCondition),
@@ -711,12 +736,15 @@ export async function POST(request: Request) {
         failureSignal: String(body.failureSignal),
         changeReason: "EXPERIMENT_STARTED",
       });
+      await saveResponse(identity, { semanticFieldId: "HAB.I6.INSIGHT.TEXT", value: String(body.insight), investigation: 6 });
+      const enrolment = await currentHabitEnrollment(identity.id);
+      if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
       await db
         .update(labEnrollments)
         .set({ status: "EXPERIMENT_ACTIVE", currentInvestigation: 7, experimentStartedAt: now, updatedAt: now })
-        .where(and(eq(labEnrollments.userId, identity.id), eq(labEnrollments.labVersion, LAB_VERSION)));
-      await audit(identity.id, "EXPERIMENT_STARTED", "EXPERIMENT", id, { prediction });
-      await pilotEvent(identity.id, "EXPERIMENT_STARTED", "EXPERIMENT", id, { prediction, plannedDays: 7 });
+        .where(eq(labEnrollments.id, enrolment.id));
+      await audit(identity.id, "EXPERIMENT_STARTED", "EXPERIMENT", id, { prediction, enrolmentVersion: enrolment.labVersion, experienceVersion: LAB_VERSION });
+      await pilotEvent(identity.id, "EXPERIMENT_STARTED", "EXPERIMENT", id, { prediction, plannedDays, enrolmentVersion: enrolment.labVersion, experienceVersion: LAB_VERSION });
       return Response.json(await snapshot(identity), { status: 201 });
     }
 
@@ -774,6 +802,8 @@ export async function POST(request: Request) {
       await db.insert(evidenceRecords).values({
         id: crypto.randomUUID(),
         userId: identity.id,
+        labCode: "HAB",
+        labVersion: LAB_VERSION,
         investigationId: "HAB.I7",
         semanticFieldId: "HAB.EXPERIMENT.EVENT",
         sourceObjectType: "EXPERIMENT_EVENT",
@@ -938,10 +968,12 @@ export async function POST(request: Request) {
       }
       const status = decision === "FINISH" ? "COMPLETED" : "COMPLETED_INSUFFICIENT";
       await db.update(experiments).set({ status, actualEndDate: now.slice(0, 10), updatedAt: now }).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id)));
-      await db.update(labEnrollments).set({ status: "EVIDENCE_REVIEW", currentInvestigation: 8, updatedAt: now }).where(and(eq(labEnrollments.userId, identity.id), eq(labEnrollments.labVersion, LAB_VERSION)));
+      const enrolment = await currentHabitEnrollment(identity.id);
+      if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
+      await db.update(labEnrollments).set({ status: "EVIDENCE_REVIEW", currentInvestigation: 8, updatedAt: now }).where(eq(labEnrollments.id, enrolment.id));
       await calculateExperiment(identity, experimentId, experiment.predictedValue);
-      await audit(identity.id, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { status, opportunityCount: metrics.opportunityCount, evidenceStrength: metrics.evidenceStrength });
-      await pilotEvent(identity.id, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { status, opportunityCount: metrics.opportunityCount, evidenceStrength: metrics.evidenceStrength });
+      await audit(identity.id, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { status, opportunityCount: metrics.opportunityCount, evidenceStrength: metrics.evidenceStrength, experienceVersion: LAB_VERSION });
+      await pilotEvent(identity.id, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { status, opportunityCount: metrics.opportunityCount, evidenceStrength: metrics.evidenceStrength, experienceVersion: LAB_VERSION });
       return Response.json(await snapshot(identity));
     }
 
