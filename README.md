@@ -2,7 +2,19 @@
 
 BIS is a private, evidence-first behaviour investigation product. This repository currently ships Habit Lab 4.5.1 and the closed-pilot operations gate.
 
-## Current milestone
+## Current milestone — Release 1.1 refinement
+
+Release 1.1 preserves the frozen Habit Lab 4.5.1 architecture while refining the learner experience from pilot feedback:
+
+- private content is covered by default after the learner enters the signed-in product;
+- the privacy screen returns after two minutes of inactivity or when the tab is hidden;
+- learners can cover the screen immediately or sign out for stronger shared-device protection;
+- the Evidence overview shows non-sensitive structure first and keeps original wording behind deliberate disclosure;
+- experiment days are derived from calendar time, so Day 1 cannot open before the configured start date;
+- a purposeful between-observations state explains what to do after today's entry and when the next day opens;
+- earlier gaps remain correctable from clear memory, but future days remain locked and the interface tells learners not to guess.
+
+## Closed-pilot operations foundation
 
 The closed-pilot operations release adds:
 

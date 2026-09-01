@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Compass,
   Eye,
+  EyeOff,
   FileText,
   FlaskConical,
   Home,
@@ -54,6 +55,7 @@ import {
   storyEpisodeOne,
   storyEpisodeTwo,
 } from "@/lib/habit-lab";
+import { getExperimentTiming } from "@/lib/experiment-timing.mjs";
 import { OperationsView } from "./operations-view";
 
 type Snapshot = {
@@ -192,6 +194,21 @@ function localDate(offset = 0) {
   return date.toISOString().slice(0, 10);
 }
 
+function todayInTimeZone(timeZone: string) {
+  try {
+    const parts = new Intl.DateTimeFormat("en-ZA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+    const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    return `${value.year}-${value.month}-${value.day}`;
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
 export function BISApp({ initialIdentity }: { initialIdentity: { email: string; displayName: string } | null }) {
   const [state, setState] = useState<Snapshot | null>(null);
   const [view, setView] = useState<View>("home");
@@ -200,10 +217,34 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [privateVisible, setPrivateVisible] = useState(false);
 
   useEffect(() => {
     void load();
   }, []);
+
+  useEffect(() => {
+    if (!privateVisible) return;
+    let timeout = window.setTimeout(() => setPrivateVisible(false), 120_000);
+    const reset = () => {
+      window.clearTimeout(timeout);
+      timeout = window.setTimeout(() => setPrivateVisible(false), 120_000);
+    };
+    const hideWhenBackgrounded = () => {
+      if (document.visibilityState === "hidden") setPrivateVisible(false);
+    };
+    document.addEventListener("visibilitychange", hideWhenBackgrounded);
+    for (const event of ["pointerdown", "keydown", "touchstart"] as const) {
+      window.addEventListener(event, reset, { passive: true });
+    }
+    return () => {
+      window.clearTimeout(timeout);
+      document.removeEventListener("visibilitychange", hideWhenBackgrounded);
+      for (const event of ["pointerdown", "keydown", "touchstart"] as const) {
+        window.removeEventListener(event, reset);
+      }
+    };
+  }, [privateVisible]);
 
   async function load() {
     setLoading(true);
@@ -261,7 +302,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
   const baselineComplete = Boolean(state.responses["HAB.CONTROL.PRE"]) && baselineItems.every(([field]) => Boolean(state.responses[field]));
 
   if (hasStaffAccess && (!state.profile || state.consent?.status !== "GRANTED" || !baselineComplete)) {
-    return <StaffOnlyShell state={state} staffRoles={staffRoles} saving={saving} error={error} act={act} />;
+    return <StaffOnlyShell state={state} staffRoles={staffRoles} saving={saving} error={error} act={act} privateVisible={privateVisible} onReveal={() => setPrivateVisible(true)} onLock={() => setPrivateVisible(false)} />;
   }
 
   if (state.profile && state.consent?.status === "WITHDRAWN") {
@@ -280,11 +321,12 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
   const displayName = state.profile.displayName.split(" ")[0] || "Investigator";
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
+    <div className={`min-h-screen bg-background text-foreground ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}>
       <header className="mobile-header">
         <button className="icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu /></button>
         <Brand compact />
-        <button className="avatar-button" aria-label="Open memory" onClick={() => setView("memory")}>{displayName.slice(0, 1).toUpperCase()}</button>
+        <div className="mobile-actions"><button className="icon-button" aria-label="Hide private content" onClick={() => setPrivateVisible(false)}><EyeOff /></button><button className="avatar-button" aria-label="Open memory" onClick={() => setView("memory")}>{displayName.slice(0, 1).toUpperCase()}</button></div>
       </header>
 
       {menuOpen && <div className="mobile-scrim" onClick={() => setMenuOpen(false)} />}
@@ -316,6 +358,9 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
           })}
         </nav>
         <div className="sidebar-spacer" />
+        <button className="memory-link" onClick={() => { setPrivateVisible(false); setMenuOpen(false); }}>
+          <EyeOff /> <span>Hide private content</span>
+        </button>
         {hasStaffAccess && <button className={`memory-link ${view === "operations" ? "active" : ""}`} onClick={() => { setView("operations"); setMenuOpen(false); }}>
           <BriefcaseBusiness /> <span>Restricted operations</span>
         </button>}
@@ -339,15 +384,22 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
         {view === "evidence" && <EvidenceView state={state} onView={setView} />}
         {view === "companion" && <CompanionView state={state} saving={saving} act={act} />}
         {view === "memory" && <MemoryView state={state} saving={saving} act={act} />}
-        {view === "settings" && <SettingsView state={state} saving={saving} act={act} />}
+        {view === "settings" && <SettingsView state={state} saving={saving} act={act} onLock={() => setPrivateVisible(false)} />}
         {view === "operations" && <OperationsView initialRoles={staffRoles} />}
       </main>
     </div>
+    {!privateVisible && <PrivacyScreen state={state} onReveal={() => setPrivateVisible(true)} />}
+    </>
   );
 }
 
-function StaffOnlyShell({ state, staffRoles, saving, error, act }: { state: Snapshot; staffRoles: string[]; saving: boolean; error: string; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
-  return <div className="staff-only-shell"><header><Brand /><div><Badge variant="outline"><LockKeyhole /> Restricted workspace</Badge><span>{state.identity.email}</span></div></header>{state.profile && state.consent?.status === "WITHDRAWN" && <div className="staff-consent-note"><div><strong>Your learner investigation is paused.</strong><p>Your staff role remains available and does not override that consent choice.</p></div><Button variant="outline" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>Restore learner consent</Button></div>}{error && <div className="error-banner"><span>{error}</span></div>}<OperationsView initialRoles={staffRoles} /></div>;
+function StaffOnlyShell({ state, staffRoles, saving, error, act, privateVisible, onReveal, onLock }: { state: Snapshot; staffRoles: string[]; saving: boolean; error: string; act: (payload: Record<string, unknown>) => Promise<unknown>; privateVisible: boolean; onReveal: () => void; onLock: () => void }) {
+  return <><div className={`staff-only-shell ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}><header><Brand /><div><Badge variant="outline"><LockKeyhole /> Restricted workspace</Badge><span>{state.identity.email}</span><button className="staff-lock" onClick={onLock}><EyeOff /> Hide</button></div></header>{state.profile && state.consent?.status === "WITHDRAWN" && <div className="staff-consent-note"><div><strong>Your learner investigation is paused.</strong><p>Your staff role remains available and does not override that consent choice.</p></div><Button variant="outline" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>Restore learner consent</Button></div>}{error && <div className="error-banner"><span>{error}</span></div>}<OperationsView initialRoles={staffRoles} /></div>{!privateVisible && <PrivacyScreen state={state} staff onReveal={onReveal} />}</>;
+}
+
+function PrivacyScreen({ state, staff = false, onReveal }: { state: Snapshot; staff?: boolean; onReveal: () => void }) {
+  const progress = Math.max(0, Math.min(9, state.enrolment?.currentInvestigation ?? 0));
+  return <main className="privacy-screen" role="dialog" aria-modal="true" aria-labelledby="privacy-screen-title"><div className="privacy-screen-card"><Brand /><div className="privacy-screen-icon"><LockKeyhole /></div><p className="eyebrow">Privacy screen active</p><h1 id="privacy-screen-title">{staff ? "Restricted workspace hidden." : "Your investigation is hidden."}</h1><p>{staff ? "Learner identities and operational records are covered while this screen is active." : "Your answers, experiment, evidence and Companion conversations are covered until you choose to continue."}</p>{!staff && <div className="privacy-safe-progress"><span>Habit Lab progress</span><strong>{progress} / 9</strong><Progress value={(progress / 9) * 100} /></div>}<div className="privacy-screen-actions"><Button size="lg" onClick={onReveal}><Eye /> Reveal this session</Button><a href="/signout-with-chatgpt?return_to=/" target="_top"><LockKeyhole /> Lock and sign out</a></div><small>This screen prevents casual viewing and returns automatically after two minutes or when the tab is hidden. On a shared device, signing out provides the strongest protection.</small></div></main>;
 }
 
 function PrivacyPaused({ state, saving, error, onRestore }: { state: Snapshot; saving: boolean; error: string; onRestore: (payload: Record<string, unknown>) => Promise<unknown> }) {
@@ -454,6 +506,11 @@ function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: 
   const cue = valueOf(state, "HAB.CUE.TEXT", "Not mapped yet");
   const hypothesis = state.hypothesis?.statement;
   const adherence = state.measurements["HAB.BEI06"]?.value;
+  const timing = state.experiment ? getExperimentTiming(state.experiment, state.events, todayInTimeZone(state.notificationPreference.timezone)) : null;
+  const experimentPhase = current === 7 && state.experiment?.status === "ACTIVE" && timing;
+  const continueTitle = !experimentPhase ? investigation.title : timing.status === "BEFORE_START" ? "Your experiment is prepared." : timing.status === "READY_TODAY" ? `Day ${timing.calendarDay} is ready when life gives you evidence.` : timing.status === "WINDOW_COMPLETE" ? "Your evidence window is complete." : "You are done for today.";
+  const continueMission = !experimentPhase ? investigation.mission : timing.status === "BEFORE_START" ? `Day 1 opens on ${new Date(`${state.experiment!.startDate}T00:00:00Z`).toLocaleDateString("en-ZA", { day: "numeric", month: "long" })}. Nothing needs to be recorded early.` : timing.status === "READY_TODAY" ? "Notice the first time your cue appears. If it never appears, record no opportunity at the end of the day." : timing.status === "WINDOW_COMPLETE" ? "Choose whether to finish, extend or refine the experiment without rewriting earlier evidence." : `Your next observation opens ${timing.nextUnlockDate ? new Date(`${timing.nextUnlockDate}T00:00:00Z`).toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "short" }) : "tomorrow"}. You do not need to manufacture another opportunity.`;
+  const continueLabel = experimentPhase ? timing.status === "WINDOW_COMPLETE" ? "Review experiment decision" : timing.status === "READY_TODAY" ? "Open today's observation" : "See experiment status" : "Continue investigation";
 
   return (
     <div className="page-wrap home-view">
@@ -466,11 +523,11 @@ function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: 
 
       <section className="continue-card">
         <div className="continue-main">
-          <div className="continue-top"><Badge>Habit Lab</Badge><span>Investigation {current} of 9</span></div>
-          <h2>{investigation.title}</h2>
-          <p>{investigation.mission}</p>
+          <div className="continue-top"><Badge>{experimentPhase ? "Phase B · Real-world experiment" : "Habit Lab"}</Badge><span>{experimentPhase && timing.calendarDay ? `Day ${timing.calendarDay} of ${timing.totalDays}` : `Investigation ${current} of 9`}</span></div>
+          <h2>{continueTitle}</h2>
+          <p>{continueMission}</p>
           <Progress value={(current / 9) * 100} />
-          <div className="continue-actions"><Button size="lg" onClick={onContinue}>Continue investigation <ArrowRight /></Button><span><NotebookTabs /> About {investigation.time}</span></div>
+          <div className="continue-actions"><Button size="lg" onClick={experimentPhase ? () => onView("experiment") : onContinue}>{continueLabel} <ArrowRight /></Button><span><NotebookTabs /> {experimentPhase ? "One entry per experienced day" : `About ${investigation.time}`}</span></div>
         </div>
         <div className="evidence-orbit" aria-hidden="true">
           <div className="orbit-center"><Search /><span>Current focus</span><strong>{current < 4 ? "Notice" : current < 7 ? "Test the explanation" : "Review evidence"}</strong></div>
@@ -481,7 +538,7 @@ function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: 
       <section className="home-grid">
         <article className="surface-card stat-card"><div className="card-icon coral"><Archive /></div><span>Evidence collected</span><strong>{evidenceCount}</strong><p>Responses and real-world observations</p><button onClick={() => onView("evidence")}>Open evidence vault <ChevronRight /></button></article>
         <article className="surface-card stat-card"><div className="card-icon teal"><Target /></div><span>Cue you are watching</span><strong className="stat-copy">{cue}</strong><p>{state.experiment ? "Active in your seven-day experiment" : "Your current working entry"}</p><button onClick={() => onView(state.experiment ? "experiment" : "lab")}>View current test <ChevronRight /></button></article>
-        <article className="surface-card stat-card"><div className="card-icon amber"><FlaskConical /></div><span>Experiment evidence</span><strong>{state.events.length}<small> / 7 days</small></strong><p>{adherence === null || adherence === undefined ? "No calculated adherence yet" : `${adherence}% adherence — ${state.measurements["HAB.BEI06"]?.evidenceStrength.toLowerCase().replaceAll("_", " ")}`}</p><button onClick={() => onView(state.experiment ? "experiment" : "lab")}>{state.experiment ? "Record today" : "Prepare experiment"} <ChevronRight /></button></article>
+        <article className="surface-card stat-card"><div className="card-icon amber"><FlaskConical /></div><span>Experiment evidence</span><strong>{state.events.length}<small> / {timing?.totalDays ?? 7} days</small></strong><p>{timing?.status === "WAITING_NEXT_DAY" || timing?.status === "CATCH_UP_AVAILABLE" ? "Today's observation is complete" : adherence === null || adherence === undefined ? "No calculated adherence yet" : `${adherence}% adherence — ${state.measurements["HAB.BEI06"]?.evidenceStrength.toLowerCase().replaceAll("_", " ")}`}</p><button onClick={() => onView(state.experiment ? "experiment" : "lab")}>{state.experiment ? timing?.status === "READY_TODAY" ? "Record today's evidence" : "Open experiment" : "Prepare experiment"} <ChevronRight /></button></article>
       </section>
 
       <section className="home-lower-grid">
@@ -621,7 +678,8 @@ function InvestigationSix({ state, saving, act, next }: StepProps) {
 
 function ExperimentView({ state, saving, act, onView, embedded = false }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; embedded?: boolean }) {
   const experiment = state.experiment;
-  const [selectedDay, setSelectedDay] = useState(1);
+  const timing = experiment ? getExperimentTiming(experiment, state.events, todayInTimeZone(state.notificationPreference.timezone)) : null;
+  const [selectedDay, setSelectedDay] = useState(() => timing?.suggestedDay ?? 1);
   const existing = experiment ? state.events.find((event) => event.dayNumber === selectedDay) : undefined;
   const [cueOccurred, setCueOccurred] = useState<boolean | null>(existing?.targetConditionOccurred ?? null);
   const [alternativeUsed, setAlternativeUsed] = useState<boolean | null>(existing?.alternativeUsed ?? null);
@@ -637,33 +695,36 @@ function ExperimentView({ state, saving, act, onView, embedded = false }: { stat
 
   if (!experiment) return <EmptyExperiment onView={onView} embedded={embedded} />;
   const start = new Date(`${experiment.startDate}T00:00:00Z`);
-  const end = new Date(`${experiment.plannedEndDate}T00:00:00Z`);
-  const today = new Date();
-  const elapsed = Math.floor((today.getTime() - start.getTime()) / 86_400_000) + 1;
-  const totalDays = Math.max(1, Math.min(21, Math.floor((end.getTime() - start.getTime()) / 86_400_000) + 1));
-  const availableDay = Math.max(1, Math.min(totalDays, elapsed));
-  const nextMissing = Array.from({ length: availableDay }, (_, index) => index + 1).find((day) => !state.events.some((event) => event.dayNumber === day)) ?? availableDay;
+  const totalDays = timing!.totalDays;
+  const availableDay = timing!.availableDay;
   const opportunityCount = Number(state.measurements["HAB.EXPERIMENT.OPPORTUNITY_COUNT"]?.value ?? 0);
   const replacementCount = Number(state.measurements["HAB.EXPERIMENT.REPLACEMENT_COUNT"]?.value ?? 0);
   const adherence = state.measurements["HAB.BEI06"]?.value;
   const evidenceStrength = state.measurements["HAB.BEI06"]?.evidenceStrength ?? "NONE";
   const active = experiment.status === "ACTIVE";
-  const canClose = active && (elapsed >= totalDays || state.events.length >= totalDays);
+  const canClose = timing!.canClose;
   const selectedDate = new Date(start);
   selectedDate.setUTCDate(start.getUTCDate() + selectedDay - 1);
+  const selectedUnavailable = selectedDay > availableDay;
+  const nextDate = timing!.nextUnlockDate ? new Date(`${timing!.nextUnlockDate}T00:00:00Z`).toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" }) : null;
+  const statusTitle = timing!.status === "BEFORE_START" ? "Your experiment is prepared—not late." : timing!.status === "READY_TODAY" ? `Day ${timing!.calendarDay} is open.` : timing!.status === "WINDOW_COMPLETE" ? "The evidence window is complete." : timing!.status === "CLOSED" ? "This experiment is closed." : "You are done for today.";
+  const statusMessage = timing!.status === "BEFORE_START" ? `Day 1 opens on ${start.toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" })}. Future evidence cannot be entered early.` : timing!.status === "READY_TODAY" ? "Wait for the first real target opportunity. If the cue does not appear, record no opportunity at the end of the day." : timing!.status === "CATCH_UP_AVAILABLE" ? `Today's entry is complete. Day ${timing!.missingAvailableDay} is still empty; fill it only if you clearly remember what happened.` : timing!.status === "WAITING_NEXT_DAY" ? `Nothing else is required today. Your next observation opens ${nextDate}.` : timing!.status === "WINDOW_COMPLETE" ? "Review the opportunity count and choose whether to finish, extend or refine the cue." : "The record remains available for inspection and correction.";
+  const strengthLabel = evidenceStrength === "SUFFICIENT_FOR_LAB" ? "Sufficient for this Lab" : evidenceStrength === "LIMITED" ? "Limited evidence" : "No opportunities yet";
 
   return <div className={`experiment-view ${embedded ? "embedded" : "page-wrap"}`}>
     {!embedded && <div className="page-intro"><div><p className="eyebrow">{active ? "Active experiment" : "Experiment complete"}</p><h1>Notice what actually happens.</h1><p>One target opportunity per day. No opportunity is not failure.</p></div><Badge>{state.events.length} of {totalDays} days recorded</Badge></div>}
     <section className="experiment-hero"><div><p className="eyebrow">You are testing · Version {experiment.parameterVersion}</p><h2>Whether <em>{experiment.targetCondition}</em> is connected to <em>{experiment.targetPattern}</em>.</h2></div><div className="alternative-chip"><span>Your alternative</span><strong>{experiment.alternativeBehaviour}</strong></div></section>
+    <section className={`experiment-status ${timing!.status.toLowerCase().replaceAll("_", "-")}`}><div className="experiment-status-icon">{timing!.status === "READY_TODAY" ? <Eye /> : timing!.status === "WINDOW_COMPLETE" || timing!.status === "CLOSED" ? <Check /> : <CalendarDays />}</div><div><p className="eyebrow">Current state</p><h2>{statusTitle}</h2><p>{statusMessage}</p></div><Badge variant="outline">{timing!.calendarDay ? `Day ${timing!.calendarDay} of ${totalDays}` : timing!.status === "BEFORE_START" ? "Starts soon" : "Review ready"}</Badge></section>
+    {active && timing!.status !== "WINDOW_COMPLETE" && <section className="between-observations surface-card"><div className="section-title"><div><p className="eyebrow">Between observations</p><h3>{timing!.status === "READY_TODAY" ? "Live the experiment; do not force the evidence." : "There is nothing else to submit right now."}</h3><p>The experiment continues in real life even while the form is waiting.</p></div><Compass /></div><ol><li><span>1</span><div><strong>Watch for the first cue</strong><p>Notice the first genuine target opportunity—not every possible moment.</p></div></li><li><span>2</span><div><strong>Use the smallest useful alternative</strong><p>Your minimum version counts when the full replacement routine is unrealistic.</p></div></li><li><span>3</span><div><strong>Return once for that day</strong><p>Record what happened. If no opportunity appeared, say so rather than guessing.</p></div></li></ol><div className="between-actions"><Button variant="outline" onClick={() => onView("companion")}>Ask the Companion</Button><Button variant="outline" onClick={() => onView("evidence")}>Review evidence overview</Button></div></section>}
     <section className="experiment-grid">
-      <div className="surface-card days-card"><div className="section-title"><div><h3>{totalDays > 7 ? "Extended evidence window" : "Seven-day evidence"}</h3><p>Future days unlock only after they happen. Earlier days can be backfilled.</p></div><CalendarDays /></div><div className="day-list">{Array.from({ length: totalDays }, (_, index) => index + 1).map((day) => {
+      <div className="surface-card days-card"><div className="section-title"><div><h3>{totalDays > 7 ? "Extended evidence window" : "Seven-day evidence"}</h3><p>Future days unlock only after they happen. Correct an earlier day only from clear memory—never fill a gap by guessing.</p></div><CalendarDays /></div><div className="day-list">{Array.from({ length: totalDays }, (_, index) => index + 1).map((day) => {
         const event = state.events.find((item) => item.dayNumber === day);
         const disabled = day > availableDay;
-        return <button key={day} disabled={disabled} className={`${selectedDay === day ? "selected" : ""} ${event ? "recorded" : ""}`} onClick={() => chooseDay(day)}><span>{event ? <Check /> : day}</span><div><strong>Day {day}</strong><small>{disabled ? "Not experienced yet" : event ? event.targetConditionOccurred ? event.alternativeUsed ? "Alternative used" : "Cue observed" : "No target opportunity" : day === nextMissing ? "Ready to record" : "Available"}</small></div>{disabled ? <LockKeyhole /> : <ChevronRight />}</button>;
+        return <button key={day} disabled={disabled} className={`${selectedDay === day ? "selected" : ""} ${event ? "recorded" : ""}`} onClick={() => chooseDay(day)}><span>{event ? <Check /> : day}</span><div><strong>Day {day}</strong><small>{disabled ? "Not experienced yet" : event ? event.targetConditionOccurred ? event.alternativeUsed ? "Alternative used" : "Cue observed" : "No target opportunity" : day === timing!.calendarDay ? "Ready today" : "Available to recall"}</small></div>{disabled ? <LockKeyhole /> : <ChevronRight />}</button>;
       })}</div></div>
-      <div className="surface-card checkin-card"><p className="eyebrow">Day {selectedDay} check-in · {selectedDate.toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</p>{active ? <><h3>Did your cue occur?</h3><div className="choice-grid two"><ChoiceButton active={cueOccurred === true} title="Yes" detail="A target opportunity occurred" onClick={() => setCueOccurred(true)} /><ChoiceButton active={cueOccurred === false} title="No" detail="No target opportunity today" onClick={() => { setCueOccurred(false); setAlternativeUsed(null); }} /></div>{cueOccurred === true && <><h3>Did you use your new routine?</h3><div className="choice-grid two"><ChoiceButton active={alternativeUsed === true} title="Yes" detail="I used the alternative" onClick={() => setAlternativeUsed(true)} /><ChoiceButton active={alternativeUsed === false} title="No" detail="I used the old routine" onClick={() => setAlternativeUsed(false)} /></div></>} {cueOccurred === false && <div className="no-opportunity"><Eye /><div><strong>No target opportunity today.</strong><p>This is valid evidence. It is excluded from adherence rather than scored as 0%.</p></div></div>}<label className="field-label">What happened? <span>Optional</span></label><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Add only what will help you remember the moment…" /><Button className="w-full" size="lg" disabled={saving || cueOccurred === null || (cueOccurred === true && alternativeUsed === null)} onClick={() => void act({ action: "saveEvent", experimentId: experiment.id, dayNumber: selectedDay, occurredAt: selectedDate.toISOString(), targetConditionOccurred: cueOccurred, alternativeUsed, notes })}>{saving ? "Saving evidence…" : existing ? "Update this evidence" : "Save this evidence"}</Button></> : <div className="closed-checkin"><ShieldCheck /><h3>This evidence window is closed.</h3><p>You can inspect each day, the calculation trail and parameter history. New observations are paused for this experiment.</p><Button variant="outline" onClick={() => onView("evidence")}>Open evidence vault</Button></div>}</div>
+      <div className="surface-card checkin-card"><p className="eyebrow">Day {selectedDay} check-in · {selectedDate.toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</p>{selectedUnavailable ? <div className="waiting-checkin"><LockKeyhole /><h3>This day has not happened yet.</h3><p>Future observations stay locked. Return on that date so the record remains evidence rather than prediction.</p></div> : active ? <><h3>Did your cue occur?</h3><div className="choice-grid two"><ChoiceButton active={cueOccurred === true} title="Yes" detail="A target opportunity occurred" onClick={() => setCueOccurred(true)} /><ChoiceButton active={cueOccurred === false} title="No" detail="No target opportunity today" onClick={() => { setCueOccurred(false); setAlternativeUsed(null); }} /></div>{cueOccurred === true && <><h3>Did you use your new routine?</h3><div className="choice-grid two"><ChoiceButton active={alternativeUsed === true} title="Yes" detail="I used the alternative" onClick={() => setAlternativeUsed(true)} /><ChoiceButton active={alternativeUsed === false} title="No" detail="I used the old routine" onClick={() => setAlternativeUsed(false)} /></div></>} {cueOccurred === false && <div className="no-opportunity"><Eye /><div><strong>No target opportunity today.</strong><p>This is valid evidence. It is excluded from adherence rather than scored as 0%.</p></div></div>}<label className="field-label">What happened? <span>Optional</span></label><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Add only what will help you remember the moment…" /><Button className="w-full" size="lg" disabled={saving || cueOccurred === null || (cueOccurred === true && alternativeUsed === null)} onClick={() => void act({ action: "saveEvent", experimentId: experiment.id, dayNumber: selectedDay, occurredAt: selectedDate.toISOString(), targetConditionOccurred: cueOccurred, alternativeUsed, notes })}>{saving ? "Saving evidence…" : existing ? "Update this evidence" : "Save this evidence"}</Button></> : <div className="closed-checkin"><ShieldCheck /><h3>This evidence window is closed.</h3><p>You can inspect each day, the calculation trail and parameter history. New observations are paused for this experiment.</p><Button variant="outline" onClick={() => onView("evidence")}>Open evidence vault</Button></div>}</div>
     </section>
-    <section className="measurement-strip"><div><span>Opportunities observed</span><strong>{opportunityCount}</strong></div><div><span>Alternative used</span><strong>{replacementCount}</strong></div><div><span>Adherence</span><strong>{adherence === null || adherence === undefined ? "N/A" : `${adherence}%`}</strong></div><div><span>Evidence strength</span><strong>{evidenceStrength.toLowerCase().replaceAll("_", " ")}</strong></div></section>
+    <section className="measurement-strip"><div><span>Opportunities observed</span><strong>{opportunityCount}</strong></div><div><span>Alternative used</span><strong>{replacementCount}</strong></div><div><span>Adherence</span><strong>{adherence === null || adherence === undefined ? "N/A" : `${adherence}%`}</strong></div><div><span>Evidence strength</span><strong>{strengthLabel}</strong></div></section>
     {state.events.length >= 3 && <CheckpointPanel state={state} saving={saving} act={act} />}
     {canClose && <ExperimentClosure state={state} saving={saving} act={act} />}
     {!active && <div className="checkpoint-card complete"><div className="card-icon teal"><Check /></div><div><p className="eyebrow">Evidence review ready</p><h3>{experiment.status === "COMPLETED_INSUFFICIENT" ? "Finished with insufficient evidence." : "Experiment complete."}</h3><p>The record preserves missingness, every parameter version and the inputs behind each calculated value.</p></div><Button variant="outline" onClick={() => onView("evidence")}>Inspect evidence</Button></div>}
@@ -717,7 +778,7 @@ function InvestigationNine({ state, saving, act, onView }: { state: Snapshot; sa
   const [agency, setAgency] = useState(valueOf(state, "HAB.AGENCY.REFLECTION"));
   const [nextPattern, setNextPattern] = useState(valueOf(state, "HAB.NEXT_PATTERN.TEXT"));
   const [remember, setRemember] = useState(false);
-  return <div className="investigation-stack"><div className="profile-preview"><div className="profile-preview-head"><div><p className="eyebrow">Behaviour Profile Summary</p><h2>Your investigation, with provenance.</h2></div><Badge variant="outline">Habit Lab 4.5.1</Badge></div><EvidenceColumns state={state} compact /></div><PromptSection number="01" title="Agency reflection" prompt="Given what you observed, what do you now believe you are capable of doing differently?"><TextField value={agency} onChange={setAgency} rows={5} /></PromptSection><PromptSection number="02" title="Your journey continues" prompt="What pattern would be worth investigating next?"><TextField value={nextPattern} onChange={setNextPattern} /><label className="consent-row memory-confirm"><Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} /><span>Remember my current hypothesis as a pattern I am still investigating. I can retire it later.</span></label></PromptSection><StepFooter label="Complete investigation" saving={saving} disabled={!agency} onSave={async () => { const updated = await act({ action: "saveResponses", items: [{ semanticFieldId: "HAB.AGENCY.REFLECTION", value: agency, investigation: 9 }, { semanticFieldId: "HAB.NEXT_PATTERN.TEXT", value: nextPattern, investigation: 9 }] }); if (remember && state.hypothesis) await act({ action: "remember", statement: state.hypothesis.statement, sourceId: state.hypothesis.id }); onView("evidence"); void updated; }} /></div>;
+  return <div className="investigation-stack"><div className="profile-preview"><div className="profile-preview-head"><div><p className="eyebrow">Behaviour Profile Summary</p><h2>Your investigation, with provenance.</h2></div><Badge variant="outline">Habit Lab 4.5.1</Badge></div><EvidenceColumns state={state} compact revealPrivate /></div><PromptSection number="01" title="Agency reflection" prompt="Given what you observed, what do you now believe you are capable of doing differently?"><TextField value={agency} onChange={setAgency} rows={5} /></PromptSection><PromptSection number="02" title="Your journey continues" prompt="What pattern would be worth investigating next?"><TextField value={nextPattern} onChange={setNextPattern} /><label className="consent-row memory-confirm"><Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked === true)} /><span>Remember my current hypothesis as a pattern I am still investigating. I can retire it later.</span></label></PromptSection><StepFooter label="Complete investigation" saving={saving} disabled={!agency} onSave={async () => { const updated = await act({ action: "saveResponses", items: [{ semanticFieldId: "HAB.AGENCY.REFLECTION", value: agency, investigation: 9 }, { semanticFieldId: "HAB.NEXT_PATTERN.TEXT", value: nextPattern, investigation: 9 }] }); if (remember && state.hypothesis) await act({ action: "remember", statement: state.hypothesis.statement, sourceId: state.hypothesis.id }); onView("evidence"); void updated; }} /></div>;
 }
 
 function EvidenceView({ state, onView }: { state: Snapshot; onView: (view: View) => void }) {
@@ -728,18 +789,24 @@ function EvidenceView({ state, onView }: { state: Snapshot; onView: (view: View)
     "HAB.BEI06": "Alternative used ÷ eligible opportunities × 100; N/A when opportunities = 0",
     "HAB.BEI03": "100 − |predicted adherence − actual adherence|; N/A when adherence is N/A",
   };
-  return <div className="page-wrap evidence-view"><div className="page-intro"><div><p className="eyebrow">Evidence vault</p><h1>What your investigation has produced.</h1><p>Original wording, observations, calculations and hypotheses remain distinct.</p></div><Badge variant="outline">{evidenceCount} records</Badge></div><EvidenceColumns state={state} /><section className="surface-card trace-section"><div className="section-title"><div><p className="eyebrow">Calculation trace</p><h2>Measure → evidence → source</h2><p>Every displayed calculation carries its formula version and linked inputs.</p></div><Search /></div><div className="trace-list">{Object.entries(state.measurements).map(([code, measure]) => <details key={code}><summary><span className="provenance-tag calculated">BIS calculated</span><strong>{code}</strong><b>{measure.status === "NA" ? "N/A" : String(measure.value)}</b></summary><div className="trace-body"><dl><div><dt>Formula</dt><dd>{formulas[code] ?? "Registered BIS calculation"}</dd></div><div><dt>Formula version</dt><dd>{measure.formulaVersion}</dd></div><div><dt>Evidence strength</dt><dd>{measure.evidenceStrength.toLowerCase().replaceAll("_", " ")}</dd></div><div><dt>Calculated</dt><dd>{new Date(measure.calculatedAt).toLocaleString("en-ZA")}</dd></div></dl><h4>Linked source inputs ({measure.sources.length})</h4>{measure.sources.length === 0 ? <p>No source inputs recorded yet.</p> : <ul>{measure.sources.map((source, index) => <li key={`${source.sourceObjectId}-${source.inputRole}-${index}`}><span>{source.sourceObjectType.toLowerCase().replaceAll("_", " ")}</span><strong>{source.inputRole.toLowerCase().replaceAll("_", " ")}</strong><code>{String(source.inputValue)}</code></li>)}</ul>}</div></details>)}</div></section><section className="surface-card vault-section"><div className="section-title"><div><p className="eyebrow">All evidence I added</p><h2>Registered Habit Lab fields</h2></div><Archive /></div><div className="evidence-list">{Object.entries(state.responses).map(([field, item]) => <div key={field}><span className="provenance-tag said">You said</span><div><strong>{fieldLabels[field] ?? field.replaceAll(".", " · ")}</strong><p>{item.status === "PASS" ? "Passed" : String(item.value)}</p></div><time>{new Date(item.recordedAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</time></div>)}</div></section><div className="companion-card evidence-companion"><div className="companion-mark"><Bot /></div><div><p className="eyebrow">Ask why</p><h3>Every behavioural statement should be traceable.</h3><p>Ask the Companion to retrieve your cue, evidence or challenge test.</p></div><Button variant="outline" onClick={() => onView("companion")}>Open Companion</Button></div></div>;
+  const measureLabels: Record<string, string> = {
+    "HAB.EXPERIMENT.OPPORTUNITY_COUNT": "Opportunities observed",
+    "HAB.EXPERIMENT.REPLACEMENT_COUNT": "Replacement routine used",
+    "HAB.BEI06": "Experiment adherence",
+    "HAB.BEI03": "Prediction accuracy",
+  };
+  return <div className="page-wrap evidence-view"><div className="page-intro"><div><p className="eyebrow">Evidence overview</p><h1>See the shape before the detail.</h1><p>Counts and calculations stay visible here. Your original wording remains closed until you deliberately open it.</p></div><Badge variant="outline"><LockKeyhole /> {evidenceCount} private records</Badge></div><EvidenceColumns state={state} /><details className="surface-card disclosure-section trace-disclosure"><summary><div><p className="eyebrow">Measure → evidence → source</p><h2>How BIS reached each number</h2><p>Open formula versions and linked inputs only when you need the technical trail.</p></div><ChevronRight /></summary><div className="trace-list">{Object.entries(state.measurements).map(([code, measure]) => <details key={code}><summary><span className="provenance-tag calculated">BIS calculated</span><strong>{measureLabels[code] ?? "Registered calculation"}</strong><b>{measure.status === "NA" ? "N/A" : String(measure.value)}</b></summary><div className="trace-body"><dl><div><dt>Formula</dt><dd>{formulas[code] ?? "Registered BIS calculation"}</dd></div><div><dt>Formula version</dt><dd>{measure.formulaVersion}</dd></div><div><dt>Evidence strength</dt><dd>{measure.evidenceStrength === "SUFFICIENT_FOR_LAB" ? "Sufficient for this Lab" : measure.evidenceStrength.toLowerCase().replaceAll("_", " ")}</dd></div><div><dt>Calculated</dt><dd>{new Date(measure.calculatedAt).toLocaleString("en-ZA")}</dd></div></dl><h4>Linked source inputs ({measure.sources.length})</h4>{measure.sources.length === 0 ? <p>No source inputs recorded yet.</p> : <ul>{measure.sources.map((source, index) => <li key={`${source.sourceObjectId}-${source.inputRole}-${index}`}><span>{source.sourceObjectType.toLowerCase().replaceAll("_", " ")}</span><strong>{source.inputRole.toLowerCase().replaceAll("_", " ")}</strong><code>{String(source.inputValue)}</code></li>)}</ul>}</div></details>)}</div></details><details className="surface-card disclosure-section private-records"><summary><div><p className="eyebrow">Private reflections</p><h2>Review my original responses</h2><p>This section contains your wording. It stays closed by default and is covered whenever the privacy screen activates.</p></div><Badge variant="outline">{Object.keys(state.responses).length} responses</Badge></summary><div className="evidence-list">{Object.entries(state.responses).map(([field, item]) => <div key={field}><span className="provenance-tag said">You said</span><div><strong>{fieldLabels[field] ?? "Habit Lab reflection"}</strong><p>{item.status === "PASS" ? "Passed" : String(item.value)}</p></div><time>{new Date(item.recordedAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</time></div>)}</div></details><div className="companion-card evidence-companion"><div className="companion-mark"><Bot /></div><div><p className="eyebrow">Ask why</p><h3>Every behavioural statement should be traceable.</h3><p>Ask the Companion to retrieve your cue, evidence or challenge test.</p></div><Button variant="outline" onClick={() => onView("companion")}>Open Companion</Button></div></div>;
 }
 
-function EvidenceColumns({ state, compact = false }: { state: Snapshot; compact?: boolean }) {
+function EvidenceColumns({ state, compact = false, revealPrivate = false }: { state: Snapshot; compact?: boolean; revealPrivate?: boolean }) {
   const observed = state.events.length;
   const adherence = state.measurements["HAB.BEI06"]?.value;
   const accuracy = state.measurements["HAB.BEI03"]?.value;
   const cards = [
-    { type: "said", label: "You said", icon: FileText, title: valueOf(state, "HAB.PATTERN.TARGET", "No target pattern yet"), detail: valueOf(state, "HAB.CUE.TEXT", "Your cue will appear here") },
+    { type: "said", label: "You said", icon: FileText, title: revealPrivate ? valueOf(state, "HAB.PATTERN.TARGET", "No target pattern yet") : `${Object.keys(state.responses).length} private responses`, detail: revealPrivate ? valueOf(state, "HAB.CUE.TEXT", "Your cue will appear here") : "Original wording is stored and closed below" },
     { type: "observed", label: "You observed", icon: Eye, title: `${observed} experiment day${observed === 1 ? "" : "s"}`, detail: observed ? `${state.events.filter((event) => event.eligibleOpportunity).length} target opportunities recorded` : "No real-world observations yet" },
     { type: "calculated", label: "BIS calculated", icon: Search, title: adherence === null || adherence === undefined ? "Adherence N/A" : `${adherence}% adherence`, detail: accuracy === null || accuracy === undefined ? "Prediction accuracy needs an opportunity" : `${accuracy}/100 prediction accuracy` },
-    { type: "hypothesis", label: "Your current hypothesis", icon: Lightbulb, title: state.hypothesis?.statement ?? "Not formed yet", detail: state.hypothesis ? `Challenge test: ${state.hypothesis.falsificationStatement}` : "Build a working equation in Investigation 5" },
+    { type: "hypothesis", label: "Your current hypothesis", icon: Lightbulb, title: revealPrivate ? state.hypothesis?.statement ?? "Not formed yet" : state.hypothesis ? "Working hypothesis stored privately" : "Not formed yet", detail: revealPrivate && state.hypothesis ? `Challenge test: ${state.hypothesis.falsificationStatement}` : state.hypothesis ? "Open your private reflections only when you want the wording on screen" : "Build a working equation in Investigation 5" },
   ];
   return <section className={`provenance-grid ${compact ? "compact" : ""}`}>{cards.map((card) => { const Icon = card.icon; return <article key={card.label} className={`provenance-card ${card.type}`}><div><span className={`provenance-tag ${card.type}`}><Icon />{card.label}</span></div><h3>{card.title}</h3><p>{card.detail}</p></article>; })}</section>;
 }
@@ -763,7 +830,7 @@ function MemoryView({ state, saving, act }: { state: Snapshot; saving: boolean; 
   return <div className="page-wrap memory-view"><div className="page-intro"><div><p className="eyebrow">What BIS remembers</p><h1>Inspectable memory, under your control.</h1><p>Only user-stated or user-confirmed items appear here. A system suggestion never silently becomes fact.</p></div><Badge variant="outline"><Brain /> {active.length} active</Badge></div>{active.length === 0 ? <div className="empty-state surface-card"><Brain /><h2>No confirmed behavioural memories yet.</h2><p>When a pattern becomes useful for continuity, BIS will ask before remembering it.</p></div> : <div className="memory-list">{active.map((memory) => <article className="surface-card" key={memory.id}><div><Badge variant="outline">{memory.memoryType.toLowerCase().replaceAll("_", " ")}</Badge><Badge className="confirmed-badge"><Check /> User confirmed</Badge></div><h2>{memory.statement}</h2><dl><div><dt>Source</dt><dd>{memory.sourceType.toLowerCase()}</dd></div><div><dt>Status</dt><dd>{memory.status.toLowerCase()}</dd></div></dl><Button variant="outline" disabled={saving} onClick={() => void act({ action: "retireMemory", memoryId: memory.id })}>Retire memory</Button></article>)}</div>}<div className="memory-policy"><LockKeyhole /><div><h3>Memory is not identity.</h3><p>BIS may remember a pattern you are investigating. It does not turn that pattern into a label about who you are.</p></div></div></div>;
 }
 
-function SettingsView({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+function SettingsView({ state, saving, act, onLock }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onLock: () => void }) {
   const [preference, setPreference] = useState(state.notificationPreference);
   const [confirmWithdrawal, setConfirmWithdrawal] = useState(false);
   const [supportCategory, setSupportCategory] = useState("FACILITATOR_CHECK_IN");
@@ -775,7 +842,7 @@ function SettingsView({ state, saving, act }: { state: Snapshot; saving: boolean
     ["experimentEnding", "Experiment ending", "Flag the final two days and completion choices"],
     ["reviewReady", "Review ready", "Show when the experiment is ready for evidence review"],
   ] as const;
-  return <div className="page-wrap settings-view"><div className="page-intro"><div><p className="eyebrow">Settings & privacy</p><h1>Your controls, in one place.</h1><p>Configure in-app reminders and manage product consent without changing earlier records.</p></div><Badge variant="outline"><ShieldCheck /> Consent {state.consent?.status.toLowerCase()}</Badge></div><div className="settings-grid"><section className="surface-card settings-card"><div className="section-title"><div><p className="eyebrow">In-app reminders</p><h2>Experiment notifications</h2><p>This pilot does not send push notifications, email or SMS. Reminders appear only inside BIS.</p></div><Bell /></div><label className="preference-row master"><Checkbox checked={preference.enabled} onCheckedChange={(checked) => setPreference({ ...preference, enabled: checked === true })} /><span><strong>Enable experiment reminders</strong><small>Turn all in-app reminders on or off</small></span></label><div className={preference.enabled ? "preference-list" : "preference-list disabled"}>{reminderOptions.map(([key, title, detail]) => <label className="preference-row" key={key}><Checkbox disabled={!preference.enabled} checked={preference[key]} onCheckedChange={(checked) => setPreference({ ...preference, [key]: checked === true })} /><span><strong>{title}</strong><small>{detail}</small></span></label>)}</div><div className="reminder-schedule"><label>Reminder time<Input type="time" value={preference.reminderTime} disabled={!preference.enabled} onChange={(event) => setPreference({ ...preference, reminderTime: event.target.value })} /></label><label>Timezone<Input value={preference.timezone} disabled readOnly /></label></div><Button disabled={saving} onClick={() => void act({ action: "updateNotificationPreferences", ...preference })}>{saving ? "Saving…" : "Save reminder settings"}</Button></section><section className="surface-card settings-card privacy-card"><div className="section-title"><div><p className="eyebrow">Privacy control</p><h2>Pause product consent</h2><p>Pausing stops new investigation activity. Existing evidence remains private and is not deleted or rewritten.</p></div><LockKeyhole /></div><dl><div><dt>Signed-in account</dt><dd>{state.identity.email}</dd></div><div><dt>Product consent</dt><dd>{state.consent?.status.toLowerCase()}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion}</dd></div><div><dt>Current sharing</dt><dd>Private Site access only</dd></div></dl><label className="consent-row"><Checkbox checked={confirmWithdrawal} onCheckedChange={(checked) => setConfirmWithdrawal(checked === true)} /><span>I understand that new responses, experiment events and Companion turns will pause until I restore consent.</span></label><Button variant="outline" disabled={saving || !confirmWithdrawal} onClick={() => void act({ action: "withdrawConsent" })}>Pause consent and investigation</Button></section><section className="surface-card settings-card support-card"><div className="section-title"><div><p className="eyebrow">Human support</p><h2>Ask for a private follow-up</h2><p>Your request goes to the restricted safeguarding queue. BIS does not diagnose you or assign an automated risk score.</p></div><LifeBuoy /></div><div className="support-layout"><div className="ops-form-stack"><label>What kind of support?<Select value={supportCategory} onValueChange={setSupportCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR_CHECK_IN">Facilitator check-in</SelectItem><SelectItem value="SAFETY_CONCERN">Safety concern</SelectItem><SelectItem value="PRIVACY_QUESTION">Privacy question</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></label><label>Optional note<Textarea value={supportNote} onChange={(event) => setSupportNote(event.target.value)} maxLength={800} placeholder="Share only what you want the safeguarding officer to receive…" /></label><Button disabled={saving} onClick={async () => { const result = await act({ action: "requestSupport", category: supportCategory, note: supportNote }); if (result) setSupportNote(""); }}>Request human follow-up</Button><small className="support-warning">BIS is not an emergency service. If there is immediate danger, contact local emergency services or a trusted person now.</small></div><div className="support-status-list"><strong>Your requests</strong>{state.supportRequests.length === 0 ? <p>No support requests yet.</p> : state.supportRequests.map((request) => <div key={request.id}><span><b>{request.category.toLowerCase().replaceAll("_", " ")}</b><small>Opened {new Date(request.openedAt).toLocaleDateString("en-ZA")}</small></span><Badge variant="outline">{request.status.toLowerCase().replaceAll("_", " ")}</Badge></div>)}</div></div></section></div></div>;
+  return <div className="page-wrap settings-view"><div className="page-intro"><div><p className="eyebrow">Settings & privacy</p><h1>Your controls, in one place.</h1><p>Configure in-app reminders and manage product consent without changing earlier records.</p></div><Badge variant="outline"><ShieldCheck /> Consent {state.consent?.status.toLowerCase()}</Badge></div><div className="settings-grid"><section className="surface-card settings-card"><div className="section-title"><div><p className="eyebrow">In-app reminders</p><h2>Experiment notifications</h2><p>This pilot does not send push notifications, email or SMS. Reminders appear only inside BIS.</p></div><Bell /></div><label className="preference-row master"><Checkbox checked={preference.enabled} onCheckedChange={(checked) => setPreference({ ...preference, enabled: checked === true })} /><span><strong>Enable experiment reminders</strong><small>Turn all in-app reminders on or off</small></span></label><div className={preference.enabled ? "preference-list" : "preference-list disabled"}>{reminderOptions.map(([key, title, detail]) => <label className="preference-row" key={key}><Checkbox disabled={!preference.enabled} checked={preference[key]} onCheckedChange={(checked) => setPreference({ ...preference, [key]: checked === true })} /><span><strong>{title}</strong><small>{detail}</small></span></label>)}</div><div className="reminder-schedule"><label>Reminder time<Input type="time" value={preference.reminderTime} disabled={!preference.enabled} onChange={(event) => setPreference({ ...preference, reminderTime: event.target.value })} /></label><label>Timezone<Input value={preference.timezone} disabled readOnly /></label></div><Button disabled={saving} onClick={() => void act({ action: "updateNotificationPreferences", ...preference })}>{saving ? "Saving…" : "Save reminder settings"}</Button></section><section className="surface-card settings-card privacy-card"><div className="section-title"><div><p className="eyebrow">Privacy control</p><h2>Cover or pause your investigation</h2><p>The privacy screen hides personal content immediately. Pausing consent separately stops new investigation activity.</p></div><LockKeyhole /></div><dl><div><dt>Signed-in account</dt><dd>{state.identity.email}</dd></div><div><dt>Session privacy</dt><dd>Auto-hide after 2 minutes</dd></div><div><dt>Product consent</dt><dd>{state.consent?.status.toLowerCase()}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion}</dd></div><div><dt>Current sharing</dt><dd>Private Site access only</dd></div></dl><Button className="privacy-now" onClick={onLock}><EyeOff /> Hide private content now</Button><label className="consent-row"><Checkbox checked={confirmWithdrawal} onCheckedChange={(checked) => setConfirmWithdrawal(checked === true)} /><span>I understand that new responses, experiment events and Companion turns will pause until I restore consent.</span></label><Button variant="outline" disabled={saving || !confirmWithdrawal} onClick={() => void act({ action: "withdrawConsent" })}>Pause consent and investigation</Button></section><section className="surface-card settings-card support-card"><div className="section-title"><div><p className="eyebrow">Human support</p><h2>Ask for a private follow-up</h2><p>Your request goes to the restricted safeguarding queue. BIS does not diagnose you or assign an automated risk score.</p></div><LifeBuoy /></div><div className="support-layout"><div className="ops-form-stack"><label>What kind of support?<Select value={supportCategory} onValueChange={setSupportCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR_CHECK_IN">Facilitator check-in</SelectItem><SelectItem value="SAFETY_CONCERN">Safety concern</SelectItem><SelectItem value="PRIVACY_QUESTION">Privacy question</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></label><label>Optional note<Textarea value={supportNote} onChange={(event) => setSupportNote(event.target.value)} maxLength={800} placeholder="Share only what you want the safeguarding officer to receive…" /></label><Button disabled={saving} onClick={async () => { const result = await act({ action: "requestSupport", category: supportCategory, note: supportNote }); if (result) setSupportNote(""); }}>Request human follow-up</Button><small className="support-warning">BIS is not an emergency service. If there is immediate danger, contact local emergency services or a trusted person now.</small></div><div className="support-status-list"><strong>Your requests</strong>{state.supportRequests.length === 0 ? <p>No support requests yet.</p> : state.supportRequests.map((request) => <div key={request.id}><span><b>{request.category.toLowerCase().replaceAll("_", " ")}</b><small>Opened {new Date(request.openedAt).toLocaleDateString("en-ZA")}</small></span><Badge variant="outline">{request.status.toLowerCase().replaceAll("_", " ")}</Badge></div>)}</div></div></section></div></div>;
 }
 
 function PromptSection({ number, title, prompt, children }: { number: string; title: string; prompt: string; children: React.ReactNode }) {
