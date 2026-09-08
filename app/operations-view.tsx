@@ -5,9 +5,13 @@ import {
   Activity,
   Check,
   ClipboardCheck,
+  Database,
+  GitBranch,
   LockKeyhole,
   Plus,
+  Sigma,
   ShieldAlert,
+  Tags,
   UserCog,
   UserPlus,
   Users,
@@ -23,8 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { LAB_VERSION } from "@/lib/habit-lab";
+import { coreLabs } from "@/lib/core-labs";
 
 type ProgressRow = {
   userId: string;
@@ -141,7 +146,7 @@ function ProgressStatus({ learner }: { learner: ProgressRow }) {
   return <article className="ops-learner-card"><div className="ops-learner-head"><div><strong>{learner.displayName}</strong><span>{learner.email}</span></div><Badge variant="outline">{label(learner.enrolment?.status ?? learner.status)}</Badge></div><div className="ops-progress-line"><span style={{ width: `${Math.min(100, ((learner.enrolment?.currentInvestigation ?? 0) / 9) * 100)}%` }} /></div><dl><div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div><div><dt>Recorded days</dt><dd>{experiment?.recordedDays ?? 0}</dd></div><div><dt>Opportunities</dt><dd>{experiment?.opportunityCount ?? 0}</dd></div><div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div></dl></article>;
 }
 
-export function OperationsView({ initialRoles }: { initialRoles: string[] }) {
+export function OperationsView({ initialRoles, perspective = "facilitator" }: { initialRoles: string[]; perspective?: "facilitator" | "audit" }) {
   const [data, setData] = useState<StaffSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -191,8 +196,38 @@ export function OperationsView({ initialRoles }: { initialRoles: string[] }) {
   if (!data) return <div className="ops-loading"><ShieldAlert /><h2>Operations could not open.</h2><p>{error}</p><Button onClick={() => void load()}>Try again</Button></div>;
 
   const roles = data.roles.length ? data.roles : initialRoles;
-  const defaultTab = roles.includes("SYSTEM_ADMIN") ? "admin" : roles.includes("FACILITATOR") ? "facilitator" : "safeguarding";
-  return <div className="page-wrap operations-view"><div className="page-intro"><div><p className="eyebrow">Restricted operations</p><h1>Support the pilot without data overreach.</h1><p>Each workspace is server-gated. A hidden tab or button never grants access.</p></div><Badge variant="outline"><LockKeyhole /> Least-privilege access</Badge></div>{error && <div className="error-banner ops-error"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}<section className="ops-boundary"><LockKeyhole /><div><strong>Privacy boundary enforced</strong><p>Facilitators receive progress and support context only. Learner answers, hypothesis wording, experiment notes, Companion conversations and memory are never returned by the staff API.</p></div></section><Tabs defaultValue={defaultTab}><TabsList className="ops-tabs" variant="line">{roles.includes("SYSTEM_ADMIN") && <TabsTrigger value="admin"><UserCog /> Administration</TabsTrigger>}{roles.includes("FACILITATOR") && <TabsTrigger value="facilitator"><Users /> Facilitation</TabsTrigger>}{roles.includes("SAFEGUARDING_OFFICER") && <TabsTrigger value="safeguarding"><ShieldAlert /> Safeguarding</TabsTrigger>}</TabsList>{data.admin && <TabsContent value="admin"><AdminPanel data={data.admin} identity={data.identity} saving={saving} act={act} /></TabsContent>}{data.facilitator && <TabsContent value="facilitator"><FacilitatorPanel data={data.facilitator} saving={saving} act={act} /></TabsContent>}{data.safeguarding && <TabsContent value="safeguarding"><SafeguardingPanel data={data.safeguarding} saving={saving} act={act} /></TabsContent>}</Tabs></div>;
+  const canFacilitate = roles.includes("FACILITATOR") || roles.includes("SAFEGUARDING_OFFICER");
+  const canAudit = roles.includes("SYSTEM_ADMIN");
+
+  if (perspective === "audit" && !canAudit) return <RoleLocked title="Audit View" detail="System administrator access is required to inspect registries, formula versions, provenance, and privacy classifications." />;
+  if (perspective === "facilitator" && !canFacilitate) return <RoleLocked title="Facilitator View" detail="A facilitator or safeguarding role is required to open learner support operations." />;
+
+  return <div className={`page-wrap operations-view ${perspective}-perspective`}><div className="page-intro"><div><p className="eyebrow">{perspective === "audit" ? "Audit View" : "Facilitator View"}</p><h1>{perspective === "audit" ? "Trace the system from evidence to result." : "See who needs support—and why."}</h1><p>{perspective === "audit" ? "Inspect the registered structure without exposing a learner’s private wording." : "Work from readiness, progress, and human support context without opening private reflections."}</p></div><Badge variant="outline"><LockKeyhole /> Least-privilege access</Badge></div>{error && <div className="error-banner ops-error"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}<OperationsOrientation perspective={perspective} /><section className="ops-boundary"><LockKeyhole /><div><strong>Privacy boundary enforced</strong><p>Facilitators receive progress and support context only. Learner answers, hypothesis wording, experiment notes, Companion conversations and memory are never returned by the staff API.</p></div></section>{perspective === "facilitator" ? <><nav className="perspective-nav" aria-label="Facilitator sections"><a href="#cohort-dashboard">Cohort dashboard</a><a href="#learner-summaries">Learner summaries</a><a href="#support-flags">Support flags</a><a href="#readiness-review">Readiness review</a></nav><span id="learner-summaries" className="section-anchor" /><section id="cohort-dashboard">{data.facilitator ? <FacilitatorPanel data={data.facilitator} saving={saving} act={act} /> : <div className="ops-empty surface-card"><Users /><h2>No facilitator cohort is assigned.</h2><p>Your current role does not return learner summaries.</p></div>}</section><section id="support-flags" className="ops-subsection-heading"><p className="eyebrow">Support flags</p><h2>Human review, never automated diagnosis.</h2></section>{data.safeguarding ? <SafeguardingPanel data={data.safeguarding} saving={saving} act={act} /> : <div className="ops-boundary compact"><ShieldAlert /><div><strong>No restricted queue access</strong><p>Facilitators may create a referral. Only safeguarding officers can open or resolve the queue.</p></div></div>}<ReadinessReview data={data.facilitator} /></> : <><nav className="perspective-nav" aria-label="Audit sections"><a href="#evidence-registry">Evidence registry</a><a href="#calculation-trace">Calculation trace</a><a href="#formula-versions">Formula versions</a><a href="#provenance-map">Provenance map</a><a href="#privacy-classification">Privacy classification</a></nav><AuditPanel />{data.admin && <details className="surface-card admin-disclosure"><summary><div><p className="eyebrow">System administration</p><h2>Open governance controls</h2><p>Role assignment, cohorts, and canonical version operations are separated from the evidence audit.</p></div><UserCog /></summary><AdminPanel data={data.admin} identity={data.identity} saving={saving} act={act} /></details>}</>}</div>;
+}
+
+function RoleLocked({ title, detail }: { title: string; detail: string }) {
+  return <div className="page-wrap operations-view"><div className="ops-empty surface-card"><LockKeyhole /><p className="eyebrow">Role protected</p><h2>{title} is not available.</h2><p>{detail}</p></div></div>;
+}
+
+function OperationsOrientation({ perspective }: { perspective: "facilitator" | "audit" }) {
+  const facilitator = perspective === "facilitator";
+  return <section className="operations-orientation" aria-label="View orientation"><div><span>Where you are</span><strong>{facilitator ? "Facilitator View" : "Audit View"}</strong></div><div><span>What this means</span><p>{facilitator ? "Operational support context." : "System evidence assurance."}</p></div><div><span>Do now</span><p>{facilitator ? "Review readiness and support flags." : "Follow a record to its source and rule."}</p></div><div><span>What happens next</span><p>{facilitator ? "Record the minimum useful support action." : "Open governance only when action is required."}</p></div><div><span>Where to get help</span><p>Use the privacy boundary and section guidance below.</p></div></section>;
+}
+
+function ReadinessReview({ data }: { data: StaffSnapshot["facilitator"] }) {
+  const learners = data?.learners ?? [];
+  const active = learners.filter((item) => item.experiment?.status === "ACTIVE").length;
+  const reviewReady = learners.filter((item) => (item.enrolment?.currentInvestigation ?? 0) >= 8).length;
+  return <section id="readiness-review" className="surface-card readiness-review"><div><p className="eyebrow">Readiness review</p><h2>Use progress to plan support—not to rank people.</h2><p>A learner is ready for review only after their evidence window is complete. Missing opportunities remain evidence about feasibility.</p></div><dl><div><dt>Learners in view</dt><dd>{learners.length}</dd></div><div><dt>Active experiments</dt><dd>{active}</dd></div><div><dt>Review stage</dt><dd>{reviewReady}</dd></div></dl></section>;
+}
+
+function AuditPanel() {
+  const labs = [
+    { code: "HAB", title: "Habit Lab™", version: LAB_VERSION, measure: "Habit behaviour", range: "BEI-01–10" },
+    { code: "DEC", title: coreLabs.DEC.title, version: coreLabs.DEC.version, measure: "Decision behaviour", range: "BEI-01–10" },
+    { code: "MON", title: coreLabs.MON.title, version: coreLabs.MON.version, measure: "Spending behaviour", range: "BEI-01–10" },
+  ];
+  return <div className="audit-view"><section className="audit-index"><article><Database /><span>Canonical Labs</span><strong>03</strong></article><article><ClipboardCheck /><span>Registered BEIs</span><strong>30</strong></article><article><Sigma /><span>Formula version</span><strong>1.0</strong></article><article><Tags /><span>Privacy classes</span><strong>P1–P3</strong></article></section><section id="evidence-registry" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Evidence registry</p><h2>Canonical measures by Lab</h2><p>Each Lab preserves its own wording, version, evidence, and Behaviour Profile.</p></div><Database /></div><div className="audit-registry" role="table" aria-label="Evidence registry"><div role="row"><strong>Code</strong><strong>Lab</strong><strong>Version</strong><strong>Evidence domain</strong><strong>Registry</strong></div>{labs.map((lab) => <div role="row" key={lab.code}><span>{lab.code}</span><strong>{lab.title}</strong><span>{lab.version}</span><span>{lab.measure}</span><span>{lab.range}</span></div>)}</div></section><section id="calculation-trace" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Calculation trace</p><h2>From source event to reviewable result</h2></div><GitBranch /></div><div className="audit-flow"><div><small>01 · Capture</small><strong>Learner response or observed event</strong><p>Recorded with time, field, and source identity.</p></div><div><small>02 · Register</small><strong>BEI or derived measure</strong><p>Mapped to the Lab’s canonical evidence definition.</p></div><div><small>03 · Calculate</small><strong>Versioned formula</strong><p>Inputs and N/A rules remain inspectable.</p></div><div><small>04 · Present</small><strong>Behaviour Profile</strong><p>Results remain evidence, never identity labels.</p></div></div></section><section id="formula-versions" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Formula versions</p><h2>Rules that produce the visible numbers</h2></div><Sigma /></div><div className="formula-registry"><div><strong>Adherence rate</strong><code>completed responses ÷ eligible opportunities × 100</code><span>v1.0</span></div><div><strong>Prediction accuracy</strong><code>100 − |predicted rate − actual rate|</code><span>v1.0</span></div><div><strong>Pre/post shift</strong><code>post rating − pre rating</code><span>v1.0</span></div><div><strong>Zero opportunities</strong><code>record N/A, never 0</code><span>v1.0</span></div></div></section><section id="provenance-map" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Provenance map</p><h2>Every statement declares its origin</h2></div><GitBranch /></div><div className="provenance-map"><article><span className="provenance-tag said">You said</span><p>Direct learner wording.</p></article><article><span className="provenance-tag observed">You observed</span><p>A recorded real-world event.</p></article><article><span className="provenance-tag calculated">BIS calculated</span><p>A versioned rule applied to sources.</p></article><article><span className="provenance-tag hypothesis">Working hypothesis</span><p>A testable explanation, not a verdict.</p></article></div></section><section id="privacy-classification" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Privacy classification</p><h2>Sensitivity determines handling</h2></div><LockKeyhole /></div><div className="privacy-classes"><article><strong>P1</strong><div><h3>Process record</h3><p>Story choices, completion state, and non-sensitive navigation evidence.</p></div></article><article><strong>P2</strong><div><h3>Behavioural reflection</h3><p>Patterns, equations, costs, and experiment interpretations.</p></div></article><article><strong>P3</strong><div><h3>High-sensitivity reflection</h3><p>Emotion, relationships, affected people, and future-self letters.</p></div></article></div><div className="audit-boundary"><ShieldAlert /><p>Staff views receive only the minimum role-scoped progress and support context. Private learner wording is never part of cohort telemetry.</p></div></section></div>;
 }
 
 function AdminPanel({ data, identity, saving, act }: { data: NonNullable<StaffSnapshot["admin"]>; identity: StaffSnapshot["identity"]; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {

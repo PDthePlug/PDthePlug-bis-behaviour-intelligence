@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Archive,
   ArrowLeft,
   ArrowRight,
+  BarChart3,
   Bell,
   BookOpen,
   Bot,
   Brain,
-  BriefcaseBusiness,
   CalendarDays,
   Check,
   ChevronRight,
@@ -19,6 +20,7 @@ import {
   FileText,
   FlaskConical,
   Home,
+  LayoutDashboard,
   Lightbulb,
   LifeBuoy,
   LockKeyhole,
@@ -27,7 +29,6 @@ import {
   NotebookTabs,
   RotateCcw,
   Search,
-  Settings2,
   ShieldCheck,
   Sparkles,
   Target,
@@ -170,15 +171,20 @@ type Snapshot = {
   }>;
 };
 
-type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "memory" | "settings" | "operations";
+type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "progress" | "memory" | "settings" | "operations";
+type SystemMode = "learner" | "facilitator" | "audit";
 
 const nav = [
   { id: "home" as const, label: "Home", icon: Home },
-  { id: "lab" as const, label: "Habit Lab", icon: FlaskConical },
-  { id: "experiment" as const, label: "Experiment", icon: CalendarDays },
-  { id: "evidence" as const, label: "Evidence", icon: Archive },
+  { id: "lab" as const, label: "My Lab", icon: FlaskConical },
+  { id: "experiment" as const, label: "Today", icon: CalendarDays },
+  { id: "evidence" as const, label: "Review", icon: Archive },
   { id: "companion" as const, label: "Companion", icon: Bot },
+  { id: "progress" as const, label: "Progress", icon: BarChart3 },
+  { id: "settings" as const, label: "Privacy", icon: LockKeyhole },
 ];
+
+const mobileNav = nav.slice(0, 5);
 
 function valueOf(state: Snapshot, field: string, fallback = "") {
   const value = state.responses[field]?.value;
@@ -220,6 +226,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [privateVisible, setPrivateVisible] = useState(false);
+  const [systemMode, setSystemMode] = useState<SystemMode>("learner");
 
   useEffect(() => {
     void load();
@@ -328,7 +335,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
       <header className="mobile-header">
         <button className="icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu /></button>
         <Brand compact />
-        <div className="mobile-actions"><button className="icon-button" aria-label="Hide private content" onClick={() => setPrivateVisible(false)}><EyeOff /></button><button className="avatar-button" aria-label="Open memory" onClick={() => setView("memory")}>{displayName.slice(0, 1).toUpperCase()}</button></div>
+        <div className="mobile-actions"><button className="icon-button" aria-label="Hide private content" onClick={() => setPrivateVisible(false)}><EyeOff /></button><button className="avatar-button" aria-label="Open memory" onClick={() => { setSystemMode("learner"); setView("memory"); }}>{displayName.slice(0, 1).toUpperCase()}</button></div>
       </header>
 
       {menuOpen && <div className="mobile-scrim" onClick={() => setMenuOpen(false)} />}
@@ -342,16 +349,25 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
           <div><span>Current Lab</span><strong>Habit Lab</strong></div>
           <Badge variant="outline">{LAB_VERSION}</Badge>
         </div>
-        <nav className="sidebar-nav" aria-label="Primary navigation">
+        <div className="sidebar-lab-switcher" aria-label="Available Labs">
+          <Link className="active" href="/">Habit</Link>
+          <Link href="/decision">Decision</Link>
+          <Link href="/money">Money</Link>
+        </div>
+        <div className="system-view-switcher" aria-label="System views">
+          <span>System view</span>
+          <button className={systemMode === "learner" ? "active" : ""} onClick={() => { setSystemMode("learner"); setView("home"); setMenuOpen(false); }}><Home /> Learner View</button>
+          {hasStaffAccess && <button className={systemMode === "facilitator" ? "active" : ""} disabled={!staffRoles.some((role) => ["FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role))} onClick={() => { setSystemMode("facilitator"); setView("operations"); setMenuOpen(false); }}><LayoutDashboard /> Facilitator View</button>}
+          {hasStaffAccess && <button className={systemMode === "audit" ? "active" : ""} disabled={!staffRoles.includes("SYSTEM_ADMIN")} onClick={() => { setSystemMode("audit"); setView("operations"); setMenuOpen(false); }}><Search /> Audit View</button>}
+        </div>
+        <nav className="sidebar-nav" aria-label="Learner navigation">
           {nav.map((item) => {
             const Icon = item.icon;
-            const disabled = item.id === "experiment" && !state.experiment;
             return (
               <button
                 key={item.id}
-                className={view === item.id ? "active" : ""}
-                disabled={disabled}
-                onClick={() => { setView(item.id); setMenuOpen(false); }}
+                className={systemMode === "learner" && view === item.id ? "active" : ""}
+                onClick={() => { setSystemMode("learner"); setView(item.id); setMenuOpen(false); }}
               >
                 <Icon /> <span>{item.label}</span>
                 {item.id === "lab" && <small>{current}/9</small>}
@@ -363,14 +379,8 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
         <button className="memory-link" onClick={() => { setPrivateVisible(false); setMenuOpen(false); }}>
           <EyeOff /> <span>Hide private content</span>
         </button>
-        {hasStaffAccess && <button className={`memory-link ${view === "operations" ? "active" : ""}`} onClick={() => { setView("operations"); setMenuOpen(false); }}>
-          <BriefcaseBusiness /> <span>Restricted operations</span>
-        </button>}
-        <button className={`memory-link ${view === "memory" ? "active" : ""}`} onClick={() => { setView("memory"); setMenuOpen(false); }}>
+        <button className={`memory-link ${systemMode === "learner" && view === "memory" ? "active" : ""}`} onClick={() => { setSystemMode("learner"); setView("memory"); setMenuOpen(false); }}>
           <Brain /> <span>What BIS remembers</span>
-        </button>
-        <button className={`memory-link ${view === "settings" ? "active" : ""}`} onClick={() => { setView("settings"); setMenuOpen(false); }}>
-          <Settings2 /> <span>Settings & privacy</span>
         </button>
         <div className="profile-chip">
           <span className="profile-avatar">{displayName.slice(0, 1).toUpperCase()}</span>
@@ -379,16 +389,19 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
       </aside>
 
       <main className="app-main">
+        <AdaptiveContextBar mode={systemMode} view={view} current={current} hasExperiment={Boolean(state.experiment)} onHelp={() => { setSystemMode("learner"); setView("companion"); }} />
         {error && <div className="error-banner"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
         {view === "home" && <HomeView state={state} name={displayName} onView={setView} onContinue={() => { setStep(current); setView("lab"); }} />}
         {view === "lab" && <LabRunner state={state} step={step} setStep={setStep} saving={saving} act={act} onView={setView} />}
         {view === "experiment" && <ExperimentView state={state} saving={saving} act={act} onView={setView} />}
         {view === "evidence" && <EvidenceView state={state} onView={setView} />}
         {view === "companion" && <CompanionView state={state} saving={saving} act={act} />}
+        {view === "progress" && <ProgressView state={state} onView={setView} />}
         {view === "memory" && <MemoryView state={state} saving={saving} act={act} />}
         {view === "settings" && <SettingsView state={state} saving={saving} act={act} onLock={() => setPrivateVisible(false)} />}
-        {view === "operations" && <OperationsView initialRoles={staffRoles} />}
+        {view === "operations" && <OperationsView initialRoles={staffRoles} perspective={systemMode === "audit" ? "audit" : "facilitator"} />}
       </main>
+      {systemMode === "learner" && <nav className="mobile-task-dock" aria-label="Mobile learner navigation">{mobileNav.map((item) => { const Icon = item.icon; return <button key={item.id} className={view === item.id ? "active" : ""} onClick={() => setView(item.id)}><Icon /><span>{item.label}</span></button>; })}</nav>}
     </div>
     {!privateVisible && <PrivacyScreen state={state} onReveal={() => setPrivateVisible(true)} />}
     </>
@@ -396,7 +409,27 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
 }
 
 function StaffOnlyShell({ state, staffRoles, saving, error, act, privateVisible, onReveal, onLock }: { state: Snapshot; staffRoles: string[]; saving: boolean; error: string; act: (payload: Record<string, unknown>) => Promise<unknown>; privateVisible: boolean; onReveal: () => void; onLock: () => void }) {
-  return <><div className={`staff-only-shell ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}><header><Brand /><div><Badge variant="outline"><LockKeyhole /> Restricted workspace</Badge><span>{state.identity.email}</span><button className="staff-lock" onClick={onLock}><EyeOff /> Hide</button></div></header>{state.profile && state.consent?.status === "WITHDRAWN" && <div className="staff-consent-note"><div><strong>Your learner investigation is paused.</strong><p>Your staff role remains available and does not override that consent choice.</p></div><Button variant="outline" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>Restore learner consent</Button></div>}{error && <div className="error-banner"><span>{error}</span></div>}<OperationsView initialRoles={staffRoles} /></div>{!privateVisible && <PrivacyScreen state={state} staff onReveal={onReveal} />}</>;
+  const canFacilitate = staffRoles.includes("FACILITATOR") || staffRoles.includes("SAFEGUARDING_OFFICER");
+  const [perspective, setPerspective] = useState<"facilitator" | "audit">(canFacilitate ? "facilitator" : "audit");
+  return <><div className={`staff-only-shell ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}><header><Brand /><div><Badge variant="outline"><LockKeyhole /> Restricted workspace</Badge><span>{state.identity.email}</span><button className="staff-lock" onClick={onLock}><EyeOff /> Hide</button></div></header><nav className="staff-mode-bar" aria-label="System views">{canFacilitate && <button className={perspective === "facilitator" ? "active" : ""} onClick={() => setPerspective("facilitator")}><LayoutDashboard /> Facilitator View</button>}{staffRoles.includes("SYSTEM_ADMIN") && <button className={perspective === "audit" ? "active" : ""} onClick={() => setPerspective("audit")}><Search /> Audit View</button>}</nav>{state.profile && state.consent?.status === "WITHDRAWN" && <div className="staff-consent-note"><div><strong>Your learner investigation is paused.</strong><p>Your staff role remains available and does not override that consent choice.</p></div><Button variant="outline" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>Restore learner consent</Button></div>}{error && <div className="error-banner"><span>{error}</span></div>}<OperationsView initialRoles={staffRoles} perspective={perspective} /></div>{!privateVisible && <PrivacyScreen state={state} staff onReveal={onReveal} />}</>;
+}
+
+const viewGuidance: Record<View, { label: string; meaning: string; now: string; next: string }> = {
+  home: { label: "Home", meaning: "Your investigation overview.", now: "Resume the most relevant task.", next: "BIS returns you to the evidence path." },
+  lab: { label: "My Lab", meaning: "The guided Habit Lab workbook.", now: "Complete the current investigation.", next: "Your answer saves before you move on." },
+  experiment: { label: "Today", meaning: "Today’s real-world observation window.", now: "Record what happened, or no opportunity.", next: "The next day unlocks with time." },
+  evidence: { label: "Review", meaning: "Your evidence and calculation trail.", now: "Read the summary before opening detail.", next: "Use the evidence to refine your explanation." },
+  companion: { label: "Companion", meaning: "Help grounded in your own evidence.", now: "Ask for clarity, retrieval, or a challenge.", next: "You decide what is useful." },
+  progress: { label: "Progress", meaning: "Your place across the full investigation.", now: "Check completed and upcoming milestones.", next: "Open the recommended next action." },
+  memory: { label: "Memory", meaning: "What BIS remembers with your permission.", now: "Inspect or retire a remembered pattern.", next: "Retired items stop guiding continuity." },
+  settings: { label: "Privacy", meaning: "Consent, reminders, and human support.", now: "Review or change your controls.", next: "Changes apply without rewriting evidence." },
+  operations: { label: "System view", meaning: "A role-scoped operational workspace.", now: "Use only the context your role permits.", next: "Every action remains auditable." },
+};
+
+function AdaptiveContextBar({ mode, view, current, hasExperiment, onHelp }: { mode: SystemMode; view: View; current: number; hasExperiment: boolean; onHelp: () => void }) {
+  const guide = viewGuidance[view];
+  const modeLabel = mode === "learner" ? "Learner View" : mode === "facilitator" ? "Facilitator View" : "Audit View";
+  return <section className="adaptive-contextbar" aria-label="Screen orientation"><div className="context-location"><span>Where you are</span><strong>{modeLabel} <ChevronRight /> {guide.label}</strong></div><div><span>What this means</span><p>{guide.meaning}</p></div><div><span>Do now</span><p>{guide.now}</p></div><div><span>Next</span><p>{guide.next}</p></div><button onClick={onHelp}><LifeBuoy /><span>Get help</span><small>{mode === "learner" ? "Open Companion" : "Open learner support"}</small></button><div className="context-progress" aria-label={`Habit Lab investigation ${current} of 9`}><i style={{ width: `${(current / 9) * 100}%` }} /><small>{hasExperiment ? "Experiment configured" : "Phase A"} · {current}/9</small></div></section>;
 }
 
 function PrivacyScreen({ state, staff = false, onReveal }: { state: Snapshot; staff?: boolean; onReveal: () => void }) {
@@ -554,6 +587,15 @@ function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: 
           <div><p className="eyebrow">BIS Companion</p><h3>What would you like to understand?</h3><p>I can retrieve your evidence, clarify a question or help examine your working explanation.</p></div>
           <Button variant="outline" onClick={() => onView("companion")}>Open Companion <MessageCircleQuestion /></Button>
         </article>
+      </section>
+
+      <section className="available-labs">
+        <div className="section-title"><div><p className="eyebrow">Behaviour Intelligence Series™</p><h2>Your available Labs</h2><p>Each Lab keeps its own enrolment, evidence, equation, seven-day experiment and Behaviour Profile.</p></div><Badge variant="outline">3 production Labs</Badge></div>
+        <div className="available-lab-grid">
+          <article className="available-lab-card current"><span>01</span><div><small>Version {LAB_VERSION}</small><h3>Habit Lab™</h3><p>Investigate a repeated behaviour through cue, routine, reward and a real-world experiment.</p></div><button onClick={onContinue}>Continue <ArrowRight /></button></article>
+          <article className="available-lab-card decision"><span>02</span><div><small>Version 4.2.1</small><h3>Decision Lab™</h3><p>Investigate how pressure, visible options and what matters shape a meaningful decision.</p></div><Link href="/decision">Open Lab <ArrowRight /></Link></article>
+          <article className="available-lab-card money"><span>03</span><div><small>Version 4.2</small><h3>Money Lab™</h3><p>Investigate the trigger, feeling and expected value around a spending opportunity.</p></div><Link href="/money">Open Lab <ArrowRight /></Link></article>
+        </div>
       </section>
     </div>
   );
@@ -897,6 +939,23 @@ function EvidenceColumns({ state, compact = false, revealPrivate = false }: { st
   return <section className={`provenance-grid ${compact ? "compact" : ""}`}>{cards.map((card) => { const Icon = card.icon; return <article key={card.label} className={`provenance-card ${card.type}`}><div><span className={`provenance-tag ${card.type}`}><Icon />{card.label}</span></div><h3>{card.title}</h3><p>{card.detail}</p></article>; })}</section>;
 }
 
+function ProgressView({ state, onView }: { state: Snapshot; onView: (view: View) => void }) {
+  const current = Math.max(1, state.enrolment?.currentInvestigation || 1);
+  const answered = Object.values(state.responses).filter((item) => item.status === "ANSWERED").length;
+  const nextView: View = current < 7 ? "lab" : current === 7 ? "experiment" : "evidence";
+  const nextLabel = current < 7 ? "Continue My Lab" : current === 7 ? "Open Today" : "Open Review";
+  const phases = [
+    { label: "Notice", range: "1–2", first: 1, active: current <= 2 },
+    { label: "Understand", range: "3", first: 3, active: current === 3 },
+    { label: "Map", range: "4", first: 4, active: current === 4 },
+    { label: "Explain", range: "5", first: 5, active: current === 5 },
+    { label: "Prepare", range: "6", first: 6, active: current === 6 },
+    { label: "Observe", range: "7", first: 7, active: current === 7 },
+    { label: "Review", range: "8–9", first: 8, active: current >= 8 },
+  ];
+  return <div className="page-wrap progress-view"><div className="page-intro"><div><p className="eyebrow">Progress</p><h1>See the whole journey at a glance.</h1><p>Your position, evidence, and next action—without turning progress into a score about you.</p></div><Badge variant="outline"><ShieldCheck /> Private to you</Badge></div><section className="progress-hero"><div><span>Current position</span><strong>{String(current).padStart(2, "0")}<small>/09</small></strong><p>{investigations[current - 1].title}</p></div><div className="progress-hero-copy"><p className="eyebrow">What to do now</p><h2>{investigations[current - 1].mission}</h2><p>Completing this step keeps every earlier answer and observation in place.</p><Button size="lg" onClick={() => onView(nextView)}>{nextLabel} <ArrowRight /></Button></div></section><section className="progress-milestones" aria-label="Habit Lab journey">{phases.map((phase) => <article key={phase.label} className={`${phase.active ? "active" : ""} ${phase.first < current ? "passed" : ""}`}><span>{phase.range}</span><strong>{phase.label}</strong><small>{phase.active ? "You are here" : phase.first < current ? "Reached" : "Ahead"}</small></article>)}</section><section className="progress-facts"><article className="surface-card"><FileText /><span>Responses recorded</span><strong>{answered}</strong><p>Your original wording remains private.</p></article><article className="surface-card"><Eye /><span>Days observed</span><strong>{state.events.length}</strong><p>Real-world entries in the active experiment.</p></article><article className="surface-card"><Search /><span>Measures available</span><strong>{Object.keys(state.measurements).length}</strong><p>Each result keeps a formula and source trail.</p></article></section><section className="progress-next surface-card"><div><p className="eyebrow">What happens next</p><h2>Your journey advances through evidence, not speed.</h2><p>Phase A builds the question. Phase B observes seven experienced days. Review then compares what you predicted with what actually happened.</p></div><Button variant="outline" onClick={() => onView("companion")}><LifeBuoy /> Ask Companion for help</Button></section></div>;
+}
+
 function CompanionView({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>, replaceSnapshot?: boolean) => Promise<unknown> }) {
   const [message, setMessage] = useState("");
   const [turns, setTurns] = useState(state.companionTurns);
@@ -928,7 +987,7 @@ function SettingsView({ state, saving, act, onLock }: { state: Snapshot; saving:
     ["experimentEnding", "Experiment ending", "Flag the final two days and completion choices"],
     ["reviewReady", "Review ready", "Show when the experiment is ready for evidence review"],
   ] as const;
-  return <div className="page-wrap settings-view"><div className="page-intro"><div><p className="eyebrow">Settings & privacy</p><h1>Your controls, in one place.</h1><p>Configure in-app reminders and manage product consent without changing earlier records.</p></div><Badge variant="outline"><ShieldCheck /> Consent {state.consent?.status.toLowerCase()}</Badge></div><div className="settings-grid"><section className="surface-card settings-card"><div className="section-title"><div><p className="eyebrow">In-app reminders</p><h2>Experiment notifications</h2><p>This pilot does not send push notifications, email or SMS. Reminders appear only inside BIS.</p></div><Bell /></div><label className="preference-row master"><Checkbox checked={preference.enabled} onCheckedChange={(checked) => setPreference({ ...preference, enabled: checked === true })} /><span><strong>Enable experiment reminders</strong><small>Turn all in-app reminders on or off</small></span></label><div className={preference.enabled ? "preference-list" : "preference-list disabled"}>{reminderOptions.map(([key, title, detail]) => <label className="preference-row" key={key}><Checkbox disabled={!preference.enabled} checked={preference[key]} onCheckedChange={(checked) => setPreference({ ...preference, [key]: checked === true })} /><span><strong>{title}</strong><small>{detail}</small></span></label>)}</div><div className="reminder-schedule"><label>Reminder time<Input type="time" value={preference.reminderTime} disabled={!preference.enabled} onChange={(event) => setPreference({ ...preference, reminderTime: event.target.value })} /></label><label>Timezone<Input value={preference.timezone} disabled readOnly /></label></div><Button disabled={saving} onClick={() => void act({ action: "updateNotificationPreferences", ...preference })}>{saving ? "Saving…" : "Save reminder settings"}</Button></section><section className="surface-card settings-card privacy-card"><div className="section-title"><div><p className="eyebrow">Privacy control</p><h2>Cover or pause your investigation</h2><p>The privacy screen hides personal content immediately. Pausing consent separately stops new investigation activity.</p></div><LockKeyhole /></div><dl><div><dt>Signed-in account</dt><dd>{state.identity.email}</dd></div><div><dt>Habit Lab experience</dt><dd>Version {state.experienceVersion}</dd></div><div><dt>Session privacy</dt><dd>Auto-hide after 2 minutes</dd></div><div><dt>Product consent</dt><dd>{state.consent?.status.toLowerCase()}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion}</dd></div><div><dt>Current sharing</dt><dd>Private Site access only</dd></div></dl><Button className="privacy-now" onClick={onLock}><EyeOff /> Hide private content now</Button><label className="consent-row"><Checkbox checked={confirmWithdrawal} onCheckedChange={(checked) => setConfirmWithdrawal(checked === true)} /><span>I understand that new responses, experiment events and Companion turns will pause until I restore consent.</span></label><Button variant="outline" disabled={saving || !confirmWithdrawal} onClick={() => void act({ action: "withdrawConsent" })}>Pause consent and investigation</Button></section><section className="surface-card settings-card support-card"><div className="section-title"><div><p className="eyebrow">Human support</p><h2>Ask for a private follow-up</h2><p>Your request goes to the restricted safeguarding queue. BIS does not diagnose you or assign an automated risk score.</p></div><LifeBuoy /></div><div className="support-layout"><div className="ops-form-stack"><label>What kind of support?<Select value={supportCategory} onValueChange={setSupportCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR_CHECK_IN">Facilitator check-in</SelectItem><SelectItem value="SAFETY_CONCERN">Safety concern</SelectItem><SelectItem value="PRIVACY_QUESTION">Privacy question</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></label><label>Optional note<Textarea value={supportNote} onChange={(event) => setSupportNote(event.target.value)} maxLength={800} placeholder="Share only what you want the safeguarding officer to receive…" /></label><Button disabled={saving} onClick={async () => { const result = await act({ action: "requestSupport", category: supportCategory, note: supportNote }); if (result) setSupportNote(""); }}>Request human follow-up</Button><small className="support-warning">BIS is not an emergency service. If there is immediate danger, contact local emergency services or a trusted person now.</small></div><div className="support-status-list"><strong>Your requests</strong>{state.supportRequests.length === 0 ? <p>No support requests yet.</p> : state.supportRequests.map((request) => <div key={request.id}><span><b>{request.category.toLowerCase().replaceAll("_", " ")}</b><small>Opened {new Date(request.openedAt).toLocaleDateString("en-ZA")}</small></span><Badge variant="outline">{request.status.toLowerCase().replaceAll("_", " ")}</Badge></div>)}</div></div></section></div></div>;
+  return <div className="page-wrap settings-view"><div className="page-intro"><div><p className="eyebrow">Privacy</p><h1>Your controls, in one place.</h1><p>Configure in-app reminders, get human help, and manage consent without changing earlier records.</p></div><Badge variant="outline"><ShieldCheck /> Consent {state.consent?.status.toLowerCase()}</Badge></div><div className="settings-grid"><section className="surface-card settings-card"><div className="section-title"><div><p className="eyebrow">In-app reminders</p><h2>Experiment notifications</h2><p>This pilot does not send push notifications, email or SMS. Reminders appear only inside BIS.</p></div><Bell /></div><label className="preference-row master"><Checkbox checked={preference.enabled} onCheckedChange={(checked) => setPreference({ ...preference, enabled: checked === true })} /><span><strong>Enable experiment reminders</strong><small>Turn all in-app reminders on or off</small></span></label><div className={preference.enabled ? "preference-list" : "preference-list disabled"}>{reminderOptions.map(([key, title, detail]) => <label className="preference-row" key={key}><Checkbox disabled={!preference.enabled} checked={preference[key]} onCheckedChange={(checked) => setPreference({ ...preference, [key]: checked === true })} /><span><strong>{title}</strong><small>{detail}</small></span></label>)}</div><div className="reminder-schedule"><label>Reminder time<Input type="time" value={preference.reminderTime} disabled={!preference.enabled} onChange={(event) => setPreference({ ...preference, reminderTime: event.target.value })} /></label><label>Timezone<Input value={preference.timezone} disabled readOnly /></label></div><Button disabled={saving} onClick={() => void act({ action: "updateNotificationPreferences", ...preference })}>{saving ? "Saving…" : "Save reminder settings"}</Button></section><section className="surface-card settings-card privacy-card"><div className="section-title"><div><p className="eyebrow">Privacy control</p><h2>Cover or pause your investigation</h2><p>The privacy screen hides personal content immediately. Pausing consent separately stops new investigation activity.</p></div><LockKeyhole /></div><dl><div><dt>Signed-in account</dt><dd>{state.identity.email}</dd></div><div><dt>Habit Lab experience</dt><dd>Version {state.experienceVersion}</dd></div><div><dt>Session privacy</dt><dd>Auto-hide after 2 minutes</dd></div><div><dt>Product consent</dt><dd>{state.consent?.status.toLowerCase()}</dd></div><div><dt>Policy version</dt><dd>{state.consent?.policyVersion}</dd></div><div><dt>Current sharing</dt><dd>Private Site access only</dd></div></dl><Button className="privacy-now" onClick={onLock}><EyeOff /> Hide private content now</Button><label className="consent-row"><Checkbox checked={confirmWithdrawal} onCheckedChange={(checked) => setConfirmWithdrawal(checked === true)} /><span>I understand that new responses, experiment events and Companion turns will pause until I restore consent.</span></label><Button variant="outline" disabled={saving || !confirmWithdrawal} onClick={() => void act({ action: "withdrawConsent" })}>Pause consent and investigation</Button></section><section className="surface-card settings-card support-card"><div className="section-title"><div><p className="eyebrow">Human support</p><h2>Ask for a private follow-up</h2><p>Your request goes to the restricted safeguarding queue. BIS does not diagnose you or assign an automated risk score.</p></div><LifeBuoy /></div><div className="support-layout"><div className="ops-form-stack"><label>What kind of support?<Select value={supportCategory} onValueChange={setSupportCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR_CHECK_IN">Facilitator check-in</SelectItem><SelectItem value="SAFETY_CONCERN">Safety concern</SelectItem><SelectItem value="PRIVACY_QUESTION">Privacy question</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></label><label>Optional note<Textarea value={supportNote} onChange={(event) => setSupportNote(event.target.value)} maxLength={800} placeholder="Share only what you want the safeguarding officer to receive…" /></label><Button disabled={saving} onClick={async () => { const result = await act({ action: "requestSupport", category: supportCategory, note: supportNote }); if (result) setSupportNote(""); }}>Request human follow-up</Button><small className="support-warning">BIS is not an emergency service. If there is immediate danger, contact local emergency services or a trusted person now.</small></div><div className="support-status-list"><strong>Your requests</strong>{state.supportRequests.length === 0 ? <p>No support requests yet.</p> : state.supportRequests.map((request) => <div key={request.id}><span><b>{request.category.toLowerCase().replaceAll("_", " ")}</b><small>Opened {new Date(request.openedAt).toLocaleDateString("en-ZA")}</small></span><Badge variant="outline">{request.status.toLowerCase().replaceAll("_", " ")}</Badge></div>)}</div></div></section></div></div>;
 }
 
 function PromptSection({ number, title, prompt, children }: { number: string; title: string; prompt: string; children: React.ReactNode }) {

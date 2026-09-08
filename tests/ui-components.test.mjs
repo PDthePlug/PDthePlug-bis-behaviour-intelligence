@@ -38,8 +38,10 @@ async function readCssTree(directory) {
 test("emits the BIS responsive visual foundations", async () => {
   const css = await readCssTree(path.join(root, "dist"));
 
-  assert.match(css, /--ink:\s*#102b3f/);
-  assert.match(css, /--coral:\s*#e56b50/);
+  assert.match(css, /--ink:\s*#17313b/);
+  assert.match(css, /--coral:\s*#e5654b/);
+  assert.match(css, /\.adaptive-contextbar/);
+  assert.match(css, /\.mobile-task-dock/);
   assert.match(css, /overflow-x:\s*hidden/);
   assert.match(css, /@media\s*\(width<=820px\)/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);

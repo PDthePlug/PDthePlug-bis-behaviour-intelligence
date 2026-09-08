@@ -1,8 +1,22 @@
 # BIS Behaviour Intelligence
 
-BIS is a private, evidence-first behaviour investigation product. This repository currently ships Habit Lab 4.5.2 and the closed-pilot operations gate.
+BIS is a private, evidence-first behaviour investigation product. This repository ships Habit Lab 4.5.2, Decision Lab 4.2.1, Money Lab 4.2 and the closed-pilot operations gate.
 
-## Current milestone — Habit Lab 4.5.2 production master
+## Current milestone — Decision Lab 4.2.1 and Money Lab 4.2
+
+The two added production Labs use the same evidence-first product architecture while keeping their records separate from Habit Lab and from each other:
+
+- distinct versioned enrolments, semantic field namespaces, hypotheses, experiments, measurements and Behaviour Profiles;
+- Lab-specific consent before the first baseline is collected;
+- nine investigations across a facilitated Phase A and a calendar-gated seven-day Phase B;
+- future days remain locked, experienced-day corrections retain provenance and “no opportunity” is valid evidence;
+- Day 3 calibration versions the target condition and Pause rather than overwriting the original contract;
+- BEI-03 prediction accuracy and BEI-06 adherence are calculated from eligible opportunities only;
+- Decision Lab records the descriptive Option Expansion Rate;
+- Money Lab distinguishes Full and Minimum Spending Pauses;
+- post-experiment rating and equation-confidence shifts are calculated without producing a personality score.
+
+## Habit Lab 4.5.2 production master
 
 Habit Lab 4.5.2 preserves the frozen 4.5.1 object and measurement architecture while applying the registered experience patch:
 

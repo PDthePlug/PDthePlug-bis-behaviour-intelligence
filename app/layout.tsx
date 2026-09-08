@@ -8,11 +8,11 @@ export const metadata: Metadata = {
     template: "%s · BIS",
   },
   description:
-    "Understand a pattern in your behaviour by collecting evidence from your own life.",
+    "Investigate habits, decisions and spending behaviour through private evidence from your own life.",
   openGraph: {
     title: "BIS — Behaviour Intelligence System",
     description:
-      "Understand a pattern. Test it in real life. Evidence before judgment.",
+      "Investigate a pattern. Test it in real life. Evidence before judgment.",
     images: [
       {
         url: "/og.png",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "BIS — Behaviour Intelligence System",
     description:
-      "Understand a pattern. Test it in real life. Evidence before judgment.",
+      "Investigate a pattern. Test it in real life. Evidence before judgment.",
     images: ["/og.png"],
   },
   icons: {

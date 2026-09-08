@@ -1,0 +1,128 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+const root = new URL("..", import.meta.url);
+
+test("registers the supplied Decision and Money production masters as separate Labs", async () => {
+  const source = await readFile(new URL("lib/core-labs.ts", root), "utf8");
+
+  assert.match(source, /code: "DEC"/);
+  assert.match(source, /version: "4\.2\.1"/);
+  assert.match(source, /title: "Decision Lab™"/);
+  assert.match(source, /code: "MON"/);
+  assert.match(source, /version: "4\.2"/);
+  assert.match(source, /title: "Money Lab™"/);
+  assert.match(source, /Decision Process Adherence Rate/);
+  assert.match(source, /Spending Pause Adherence Rate/);
+  assert.match(source, /BEI-09 · Decision Agency Shift/);
+  assert.match(source, /BEI-09 · Money Agency Shift/);
+});
+
+test("keeps Decision, Money and Habit evidence namespaces separate", async () => {
+  const [definitions, route, habit] = await Promise.all([
+    readFile(new URL("lib/core-labs.ts", root), "utf8"),
+    readFile(new URL("app/api/labs/route.ts", root), "utf8"),
+    readFile(new URL("lib/habit-lab.ts", root), "utf8"),
+  ]);
+
+  assert.match(route, /labCode: lab\.code/);
+  assert.match(route, /eq\(labEnrollments\.labCode, lab\.code\)/);
+  assert.match(route, /semanticFieldId\.startsWith\(`\$\{lab\.prefix\}\.\`/);
+  assert.match(route, /eq\(hypotheses\.labCode, lab\.code\)/);
+  assert.match(definitions, /prefix: "DEC"/);
+  assert.match(definitions, /prefix: "MON"/);
+  assert.match(definitions, /`\$\{lab\.prefix\}\.EQUATION\.TEXT`/);
+  assert.match(habit, /LAB_VERSION = "4\.5\.2"/);
+});
+
+test("enforces a seven-day calendar-gated experiment for both new Labs", async () => {
+  const [route, experience] = await Promise.all([
+    readFile(new URL("app/api/labs/route.ts", root), "utf8"),
+    readFile(new URL("app/core-lab-experience.tsx", root), "utf8"),
+  ]);
+
+  assert.match(route, /plannedEnd\.setUTCDate\(plannedEnd\.getUTCDate\(\) \+ 6\)/);
+  assert.match(route, /dayNumber > unlocked/);
+  assert.match(route, /Future experiment days stay locked/);
+  assert.match(route, /calendarDay\(experiment\.startDate[\s\S]*< 7/);
+  assert.match(route, /eventRows\.length < 7/);
+  assert.match(experience, /No opportunity/);
+  assert.match(experience, /Not experienced yet/);
+  assert.match(experience, /privacy-obscured/);
+  assert.match(experience, /Privacy screen active/);
+});
+
+test("exposes both Labs from the private BIS home and their own routes", async () => {
+  const [home, decisionPage, moneyPage] = await Promise.all([
+    readFile(new URL("app/bis-app.tsx", root), "utf8"),
+    readFile(new URL("app/decision/page.tsx", root), "utf8"),
+    readFile(new URL("app/money/page.tsx", root), "utf8"),
+  ]);
+
+  assert.match(home, /href="\/decision"/);
+  assert.match(home, /href="\/money"/);
+  assert.match(home, /3 production Labs/);
+  assert.match(decisionPage, /coreLabsBySlug\.decision/);
+  assert.match(moneyPage, /coreLabsBySlug\.money/);
+});
+
+test("preserves the supplied Decision Lab 4.2.1 narrative and authored learning sequence", async () => {
+  const source = await readFile(new URL("lib/core-labs.ts", root), "utf8");
+
+  assert.match(source, /The Boy Who Saw a Third Option/);
+  assert.match(source, /Lethabo is seventeen\. He lives with his grandmother, who takes pills for her heart\./);
+  assert.match(source, /The third option wasn't visible to him until he looked for it\./);
+  assert.match(source, /Sometimes looking harder gives you another option\./);
+  assert.match(source, /Sometimes it doesn't\./);
+  assert.match(source, /The point is to know you looked before you chose\./);
+  assert.match(source, /Situation → Options I See → State\/Pressure → What Matters → Options I Might Be Missing → Choice → What Happened/);
+  assert.match(source, /When \[situation\/state\/pressure\], I tend to see \[initial options\] and choose \[pattern\]/);
+  assert.match(source, /Avoiding decisions/);
+  assert.match(source, /Impulsive decisions/);
+  assert.match(source, /People-pleasing decisions/);
+  assert.match(source, /Overthinking decisions/);
+  assert.match(source, /The meta-decision skill is the practice of pausing to check whether your first options are the only workable ones/);
+  assert.match(source, /Decision Investigation Certificate/);
+});
+
+test("preserves the supplied Money Lab 4.2 narrative and spending-specific evidence model", async () => {
+  const [source, route] = await Promise.all([
+    readFile(new URL("lib/core-labs.ts", root), "utf8"),
+    readFile(new URL("app/api/labs/route.ts", root), "utf8"),
+  ]);
+
+  assert.match(source, /The Girl Who Counted Coins/);
+  assert.match(source, /I noticed the pull before I spent\./);
+  assert.match(source, /The sweets gave me sweetness\. The choosing gave me something else\./);
+  assert.match(source, /Trigger → Feeling\/State → Expected Value → Spending Action → Outcome\/Trade-off/);
+  assert.match(source, /When \[trigger\], I tend to feel \[feeling\/state\] and expect \[purchase\] to give me \[expected value\]/);
+  assert.match(source, /Emotional spending/);
+  assert.match(source, /Social spending/);
+  assert.match(source, /Control spending/);
+  assert.match(source, /Deliberate spending/);
+  assert.match(source, /The meta-spending skill is the practice of pausing to notice the trigger, the feeling, and what you're asking the purchase to give you/);
+  assert.match(source, /Spending Behaviour Investigation Certificate/);
+  assert.match(route, /OUTCOME_BOUGHT/);
+  assert.match(route, /OUTCOME_CHANGED/);
+  assert.match(route, /OUTCOME_DELAYED/);
+  assert.match(route, /OUTCOME_NOT_PURCHASED/);
+  assert.match(route, /OUTCOME_NO_ALTERNATIVE/);
+});
+
+test("keeps canonical prompts while retaining explicit pass and seven-day safeguards", async () => {
+  const [source, experience, route] = await Promise.all([
+    readFile(new URL("lib/core-labs.ts", root), "utf8"),
+    readFile(new URL("app/core-lab-experience.tsx", root), "utf8"),
+    readFile(new URL("app/api/labs/route.ts", root), "utf8"),
+  ]);
+
+  assert.match(source, /Did decision opportunities matching your target condition appear on most days\?/);
+  assert.match(source, /Did spending opportunities matching your target condition appear on most days\?/);
+  assert.match(source, /If you are under 18, a parent or guardian should also consent where required|Skip any question you don't feel ready to answer/);
+  assert.match(experience, /Pass this question/);
+  assert.match(experience, /Experiment Version Tracking/);
+  assert.match(experience, /Future days stay locked until they have been experienced/);
+  assert.match(route, /responseStatus === "PASS"/);
+  assert.match(route, /plannedEnd\.setUTCDate\(plannedEnd\.getUTCDate\(\) \+ 6\)/);
+});
