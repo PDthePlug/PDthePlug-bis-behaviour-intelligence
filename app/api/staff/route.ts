@@ -1,10 +1,8 @@
-import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
-import { getDb } from "../../../db";
+import { and, asc, desc, eq, inArray, ne } from "../../../db/query";
+import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   cohortMembers,
-  experimentEvents,
-  experiments,
   facilitatorNotes,
   labAssignments,
   labEnrollments,
@@ -13,6 +11,8 @@ import {
   pilotEvents,
   roleAssignments,
   safeguardingCases,
+  staffExperimentEventProgress,
+  staffExperimentProgress,
 } from "../../../db/schema";
 import {
   AccessError,
@@ -176,26 +176,26 @@ async function progressRows(userIds: string[]) {
     .orderBy(desc(labEnrollments.updatedAt));
   const experimentRows = await db
     .select({
-      id: experiments.id,
-      userId: experiments.userId,
-      status: experiments.status,
-      startDate: experiments.startDate,
-      plannedEndDate: experiments.plannedEndDate,
-      actualEndDate: experiments.actualEndDate,
-      minimumEvidenceThreshold: experiments.minimumEvidenceThreshold,
+      id: staffExperimentProgress.id,
+      userId: staffExperimentProgress.userId,
+      status: staffExperimentProgress.status,
+      startDate: staffExperimentProgress.startDate,
+      plannedEndDate: staffExperimentProgress.plannedEndDate,
+      actualEndDate: staffExperimentProgress.actualEndDate,
+      minimumEvidenceThreshold: staffExperimentProgress.minimumEvidenceThreshold,
     })
-    .from(experiments)
-    .where(inArray(experiments.userId, userIds))
-    .orderBy(desc(experiments.createdAt));
+    .from(staffExperimentProgress)
+    .where(inArray(staffExperimentProgress.userId, userIds))
+    .orderBy(desc(staffExperimentProgress.createdAt));
   const eventRows = await db
     .select({
-      userId: experimentEvents.userId,
-      experimentId: experimentEvents.experimentId,
-      eligibleOpportunity: experimentEvents.eligibleOpportunity,
-      recordedAt: experimentEvents.recordedAt,
+      userId: staffExperimentEventProgress.userId,
+      experimentId: staffExperimentEventProgress.experimentId,
+      eligibleOpportunity: staffExperimentEventProgress.eligibleOpportunity,
+      recordedAt: staffExperimentEventProgress.recordedAt,
     })
-    .from(experimentEvents)
-    .where(inArray(experimentEvents.userId, userIds));
+    .from(staffExperimentEventProgress)
+    .where(inArray(staffExperimentEventProgress.userId, userIds));
 
   return learnerRows.map((learner) => {
     const enrolment = enrolments.find((item) => item.userId === learner.userId);
@@ -242,10 +242,10 @@ async function adminSnapshot() {
     .select({ cohortId: cohortMembers.cohortId, status: cohortMembers.status })
     .from(cohortMembers);
   const labRows = await db.select().from(labAssignments).orderBy(desc(labAssignments.assignedAt));
-  const [openCases] = await db
-    .select({ value: count() })
+  const openCaseRows = await db
+    .select({ id: safeguardingCases.id })
     .from(safeguardingCases)
-    .where(sql`${safeguardingCases.status} != 'RESOLVED'`);
+    .where(ne(safeguardingCases.status, "RESOLVED"));
   const opportunityBands = { none: 0, one: 0, two: 0, threePlus: 0 };
   for (const learner of progress) {
     const opportunities = learner.experiment?.opportunityCount ?? 0;
@@ -259,7 +259,7 @@ async function adminSnapshot() {
       learners: progress.length,
       completed: progress.filter((item) => item.enrolment?.status === "COMPLETED").length,
       experimentActive: progress.filter((item) => item.experiment?.status === "ACTIVE").length,
-      openSafeguardingCases: Number(openCases?.value ?? 0),
+      openSafeguardingCases: openCaseRows.length,
       opportunityBands,
     },
     learners: progress,
@@ -358,8 +358,8 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
   };
 }
 
-export async function GET(request: Request) {
-  const identity = identityFrom(request);
+async function getHandler() {
+  const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   try {
     const roles = await getRoles(identity);
@@ -370,8 +370,8 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
-  const identity = identityFrom(request);
+async function postHandler(request: Request) {
+  const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
 
   try {
@@ -415,11 +415,11 @@ export async function POST(request: Request) {
         .limit(1);
       if (!assignment || assignment.status !== "ACTIVE") throw new Error("That active role assignment was not found.");
       if (assignment.role === "SYSTEM_ADMIN") {
-        const [admins] = await db
-          .select({ value: count() })
+        const admins = await db
+          .select({ id: roleAssignments.id })
           .from(roleAssignments)
           .where(and(eq(roleAssignments.role, "SYSTEM_ADMIN"), eq(roleAssignments.status, "ACTIVE")));
-        if (Number(admins?.value ?? 0) <= 1) throw new Error("The final system administrator cannot be revoked.");
+        if (admins.length <= 1) throw new Error("The final system administrator cannot be revoked.");
       }
       const now = new Date().toISOString();
       await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, assignmentId));
@@ -603,4 +603,13 @@ export async function POST(request: Request) {
   } catch (error) {
     return errorResponse(error);
   }
+}
+
+export async function GET(request: Request) {
+  void request;
+  return withSupabaseRequest(() => getHandler());
+}
+
+export async function POST(request: Request) {
+  return withSupabaseRequest(() => postHandler(request));
 }

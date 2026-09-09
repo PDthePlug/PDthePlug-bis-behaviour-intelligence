@@ -1,6 +1,7 @@
-import { and, asc, eq, or } from "drizzle-orm";
+import { and, asc, eq, or } from "../db/query";
 import { getDb } from "../db";
 import { learners, roleAssignments } from "../db/schema";
+import { requestSupabaseClient } from "./supabase/server";
 
 export const STAFF_ROLES = [
   "SYSTEM_ADMIN",
@@ -9,7 +10,7 @@ export const STAFF_ROLES = [
 ] as const;
 
 export type StaffRole = (typeof STAFF_ROLES)[number];
-export type Identity = { id: string; email: string; displayName: string };
+export type Identity = { id: string; authUserId: string; email: string; displayName: string };
 
 export class AccessError extends Error {
   status: number;
@@ -24,22 +25,32 @@ export function normalizeEmail(value: string) {
   return value.trim().toLowerCase();
 }
 
-export function identityFrom(request: Request): Identity | null {
-  const id = request.headers.get("oai-authenticated-user-id");
-  const email = request.headers.get("oai-authenticated-user-email");
-  if (!id || !email) return null;
+export async function identityFrom(): Promise<Identity | null> {
+  const supabase = requestSupabaseClient();
+  const { data, error } = await supabase.auth.getUser();
+  const user = data.user;
+  const email = user?.email ? normalizeEmail(user.email) : null;
+  if (error || !user || !email) return null;
 
-  const encodedName = request.headers.get("oai-authenticated-user-full-name");
-  const encoding = request.headers.get("oai-authenticated-user-full-name-encoding");
-  let displayName = email.split("@")[0];
-  if (encodedName && encoding === "percent-encoded-utf-8") {
-    try {
-      displayName = decodeURIComponent(encodedName);
-    } catch {
-      // Fall back to the verified email local-part.
-    }
-  }
-  return { id, email: normalizeEmail(email), displayName };
+  const { data: profile, error: profileError } = await supabase
+    .from("learners")
+    .select("user_id,display_name")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+  if (profileError) throw new Error(profileError.message);
+
+  const metadataName =
+    typeof user.user_metadata?.full_name === "string"
+      ? user.user_metadata.full_name
+      : typeof user.user_metadata?.name === "string"
+        ? user.user_metadata.name
+        : null;
+  return {
+    id: profile?.user_id ?? user.id,
+    authUserId: user.id,
+    email,
+    displayName: profile?.display_name ?? metadataName ?? email.split("@")[0],
+  };
 }
 
 async function bootstrapInitialAdmin(identity: Identity) {
@@ -82,14 +93,6 @@ async function bootstrapInitialAdmin(identity: Identity) {
 export async function getRoles(identity: Identity, bootstrap = true) {
   const db = getDb();
   if (bootstrap) await bootstrapInitialAdmin(identity);
-
-  await db
-    .update(roleAssignments)
-    .set({ userId: identity.id })
-    .where(and(
-      eq(roleAssignments.principalEmail, identity.email),
-      eq(roleAssignments.status, "ACTIVE"),
-    ));
 
   const assignments = await db
     .select({ role: roleAssignments.role })

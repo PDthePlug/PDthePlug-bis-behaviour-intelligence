@@ -1,5 +1,5 @@
-import { and, desc, eq, sql } from "drizzle-orm";
-import { getDb } from "../../../db";
+import { and, desc, eq } from "../../../db/query";
+import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   consentRecords,
@@ -164,7 +164,7 @@ async function saveResponse(identity: Identity, lab: CoreLabDefinition, item: Re
   const enrolment = await enrolmentFor(identity.id, lab);
   if (!enrolment) throw new Error(`Open ${lab.shortTitle} before saving evidence.`);
   await db.update(labEnrollments).set({
-    currentInvestigation: sql`MAX(${labEnrollments.currentInvestigation}, ${field.investigation})`,
+    currentInvestigation: Math.max(Number(enrolment.currentInvestigation), field.investigation),
     updatedAt: now,
   }).where(eq(labEnrollments.id, enrolment.id));
   await audit(identity, previous ? "RESPONSE_CORRECTED" : "RESPONSE_CREATED", "RESPONSE", id, { labCode: lab.code, labVersion: lab.version, semanticFieldId: fieldId });
@@ -292,8 +292,8 @@ function requestedLab(request: Request, body?: Record<string, unknown>) {
   return getCoreLab(code);
 }
 
-export async function GET(request: Request) {
-  const identity = identityFrom(request);
+async function getHandler(request: Request) {
+  const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   const lab = requestedLab(request);
   if (!lab) return Response.json({ error: "Choose Decision Lab or Money Lab." }, { status: 400 });
@@ -304,8 +304,8 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
-  const identity = identityFrom(request);
+async function postHandler(request: Request) {
+  const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   try {
     const body = await request.json() as Record<string, unknown>;
@@ -543,4 +543,12 @@ export async function POST(request: Request) {
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 400 });
   }
+}
+
+export async function GET(request: Request) {
+  return withSupabaseRequest(() => getHandler(request));
+}
+
+export async function POST(request: Request) {
+  return withSupabaseRequest(() => postHandler(request));
 }

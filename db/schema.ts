@@ -1,16 +1,17 @@
-import { sql } from "drizzle-orm";
+import { sql } from "./query";
 import {
   index,
   integer,
   sqliteTable,
   text,
   uniqueIndex,
-} from "drizzle-orm/sqlite-core";
+} from "./table";
 
 const timestamp = () => text().notNull().default(sql`CURRENT_TIMESTAMP`);
 
 export const learners = sqliteTable("learners", {
   userId: text("user_id").primaryKey(),
+  authUserId: text("auth_user_id"),
   email: text("email").notNull(),
   displayName: text("display_name").notNull(),
   ageBand: text("age_band").notNull(),
@@ -158,6 +159,19 @@ export const experiments = sqliteTable(
   (table) => [index("idx_experiments_user_id").on(table.userId)],
 );
 
+// Read-only database views expose structural progress to authorized staff
+// without exposing a learner's target pattern, equation, reward, or notes.
+export const staffExperimentProgress = sqliteTable("staff_experiment_progress", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  status: text("status").notNull(),
+  startDate: text("start_date").notNull(),
+  plannedEndDate: text("planned_end_date").notNull(),
+  actualEndDate: text("actual_end_date"),
+  minimumEvidenceThreshold: integer("minimum_evidence_threshold").notNull(),
+  createdAt: timestamp(),
+});
+
 export const experimentEvents = sqliteTable(
   "experiment_events",
   {
@@ -178,6 +192,13 @@ export const experimentEvents = sqliteTable(
     index("idx_experiment_events_user_id").on(table.userId),
   ],
 );
+
+export const staffExperimentEventProgress = sqliteTable("staff_experiment_event_progress", {
+  userId: text("user_id").notNull(),
+  experimentId: text("experiment_id").notNull(),
+  eligibleOpportunity: integer("eligible_opportunity", { mode: "boolean" }).notNull(),
+  recordedAt: timestamp(),
+});
 
 export const experimentParameterVersions = sqliteTable(
   "experiment_parameter_versions",

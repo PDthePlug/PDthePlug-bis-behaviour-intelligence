@@ -1,5 +1,5 @@
-import { and, desc, eq, sql } from "drizzle-orm";
-import { getDb } from "../../../db";
+import { and, desc, eq } from "../../../db/query";
+import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   companionTurns,
@@ -385,7 +385,7 @@ async function saveResponse(
   await db
     .update(labEnrollments)
     .set({
-      currentInvestigation: sql`MAX(${labEnrollments.currentInvestigation}, ${investigation})`,
+      currentInvestigation: Math.max(Number(enrolment.currentInvestigation), investigation),
       updatedAt: now,
     })
     .where(eq(labEnrollments.id, enrolment.id));
@@ -476,8 +476,8 @@ async function calculateExperiment(identity: Identity, experimentId: string, pre
   }
 }
 
-export async function GET(request: Request) {
-  const identity = identityFrom(request);
+async function getHandler() {
+  const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   try {
     return Response.json(await snapshot(identity));
@@ -486,8 +486,8 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
-  const identity = identityFrom(request);
+async function postHandler(request: Request) {
+  const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
 
   try {
@@ -505,6 +505,7 @@ export async function POST(request: Request) {
         .insert(learners)
         .values({
           userId: identity.id,
+          authUserId: identity.authUserId,
           email: identity.email,
           displayName: identity.displayName,
           ageBand,
@@ -512,7 +513,7 @@ export async function POST(request: Request) {
         })
         .onConflictDoUpdate({
           target: learners.userId,
-          set: { email: identity.email, displayName: identity.displayName, ageBand, mode, updatedAt: now },
+          set: { authUserId: identity.authUserId, email: identity.email, displayName: identity.displayName, ageBand, mode, updatedAt: now },
         });
       const consentId = crypto.randomUUID();
       await db.insert(consentRecords).values({
@@ -1097,4 +1098,13 @@ export async function POST(request: Request) {
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 400 });
   }
+}
+
+export async function GET(request: Request) {
+  void request;
+  return withSupabaseRequest(() => getHandler());
+}
+
+export async function POST(request: Request) {
+  return withSupabaseRequest(() => postHandler(request));
 }
