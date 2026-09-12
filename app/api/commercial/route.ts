@@ -26,6 +26,15 @@ const OPPORTUNITY_STAGES = [
   "HOLD",
 ] as const;
 
+const PRE_CONTACT_STAGES = [
+  "RESEARCH",
+  "QUALIFY",
+  "QUALIFIED",
+  "THESIS_READY",
+  "PROPOSAL_DRAFT",
+  "PROPOSAL_FROZEN",
+] as const;
+
 const LANES = ["SCHOOL", "EMERGING_ADULT", "WORKPLACE"] as const;
 const PRIORITIES = ["HIGH", "MEDIUM", "LOW", "WATCHLIST", "HOLD"] as const;
 
@@ -132,6 +141,7 @@ export async function GET() {
       roles,
       canWrite: canWriteCommercial(roles),
       canAdmin: canAdminCommercial(roles),
+      canAssignRoles: roles.includes("SYSTEM_ADMIN"),
       ...(await snapshot()),
     });
   } catch (error) {
@@ -274,6 +284,14 @@ export async function POST(request: Request) {
       const activityType = String(body.activityType ?? "NOTE");
       if (!opportunityId) fail("Opportunity id is required.");
       const occurredAt = body.occurredAt ? String(body.occurredAt) : new Date().toISOString();
+
+      const { data: currentOpportunity, error: opportunityError } = await supabase
+        .from("crm_opportunities")
+        .select("stage")
+        .eq("id", opportunityId)
+        .single();
+      if (opportunityError) throw new Error(opportunityError.message);
+
       const { data, error } = await supabase
         .from("crm_activities")
         .insert({
@@ -289,14 +307,25 @@ export async function POST(request: Request) {
         .select("*")
         .single();
       if (error) throw new Error(error.message);
+
       const update: Record<string, unknown> = {
         last_activity_at: occurredAt,
         updated_at: new Date().toISOString(),
       };
-      if (["EMAIL", "WHATSAPP", "CALL", "LINKEDIN"].includes(activityType)) update.stage = "CONTACTED";
+      const isOutboundContact = ["EMAIL", "WHATSAPP", "CALL", "LINKEDIN"].includes(activityType);
+      if (
+        isOutboundContact &&
+        PRE_CONTACT_STAGES.includes(currentOpportunity.stage as (typeof PRE_CONTACT_STAGES)[number])
+      ) {
+        update.stage = "CONTACTED";
+      }
       const { error: updateError } = await supabase.from("crm_opportunities").update(update).eq("id", opportunityId);
       if (updateError) throw new Error(updateError.message);
-      await audit(identity.email, "CRM_ACTIVITY_ADDED", "crm_opportunity", opportunityId, { activityType });
+      await audit(identity.email, "CRM_ACTIVITY_ADDED", "crm_opportunity", opportunityId, {
+        activityType,
+        previousStage: currentOpportunity.stage,
+        stageChangedTo: update.stage ?? null,
+      });
       return Response.json({ activity: data });
     }
 
@@ -337,7 +366,9 @@ export async function POST(request: Request) {
     }
 
     if (action === "assignCommercialRole") {
-      if (!canAdminCommercial(roles)) throw new AccessError("Commercial admin access is required.", 403);
+      if (!roles.includes("SYSTEM_ADMIN")) {
+        throw new AccessError("Only a BIS system administrator can assign commercial roles in 0.1.", 403);
+      }
       const email = normalizeEmail(String(body.email ?? ""));
       const role = String(body.role ?? "");
       if (!email.includes("@")) fail("Enter a valid email address.");
