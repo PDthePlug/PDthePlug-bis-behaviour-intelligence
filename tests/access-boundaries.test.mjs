@@ -56,9 +56,11 @@ test("learner support is a human-only, auditable restricted handoff", async () =
   }
 });
 
-test("release migration is append-only", async () => {
-  const migration = await readFile(new URL("drizzle/0002_nebulous_luke_cage.sql", root), "utf8");
-  assert.match(migration, /CREATE TABLE `role_assignments`/);
-  assert.match(migration, /CREATE TABLE `safeguarding_cases`/);
-  assert.doesNotMatch(migration, /\b(?:DROP|ALTER)\s+(?:TABLE|COLUMN|INDEX)\b/i);
+test("Supabase production migration creates protected staff boundaries without destructive DDL", async () => {
+  const migration = await readFile(new URL("supabase/migrations/20260909000000_bis_production.sql", root), "utf8");
+  assert.match(migration, /create table public\.role_assignments/i);
+  assert.match(migration, /create table public\.safeguarding_cases/i);
+  assert.match(migration, /enable row level security/i);
+  assert.match(migration, /create view public\.staff_experiment_progress/i);
+  assert.doesNotMatch(migration, /\bdrop\s+(?:table|column|index|schema)\b/i);
 });

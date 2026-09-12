@@ -12,7 +12,7 @@ test("covers private content by default and restores the cover automatically", a
   assert.match(experience, /120_000/);
   assert.match(experience, /privacy-obscured/);
   assert.match(experience, /Lock and sign out/);
-  assert.match(experience, /signout-with-chatgpt\?return_to=\//);
+  assert.match(experience, /\/auth\/signout/);
   assert.match(experience, /signing out provides the strongest protection/);
 });
 

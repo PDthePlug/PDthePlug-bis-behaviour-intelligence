@@ -2,7 +2,18 @@
 
 BIS is a private, evidence-first behaviour investigation product. This repository ships Habit Lab 4.5.2, Decision Lab 4.2.1, Money Lab 4.2 and the closed-pilot operations gate.
 
-## Current milestone — Decision Lab 4.2.1 and Money Lab 4.2
+## Current milestone — Vercel and Supabase production runtime
+
+The application now runs as a standard Next.js 16 deployment on Vercel with Supabase Auth and Postgres:
+
+- Supabase password authentication replaces hosting-specific identity headers;
+- legacy application user IDs remain stable and are linked to Supabase Auth UUIDs, preserving evidence ownership;
+- browser and server access use only the public Supabase publishable key;
+- Row Level Security protects every public table;
+- staff progress is exposed through deliberately restricted views that omit learner answers, equations, rewards, event notes, Companion turns, and memory;
+- the existing Site deployment remains an independent rollback point until the Vercel cutover is accepted.
+
+## Canonical Labs — Decision 4.2.1 and Money 4.2
 
 The two added production Labs use the same evidence-first product architecture while keeping their records separate from Habit Lab and from each other:
 
@@ -53,18 +64,20 @@ The closed-pilot operations release adds:
 
 The staff API never returns learner answers, hypothesis wording, experiment notes, Companion conversations, or memory items. Administrators receive only an aggregate count of open safeguarding cases. Case details require the explicit safeguarding-officer role.
 
-Application role assignment does not grant access to the private Site. The Site owner must separately grant Site access to each staff member.
+Application role assignment remains separate from authentication. Staff receive only the product role and row access explicitly assigned to their verified email.
 
 ## Access bootstrap
 
-When there is no active system administrator, the oldest existing learner account is promoted on its next authenticated request. This bootstraps the current private Site owner without a hard-coded email. The final active administrator cannot be revoked.
+When there is no active system administrator, the first authenticated learner account can bootstrap the initial administrator role. If role assignments are migrated, the existing administrator is matched by verified email instead. The final active administrator cannot be revoked.
 
 ## Development
 
-Requirements: Node.js 22.13 or newer, Linux, `flock`, `curl`, and GNU `timeout`.
+Requirements: Node.js 22.13 or newer and a Supabase project.
+
+Copy `.env.example` to `.env.local` and set the project URL and publishable key. No service-role key or database password belongs in the browser environment.
 
 ```bash
-npm run install:ci
+npm install
 npm run dev
 ```
 
@@ -72,14 +85,14 @@ Useful checks:
 
 ```bash
 npm run lint
-npx tsc --noEmit
+npm run typecheck
 npm test
 ```
 
-After an append-only schema change, generate a new migration without editing earlier migrations:
+The production schema, RLS policies, authentication binding trigger, and restricted staff views are versioned in:
 
 ```bash
-npm run db:generate
+supabase/migrations/20260909000000_bis_production.sql
 ```
 
-The app uses verified Sites identity headers and a Cloudflare D1 binding declared in `.openai/hosting.json`. The production build is `npm run build`.
+Apply future schema changes as new append-only Supabase migrations. The production build is `npm run build`.
