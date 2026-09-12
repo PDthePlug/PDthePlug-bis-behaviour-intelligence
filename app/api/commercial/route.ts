@@ -5,7 +5,7 @@ import {
   canWriteCommercial,
   requireCommercialIdentity,
 } from "../../../lib/commercial-access";
-import { requestSupabaseClient } from "../../../lib/supabase/server";
+import { requestSupabaseClient, withSupabaseRequest } from "../../../lib/supabase/server";
 
 const OPPORTUNITY_STAGES = [
   "RESEARCH",
@@ -76,64 +76,55 @@ async function audit(
 
 async function snapshot() {
   const supabase = requestSupabaseClient();
-  const [
-    organisationsResult,
-    contactsResult,
-    opportunitiesResult,
-    proposalsResult,
-    tasksResult,
-    activitiesResult,
-    discoveryResult,
-  ] = await Promise.all([
-    supabase.from("crm_organisations").select("*").order("name"),
-    supabase.from("crm_contacts").select("*").order("created_at", { ascending: false }),
-    supabase.from("crm_opportunities").select("*").order("priority").order("created_at"),
-    supabase.from("crm_proposals").select("*").order("created_at", { ascending: false }),
-    supabase.from("crm_tasks").select("*").order("status").order("due_at"),
-    supabase.from("crm_activities").select("*").order("occurred_at", { ascending: false }).limit(250),
-    supabase.from("crm_discovery_sessions").select("*").order("created_at", { ascending: false }),
-  ]);
+  const [organisations, contacts, opportunities, proposals, tasks, activities, discoverySessions] =
+    await Promise.all([
+      supabase.from("crm_organisations").select("*").order("name"),
+      supabase.from("crm_contacts").select("*").order("created_at", { ascending: false }),
+      supabase.from("crm_opportunities").select("*").order("priority").order("created_at"),
+      supabase.from("crm_proposals").select("*").order("created_at", { ascending: false }),
+      supabase.from("crm_tasks").select("*").order("status").order("due_at"),
+      supabase.from("crm_activities").select("*").order("occurred_at", { ascending: false }).limit(250),
+      supabase.from("crm_discovery_sessions").select("*").order("created_at", { ascending: false }),
+    ]);
 
   for (const result of [
-    organisationsResult,
-    contactsResult,
-    opportunitiesResult,
-    proposalsResult,
-    tasksResult,
-    activitiesResult,
-    discoveryResult,
+    organisations,
+    contacts,
+    opportunities,
+    proposals,
+    tasks,
+    activities,
+    discoverySessions,
   ]) {
     if (result.error) throw new Error(result.error.message);
   }
 
-  const opportunities = opportunitiesResult.data ?? [];
-  const metrics = {
-    organisations: organisationsResult.data?.length ?? 0,
-    opportunities: opportunities.length,
-    school: opportunities.filter((item) => item.lane === "SCHOOL").length,
-    emergingAdult: opportunities.filter((item) => item.lane === "EMERGING_ADULT").length,
-    workplace: opportunities.filter((item) => item.lane === "WORKPLACE").length,
-    waveOne: opportunities.filter((item) => item.wave === "WAVE_1").length,
-    frozenProposals: proposalsResult.data?.filter((item) => item.status === "FROZEN").length ?? 0,
-    discovery: opportunities.filter((item) => item.stage === "DISCOVERY").length,
-    won: opportunities.filter((item) => item.stage === "WON").length,
-    openTasks: tasksResult.data?.filter((item) => item.status !== "DONE").length ?? 0,
-  };
-
+  const opportunityRows = opportunities.data ?? [];
   return {
-    metrics,
-    organisations: organisationsResult.data ?? [],
-    contacts: contactsResult.data ?? [],
-    opportunities,
-    proposals: proposalsResult.data ?? [],
-    tasks: tasksResult.data ?? [],
-    activities: activitiesResult.data ?? [],
-    discoverySessions: discoveryResult.data ?? [],
+    metrics: {
+      organisations: organisations.data?.length ?? 0,
+      opportunities: opportunityRows.length,
+      school: opportunityRows.filter((item) => item.lane === "SCHOOL").length,
+      emergingAdult: opportunityRows.filter((item) => item.lane === "EMERGING_ADULT").length,
+      workplace: opportunityRows.filter((item) => item.lane === "WORKPLACE").length,
+      waveOne: opportunityRows.filter((item) => item.wave === "WAVE_1").length,
+      frozenProposals: proposals.data?.filter((item) => item.status === "FROZEN").length ?? 0,
+      discovery: opportunityRows.filter((item) => item.stage === "DISCOVERY").length,
+      won: opportunityRows.filter((item) => item.stage === "WON").length,
+      openTasks: tasks.data?.filter((item) => item.status !== "DONE").length ?? 0,
+    },
+    organisations: organisations.data ?? [],
+    contacts: contacts.data ?? [],
+    opportunities: opportunityRows,
+    proposals: proposals.data ?? [],
+    tasks: tasks.data ?? [],
+    activities: activities.data ?? [],
+    discoverySessions: discoverySessions.data ?? [],
     controlledStages: OPPORTUNITY_STAGES,
   };
 }
 
-export async function GET() {
+async function getHandler() {
   try {
     const { identity, roles } = await requireCommercialIdentity();
     return Response.json({
@@ -149,7 +140,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   try {
     const { identity, roles } = await requireCommercialIdentity();
     const body = (await request.json()) as Record<string, unknown>;
@@ -160,8 +151,8 @@ export async function POST(request: Request) {
       requireWrite(roles);
       const id = String(body.id ?? "");
       if (!id) fail("Opportunity id is required.");
-      const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
 
+      const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (body.stage !== undefined) {
         const stage = String(body.stage);
         if (!OPPORTUNITY_STAGES.includes(stage as (typeof OPPORTUNITY_STAGES)[number])) {
@@ -171,7 +162,9 @@ export async function POST(request: Request) {
       }
       if (body.priority !== undefined) {
         const priority = String(body.priority);
-        if (!PRIORITIES.includes(priority as (typeof PRIORITIES)[number])) fail("Choose a supported priority.");
+        if (!PRIORITIES.includes(priority as (typeof PRIORITIES)[number])) {
+          fail("Choose a supported priority.");
+        }
         patch.priority = priority;
       }
       for (const [input, column] of [
@@ -203,6 +196,7 @@ export async function POST(request: Request) {
       const name = String(body.name ?? "").trim();
       const organisationType = String(body.organisationType ?? "").trim();
       if (!name || !organisationType) fail("Organisation name and type are required.");
+
       const { data, error } = await supabase
         .from("crm_organisations")
         .insert({
@@ -226,6 +220,7 @@ export async function POST(request: Request) {
       const lane = String(body.lane ?? "");
       if (!organisationId || !opportunityName) fail("Organisation and opportunity name are required.");
       if (!LANES.includes(lane as (typeof LANES)[number])) fail("Choose a supported commercial lane.");
+
       const code = String(body.code ?? `CRM-${crypto.randomUUID().slice(0, 8).toUpperCase()}`);
       const { data, error } = await supabase
         .from("crm_opportunities")
@@ -255,6 +250,7 @@ export async function POST(request: Request) {
       const organisationId = String(body.organisationId ?? "");
       if (!organisationId) fail("Organisation id is required.");
       const email = body.email ? normalizeEmail(String(body.email)) : null;
+
       const { data, error } = await supabase
         .from("crm_contacts")
         .insert({
@@ -308,7 +304,7 @@ export async function POST(request: Request) {
         .single();
       if (error) throw new Error(error.message);
 
-      const update: Record<string, unknown> = {
+      const opportunityPatch: Record<string, unknown> = {
         last_activity_at: occurredAt,
         updated_at: new Date().toISOString(),
       };
@@ -317,14 +313,18 @@ export async function POST(request: Request) {
         isOutboundContact &&
         PRE_CONTACT_STAGES.includes(currentOpportunity.stage as (typeof PRE_CONTACT_STAGES)[number])
       ) {
-        update.stage = "CONTACTED";
+        opportunityPatch.stage = "CONTACTED";
       }
-      const { error: updateError } = await supabase.from("crm_opportunities").update(update).eq("id", opportunityId);
+      const { error: updateError } = await supabase
+        .from("crm_opportunities")
+        .update(opportunityPatch)
+        .eq("id", opportunityId);
       if (updateError) throw new Error(updateError.message);
+
       await audit(identity.email, "CRM_ACTIVITY_ADDED", "crm_opportunity", opportunityId, {
         activityType,
         previousStage: currentOpportunity.stage,
-        stageChangedTo: update.stage ?? null,
+        stageChangedTo: opportunityPatch.stage ?? null,
       });
       return Response.json({ activity: data });
     }
@@ -333,6 +333,7 @@ export async function POST(request: Request) {
       requireWrite(roles);
       const title = String(body.title ?? "").trim();
       if (!title) fail("Task title is required.");
+
       const { data, error } = await supabase
         .from("crm_tasks")
         .insert({
@@ -354,6 +355,7 @@ export async function POST(request: Request) {
       requireWrite(roles);
       const id = String(body.id ?? "");
       if (!id) fail("Task id is required.");
+
       const { data, error } = await supabase
         .from("crm_tasks")
         .update({ status: "DONE", completed_at: new Date().toISOString() })
@@ -372,7 +374,10 @@ export async function POST(request: Request) {
       const email = normalizeEmail(String(body.email ?? ""));
       const role = String(body.role ?? "");
       if (!email.includes("@")) fail("Enter a valid email address.");
-      if (!COMMERCIAL_ROLES.includes(role as (typeof COMMERCIAL_ROLES)[number])) fail("Choose a commercial role.");
+      if (!COMMERCIAL_ROLES.includes(role as (typeof COMMERCIAL_ROLES)[number])) {
+        fail("Choose a commercial role.");
+      }
+
       const { data, error } = await supabase
         .from("role_assignments")
         .upsert(
@@ -400,4 +405,13 @@ export async function POST(request: Request) {
   } catch (error) {
     return errorResponse(error);
   }
+}
+
+export async function GET(request: Request) {
+  void request;
+  return withSupabaseRequest(() => getHandler());
+}
+
+export async function POST(request: Request) {
+  return withSupabaseRequest(() => postHandler(request));
 }
