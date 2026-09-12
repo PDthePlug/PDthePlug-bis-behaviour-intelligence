@@ -109,8 +109,9 @@ Apply these migrations after the existing BIS production migration:
 4. `20260912093000_bis_commercial_seed_emerging_adult.sql`
 5. `20260912094000_bis_commercial_seed_workplace.sql`
 6. `20260912095000_bis_commercial_seed_controlled_masters.sql`
+7. `20260912100000_bis_commercial_performance_indexes.sql`
 
-Do not mark the CRM production-ready until these migrations have been applied to the selected Supabase project and `/commercial` has passed authenticated role and mutation checks.
+The selected BIS Production Supabase project now has these migrations applied. The remaining 0.1 release gate is application-level verification of the protected `/commercial` route and its authenticated mutations on the deployment produced from this branch.
 
 ## Future milestones
 
