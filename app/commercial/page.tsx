@@ -1,15 +1,22 @@
 import { redirect } from "next/navigation";
 import { getRoles, identityFrom } from "../../lib/bis-access";
 import { hasCommercialAccess } from "../../lib/commercial-access";
+import { withSupabaseRequest } from "../../lib/supabase/server";
 import { CommercialWorkspace } from "./commercial-workspace";
 
 export const dynamic = "force-dynamic";
 
 export default async function CommercialPage() {
-  const identity = await identityFrom();
-  if (!identity) redirect("/sign-in");
+  const access = await withSupabaseRequest(async () => {
+    const identity = await identityFrom();
+    if (!identity) return null;
+    const roles = await getRoles(identity);
+    return { identity, roles };
+  });
 
-  const roles = await getRoles(identity);
+  if (!access) redirect("/sign-in");
+
+  const { identity, roles } = access;
   if (!hasCommercialAccess(roles)) {
     return (
       <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 32, background: "#f5f3ee" }}>
