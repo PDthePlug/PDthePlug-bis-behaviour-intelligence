@@ -15,6 +15,7 @@ test("uses the standard Next.js Vercel runtime without retired hosting adapters"
   assert.equal(manifest.scripts.dev, "next dev");
   assert.equal(manifest.scripts.build, "next build");
   assert.equal(manifest.scripts.start, "next start");
+  assert.equal(manifest.scripts["vercel-build"], "npm run test:acceptance && next build");
   assert.doesNotMatch(packageJson, /vinext|wrangler|cloudflare/i);
   assert.match(proxy, /updateSession/);
   assert.doesNotMatch(database, /cloudflare:workers|D1Database/);
@@ -38,13 +39,17 @@ test("uses verified Supabase users and a request-scoped database client", async 
 });
 
 test("keeps only public Supabase configuration in deployment examples", async () => {
-  const [example, client] = await Promise.all([
+  const [example, client, config] = await Promise.all([
     read(".env.example"),
     read("lib/supabase/client.ts"),
+    read("lib/supabase/config.ts"),
   ]);
   assert.match(example, /NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY/);
+  assert.match(client, /supabaseBrowserConfig/);
+  assert.match(config, /swmhsqivqaqwovojbceo\.supabase\.co/);
+  assert.match(config, /sb_publishable_/);
   assert.doesNotMatch(example, /SERVICE_ROLE|DATABASE_URL|DB_PASSWORD|SECRET/i);
-  assert.doesNotMatch(client, /service.role|service_role|database_url/i);
+  assert.doesNotMatch(`${client}\n${config}`, /service.role|service_role|database_url|sb_secret_/i);
 });
 
 test("protects every production table and exposes only structural staff progress", async () => {
