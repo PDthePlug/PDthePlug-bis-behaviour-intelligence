@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { ArrowLeft, ArrowRight, BookOpen, BriefcaseBusiness, Check, GraduationCap, LockKeyhole, Menu, ShieldCheck, Sparkles, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, BriefcaseBusiness, Check, GraduationCap, LockKeyhole, Menu, ShieldCheck, Sparkles, X } from "lucide-react";
 
 type EditionKey = "school" | "emerging" | "workplace";
 type Block =
@@ -154,7 +154,16 @@ export function LearningPortal() {
         const preview = new URLSearchParams(window.location.search).get("edition");
         if (preview === "school" || preview === "emerging" || preview === "workplace") nextEdition = preview;
       }
-      if (!cancelled) setEdition(nextEdition);
+      if (!cancelled) {
+        if (nextEdition !== "school") {
+          setLoading(true);
+          setError("");
+          setDocument(null);
+          setSelectedId(null);
+          setReaderOpen(false);
+        }
+        setEdition(nextEdition);
+      }
     }
     void boot();
     return () => { cancelled = true; };
@@ -162,11 +171,6 @@ export function LearningPortal() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError("");
-    setDocument(null);
-    setSelectedId(null);
-    setReaderOpen(false);
     void loadDocument(edition)
       .then((data) => {
         if (cancelled) return;
@@ -191,6 +195,12 @@ export function LearningPortal() {
   const style = { "--learn-accent": config.accent, "--learn-soft": config.soft, "--learn-ink": config.ink } as CSSProperties;
 
   function chooseEdition(next: EditionKey) {
+    if (next === edition) return;
+    setLoading(true);
+    setError("");
+    setDocument(null);
+    setSelectedId(null);
+    setReaderOpen(false);
     setEdition(next);
     const url = new URL(window.location.href);
     url.searchParams.set("edition", next);
