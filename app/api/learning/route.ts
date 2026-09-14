@@ -5,18 +5,31 @@ import {
   contentReleases,
   handbookProgress,
   learners,
+  responses,
 } from "../../../db/schema";
 import { identityFrom } from "../../../lib/bis-access";
-import {
-  isDeliveryEdition,
-  type LabCode,
-} from "../../../lib/learning-foundation";
+import { isDeliveryEdition, type LabCode } from "../../../lib/learning-foundation";
 
 const STEP_ID = /^[A-Z]{3}\.[A-Z0-9][A-Z0-9._-]{1,119}$/;
+const WORKBOOK_FIELD_ID = /^HAB\.WB\.[A-Z0-9._-]{3,160}$/;
 const LAB_CODES = new Set<LabCode>(["HAB", "DEC", "MON", "IDN"]);
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unexpected error";
+}
+
+function encode(value: unknown) {
+  return JSON.stringify(value ?? null);
+}
+
+function decode(value: string | null) {
+  if (value === null) return "";
+  try {
+    const parsed = JSON.parse(value);
+    return parsed === null || parsed === undefined ? "" : String(parsed);
+  } catch {
+    return value;
+  }
 }
 
 async function audit(
@@ -60,6 +73,29 @@ async function learningSnapshot(userId: string) {
     .where(eq(handbookProgress.userId, userId))
     .orderBy(desc(handbookProgress.lastSeenAt));
 
+  const responseRows = await db
+    .select()
+    .from(responses)
+    .where(and(eq(responses.userId, userId), eq(responses.labCode, "HAB")))
+    .orderBy(desc(responses.recordedAt));
+  const workbookResponses: Record<string, {
+    value: string;
+    semanticStepId: string;
+    sourceFieldKey: string;
+    updatedAt: string;
+  }> = {};
+  for (const row of responseRows) {
+    if (row.provenance !== "LR" || row.responseStatus === "SUPERSEDED" || !row.semanticFieldId.startsWith("HAB.WB.")) continue;
+    if (workbookResponses[row.semanticFieldId]) continue;
+    const promptParts = row.promptId.split(":");
+    workbookResponses[row.semanticFieldId] = {
+      value: decode(row.value),
+      semanticStepId: promptParts[1] ?? "",
+      sourceFieldKey: promptParts[2] ?? row.promptId,
+      updatedAt: row.recordedAt,
+    };
+  }
+
   return {
     profile: {
       displayName: profile.displayName,
@@ -70,6 +106,7 @@ async function learningSnapshot(userId: string) {
     },
     releases,
     progress,
+    workbookResponses,
   };
 }
 
@@ -125,9 +162,8 @@ async function postHandler(request: Request) {
       }
 
       const now = new Date().toISOString();
-      const id = crypto.randomUUID();
       await db.insert(handbookProgress).values({
-        id,
+        id: crypto.randomUUID(),
         userId: identity.id,
         labCode,
         deliveryEdition: profile.deliveryEdition,
@@ -146,11 +182,73 @@ async function postHandler(request: Request) {
           updatedAt: now,
         },
       });
-      await audit(identity.id, "HANDBOOK_PROGRESS_SAVED", "CONTENT_RELEASE", contentReleaseId, {
-        labCode,
-        semanticStepId,
-        status,
-      });
+      await audit(identity.id, "HANDBOOK_PROGRESS_SAVED", "CONTENT_RELEASE", contentReleaseId, { labCode, semanticStepId, status });
+      return Response.json(await learningSnapshot(identity.id));
+    }
+
+    if (action === "saveWorkbookResponses") {
+      const labCode = String(body.labCode ?? "") as LabCode;
+      const contentReleaseId = String(body.contentReleaseId ?? "");
+      const items = Array.isArray(body.items) ? body.items : [];
+      if (labCode !== "HAB") throw new Error("Habit Lab is the current programme-player production standard.");
+      if (!contentReleaseId) throw new Error("A content release is required before saving workbook responses.");
+      if (items.length < 1 || items.length > 60) throw new Error("Save between 1 and 60 workbook responses at a time.");
+
+      const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
+      const [release] = await db.select().from(contentReleases).where(and(
+        eq(contentReleases.id, contentReleaseId),
+        eq(contentReleases.labCode, "HAB"),
+        eq(contentReleases.deliveryEdition, profile?.deliveryEdition ?? "school"),
+      )).limit(1);
+      if (!profile || !release || release.status === "RETIRED") throw new Error("That handbook release is not available for this learner edition.");
+
+      for (const raw of items) {
+        if (!raw || typeof raw !== "object") throw new Error("One workbook response is invalid.");
+        const item = raw as Record<string, unknown>;
+        const semanticFieldId = String(item.semanticFieldId ?? "").trim().toUpperCase();
+        const semanticStepId = String(item.semanticStepId ?? "").trim().toUpperCase();
+        const sourceFieldKey = String(item.sourceFieldKey ?? "").trim();
+        const value = String(item.value ?? "");
+        if (!WORKBOOK_FIELD_ID.test(semanticFieldId)) throw new Error("Workbook responses must use the HAB.WB semantic namespace.");
+        if (!STEP_ID.test(semanticStepId) || !semanticStepId.startsWith("HAB.PROGRAMME.")) throw new Error("Workbook responses must belong to a Habit programme page.");
+        if (!sourceFieldKey || sourceFieldKey.length > 120) throw new Error("Workbook source field identity is missing.");
+        if (value.length > 20_000) throw new Error("Keep each workbook response under 20,000 characters.");
+
+        const [previous] = await db.select().from(responses).where(and(
+          eq(responses.userId, identity.id),
+          eq(responses.contentReleaseId, contentReleaseId),
+          eq(responses.semanticFieldId, semanticFieldId),
+        )).orderBy(desc(responses.recordedAt)).limit(1);
+        const responseId = crypto.randomUUID();
+        if (previous && previous.responseStatus !== "SUPERSEDED") {
+          await db.update(responses).set({ responseStatus: "SUPERSEDED" }).where(eq(responses.id, previous.id));
+        }
+        await db.insert(responses).values({
+          id: responseId,
+          userId: identity.id,
+          promptId: `LEARNING:${semanticStepId}:${sourceFieldKey}`,
+          semanticFieldId,
+          labCode: "HAB",
+          labVersion: "HANDBOOK-1.4",
+          contentReleaseId,
+          deliveryEdition: profile.deliveryEdition,
+          promptVersion: release.contentVersion,
+          privacyClass: "P3",
+          provenance: "LR",
+          value: encode(value),
+          responseStatus: "ANSWERED",
+          occurredAt: new Date().toISOString(),
+          supersedesResponseId: previous?.id ?? null,
+        });
+        await audit(identity.id, previous ? "HANDBOOK_RESPONSE_CORRECTED" : "HANDBOOK_RESPONSE_CREATED", "LEARNING_RESPONSE", responseId, {
+          labCode: "HAB",
+          semanticFieldId,
+          semanticStepId,
+          contentReleaseId,
+          provenance: "LR",
+          privacyClass: "P3",
+        });
+      }
       return Response.json(await learningSnapshot(identity.id));
     }
 
