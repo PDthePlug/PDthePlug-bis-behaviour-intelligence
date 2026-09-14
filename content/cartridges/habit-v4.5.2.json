@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "handbookId": "habit-lab-volume-1",
+  "labCode": "HAB",
+  "slug": "habit",
+  "title": "Habit Lab™",
+  "subtitle": "The Habit Investigation Handbook",
+  "contentVersion": "4.5.2",
+  "sourceTrace": {
+    "authority": "Habit Lab™ Learner Workbook — Production Master",
+    "sourceVersion": "4.5.2",
+    "notes": "Phase 1 player map traced to the frozen workbook and existing canonical HAB field registry. The executable evidence runtime remains authoritative during the vertical-slice transition."
+  },
+  "editions": {
+    "school": { "label": "School Edition", "audience": "Ages 14–18", "privacySummary": "You decide what to share with peers. Facilitator access is limited to what is needed to support learning and safeguarding." },
+    "emerging_adult": { "label": "Emerging Adult Edition", "audience": "Ages 18–25", "privacySummary": "Private reflections are not automatically shared with peers, employers or programme administrators." },
+    "workplace": { "label": "Workplace Edition", "audience": "Working adults", "privacySummary": "Individual evidence is private. Organisational reporting is aggregated and separated from personal reflections." }
+  },
+  "sessions": [
+    { "id": "HAB.I1", "number": 1, "title": "The Hook", "mission": "Meet someone whose habits changed everything.", "phase": "LEARN", "duration": "5 minutes", "blocks": [
+      { "id": "HAB.I1.STORY.SIPHO", "type": "story", "title": "The boy who kept losing R20", "body": ["Sipho keeps taking the same route, entering the same shop and spending the same R20 before he has properly decided.", "Then a broken radio gives him a different loop: challenge, curiosity, try. One repeated pattern costs him; another begins to build something."], "accessibilityLabel": "Read Sipho's opening story", "fieldIds": [], "privacyClass": "P0" },
+      { "id": "HAB.I1.PREDICTION", "type": "choice", "title": "Make a prediction", "body": ["What do you think happens next for Sipho? Your prediction remains part of the story; your own prediction accuracy is measured later."], "accessibilityLabel": "Predict what happens next for Sipho", "fieldIds": ["HAB.STORY1.PREDICTION"], "privacyClass": "P1" },
+      { "id": "HAB.I1.PAUSE", "type": "pause", "title": "Pause", "body": ["Close the handbook for 30 seconds. Ask: What surprised me most so far?"], "accessibilityLabel": "Thirty second reflection pause", "fieldIds": [], "privacyClass": "P0" }
+    ]},
+    { "id": "HAB.I2", "number": 2, "title": "The Pattern", "mission": "Name one repeated pattern and find evidence that it exists.", "phase": "INVESTIGATE", "duration": "5 minutes", "blocks": [
+      { "id": "HAB.I2.EVIDENCE", "type": "evidence_capture", "title": "Find evidence", "body": ["Choose a repeated pattern and one trace from the last seven days that could show it happened. Evidence can reveal what memory smooths over."], "accessibilityLabel": "Capture evidence of a repeated pattern", "fieldIds": ["HAB.PATTERN.TARGET", "HAB.EVIDENCE.INITIAL", "HAB.EVIDENCE.INITIAL_MEANING"], "privacyClass": "P2" },
+      { "id": "HAB.I2.REWARD", "type": "reflection", "title": "Look beneath the obvious reward", "body": ["Ask what the pattern gives you, including relief, escape, control, numbness or avoidance."], "accessibilityLabel": "Reflect on obvious and less obvious rewards", "fieldIds": ["HAB.REWARD.OBVIOUS", "HAB.REWARD.LESS_OBVIOUS"], "privacyClass": "P3" }
+    ]},
+    { "id": "HAB.I3", "number": 3, "title": "The Revelation", "mission": "Discover the hidden structure of a habit.", "phase": "LEARN", "duration": "5 minutes", "blocks": [
+      { "id": "HAB.I3.SYSTEM.LOOP", "type": "system_lens", "title": "The habit loop", "body": ["Cue → Routine → Reward", "A pattern repeats because it produces a payoff, even when the payoff also carries a cost. Once the loop is visible, it can be tested."], "accessibilityLabel": "Understand the cue routine reward model", "fieldIds": [], "privacyClass": "P0" },
+      { "id": "HAB.I3.STORY.EVIDENCE", "type": "story", "title": "Once is evidence", "body": ["Sipho still wants the sweets. He buys screws instead. Once is not a new habit, but once is evidence that another routine is possible."], "accessibilityLabel": "Read the second Sipho episode", "fieldIds": [], "privacyClass": "P0" }
+    ]},
+    { "id": "HAB.I4", "number": 4, "title": "Habit Mapping", "mission": "Map the structure of one real habit as carefully as you can.", "phase": "INVESTIGATE", "duration": "15 minutes", "blocks": [
+      { "id": "HAB.I4.MAP", "type": "activity", "title": "Map the loop", "body": ["Identify the cue, routine, obvious reward, less obvious reward, cost, people affected, environment and a possible replacement routine."], "accessibilityLabel": "Map the structure of your selected habit", "fieldIds": ["HAB.CUE.TEXT", "HAB.ROUTINE.TEXT", "HAB.COST.TEXT", "HAB.AFFECTED_PEOPLE.TEXT", "HAB.ENVIRONMENT.TEXT", "HAB.ALTERNATIVE.TEXT"], "privacyClass": "P3" },
+      { "id": "HAB.I4.DIAGNOSTIC", "type": "evidence_capture", "title": "Add diagnostic evidence", "body": ["Record the emotion, person and yesterday count that might help explain when the pattern appears."], "accessibilityLabel": "Capture diagnostic evidence for the habit map", "fieldIds": ["HAB.EMOTION.TEXT", "HAB.SOCIAL_TRIGGER.TEXT", "HAB.FREQUENCY.YESTERDAY"], "privacyClass": "P3" }
+    ]},
+    { "id": "HAB.I5", "number": 5, "title": "Behaviour Equation", "mission": "Write a working explanation that can be challenged.", "phase": "INVESTIGATE", "duration": "10 minutes", "blocks": [
+      { "id": "HAB.I5.HYPOTHESIS", "type": "hypothesis", "title": "Working Behaviour Equation", "body": ["Cue + Old Routine → Cost", "Cue + New Routine → Similar Reward + Lower Cost", "This is a hypothesis, not a verdict."], "accessibilityLabel": "Write and rate a working behaviour equation", "fieldIds": ["HAB.EQUATION.TEXT", "HAB.EQUATION.CONFIDENCE_PRE"], "privacyClass": "P2" },
+      { "id": "HAB.I5.FALSIFICATION", "type": "reflection", "title": "Falsification test", "body": ["Name what you would see if your explanation were wrong and what evidence would make you revise it."], "accessibilityLabel": "Define evidence that could disprove your equation", "fieldIds": ["HAB.FALSIFICATION.TEXT", "HAB.FALSIFICATION.MISUNDERSTOOD"], "privacyClass": "P2" }
+    ]},
+    { "id": "HAB.I6", "number": 6, "title": "Behaviour Contract", "mission": "Design a seven-day test of your working equation.", "phase": "INVESTIGATE", "duration": "10 minutes", "blocks": [
+      { "id": "HAB.I6.EXPERIMENT.SETUP", "type": "experiment_setup", "title": "Design the experiment", "body": ["Choose the habit, replacement routine, cue, reward, witness, restart plan, minimum version and failure signal. Predict your adherence before the experiment begins."], "accessibilityLabel": "Set up the seven day Habit Lab experiment", "fieldIds": ["HAB.PREDICTED_ADHERENCE"], "privacyClass": "P2" }
+    ]},
+    { "id": "HAB.I7", "number": 7, "title": "7-Day Experiment", "mission": "Notice the first target opportunity each day and record what happens.", "phase": "EXPERIMENT", "duration": "7 days", "blocks": [
+      { "id": "HAB.I7.DAILY", "type": "experiment_day", "title": "Daily evidence", "body": ["Each day, record whether the cue occurred and whether you used the replacement routine. No opportunity is not the same as failure."], "accessibilityLabel": "Record a daily target opportunity", "fieldIds": ["HAB.EXPERIMENT.EVENT"], "privacyClass": "P2" },
+      { "id": "HAB.I7.DAY3", "type": "checkpoint", "title": "Day 3 checkpoint", "body": ["Review surprises, difficulty and evidence. Adjusting the test is calibration; the experiment version must remain visible."], "accessibilityLabel": "Complete the day three calibration checkpoint", "fieldIds": ["HAB.CHECKPOINT.DAY3"], "privacyClass": "P2" },
+      { "id": "HAB.I7.ADHERENCE", "type": "calculation", "title": "Prediction accuracy", "body": ["Prediction accuracy = 100 − |predicted adherence − actual adherence|. If no opportunities occur, record N/A rather than zero."], "accessibilityLabel": "Calculate adherence and prediction accuracy", "fieldIds": [], "privacyClass": "P0" }
+    ]},
+    { "id": "HAB.I8", "number": 8, "title": "Evidence Review", "mission": "Review what supported and challenged your explanation.", "phase": "REVIEW", "duration": "10 minutes", "blocks": [
+      { "id": "HAB.I8.SHIFTS", "type": "calculation", "title": "What changed?", "body": ["Compare Habit Control and Equation Confidence before and after the experiment. A negative or zero shift is still evidence."], "accessibilityLabel": "Review pre and post Behaviour Evidence Indicators", "fieldIds": ["HAB.CONTROL.POST", "HAB.EQUATION.CONFIDENCE_POST"], "privacyClass": "P2" },
+      { "id": "HAB.I8.REVIEW", "type": "reflection", "title": "Harvest the evidence", "body": ["Identify what supported the equation, what challenged it, and which assumption became harder to defend."], "accessibilityLabel": "Reflect on evidence from the seven day experiment", "fieldIds": ["HAB.EVIDENCE.SUPPORTING", "HAB.EVIDENCE.CHALLENGING", "HAB.I8.ASSUMPTION.TEXT"], "privacyClass": "P2" }
+    ]},
+    { "id": "HAB.I9", "number": 9, "title": "Behaviour Profile", "mission": "Bring your evidence, experiment and updated understanding together.", "phase": "PROFILE", "duration": "10 minutes", "blocks": [
+      { "id": "HAB.I9.PROFILE", "type": "profile", "title": "Behaviour Profile Summary", "body": ["The profile brings together the pattern, loop, equation, falsification test, impact, adherence and shifts without turning evidence into a label."], "accessibilityLabel": "Review the completed Behaviour Profile Summary", "fieldIds": ["HAB.AGENCY.REFLECTION", "HAB.I9.CAPABILITY.TEXT", "HAB.NEXT_PATTERN.TEXT"], "privacyClass": "P2" },
+      { "id": "HAB.I9.CERTIFICATE", "type": "certificate", "title": "Investigation complete", "body": ["This is not a certificate of perfection. It is evidence that you completed and reviewed a behavioural investigation."], "accessibilityLabel": "View the Habit Investigation Certificate", "fieldIds": [], "privacyClass": "P0" }
+    ]}
+  ]
+}

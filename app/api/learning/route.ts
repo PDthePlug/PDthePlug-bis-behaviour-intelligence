@@ -12,7 +12,7 @@ import {
   type LabCode,
 } from "../../../lib/learning-foundation";
 
-const STEP_ID = /^[A-Z]{3}\.[A-Z0-9][A-Z0-9._-]{2,119}$/;
+const STEP_ID = /^[A-Z]{3}\.[A-Z0-9][A-Z0-9._-]{1,119}$/;
 const LAB_CODES = new Set<LabCode>(["HAB", "DEC", "MON", "IDN"]);
 
 function errorMessage(error: unknown) {

@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "next dev",
+    "content:compile": "node scripts/compile-learning-cartridges.mjs",
+    "prebuild": "npm run content:compile",
     "build": "next build",
     "start": "next start",
     "vercel-build": "npm run lint && npm run test:acceptance && next build",
