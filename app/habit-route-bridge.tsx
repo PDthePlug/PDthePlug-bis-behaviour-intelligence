@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { ArrowLeft } from "lucide-react";
 
 type RequestedView = "lab" | "experiment";
@@ -21,12 +21,13 @@ function safeReturnPath() {
   return value?.startsWith("/learning/") ? value : null;
 }
 
+const subscribeToLocation = () => () => undefined;
+
 export function HabitRouteBridge() {
-  const [returnTo, setReturnTo] = useState<string | null>(null);
+  const returnTo = useSyncExternalStore(subscribeToLocation, safeReturnPath, () => null);
 
   useEffect(() => {
     const target = requestedView();
-    setReturnTo(safeReturnPath());
     if (!target) return;
 
     let finished = false;
