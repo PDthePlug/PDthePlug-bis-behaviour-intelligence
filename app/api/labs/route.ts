@@ -1,8 +1,9 @@
-import { and, desc, eq } from "../../../db/query";
+import { and, desc, eq, or } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   consentRecords,
+  contentReleases,
   evidenceRecords,
   experimentCheckpoints,
   experimentEvents,
@@ -123,10 +124,13 @@ async function saveResponse(identity: Identity, lab: CoreLabDefinition, item: Re
   const db = getDb();
   const now = new Date().toISOString();
   const responseStatus = item.responseStatus === "PASS" ? "PASS" : "ANSWERED";
+  const enrolment = await enrolmentFor(identity.id, lab);
+  if (!enrolment) throw new Error(`Open ${lab.shortTitle} before saving evidence.`);
+  const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
   const [previous] = await db
     .select()
     .from(responses)
-    .where(and(eq(responses.userId, identity.id), eq(responses.semanticFieldId, fieldId), eq(responses.labVersion, lab.version)))
+    .where(and(eq(responses.userId, identity.id), eq(responses.labCode, lab.code), eq(responses.semanticFieldId, fieldId), eq(responses.labVersion, lab.version)))
     .orderBy(desc(responses.recordedAt))
     .limit(1);
   const id = crypto.randomUUID();
@@ -139,7 +143,13 @@ async function saveResponse(identity: Identity, lab: CoreLabDefinition, item: Re
     userId: identity.id,
     promptId: `${lab.prefix}.I${field.investigation}.${fieldId.split(".").slice(1).join("_")}`,
     semanticFieldId: fieldId,
+    labCode: lab.code,
     labVersion: lab.version,
+    contentReleaseId: enrolment.contentReleaseId ?? null,
+    deliveryEdition: profile?.deliveryEdition ?? "school",
+    promptVersion: lab.version,
+    privacyClass: field.sensitivity ?? "P2",
+    provenance: "SR",
     value: responseStatus === "PASS" ? null : encode(item.value),
     responseStatus,
     occurredAt: typeof item.occurredAt === "string" ? item.occurredAt : now,
@@ -150,6 +160,7 @@ async function saveResponse(identity: Identity, lab: CoreLabDefinition, item: Re
     userId: identity.id,
     labCode: lab.code,
     labVersion: lab.version,
+    contentReleaseId: enrolment.contentReleaseId ?? null,
     investigationId: `${lab.prefix}.I${field.investigation}`,
     semanticFieldId: fieldId,
     sourceObjectType: "RESPONSE",
@@ -161,8 +172,6 @@ async function saveResponse(identity: Identity, lab: CoreLabDefinition, item: Re
     sensitivity: field.sensitivity ?? "P2",
     occurredAt: typeof item.occurredAt === "string" ? item.occurredAt : now,
   });
-  const enrolment = await enrolmentFor(identity.id, lab);
-  if (!enrolment) throw new Error(`Open ${lab.shortTitle} before saving evidence.`);
   await db.update(labEnrollments).set({
     currentInvestigation: Math.max(Number(enrolment.currentInvestigation), field.investigation),
     updatedAt: now,
@@ -241,7 +250,7 @@ async function snapshot(identity: Identity, lab: CoreLabDefinition) {
   const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
   const consent = await consentFor(identity.id);
   const enrolment = await enrolmentFor(identity.id, lab);
-  const responseRows = (await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labVersion, lab.version))).orderBy(responses.recordedAt))
+  const responseRows = (await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labCode, lab.code), eq(responses.labVersion, lab.version))).orderBy(responses.recordedAt))
     .filter((row) => row.semanticFieldId.startsWith(`${lab.prefix}.`));
   const currentResponses: Record<string, { value: unknown; status: string; responseId: string; recordedAt: string }> = {};
   for (const row of responseRows) {
@@ -256,6 +265,7 @@ async function snapshot(identity: Identity, lab: CoreLabDefinition) {
   )).orderBy(desc(hypotheses.createdAt)).limit(1);
   const [experiment] = await db.select().from(experiments).where(and(
     eq(experiments.userId, identity.id),
+    eq(experiments.labCode, lab.code),
     eq(experiments.labVersion, lab.version),
   )).orderBy(desc(experiments.createdAt)).limit(1);
   const events = experiment ? await db.select().from(experimentEvents).where(and(eq(experimentEvents.userId, identity.id), eq(experimentEvents.experimentId, experiment.id))).orderBy(experimentEvents.dayNumber) : [];
@@ -320,6 +330,12 @@ async function postHandler(request: Request) {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
       const consentId = crypto.randomUUID();
+      const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
+      const [release] = profile ? await db.select().from(contentReleases).where(and(
+        eq(contentReleases.labCode, lab.code),
+        eq(contentReleases.deliveryEdition, profile.deliveryEdition),
+        or(eq(contentReleases.status, "PUBLISHED"), eq(contentReleases.status, "CONTROLLED")),
+      )).orderBy(desc(contentReleases.createdAt)).limit(1) : [];
       await db.insert(consentRecords).values({
         id: consentId,
         userId: identity.id,
@@ -328,9 +344,9 @@ async function postHandler(request: Request) {
         status: "GRANTED",
         grantedAt: now,
       });
-      await db.insert(labEnrollments).values({ id, userId: identity.id, labCode: lab.code, labVersion: lab.version }).onConflictDoUpdate({
+      await db.insert(labEnrollments).values({ id, userId: identity.id, labCode: lab.code, labVersion: lab.version, contentReleaseId: release?.id ?? null }).onConflictDoUpdate({
         target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
-        set: { updatedAt: now },
+        set: { contentReleaseId: release?.id ?? null, updatedAt: now },
       });
       await audit(identity, "CONSENT_CHANGED", "CONSENT_RECORD", consentId, { status: "GRANTED", labCode: lab.code, labVersion: lab.version });
       await audit(identity, "LAB_OPENED", "LAB_ENROLLMENT", id, { labCode: lab.code, labVersion: lab.version });
@@ -350,12 +366,12 @@ async function postHandler(request: Request) {
       }
       const savedIds = new Set(items.filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object")).map((item) => String(item.semanticFieldId ?? "")));
       if (savedIds.has(lab.postMetric.id) || savedIds.has(lab.confidencePost)) {
-        const rows = await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labVersion, lab.version))).orderBy(desc(responses.recordedAt));
+        const rows = await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labCode, lab.code), eq(responses.labVersion, lab.version))).orderBy(desc(responses.recordedAt));
         const latestValue = (fieldId: string) => {
           const row = rows.find((item) => item.semanticFieldId === fieldId && item.responseStatus === "ANSWERED");
           return Number(decode(row?.value ?? null));
         };
-        const [experiment] = await db.select().from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.labVersion, lab.version))).orderBy(desc(experiments.createdAt)).limit(1);
+        const [experiment] = await db.select().from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, lab.code), eq(experiments.labVersion, lab.version))).orderBy(desc(experiments.createdAt)).limit(1);
         const derived = [
           [`${lab.prefix}.${lab.code === "DEC" ? "DELIBERATENESS" : "AWARENESS"}_SHIFT`, latestValue(lab.postMetric.id) - latestValue(lab.preMetric.id)],
           [`${lab.prefix}.EQUATION_CONFIDENCE_SHIFT`, latestValue(lab.confidencePost) - latestValue(lab.confidencePre)],
@@ -380,7 +396,7 @@ async function postHandler(request: Request) {
       const [previous] = await db.select().from(hypotheses).where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, lab.code), eq(hypotheses.labVersion, lab.version), eq(hypotheses.status, "ACTIVE"))).orderBy(desc(hypotheses.createdAt)).limit(1);
       const id = crypto.randomUUID();
       if (previous) await db.update(hypotheses).set({ status: "SUPERSEDED", supersededBy: id }).where(eq(hypotheses.id, previous.id));
-      await db.insert(hypotheses).values({ id, userId: identity.id, labCode: lab.code, labVersion: lab.version, statement: passCore ? "" : statement, falsificationStatement: passCore ? "" : falsification, learnerConfidence: passCore ? 0 : confidence });
+      await db.insert(hypotheses).values({ id, userId: identity.id, labCode: lab.code, labVersion: lab.version, contentReleaseId: enrolment.contentReleaseId ?? null, statement: passCore ? "" : statement, falsificationStatement: passCore ? "" : falsification, learnerConfidence: passCore ? 0 : confidence });
       await saveResponse(identity, lab, { semanticFieldId: `${lab.prefix}.EQUATION.TEXT`, value: statement, responseStatus: passCore ? "PASS" : "ANSWERED" });
       await saveResponse(identity, lab, { semanticFieldId: `${lab.prefix}.FALSIFICATION.TEXT`, value: falsification, responseStatus: passCore ? "PASS" : "ANSWERED" });
       await saveResponse(identity, lab, { semanticFieldId: lab.confidencePre, value: confidence, responseStatus: passCore ? "PASS" : "ANSWERED" });
@@ -398,16 +414,22 @@ async function postHandler(request: Request) {
       const plannedEnd = new Date(`${startDate}T00:00:00.000Z`);
       plannedEnd.setUTCDate(plannedEnd.getUTCDate() + 6);
       const plannedEndDate = plannedEnd.toISOString().slice(0, 10);
-      const [active] = await db.select({ id: experiments.id }).from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.status, "ACTIVE"))).limit(1);
-      if (active) throw new Error("Finish the active seven-day experiment before starting another one.");
+      const [active] = await db.select({ id: experiments.id }).from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, lab.code), eq(experiments.status, "ACTIVE"))).limit(1);
+      if (active) throw new Error(`Finish the active ${lab.shortTitle} experiment before starting another one.`);
       const [hypothesis] = await db.select().from(hypotheses).where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, lab.code), eq(hypotheses.status, "ACTIVE"))).orderBy(desc(hypotheses.createdAt)).limit(1);
       if (!hypothesis) throw new Error("Write your working equation before starting the experiment.");
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
+      const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
       await db.insert(experiments).values({
         id,
         userId: identity.id,
+        labCode: lab.code,
         labVersion: lab.version,
+        contentReleaseId: enrolment.contentReleaseId ?? null,
+        deliveryEdition: profile?.deliveryEdition ?? "school",
+        experimentProtocol: lab.code === "DEC" ? "DECISION_PAUSE" : "SPENDING_PAUSE",
+        protocolVersion: "1",
         hypothesisId: hypothesis.id,
         targetPattern: String(body.targetPattern),
         targetCondition: String(body.targetCondition),
@@ -446,7 +468,7 @@ async function postHandler(request: Request) {
     if (action === "saveEvent") {
       const experimentId = String(body.experimentId ?? "");
       const dayNumber = Number(body.dayNumber ?? 0);
-      const [experiment] = await db.select().from(experiments).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labVersion, lab.version))).limit(1);
+      const [experiment] = await db.select().from(experiments).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labCode, lab.code), eq(experiments.labVersion, lab.version))).limit(1);
       if (!experiment || experiment.status !== "ACTIVE") throw new Error("The active experiment could not be found.");
       const [preference] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, identity.id)).limit(1);
       const today = todayInZone(preference?.timezone ?? "Africa/Johannesburg");
@@ -471,7 +493,7 @@ async function postHandler(request: Request) {
       });
       await db.update(evidenceRecords).set({ status: "SUPERSEDED" }).where(eq(evidenceRecords.sourceObjectId, id));
       await db.insert(evidenceRecords).values({
-        id: crypto.randomUUID(), userId: identity.id, labCode: lab.code, labVersion: lab.version, investigationId: `${lab.prefix}.I7`, semanticFieldId: `${lab.prefix}.EXPERIMENT.DAY.${dayNumber}`,
+        id: crypto.randomUUID(), userId: identity.id, labCode: lab.code, labVersion: lab.version, contentReleaseId: experiment.contentReleaseId ?? null, investigationId: `${lab.prefix}.I7`, semanticFieldId: `${lab.prefix}.EXPERIMENT.DAY.${dayNumber}`,
         sourceObjectType: "EXPERIMENT_EVENT", sourceObjectId: id, provenance: "OBS", valueType: "STRUCTURED", value: encode({ opportunity, pauseCompleted, details }), sensitivity: "P3", occurredAt: occurredDate.toISOString(),
       });
       await calculate(identity, lab, experimentId, experiment.predictedValue);
@@ -481,7 +503,7 @@ async function postHandler(request: Request) {
 
     if (action === "saveCheckpoint") {
       const experimentId = String(body.experimentId ?? "");
-      const [experiment] = await db.select().from(experiments).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labVersion, lab.version))).limit(1);
+      const [experiment] = await db.select().from(experiments).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labCode, lab.code), eq(experiments.labVersion, lab.version))).limit(1);
       if (!experiment || experiment.status !== "ACTIVE") throw new Error("The active experiment could not be found.");
       const [preference] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, identity.id)).limit(1);
       if (calendarDay(experiment.startDate, todayInZone(preference?.timezone ?? "Africa/Johannesburg")) < 3) throw new Error("The Day 3 checkpoint opens after three calendar days have been experienced.");
@@ -512,7 +534,7 @@ async function postHandler(request: Request) {
 
     if (action === "completeExperiment") {
       const experimentId = String(body.experimentId ?? "");
-      const [experiment] = await db.select().from(experiments).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labVersion, lab.version))).limit(1);
+      const [experiment] = await db.select().from(experiments).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labCode, lab.code), eq(experiments.labVersion, lab.version))).limit(1);
       if (!experiment || experiment.status !== "ACTIVE") throw new Error("The active experiment could not be found.");
       const [preference] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, identity.id)).limit(1);
       if (calendarDay(experiment.startDate, todayInZone(preference?.timezone ?? "Africa/Johannesburg")) < 7) throw new Error("The evidence review opens only after all seven calendar days have been experienced.");
@@ -529,7 +551,7 @@ async function postHandler(request: Request) {
 
     if (action === "completeLab") {
       const finalIds = new Set(lab.sections[9].map((field) => field.id));
-      const finalRows = await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labVersion, lab.version)));
+      const finalRows = await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labCode, lab.code), eq(responses.labVersion, lab.version)));
       const completedFields = new Set(finalRows.filter((row) => ["ANSWERED", "PASS"].includes(row.responseStatus) && finalIds.has(row.semanticFieldId)).map((row) => row.semanticFieldId));
       if (completedFields.size !== finalIds.size) throw new Error("Complete or pass every Behaviour Profile reflection before finishing the Lab.");
       const now = new Date().toISOString();

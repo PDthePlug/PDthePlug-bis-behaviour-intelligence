@@ -15,6 +15,8 @@ export const learners = sqliteTable("learners", {
   email: text("email").notNull(),
   displayName: text("display_name").notNull(),
   ageBand: text("age_band").notNull(),
+  deliveryEdition: text("delivery_edition").notNull().default("school"),
+  deliveryContext: text("delivery_context").notNull().default("independent"),
   mode: text("mode").notNull().default("INDEPENDENT"),
   language: text("language").notNull().default("en"),
   timezone: text("timezone").notNull().default("Africa/Johannesburg"),
@@ -22,6 +24,32 @@ export const learners = sqliteTable("learners", {
   createdAt: timestamp(),
   updatedAt: timestamp(),
 });
+
+export const contentReleases = sqliteTable(
+  "content_releases",
+  {
+    id: text("id").primaryKey(),
+    handbookId: text("handbook_id").notNull(),
+    labCode: text("lab_code").notNull(),
+    deliveryEdition: text("delivery_edition").notNull(),
+    contentVersion: text("content_version").notNull(),
+    runtimeVersion: text("runtime_version").notNull(),
+    schemaVersion: text("schema_version").notNull(),
+    releaseHash: text("release_hash").notNull(),
+    status: text("status").notNull().default("CONTROLLED"),
+    releasedAt: text("released_at"),
+    createdAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_content_release_identity").on(
+      table.labCode,
+      table.deliveryEdition,
+      table.contentVersion,
+      table.releaseHash,
+    ),
+    index("idx_content_release_lookup").on(table.labCode, table.deliveryEdition, table.status),
+  ],
+);
 
 export const consentRecords = sqliteTable(
   "consent_records",
@@ -46,6 +74,7 @@ export const labEnrollments = sqliteTable(
     userId: text("user_id").notNull(),
     labCode: text("lab_code").notNull().default("HAB"),
     labVersion: text("lab_version").notNull().default("4.5.1"),
+    contentReleaseId: text("content_release_id"),
     status: text("status").notNull().default("IN_PROGRESS"),
     currentInvestigation: integer("current_investigation").notNull().default(0),
     startedAt: timestamp(),
@@ -71,7 +100,13 @@ export const responses = sqliteTable(
     userId: text("user_id").notNull(),
     promptId: text("prompt_id").notNull(),
     semanticFieldId: text("semantic_field_id").notNull(),
+    labCode: text("lab_code").notNull().default("HAB"),
     labVersion: text("lab_version").notNull().default("4.5.1"),
+    contentReleaseId: text("content_release_id"),
+    deliveryEdition: text("delivery_edition").notNull().default("school"),
+    promptVersion: text("prompt_version").notNull().default("1"),
+    privacyClass: text("privacy_class").notNull().default("P2"),
+    provenance: text("provenance").notNull().default("SR"),
     value: text("value"),
     responseStatus: text("response_status").notNull().default("ANSWERED"),
     language: text("language").notNull().default("en"),
@@ -80,7 +115,7 @@ export const responses = sqliteTable(
     supersedesResponseId: text("supersedes_response_id"),
   },
   (table) => [
-    index("idx_responses_user_field").on(table.userId, table.semanticFieldId),
+    index("idx_responses_user_field").on(table.userId, table.labCode, table.semanticFieldId),
     index("idx_responses_user_recorded").on(table.userId, table.recordedAt),
   ],
 );
@@ -92,6 +127,7 @@ export const evidenceRecords = sqliteTable(
     userId: text("user_id").notNull(),
     labCode: text("lab_code").notNull().default("HAB"),
     labVersion: text("lab_version").notNull().default("4.5.1"),
+    contentReleaseId: text("content_release_id"),
     investigationId: text("investigation_id").notNull(),
     semanticFieldId: text("semantic_field_id").notNull(),
     sourceObjectType: text("source_object_type").notNull(),
@@ -117,6 +153,7 @@ export const hypotheses = sqliteTable(
     userId: text("user_id").notNull(),
     labCode: text("lab_code").notNull().default("HAB"),
     labVersion: text("lab_version").notNull().default("4.5.1"),
+    contentReleaseId: text("content_release_id"),
     statement: text("statement").notNull(),
     falsificationStatement: text("falsification_statement").notNull(),
     learnerConfidence: integer("learner_confidence").notNull(),
@@ -134,7 +171,12 @@ export const experiments = sqliteTable(
   {
     id: text("id").primaryKey(),
     userId: text("user_id").notNull(),
+    labCode: text("lab_code").notNull().default("HAB"),
     labVersion: text("lab_version").notNull().default("4.5.1"),
+    contentReleaseId: text("content_release_id"),
+    deliveryEdition: text("delivery_edition").notNull().default("school"),
+    experimentProtocol: text("experiment_protocol").notNull().default("HABIT_REPLACEMENT"),
+    protocolVersion: text("protocol_version").notNull().default("1"),
     hypothesisId: text("hypothesis_id"),
     status: text("status").notNull().default("ACTIVE"),
     targetPattern: text("target_pattern").notNull(),
@@ -156,7 +198,51 @@ export const experiments = sqliteTable(
     createdAt: timestamp(),
     updatedAt: timestamp(),
   },
-  (table) => [index("idx_experiments_user_id").on(table.userId)],
+  (table) => [index("idx_experiments_user_lab").on(table.userId, table.labCode)],
+);
+
+export const handbookProgress = sqliteTable(
+  "handbook_progress",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    labCode: text("lab_code").notNull(),
+    deliveryEdition: text("delivery_edition").notNull(),
+    contentReleaseId: text("content_release_id").notNull(),
+    semanticStepId: text("semantic_step_id").notNull(),
+    status: text("status").notNull().default("STARTED"),
+    syncState: text("sync_state").notNull().default("SYNCED"),
+    firstSeenAt: timestamp(),
+    lastSeenAt: timestamp(),
+    completedAt: text("completed_at"),
+    updatedAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_handbook_progress_step").on(table.userId, table.contentReleaseId, table.semanticStepId),
+    index("idx_handbook_progress_lab").on(table.userId, table.labCode, table.status),
+    index("idx_handbook_progress_content_release").on(table.contentReleaseId),
+  ],
+);
+
+export const certificateAwards = sqliteTable(
+  "certificate_awards",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    enrolmentId: text("enrolment_id").notNull(),
+    labCode: text("lab_code").notNull(),
+    contentReleaseId: text("content_release_id"),
+    certificateVersion: text("certificate_version").notNull().default("1"),
+    evidenceSnapshot: text("evidence_snapshot").notNull(),
+    status: text("status").notNull().default("ISSUED"),
+    issuedAt: timestamp(),
+    revokedAt: text("revoked_at"),
+  },
+  (table) => [
+    uniqueIndex("uq_certificate_enrolment_version").on(table.enrolmentId, table.certificateVersion),
+    index("idx_certificate_user_lab").on(table.userId, table.labCode),
+    index("idx_certificate_content_release").on(table.contentReleaseId),
+  ],
 );
 
 // Read-only database views expose structural progress to authorized staff

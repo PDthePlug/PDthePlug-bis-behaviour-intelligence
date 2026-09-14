@@ -4,6 +4,7 @@ import {
   auditEvents,
   companionTurns,
   consentRecords,
+  contentReleases,
   evidenceRecords,
   experimentCheckpoints,
   experimentEvents,
@@ -27,6 +28,7 @@ import {
   LAB_VERSION,
   POLICY_VERSION,
 } from "../../../lib/habit-lab";
+import { initialDeliveryEdition } from "../../../lib/learning-foundation";
 import { computeHabitMetrics } from "../../../lib/bis-metrics.mjs";
 
 import type { Identity } from "../../../lib/bis-access";
@@ -180,7 +182,7 @@ async function snapshot(identity: Identity) {
   const responseRows = await db
     .select()
     .from(responses)
-    .where(eq(responses.userId, identity.id))
+    .where(and(eq(responses.userId, identity.id), eq(responses.labCode, "HAB")))
     .orderBy(desc(responses.recordedAt));
   const responseMap: Record<string, { value: unknown; status: string; responseId: string; recordedAt: string }> = {};
   for (const row of responseRows) {
@@ -196,13 +198,13 @@ async function snapshot(identity: Identity) {
   const [hypothesis] = await db
     .select()
     .from(hypotheses)
-    .where(eq(hypotheses.userId, identity.id))
+    .where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, "HAB")))
     .orderBy(desc(hypotheses.createdAt))
     .limit(1);
   const [experiment] = await db
     .select()
     .from(experiments)
-    .where(eq(experiments.userId, identity.id))
+    .where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB")))
     .orderBy(desc(experiments.createdAt))
     .limit(1);
   const events = experiment
@@ -336,11 +338,14 @@ async function saveResponse(
   const sensitivity = definition ? definition.sensitivity : "P2";
   const valueType = definition ? definition.type : "CATEGORICAL";
   const responseStatus = payload.responseStatus === "PASS" ? "PASS" : "ANSWERED";
+  const enrolment = await currentHabitEnrollment(identity.id);
+  if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
+  const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
 
   const [previous] = await db
     .select()
     .from(responses)
-    .where(and(eq(responses.userId, identity.id), eq(responses.semanticFieldId, payload.semanticFieldId)))
+    .where(and(eq(responses.userId, identity.id), eq(responses.labCode, "HAB"), eq(responses.semanticFieldId, payload.semanticFieldId)))
     .orderBy(desc(responses.recordedAt))
     .limit(1);
 
@@ -358,7 +363,13 @@ async function saveResponse(
     userId: identity.id,
     promptId,
     semanticFieldId: payload.semanticFieldId,
+    labCode: "HAB",
     labVersion: LAB_VERSION,
+    contentReleaseId: enrolment.contentReleaseId ?? null,
+    deliveryEdition: profile?.deliveryEdition ?? "school",
+    promptVersion: LAB_VERSION,
+    privacyClass: sensitivity,
+    provenance: "SR",
     value: responseStatus === "PASS" ? null : jsonValue(payload.value),
     responseStatus,
     occurredAt: payload.occurredAt ?? now,
@@ -369,6 +380,7 @@ async function saveResponse(
     userId: identity.id,
     labCode: "HAB",
     labVersion: LAB_VERSION,
+    contentReleaseId: enrolment.contentReleaseId ?? null,
     investigationId: `HAB.I${investigation}`,
     semanticFieldId: payload.semanticFieldId,
     sourceObjectType: "RESPONSE",
@@ -380,8 +392,6 @@ async function saveResponse(
     sensitivity,
     occurredAt: payload.occurredAt ?? now,
   });
-  const enrolment = await currentHabitEnrollment(identity.id);
-  if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
   await db
     .update(labEnrollments)
     .set({
@@ -509,6 +519,7 @@ async function postHandler(request: Request) {
           email: identity.email,
           displayName: identity.displayName,
           ageBand,
+          deliveryEdition: initialDeliveryEdition(ageBand),
           mode,
         })
         .onConflictDoUpdate({
@@ -524,12 +535,18 @@ async function postHandler(request: Request) {
         status: "GRANTED",
         grantedAt: now,
       });
+      const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
+      const [release] = profile ? await db.select().from(contentReleases).where(and(
+        eq(contentReleases.labCode, "HAB"),
+        eq(contentReleases.deliveryEdition, profile.deliveryEdition),
+        eq(contentReleases.status, "PUBLISHED"),
+      )).orderBy(desc(contentReleases.createdAt)).limit(1) : [];
       await db
         .insert(labEnrollments)
-        .values({ id: crypto.randomUUID(), userId: identity.id, labCode: "HAB", labVersion: LAB_VERSION })
+        .values({ id: crypto.randomUUID(), userId: identity.id, labCode: "HAB", labVersion: LAB_VERSION, contentReleaseId: release?.id ?? null })
         .onConflictDoUpdate({
           target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
-          set: { status: "IN_PROGRESS", updatedAt: now },
+          set: { contentReleaseId: release?.id ?? null, status: "IN_PROGRESS", updatedAt: now },
         });
       await audit(identity.id, "CONSENT_CHANGED", "CONSENT_RECORD", consentId, { status: "GRANTED" });
       await pilotEvent(identity.id, "ONBOARDING_COMPLETED", "CONSENT_RECORD", consentId, { mode, ageBand, experienceVersion: LAB_VERSION });
@@ -653,7 +670,7 @@ async function postHandler(request: Request) {
       const [previous] = await db
         .select()
         .from(hypotheses)
-        .where(eq(hypotheses.userId, identity.id))
+        .where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, "HAB")))
         .orderBy(desc(hypotheses.createdAt))
         .limit(1);
       const id = crypto.randomUUID();
@@ -665,6 +682,7 @@ async function postHandler(request: Request) {
         userId: identity.id,
         labCode: "HAB",
         labVersion: LAB_VERSION,
+        contentReleaseId: (await currentHabitEnrollment(identity.id))?.contentReleaseId ?? null,
         statement,
         falsificationStatement: falsification,
         learnerConfidence: confidence,
@@ -696,19 +714,27 @@ async function postHandler(request: Request) {
       const [activeExperiment] = await db
         .select({ id: experiments.id })
         .from(experiments)
-        .where(and(eq(experiments.userId, identity.id), eq(experiments.status, "ACTIVE")))
+        .where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB"), eq(experiments.status, "ACTIVE")))
         .limit(1);
       if (activeExperiment) throw new Error("Finish the active experiment before starting another one.");
       const [activeHypothesis] = await db
         .select()
         .from(hypotheses)
-        .where(eq(hypotheses.userId, identity.id))
+        .where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, "HAB")))
         .orderBy(desc(hypotheses.createdAt))
         .limit(1);
+      const enrolment = await currentHabitEnrollment(identity.id);
+      if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
+      const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
       await db.insert(experiments).values({
         id,
         userId: identity.id,
+        labCode: "HAB",
         labVersion: LAB_VERSION,
+        contentReleaseId: enrolment.contentReleaseId ?? null,
+        deliveryEdition: profile?.deliveryEdition ?? "school",
+        experimentProtocol: "HABIT_REPLACEMENT",
+        protocolVersion: "1",
         hypothesisId: activeHypothesis?.id ?? null,
         targetPattern: String(body.targetPattern),
         targetCondition: String(body.targetCondition),
@@ -738,8 +764,6 @@ async function postHandler(request: Request) {
         changeReason: "EXPERIMENT_STARTED",
       });
       await saveResponse(identity, { semanticFieldId: "HAB.I6.INSIGHT.TEXT", value: String(body.insight), investigation: 6 });
-      const enrolment = await currentHabitEnrollment(identity.id);
-      if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
       await db
         .update(labEnrollments)
         .set({ status: "EXPERIMENT_ACTIVE", currentInvestigation: 7, experimentStartedAt: now, updatedAt: now })
@@ -756,7 +780,7 @@ async function postHandler(request: Request) {
       const [experiment] = await db
         .select()
         .from(experiments)
-        .where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id)))
+        .where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB")))
         .limit(1);
       if (!experiment) throw new Error("Experiment not found.");
       if (experiment.status !== "ACTIVE") throw new Error("This experiment is closed. Continue to the evidence review.");
@@ -805,6 +829,7 @@ async function postHandler(request: Request) {
         userId: identity.id,
         labCode: "HAB",
         labVersion: LAB_VERSION,
+        contentReleaseId: experiment.contentReleaseId ?? null,
         investigationId: "HAB.I7",
         semanticFieldId: "HAB.EXPERIMENT.EVENT",
         sourceObjectType: "EXPERIMENT_EVENT",
@@ -839,7 +864,7 @@ async function postHandler(request: Request) {
       const [experiment] = await db
         .select()
         .from(experiments)
-        .where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id)))
+        .where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB")))
         .limit(1);
       if (!experiment || experiment.status !== "ACTIVE") throw new Error("Only an active experiment can be calibrated.");
       await ensureInitialParameterVersion(experiment);
@@ -914,7 +939,7 @@ async function postHandler(request: Request) {
       const [experiment] = await db
         .select()
         .from(experiments)
-        .where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id)))
+        .where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB")))
         .limit(1);
       if (!experiment || experiment.status !== "ACTIVE") throw new Error("Only an active experiment can be completed or extended.");
       const eventRows = await db
