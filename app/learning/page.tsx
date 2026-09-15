@@ -1,12 +1,9 @@
-import { LearningPortal } from "./learning-portal";
+import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/supabase/require-user";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Volume 1 Learning Library | BIS",
-  description: "The unified learning library for the Behaviour Intelligence Series.",
-};
-
-export default function LearningPage() {
-  return <LearningPortal />;
+export default async function LearningPage() {
+  await requireUser("/habit");
+  redirect("/habit");
 }
