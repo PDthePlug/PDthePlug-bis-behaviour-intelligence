@@ -38,16 +38,24 @@ test("learner profile setup opens the prototype-derived BIS shell without forcin
   assert.match(habitPage, /params\.section === "learn" \? "learn" : "today"/);
 });
 
-test("Habit Lab and field experiment remain focused child routes", async () => {
-  const [lab, experiment, shell] = await Promise.all([
+test("Habit Lab and field experiment are focused child surfaces under the same bottom BIS menu", async () => {
+  const [lab, experiment, shell, menu, focusedCss] = await Promise.all([
     source("app/habit-lab/page.tsx"),
     source("app/habit-lab/experiment/page.tsx"),
     source("app/habit-lab/habit-lab-shell.tsx"),
+    source("app/habit-lab/focused-learner-menu.tsx"),
+    source("app/habit-lab/focused-runtime.css"),
   ]);
   assert.match(lab, /view="lab"/);
   assert.match(experiment, /view="experiment"/);
-  assert.match(shell, /href="\/habit"/);
-  assert.match(shell, /HabitRouteBridge target=\{view\}/);
+  assert.match(shell, /HabitRouteBridge target=\{view\} hideReturnLink/);
+  assert.match(shell, /<FocusedLearnerMenu active=\{view\} \/>/);
+  assert.match(menu, /<strong>Today<\/strong>/);
+  assert.match(menu, /<strong>Learn<\/strong>/);
+  assert.match(menu, /<strong>Lab<\/strong>/);
+  assert.match(menu, /<strong>Experiment<\/strong>/);
+  assert.match(focusedCss, /\.habit-lab-route \.sidebar[\s\S]*display:none!important/);
+  assert.match(focusedCss, /\.habit-lab-route \.mobile-task-dock/);
 });
 
 test("learner application has one bottom hamburger navigation rather than a menu inside a menu", async () => {
