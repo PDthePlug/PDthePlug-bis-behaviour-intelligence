@@ -132,16 +132,19 @@ test("Workplace programme retains its confidentiality architecture", async () =>
   assert.match(welcome, /manager|employer/i);
 });
 
-test("programme handoff opens the live Habit view and preserves a return path", async () => {
+test("programme handoff opens focused Habit routes and preserves programme continuity", async () => {
   const playerSource = await readFile(new URL("../app/learning/programme-player.tsx", import.meta.url), "utf8");
   const bridgeSource = await readFile(new URL("../app/habit-route-bridge.tsx", import.meta.url), "utf8");
-  const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const rootSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const labShellSource = await readFile(new URL("../app/habit-lab/habit-lab-shell.tsx", import.meta.url), "utf8");
   assert.match(playerSource, /\?view=lab&returnTo=\/learning\/habit/);
   assert.match(playerSource, /\?view=experiment&returnTo=\/learning\/habit/);
+  assert.match(rootSource, /view === "lab"[\s\S]*redirect\("\/habit-lab"\)/);
+  assert.match(rootSource, /view === "experiment"[\s\S]*redirect\("\/habit-lab\/experiment"\)/);
   assert.match(bridgeSource, /lab: "My Lab"/);
   assert.match(bridgeSource, /experiment: "Today"/);
-  assert.match(bridgeSource, /Return to programme/);
-  assert.match(pageSource, /<HabitRouteBridge \/>/);
+  assert.match(labShellSource, /HabitRouteBridge target=\{view\}/);
+  assert.match(labShellSource, /href="\/habit"/);
   const assetRouteSource = await readFile(new URL("../app/programmes/[asset]/route.ts", import.meta.url), "utf8");
   assert.match(playerSource, /\/programmes\/habit-\$\{edition\}\.json\.gz\.b64/);
   assert.match(assetRouteSource, /habit-school\.json\.gz\.b64/);

@@ -4,36 +4,44 @@ import Link from "next/link";
 import { useEffect, useSyncExternalStore } from "react";
 import { ArrowLeft } from "lucide-react";
 
-type RequestedView = "lab" | "experiment";
+export type RequestedHabitView = "lab" | "experiment";
 
-const labels: Record<RequestedView, string> = {
+const labels: Record<RequestedHabitView, string> = {
   lab: "My Lab",
   experiment: "Today",
 };
 
-function requestedView(): RequestedView | null {
+function requestedView(): RequestedHabitView | null {
   const value = new URLSearchParams(window.location.search).get("view");
   return value === "lab" || value === "experiment" ? value : null;
 }
 
 function safeReturnPath() {
   const value = new URLSearchParams(window.location.search).get("returnTo");
-  return value?.startsWith("/learning/") ? value : null;
+  return value?.startsWith("/") && !value.startsWith("//") ? value : null;
 }
 
 const subscribeToLocation = () => () => undefined;
 
-export function HabitRouteBridge() {
-  const returnTo = useSyncExternalStore(subscribeToLocation, safeReturnPath, () => null);
+export function HabitRouteBridge({
+  target,
+  returnTo,
+}: {
+  target?: RequestedHabitView;
+  returnTo?: string;
+}) {
+  const queryTarget = useSyncExternalStore(subscribeToLocation, requestedView, () => null);
+  const queryReturn = useSyncExternalStore(subscribeToLocation, safeReturnPath, () => null);
+  const resolvedTarget = target ?? queryTarget;
+  const resolvedReturn = returnTo ?? queryReturn;
 
   useEffect(() => {
-    const target = requestedView();
-    if (!target) return;
+    if (!resolvedTarget) return;
 
     let finished = false;
     const openRequestedView = () => {
       if (finished) return true;
-      const expected = labels[target];
+      const expected = labels[resolvedTarget];
       const button = [...document.querySelectorAll<HTMLButtonElement>(".sidebar-nav button")]
         .find((candidate) => candidate.textContent?.replace(/\s+/g, " ").trim().startsWith(expected));
       if (!button) return false;
@@ -48,8 +56,8 @@ export function HabitRouteBridge() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, []);
+  }, [resolvedTarget]);
 
-  if (!returnTo) return null;
-  return <Link href={returnTo} className="fixed bottom-5 right-5 z-[140] flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-3 text-xs font-semibold text-[#173f35] shadow-xl shadow-black/10"><ArrowLeft className="size-4"/>Return to programme</Link>;
+  if (!resolvedReturn) return null;
+  return <Link href={resolvedReturn} className="fixed bottom-5 right-5 z-[140] flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-3 text-xs font-semibold text-[#173f35] shadow-xl shadow-black/10"><ArrowLeft className="size-4"/>Return to programme</Link>;
 }

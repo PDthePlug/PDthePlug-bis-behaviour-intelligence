@@ -1,0 +1,28 @@
+import Link from "next/link";
+import { ArrowLeft, FlaskConical } from "lucide-react";
+import { BISApp } from "../bis-app";
+import { HabitRouteBridge, type RequestedHabitView } from "../habit-route-bridge";
+import { requireUser } from "@/lib/supabase/require-user";
+
+export async function HabitLabShell({ view }: { view: RequestedHabitView }) {
+  const next = view === "experiment" ? "/habit-lab/experiment" : "/habit-lab";
+  const user = await requireUser(next);
+  const displayName =
+    typeof user.user_metadata?.full_name === "string"
+      ? user.user_metadata.full_name
+      : typeof user.user_metadata?.name === "string"
+        ? user.user_metadata.name
+        : user.email.split("@")[0];
+
+  return (
+    <div className="habit-lab-route">
+      <header className="habit-lab-route-header">
+        <Link href="/habit"><ArrowLeft /> Habit programme</Link>
+        <div><FlaskConical /><span><small>{view === "experiment" ? "Field experiment" : "Day 3 · Live investigation"}</small><strong>{view === "experiment" ? "Habit Lab Experiment" : "Habit Lab Phase A"}</strong></span></div>
+        <span className="habit-lab-route-status">Focused tool</span>
+      </header>
+      <BISApp initialIdentity={{ email: user.email, displayName }} />
+      <HabitRouteBridge target={view} />
+    </div>
+  );
+}
