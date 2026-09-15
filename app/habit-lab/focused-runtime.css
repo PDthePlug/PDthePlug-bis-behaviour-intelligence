@@ -1,0 +1,14 @@
+/* Focused Habit Lab and Experiment routes: the BIS bottom menu is the only learner-level navigation. */
+.habit-lab-route{min-height:100vh;background:#f4f2ed;color:#17201d;padding-bottom:78px}
+.habit-lab-route-header{position:sticky;z-index:55;top:0;height:64px;border-bottom:1px solid #dedad2;background:rgba(250,249,246,.96);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.habit-lab-route-header .habit-lab-brand{display:flex;align-items:center;gap:10px}.habit-lab-route-header .habit-lab-brand>span{width:36px;height:36px;border-radius:11px;background:#173f35;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:900;letter-spacing:.08em}.habit-lab-route-header .habit-lab-brand>div{display:grid}.habit-lab-route-header .habit-lab-brand strong{font-size:12px}.habit-lab-route-header .habit-lab-brand small{font-size:9px;color:#707974;text-transform:uppercase;letter-spacing:.08em;font-weight:800}.habit-lab-route-status{border-radius:999px;background:#dfeae4;color:#173f35;padding:7px 10px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.habit-lab-route .mobile-header,.habit-lab-route .sidebar,.habit-lab-route .mobile-task-dock,.habit-lab-route .adaptive-contextbar{display:none!important}
+.habit-lab-route .app-main{margin-left:0!important;padding:0!important;min-height:calc(100vh - 64px)!important;width:100%!important}
+.habit-lab-route .app-main>.error-banner{width:min(960px,calc(100% - 32px));margin:16px auto 0}
+.habit-lab-route .app-main>.page-shell,.habit-lab-route .app-main>.lab-shell,.habit-lab-route .app-main>.experiment-shell{margin-left:auto!important;margin-right:auto!important}
+.habit-lab-route .privacy-screen{z-index:120}
+.habit-lab-route .prototype-bottom-trigger{z-index:135}
+.habit-lab-route .prototype-menu-scrim{z-index:138}
+.habit-lab-route .prototype-bottom-sheet{z-index:139}
+.habit-lab-route .prototype-menu-items a.active{background:#dfeae4;color:#173f35}
+@media(max-width:700px){.habit-lab-route-header{padding:0 14px}.habit-lab-route-status{font-size:8px;padding:6px 8px}}
