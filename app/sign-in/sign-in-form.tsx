@@ -8,6 +8,20 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+function authErrorMessage(message: string) {
+  const normalised = message.toLowerCase();
+  if (normalised.includes("email rate limit exceeded") || normalised.includes("rate limit")) {
+    return "BIS has temporarily reached the confirmation-email limit. If you already created this account, choose Sign in and use the same email and password. New confirmation emails will resume when the provider limit resets.";
+  }
+  if (normalised.includes("email not confirmed")) {
+    return "This account exists, but its email is still waiting for confirmation. Use the confirmation email already sent to you; requesting another one immediately may be rate-limited.";
+  }
+  if (normalised.includes("user already registered") || normalised.includes("already registered")) {
+    return "A BIS account already exists for this email. Choose Sign in and use your password.";
+  }
+  return message;
+}
+
 export function SignInForm({ next }: { next: string }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -18,6 +32,12 @@ export function SignInForm({ next }: { next: string }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  function changeMode(nextMode: "signin" | "signup") {
+    setMode(nextMode);
+    setError("");
+    setMessage("");
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,7 +69,13 @@ export function SignInForm({ next }: { next: string }) {
         setMessage("Check your email to confirm your BIS account. BIS will resolve the right learner or staff dashboard when you return.");
       }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "BIS could not complete that request.");
+      const raw = cause instanceof Error ? cause.message : "BIS could not complete that request.";
+      const friendly = authErrorMessage(raw);
+      setError(friendly);
+      if (raw.toLowerCase().includes("rate limit") || raw.toLowerCase().includes("already registered")) {
+        setMode("signin");
+        setMessage("Your details are still in the form. Try signing in before creating another account.");
+      }
     } finally {
       setBusy(false);
     }
@@ -75,8 +101,8 @@ export function SignInForm({ next }: { next: string }) {
         <h2>{mode === "signin" ? "Continue where you belong." : "Create your BIS account."}</h2>
         <p>{mode === "signin" ? "After sign-in, BIS routes you to your learner experience or role-restricted workspace." : "After signup, your learner profile will resolve the correct authored handbook edition."}</p>
         <div className="auth-mode" role="tablist" aria-label="Account action">
-          <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "active" : ""} onClick={() => setMode("signin")}>Sign in</button>
-          <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "active" : ""} onClick={() => setMode("signup")}>Create account</button>
+          <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "active" : ""} onClick={() => changeMode("signin")}>Sign in</button>
+          <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "active" : ""} onClick={() => changeMode("signup")}>Create account</button>
         </div>
         <form onSubmit={submit}>
           {mode === "signup" ? <label><span>Name</span><Input autoComplete="name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} required minLength={2} /></label> : null}
