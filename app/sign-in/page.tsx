@@ -3,11 +3,11 @@ import { SignInForm } from "./sign-in-form";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to continue your BIS programme.",
+  description: "Sign in to continue in BIS.",
 };
 
 function safeReturnPath(value: string | undefined) {
-  return value?.startsWith("/") && !value.startsWith("//") ? value : "/habit";
+  return value?.startsWith("/") && !value.startsWith("//") ? value : "/";
 }
 
 export default async function SignInPage({

@@ -6,6 +6,6 @@ export const dynamic = "force-dynamic";
 export default async function LegacyProgrammePage({ params }: { params: Promise<{ lab: string }> }) {
   const { lab } = await params;
   if (lab !== "habit") notFound();
-  await requireUser("/habit");
-  redirect("/habit");
+  await requireUser("/habit?section=learn");
+  redirect("/habit?section=learn");
 }

@@ -14,50 +14,14 @@ const expectedHashes = {
 const expectedKeys = ["Welcome", "Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Weekend", "Day 6", "Day 7", "Day 8", "Day 9", "Day 10", "Certificate"];
 
 const assetManifest = {
-  school: [
-    "habit-school.part0.seg00",
-    "habit-school.part0.seg01",
-    "habit-school.part1.seg00",
-    "habit-school.part1.seg01",
-    "habit-school.part2.seg00",
-    "habit-school.part2.seg01",
-    "habit-school.part2.seg02",
-    "habit-school.part2.seg03",
-    "habit-school.part2.seg04",
-    "habit-school.part2.seg05",
-  ],
-  emerging_adult: [
-    "habit-emerging_adult.part0.seg00",
-    "habit-emerging_adult.part0.seg01",
-    "habit-emerging_adult.part0.seg02",
-    "habit-emerging_adult.part0.seg03",
-    "habit-emerging_adult.part0.seg04",
-    "habit-emerging_adult.part0.seg05",
-    "habit-emerging_adult.part0.seg06",
-    "habit-emerging_adult.part1.seg00",
-    "habit-emerging_adult.part1.seg01",
-    "habit-emerging_adult.part2.seg00",
-    "habit-emerging_adult.part2.seg01",
-    "habit-emerging_adult.part2.seg02",
-    "habit-emerging_adult.part2.seg03",
-    "habit-emerging_adult.part2.seg04",
-    "habit-emerging_adult.part2.seg05",
-  ],
-  workplace: [
-    "habit-workplace.part0.seg00",
-    "habit-workplace.part0.seg01",
-    "habit-workplace.part1.seg00",
-    "habit-workplace.part1.seg01",
-    "habit-workplace.part2.seg00",
-    "habit-workplace.part2.seg01",
-    "habit-workplace.part3.seg00",
-  ],
+  school: ["habit-school.part0.seg00", "habit-school.part0.seg01", "habit-school.part1.seg00", "habit-school.part1.seg01", "habit-school.part2.seg00", "habit-school.part2.seg01", "habit-school.part2.seg02", "habit-school.part2.seg03", "habit-school.part2.seg04", "habit-school.part2.seg05"],
+  emerging_adult: ["habit-emerging_adult.part0.seg00", "habit-emerging_adult.part0.seg01", "habit-emerging_adult.part0.seg02", "habit-emerging_adult.part0.seg03", "habit-emerging_adult.part0.seg04", "habit-emerging_adult.part0.seg05", "habit-emerging_adult.part0.seg06", "habit-emerging_adult.part1.seg00", "habit-emerging_adult.part1.seg01", "habit-emerging_adult.part2.seg00", "habit-emerging_adult.part2.seg01", "habit-emerging_adult.part2.seg02", "habit-emerging_adult.part2.seg03", "habit-emerging_adult.part2.seg04", "habit-emerging_adult.part2.seg05"],
+  workplace: ["habit-workplace.part0.seg00", "habit-workplace.part0.seg01", "habit-workplace.part1.seg00", "habit-workplace.part1.seg01", "habit-workplace.part2.seg00", "habit-workplace.part2.seg01", "habit-workplace.part3.seg00"],
 };
 
 async function programme(edition) {
   const parts = await Promise.all(assetManifest[edition].map((name) => readFile(new URL(`../public/programmes/chunks/${name}`, import.meta.url), "utf8")));
-  const encoded = parts.join("").trim();
-  return JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"));
+  return JSON.parse(gunzipSync(Buffer.from(parts.join("").trim(), "base64")).toString("utf8"));
 }
 
 test("Habit is a lossless 13-position programme in all three editions", async () => {
@@ -87,8 +51,7 @@ test("programme clock and experiment clock remain distinct", async () => {
 
 test("Day 3 separates learning responses from the formal Lab record", async () => {
   for (const edition of editions) {
-    const value = await programme(edition);
-    const day3 = value.treatment.pages.find((item) => item.key === "Day 3");
+    const day3 = (await programme(edition)).treatment.pages.find((item) => item.key === "Day 3");
     assert.equal(day3.phase, "LAB");
     assert.ok(day3.labHandoff);
     assert.match(day3.html, /data-purpose="FORMAL_LAB_REFERENCE"/);
@@ -117,8 +80,7 @@ test("all digital workbook fields are stable private learning-response IDs with 
 
 test("Day 8 retains N/A zero-opportunity logic and calibration formula", async () => {
   for (const edition of editions) {
-    const value = await programme(edition);
-    const html = value.treatment.pages.find((item) => item.key === "Day 8").html;
+    const html = (await programme(edition)).treatment.pages.find((item) => item.key === "Day 8").html;
     assert.match(html, /N\/A/);
     assert.match(html, /Prediction Accuracy/);
     assert.match(html, /100/);
@@ -126,26 +88,29 @@ test("Day 8 retains N/A zero-opportunity logic and calibration formula", async (
 });
 
 test("Workplace programme retains its confidentiality architecture", async () => {
-  const value = await programme("workplace");
-  const welcome = value.treatment.pages.find((item) => item.key === "Welcome").html;
+  const welcome = (await programme("workplace")).treatment.pages.find((item) => item.key === "Welcome").html;
   assert.match(welcome, /CONFIDENTIALITY|Confidentiality/);
   assert.match(welcome, /manager|employer/i);
 });
 
 test("programme handoff opens focused Habit routes and preserves programme continuity", async () => {
-  const playerSource = await readFile(new URL("../app/learning/programme-player.tsx", import.meta.url), "utf8");
-  const bridgeSource = await readFile(new URL("../app/habit-route-bridge.tsx", import.meta.url), "utf8");
-  const rootSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-  const labShellSource = await readFile(new URL("../app/habit-lab/habit-lab-shell.tsx", import.meta.url), "utf8");
-  assert.match(playerSource, /\?view=lab&returnTo=\/learning\/habit/);
-  assert.match(playerSource, /\?view=experiment&returnTo=\/learning\/habit/);
+  const [playerSource, bridgeSource, rootSource, labShellSource, menuSource, assetRouteSource] = await Promise.all([
+    readFile(new URL("../app/learning/programme-player.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/habit-route-bridge.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/habit-lab/habit-lab-shell.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/habit-lab/focused-learner-menu.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/programmes/[asset]/route.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(playerSource, /\/habit-lab\?returnTo=%2Fhabit/);
+  assert.match(playerSource, /\/habit-lab\/experiment\?returnTo=%2Fhabit/);
   assert.match(rootSource, /view === "lab"[\s\S]*redirect\("\/habit-lab"\)/);
   assert.match(rootSource, /view === "experiment"[\s\S]*redirect\("\/habit-lab\/experiment"\)/);
   assert.match(bridgeSource, /lab: "My Lab"/);
   assert.match(bridgeSource, /experiment: "Today"/);
-  assert.match(labShellSource, /HabitRouteBridge target=\{view\}/);
-  assert.match(labShellSource, /href="\/habit"/);
-  const assetRouteSource = await readFile(new URL("../app/programmes/[asset]/route.ts", import.meta.url), "utf8");
+  assert.match(labShellSource, /HabitRouteBridge target=\{view\} hideReturnLink/);
+  assert.match(menuSource, /href="\/habit"/);
+  assert.match(menuSource, /href="\/habit\?section=learn"/);
   assert.match(playerSource, /\/programmes\/habit-\$\{edition\}\.json\.gz\.b64/);
   assert.match(assetRouteSource, /habit-school\.json\.gz\.b64/);
   assert.match(assetRouteSource, /habit-emerging_adult\.json\.gz\.b64/);
