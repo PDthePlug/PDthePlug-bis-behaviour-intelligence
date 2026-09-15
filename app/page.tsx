@@ -1,4 +1,5 @@
 import { BISApp } from "./bis-app";
+import { HabitRouteBridge } from "./habit-route-bridge";
 import { requireUser } from "@/lib/supabase/require-user";
 
 export const dynamic = "force-dynamic";
@@ -12,8 +13,9 @@ export default async function Home() {
         ? user.user_metadata.name
         : user.email.split("@")[0];
   return (
-    <BISApp
-      initialIdentity={{ email: user.email, displayName }}
-    />
+    <>
+      <BISApp initialIdentity={{ email: user.email, displayName }} />
+      <HabitRouteBridge />
+    </>
   );
 }
