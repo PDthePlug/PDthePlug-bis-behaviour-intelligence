@@ -83,7 +83,22 @@ export function ProgrammeEntry({ initialIdentity }: { initialIdentity: { email: 
     }
   }
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        const response = await fetch("/api/bis", { cache: "no-store", signal: controller.signal });
+        const data = await response.json() as EntrySnapshot & { error?: string };
+        if (!response.ok) throw new Error(data.error || "Your Habit programme could not be opened.");
+        if (!controller.signal.aborted) setSnapshot(data);
+      } catch (cause) {
+        if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Your Habit programme could not be opened.");
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, []);
 
   if (loading) {
     return <main className="learning-state"><span className="learning-loader"/><h1>Opening your Habit programme…</h1><p>BIS is finding your edition and your current programme position.</p></main>;
