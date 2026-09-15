@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 function authErrorMessage(message: string) {
   const normalised = message.toLowerCase();
   if (normalised.includes("email rate limit exceeded") || normalised.includes("rate limit")) {
-    return "BIS has temporarily reached the confirmation-email limit. If you already created this account, choose Sign in and use the same email and password. New confirmation emails will resume when the provider limit resets.";
+    return "BIS cannot send another confirmation email right now because the authentication provider's project-wide email limit has been reached. Your signup was not completed. Keep these details and try Create account again after the email limit resets.";
   }
   if (normalised.includes("email not confirmed")) {
     return "This account exists, but its email is still waiting for confirmation. Use the confirmation email already sent to you; requesting another one immediately may be rate-limited.";
@@ -70,11 +70,14 @@ export function SignInForm({ next }: { next: string }) {
       }
     } catch (cause) {
       const raw = cause instanceof Error ? cause.message : "BIS could not complete that request.";
-      const friendly = authErrorMessage(raw);
-      setError(friendly);
-      if (raw.toLowerCase().includes("rate limit") || raw.toLowerCase().includes("already registered")) {
+      const normalised = raw.toLowerCase();
+      setError(authErrorMessage(raw));
+      if (normalised.includes("already registered")) {
         setMode("signin");
-        setMessage("Your details are still in the form. Try signing in before creating another account.");
+        setMessage("Your details are still in the form. Sign in with the account that already exists.");
+      } else if (normalised.includes("rate limit")) {
+        setMode("signup");
+        setMessage("This is a provider email throttle, not a problem with your name, email or password. BIS has preserved the form so you can retry later.");
       }
     } finally {
       setBusy(false);
