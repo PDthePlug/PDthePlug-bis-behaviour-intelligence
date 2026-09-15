@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  outputFileTracingIncludes: {
+    "/programmes/[asset]": ["./public/programmes/chunks/**/*"],
+  },
 };
 
 export default nextConfig;
