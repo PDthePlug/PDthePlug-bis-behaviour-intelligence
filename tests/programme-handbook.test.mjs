@@ -137,8 +137,8 @@ test("programme handoff opens focused Habit routes and preserves programme conti
   const bridgeSource = await readFile(new URL("../app/habit-route-bridge.tsx", import.meta.url), "utf8");
   const rootSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const labShellSource = await readFile(new URL("../app/habit-lab/habit-lab-shell.tsx", import.meta.url), "utf8");
-  assert.match(playerSource, /\?view=lab&returnTo=\/learning\/habit/);
-  assert.match(playerSource, /\?view=experiment&returnTo=\/learning\/habit/);
+  assert.match(playerSource, /\/habit-lab\?returnTo=%2Fhabit/);
+  assert.match(playerSource, /\/habit-lab\/experiment\?returnTo=%2Fhabit/);
   assert.match(rootSource, /view === "lab"[\s\S]*redirect\("\/habit-lab"\)/);
   assert.match(rootSource, /view === "experiment"[\s\S]*redirect\("\/habit-lab\/experiment"\)/);
   assert.match(bridgeSource, /lab: "My Lab"/);
