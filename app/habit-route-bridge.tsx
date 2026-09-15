@@ -26,9 +26,11 @@ const subscribeToLocation = () => () => undefined;
 export function HabitRouteBridge({
   target,
   returnTo,
+  hideReturnLink = false,
 }: {
   target?: RequestedHabitView;
   returnTo?: string;
+  hideReturnLink?: boolean;
 }) {
   const queryTarget = useSyncExternalStore(subscribeToLocation, requestedView, () => null);
   const queryReturn = useSyncExternalStore(subscribeToLocation, safeReturnPath, () => null);
@@ -58,6 +60,6 @@ export function HabitRouteBridge({
     return () => observer.disconnect();
   }, [resolvedTarget]);
 
-  if (!resolvedReturn) return null;
+  if (hideReturnLink || !resolvedReturn) return null;
   return <Link href={resolvedReturn} className="fixed bottom-5 right-5 z-[140] flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-3 text-xs font-semibold text-[#173f35] shadow-xl shadow-black/10"><ArrowLeft className="size-4"/>Return to programme</Link>;
 }
