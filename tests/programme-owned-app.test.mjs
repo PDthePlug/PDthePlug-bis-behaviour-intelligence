@@ -8,28 +8,37 @@ async function source(path) {
   return readFile(new URL(path, root), "utf8");
 }
 
-test("authenticated root and auth defaults enter the Habit programme", async () => {
-  const [home, signIn, callback] = await Promise.all([
+test("authenticated root and auth defaults resolve through BIS role routing", async () => {
+  const [home, router, signIn, callback] = await Promise.all([
     source("app/page.tsx"),
+    source("app/role-router.tsx"),
     source("app/sign-in/page.tsx"),
     source("app/auth/callback/route.ts"),
   ]);
-  assert.match(home, /redirect\("\/habit"\)/);
+  assert.match(home, /<RoleRouter \/>/);
   assert.match(home, /view === "lab"[\s\S]*redirect\("\/habit-lab"\)/);
   assert.match(home, /view === "experiment"[\s\S]*redirect\("\/habit-lab\/experiment"\)/);
-  assert.match(signIn, /: "\/habit"/);
-  assert.match(callback, /: "\/habit"/);
+  assert.match(router, /SYSTEM_ADMIN/);
+  assert.match(router, /FACILITATOR/);
+  assert.match(router, /SAFEGUARDING_OFFICER/);
+  assert.match(router, /staff \? "\/workspace" : "\/habit"/);
+  assert.match(signIn, /: "\/"/);
+  assert.match(callback, /: "\/"/);
 });
 
-test("Habit programme owns learner setup without forcing the formal baseline before Day 1", async () => {
-  const entry = await source("app/habit/programme-entry.tsx");
-  assert.match(entry, /return <ProgrammePlayer \/>/);
+test("learner profile setup opens the prototype-derived BIS shell without forcing the formal baseline", async () => {
+  const [entry, habitPage] = await Promise.all([
+    source("app/habit/programme-entry.tsx"),
+    source("app/habit/page.tsx"),
+  ]);
+  assert.match(entry, /<ProgrammePlayer initialSection=\{initialSection\} \/>/);
   assert.match(entry, /action: "setup"/);
   assert.doesNotMatch(entry, /BaselineScreen/);
-  assert.match(entry, /Learn the pattern first\. Investigate it on Day 3/);
+  assert.match(entry, /One profile determines the right handbook edition across BIS/);
+  assert.match(habitPage, /params\.section === "learn" \? "learn" : "today"/);
 });
 
-test("Habit Lab and field experiment are focused child routes", async () => {
+test("Habit Lab and field experiment remain focused child routes", async () => {
   const [lab, experiment, shell] = await Promise.all([
     source("app/habit-lab/page.tsx"),
     source("app/habit-lab/experiment/page.tsx"),
@@ -41,19 +50,41 @@ test("Habit Lab and field experiment are focused child routes", async () => {
   assert.match(shell, /HabitRouteBridge target=\{view\}/);
 });
 
-test("programme tools are presented through the hamburger drawer rather than a horizontal toolbar", async () => {
-  const css = await source("app/learning/programme-owner.css");
-  assert.match(css, /\.programme-menu\{display:grid!important/);
-  assert.match(css, /\.programme-rail\.open~\.programme-main \.programme-tabs/);
-  assert.match(css, /grid-template-columns:1fr!important/);
-  assert.match(css, /\.programme-main\{margin-left:0!important/);
+test("learner application has one bottom hamburger navigation rather than a menu inside a menu", async () => {
+  const [player, css, layout] = await Promise.all([
+    source("app/learning/programme-player.tsx"),
+    source("app/learning/programme-player.css"),
+    source("app/layout.tsx"),
+  ]);
+  assert.match(player, /prototype-bottom-trigger/);
+  assert.match(player, /prototype-bottom-sheet/);
+  assert.match(player, /<strong>Today<\/strong>/);
+  assert.match(player, /<strong>Learn<\/strong>/);
+  assert.match(player, /<strong>Lab<\/strong>/);
+  assert.match(player, /<strong>Experiment<\/strong>/);
+  assert.doesNotMatch(player, /programme-tabs/);
+  assert.doesNotMatch(player, /programme-rail/);
+  assert.match(css, /\.prototype-bottom-trigger\{/);
+  assert.match(css, /\.prototype-bottom-sheet\{/);
+  assert.doesNotMatch(layout, /programme-owner\.css/);
 });
 
-test("legacy learning URLs collapse back into the active programme", async () => {
+test("Learn owns profile classification, the five-handbook library and contextual programme map", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+  for (const label of ["Habit Lab™", "Decision Lab™", "Money Lab™", "Identity Lab™", "Attention Lab™"]) {
+    assert.match(player, new RegExp(label));
+  }
+  assert.match(player, /deliveryEdition/);
+  assert.match(player, /prototype-handbook-grid/);
+  assert.match(player, /prototype-programme-map/);
+  assert.match(player, /The edition is already resolved from your persisted BIS learner profile/);
+});
+
+test("legacy learning URLs collapse into the Learn surface", async () => {
   const [learning, legacyHabit] = await Promise.all([
     source("app/learning/page.tsx"),
     source("app/learning/[lab]/page.tsx"),
   ]);
-  assert.match(learning, /redirect\("\/habit"\)/);
-  assert.match(legacyHabit, /redirect\("\/habit"\)/);
+  assert.match(learning, /redirect\("\/habit\?section=learn"\)/);
+  assert.match(legacyHabit, /redirect\("\/habit\?section=learn"\)/);
 });
