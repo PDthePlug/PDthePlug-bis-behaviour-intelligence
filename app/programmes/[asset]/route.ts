@@ -41,6 +41,18 @@ const ASSETS: Record<string, readonly string[]> = {
   ],
 };
 
+function normaliseBase64Chunk(value: string) {
+  // A UTF-8 BOM or transport whitespace inside any individual chunk becomes an
+  // internal character after concatenation and makes window.atob() fail on
+  // some browsers. Remove only those transport characters; never silently
+  // discard arbitrary payload bytes.
+  return value.replace(/\uFEFF/g, "").replace(/\s+/g, "");
+}
+
+function isBase64Payload(value: string) {
+  return value.length > 0 && value.length % 4 === 0 && /^[A-Za-z0-9+/]*={0,2}$/.test(value);
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ asset: string }> },
@@ -57,12 +69,26 @@ export async function GET(
     return NextResponse.json({ error: "Programme asset unavailable." }, { status: 503 });
   }
 
-  const content = (await Promise.all(responses.map((response) => response.text()))).join("");
+  const parts = await Promise.all(responses.map((response) => response.text()));
+  const content = parts.map(normaliseBase64Chunk).join("");
+  if (!isBase64Payload(content)) {
+    console.error("PROGRAMME_ASSET_INVALID_BASE64", {
+      asset,
+      chunkCount: chunks.length,
+      length: content.length,
+    });
+    return NextResponse.json(
+      { error: "Programme asset failed integrity validation." },
+      { status: 503 },
+    );
+  }
+
   return new NextResponse(content, {
     status: 200,
     headers: {
-      "content-type": "text/plain; charset=utf-8",
+      "content-type": "text/plain; charset=us-ascii",
       "cache-control": "public, max-age=31536000, immutable",
+      "x-content-type-options": "nosniff",
     },
   });
 }
