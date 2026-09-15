@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { ArrowLeft, FlaskConical } from "lucide-react";
+import { FlaskConical } from "lucide-react";
 import { BISApp } from "../bis-app";
 import { HabitRouteBridge, type RequestedHabitView } from "../habit-route-bridge";
 import { requireUser } from "@/lib/supabase/require-user";
+import { FocusedLearnerMenu } from "./focused-learner-menu";
 
 export async function HabitLabShell({ view }: { view: RequestedHabitView }) {
   const next = view === "experiment" ? "/habit-lab/experiment" : "/habit-lab";
@@ -17,12 +17,18 @@ export async function HabitLabShell({ view }: { view: RequestedHabitView }) {
   return (
     <div className="habit-lab-route">
       <header className="habit-lab-route-header">
-        <Link href="/habit"><ArrowLeft /> Habit programme</Link>
-        <div><FlaskConical /><span><small>{view === "experiment" ? "Field experiment" : "Day 3 · Live investigation"}</small><strong>{view === "experiment" ? "Habit Lab Experiment" : "Habit Lab Phase A"}</strong></span></div>
-        <span className="habit-lab-route-status">Focused tool</span>
+        <div className="habit-lab-brand">
+          <span>BIS</span>
+          <div>
+            <small>{view === "experiment" ? "Field experiment" : "Day 3 · Live investigation"}</small>
+            <strong>{view === "experiment" ? "Habit Lab Experiment" : "Habit Lab Phase A"}</strong>
+          </div>
+        </div>
+        <span className="habit-lab-route-status"><FlaskConical /> {view === "experiment" ? "Experiment" : "Lab"}</span>
       </header>
       <BISApp initialIdentity={{ email: user.email, displayName }} />
-      <HabitRouteBridge target={view} />
+      <HabitRouteBridge target={view} hideReturnLink />
+      <FocusedLearnerMenu active={view} />
     </div>
   );
 }
