@@ -1,4 +1,4 @@
-import { and, asc, eq, or } from "../db/query";
+import { and, eq, or } from "../db/query";
 import { getDb } from "../db";
 import { learners, roleAssignments } from "../db/schema";
 import { requestSupabaseClient } from "./supabase/server";
@@ -53,46 +53,15 @@ export async function identityFrom(): Promise<Identity | null> {
   };
 }
 
-async function bootstrapInitialAdmin(identity: Identity) {
-  const db = getDb();
-  const [activeAdmin] = await db
-    .select({ id: roleAssignments.id })
-    .from(roleAssignments)
-    .where(and(eq(roleAssignments.role, "SYSTEM_ADMIN"), eq(roleAssignments.status, "ACTIVE")))
-    .limit(1);
-  if (activeAdmin) return;
-
-  const [firstLearner] = await db
-    .select({ userId: learners.userId, email: learners.email })
-    .from(learners)
-    .orderBy(asc(learners.createdAt))
-    .limit(1);
-  if (!firstLearner) return;
-  if (firstLearner.userId !== identity.id && normalizeEmail(firstLearner.email) !== identity.email) return;
-
-  await db
-    .insert(roleAssignments)
-    .values({
-      id: crypto.randomUUID(),
-      principalEmail: identity.email,
-      userId: identity.id,
-      role: "SYSTEM_ADMIN",
-      assignedBy: identity.id,
-    })
-    .onConflictDoUpdate({
-      target: [
-        roleAssignments.principalEmail,
-        roleAssignments.role,
-        roleAssignments.scopeType,
-        roleAssignments.scopeId,
-      ],
-      set: { userId: identity.id, status: "ACTIVE", revokedAt: null },
-    });
+async function bootstrapInitialAdmin() {
+  const supabase = requestSupabaseClient();
+  const { error } = await supabase.rpc("bootstrap_initial_admin");
+  if (error) throw new Error(error.message);
 }
 
 export async function getRoles(identity: Identity, bootstrap = true) {
   const db = getDb();
-  if (bootstrap) await bootstrapInitialAdmin(identity);
+  if (bootstrap) await bootstrapInitialAdmin();
 
   const assignments = await db
     .select({ role: roleAssignments.role })
