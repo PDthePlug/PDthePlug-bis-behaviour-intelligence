@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./learning/programme-player.css";
+import "./habit-lab/focused-runtime.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
