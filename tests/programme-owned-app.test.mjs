@@ -88,6 +88,13 @@ test("Learn owns profile classification, the five-handbook library and contextua
   assert.match(player, /The edition is already resolved from your persisted BIS learner profile/);
 });
 
+test("handbook assets are loaded from the deployed filesystem rather than self-fetching a protected preview", async () => {
+  const assetRoute = await source("app/programmes/[asset]/route.ts");
+  assert.match(assetRoute, /readFile\(path\.join\(process\.cwd\(\), "public", relativePath\)/);
+  assert.match(assetRoute, /export const runtime = "nodejs"/);
+  assert.doesNotMatch(assetRoute, /fetch\(new URL\(path, origin\)/);
+});
+
 test("legacy learning URLs collapse into the Learn surface", async () => {
   const [learning, legacyHabit] = await Promise.all([
     source("app/learning/page.tsx"),
