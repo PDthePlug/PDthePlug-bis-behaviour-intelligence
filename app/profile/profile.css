@@ -1,0 +1,36 @@
+.profile-page{
+  width:min(1120px,calc(100% - 40px));
+  margin:0 auto;
+  padding:46px 0 110px;
+}
+.profile-hero{max-width:760px;margin-bottom:30px}
+.profile-hero h1{margin:8px 0 10px;font:600 clamp(42px,7vw,72px)/.96 var(--font-serif);letter-spacing:-.045em}
+.profile-hero>p:last-child{margin:0;color:var(--muted-foreground);font-size:16px;line-height:1.65}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.profile-card{display:grid;align-content:start;gap:18px;padding:26px;border:1px solid var(--border);border-radius:22px;background:var(--paper);box-shadow:0 12px 40px rgb(18 39 47 / 5%)}
+.profile-card-icon{display:grid;width:42px;height:42px;place-items:center;border-radius:13px;background:#edf3f0;color:var(--teal)}
+.profile-card-icon svg{width:20px}
+.profile-label{margin:0 0 4px;color:var(--muted-foreground);font-size:11px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+.profile-card h2{margin:0;font:600 28px/1.1 var(--font-serif)}
+.profile-card>p,.profile-card>div>p:last-child{margin:0;color:var(--muted-foreground);font-size:14px;line-height:1.65}
+.profile-card dl{display:grid;margin:0;border-top:1px solid var(--border)}
+.profile-card dl div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;padding:13px 0;border-bottom:1px solid var(--border)}
+.profile-card dt{color:var(--muted-foreground);font-size:12px;font-weight:800}
+.profile-card dd{margin:0;overflow-wrap:anywhere;font-size:14px;font-weight:750}
+.profile-secondary,.profile-signout{min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;font-size:14px;font-weight:850;text-decoration:none}
+.profile-secondary{border:1px solid var(--border);color:var(--ink);background:white}
+.profile-secondary svg,.profile-signout svg{width:18px}
+.profile-signout-card{grid-column:1/-1;grid-template-columns:minmax(0,1fr) auto;align-items:center;background:#17313b;color:white}
+.profile-signout-card .profile-label,.profile-signout-card>div>p:last-child{color:#b9cbc7}
+.profile-signout{min-width:170px;padding:0 18px;border:1px solid #ffffff32;background:white;color:var(--ink)}
+.profile-page a:focus-visible,.profile-page button:focus-visible{outline:3px solid color-mix(in srgb,var(--teal) 55%,white);outline-offset:3px}
+@media(max-width:760px){
+  .profile-page{width:calc(100% - 28px);padding:30px 0 96px}
+  .profile-grid{grid-template-columns:1fr}
+  .profile-signout-card{grid-column:auto;grid-template-columns:1fr}
+  .profile-signout{width:100%}
+}
+@media(max-width:430px){
+  .profile-card{padding:22px 18px}
+  .profile-card dl div{grid-template-columns:1fr;gap:4px}
+}
