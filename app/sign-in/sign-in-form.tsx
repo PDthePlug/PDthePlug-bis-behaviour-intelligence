@@ -11,18 +11,21 @@ import { Input } from "@/components/ui/input";
 function authErrorMessage(message: string) {
   const normalised = message.toLowerCase();
   if (normalised.includes("email rate limit exceeded") || normalised.includes("rate limit")) {
-    return "BIS cannot send another confirmation email right now because the authentication provider's project-wide email limit has been reached. Your signup was not completed. Keep these details and try Create account again after the email limit resets.";
+    return "BIS cannot send another confirmation email right now. Your signup was not completed. Keep these details and try Create account again later.";
   }
   if (normalised.includes("email not confirmed")) {
-    return "This account exists, but its email is still waiting for confirmation. Use the confirmation email already sent to you; requesting another one immediately may be rate-limited.";
+    return "This account exists, but its email is still waiting for confirmation. Use the confirmation email already sent to you, or request a new one later if needed.";
   }
   if (normalised.includes("user already registered") || normalised.includes("already registered")) {
     return "A BIS account already exists for this email. Choose Sign in and use your password.";
   }
-  return message;
+  if (normalised.includes("invalid login credentials") || normalised.includes("invalid credentials")) {
+    return "The email or password is incorrect. Check your details and try again.";
+  }
+  return "BIS could not complete that request. Check your details and try again.";
 }
 
-export function SignInForm({ next }: { next: string }) {
+export function SignInForm({ next, initialError = "" }: { next: string; initialError?: string }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -31,7 +34,7 @@ export function SignInForm({ next }: { next: string }) {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(initialError);
 
   function changeMode(nextMode: "signin" | "signup") {
     setMode(nextMode);
@@ -77,7 +80,7 @@ export function SignInForm({ next }: { next: string }) {
         setMessage("Your details are still in the form. Sign in with the account that already exists.");
       } else if (normalised.includes("rate limit")) {
         setMode("signup");
-        setMessage("This is a provider email throttle, not a problem with your name, email or password. BIS has preserved the form so you can retry later.");
+        setMessage("BIS cannot send another confirmation email right now. Your form is preserved so you can retry later.");
       }
     } finally {
       setBusy(false);
