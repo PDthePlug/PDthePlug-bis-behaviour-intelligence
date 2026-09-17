@@ -8,18 +8,23 @@ const css = readFileSync(new URL("../app/learner-readability.css", import.meta.u
 const habitLayout = readFileSync(new URL("../app/habit/layout.tsx", import.meta.url), "utf8");
 const labLayout = readFileSync(new URL("../app/habit-lab/layout.tsx", import.meta.url), "utf8");
 
-test("learner shell uses task language instead of system implementation language", () => {
+test("learner shell uses concise task and account language", () => {
   for (const phrase of [
-    "Your next step in the Habit programme.",
+    "Your next step",
     "Handbook and workbook",
     "Guided Habit investigation",
     "Seven days of real-world observation",
-    "One programme. One clear path.",
+    "Account and sign out",
   ]) {
     assert.ok(shell.includes(phrase), `${phrase} should be present`);
   }
 
-  for (const phrase of ["without duplicating evidence", "One programme. One learner shell."]) {
+  for (const phrase of [
+    "without duplicating evidence",
+    "One programme. One learner shell.",
+    "One programme. One clear path.",
+    "Screen guide",
+  ]) {
     assert.ok(!shell.includes(phrase), `${phrase} should not remain in learner-facing shell copy`);
   }
 });
