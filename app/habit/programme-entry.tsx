@@ -117,7 +117,7 @@ export function ProgrammeEntry({
   }
 
   if (snapshot.profile && snapshot.consent?.status === "GRANTED") {
-    return <ProgrammePlayer initialSection={initialSection} />;
+    return <ProgrammePlayer key={initialSection} initialSection={initialSection} />;
   }
 
   if (snapshot.profile && snapshot.consent?.status === "WITHDRAWN") {
@@ -133,7 +133,7 @@ export function ProgrammeEntry({
         <div>
           <p className="eyebrow">Your BIS journey starts here</p>
           <h1>Tell BIS a little about how you are learning.</h1>
-          <p className="lede">Your age band helps us show the handbook edition written for your stage. You set this once and use it across the programme.</p>
+          <p className="lede">Your age band helps us show the right learning material.</p>
           <div className="journey-line" aria-label="BIS learning journey">
             {["Learn", "Investigate", "Experiment", "Review"].map((label, index) => <div key={label}><span>{index + 1}</span><strong>{label}</strong></div>)}
           </div>
@@ -149,10 +149,10 @@ export function ProgrammeEntry({
           <Select value={ageBand} onValueChange={setAgeBand}>
             <SelectTrigger id="programme-age-band" className="w-full"><SelectValue placeholder="Choose an age band" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="14-17">14–17 · School Edition</SelectItem>
-              <SelectItem value="18-21">18–21 · Emerging Adult Edition</SelectItem>
-              <SelectItem value="22-25">22–25 · Emerging Adult Edition</SelectItem>
-              <SelectItem value="26+">26 or older · Workplace Edition</SelectItem>
+              <SelectItem value="14-17">14–17</SelectItem>
+              <SelectItem value="18-21">18–21</SelectItem>
+              <SelectItem value="22-25">22–25</SelectItem>
+              <SelectItem value="26+">26 or older</SelectItem>
             </SelectContent>
           </Select>
           <div className="privacy-copy"><ShieldCheck /><p><strong>Private by design:</strong> your learning answers, Lab work and experiment entries are kept separate. Facilitators only see what their role allows.</p></div>

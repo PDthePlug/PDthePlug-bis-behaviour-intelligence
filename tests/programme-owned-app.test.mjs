@@ -31,11 +31,11 @@ test("learner profile setup opens the prototype-derived BIS shell without forcin
     source("app/habit/programme-entry.tsx"),
     source("app/habit/page.tsx"),
   ]);
-  assert.match(entry, /<ProgrammePlayer initialSection=\{initialSection\} \/>/);
+  assert.match(entry, /<ProgrammePlayer key=\{initialSection\} initialSection=\{initialSection\} \/>/);
   assert.match(entry, /action: "setup"/);
   assert.doesNotMatch(entry, /BaselineScreen/);
   assert.match(entry, /Tell BIS a little about how you are learning/);
-  assert.match(entry, /Your age band helps us show the handbook edition written for your stage/);
+  assert.match(entry, /Your age band helps us show the right learning material/);
   assert.doesNotMatch(entry, /Your classification is stored once/);
   assert.match(habitPage, /params\.section === "learn" \? "learn" : "today"/);
 });
@@ -79,15 +79,18 @@ test("learner application has one bottom hamburger navigation rather than a menu
   assert.doesNotMatch(layout, /programme-owner\.css/);
 });
 
-test("Learn owns profile classification, the five-handbook library and contextual programme map", async () => {
+test("Learn owns the five-handbook library and programme map without repeating profile classification", async () => {
   const player = await source("app/learning/programme-player.tsx");
   for (const label of ["Habit Lab™", "Decision Lab™", "Money Lab™", "Identity Lab™", "Attention Lab™"]) {
     assert.match(player, new RegExp(label));
   }
-  assert.match(player, /deliveryEdition/);
+  assert.match(player, /Learning library\./);
+  assert.match(player, /Choose a handbook to open or continue\./);
   assert.match(player, /prototype-handbook-grid/);
   assert.match(player, /prototype-programme-map/);
-  assert.match(player, /The edition is already resolved from your persisted BIS learner profile/);
+  assert.doesNotMatch(player, /Learner profile context/);
+  assert.doesNotMatch(player, /The edition is already resolved from your persisted BIS learner profile/);
+  assert.doesNotMatch(player, /Workplace Edition/);
 });
 
 test("handbook assets are loaded from the deployed filesystem rather than self-fetching a protected preview", async () => {

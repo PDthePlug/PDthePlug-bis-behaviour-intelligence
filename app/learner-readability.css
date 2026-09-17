@@ -118,19 +118,22 @@
   min-height: 44px;
 }
 
-/* Learn library: keep the learner's edition visible without explaining internal classification. */
-.canonical-shell .prototype-profile-banner > p,
-.canonical-shell .prototype-library-note {
-  display: none;
+/* Learn library: short invitation, then the handbooks. */
+.canonical-shell .prototype-library {
+  padding-top: 22px;
 }
 
-.canonical-shell .prototype-profile-banner {
-  align-items: center;
-  min-height: 104px;
+.canonical-shell .prototype-library > .prototype-lede {
+  max-width: 44ch;
+  margin-bottom: 18px;
+}
+
+.canonical-shell .prototype-section-heading {
+  margin-top: 18px;
 }
 
 .canonical-shell .prototype-handbook-card {
-  min-height: 260px;
+  min-height: 230px;
 }
 
 .canonical-shell .prototype-handbook-card p {
@@ -163,12 +166,47 @@
   font-weight: 800;
 }
 
-/* Reader: optimise for sustained reading rather than dashboard density. */
+/* Reader: progress first, then content. Do not repeat the book cover on every page. */
 .canonical-shell .prototype-reader {
   max-width: 1180px;
 }
 
-.canonical-shell .prototype-reader-hero > p:not(.prototype-eyebrow),
+.canonical-shell .prototype-reader-hero-compact {
+  padding: 18px 22px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.canonical-shell .prototype-reader-compact-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.canonical-shell .prototype-reader-compact-head h1 {
+  margin: 4px 0 0;
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1;
+}
+
+.canonical-shell .prototype-reader-compact-head > strong {
+  flex: 0 0 auto;
+  font-size: 24px;
+  letter-spacing: -.03em;
+}
+
+.canonical-shell .prototype-reader-position {
+  margin: 10px 0 0;
+  color: #d8e3de;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.canonical-shell .prototype-reader-hero-compact .prototype-progress-track {
+  margin: 13px 0 0;
+}
+
 .canonical-shell .prototype-lede {
   max-width: 68ch;
   font-size: 16px;
@@ -277,13 +315,11 @@
 
   .canonical-shell .prototype-today-hero,
   .canonical-shell .prototype-dashboard-grid,
-  .canonical-shell .prototype-profile-banner,
   .canonical-shell .onboarding-intro {
     gap: 16px;
   }
 
   .canonical-shell .prototype-card,
-  .canonical-shell .prototype-profile-banner,
   .canonical-shell .onboarding-card,
   .canonical-shell .privacy-paused-card {
     border-radius: 18px;
@@ -302,7 +338,24 @@
   }
 
   .canonical-shell .prototype-handbook-card {
-    min-height: 220px;
+    min-height: 210px;
+  }
+
+  .canonical-shell .prototype-reader-hero-compact {
+    padding: 16px 18px;
+    border-radius: 18px;
+  }
+
+  .canonical-shell .prototype-reader-compact-head {
+    align-items: flex-start;
+  }
+
+  .canonical-shell .prototype-reader-compact-head h1 {
+    font-size: 28px;
+  }
+
+  .canonical-shell .prototype-reader-compact-head > strong {
+    font-size: 20px;
   }
 
   .canonical-shell .prototype-document {
@@ -332,7 +385,6 @@
   }
 
   .canonical-shell .prototype-card,
-  .canonical-shell .prototype-profile-banner,
   .canonical-shell .onboarding-card,
   .canonical-shell .privacy-paused-card {
     padding: 18px;

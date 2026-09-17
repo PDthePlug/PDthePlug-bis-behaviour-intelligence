@@ -15,7 +15,6 @@ import {
   LibraryBig,
   LockKeyhole,
   Menu,
-  ShieldCheck,
   X,
 } from "lucide-react";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
@@ -70,12 +69,6 @@ type Runtime = {
   };
   events: Array<{ dayNumber: number; eligibleOpportunity: boolean; alternativeUsed: boolean | null }>;
   measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
-};
-
-const editionLabels: Record<Edition, string> = {
-  school: "School Edition",
-  emerging_adult: "Emerging Adult Edition",
-  workplace: "Workplace Edition",
 };
 
 const handbookCards = [
@@ -189,9 +182,7 @@ export function ProgrammePlayer({
   const [programme, setProgramme] = useState<HabitProgramme | null>(null);
   const [selected, setSelected] = useState(0);
   const [section, setSection] = useState<AppSection>(initialSection);
-  const [learnMode, setLearnMode] = useState<LearnMode>(
-    initialSection === "learn" ? "reader" : "library",
-  );
+  const [learnMode, setLearnMode] = useState<LearnMode>("library");
   const [menuOpen, setMenuOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "dirty" | "saving">("saved");
@@ -465,7 +456,7 @@ export function ProgrammePlayer({
       <main className="learning-state">
         <span className="learning-loader" />
         <h1>Opening your BIS learning environment…</h1>
-        <p>Loading your profile classification, handbook and programme record.</p>
+        <p>Loading your progress.</p>
       </main>
     );
   }
@@ -485,7 +476,6 @@ export function ProgrammePlayer({
           <strong>Behaviour Intelligence Series™</strong>
         </button>
         <div className="prototype-top-context">
-          <span>{editionLabels[snapshot.profile.deliveryEdition]}</span>
           {runtime.experiment?.status === "ACTIVE" && experimentDay ? (
             <strong>Experiment Day {experimentDay} of 7</strong>
           ) : null}
@@ -524,21 +514,6 @@ export function ProgrammePlayer({
                 </button>
               </article>
 
-              <article className="prototype-card prototype-profile-card">
-                <ShieldCheck />
-                <p className="prototype-eyebrow">Learner profile context</p>
-                <h3>{editionLabels[snapshot.profile.deliveryEdition]}</h3>
-                <p>
-                  deliveryEdition: <strong>{snapshot.profile.deliveryEdition}</strong>
-                  <br />
-                  context: <strong>{snapshot.profile.deliveryContext}</strong>
-                </p>
-                <small>
-                  Every handbook inherits this persisted profile classification. Individual Labs do
-                  not reclassify the learner.
-                </small>
-              </article>
-
               {page.key === "Day 3" && !phaseAComplete ? (
                 <article className="prototype-card prototype-action-card">
                   <FlaskConical />
@@ -569,30 +544,16 @@ export function ProgrammePlayer({
           </section>
         ) : learnMode === "library" ? (
           <section className="prototype-page prototype-library">
-            <p className="prototype-eyebrow">/learning · Behaviour Intelligence Series™</p>
-            <h1>Volume 1 learning library.</h1>
-            <p className="prototype-lede">
-              One learner profile. One learning environment. Each handbook inherits your delivery
-              edition, while each executable Lab keeps its own evidence record.
-            </p>
-
-            <article className="prototype-card prototype-profile-banner">
-              <div>
-                <p className="prototype-eyebrow">Learner profile context</p>
-                <h3>{editionLabels[snapshot.profile.deliveryEdition]}</h3>
-              </div>
-              <p>
-                The edition is already resolved from your persisted BIS learner profile. You are not
-                classified again inside a handbook or Lab.
-              </p>
-            </article>
+            <p className="prototype-eyebrow">Volume 1</p>
+            <h1>Learning library.</h1>
+            <p className="prototype-lede">Choose a handbook to open or continue.</p>
 
             <div className="prototype-section-heading">
               <div>
-                <p className="prototype-eyebrow">Volume 1</p>
-                <h2>Your handbooks</h2>
+                <p className="prototype-eyebrow">Browse</p>
+                <h2>Handbooks</h2>
               </div>
-              <span>Handbooks 1–5</span>
+              <span>1–5</span>
             </div>
 
             <div className="prototype-handbook-grid">
@@ -610,7 +571,7 @@ export function ProgrammePlayer({
                         title={book.title}
                         subtitle={book.subtitle}
                         copy={book.copy}
-                        status={`${editionLabels[snapshot.profile.deliveryEdition]} · full programme`}
+                        status={progressPercent > 0 ? `${progressPercent}% reviewed` : "Open handbook"}
                       />
                     </button>
                   );
@@ -623,7 +584,7 @@ export function ProgrammePlayer({
                         title={book.title}
                         subtitle={book.subtitle}
                         copy={book.copy}
-                        status="Current executable Lab available"
+                        status="Open Lab"
                       />
                     </Link>
                   );
@@ -635,18 +596,13 @@ export function ProgrammePlayer({
                       title={book.title}
                       subtitle={book.subtitle}
                       copy={book.copy}
-                      status="Source preserved · production reader migration held"
+                      status="Coming later"
                     />
                   </article>
                 );
               })}
             </div>
 
-            <p className="prototype-library-note">
-              The supplied prototype defines this five-handbook library and profile-classification
-              contract. Habit remains the first fully connected end-to-end programme standard while
-              the other handbook runtimes are reconciled without changing their authored source.
-            </p>
           </section>
         ) : (
           <section className="prototype-page prototype-reader">
@@ -654,18 +610,17 @@ export function ProgrammePlayer({
               <ArrowLeft /> All handbooks
             </button>
 
-            <div className="prototype-reader-hero">
-              <p className="prototype-eyebrow">Handbook 1 · Habit Lab™</p>
-              <h1>The Habit Investigation Handbook</h1>
-              <p>
-                Ten days. One repeated behaviour. Your learning material stays here; formal Lab and
-                experiment evidence stay in their own tools.
-              </p>
-              <div className="prototype-reader-status">
-                <span>{editionLabels[snapshot.profile.deliveryEdition]}</span>
-                <span>{page.programmeDay ? `Programme Day ${page.programmeDay} of 10` : page.key}</span>
-                {page.experimentPosition ? <strong>{page.experimentPosition}</strong> : null}
+            <div className="prototype-reader-hero prototype-reader-hero-compact">
+              <div className="prototype-reader-compact-head">
+                <div>
+                  <p className="prototype-eyebrow">Habit Investigation Handbook</p>
+                  <h1>{page.programmeDay ? `Day ${page.programmeDay} of 10` : page.key}</h1>
+                </div>
+                <strong>{progressPercent}%</strong>
               </div>
+              {page.experimentPosition ? (
+                <p className="prototype-reader-position">{page.experimentPosition}</p>
+              ) : null}
               <div className="prototype-progress-track light">
                 <i style={{ width: `${progressPercent}%` }} />
               </div>
@@ -798,7 +753,7 @@ export function ProgrammePlayer({
             <span>BIS</span>
             <div>
               <strong>Behaviour Intelligence Series™</strong>
-              <small>{editionLabels[snapshot.profile.deliveryEdition]}</small>
+              <small>Learner menu</small>
             </div>
           </div>
           <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close menu">
@@ -833,9 +788,7 @@ export function ProgrammePlayer({
             </Link>
           ) : null}
         </div>
-        <div className="prototype-menu-foot">
-          <ShieldCheck /> Workbook responses, formal Lab inputs and experiment evidence remain separate records.
-        </div>
+
       </nav>
 
       <button
