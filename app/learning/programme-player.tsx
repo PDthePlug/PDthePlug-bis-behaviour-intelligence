@@ -192,11 +192,6 @@ export function ProgrammePlayer({
   const documentRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    setSection(initialSection);
-    if (initialSection === "learn") setLearnMode("library");
-  }, [initialSection]);
-
-  useEffect(() => {
     const controller = new AbortController();
     void (async () => {
       try {
