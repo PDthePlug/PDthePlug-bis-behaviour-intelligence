@@ -1,5 +1,6 @@
 import { and, asc, desc, eq, inArray, ne } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
+import { scopedStaffExperimentProgress as staffExperimentProgress } from "../../../db/staff-progress";
 import {
   auditEvents,
   cohortMembers,
@@ -12,7 +13,6 @@ import {
   roleAssignments,
   safeguardingCases,
   staffExperimentEventProgress,
-  staffExperimentProgress,
 } from "../../../db/schema";
 import {
   AccessError,
@@ -147,7 +147,7 @@ async function assignLab(identity: Identity, learner: typeof learners.$inferSele
     });
 }
 
-async function progressRows(userIds: string[]) {
+async function progressRows(userIds: string[], labCode?: string) {
   if (userIds.length === 0) return [];
   const db = getDb();
   const learnerRows = await db
@@ -172,7 +172,9 @@ async function progressRows(userIds: string[]) {
       completedAt: labEnrollments.completedAt,
     })
     .from(labEnrollments)
-    .where(inArray(labEnrollments.userId, userIds))
+    .where(labCode
+      ? and(inArray(labEnrollments.userId, userIds), eq(labEnrollments.labCode, labCode))
+      : inArray(labEnrollments.userId, userIds))
     .orderBy(desc(labEnrollments.updatedAt));
   const experimentRows = await db
     .select({
@@ -185,7 +187,9 @@ async function progressRows(userIds: string[]) {
       minimumEvidenceThreshold: staffExperimentProgress.minimumEvidenceThreshold,
     })
     .from(staffExperimentProgress)
-    .where(inArray(staffExperimentProgress.userId, userIds))
+    .where(labCode
+      ? and(inArray(staffExperimentProgress.userId, userIds), eq(staffExperimentProgress.labCode, labCode))
+      : inArray(staffExperimentProgress.userId, userIds))
     .orderBy(desc(staffExperimentProgress.createdAt));
   const eventRows = await db
     .select({
@@ -289,7 +293,7 @@ async function facilitatorSnapshot(identity: Identity) {
     .select()
     .from(cohortMembers)
     .where(and(inArray(cohortMembers.cohortId, cohortIds), eq(cohortMembers.status, "ACTIVE")));
-  const progress = await progressRows([...new Set(members.map((member) => member.learnerUserId))]);
+  const progress = await progressRows([...new Set(members.map((member) => member.learnerUserId))], "HAB");
   const notes = await db
     .select()
     .from(facilitatorNotes)
