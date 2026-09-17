@@ -33,6 +33,14 @@ function authErrorMessage(message: string) {
   return "BIS could not complete that request. Check your details and try again.";
 }
 
+function googleAuthErrorMessage(message: string) {
+  const normalised = message.toLowerCase();
+  if (normalised.includes("provider is not enabled") || normalised.includes("unsupported provider")) {
+    return "Google sign-in is still being configured for BIS. Use email and password for now or try again shortly.";
+  }
+  return "BIS could not start Google sign-in. Try again, or continue with email and password.";
+}
+
 export function SignInForm({ next, initialError = "" }: { next: string; initialError?: string }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -41,6 +49,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [resendBusy, setResendBusy] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [confirmationPending, setConfirmationPending] = useState(false);
@@ -69,6 +78,26 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
 
   function callbackUrl() {
     return confirmationRedirectUrl(next, window.location.origin);
+  }
+
+  async function continueWithGoogle() {
+    setGoogleBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const result = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: callbackUrl(),
+          queryParams: { prompt: "select_account" },
+        },
+      });
+      if (result.error) throw result.error;
+    } catch (cause) {
+      const raw = cause instanceof Error ? cause.message : "BIS could not start Google sign-in.";
+      setError(googleAuthErrorMessage(raw));
+      setGoogleBusy(false);
+    }
   }
 
   async function resendConfirmation() {
@@ -167,19 +196,33 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
           <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "active" : ""} onClick={() => changeMode("signin")}>Sign in</button>
           <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "active" : ""} onClick={() => changeMode("signup")}>Create account</button>
         </div>
+        <div className="grid gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="w-full"
+            disabled={busy || googleBusy || resendBusy}
+            onClick={() => void continueWithGoogle()}
+          >
+            <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full bg-white text-xs font-black text-[#4285F4] shadow-sm">G</span>
+            {googleBusy ? "Opening Google…" : "Continue with Google"}
+          </Button>
+          <p className="text-center text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground">or use email and password</p>
+        </div>
         <form onSubmit={submit}>
           {mode === "signup" ? <label><span>Name</span><Input autoComplete="name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} required minLength={2} /></label> : null}
           <label><span>Email</span><Input type="email" autoComplete="email" value={email} onChange={(event) => updateEmail(event.target.value)} required /></label>
           <label><span>Password</span><Input type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} /></label>
           {error ? <p className="field-error" role="alert">{error}</p> : null}
           {message ? <p className="auth-message" role="status">{message}</p> : null}
-          <Button size="lg" className="w-full" disabled={busy || resendBusy}>{busy ? "Please wait…" : mode === "signin" ? <>Enter BIS <ArrowRight /></> : <>Create account <ArrowRight /></>}</Button>
+          <Button size="lg" className="w-full" disabled={busy || googleBusy || resendBusy}>{busy ? "Please wait…" : mode === "signin" ? <>Enter BIS <ArrowRight /></> : <>Create account <ArrowRight /></>}</Button>
           {confirmationPending ? (
             <Button
               type="button"
               variant="outline"
               className="w-full"
-              disabled={busy || resendBusy || resendCooldown > 0}
+              disabled={busy || googleBusy || resendBusy || resendCooldown > 0}
               onClick={() => void resendConfirmation()}
             >
               {resendBusy ? "Requesting…" : resendCooldown > 0 ? `Resend available in ${resendCooldown}s` : "Resend verification email"}
