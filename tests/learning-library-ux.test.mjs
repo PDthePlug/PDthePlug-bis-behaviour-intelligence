@@ -15,7 +15,7 @@ test("Today and Learn are distinct route-owned destinations", async () => {
   assert.match(player, /setSection\(initialSection\)/);
   assert.match(player, /if \(initialSection === "learn"\) setLearnMode\("library"\)/);
   assert.match(player, /useState<LearnMode>\("library"\)/);
-  assert.match(player, /Continue learning[\s\S]*openLearn\("reader"\)/);
+  assert.match(player, /openLearn\("reader"\)[\s\S]*Continue learning/);
 });
 
 test("Learn opens a concise handbook library without repeating profile classification", async () => {
