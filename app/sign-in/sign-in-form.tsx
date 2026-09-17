@@ -3,7 +3,7 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BookOpen, FlaskConical, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { confirmationRedirectUrl } from "@/lib/auth-redirect";
 import { Button } from "@/components/ui/button";
@@ -175,17 +175,11 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
 
   return (
     <main className="auth-shell">
-      <section className="auth-story">
+      <section className="auth-story auth-story-simplified">
         <div className="brand"><span className="brand-symbol">B</span><div><strong>BIS</strong><small>Behaviour Intelligence</small></div></div>
         <div>
           <p className="eyebrow">Behaviour Intelligence Series™</p>
-          <h1>One identity. The right BIS experience.</h1>
-          <p>Sign in once. BIS resolves your role, learner profile and delivery edition, then opens the right dashboard without asking each Lab to classify you again.</p>
-        </div>
-        <div className="auth-principles">
-          <span><BookOpen /> Edition-aware learning</span>
-          <span><FlaskConical /> Separate Lab evidence</span>
-          <span><ShieldCheck /> Role-based access</span>
+          <h1>Behaviour comes before results.</h1>
         </div>
       </section>
       <section className="auth-card surface-card">

@@ -8,50 +8,24 @@ import {
   ChevronRight,
   FlaskConical,
   House,
-  LifeBuoy,
   Menu,
-  ShieldCheck,
+  UserRound,
   X,
 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-type ShellStage = "today" | "learn" | "lab" | "experiment";
+type ShellStage = "today" | "learn" | "lab" | "experiment" | "profile";
 
-type Guidance = {
-  label: string;
-  meaning: string;
-  now: string;
-  next: string;
-};
-
-const guidance: Record<ShellStage, Guidance> = {
-  today: {
-    label: "Today",
-    meaning: "Your next step in the Habit programme.",
-    now: "Continue the task shown below.",
-    next: "Your place is saved as you move between learning, the Lab and your experiment.",
-  },
-  learn: {
-    label: "Learn",
-    meaning: "Your handbook and workbook for the current programme day.",
-    now: "Read the current section and complete any reflection shown.",
-    next: "When the programme reaches an investigation, you will move into Habit Lab.",
-  },
-  lab: {
-    label: "Lab",
-    meaning: "The guided investigation where you turn a habit into something you can test.",
-    now: "Complete the step in front of you using what you actually observe or remember.",
-    next: "When the investigation is complete, your seven-day experiment begins.",
-  },
-  experiment: {
-    label: "Experiment",
-    meaning: "Seven days of observing your habit in real life.",
-    now: "Record what happened today. If there was no opportunity, record that honestly.",
-    next: "After the final day, you will review what the pattern taught you.",
-  },
+const stageLabels: Record<ShellStage, string> = {
+  today: "Today",
+  learn: "Learn",
+  lab: "Lab",
+  experiment: "Experiment",
+  profile: "Profile",
 };
 
 function resolveStage(pathname: string, section: string | null): ShellStage {
+  if (pathname.startsWith("/profile")) return "profile";
   if (pathname.startsWith("/habit-lab/experiment")) return "experiment";
   if (pathname.startsWith("/habit-lab")) return "lab";
   if (section === "learn") return "learn";
@@ -62,7 +36,6 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const stage = resolveStage(pathname, searchParams.get("section"));
-  const guide = guidance[stage];
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
@@ -96,6 +69,13 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         detail: "Seven days of real-world observation",
         href: "/habit-lab/experiment",
         icon: CalendarDays,
+      },
+      {
+        id: "profile" as const,
+        label: "Profile",
+        detail: "Account and sign out",
+        href: "/profile",
+        icon: UserRound,
       },
     ],
     [],
@@ -158,63 +138,9 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         <div className="canonical-location" aria-label="Current BIS location">
           <span>Learner View</span>
           <ChevronRight />
-          <strong>{guide.label}</strong>
+          <strong>{stageLabels[stage]}</strong>
         </div>
       </header>
-
-      <section className="canonical-orientation" aria-label="Screen orientation">
-        <div>
-          <span>Where you are</span>
-          <strong>Learner View · {guide.label}</strong>
-        </div>
-        <div>
-          <span>What this means</span>
-          <p>{guide.meaning}</p>
-        </div>
-        <div>
-          <span>Do now</span>
-          <p>{guide.now}</p>
-        </div>
-        <div>
-          <span>Next</span>
-          <p>{guide.next}</p>
-        </div>
-        <div className="canonical-help">
-          <LifeBuoy />
-          <span>
-            <strong>Need help?</strong>
-            <small>
-              Return to Today for the recommended next step. In a facilitated programme, ask your
-              facilitator for support.
-            </small>
-          </span>
-        </div>
-      </section>
-
-      <details className="canonical-mobile-guide">
-        <summary>
-          <LifeBuoy /> Screen guide <ChevronRight />
-        </summary>
-        <div>
-          <span>What this means</span>
-          <p>{guide.meaning}</p>
-        </div>
-        <div>
-          <span>Do now</span>
-          <p>{guide.now}</p>
-        </div>
-        <div>
-          <span>Next</span>
-          <p>{guide.next}</p>
-        </div>
-        <div>
-          <span>Help</span>
-          <p>
-            Return to Today for the recommended next step. In a facilitated programme, ask your
-            facilitator for support.
-          </p>
-        </div>
-      </details>
 
       <div id="bis-task-surface" className="canonical-task" tabIndex={-1}>
         {children}
@@ -239,7 +165,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
                 <span>BIS</span>
                 <div>
                   <strong>Behaviour Intelligence Series™</strong>
-                  <small>One programme. One clear path.</small>
+                  <small>Learner menu</small>
                 </div>
               </div>
               <button
@@ -271,12 +197,6 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
                 );
               })}
             </nav>
-            <div className="canonical-menu-foot">
-              <ShieldCheck />
-              <span>
-                Your learning answers, Lab work and experiment entries stay in their proper places.
-              </span>
-            </div>
           </div>
         </>
       ) : null}

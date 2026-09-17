@@ -1,0 +1,10 @@
+/* RC01 human UAT cleanup: active Lab pages should lead with progress and task content. */
+.multi-lab-shell .corelab-progressbar {
+  margin-top: 0;
+}
+
+@media (max-width: 820px) {
+  .multi-lab-shell .corelab-progressbar {
+    margin-top: 0;
+  }
+}
