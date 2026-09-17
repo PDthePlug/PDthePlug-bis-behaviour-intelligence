@@ -35,7 +35,7 @@ test("learner profile setup opens the prototype-derived BIS shell without forcin
   assert.match(entry, /action: "setup"/);
   assert.doesNotMatch(entry, /BaselineScreen/);
   assert.match(entry, /Tell BIS a little about how you are learning/);
-  assert.match(entry, /Your age band helps us show the handbook edition written for your stage/);
+  assert.match(entry, /Your age band helps us show the right learning material/);
   assert.doesNotMatch(entry, /Your classification is stored once/);
   assert.match(habitPage, /params\.section === "learn" \? "learn" : "today"/);
 });
