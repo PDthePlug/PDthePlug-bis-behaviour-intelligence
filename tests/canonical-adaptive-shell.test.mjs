@@ -36,7 +36,7 @@ test("canonical shell answers the five PD experience questions without deleting 
 test("canonical shell contains keyboard and motion hardening", () => {
   assert.match(shell, /event\.key === "Escape"/);
   assert.match(shell, /event\.key !== "Tab"/);
-  assert.match(shell, /triggerRef\.current\?\.focus/);
+  assert.match(shell, /trigger\?\.focus/);
   assert.match(shell, /Skip to current task/);
   assert.match(css, /prefers-reduced-motion:reduce/);
 });
