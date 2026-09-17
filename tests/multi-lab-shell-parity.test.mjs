@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 
 const shell = readFileSync("app/multi-lab-adaptive-shell.tsx", "utf8");
 const css = readFileSync("app/multi-lab-shell.css", "utf8");
+const flowCss = readFileSync("app/multi-lab-flow-cleanup.css", "utf8");
 const decisionLayout = readFileSync("app/decision/layout.tsx", "utf8");
 const moneyLayout = readFileSync("app/money/layout.tsx", "utf8");
 const engine = readFileSync("app/core-lab-experience.tsx", "utf8");
@@ -14,26 +15,29 @@ test("Decision and Money routes are owned by the same BIS multi-Lab shell", () =
   assert.match(moneyLayout, /MultiLabAdaptiveShell lab="money"/);
   assert.match(decisionLayout, /multi-lab-shell\.css/);
   assert.match(moneyLayout, /multi-lab-shell\.css/);
+  assert.match(decisionLayout, /multi-lab-flow-cleanup\.css/);
+  assert.match(moneyLayout, /multi-lab-flow-cleanup\.css/);
 });
 
-test("multi-Lab navigation presents Habit, Decision and Money as one product family", () => {
+test("multi-Lab navigation presents the BIS destinations and Profile", () => {
   assert.match(shell, /Habit Programme/);
   assert.match(shell, /Decision Lab/);
   assert.match(shell, /Money Lab/);
+  assert.match(shell, /Profile/);
   assert.match(shell, /href: "\/habit"/);
   assert.match(shell, /href: "\/decision"/);
   assert.match(shell, /href: "\/money"/);
-  assert.match(shell, /Each Lab keeps its own evidence record/);
+  assert.match(shell, /href: "\/profile"/);
+  assert.doesNotMatch(shell, /Each Lab keeps its own evidence record/);
 });
 
-test("Decision and Money retain the five-question BIS orientation model", () => {
-  for (const label of ["Where you are", "What this means", "Do now", "What happens next", "Where to get help"]) {
-    assert.match(shell, new RegExp(label));
-  }
-  assert.match(shell, /Screen guide/);
-  assert.match(shell, /Investigate/);
-  assert.match(shell, /Experiment/);
-  assert.match(shell, /Review/);
+test("Decision and Money put the active task before repeated explanatory chrome", () => {
+  assert.doesNotMatch(shell, /Screen guide/);
+  assert.doesNotMatch(shell, /multi-lab-orientation/);
+  assert.doesNotMatch(shell, /multi-lab-mobile-guide/);
+  assert.doesNotMatch(shell, /multi-lab-route-banner/);
+  assert.doesNotMatch(shell, /Phase A · 90 minutes · Phase B · 7 days/);
+  assert.match(flowCss, /corelab-progressbar[\s\S]*margin-top:\s*0/);
 });
 
 test("shared shell owns global chrome without deleting the Core Lab task engine", () => {
@@ -46,7 +50,6 @@ test("shared shell owns global chrome without deleting the Core Lab task engine"
 });
 
 test("Decision and Money welcome surfaces hide internal catalogue metadata", () => {
-  assert.match(shell, /Phase A · 90 minutes · Phase B · 7 days/);
   assert.match(css, /corelab-welcome \.fidelity-hero \[data-slot="badge"\]/);
   assert.match(css, /corelab-welcome \.fidelity-hero dl\{display:none\}/);
 });
