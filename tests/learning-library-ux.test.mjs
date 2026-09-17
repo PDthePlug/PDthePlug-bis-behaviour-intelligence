@@ -7,13 +7,13 @@ const source = (path) => readFile(new URL(path, root), "utf8");
 
 test("Today and Learn are distinct route-owned destinations", async () => {
   const player = await source("app/learning/programme-player.tsx");
+  const entry = await source("app/habit/programme-entry.tsx");
   const page = await source("app/habit/page.tsx");
   const shell = await source("app/canonical-adaptive-shell.tsx");
 
   assert.match(page, /params\.section === "learn" \? "learn" : "today"/);
   assert.match(shell, /href: "\/habit\?section=learn"/);
-  assert.match(player, /setSection\(initialSection\)/);
-  assert.match(player, /if \(initialSection === "learn"\) setLearnMode\("library"\)/);
+  assert.match(entry, /<ProgrammePlayer key=\{initialSection\} initialSection=\{initialSection\} \/>/);
   assert.match(player, /useState<LearnMode>\("library"\)/);
   assert.match(player, /openLearn\("reader"\)[\s\S]*Continue learning/);
 });
