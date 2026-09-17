@@ -60,6 +60,7 @@ export function MultiLabAdaptiveShell({ lab, children }: { lab: LabSlug; childre
   useEffect(() => {
     if (!menuOpen) return;
     const previousOverflow = document.body.style.overflow;
+    const menuButton = menuButtonRef.current;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
 
@@ -88,7 +89,7 @@ export function MultiLabAdaptiveShell({ lab, children }: { lab: LabSlug; childre
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
-      window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+      window.requestAnimationFrame(() => menuButton?.focus());
     };
   }, [menuOpen]);
 
