@@ -8,14 +8,16 @@ function safeReturnPath(value: string | null) {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  const next = safeReturnPath(url.searchParams.get("next"));
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(
-        new URL(safeReturnPath(url.searchParams.get("next")), url.origin),
-      );
+      return NextResponse.redirect(new URL(next, url.origin));
     }
   }
-  return NextResponse.redirect(new URL("/sign-in?error=confirmation&next=%2F", url.origin));
+  const signInUrl = new URL("/sign-in", url.origin);
+  signInUrl.searchParams.set("error", "confirmation");
+  signInUrl.searchParams.set("next", next);
+  return NextResponse.redirect(signInUrl);
 }
