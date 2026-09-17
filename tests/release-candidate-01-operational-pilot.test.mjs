@@ -7,9 +7,11 @@ const source = (path) => readFile(new URL(path, root), "utf8");
 
 test("structural staff experiment progress carries Lab identity without private experiment wording", async () => {
   const migration = await source("supabase/migrations/20260917215000_rc01_scope_staff_progress_by_lab.sql");
-  assert.match(migration, /e\.lab_code/);
+  const projection = migration.match(/select([\s\S]*?)from public\.experiments e/i)?.[1] ?? "";
+  assert.match(projection, /e\.lab_code/);
   assert.match(migration, /security_barrier = true/);
-  assert.doesNotMatch(migration, /target_pattern|target_condition|alternative_behaviour|expected_reward|notes/);
+  assert.match(migration, /security_invoker = true/);
+  assert.doesNotMatch(projection, /target_pattern|target_condition|alternative_behaviour|expected_reward|notes/);
 });
 
 test("RC01 uses a typed structural staff progress mapping with Lab code", async () => {
