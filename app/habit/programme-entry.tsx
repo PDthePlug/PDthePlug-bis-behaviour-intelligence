@@ -82,10 +82,10 @@ export function ProgrammeEntry({
         body: JSON.stringify(payload),
       });
       const data = await response.json() as EntrySnapshot & { error?: string };
-      if (!response.ok) throw new Error(data.error || "That programme change could not be saved.");
+      if (!response.ok) throw new Error(data.error || "That change could not be saved.");
       setSnapshot(data);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "That programme change could not be saved.");
+      setError(cause instanceof Error ? cause.message : "That change could not be saved.");
     } finally {
       setSaving(false);
     }
@@ -109,7 +109,7 @@ export function ProgrammeEntry({
   }, []);
 
   if (loading) {
-    return <main className="learning-state"><span className="learning-loader"/><h1>Opening BIS…</h1><p>Loading your learner profile and current programme position.</p></main>;
+    return <main className="learning-state"><span className="learning-loader"/><h1>Opening BIS…</h1><p>Getting your programme ready.</p></main>;
   }
 
   if (!snapshot) {
@@ -121,25 +121,25 @@ export function ProgrammeEntry({
   }
 
   if (snapshot.profile && snapshot.consent?.status === "WITHDRAWN") {
-    return <main className="privacy-paused"><div className="surface-card privacy-paused-card"><div className="card-icon teal"><LockKeyhole /></div><p className="eyebrow">Programme paused</p><h1>Your consent choice is active.</h1><p>Your authored programme place and existing evidence are preserved. Restore product consent when you want to continue.</p>{error && <p className="field-error">{error}</p>}<Button size="lg" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>{saving ? "Restoring…" : "Restore consent and return to BIS"}</Button></div></main>;
+    return <main className="privacy-paused"><div className="surface-card privacy-paused-card"><div className="card-icon teal"><LockKeyhole /></div><p className="eyebrow">Programme paused</p><h1>Your consent choice is active.</h1><p>Your progress is saved. Restore consent whenever you want to continue.</p>{error && <p className="field-error">{error}</p>}<Button size="lg" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>{saving ? "Restoring…" : "Restore consent and continue"}</Button></div></main>;
   }
 
   const hasStaffAccess = snapshot.roles.some((role) => ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role));
 
   return (
     <main className="onboarding-shell">
-      <div className="onboarding-header"><Brand /><Badge variant="outline">BIS learner profile</Badge></div>
+      <div className="onboarding-header"><Brand /><Badge variant="outline">Learner setup</Badge></div>
       <section className="onboarding-intro">
         <div>
-          <p className="eyebrow">Your learning profile starts here</p>
-          <h1>One profile determines the right handbook edition across BIS.</h1>
-          <p className="lede">Your classification is stored once. Every handbook inherits it, while each Lab keeps its formal evidence separate from your learning responses.</p>
+          <p className="eyebrow">Your BIS journey starts here</p>
+          <h1>Tell BIS a little about how you are learning.</h1>
+          <p className="lede">Your age band helps us show the handbook edition written for your stage. You set this once and use it across the programme.</p>
           <div className="journey-line" aria-label="BIS learning journey">
             {["Learn", "Investigate", "Experiment", "Review"].map((label, index) => <div key={label}><span>{index + 1}</span><strong>{label}</strong></div>)}
           </div>
         </div>
         <div className="surface-card onboarding-card">
-          <div className="privacy-heading"><LockKeyhole /><div><h2>Set up your learner profile</h2><p>Your age band resolves the correct authored delivery edition.</p></div></div>
+          <div className="privacy-heading"><LockKeyhole /><div><h2>Set up your learner profile</h2><p>Choose how you are taking BIS and your age band.</p></div></div>
           <label className="field-label">How are you taking BIS?</label>
           <div className="choice-grid two">
             <ProgrammeChoice active={mode === "INDEPENDENT"} title="On my own" detail="Independent learning journey" onClick={() => setMode("INDEPENDENT")} />
@@ -155,12 +155,12 @@ export function ProgrammeEntry({
               <SelectItem value="26+">26 or older · Workplace Edition</SelectItem>
             </SelectContent>
           </Select>
-          <div className="privacy-copy"><ShieldCheck /><p><strong>Private by design:</strong> workbook responses, formal Lab inputs and field-experiment evidence remain distinct records. Facilitators only receive the visibility their role permits.</p></div>
+          <div className="privacy-copy"><ShieldCheck /><p><strong>Private by design:</strong> your learning answers, Lab work and experiment entries are kept separate. Facilitators only see what their role allows.</p></div>
           <label className="consent-row"><Checkbox checked={consent} onCheckedChange={(value) => setConsent(value === true)} /><span>I understand what BIS collects, why it is used, who may see it in my selected mode, and that safeguarding or legal duties may limit confidentiality.</span></label>
           {error && <p className="field-error">{error}</p>}
-          <Button className="w-full" size="lg" disabled={saving || !ageBand || !consent} onClick={() => void act({ action: "setup", ageBand, mode, consent })}>{saving ? "Preparing BIS…" : <>Enter BIS <ArrowRight /></>}</Button>
+          <Button className="w-full" size="lg" disabled={saving || !ageBand || !consent} onClick={() => void act({ action: "setup", ageBand, mode, consent })}>{saving ? "Preparing BIS…" : <>Start BIS <ArrowRight /></>}</Button>
           <p className="signed-in-note">Signed in as {snapshot.identity?.email ?? initialIdentity.email}</p>
-          {hasStaffAccess && <p className="signed-in-note"><Link href="/workspace">Open role-restricted staff workspace</Link></p>}
+          {hasStaffAccess && <p className="signed-in-note"><Link href="/workspace">Open staff workspace</Link></p>}
         </div>
       </section>
     </main>
