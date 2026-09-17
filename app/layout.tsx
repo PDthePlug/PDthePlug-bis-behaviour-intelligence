@@ -3,11 +3,14 @@ import "./globals.css";
 import "./learning/programme-player.css";
 import "./habit-lab/focused-runtime.css";
 
+const metadataBase = new URL(
+  process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.NEXT_PUBLIC_APP_URL ?? "https://bis-behaviour-intelligence.vercel.app",
+);
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ??
-      "https://bis-behaviour-intelligence.pdmpofu.chatgpt.site",
-  ),
+  metadataBase,
   title: {
     default: "BIS — Behaviour Intelligence System",
     template: "%s · BIS",
