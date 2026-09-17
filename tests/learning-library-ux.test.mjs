@@ -43,9 +43,15 @@ test("handbook reader uses a compact progress header instead of a repeated cover
   assert.match(css, /prototype-reader-hero-compact[\s\S]*padding:\s*18px 22px/);
 });
 
-test("delivery edition remains a profile concern rather than repeated learning chrome", async () => {
+test("delivery edition stays in the data model and Profile but not repeated learning chrome", async () => {
   const player = await source("app/learning/programme-player.tsx");
   const profile = await source("app/profile/profile-dashboard.tsx");
+  const learningApi = await source("app/api/learning/route.ts");
+  const bisApi = await source("app/api/bis/route.ts");
+
+  assert.match(player, /deliveryEdition: Edition/);
+  assert.match(learningApi, /contentReleases\.deliveryEdition, profile\.deliveryEdition/);
+  assert.match(bisApi, /deliveryEdition: profile\?\.deliveryEdition/);
 
   assert.doesNotMatch(player, /School Edition|Emerging Adult Edition|Workplace Edition/);
   assert.match(profile, /School Edition/);
