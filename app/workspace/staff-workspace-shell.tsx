@@ -65,6 +65,11 @@ export function StaffWorkspaceShell() {
       const response = await fetch("/api/staff", { cache: "no-store" });
       const payload = (await response.json()) as StaffSession & { error?: string };
       if (!response.ok) {
+        if (response.status === 403) {
+          throw new Error(
+            "This signed-in account does not have a BIS staff role. Staff access is assigned by a BIS administrator.",
+          );
+        }
         throw new Error(payload.error || "Your staff workspace could not be opened.");
       }
 
@@ -102,6 +107,7 @@ export function StaffWorkspaceShell() {
             <LockKeyhole aria-hidden="true" />
             <span>{loading ? "Opening workspace…" : "Open staff workspace"}</span>
           </button>
+          <Link className="staff-gate-secondary" href="/profile">Profile and account</Link>
           <Link className="staff-gate-secondary" href="/habit">Open learner experience instead</Link>
         </section>
       </main>
@@ -120,6 +126,7 @@ export function StaffWorkspaceShell() {
         </Link>
         <div className="staff-workspace-actions">
           <span className="staff-workspace-identity">{session.identity.email}</span>
+          <Link className="staff-workspace-learner-link" href="/profile">Profile</Link>
           <Link className="staff-workspace-learner-link" href="/habit">Learner experience</Link>
           <button type="button" className="staff-workspace-hide" onClick={() => setVisible(false)}>
             <EyeOff aria-hidden="true" /> Hide workspace
