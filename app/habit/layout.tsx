@@ -1,4 +1,5 @@
 import "../canonical-shell.css";
+import "../learner-readability.css";
 import { CanonicalAdaptiveShell } from "../canonical-adaptive-shell";
 
 export default function HabitLayout({ children }: { children: React.ReactNode }) {

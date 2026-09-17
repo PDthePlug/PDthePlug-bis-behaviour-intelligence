@@ -1,4 +1,5 @@
 import "../canonical-shell.css";
+import "../learner-readability.css";
 import "./habit-lab-route.css";
 import { CanonicalAdaptiveShell } from "../canonical-adaptive-shell";
 
