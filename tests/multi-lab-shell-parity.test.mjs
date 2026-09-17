@@ -45,10 +45,16 @@ test("shared shell owns global chrome without deleting the Core Lab task engine"
   assert.match(engine, /step === 9 && <CanonicalFinalStep/);
 });
 
+test("Decision and Money welcome surfaces hide internal catalogue metadata", () => {
+  assert.match(shell, /Phase A · 90 minutes · Phase B · 7 days/);
+  assert.match(css, /corelab-welcome \.fidelity-hero \[data-slot="badge"\]/);
+  assert.match(css, /corelab-welcome \.fidelity-hero dl\{display:none\}/);
+});
+
 test("multi-Lab parity includes keyboard, mobile and readable interaction hardening", () => {
   assert.match(shell, /event\.key === "Escape"/);
   assert.match(shell, /event\.key !== "Tab"/);
-  assert.match(shell, /menuButtonRef\.current\?\.focus/);
+  assert.match(shell, /menuButton\?\.focus/);
   assert.match(css, /min-height:44px/);
   assert.match(css, /@media\(max-width:820px\)/);
   assert.match(css, /@media\(max-width:430px\)/);
