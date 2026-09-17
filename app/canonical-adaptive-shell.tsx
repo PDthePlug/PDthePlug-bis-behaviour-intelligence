@@ -73,7 +73,11 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
     document.body.style.overflow = "hidden";
     const frame = requestAnimationFrame(() => closeRef.current?.focus());
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMenuOpen(false);
+        return;
+      }
       if (event.key !== "Tab") return;
       const dialog = document.querySelector<HTMLElement>(".canonical-menu");
       if (!dialog) return;
@@ -130,20 +134,24 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
 
       <div id="bis-task-surface" className="canonical-task" tabIndex={-1}>{children}</div>
 
-      {menuOpen ? <button type="button" className="canonical-scrim" aria-label="Close BIS menu" onClick={() => setMenuOpen(false)} /> : null}
-      <nav className={`canonical-menu ${menuOpen ? "open" : ""}`} aria-label="BIS learner menu" aria-hidden={!menuOpen}>
-        <div className="canonical-menu-head">
-          <div><span>BIS</span><div><strong>Behaviour Intelligence Series™</strong><small>One programme. One learner shell.</small></div></div>
-          <button ref={closeRef} type="button" onClick={() => setMenuOpen(false)} aria-label="Close BIS menu"><X /></button>
-        </div>
-        <div className="canonical-menu-items">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return <Link key={item.id} className={stage === item.id ? "active" : ""} href={item.href} onClick={() => setMenuOpen(false)} aria-current={stage === item.id ? "page" : undefined}><Icon /><span><strong>{item.label}</strong><small>{item.detail}</small></span></Link>;
-          })}
-        </div>
-        <div className="canonical-menu-foot"><ShieldCheck /><span>Learning responses, formal Lab inputs and experiment evidence remain separate records.</span></div>
-      </nav>
+      {menuOpen ? (
+        <>
+          <button type="button" className="canonical-scrim" aria-label="Close BIS menu" onClick={() => setMenuOpen(false)} />
+          <div className="canonical-menu open" role="dialog" aria-modal="true" aria-label="BIS learner menu">
+            <div className="canonical-menu-head">
+              <div><span>BIS</span><div><strong>Behaviour Intelligence Series™</strong><small>One programme. One learner shell.</small></div></div>
+              <button ref={closeRef} type="button" onClick={() => setMenuOpen(false)} aria-label="Close BIS menu"><X /></button>
+            </div>
+            <nav className="canonical-menu-items" aria-label="BIS learner destinations">
+              {menuItems.map((item) => {
+                const Icon = item.icon;
+                return <Link key={item.id} className={stage === item.id ? "active" : ""} href={item.href} onClick={() => setMenuOpen(false)} aria-current={stage === item.id ? "page" : undefined}><Icon /><span><strong>{item.label}</strong><small>{item.detail}</small></span></Link>;
+              })}
+            </nav>
+            <div className="canonical-menu-foot"><ShieldCheck /><span>Learning responses, formal Lab inputs and experiment evidence remain separate records.</span></div>
+          </div>
+        </>
+      ) : null}
 
       <button ref={triggerRef} type="button" className="canonical-menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Open BIS menu" aria-expanded={menuOpen}><Menu /><span>Menu</span></button>
     </div>
