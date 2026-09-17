@@ -1,0 +1,356 @@
+/* BIS UX Hardening 02 — learner-facing readability only.
+   This layer may simplify or hide interface implementation copy, but it must not alter
+   authored handbook content, Lab logic, evidence semantics, timing, or privacy rules. */
+
+.canonical-shell {
+  --learner-reading: #2f3a35;
+  --learner-secondary: #64706a;
+  --learner-soft-line: #e5e2db;
+}
+
+/* Canonical shell guidance should be readable at a glance, not treated as metadata. */
+.canonical-shell .canonical-orientation span,
+.canonical-shell .canonical-mobile-guide span {
+  font-size: 10px;
+  letter-spacing: .075em;
+}
+
+.canonical-shell .canonical-orientation strong {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.canonical-shell .canonical-orientation p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.canonical-shell .canonical-help span strong {
+  font-size: 12px;
+}
+
+.canonical-shell .canonical-help small {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.canonical-shell .canonical-brand small,
+.canonical-shell .canonical-menu-head small,
+.canonical-shell .canonical-menu-items small,
+.canonical-shell .canonical-menu-foot {
+  font-size: 11px;
+}
+
+.canonical-shell .canonical-menu-items strong {
+  font-size: 14px;
+}
+
+/* Learner setup: make the decision task primary and supporting explanation secondary. */
+.canonical-shell .onboarding-intro {
+  gap: clamp(28px, 5vw, 72px);
+}
+
+.canonical-shell .onboarding-intro h1 {
+  max-width: 15ch;
+  text-wrap: balance;
+}
+
+.canonical-shell .onboarding-intro .lede {
+  max-width: 58ch;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--learner-reading);
+}
+
+.canonical-shell .onboarding-card {
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.canonical-shell .onboarding-card .privacy-heading p,
+.canonical-shell .privacy-copy p,
+.canonical-shell .consent-row,
+.canonical-shell .choice-button small,
+.canonical-shell .signed-in-note {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.canonical-shell .field-label {
+  font-size: 14px;
+}
+
+.canonical-shell .choice-button,
+.canonical-shell .onboarding-card button,
+.canonical-shell .onboarding-card [role="combobox"] {
+  min-height: 44px;
+}
+
+/* Today: remove implementation explanation and raw profile fields from the learner surface. */
+.canonical-shell .prototype-today-hero > div:first-child > p:not(.prototype-eyebrow) {
+  display: none;
+}
+
+.canonical-shell .prototype-profile-card > p:not(.prototype-eyebrow),
+.canonical-shell .prototype-profile-card > small {
+  display: none;
+}
+
+.canonical-shell .prototype-profile-card {
+  align-content: start;
+  min-height: 180px;
+}
+
+.canonical-shell .prototype-card p,
+.canonical-shell .prototype-card small {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.canonical-shell .prototype-card h2,
+.canonical-shell .prototype-card h3 {
+  text-wrap: balance;
+}
+
+.canonical-shell .prototype-btn,
+.canonical-shell .prototype-reader-footer button,
+.canonical-shell .prototype-programme-map button,
+.canonical-shell .prototype-back-link {
+  min-height: 44px;
+}
+
+/* Learn library: keep the learner's edition visible without explaining internal classification. */
+.canonical-shell .prototype-profile-banner > p,
+.canonical-shell .prototype-library-note {
+  display: none;
+}
+
+.canonical-shell .prototype-profile-banner {
+  align-items: center;
+  min-height: 104px;
+}
+
+.canonical-shell .prototype-handbook-card {
+  min-height: 260px;
+}
+
+.canonical-shell .prototype-handbook-card p {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.canonical-shell .prototype-book-meta,
+.canonical-shell .prototype-book-status {
+  font-size: 12px;
+}
+
+.canonical-shell article.prototype-handbook-card.source-held .prototype-book-status {
+  display: none;
+}
+
+.canonical-shell article.prototype-handbook-card.source-held::after {
+  content: "Coming later";
+  align-self: end;
+  justify-self: start;
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid var(--learner-soft-line);
+  border-radius: 999px;
+  background: #f6f4ef;
+  color: var(--learner-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* Reader: optimise for sustained reading rather than dashboard density. */
+.canonical-shell .prototype-reader {
+  max-width: 1180px;
+}
+
+.canonical-shell .prototype-reader-hero > p:not(.prototype-eyebrow),
+.canonical-shell .prototype-lede {
+  max-width: 68ch;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.canonical-shell .prototype-document {
+  max-width: 840px;
+  margin-inline: auto;
+}
+
+.canonical-shell .prototype-document p,
+.canonical-shell .prototype-document li,
+.canonical-shell .prototype-document blockquote {
+  font-size: 16px;
+  line-height: 1.72;
+  color: var(--learner-reading);
+}
+
+.canonical-shell .prototype-document h2 {
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.canonical-shell .prototype-document h3 {
+  font-size: clamp(19px, 2vw, 24px);
+  line-height: 1.25;
+}
+
+.canonical-shell .prototype-document textarea {
+  min-height: 120px;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.canonical-shell .prototype-save-state,
+.canonical-shell .prototype-reader-status,
+.canonical-shell .prototype-programme-map small,
+.canonical-shell .prototype-programme-map em {
+  font-size: 12px;
+}
+
+.canonical-shell .prototype-lab-handoff span,
+.canonical-shell .prototype-reference p,
+.canonical-shell .prototype-after-lab p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Habit Lab task surface: readability without changing the Lab engine. */
+.canonical-shell .habit-lab-route .surface-card p,
+.canonical-shell .habit-lab-route .surface-card li,
+.canonical-shell .habit-lab-route .field-help,
+.canonical-shell .habit-lab-route .field-description {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.canonical-shell .habit-lab-route label,
+.canonical-shell .habit-lab-route .field-label {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.canonical-shell .habit-lab-route input,
+.canonical-shell .habit-lab-route textarea,
+.canonical-shell .habit-lab-route select {
+  font-size: 16px;
+}
+
+.canonical-shell .habit-lab-route button,
+.canonical-shell .habit-lab-route a[role="button"] {
+  min-height: 44px;
+}
+
+/* Error, saving, locked and waiting states must remain legible. */
+.canonical-shell .learning-state p,
+.canonical-shell .privacy-paused-card > p:not(.eyebrow),
+.canonical-shell .prototype-error {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.canonical-shell .prototype-error {
+  max-width: 70ch;
+}
+
+@media (max-width: 820px) {
+  .canonical-shell .canonical-mobile-guide summary {
+    min-height: 50px;
+    font-size: 13px;
+  }
+
+  .canonical-shell .canonical-mobile-guide p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .canonical-shell .prototype-page,
+  .canonical-shell .onboarding-shell,
+  .canonical-shell .privacy-paused {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .canonical-shell .prototype-today-hero,
+  .canonical-shell .prototype-dashboard-grid,
+  .canonical-shell .prototype-profile-banner,
+  .canonical-shell .onboarding-intro {
+    gap: 16px;
+  }
+
+  .canonical-shell .prototype-card,
+  .canonical-shell .prototype-profile-banner,
+  .canonical-shell .onboarding-card,
+  .canonical-shell .privacy-paused-card {
+    border-radius: 18px;
+  }
+
+  .canonical-shell .prototype-today-hero h1,
+  .canonical-shell .prototype-library > h1,
+  .canonical-shell .prototype-reader-hero h1,
+  .canonical-shell .onboarding-intro h1 {
+    font-size: clamp(32px, 10vw, 44px);
+    line-height: 1.04;
+  }
+
+  .canonical-shell .prototype-handbook-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .canonical-shell .prototype-handbook-card {
+    min-height: 220px;
+  }
+
+  .canonical-shell .prototype-document {
+    width: 100%;
+  }
+
+  .canonical-shell .prototype-reader-footer {
+    gap: 10px;
+  }
+
+  .canonical-shell .prototype-reader-footer button {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+
+  .canonical-shell .habit-lab-route {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 430px) {
+  .canonical-shell .prototype-page,
+  .canonical-shell .onboarding-shell,
+  .canonical-shell .privacy-paused {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .canonical-shell .prototype-card,
+  .canonical-shell .prototype-profile-banner,
+  .canonical-shell .onboarding-card,
+  .canonical-shell .privacy-paused-card {
+    padding: 18px;
+  }
+
+  .canonical-shell .choice-grid.two {
+    grid-template-columns: 1fr;
+  }
+
+  .canonical-shell .prototype-reader-footer {
+    flex-direction: column-reverse;
+  }
+
+  .canonical-shell .prototype-reader-footer button {
+    width: 100%;
+  }
+
+  .canonical-shell .canonical-menu-items a {
+    min-height: 60px;
+  }
+}
