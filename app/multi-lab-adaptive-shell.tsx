@@ -131,6 +131,7 @@ export function MultiLabAdaptiveShell({ lab, children }: { lab: LabSlug; childre
           <p>Volume 1 · Applied Commerce®</p>
           <h1>{definition.title}</h1>
           <span>{definition.focus}</span>
+          <small className="multi-lab-duration">Phase A · 90 minutes · Phase B · 7 days</small>
         </div>
         <div className="multi-lab-journey" aria-label="Lab journey stages">
           <span><CheckCircle2 /> Investigate</span><ArrowRight /><span><FlaskConical /> Experiment</span><ArrowRight /><span><ShieldCheck /> Review</span>
