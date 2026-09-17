@@ -2,7 +2,7 @@
 -- Keep staff experiment progress structural while allowing cohort-scoped Lab filtering.
 
 create or replace view public.staff_experiment_progress
-with (security_barrier = true)
+with (security_barrier = true, security_invoker = true)
 as
 select
   e.id,
@@ -21,4 +21,4 @@ revoke insert, update, delete on public.staff_experiment_progress from authentic
 grant select on public.staff_experiment_progress to authenticated;
 
 comment on view public.staff_experiment_progress is
-  'Structural experiment progress only; includes Lab identity but excludes learner pattern, equation, reward, and notes.';
+  'Structural experiment progress only; security-invoker staff view includes Lab identity but excludes learner pattern, equation, reward, and notes.';
