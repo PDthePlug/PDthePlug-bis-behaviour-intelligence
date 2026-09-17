@@ -14,23 +14,22 @@ test("canonical learner shell owns the Habit programme and focused Habit tools",
   assert.match(labLayout, /canonical-shell\.css/);
 });
 
-test("canonical learner navigation preserves the accepted BIS journey", () => {
-  for (const label of ["Today", "Learn", "Lab", "Experiment"]) {
-    assert.ok(shell.includes(`label: \"${label}\"`), `${label} should remain in the canonical learner menu`);
+test("canonical learner navigation preserves the accepted BIS journey and adds Profile", () => {
+  for (const label of ["Today", "Learn", "Lab", "Experiment", "Profile"]) {
+    assert.ok(shell.includes(`label: "${label}"`), `${label} should remain in the canonical learner menu`);
   }
   assert.match(shell, /href: "\/habit"/);
   assert.match(shell, /href: "\/habit\?section=learn"/);
   assert.match(shell, /href: "\/habit-lab"/);
   assert.match(shell, /href: "\/habit-lab\/experiment"/);
+  assert.match(shell, /href: "\/profile"/);
 });
 
-test("canonical shell answers the five PD experience questions without deleting them on mobile", () => {
-  for (const label of ["Where you are", "What this means", "Do now", "Next", "Need help?"]) {
-    assert.ok(shell.includes(label), `${label} should remain visible in shell guidance`);
-  }
-  assert.match(shell, /canonical-mobile-guide/);
-  assert.match(css, /\.canonical-mobile-guide\{display:none/);
-  assert.match(css, /@media\(max-width:820px\).*\.canonical-mobile-guide\{display:block/s);
+test("canonical learner shell is task-first and does not repeat screen guidance", () => {
+  assert.doesNotMatch(shell, /canonical-mobile-guide/);
+  assert.doesNotMatch(shell, /canonical-orientation/);
+  assert.doesNotMatch(shell, /Screen guide/);
+  assert.doesNotMatch(shell, /Your learning answers, Lab work and experiment entries stay in their proper places/);
 });
 
 test("canonical shell contains keyboard and motion hardening", () => {
