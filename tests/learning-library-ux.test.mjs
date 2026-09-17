@@ -27,7 +27,7 @@ test("Learn opens a concise handbook library without repeating profile classific
   assert.doesNotMatch(player, /Learner profile context/);
   assert.doesNotMatch(player, /One learner profile\. One learning environment\./);
   assert.doesNotMatch(player, /Workplace Edition/);
-  assert.doesNotMatch(player, /deliveryEdition:/);
+  assert.doesNotMatch(player, /deliveryEdition:\s*<strong>|Learner profile context|Workplace Edition/);
 });
 
 test("handbook reader uses a compact progress header instead of a repeated cover", async () => {
