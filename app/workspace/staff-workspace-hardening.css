@@ -1,0 +1,359 @@
+.staff-gate{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:32px 20px;
+  background:linear-gradient(180deg,#f7f6f2 0%,#eef2ef 100%);
+  color:var(--foreground);
+}
+.staff-gate-card{
+  width:min(620px,100%);
+  display:grid;
+  justify-items:start;
+  gap:16px;
+  padding:clamp(28px,5vw,48px);
+  border:1px solid var(--border);
+  border-radius:28px;
+  background:var(--paper);
+  box-shadow:0 28px 90px rgb(18 39 47 / 9%);
+}
+.staff-gate-mark{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:var(--ink);
+  color:white;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.staff-gate-eyebrow{
+  margin:2px 0 -8px;
+  color:var(--teal);
+  font-size:12px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.staff-gate h1{
+  max-width:520px;
+  margin:0;
+  font:600 clamp(36px,7vw,56px)/.98 var(--font-serif);
+  letter-spacing:-.035em;
+}
+.staff-gate-copy{
+  max-width:540px;
+  margin:0;
+  color:var(--muted-foreground);
+  font-size:16px;
+  line-height:1.7;
+}
+.staff-gate-privacy{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  margin-top:4px;
+  padding:16px;
+  border:1px solid #2b756f2c;
+  border-radius:16px;
+  background:#edf4f1;
+}
+.staff-gate-privacy svg{width:21px;flex:0 0 auto;color:var(--teal)}
+.staff-gate-privacy p{margin:0;color:#455650;font-size:14px;line-height:1.6}
+.staff-gate-error{margin:0;color:var(--destructive);font-size:14px;font-weight:700}
+.staff-gate-primary,
+.staff-gate-secondary{
+  min-height:48px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:850;
+}
+.staff-gate-primary{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  border:0;
+  background:var(--ink);
+  color:white;
+}
+.staff-gate-primary:disabled{opacity:.58;cursor:not-allowed}
+.staff-gate-primary svg{width:18px}
+.staff-gate-secondary{
+  width:100%;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--border);
+  color:var(--ink);
+  text-decoration:none;
+}
+
+.staff-workspace-shell{
+  min-height:100vh;
+  overflow-x:clip;
+  background:#f4f5f2;
+  color:var(--foreground);
+}
+.staff-workspace-header{
+  position:sticky;
+  z-index:90;
+  top:0;
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  padding:10px clamp(18px,4vw,48px);
+  border-bottom:1px solid #ffffff18;
+  background:rgba(18,39,47,.98);
+  backdrop-filter:blur(16px);
+}
+.staff-workspace-brand{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  color:white;
+  text-decoration:none;
+}
+.staff-workspace-brand>span{
+  width:40px;
+  height:40px;
+  flex:0 0 auto;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:white;
+  color:var(--ink);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.staff-workspace-brand>div{display:grid;min-width:0}
+.staff-workspace-brand strong{font-size:14px;line-height:1.2}
+.staff-workspace-brand small{margin-top:2px;color:#afc0bb;font-size:12px}
+.staff-workspace-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  min-width:0;
+}
+.staff-workspace-identity{
+  max-width:230px;
+  overflow:hidden;
+  color:#afc0bb;
+  font-size:13px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.staff-workspace-learner-link,
+.staff-workspace-hide{
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 14px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:800;
+}
+.staff-workspace-learner-link{
+  border:1px solid #ffffff24;
+  color:white;
+  text-decoration:none;
+}
+.staff-workspace-hide{
+  border:0;
+  background:#ffffff12;
+  color:white;
+}
+.staff-workspace-hide svg{width:17px}
+
+.staff-workspace-switcher{
+  position:sticky;
+  z-index:80;
+  top:72px;
+  display:flex;
+  gap:8px;
+  padding:10px clamp(18px,4vw,48px);
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px);
+}
+.staff-workspace-switcher button{
+  min-height:56px;
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  padding:9px 14px;
+  border:1px solid transparent;
+  border-radius:12px;
+  background:transparent;
+  color:var(--muted-foreground);
+  text-align:left;
+}
+.staff-workspace-switcher button>svg{width:19px}
+.staff-workspace-switcher button>span{display:grid;gap:2px}
+.staff-workspace-switcher strong{font-size:14px;color:inherit}
+.staff-workspace-switcher small{font-size:12px;color:var(--muted-foreground)}
+.staff-workspace-switcher button.active{
+  border-color:#17313b1f;
+  background:var(--ink);
+  color:white;
+  box-shadow:0 8px 24px rgb(18 39 47 / 12%);
+}
+.staff-workspace-switcher button.active small{color:#b9c9c5}
+.staff-workspace-main{width:100%;min-width:0}
+
+.staff-workspace-shell .operations-view{
+  width:min(1380px,100%);
+  margin:0 auto;
+  padding-top:32px;
+  padding-bottom:80px;
+}
+.staff-workspace-shell .page-intro{margin-bottom:26px}
+.staff-workspace-shell .page-intro h1{
+  max-width:820px;
+  font-size:clamp(38px,5vw,62px);
+  line-height:.98;
+  letter-spacing:-.04em;
+}
+.staff-workspace-shell .page-intro p:last-child{
+  max-width:760px;
+  font-size:16px;
+  line-height:1.65;
+}
+.staff-workspace-shell .operations-orientation span{font-size:12px}
+.staff-workspace-shell .operations-orientation strong{font-size:15px}
+.staff-workspace-shell .operations-orientation p{font-size:14px;line-height:1.55}
+.staff-workspace-shell .ops-boundary{margin-top:0;padding:18px 20px}
+.staff-workspace-shell .ops-boundary strong{font-size:15px}
+.staff-workspace-shell .ops-boundary p{font-size:14px;line-height:1.6}
+.staff-workspace-shell .perspective-nav{top:150px;gap:6px}
+.staff-workspace-shell .perspective-nav a{
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  font-size:14px;
+}
+.staff-workspace-shell .ops-section{padding:28px}
+.staff-workspace-shell .ops-section .section-title h2,
+.staff-workspace-shell .ops-section-heading h2{font-size:28px;line-height:1.12}
+.staff-workspace-shell .ops-section .section-title p:last-child,
+.staff-workspace-shell .ops-helper,
+.staff-workspace-shell .ops-record-list p,
+.staff-workspace-shell .ops-empty p{font-size:14px;line-height:1.65}
+.staff-workspace-shell .ops-form-stack label{font-size:14px}
+.staff-workspace-shell .ops-form-stack input,
+.staff-workspace-shell .ops-form-stack textarea,
+.staff-workspace-shell .ops-form-stack button,
+.staff-workspace-shell .ops-form-row input,
+.staff-workspace-shell .ops-form-row button,
+.staff-workspace-shell [data-slot="select-trigger"]{min-height:44px;font-size:14px}
+.staff-workspace-shell .ops-role-list>div,
+.staff-workspace-shell .ops-cohort-list>div,
+.staff-workspace-shell .ops-record-list>div{padding:16px 0}
+.staff-workspace-shell .ops-role-list strong,
+.staff-workspace-shell .ops-cohort-list strong,
+.staff-workspace-shell .ops-record-list strong,
+.staff-workspace-shell .ops-learner-head strong{font-size:15px}
+.staff-workspace-shell .ops-role-list small,
+.staff-workspace-shell .ops-cohort-list small,
+.staff-workspace-shell .ops-record-list small,
+.staff-workspace-shell .ops-learner-head span{font-size:13px;line-height:1.45}
+.staff-workspace-shell .ops-learner-grid{gap:16px}
+.staff-workspace-shell .ops-learner-card{padding:20px}
+.staff-workspace-shell .ops-learner-card dt{font-size:12px;line-height:1.4}
+.staff-workspace-shell .ops-learner-card dd{font-size:14px;line-height:1.45}
+.staff-workspace-shell .ops-learner-select{min-height:44px}
+.staff-workspace-shell .ops-empty{min-height:250px}
+.staff-workspace-shell .audit-section{scroll-margin-top:170px}
+.staff-workspace-shell .audit-section-title h2{font-size:30px}
+.staff-workspace-shell .audit-section-title p:last-child{font-size:15px;line-height:1.6}
+.staff-workspace-shell .audit-registry span,
+.staff-workspace-shell .audit-registry strong{font-size:14px;line-height:1.45}
+.staff-workspace-shell .audit-flow small{font-size:12px}
+.staff-workspace-shell .audit-flow strong{font-size:15px;line-height:1.45}
+.staff-workspace-shell .audit-flow p{font-size:14px;line-height:1.6}
+.staff-workspace-shell .readiness-review p:last-child{font-size:15px;line-height:1.65}
+.staff-workspace-shell .admin-disclosure summary{min-height:58px}
+
+.staff-workspace-shell button:focus-visible,
+.staff-workspace-shell a:focus-visible,
+.staff-gate button:focus-visible,
+.staff-gate a:focus-visible{
+  outline:3px solid color-mix(in srgb,var(--teal) 48%,white);
+  outline-offset:3px;
+}
+
+@media(max-width:1000px){
+  .staff-workspace-header{align-items:flex-start;flex-direction:column;gap:9px;padding-top:14px;padding-bottom:14px}
+  .staff-workspace-actions{width:100%;justify-content:flex-start;flex-wrap:wrap}
+  .staff-workspace-identity{margin-right:auto}
+  .staff-workspace-switcher{top:104px}
+  .staff-workspace-shell .perspective-nav{top:182px}
+  .staff-workspace-shell .ops-learner-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .staff-workspace-shell .ops-form-row{grid-template-columns:1fr 1fr}
+  .staff-workspace-shell .ops-form-row button{grid-column:1/-1}
+}
+
+@media(max-width:700px){
+  .staff-gate{padding:16px}
+  .staff-gate-card{padding:26px 20px;border-radius:22px}
+  .staff-gate h1{font-size:40px}
+  .staff-workspace-header{position:relative;min-height:auto;padding:14px}
+  .staff-workspace-brand strong{font-size:13px}
+  .staff-workspace-actions{display:grid;grid-template-columns:1fr 1fr}
+  .staff-workspace-identity{grid-column:1/-1;max-width:100%;font-size:12px}
+  .staff-workspace-learner-link,.staff-workspace-hide{width:100%;padding:0 10px;font-size:12px}
+  .staff-workspace-switcher{position:sticky;top:0;display:grid;grid-template-columns:1fr;padding:8px 12px}
+  .staff-workspace-switcher button{min-height:54px}
+  .staff-workspace-shell .operations-view{padding:24px 16px 72px}
+  .staff-workspace-shell .page-intro{gap:14px}
+  .staff-workspace-shell .page-intro h1{font-size:38px}
+  .staff-workspace-shell .page-intro p:last-child{font-size:15px}
+  .staff-workspace-shell .operations-orientation{grid-template-columns:1fr}
+  .staff-workspace-shell .operations-orientation>div,
+  .staff-workspace-shell .operations-orientation>div:nth-child(2n),
+  .staff-workspace-shell .operations-orientation>div:last-child{grid-column:auto;border-right:0;border-bottom:1px solid var(--border)}
+  .staff-workspace-shell .operations-orientation>div:last-child{border-bottom:0}
+  .staff-workspace-shell .perspective-nav{position:static;margin:14px 0 20px;padding:6px;scrollbar-width:none}
+  .staff-workspace-shell .perspective-nav a{min-height:46px;font-size:13px}
+  .staff-workspace-shell .ops-learner-grid,
+  .staff-workspace-shell .ops-two-column,
+  .staff-workspace-shell .ops-form-row,
+  .staff-workspace-shell .opportunity-bands,
+  .staff-workspace-shell .ops-metrics,
+  .staff-workspace-shell .audit-index{grid-template-columns:1fr}
+  .staff-workspace-shell .ops-section{padding:22px 18px}
+  .staff-workspace-shell .ops-cohort-banner,
+  .staff-workspace-shell .ops-safeguard-banner{align-items:flex-start;flex-direction:column;padding:22px}
+  .staff-workspace-shell .readiness-review{padding:22px 18px}
+  .staff-workspace-shell .audit-section{padding:22px 16px;scroll-margin-top:90px}
+  .staff-workspace-shell .audit-section-title h2{font-size:26px}
+  .staff-workspace-shell .audit-index article{min-height:112px}
+  .staff-workspace-shell .case-actions,
+  .staff-workspace-shell .case-resolution{grid-template-columns:1fr}
+  .staff-workspace-shell .case-actions>*{width:100%}
+}
+
+@media(max-width:430px){
+  .staff-gate h1{font-size:36px}
+  .staff-workspace-actions{grid-template-columns:1fr}
+  .staff-workspace-identity{grid-column:auto}
+  .staff-workspace-shell .page-intro h1{font-size:34px}
+  .staff-workspace-shell .ops-section .section-title h2,
+  .staff-workspace-shell .ops-section-heading h2{font-size:25px}
+  .staff-workspace-shell .ops-learner-card dl{grid-template-columns:1fr 1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .staff-workspace-shell *,
+  .staff-gate *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
