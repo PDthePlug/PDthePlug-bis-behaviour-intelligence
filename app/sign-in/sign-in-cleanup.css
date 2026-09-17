@@ -1,0 +1,21 @@
+/* RC01 sign-in simplification */
+.auth-story.auth-story-simplified {
+  justify-content: flex-start;
+  gap: clamp(56px, 12vh, 140px);
+}
+
+.auth-story.auth-story-simplified > div:nth-child(2) {
+  max-width: 760px;
+}
+
+@media (max-width: 860px) {
+  .auth-story.auth-story-simplified {
+    min-height: auto;
+    gap: 48px;
+    padding-bottom: 36px;
+  }
+
+  .auth-story.auth-story-simplified > div:nth-child(2) {
+    margin-top: 18px;
+  }
+}
