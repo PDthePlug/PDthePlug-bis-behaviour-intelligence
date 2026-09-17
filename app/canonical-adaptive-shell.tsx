@@ -70,6 +70,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
   useEffect(() => {
     if (!menuOpen) return;
     const previousOverflow = document.body.style.overflow;
+    const trigger = triggerRef.current;
     document.body.style.overflow = "hidden";
     const frame = requestAnimationFrame(() => closeRef.current?.focus());
     const onKeyDown = (event: KeyboardEvent) => {
@@ -98,7 +99,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
       cancelAnimationFrame(frame);
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
-      requestAnimationFrame(() => triggerRef.current?.focus());
+      requestAnimationFrame(() => trigger?.focus());
     };
   }, [menuOpen]);
 
