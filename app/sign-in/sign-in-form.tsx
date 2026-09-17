@@ -19,10 +19,13 @@ function authErrorMessage(message: string) {
   if (normalised.includes("user already registered") || normalised.includes("already registered")) {
     return "A BIS account already exists for this email. Choose Sign in and use your password.";
   }
-  return message;
+  if (normalised.includes("invalid login credentials") || normalised.includes("invalid credentials")) {
+    return "The email or password is incorrect. Check your details and try again.";
+  }
+  return "BIS could not complete that request. Check your details and try again.";
 }
 
-export function SignInForm({ next }: { next: string }) {
+export function SignInForm({ next, initialError = "" }: { next: string; initialError?: string }) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -31,7 +34,7 @@ export function SignInForm({ next }: { next: string }) {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(initialError);
 
   function changeMode(nextMode: "signin" | "signup") {
     setMode(nextMode);
