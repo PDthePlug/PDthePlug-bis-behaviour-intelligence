@@ -117,7 +117,7 @@ export function ProgrammeEntry({
   }
 
   if (snapshot.profile && snapshot.consent?.status === "GRANTED") {
-    return <ProgrammePlayer initialSection={initialSection} />;
+    return <ProgrammePlayer key={initialSection} initialSection={initialSection} />;
   }
 
   if (snapshot.profile && snapshot.consent?.status === "WITHDRAWN") {
