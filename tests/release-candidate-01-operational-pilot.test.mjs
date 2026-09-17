@@ -9,8 +9,12 @@ test("structural staff experiment progress carries Lab identity without private 
   const migration = await source("supabase/migrations/20260917215000_rc01_scope_staff_progress_by_lab.sql");
   const projection = migration.match(/select([\s\S]*?)from public\.experiments e/i)?.[1] ?? "";
   assert.match(projection, /e\.lab_code/);
+  assert.match(migration, /function private\.staff_experiment_progress_rows\(\)/);
+  assert.match(migration, /security definer/);
+  assert.match(migration, /set search_path = ''/);
   assert.match(migration, /security_barrier = true/);
   assert.match(migration, /security_invoker = true/);
+  assert.match(migration, /select \* from private\.staff_experiment_progress_rows\(\)/);
   assert.doesNotMatch(projection, /target_pattern|target_condition|alternative_behaviour|expected_reward|notes/);
 });
 
