@@ -15,7 +15,6 @@ import {
   LibraryBig,
   LockKeyhole,
   Menu,
-  ShieldCheck,
   X,
 } from "lucide-react";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
