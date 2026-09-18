@@ -18,7 +18,8 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(route, /content-type": "application\/pdf"/);
   assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
   assert.match(pdf, /%PDF-1\.4/);
-  assert.match(pdf, /canvas\.textAt\(MARGIN, 714, "Programme"/);\n  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Outcomes Report"/);
+  assert.match(pdf, /canvas\.textAt\(MARGIN, 714, "Programme"/);
+  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Outcomes Report"/);
   assert.match(pdf, /Executive summary/);
   assert.match(pdf, /KEY FINDINGS/);
   assert.match(pdf, /LEARNING JOURNEY/);
