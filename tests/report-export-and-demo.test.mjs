@@ -22,7 +22,7 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Outcomes Report"/);
   assert.match(pdf, /Executive summary/);
   assert.match(pdf, /KEY FINDINGS/);
-  assert.match(pdf, /LEARNING JOURNEY/);
+  assert.match(pdf, /Learning journey/);
   assert.match(pdf, /DAY-BY-DAY PROGRESSION/);
   assert.match(pdf, /RECURRING STRUCTURED CHALLENGES/);
   assert.match(pdf, /GROUP SHIFTS/);
