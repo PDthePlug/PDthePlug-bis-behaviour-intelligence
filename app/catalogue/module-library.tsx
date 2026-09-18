@@ -100,7 +100,7 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
               {body}
             </Link>
           ) : (
-            <article className="bis-module-card unavailable" key={item.code} aria-disabled="true">
+            <article className="bis-module-card unavailable" key={item.code} data-availability="unavailable">
               {body}
             </article>
           );
