@@ -7,6 +7,7 @@ export const STAFF_ROLES = [
   "SYSTEM_ADMIN",
   "FACILITATOR",
   "SAFEGUARDING_OFFICER",
+  "SPONSOR_VIEWER",
 ] as const;
 
 export type StaffRole = (typeof STAFF_ROLES)[number];

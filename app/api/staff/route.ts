@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, ne } from "../../../db/query";
+import { and, asc, desc, eq, inArray, ne, or } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import { scopedStaffExperimentProgress as staffExperimentProgress } from "../../../db/staff-progress";
 import {
@@ -25,6 +25,7 @@ import {
   STAFF_ROLES,
 } from "../../../lib/bis-access";
 import type { Identity, StaffRole } from "../../../lib/bis-access";
+import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { LAB_VERSION } from "../../../lib/habit-lab";
 
 const SUPPORTED_LAB_VERSIONS = [LAB_VERSION] as const;
@@ -325,6 +326,64 @@ async function facilitatorSnapshot(identity: Identity) {
   };
 }
 
+async function sponsorSnapshot(identity: Identity, roles: string[]) {
+  const db = getDb();
+  let cohortIds: string[] = [];
+
+  if (hasRole(roles, "SYSTEM_ADMIN")) {
+    const cohorts = await db
+      .select({ id: pilotCohorts.id })
+      .from(pilotCohorts)
+      .where(eq(pilotCohorts.status, "ACTIVE"))
+      .orderBy(asc(pilotCohorts.name));
+    cohortIds = cohorts.map((cohort) => cohort.id);
+  } else {
+    const assignments = await db
+      .select({ scopeId: roleAssignments.scopeId })
+      .from(roleAssignments)
+      .where(and(
+        eq(roleAssignments.role, "SPONSOR_VIEWER"),
+        eq(roleAssignments.scopeType, "COHORT"),
+        eq(roleAssignments.status, "ACTIVE"),
+        or(
+          eq(roleAssignments.principalEmail, identity.email),
+          eq(roleAssignments.userId, identity.id),
+        ),
+      ));
+    cohortIds = [...new Set(assignments.map((assignment) => assignment.scopeId))];
+  }
+
+  const client = requestSupabaseClient();
+  const cohorts = [];
+  for (const cohortId of cohortIds) {
+    const { data, error } = await client.rpc("sponsor_cohort_outcomes", {
+      target_cohort_id: cohortId,
+    });
+    if (error) throw new Error(error.message);
+    if (data) cohorts.push(data);
+  }
+
+  return {
+    cohorts,
+    signalCoverage: [
+      { id: "action", label: "Action", status: "LIVE", description: "Reached the experiment stage, started, or remained ready but not started." },
+      { id: "prediction", label: "Prediction", status: "LIVE", description: "Predicted behaviour compared with observed behaviour when evidence is available." },
+      { id: "experiment", label: "Experiment", status: "LIVE", description: "Real-world attempts, observations and eligible opportunities." },
+      { id: "evidence", label: "Evidence", status: "LIVE", description: "Sufficient, limited, or not enough evidence yet." },
+      { id: "change", label: "Change", status: "LIVE", description: "Response direction across repeated comparable opportunities." },
+      { id: "support", label: "Support", status: "LIVE", description: "Learner-initiated requests for human help, aggregated only." },
+      { id: "voice", label: "Voice / silence", status: "FUTURE_SIGNAL", description: "Activates when the relevant Identity or Communication evidence field is live." },
+      { id: "mistakes", label: "Response to mistakes", status: "FUTURE_SIGNAL", description: "Activates with Failure Lab evidence." },
+      { id: "feedback", label: "Ungraded feedback", status: "FUTURE_SIGNAL", description: "Activates when the relevant feedback evidence protocol is live." },
+    ],
+    privacy: {
+      aggregationOnly: true,
+      minimumReportableCohortSize: 5,
+      excluded: ["learner names", "email addresses", "reflection text", "hypothesis wording", "experiment notes", "Companion conversations"],
+    },
+  };
+}
+
 async function safeguardingSnapshot() {
   const db = getDb();
   const cases = await db.select().from(safeguardingCases).orderBy(desc(safeguardingCases.openedAt));
@@ -348,16 +407,20 @@ async function safeguardingSnapshot() {
 }
 
 async function staffSnapshot(identity: Identity, roles: string[]) {
+  const sponsorAvailable = hasRole(roles, "SPONSOR_VIEWER") || hasRole(roles, "SYSTEM_ADMIN");
   return {
     identity,
     roles,
     privacyBoundary: {
       facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
+      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand"],
+      sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },
     admin: hasRole(roles, "SYSTEM_ADMIN") ? await adminSnapshot() : null,
     facilitator: hasRole(roles, "FACILITATOR") ? await facilitatorSnapshot(identity) : null,
+    sponsor: sponsorAvailable ? await sponsorSnapshot(identity, roles) : null,
     safeguarding: hasRole(roles, "SAFEGUARDING_OFFICER") ? await safeguardingSnapshot() : null,
   };
 }
@@ -391,11 +454,24 @@ async function postHandler(request: Request) {
       const role = String(body.role ?? "") as StaffRole;
       if (!EMAIL_PATTERN.test(principalEmail)) throw new Error("Enter a valid staff email address.");
       if (!STAFF_ROLES.includes(role)) throw new Error("Choose a supported staff role.");
+
+      const sponsorRole = role === "SPONSOR_VIEWER";
+      const scopeType = sponsorRole ? "COHORT" : "GLOBAL";
+      const scopeId = sponsorRole ? String(body.cohortId ?? "") : "GLOBAL";
+      if (sponsorRole) {
+        const [cohort] = await db
+          .select({ id: pilotCohorts.id })
+          .from(pilotCohorts)
+          .where(and(eq(pilotCohorts.id, scopeId), eq(pilotCohorts.status, "ACTIVE")))
+          .limit(1);
+        if (!cohort) throw new Error("Choose an active cohort for sponsor access.");
+      }
+
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
       await db
         .insert(roleAssignments)
-        .values({ id, principalEmail, role, scopeType: "GLOBAL", scopeId: "GLOBAL", assignedBy: identity.id })
+        .values({ id, principalEmail, role, scopeType, scopeId, assignedBy: identity.id })
         .onConflictDoUpdate({
           target: [roleAssignments.principalEmail, roleAssignments.role, roleAssignments.scopeType, roleAssignments.scopeId],
           set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null },
@@ -403,9 +479,19 @@ async function postHandler(request: Request) {
       const [assignment] = await db
         .select({ id: roleAssignments.id })
         .from(roleAssignments)
-        .where(and(eq(roleAssignments.principalEmail, principalEmail), eq(roleAssignments.role, role)))
+        .where(and(
+          eq(roleAssignments.principalEmail, principalEmail),
+          eq(roleAssignments.role, role),
+          eq(roleAssignments.scopeType, scopeType),
+          eq(roleAssignments.scopeId, scopeId),
+        ))
         .limit(1);
-      await staffAudit(identity, "STAFF_ROLE_ASSIGNED", "ROLE_ASSIGNMENT", assignment?.id ?? id, { role, principalEmail });
+      await staffAudit(identity, "STAFF_ROLE_ASSIGNED", "ROLE_ASSIGNMENT", assignment?.id ?? id, {
+        role,
+        principalEmail,
+        scopeType,
+        scopeId,
+      });
       return Response.json(await staffSnapshot(identity, await getRoles(identity)), { status: 201 });
     }
 

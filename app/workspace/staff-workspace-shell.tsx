@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  Activity,
   EyeOff,
   LayoutDashboard,
   LockKeyhole,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import { OperationsView } from "../operations-view";
 
-type Perspective = "facilitator" | "audit";
+type Perspective = "facilitator" | "sponsor" | "audit";
 
 type StaffSession = {
   identity: { email: string; displayName: string };
@@ -20,6 +21,10 @@ type StaffSession = {
 
 function canFacilitate(roles: string[]) {
   return roles.includes("FACILITATOR") || roles.includes("SAFEGUARDING_OFFICER");
+}
+
+function canSponsor(roles: string[]) {
+  return roles.includes("SPONSOR_VIEWER") || roles.includes("SYSTEM_ADMIN");
 }
 
 function canAudit(roles: string[]) {
@@ -74,12 +79,18 @@ export function StaffWorkspaceShell() {
       }
 
       const roles = payload.roles ?? [];
-      if (!canFacilitate(roles) && !canAudit(roles)) {
+      if (!canFacilitate(roles) && !canSponsor(roles) && !canAudit(roles)) {
         throw new Error("Your account does not currently have a BIS staff role.");
       }
 
       setSession({ identity: payload.identity, roles });
-      setPerspective(canFacilitate(roles) ? "facilitator" : "audit");
+      setPerspective(
+        canFacilitate(roles)
+          ? "facilitator"
+          : canAudit(roles)
+            ? "audit"
+            : "sponsor",
+      );
       setVisible(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Your staff workspace could not be opened.");
@@ -94,9 +105,9 @@ export function StaffWorkspaceShell() {
         <section className="staff-gate-card" aria-labelledby="staff-gate-title">
           <div className="staff-gate-mark" aria-hidden="true">BIS</div>
           <p className="staff-gate-eyebrow">Restricted staff workspace</p>
-          <h1 id="staff-gate-title">Facilitator and Audit Workspace</h1>
+          <h1 id="staff-gate-title">Programme Workspace</h1>
           <p className="staff-gate-copy">
-            Open this workspace only when you are ready to review programme operations. Learner private wording is not shown here.
+            Open the view your role allows. Sponsor reporting is aggregate-only; facilitator and safeguarding access remains separately controlled.
           </p>
           <div className="staff-gate-privacy">
             <ShieldCheck aria-hidden="true" />
@@ -115,6 +126,7 @@ export function StaffWorkspaceShell() {
   }
 
   const facilitatorAvailable = canFacilitate(session.roles);
+  const sponsorAvailable = canSponsor(session.roles);
   const auditAvailable = canAudit(session.roles);
 
   return (
@@ -144,6 +156,17 @@ export function StaffWorkspaceShell() {
           >
             <LayoutDashboard aria-hidden="true" />
             <span><strong>Facilitator View</strong><small>Cohorts, learner summaries and support</small></span>
+          </button>
+        ) : null}
+        {sponsorAvailable ? (
+          <button
+            type="button"
+            className={perspective === "sponsor" ? "active" : ""}
+            onClick={() => setPerspective("sponsor")}
+            aria-current={perspective === "sponsor" ? "page" : undefined}
+          >
+            <Activity aria-hidden="true" />
+            <span><strong>Programme Outcomes</strong><small>Behavioural evidence for sponsors</small></span>
           </button>
         ) : null}
         {auditAvailable ? (
