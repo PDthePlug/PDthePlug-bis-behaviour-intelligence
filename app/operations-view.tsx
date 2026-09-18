@@ -114,7 +114,7 @@ type StaffSnapshot = {
   };
   admin: null | {
     metrics: {
-      participants: number;
+      learners: number;
       completed: number;
       experimentActive: number;
       openSafeguardingCases: number;
