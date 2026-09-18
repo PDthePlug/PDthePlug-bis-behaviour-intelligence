@@ -7,12 +7,12 @@ import {
   EyeOff,
   LayoutDashboard,
   LockKeyhole,
-  Search,
+  Settings2,
   ShieldCheck,
 } from "lucide-react";
 import { OperationsView } from "../operations-view";
 
-type Perspective = "facilitator" | "sponsor" | "audit";
+type Perspective = "facilitator" | "outcomes" | "admin";
 
 type StaffSession = {
   identity: { email: string; displayName: string };
@@ -23,11 +23,11 @@ function canFacilitate(roles: string[]) {
   return roles.includes("FACILITATOR") || roles.includes("SAFEGUARDING_OFFICER");
 }
 
-function canSponsor(roles: string[]) {
+function canViewOutcomes(roles: string[]) {
   return roles.includes("SPONSOR_VIEWER") || roles.includes("SYSTEM_ADMIN");
 }
 
-function canAudit(roles: string[]) {
+function canAdminister(roles: string[]) {
   return roles.includes("SYSTEM_ADMIN");
 }
 
@@ -79,7 +79,7 @@ export function StaffWorkspaceShell() {
       }
 
       const roles = payload.roles ?? [];
-      if (!canFacilitate(roles) && !canSponsor(roles) && !canAudit(roles)) {
+      if (!canFacilitate(roles) && !canViewOutcomes(roles) && !canAdminister(roles)) {
         throw new Error("Your account does not currently have a BIS staff role.");
       }
 
@@ -87,9 +87,9 @@ export function StaffWorkspaceShell() {
       setPerspective(
         canFacilitate(roles)
           ? "facilitator"
-          : canAudit(roles)
-            ? "audit"
-            : "sponsor",
+          : canAdminister(roles)
+            ? "admin"
+            : "outcomes",
       );
       setVisible(true);
     } catch (cause) {
@@ -104,22 +104,19 @@ export function StaffWorkspaceShell() {
       <main className="staff-gate">
         <section className="staff-gate-card" aria-labelledby="staff-gate-title">
           <div className="staff-gate-mark" aria-hidden="true">BIS</div>
-          <p className="staff-gate-eyebrow">Restricted staff workspace</p>
-          <h1 id="staff-gate-title">Programme Workspace</h1>
-          <p className="staff-gate-copy">
-            Open the view your role allows. Sponsor reporting is aggregate-only; facilitator and safeguarding access remains separately controlled.
-          </p>
+          <p className="staff-gate-eyebrow">BIS</p>
+          <h1 id="staff-gate-title">Programme workspace</h1>
           <div className="staff-gate-privacy">
             <ShieldCheck aria-hidden="true" />
-            <p><strong>Privacy first.</strong> The workspace hides automatically after two minutes of inactivity or when this tab is backgrounded.</p>
+            <p>Workspace hides after two minutes of inactivity.</p>
           </div>
           {error ? <p className="staff-gate-error" role="alert">{error}</p> : null}
           <button className="staff-gate-primary" type="button" onClick={() => void openWorkspace()} disabled={loading}>
             <LockKeyhole aria-hidden="true" />
-            <span>{loading ? "Opening workspace…" : "Open staff workspace"}</span>
+            <span>{loading ? "Opening…" : "Open workspace"}</span>
           </button>
           <Link className="staff-gate-secondary" href="/profile">Profile and account</Link>
-          <Link className="staff-gate-secondary" href="/habit">Open learner experience instead</Link>
+          <Link className="staff-gate-secondary" href="/habit">Learner experience</Link>
         </section>
       </main>
     );
@@ -134,7 +131,7 @@ export function StaffWorkspaceShell() {
       <header className="staff-workspace-header">
         <Link className="staff-workspace-brand" href="/workspace" aria-label="BIS staff workspace home">
           <span>BIS</span>
-          <div><strong>Behaviour Intelligence Series™</strong><small>Staff workspace</small></div>
+          <div><strong>Behaviour Intelligence Series™</strong><small>Programme workspace</small></div>
         </Link>
         <div className="staff-workspace-actions">
           <span className="staff-workspace-identity">{session.identity.email}</span>
@@ -155,29 +152,29 @@ export function StaffWorkspaceShell() {
             aria-current={perspective === "facilitator" ? "page" : undefined}
           >
             <LayoutDashboard aria-hidden="true" />
-            <span><strong>Facilitator View</strong><small>Cohorts, learner summaries and support</small></span>
+            <span><strong>Facilitator</strong></span>
           </button>
         ) : null}
-        {sponsorAvailable ? (
+        {outcomesAvailable ? (
           <button
             type="button"
-            className={perspective === "sponsor" ? "active" : ""}
-            onClick={() => setPerspective("sponsor")}
-            aria-current={perspective === "sponsor" ? "page" : undefined}
+            className={perspective === "outcomes" ? "active" : ""}
+            onClick={() => setPerspective("outcomes")}
+            aria-current={perspective === "outcomes" ? "page" : undefined}
           >
             <Activity aria-hidden="true" />
-            <span><strong>Programme Outcomes</strong><small>Behavioural evidence for sponsors</small></span>
+            <span><strong>Programme Outcomes</strong></span>
           </button>
         ) : null}
-        {auditAvailable ? (
+        {adminAvailable ? (
           <button
             type="button"
-            className={perspective === "audit" ? "active" : ""}
-            onClick={() => setPerspective("audit")}
-            aria-current={perspective === "audit" ? "page" : undefined}
+            className={perspective === "admin" ? "active" : ""}
+            onClick={() => setPerspective("admin")}
+            aria-current={perspective === "admin" ? "page" : undefined}
           >
-            <Search aria-hidden="true" />
-            <span><strong>Audit View</strong><small>Evidence, formulas and provenance</small></span>
+            <Settings2 aria-hidden="true" />
+            <span><strong>BIS Administrator</strong></span>
           </button>
         ) : null}
       </nav>
