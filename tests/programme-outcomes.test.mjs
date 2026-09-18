@@ -14,7 +14,7 @@ test("sponsor access is a first-class cohort-scoped staff role", async () => {
   assert.match(access, /"SPONSOR_VIEWER"/);
   assert.match(route, /role === "SPONSOR_VIEWER"/);
   assert.match(route, /scopeType = sponsorRole \? "COHORT" : "GLOBAL"/);
-  assert.match(route, /Choose an active cohort for sponsor access/);
+  assert.match(route, /Choose an active programme group for organisation reporting/);
   assert.match(route, /SPONSOR_VIEWER/);
 });
 
@@ -47,23 +47,23 @@ test("database outcome boundary authorizes cohort scope and suppresses small coh
   assert.match(migration, /grant execute on function public\.sponsor_cohort_outcomes\(text\) to authenticated/i);
 });
 
-test("programme outcomes answer behavioural questions rather than only completion", async () => {
+test("programme outcomes answer useful organisation questions rather than only completion", async () => {
   const view = await source("app/programme-outcomes-view.tsx");
 
   for (const question of [
     "Are people moving from preparation into action?",
-    "What did participants predict—and what happened?",
-    "Are the experiments actually being attempted?",
+    "What did people expect—and what happened?",
+    "Are people actually testing this in real life?",
     "How much can we responsibly say?",
-    "Did anything change in the next comparable situation?",
+    "What happened the next time?",
     "Did participants ask for help when they got stuck?",
   ]) {
     assert.match(view, new RegExp(question.replace(/[?]/g, "\\?")));
   }
 
   assert.match(view, /Completion/);
-  assert.match(view, /Context only—not the outcome claim/);
-  assert.match(view, /not enough evidence/i);
+  assert.match(view, /Programme context/);
+  assert.match(view, /not enough evidence yet/i);
 });
 
 test("outcome calculation preserves prediction calibration, missingness and repeat-opportunity change", async () => {
@@ -108,20 +108,20 @@ test("deeper analysis generalises experiment context without exposing experiment
   assert.doesNotMatch(migration, /alternative_behaviour/i);
   assert.doesNotMatch(migration, /expected_reward/i);
   assert.doesNotMatch(migration, /experiment_events\.notes/i);
-  assert.match(view, /Generalised from structured impact-domain tags—not private experiment wording/);
+  assert.match(view, /Grouped broadly to protect privacy/);
 });
 
-test("deeper analysis is an explicit expandable sponsor layer", async () => {
+test("deeper analysis is an explicit expandable organisation layer", async () => {
   const [view, css] = await Promise.all([
     source("app/programme-outcomes-view.tsx"),
     source("app/programme-outcomes-view.css"),
   ]);
 
   assert.match(view, /<details className="outcomes-deeper-analysis">/);
-  assert.match(view, /What were people actually exploring—and what should we investigate next\?/);
-  assert.match(view, /Experiment landscape/);
-  assert.match(view, /System opportunities/);
-  assert.match(view, /Question for the sponsor/);
+  assert.match(view, /What were people exploring\?/);
+  assert.match(view, /What people explored/);
+  assert.match(view, /What to look at next/);
+  assert.match(view, /Worth checking/);
   assert.match(css, /\.outcomes-deeper-analysis/);
   assert.match(css, /\.opportunity-list/);
 });
@@ -130,19 +130,19 @@ test("system opportunity signals remain evidence-based review questions rather t
   const view = await source("app/programme-outcomes-view.tsx");
 
   for (const signal of [
-    "Activation friction",
-    "Too little real-world exposure",
-    "Prediction and practice are far apart",
-    "Limited repeat exposure",
-    "Human support demand is material",
-    "Experiment context is under-specified",
+    "People reached the test but did not start",
+    "Not enough chances to test the behaviour",
+    "What people expected and what happened are far apart",
+    "Too few repeat situations",
+    "People are asking for help",
+    "We need clearer context",
   ]) {
     assert.match(view, new RegExp(signal));
   }
 
-  assert.match(view, /identify questions to investigate, not causes or diagnoses/);
-  assert.match(view, /descriptive, not proof that the organisation caused the behaviour/);
-  assert.match(view, /does not prove that no system gap exists/);
+  assert.match(view, /These patterns point to useful questions/);
+  assert.match(view, /they do not prove why it happened/);
+  assert.match(view, /does not prove that there is no gap/);
 });
 
 test("deeper analysis preserves independent small-cell suppression", async () => {
@@ -153,4 +153,46 @@ test("deeper analysis preserves independent small-cell suppression", async () =>
   assert.match(migration, /suppressedSmallThemeCount/);
   assert.match(migration, /revoke all on function public\.sponsor_cohort_deeper_analysis\(text\) from public, anon/i);
   assert.match(migration, /grant execute on function public\.sponsor_cohort_deeper_analysis\(text\) to authenticated/i);
+});
+
+
+test("organisation experience hides implementation language and explanatory product copy", async () => {
+  const view = await source("app/programme-outcomes-view.tsx");
+
+  for (const phrase of [
+    "What this changes",
+    "Signal coverage",
+    "Experiment landscape",
+    "System opportunities",
+    "structured impact-domain tags",
+    "Question for the sponsor",
+    "Sponsor View",
+    "Aggregate reporting only",
+    "prediction calibration",
+  ]) {
+    assert.doesNotMatch(view, new RegExp(phrase, "i"));
+  }
+
+  assert.match(view, /Group view · individual responses stay private/);
+  assert.match(view, /Areas people were exploring/);
+  assert.match(view, /What may be worth checking\?/);
+});
+
+test("organisation outcome labels use plain language", async () => {
+  const view = await source("app/programme-outcomes-view.tsx");
+
+  for (const phrase of [
+    "Expectation vs reality",
+    "Real-world testing",
+    "What we can say",
+    "Next time",
+    "People who asked for help",
+    "Real situations",
+  ]) {
+    assert.match(view, new RegExp(phrase));
+  }
+
+  assert.doesNotMatch(view, /Eligible opportunities/);
+  assert.doesNotMatch(view, /Cohort request rate/);
+  assert.doesNotMatch(view, /Changed toward protocol/);
 });
