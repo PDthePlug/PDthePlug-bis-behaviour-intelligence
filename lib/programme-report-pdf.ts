@@ -19,6 +19,31 @@ type Outcome = {
     change: { repeatOpportunityParticipants: number; improvedLaterResponse: number; changedOtherDirection: number; sameLaterResponse: number };
     support: { participantsRequestingHelp: number; supportRequests: number; supportRequestRate: number | null };
   };
+  learningSummary?: null | {
+    suppressed: boolean;
+    learningJourney: null | {
+      days: Array<{ day: number; reached: number; completed: number; reachedRate: number | null; completionRate: number | null }>;
+      baselineThemes: Array<{
+        label: string;
+        area: string;
+        respondents: number;
+        frequentCount: number;
+        frequentShare: number;
+      }>;
+      skillShifts: Array<{
+        label: string;
+        pairedParticipants: number;
+        averagePre: number;
+        averagePost: number;
+        averageShift: number;
+      }>;
+      activity: {
+        participantsWithHandbookActivity: number;
+        participantsWithStructuredResponses: number;
+        structuredResponsesRecorded: number;
+      };
+    };
+  };
   deepAnalysis?: null | {
     suppressed: boolean;
     experimentLandscape: null | {
@@ -109,6 +134,36 @@ function reportInsights(outcome: Outcome) {
       " of the group), showing where facilitator capacity forms part of delivery."
     );
   }
+  const journey = outcome.learningSummary?.learningJourney;
+  if (journey) {
+    const furthest = [...journey.days].reverse().find((day) => day.reached > 0);
+    if (furthest) {
+      lines.push(
+        String(furthest.reached) + " of " + String(outcome.participantCount) +
+        " participants reached Day " + String(furthest.day) +
+        "; " + String(journey.activity.participantsWithStructuredResponses) +
+        " contributed structured learning evidence."
+      );
+    }
+    const topChallenges = journey.baselineThemes.slice(0,3);
+    if (topChallenges.length) {
+      lines.push(
+        "Most common structured baseline challenges: " +
+        topChallenges.map((item) =>
+          item.label + " " + String(item.frequentShare) + "% (" +
+          String(item.frequentCount) + " of " + String(item.respondents) + ")"
+        ).join(", ") + "."
+      );
+    }
+    for (const shift of journey.skillShifts) {
+      lines.push(
+        shift.label + " moved from " + String(shift.averagePre) + " to " +
+        String(shift.averagePost) + " across " + String(shift.pairedParticipants) +
+        " paired participants (" + (shift.averageShift > 0 ? "+" : "") +
+        String(shift.averageShift) + ")."
+      );
+    }
+  }
   const themes = outcome.deepAnalysis?.experimentLandscape?.themes ?? [];
   if (themes.length) {
     lines.push(
@@ -139,6 +194,20 @@ function reviewQuestions(outcome: Outcome) {
   }
   if (metrics.change.repeatOpportunityParticipants > 0) {
     questions.push("Use repeat opportunities to examine whether a different response becomes easier, stays unchanged, or moves in another direction over time.");
+  }
+  const journey = outcome.learningSummary?.learningJourney;
+  for (const theme of journey?.baselineThemes.slice(0,3) ?? []) {
+    const suggestion =
+      theme.area === "Follow-through"
+        ? "Explore smaller commitments, visible follow-up points and clearer ownership of the next action."
+        : theme.area === "Focus"
+          ? "Explore where distraction enters the environment and whether focused work needs stronger boundaries."
+          : theme.area === "Self-regulation"
+            ? "Explore short pause, reset and recovery practices for moments of pressure."
+            : theme.area === "Routine"
+              ? "Explore whether routines rely too heavily on motivation instead of predictable cues and practical structure."
+              : "Explore the conditions around this recurring pattern and test a practical support response.";
+    questions.push(theme.label + ": " + suggestion);
   }
   return questions;
 }
@@ -209,6 +278,53 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
     draw("- " + insight, { size: 10, indent: 8, gapAfter: 5, width: 82 });
   }
   divider();
+
+  const journey = outcome.learningSummary?.learningJourney;
+  if (journey) {
+    draw("LEARNING JOURNEY", { size: 9, bold: true, gapAfter: 7 });
+    draw(
+      String(journey.activity.participantsWithHandbookActivity) + " participants recorded learning activity | " +
+      String(journey.activity.participantsWithStructuredResponses) + " contributed structured evidence | " +
+      String(journey.activity.structuredResponsesRecorded) + " structured inputs recorded",
+      { size: 10, gapAfter: 7 }
+    );
+    const activeDays = journey.days.filter((day) => day.reached > 0);
+    if (activeDays.length) {
+      draw(
+        activeDays.map((day) =>
+          "Day " + String(day.day) + ": " + String(day.reached) + " reached / " +
+          String(day.completed) + " completed"
+        ).join(" | "),
+        { size: 9, gapAfter: 9, width: 82 }
+      );
+    }
+
+    if (journey.baselineThemes.length) {
+      draw("Recurring structured challenges", { size: 14, bold: true, gapAfter: 6 });
+      for (const theme of journey.baselineThemes.slice(0,6)) {
+        draw(
+          "- " + theme.label + ": " + String(theme.frequentCount) + " of " +
+          String(theme.respondents) + " reported this often or always (" +
+          String(theme.frequentShare) + "%). Area: " + theme.area + ".",
+          { size: 10, indent: 8, gapAfter: 4, width: 82 }
+        );
+      }
+    }
+
+    if (journey.skillShifts.length) {
+      draw("Group shifts", { size: 14, bold: true, gapAfter: 6 });
+      for (const shift of journey.skillShifts) {
+        draw(
+          "- " + shift.label + ": " + String(shift.averagePre) + " to " +
+          String(shift.averagePost) + " (" +
+          (shift.averageShift > 0 ? "+" : "") + String(shift.averageShift) +
+          ") across " + String(shift.pairedParticipants) + " paired participants.",
+          { size: 10, indent: 8, gapAfter: 4, width: 82 }
+        );
+      }
+    }
+    divider();
+  }
 
   draw("Participation and action", { size: 16, bold: true, gapAfter: 7 });
   draw(
