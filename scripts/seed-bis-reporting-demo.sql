@@ -125,9 +125,9 @@ begin
       completed_at=excluded.completed_at,updated_at=excluded.updated_at;
 
     for d in 1..10 loop
-      if i <= case d
+      if i <= (case d
         when 1 then 20 when 2 then 20 when 3 then 18 when 4 then 16 when 5 then 15
-        when 6 then 14 when 7 then 12 when 8 then 10 when 9 then 8 else 6 end
+        when 6 then 14 when 7 then 12 when 8 then 10 when 9 then 8 else 6 end)
       then
         insert into public.handbook_progress (
           id,user_id,lab_code,delivery_edition,content_release_id,semantic_step_id,status,
