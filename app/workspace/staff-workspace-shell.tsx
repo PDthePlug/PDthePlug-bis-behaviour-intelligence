@@ -20,7 +20,7 @@ type StaffSession = {
 };
 
 function canFacilitate(roles: string[]) {
-  return roles.includes("FACILITATOR");
+  return roles.includes("FACILITATOR") || roles.includes("SAFEGUARDING_OFFICER");
 }
 
 function canViewOutcomes(roles: string[]) {
@@ -173,7 +173,7 @@ export function StaffWorkspaceShell() {
             aria-current={perspective === "facilitator" ? "page" : undefined}
           >
             <LayoutDashboard aria-hidden="true" />
-            <span><strong>Facilitator</strong></span>
+            <span><strong>{session.roles.includes("FACILITATOR") ? "Facilitator" : "Safeguarding"}</strong></span>
           </button>
         ) : null}
         {outcomesAvailable ? (
