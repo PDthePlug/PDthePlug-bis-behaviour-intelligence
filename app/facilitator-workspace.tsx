@@ -90,6 +90,43 @@ function needsAttention(learner: ProgressRow) {
   return false;
 }
 
+function evidencePosition(learner: ProgressRow) {
+  const experiment = learner.experiment;
+  if (!experiment) return "No experiment evidence yet";
+  const opportunities = experiment.opportunityCount ?? 0;
+  const threshold = experiment.minimumEvidenceThreshold ?? 3;
+  if (opportunities >= threshold) return "Enough evidence for review";
+  if (opportunities > 0) return "Evidence building";
+  if ((experiment.recordedDays ?? 0) > 0) return "Observing · no eligible situation yet";
+  return "First observation pending";
+}
+
+function observedStrengths(learner: ProgressRow) {
+  const strengths: string[] = [];
+  const step = learner.enrolment?.currentInvestigation ?? 0;
+  const experiment = learner.experiment;
+  if (step >= 4) strengths.push("Learning momentum");
+  if (experiment) strengths.push("Moved from planning into action");
+  if ((experiment?.recordedDays ?? 0) >= 3) strengths.push("Consistent observation");
+  if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push("Repeated real-world testing");
+  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Evidence ready");
+  if (learner.enrolment?.status === "COMPLETED") strengths.push("Completed the learning cycle");
+  return strengths.slice(0, 4);
+}
+
+function supportFocus(learner: ProgressRow) {
+  const focus: string[] = [];
+  const step = learner.enrolment?.currentInvestigation ?? 0;
+  const experiment = learner.experiment;
+  if (step <= 3) focus.push("Build learning momentum");
+  if (step >= 6 && !experiment) focus.push("Move from planning to the first real-world test");
+  if (experiment && (experiment.recordedDays ?? 0) < 3) focus.push("Build observation consistency");
+  if (experiment && (experiment.opportunityCount ?? 0) === 0) focus.push("Find a realistic situation where the behaviour can be tested");
+  if (experiment && (experiment.opportunityCount ?? 0) > 0 && (experiment.opportunityCount ?? 0) < (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Collect enough repeat evidence for a stronger review");
+  if (step >= 8 && experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Review what changed, what stayed the same and what should be tested next");
+  return focus.slice(0, 3);
+}
+
 function ParticipantCard({ learner }: { learner: ProgressRow }) {
   const progress = Math.min(100, ((learner.enrolment?.currentInvestigation ?? 0) / 9) * 100);
   return (
@@ -248,18 +285,48 @@ export function FacilitatorWorkspace({
                 <article><Activity /><span>Last activity</span><strong className="metric-date">{formatDate(selected.lastActivityAt)}</strong></article>
               </section>
             </section>
+            <section className="participant-evidence-position">
+              <article className="surface-card participant-signal-card">
+                <p className="eyebrow">Programme position</p>
+                <h3>{position(selected)}</h3>
+                <div className="participant-signal-track">
+                  <span style={{ width: `${Math.min(100, ((selected.enrolment?.currentInvestigation ?? 0) / 9) * 100)}%` }} />
+                </div>
+                <small>Investigation {selected.enrolment?.currentInvestigation ?? 0} of 9</small>
+              </article>
+              <article className="surface-card participant-signal-card">
+                <p className="eyebrow">Evidence position</p>
+                <h3>{evidencePosition(selected)}</h3>
+                <div className="participant-signal-track">
+                  <span style={{ width: `${Math.min(100, ((selected.experiment?.opportunityCount ?? 0) / Math.max(1, selected.experiment?.minimumEvidenceThreshold ?? 3)) * 100)}%` }} />
+                </div>
+                <small>{selected.experiment?.opportunityCount ?? 0} of {selected.experiment?.minimumEvidenceThreshold ?? 3} minimum real-world opportunities</small>
+              </article>
+            </section>
+
             <section className="ops-two-column">
               <div className="surface-card ops-section">
-                <div className="section-title"><div><p className="eyebrow">Current position</p><h2>{position(selected)}</h2></div><Activity /></div>
-                <p className="ops-helper">{needsAttention(selected) ? "This participant may benefit from a facilitator check-in based on programme activity." : "No immediate facilitator follow-up is indicated by the structural progress record."}</p>
+                <div className="section-title"><div><p className="eyebrow">Observed strengths</p><h2>What the programme record shows</h2></div><Check /></div>
+                <div className="participant-attribute-list">
+                  {observedStrengths(selected).length ? observedStrengths(selected).map((strength) => <span key={strength}><Check />{strength}</span>) : <p className="ops-helper">Strength signals will appear as programme activity builds.</p>}
+                </div>
+                <p className="participant-attribute-note">These describe observable programme behaviour, not personality or ability.</p>
               </div>
               <div className="surface-card ops-section">
-                <div className="section-title"><div><p className="eyebrow">Support history</p><h2>Notes and referrals</h2></div><ClipboardCheck /></div>
-                <div className="ops-record-list">
-                  {participantNotes.map((item) => <div key={item.id}><span><strong>{label(item.category)}</strong><small>{formatDate(item.createdAt)}</small></span><p>{item.content}</p></div>)}
-                  {participantReferrals.map((item) => <div key={item.id}><span><strong>Safeguarding referral</strong><small>{label(item.category)} · {formatDate(item.openedAt)}</small></span><Badge variant="outline">{label(item.status)}</Badge></div>)}
-                  {participantNotes.length === 0 && participantReferrals.length === 0 ? <p className="ops-helper">No facilitator notes or referrals for this participant.</p> : null}
+                <div className="section-title"><div><p className="eyebrow">Where support may help</p><h2>Next useful facilitator moves</h2></div><Activity /></div>
+                <div className="participant-focus-list">
+                  {supportFocus(selected).map((item, index) => <div key={item}><strong>{String(index + 1).padStart(2,"0")}</strong><p>{item}</p></div>)}
+                  {supportFocus(selected).length === 0 ? <p className="ops-helper">No structural support prompt is currently indicated.</p> : null}
                 </div>
+              </div>
+            </section>
+
+            <section className="surface-card ops-section">
+              <div className="section-title"><div><p className="eyebrow">Support history</p><h2>Notes and referrals</h2></div><ClipboardCheck /></div>
+              <div className="ops-record-list">
+                {participantNotes.map((item) => <div key={item.id}><span><strong>{label(item.category)}</strong><small>{formatDate(item.createdAt)}</small></span><p>{item.content}</p></div>)}
+                {participantReferrals.map((item) => <div key={item.id}><span><strong>Safeguarding referral</strong><small>{label(item.category)} · {formatDate(item.openedAt)}</small></span><Badge variant="outline">{label(item.status)}</Badge></div>)}
+                {participantNotes.length === 0 && participantReferrals.length === 0 ? <p className="ops-helper">No facilitator notes or referrals for this participant.</p> : null}
               </div>
             </section>
           </div>
