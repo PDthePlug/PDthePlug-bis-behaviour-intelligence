@@ -123,8 +123,8 @@ export function StaffWorkspaceShell() {
   }
 
   const facilitatorAvailable = canFacilitate(session.roles);
-  const sponsorAvailable = canSponsor(session.roles);
-  const auditAvailable = canAudit(session.roles);
+  const outcomesAvailable = canViewOutcomes(session.roles);
+  const adminAvailable = canAdminister(session.roles);
 
   return (
     <div className="staff-workspace-shell">
