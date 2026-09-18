@@ -22,3 +22,7 @@ Exact pre-merge branch gate:
 - Vercel preview READY
 - Next.js compile PASS
 - static generation 9/9
+
+Production deployment retry:
+- deployment-only retry after the earlier Vercel build-rate limit
+- no functional application changes in this retry
