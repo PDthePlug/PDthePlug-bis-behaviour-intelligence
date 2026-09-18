@@ -356,11 +356,18 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const { data, error } = await client.rpc("sponsor_cohort_outcomes", {
-      target_cohort_id: cohortId,
-    });
-    if (error) throw new Error(error.message);
-    if (data) cohorts.push(data);
+    const [outcomeResult, deeperResult] = await Promise.all([
+      client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
+      client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
+    ]);
+    if (outcomeResult.error) throw new Error(outcomeResult.error.message);
+    if (deeperResult.error) throw new Error(deeperResult.error.message);
+    if (outcomeResult.data) {
+      cohorts.push({
+        ...outcomeResult.data,
+        deepAnalysis: deeperResult.data ?? null,
+      });
+    }
   }
 
   return {
@@ -414,7 +421,7 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
     privacyBoundary: {
       facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
-      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand"],
+      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "aggregate system opportunity signals"],
       sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },
