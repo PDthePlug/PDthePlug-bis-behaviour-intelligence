@@ -5,17 +5,17 @@ import test from "node:test";
 const root = new URL("..", import.meta.url);
 const source = (path) => readFile(new URL(path, root), "utf8");
 
-test("BIS catalogue defines exactly 32 current modules across 12 + 12 + 8", async () => {
+test("BIS catalogue defines exactly 34 current modules across 12 + 12 + 10", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
-  assert.equal(catalogue.productScope, 32);
-  assert.equal(catalogue.modules.length, 32);
+  assert.equal(catalogue.productScope, 34);
+  assert.equal(catalogue.modules.length, 34);
   assert.deepEqual(
     catalogue.volumes.map((volume) => [volume.volume, volume.count]),
-    [[1, 12], [2, 12], [3, 8]],
+    [[1, 12], [2, 12], [3, 10]],
   );
   assert.equal(catalogue.modules.filter((item) => item.volume === 1).length, 12);
   assert.equal(catalogue.modules.filter((item) => item.volume === 2).length, 12);
-  assert.equal(catalogue.modules.filter((item) => item.volume === 3).length, 8);
+  assert.equal(catalogue.modules.filter((item) => item.volume === 3).length, 10);
 });
 
 test("catalogue identities and positions are unique and continuous", async () => {
@@ -23,13 +23,13 @@ test("catalogue identities and positions are unique and continuous", async () =>
   const codes = catalogue.modules.map((item) => item.code);
   const slugs = catalogue.modules.map((item) => item.slug);
   const globals = catalogue.modules.map((item) => item.global);
-  assert.equal(new Set(codes).size, 32);
-  assert.equal(new Set(slugs).size, 32);
-  assert.equal(new Set(globals).size, 32);
-  assert.deepEqual(globals, Array.from({ length: 32 }, (_, index) => index + 1));
+  assert.equal(new Set(codes).size, 34);
+  assert.equal(new Set(slugs).size, 34);
+  assert.equal(new Set(globals).size, 34);
+  assert.deepEqual(globals, Array.from({ length: 34 }, (_, index) => index + 1));
 });
 
-test("current 32-module scope preserves the sourced volume sequence", async () => {
+test("current 34-module scope preserves the sourced volume sequence", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
   assert.deepEqual(
     catalogue.modules.filter((m) => m.volume === 1).map((m) => m.title),
@@ -53,6 +53,7 @@ test("current 32-module scope preserves the sourced volume sequence", async () =
       "Systems Thinking™ Lab", "Long-Term Thinking™ Lab", "Economics for Humans™ Lab",
       "Customer Thinking™ Lab", "Innovation Thinking™ Lab", "Asset Thinking™ Lab",
       "Financial Philosophy™ Lab", "Personal Effectiveness™ Lab",
+      "Transferable Skills™ Lab", "Meta-Learning™ Lab",
     ],
   );
 });
@@ -101,13 +102,15 @@ test("module template freezes three editions and the 13-position handbook patter
   assert.match(contract, /workbookResponse:.*WB/);
 });
 
-test("future source candidates remain outside the current 32 until explicitly promoted", async () => {
+test("Volume 3 Labs 9 and 10 are part of the canonical 34-module catalogue", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
+  assert.deepEqual(catalogue.futureSourceCandidates, []);
   assert.deepEqual(
-    catalogue.futureSourceCandidates.map((item) => item.title),
+    catalogue.modules.filter((item) => item.volume === 3 && item.position >= 9).map((item) => item.title),
     ["Transferable Skills™ Lab", "Meta-Learning™ Lab"],
   );
-  for (const candidate of catalogue.futureSourceCandidates) {
-    assert.equal(catalogue.modules.some((item) => item.title === candidate.title), false);
-  }
+  assert.deepEqual(
+    catalogue.modules.filter((item) => item.volume === 3 && item.position >= 9).map((item) => item.global),
+    [33, 34],
+  );
 });
