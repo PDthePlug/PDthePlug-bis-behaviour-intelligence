@@ -1,0 +1,65 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+const root = new URL("..", import.meta.url);
+const source = (path) => readFile(new URL(path, root), "utf8");
+
+test("learner profile does not advertise staff access unless a staff role exists", async () => {
+  const profile = await source("app/profile/profile-dashboard.tsx");
+  assert.match(profile, /const staff = hasStaffRole\(roles\)/);
+  assert.match(profile, /\{staff \? \(/);
+  assert.match(profile, /Open staff dashboard/);
+  assert.match(profile, /"SPONSOR_VIEWER"/);
+  assert.doesNotMatch(profile, /Facilitator and Audit access is assigned/);
+  assert.doesNotMatch(profile, /cannot be self-registered from a learner account/);
+});
+
+test("root role routing treats organisation reporting as staff access", async () => {
+  const router = await source("app/role-router.tsx");
+  assert.match(router, /"SPONSOR_VIEWER"/);
+  assert.match(router, /router\.replace\(staff \? "\/workspace" : "\/habit"\)/);
+});
+
+test("staff workspace defaults directly to a permitted perspective", async () => {
+  const shell = await source("app/workspace/staff-workspace-shell.tsx");
+  assert.match(shell, /if \(canFacilitate\(roles\)\) return "facilitator"/);
+  assert.match(shell, /if \(roles\.includes\("SPONSOR_VIEWER"\)\) return "outcomes"/);
+  assert.match(shell, /return "admin"/);
+  assert.match(shell, /setPerspective\(defaultPerspective\(roles\)\)/);
+});
+
+test("programme PDF export requires organisation reporting or system administration", async () => {
+  const route = await source("app/api/staff/route.ts");
+  assert.match(route, /url\.searchParams\.get\("report"\) === "pdf"/);
+  assert.match(route, /!hasRole\(roles, "SPONSOR_VIEWER"\) && !hasRole\(roles, "SYSTEM_ADMIN"\)/);
+  assert.match(route, /sponsorSnapshot\(identity, roles\)/);
+  assert.match(route, /snapshot\.cohorts\.find\(\(item\) => item\.cohort\?\.id === cohortId\)/);
+  assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
+  assert.match(route, /"content-type": "application\/pdf"/);
+  assert.match(route, /"cache-control": "private, no-store"/);
+});
+
+test("programme PDF renderer contains aggregate findings and excludes private learner fields", async () => {
+  const pdf = await source("lib/programme-report-pdf.ts");
+  assert.match(pdf, /%PDF-1\.4/);
+  assert.match(pdf, /WHAT STANDS OUT/);
+  assert.match(pdf, /Participation and action/);
+  assert.match(pdf, /Expectation vs observed behaviour/);
+  assert.match(pdf, /Evidence strength/);
+  assert.match(pdf, /Human support/);
+  assert.match(pdf, /WHAT MAY BE WORTH CHECKING/);
+  assert.match(pdf, /Individual responses remain private/);
+  for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "notes", "hypothesis"]) {
+    assert.doesNotMatch(pdf, new RegExp(privateField));
+  }
+});
+
+test("programme outcomes expose a factual summary and PDF action", async () => {
+  const view = await source("app/programme-outcomes-view.tsx");
+  assert.match(view, /What stands out/);
+  assert.match(view, /What the group evidence is telling us/);
+  assert.match(view, /Group averages can hide individual miscalibration/);
+  assert.match(view, /Download PDF/);
+  assert.match(view, /report=pdf&cohortId=/);
+});
