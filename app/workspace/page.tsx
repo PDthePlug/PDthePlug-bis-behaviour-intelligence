@@ -7,7 +7,7 @@ import "../programme-outcomes-view.css";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "BIS Staff Workspace",
-  description: "Role-scoped BIS facilitator and audit workspace.",
+  description: "Role-scoped BIS facilitator, programme outcomes and audit workspace.",
 };
 
 export default async function WorkspacePage() {
