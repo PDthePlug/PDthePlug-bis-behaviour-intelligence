@@ -25,7 +25,7 @@ test("staff entry resolves roles automatically without a second open-workspace g
 
 test("workspace navigation exists only for roles that can use each surface", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
-  assert.match(shell, /roles\.includes\("FACILITATOR"\) \|\| roles\.includes\("SAFEGUARDING_OFFICER"\)/);
+  assert.match(shell, /roles\.includes\("FACILITATOR"\)/);
   assert.match(shell, /roles\.includes\("SPONSOR_VIEWER"\) \|\| roles\.includes\("SYSTEM_ADMIN"\)/);
   assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
   assert.match(shell, /facilitatorAvailable \? \(/);
@@ -63,7 +63,7 @@ test("participant cards drill into facilitator-safe progress detail", async () =
   assert.match(facilitator, /participant-card-button/);
   assert.match(facilitator, /setLearnerId\(learner\.userId\)/);
   assert.match(facilitator, /Open participant/);
-  for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Support history"]) {
+  for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Observed strengths", "Where support may help", "Support history"]) {
     assert.match(facilitator, new RegExp(field));
   }
   for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "hypothesis", "Companion"]) {
@@ -109,4 +109,29 @@ test("staff hardening layer covers facilitator drilldown and mobile reflow", asy
   assert.match(css, /\.review-participant-list/);
   assert.match(css, /@media\(max-width:700px\)/);
   assert.match(css, /prefers-reduced-motion:reduce/);
+});
+
+
+test("learner-only profiles do not advertise staff access", async () => {
+  const profile = await source("app/profile/profile-dashboard.tsx");
+  assert.match(profile, /"SPONSOR_VIEWER"/);
+  assert.match(profile, /\{staff \? \(/);
+  assert.match(profile, /Open staff dashboard/);
+  assert.match(profile, /\) : null\}/);
+  assert.doesNotMatch(profile, /cannot be self-registered/i);
+  assert.doesNotMatch(profile, /Facilitator and Audit access/i);
+});
+
+test("participant insight labels stay behavioural rather than personality based", async () => {
+  const facilitator = await source("app/facilitator-workspace.tsx");
+  for (const strength of [
+    "Learning momentum",
+    "Moved from planning into action",
+    "Consistent observation",
+    "Repeated real-world testing",
+    "Evidence ready",
+  ]) {
+    assert.match(facilitator, new RegExp(strength));
+  }
+  assert.match(facilitator, /observable programme behaviour, not personality or ability/);
 });
