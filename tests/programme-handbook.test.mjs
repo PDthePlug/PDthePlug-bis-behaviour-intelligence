@@ -110,7 +110,7 @@ test("programme handoff opens focused Habit routes and preserves programme conti
   assert.match(bridgeSource, /experiment: "Today"/);
   assert.match(labShellSource, /HabitRouteBridge target=\{view\} hideReturnLink/);
   assert.match(menuSource, /href="\/habit"/);
-  assert.match(menuSource, /href="\/habit\?section=learn"/);
+  assert.match(menuSource, /href="\/learn"/);
   assert.match(playerSource, /\/programmes\/habit-\$\{edition\}\.json\.gz\.b64/);
   assert.match(assetRouteSource, /habit-school\.json\.gz\.b64/);
   assert.match(assetRouteSource, /habit-emerging_adult\.json\.gz\.b64/);
