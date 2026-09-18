@@ -260,10 +260,10 @@ function outcomeInsights(outcome: SponsorOutcome) {
       ? Math.abs(metrics.prediction.averagePredictedRate - metrics.prediction.averageActualRate).toFixed(1)
       : null;
     insights.push({
-      title: "Group averages can hide individual miscalibration",
+      title: "Group averages can hide what happened for individuals",
       body: groupDifference === null
-        ? "The average person-level prediction gap is " + String(metrics.prediction.averagePredictionGap) + " points."
-        : "Expected and observed behaviour are only " + groupDifference + " points apart at group-average level, while the average person-level prediction gap is " + String(metrics.prediction.averagePredictionGap) + " points.",
+        ? "Across participants, expectations were on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened."
+        : "The group averages are only " + groupDifference + " points apart, but each person's expectation was on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened.",
     });
   }
   if (metrics.support.participantsRequestingHelp > 0) {
