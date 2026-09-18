@@ -105,9 +105,9 @@ export function StaffWorkspaceShell() {
         <section className="staff-gate-card" aria-labelledby="staff-gate-title">
           <div className="staff-gate-mark" aria-hidden="true">BIS</div>
           <p className="staff-gate-eyebrow">Restricted staff workspace</p>
-          <h1 id="staff-gate-title">Facilitator and Audit Workspace</h1>
+          <h1 id="staff-gate-title">Programme Workspace</h1>
           <p className="staff-gate-copy">
-            Open this workspace only when you are ready to review programme operations. Learner private wording is not shown here.
+            Open the view your role allows. Sponsor reporting is aggregate-only; facilitator and safeguarding access remains separately controlled.
           </p>
           <div className="staff-gate-privacy">
             <ShieldCheck aria-hidden="true" />
