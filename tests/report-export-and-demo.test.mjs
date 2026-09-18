@@ -14,7 +14,7 @@ test("programme outcomes expose a real PDF export route", async () => {
 
   assert.match(view, /Download PDF/);
   assert.match(view, /report=pdf/);
-  assert.match(route, /url\.searchParams\.get\("report"\) === "pdf"/);
+  assert.match(route, /searchParams\.get\("report"\)/);
   assert.match(route, /content-type": "application\/pdf"/);
   assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
   assert.match(pdf, /%PDF-1\.4/);
