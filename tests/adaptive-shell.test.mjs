@@ -4,6 +4,7 @@ import test from "node:test";
 
 const app = readFileSync(new URL("../app/bis-app.tsx", import.meta.url), "utf8");
 const operations = readFileSync(new URL("../app/operations-view.tsx", import.meta.url), "utf8");
+const workspace = readFileSync(new URL("../app/workspace/staff-workspace-shell.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 const staffApi = readFileSync(new URL("../app/api/staff/route.ts", import.meta.url), "utf8");
 
@@ -14,27 +15,32 @@ test("learner shell uses the approved navigation language", () => {
   assert.match(app, /mobileNav = nav\.slice\(0, 5\)/);
 });
 
-test("adaptive shell exposes role-scoped system views", () => {
-  assert.match(app, /> Learner View</);
-  assert.match(app, /> Facilitator View</);
-  assert.match(app, /> Audit View</);
-  assert.match(app, /staffRoles\.includes\("SYSTEM_ADMIN"\)/);
-  assert.match(operations, /perspective === "audit" && !canAudit/);
-  assert.match(operations, /perspective === "facilitator" && !canFacilitate/);
-});
-
-test("screen orientation answers the five experience questions", () => {
-  for (const label of ["Where you are", "What this means", "Do now", "Next", "Get help"]) {
-    assert.ok(app.includes(label), `${label} should be present in the adaptive context bar`);
+test("programme workspace exposes the three role-specific surfaces", () => {
+  for (const label of ["Facilitator", "Programme Outcomes", "BIS Administrator"]) {
+    assert.match(workspace, new RegExp(label));
   }
-  assert.match(app, /onHelp=.*setView\("companion"\)/);
+  assert.match(workspace, /roles\.includes\("SYSTEM_ADMIN"\)/);
+  assert.match(workspace, /roles\.includes\("SPONSOR_VIEWER"\)/);
+  assert.match(operations, /perspective === "admin" && !canAdminister/);
+  assert.match(operations, /perspective === "outcomes" && !canViewOutcomes/);
+  assert.match(operations, /perspective === "facilitator" && !canFacilitate/);
+  assert.doesNotMatch(workspace, /Audit View/);
 });
 
-test("facilitator and audit information architecture uses canonical names", () => {
-  for (const label of ["Cohort dashboard", "Learner summaries", "Support flags", "Readiness review", "Evidence registry", "Calculation trace", "Formula versions", "Provenance map", "Privacy classification"]) {
+test("staff workspace is task-first and omits orientation explainer panels", () => {
+  for (const label of ["Where you are", "What this means", "Do now", "What happens next", "Least-privilege access"]) {
+    assert.doesNotMatch(operations, new RegExp(label));
+  }
+  assert.doesNotMatch(operations, /OperationsOrientation/);
+});
+
+test("facilitator and administrator information architecture uses human labels", () => {
+  for (const label of ["Cohort", "Participants", "Support", "Review", "Access", "Programmes", "Activity", "Advanced system checks"]) {
     assert.ok(operations.includes(label), `${label} should be present`);
   }
-  assert.match(operations, /Private learner wording is never part of cohort telemetry/);
+  for (const oldLabel of ["Evidence registry", "Calculation trace", "Formula versions", "Provenance map", "Privacy classification"]) {
+    assert.doesNotMatch(operations, new RegExp(oldLabel));
+  }
 });
 
 test("mobile shell is task-focused and page overflow remains contained", () => {
@@ -46,5 +52,6 @@ test("mobile shell is task-focused and page overflow remains contained", () => {
 
 test("staff API remains outside private learner response stores", () => {
   assert.doesNotMatch(staffApi, /responseRecords|companionTurns|memoryEntries|hypotheses/);
-  assert.match(operations, /Learner answers, hypothesis wording, experiment notes, Companion conversations and memory are never returned/);
+  assert.match(staffApi, /facilitatorCannotSee:[\s\S]*"learner answers"[\s\S]*"experiment notes"/);
+  assert.match(staffApi, /sponsorCannotSee:[\s\S]*"learner identity"[\s\S]*"reflection text"/);
 });

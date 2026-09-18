@@ -5,51 +5,76 @@ import test from "node:test";
 const root = new URL("..", import.meta.url);
 const source = (path) => readFile(new URL(path, root), "utf8");
 
-test("workspace is a dedicated staff surface rather than the legacy learner shell", async () => {
+test("workspace is a dedicated programme surface", async () => {
   const page = await source("app/workspace/page.tsx");
   assert.match(page, /<StaffWorkspaceShell \/>/);
   assert.match(page, /requireUser\("\/workspace"\)/);
   assert.doesNotMatch(page, /<BISApp/);
-  assert.match(page, /Role-scoped BIS facilitator, programme outcomes and audit workspace/);
+  assert.match(page, /BIS programme delivery, organisation outcomes and administration/);
 });
 
-test("staff shell exposes role-appropriate facilitator, sponsor and audit views", async () => {
+test("workspace navigation is concise and role appropriate", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /roles\.includes\("FACILITATOR"\)/);
   assert.match(shell, /roles\.includes\("SAFEGUARDING_OFFICER"\)/);
   assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
   assert.match(shell, /roles\.includes\("SPONSOR_VIEWER"\)/);
-  assert.match(shell, /Facilitator View/);
-  assert.match(shell, /Programme Outcomes/);
-  assert.match(shell, /Audit View/);
+  for (const label of ["Facilitator", "Programme Outcomes", "BIS Administrator"]) {
+    assert.match(shell, new RegExp(label));
+  }
+  assert.doesNotMatch(shell, /Audit View/);
+  assert.doesNotMatch(shell, /Behavioural evidence for sponsors/);
   assert.match(shell, /<OperationsView initialRoles=\{session\.roles\} perspective=\{perspective\} \/>/);
-  assert.match(shell, /href="\/habit"/);
 });
 
-test("staff privacy cover requires deliberate reveal and auto-hides", async () => {
+test("workspace opens deliberately and auto hides", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /fetch\("\/api\/staff"/);
   assert.match(shell, /setTimeout\(\(\) => setVisible\(false\), 120_000\)/);
   assert.match(shell, /document\.visibilityState === "hidden"/);
-  assert.match(shell, /Open staff workspace/);
+  assert.match(shell, /Open workspace/);
   assert.match(shell, /Hide workspace/);
-  assert.match(shell, /Sponsor reporting is aggregate-only/);
+  assert.match(shell, /Workspace hides after two minutes of inactivity/);
 });
 
-test("facilitator, sponsor and audit information architecture remains canonical", async () => {
+test("workspace removes orientation explainers and executes each role directly", async () => {
   const view = await source("app/operations-view.tsx");
-  for (const label of ["Cohort dashboard", "Learner summaries", "Support flags", "Readiness review"]) {
+  assert.doesNotMatch(view, /function OperationsOrientation/);
+  for (const phrase of ["Where you are", "What this means", "Do now", "What happens next", "Least-privilege access"]) {
+    assert.doesNotMatch(view, new RegExp(phrase));
+  }
+  for (const label of ["Cohort", "Participants", "Support", "Review"]) {
     assert.match(view, new RegExp(label));
   }
-  for (const label of ["Evidence registry", "Calculation trace", "Formula versions", "Provenance map", "Privacy classification"]) {
+});
+
+test("BIS Administrator is the primary system-owner surface and technical checks are secondary", async () => {
+  const view = await source("app/operations-view.tsx");
+  assert.match(view, /<h1>Administrator<\/h1>/);
+  for (const label of ["Access", "Programmes", "Participants", "Activity", "Safeguarding cases"]) {
     assert.match(view, new RegExp(label));
   }
-  assert.match(view, /Human review, never automated diagnosis/);
-  assert.match(view, /Use progress to plan support—not to rank people/);
-  assert.match(view, /ProgrammeOutcomesView/);
-  const outcomes = await source("app/programme-outcomes-view.tsx");
-  for (const label of ["Action", "Prediction", "Experiment", "Evidence", "Change", "Support"]) {
-    assert.match(outcomes, new RegExp(label));
+  assert.match(view, /Advanced system checks/);
+  assert.match(view, /Evidence and calculation checks/);
+  const adminIndex = view.indexOf("<AdminPanel");
+  const checksIndex = view.indexOf("Advanced system checks");
+  assert.ok(adminIndex >= 0 && checksIndex > adminIndex, "system management should appear before advanced checks");
+  assert.doesNotMatch(view, /Open governance controls/);
+});
+
+test("advanced checks use understandable labels while preserving the underlying assurance tools", async () => {
+  const view = await source("app/operations-view.tsx");
+  for (const label of [
+    "What BIS measures",
+    "How a result is produced",
+    "Calculation rules",
+    "Where a result came from",
+    "Privacy levels",
+  ]) {
+    assert.match(view, new RegExp(label));
+  }
+  for (const oldLabel of ["Evidence registry", "Calculation trace", "Formula versions", "Provenance map", "Privacy classification"]) {
+    assert.doesNotMatch(view, new RegExp(oldLabel));
   }
 });
 

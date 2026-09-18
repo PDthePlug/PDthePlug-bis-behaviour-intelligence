@@ -2,9 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
-  ArrowRight,
   ChevronDown,
-  CircleHelp,
   Compass,
   Eye,
   FlaskConical,
@@ -15,7 +13,6 @@ import {
   MessageCircleQuestion,
   Repeat2,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 
 export type SponsorOutcome = {
@@ -114,6 +111,13 @@ export type SponsorSnapshot = {
   };
 };
 
+function experimentSummary(labCode: string) {
+  if (labCode === "HAB") return "People tested a different response when a familiar habit situation appeared.";
+  if (labCode === "DEC") return "People tested what happened when they paused before making a decision.";
+  if (labCode === "MON") return "People tested what happened when they paused before spending.";
+  return "People tested a chosen response in real situations.";
+}
+
 function percent(value: number | null | undefined) {
   return value === null || value === undefined ? "—" : `${value}%`;
 }
@@ -152,9 +156,9 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   if (reached >= 3 && readyNotStarted >= 2 && activationGap >= 25) {
     signals.push({
       id: "activation-friction",
-      title: "Activation friction",
+      title: "People reached the test but did not start",
       evidence: `${readyNotStarted} of ${reached} participants who reached the experiment stage had not started yet.`,
-      question: "Investigate whether timing, instructions, facilitator support, workload, or access to a suitable real-world moment is making it harder to begin.",
+      question: "Check whether timing, instructions, workload, support, or access to a suitable situation is making it harder to begin.",
       level: "INVESTIGATE",
     });
   }
@@ -164,9 +168,9 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   if (started >= 3 && insufficientRate >= 40) {
     signals.push({
       id: "opportunity-scarcity",
-      title: "Too little real-world exposure",
-      evidence: `${insufficient} of ${started} experiment starters still have limited or no usable opportunity evidence.`,
-      question: "Check whether the situations BIS asks people to observe actually occur often enough during the programme window, or whether the experiment design needs a more reachable minimum version.",
+      title: "Not enough chances to test the behaviour",
+      evidence: `${insufficient} of ${started} people who started still do not have enough real-world observations.`,
+      question: "Check whether the situations being tested happen often enough during the programme, or whether the experiment needs an easier minimum version.",
       level: "INVESTIGATE",
     });
   }
@@ -175,9 +179,9 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   if (predictionGap !== null && predictionGap >= 20) {
     signals.push({
       id: "prediction-gap",
-      title: "Prediction and practice are far apart",
-      evidence: `The cohort's average prediction gap is ${predictionGap} percentage points.`,
-      question: "Explore whether participants are over- or under-estimating their control, whether the chosen alternative is realistic, or whether environmental conditions are affecting behaviour in practice.",
+      title: "What people expected and what happened are far apart",
+      evidence: `The group's average difference between expectation and observed behaviour is ${predictionGap} percentage points.`,
+      question: "Check whether people are over- or under-estimating what they can control, whether the alternative is realistic, or whether conditions around them are affecting what happens.",
       level: "WATCH",
     });
   }
@@ -187,9 +191,9 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   if (started >= 3 && repeatRate < 50) {
     signals.push({
       id: "repeat-exposure",
-      title: "Limited repeat exposure",
-      evidence: `Only ${repeat} of ${started} experiment starters have at least two comparable opportunities.`,
-      question: "Before claiming behavioural change, consider whether the programme needs a longer evidence window or experiments built around more frequently occurring situations.",
+      title: "Too few repeat situations",
+      evidence: `Only ${repeat} of ${started} people who started saw at least two comparable situations.`,
+      question: "Before drawing a conclusion about change, consider a longer observation window or experiments built around situations that happen more often.",
       level: "WATCH",
     });
   }
@@ -198,9 +202,9 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   if (metrics.support.participantsRequestingHelp >= 2 && helpRate >= 20) {
     signals.push({
       id: "support-demand",
-      title: "Human support demand is material",
-      evidence: `${metrics.support.participantsRequestingHelp} participants requested human help (${helpRate}% of the cohort).`,
-      question: "Look for programme moments that may need clearer facilitation, more structured check-ins, or an easier escalation path—without treating help-seeking as failure.",
+      title: "People are asking for help",
+      evidence: `${metrics.support.participantsRequestingHelp} participants requested human help (${helpRate}% of the group).`,
+      question: "Look for moments that may need clearer facilitation, more regular check-ins, or an easier way to ask for help.",
       level: "INVESTIGATE",
     });
   }
@@ -210,9 +214,9 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
     if (untaggedRate >= 30) {
       signals.push({
         id: "context-coverage",
-        title: "Experiment context is under-specified",
-        evidence: `${landscape.participantsWithoutStructuredThemes} of ${landscape.participantsStarted} experiment starters do not yet have a recognised structured impact-domain tag.`,
-        question: "Improve the experiment-design step so sponsors can understand where behaviour is being tested without asking learners to disclose private wording.",
+        title: "We need clearer context",
+        evidence: `${landscape.participantsWithoutStructuredThemes} of ${landscape.participantsStarted} people who started do not yet have a broad area attached to their experiment.`,
+        question: "Make the experiment setup clearer so the organisation can understand where behaviour is being tested without asking people to share private wording.",
         level: "CONTEXT",
       });
     }
@@ -221,9 +225,9 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   if (signals.length === 0) {
     signals.push({
       id: "no-threshold-signal",
-      title: "No strong aggregate friction signal yet",
-      evidence: "None of the current cohort-level review thresholds has been triggered.",
-      question: "Keep collecting evidence. This does not prove that no system gap exists; it means the current aggregate data is not yet pointing strongly to one.",
+      title: "Nothing stands out strongly yet",
+      evidence: "The current group patterns have not crossed any review threshold.",
+      question: "Keep collecting observations. This does not prove that there is no gap; it means the current group picture is not pointing strongly to one yet.",
       level: "CONTEXT",
     });
   }
@@ -261,8 +265,8 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
       <section className="programme-outcomes-empty">
         <ShieldCheck />
         <p className="eyebrow">Programme Outcomes</p>
-        <h2>No sponsor cohort is assigned.</h2>
-        <p>A system administrator can grant a sponsor account aggregate access to a specific cohort.</p>
+        <h2>No programme assigned.</h2>
+        <p>A BIS Administrator can add this organisation account to a programme.</p>
       </section>
     );
   }
@@ -273,15 +277,11 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
     <div className="programme-outcomes">
       <section className="outcomes-hero">
         <div>
-          <p className="eyebrow">Programme Outcomes</p>
-          <h1>What is happening with the people?</h1>
-          <p>
-            Behavioural evidence across the cohort—what participants expected, what they attempted,
-            what happened in practice, and how much evidence is strong enough to support a conclusion.
-          </p>
+          <p className="eyebrow">Programme</p>
+          <h1>Outcomes</h1>
         </div>
         <div className="outcomes-cohort-picker">
-          <label htmlFor="sponsor-cohort">Cohort</label>
+          <label htmlFor="sponsor-cohort">Group</label>
           <select
             id="sponsor-cohort"
             value={outcome.cohort.id}
@@ -302,23 +302,22 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
         <Metric
           label="Completion"
           value={metrics ? percent(metrics.completionContext.completionRate) : "Suppressed"}
-          detail="Context only—not the outcome claim."
+          detail="Programme context"
         />
         <div className="outcomes-context-note">
           <LockKeyhole />
-          <span>Aggregate reporting only. Individual learner records are never part of this view.</span>
+          <span>Group view · individual responses stay private.</span>
         </div>
       </section>
 
       {outcome.suppressed || !metrics ? (
         <section className="outcomes-suppressed">
           <LockKeyhole />
-          <p className="eyebrow">Privacy threshold</p>
+          <p className="eyebrow">Small group privacy</p>
           <h2>Too few participants to report behavioural outcomes safely.</h2>
           <p>
-            This cohort has {outcome.participantCount} participant{outcome.participantCount === 1 ? "" : "s"}.
-            Programme Outcomes opens at {outcome.minimumReportableCohortSize} so aggregate patterns do not
-            become a proxy for an individual person.
+            This group has {outcome.participantCount} participant{outcome.participantCount === 1 ? "" : "s"}.
+            Results appear from {outcome.minimumReportableCohortSize} participants so no group pattern can point back to one person.
           </p>
         </section>
       ) : (
@@ -333,65 +332,60 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                 <Metric label="Ready, not started" value={metrics.action.readyButNotStarted} />
               </div>
               <p>
-                {percent(metrics.action.experimentAttemptRate)} of the cohort has started a real-world experiment.
+                {percent(metrics.action.experimentAttemptRate)} of the group has started a real-world experiment.
                 “Ready, not started” shows the transition point where facilitator support may matter.
               </p>
             </article>
 
             <article className="outcome-question-card">
-              <div className="outcome-card-title"><Gauge /><span>Prediction</span></div>
-              <h2>What did participants predict—and what happened?</h2>
+              <div className="outcome-card-title"><Gauge /><span>Expectation vs reality</span></div>
+              <h2>What did people expect—and what happened?</h2>
               <div className="outcome-metric-row">
-                <Metric label="Average predicted rate" value={percent(metrics.prediction.averagePredictedRate)} />
-                <Metric label="Average actual rate" value={percent(metrics.prediction.averageActualRate)} />
-                <Metric label="Average prediction gap" value={metrics.prediction.averagePredictionGap === null ? "—" : `${metrics.prediction.averagePredictionGap} pp`} />
+                <Metric label="Expected" value={percent(metrics.prediction.averagePredictedRate)} />
+                <Metric label="Observed" value={percent(metrics.prediction.averageActualRate)} />
+                <Metric label="Difference" value={metrics.prediction.averagePredictionGap === null ? "—" : `${metrics.prediction.averagePredictionGap} points`} />
               </div>
               <p>
-                Prediction is treated as calibration, not a score. A gap means behaviour in practice differed from
-                what participants expected before the experiment.
+                The difference shows where behaviour in practice did not match what people expected beforehand.
               </p>
             </article>
 
             <article className="outcome-question-card">
-              <div className="outcome-card-title"><FlaskConical /><span>Experiment</span></div>
-              <h2>Are the experiments actually being attempted?</h2>
+              <div className="outcome-card-title"><FlaskConical /><span>Real-world testing</span></div>
+              <h2>Are people actually testing this in real life?</h2>
               <div className="outcome-metric-row">
-                <Metric label="Participants started" value={metrics.experiment.participantsStarted} />
-                <Metric label="Observations recorded" value={metrics.experiment.observationsRecorded} />
-                <Metric label="Eligible opportunities" value={metrics.experiment.eligibleOpportunities} />
+                <Metric label="People who started" value={metrics.experiment.participantsStarted} />
+                <Metric label="Days recorded" value={metrics.experiment.observationsRecorded} />
+                <Metric label="Real situations" value={metrics.experiment.eligibleOpportunities} />
               </div>
               <p>
-                This distinguishes attendance from behavioural participation. A completed screen is not the same
-                thing as an attempted experiment.
+                This shows whether people moved beyond the programme screen and tested something in a real situation.
               </p>
             </article>
 
             <article className="outcome-question-card">
-              <div className="outcome-card-title"><Eye /><span>Evidence</span></div>
+              <div className="outcome-card-title"><Eye /><span>What we can say</span></div>
               <h2>How much can we responsibly say?</h2>
               <div className="outcome-metric-row">
-                <Metric label="Sufficient evidence" value={metrics.evidence.sufficient} />
-                <Metric label="Limited evidence" value={metrics.evidence.limited} />
-                <Metric label="No evidence yet" value={metrics.evidence.none} />
+                <Metric label="Enough evidence" value={metrics.evidence.sufficient} />
+                <Metric label="Still building" value={metrics.evidence.limited} />
+                <Metric label="Nothing yet" value={metrics.evidence.none} />
               </div>
               <p>
-                For {metrics.evidence.notEnoughYet} participant{metrics.evidence.notEnoughYet === 1 ? "" : "s"}, there is
-                not enough evidence yet for a useful behavioural conclusion. BIS reports that explicitly instead of
-                forcing a result.
+                For {metrics.evidence.notEnoughYet} participant{metrics.evidence.notEnoughYet === 1 ? "" : "s"}, there is not enough evidence yet to say anything useful. BIS leaves that result open rather than forcing a conclusion.
               </p>
             </article>
 
             <article className="outcome-question-card">
-              <div className="outcome-card-title"><Repeat2 /><span>Change</span></div>
-              <h2>Did anything change in the next comparable situation?</h2>
+              <div className="outcome-card-title"><Repeat2 /><span>Next time</span></div>
+              <h2>What happened the next time?</h2>
               <div className="outcome-metric-row">
-                <Metric label="Repeat-opportunity participants" value={metrics.change.repeatOpportunityParticipants} />
-                <Metric label="Changed toward protocol" value={metrics.change.improvedLaterResponse} />
-                <Metric label="Changed away / same" value={`${metrics.change.changedOtherDirection} / ${metrics.change.sameLaterResponse}`} />
+                <Metric label="People with a repeat situation" value={metrics.change.repeatOpportunityParticipants} />
+                <Metric label="Moved toward the alternative" value={metrics.change.improvedLaterResponse} />
+                <Metric label="Stayed the same" value={metrics.change.sameLaterResponse} />
               </div>
               <p>
-                This compares the earliest and latest eligible opportunity for participants with repeat evidence.
-                It describes response direction; it does not label a person as improved or regressed.
+                This compares the first and latest similar situation. {metrics.change.changedOtherDirection} participant{metrics.change.changedOtherDirection === 1 ? "" : "s"} changed in another direction.
               </p>
             </article>
 
@@ -399,65 +393,52 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
               <div className="outcome-card-title"><MessageCircleQuestion /><span>Support</span></div>
               <h2>Did participants ask for help when they got stuck?</h2>
               <div className="outcome-metric-row">
-                <Metric label="Participants requesting help" value={metrics.support.participantsRequestingHelp} />
+                <Metric label="People who asked for help" value={metrics.support.participantsRequestingHelp} />
                 <Metric label="Support requests" value={metrics.support.supportRequests} />
-                <Metric label="Cohort request rate" value={percent(metrics.support.supportRequestRate)} />
+                <Metric label="% of group" value={percent(metrics.support.supportRequestRate)} />
               </div>
               <p>
-                Only the existence of a learner-initiated human-support request is counted here. The request wording
-                and safeguarding details remain outside Sponsor View.
+                Only the fact that help was requested is counted here. What the person wrote remains private.
               </p>
             </article>
           </section>
 
-          <section className="outcomes-summary">
-            <Sparkles />
-            <div>
-              <p className="eyebrow">What this changes</p>
-              <h2>Completion tells you who finished. Behavioural evidence tells you what happened.</h2>
-              <p>
-                The sponsor view is designed to show where action begins, where prediction and reality differ,
-                whether real-world attempts occurred, whether evidence is strong enough, and whether a later
-                opportunity produced a different response.
-              </p>
-            </div>
-            <ArrowRight />
-          </section>
+
 
           {outcome.deepAnalysis && !outcome.deepAnalysis.suppressed && outcome.deepAnalysis.experimentLandscape ? (
             <details className="outcomes-deeper-analysis">
               <summary>
                 <div className="deeper-summary-icon"><Layers3 /></div>
                 <div>
-                  <p className="eyebrow">Deeper analysis</p>
-                  <h2>What were people actually exploring—and what should we investigate next?</h2>
-                  <p>Open a privacy-safe generalisation of experiment contexts and evidence-backed system opportunities.</p>
+                  <p className="eyebrow">Explore the detail</p>
+                  <h2>What were people exploring?</h2>
+                  
                 </div>
-                <span className="deeper-open-label">Expand analysis <ChevronDown /></span>
+                <span className="deeper-open-label">Open <ChevronDown /></span>
               </summary>
 
               <div className="deeper-analysis-body">
                 <section className="experiment-landscape">
                   <div className="deeper-section-heading">
                     <div>
-                      <p className="eyebrow">Experiment landscape</p>
+                      <p className="eyebrow">What people explored</p>
                       <h3>{outcome.deepAnalysis.experimentLandscape.archetype.label}</h3>
-                      <p>{outcome.deepAnalysis.experimentLandscape.archetype.description}</p>
+                      <p>{experimentSummary(outcome.cohort.labCode)}</p>
                     </div>
                     <FlaskConical />
                   </div>
 
                   <div className="landscape-context-row">
                     <Metric label="Experiments started" value={outcome.deepAnalysis.experimentLandscape.participantsStarted} />
-                    <Metric label="Context-tagged" value={outcome.deepAnalysis.experimentLandscape.participantsWithStructuredThemes} />
-                    <Metric label="Context not tagged" value={outcome.deepAnalysis.experimentLandscape.participantsWithoutStructuredThemes} />
+                    <Metric label="Area identified" value={outcome.deepAnalysis.experimentLandscape.participantsWithStructuredThemes} />
+                    <Metric label="Area not selected" value={outcome.deepAnalysis.experimentLandscape.participantsWithoutStructuredThemes} />
                   </div>
 
                   <div className="theme-list">
                     <div className="theme-list-head">
                       <div>
-                        <strong>What people were exploring</strong>
-                        <span>Generalised from structured impact-domain tags—not private experiment wording.</span>
+                        <strong>Areas people were exploring</strong>
+                        <span>Grouped broadly to protect privacy.</span>
                       </div>
                       <span>Participants</span>
                     </div>
@@ -493,9 +474,9 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                 <section className="system-opportunities">
                   <div className="deeper-section-heading">
                     <div>
-                      <p className="eyebrow">System opportunities</p>
-                      <h3>Where should the organisation look more closely?</h3>
-                      <p>These are review signals generated from aggregate evidence. They identify questions to investigate, not causes or diagnoses.</p>
+                      <p className="eyebrow">What to look at next</p>
+                      <h3>What may be worth checking?</h3>
+                      <p>These patterns point to useful questions. They do not prove what caused the behaviour.</p>
                     </div>
                     <Lightbulb />
                   </div>
@@ -507,7 +488,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                         <h4>{signal.title}</h4>
                         <p className="opportunity-evidence">{signal.evidence}</p>
                         <div className="opportunity-question">
-                          <strong>Question for the sponsor</strong>
+                          <strong>Worth checking</strong>
                           <p>{signal.question}</p>
                         </div>
                       </article>
@@ -518,11 +499,9 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                 <section className="analysis-boundary">
                   <ShieldCheck />
                   <div>
-                    <strong>Useful context without private disclosure</strong>
+                    <strong>Group patterns only</strong>
                     <p>
-                      BIS generalises only from the fixed experiment taxonomy and aggregate behaviour evidence.
-                      It does not expose learner triggers, target patterns, rewards, notes, reflections, or support wording.
-                      These patterns are descriptive, not proof that the organisation caused the behaviour.
+                      Private experiment wording, reflections and support messages stay private. These patterns describe what appeared in the group; they do not prove why it happened.
                     </p>
                   </div>
                 </section>
@@ -532,32 +511,12 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
         </>
       )}
 
-      <section className="outcomes-signal-coverage">
-        <div className="outcomes-section-heading">
-          <div>
-            <p className="eyebrow">Signal coverage</p>
-            <h2>What BIS can observe now—and what activates with future Labs.</h2>
-          </div>
-          <CircleHelp />
-        </div>
-        <div className="signal-grid">
-          {data.signalCoverage.map((signal) => (
-            <article key={signal.id} className={signal.status === "LIVE" ? "live" : "future"}>
-              <span>{signal.status === "LIVE" ? "Live" : "Future Lab signal"}</span>
-              <h3>{signal.label}</h3>
-              <p>{signal.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
       <section className="outcomes-privacy">
         <ShieldCheck />
         <div>
-          <strong>Privacy boundary</strong>
+          <strong>Privacy</strong>
           <p>
-            Sponsor View excludes {data.privacy.excluded.join(", ")}. Cohorts below
-            {" "}{data.privacy.minimumReportableCohortSize} participants are suppressed.
+            Individual responses stay private. Small groups are hidden when reporting could point back to a person.
           </p>
         </div>
       </section>
