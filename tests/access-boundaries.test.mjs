@@ -12,6 +12,7 @@ test("staff operations never import or select private learner reflection stores"
   }
   assert.doesNotMatch(route, /experimentEvents\.notes/);
   assert.match(route, /facilitatorCannotSee:[\s\S]*"learner answers"[\s\S]*"experiment notes"[\s\S]*"Companion conversations"/);
+  assert.match(route, /sponsorCannotSee:[\s\S]*"learner identity"[\s\S]*"reflection text"[\s\S]*"support request wording"/);
 });
 
 test("every restricted mutation has a server-side role gate", async () => {
