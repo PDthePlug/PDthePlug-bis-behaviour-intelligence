@@ -19,8 +19,8 @@ test("canonical learner navigation preserves the accepted BIS journey and adds P
     assert.ok(shell.includes(`label: "${label}"`), `${label} should remain in the canonical learner menu`);
   }
   assert.match(shell, /href: "\/habit"/);
-  assert.match(shell, /href: "\/habit\?section=learn"/);
-  assert.match(shell, /href: "\/habit-lab"/);
+  assert.match(shell, /href: "\/learn"/);
+  assert.match(shell, /href: "\/labs"/);
   assert.match(shell, /href: "\/habit-lab\/experiment"/);
   assert.match(shell, /href: "\/profile"/);
 });
