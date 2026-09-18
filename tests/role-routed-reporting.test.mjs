@@ -59,7 +59,7 @@ test("programme outcomes expose a factual summary and PDF action", async () => {
   const view = await source("app/programme-outcomes-view.tsx");
   assert.match(view, /What stands out/);
   assert.match(view, /What the group evidence is telling us/);
-  assert.match(view, /Group averages can hide individual miscalibration/);
+  assert.match(view, /Group averages can hide what happened for individuals/);
   assert.match(view, /Download PDF/);
   assert.match(view, /report=pdf&cohortId=/);
 });
