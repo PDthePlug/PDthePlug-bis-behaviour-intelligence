@@ -237,8 +237,8 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                 <Metric label="No evidence yet" value={metrics.evidence.none} />
               </div>
               <p>
-                {metrics.evidence.notEnoughYet} participant{metrics.evidence.notEnoughYet === 1 ? "" : "s"} currently
-                have too little evidence for a useful behavioural conclusion. BIS reports that explicitly instead of
+                For {metrics.evidence.notEnoughYet} participant{metrics.evidence.notEnoughYet === 1 ? "" : "s"}, there is
+                not enough evidence yet for a useful behavioural conclusion. BIS reports that explicitly instead of
                 forcing a result.
               </p>
             </article>
