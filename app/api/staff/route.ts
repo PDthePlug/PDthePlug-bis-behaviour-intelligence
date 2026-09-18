@@ -415,7 +415,7 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
       facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
       sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand"],
-      sponsorCannotSee: ["learner identity", "individual responses", "reflection text", "experiment notes", "support request wording"],
+      sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },
     admin: hasRole(roles, "SYSTEM_ADMIN") ? await adminSnapshot() : null,
