@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { ArrowRight, BookOpen, FlaskConical } from "lucide-react";
 import {
   BIS_MODULES,
+  BIS_PRODUCT_SCOPE,
   BIS_VOLUMES,
   isModuleOpen,
   moduleHref,
@@ -43,7 +44,7 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
           <p>{intro}</p>
         </div>
         <div className="bis-library-count" aria-label="BIS catalogue size">
-          <strong>32</strong>
+          <strong>{BIS_PRODUCT_SCOPE}</strong>
           <span>{mode === "learning" ? "handbooks" : "Labs"}</span>
         </div>
       </section>
