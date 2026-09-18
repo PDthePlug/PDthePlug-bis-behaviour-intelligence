@@ -25,7 +25,7 @@ function statusLabel(
 export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
   const [volume, setVolume] = useState<BISVolume>(1);
   const modules = useMemo(
-    () => BIS_MODULES.filter((module) => item.volume === volume),
+    () => BIS_MODULES.filter((item) => item.volume === volume),
     [volume],
   );
   const title = mode === "learning" ? "Learning library" : "Lab library";
