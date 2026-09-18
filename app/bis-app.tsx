@@ -172,7 +172,7 @@ type Snapshot = {
 };
 
 type View = "home" | "lab" | "experiment" | "evidence" | "companion" | "progress" | "memory" | "settings" | "operations";
-type SystemMode = "learner" | "facilitator" | "audit";
+type SystemMode = "learner" | "facilitator" | "admin";
 
 const nav = [
   { id: "home" as const, label: "Home", icon: Home },
@@ -358,7 +358,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
           <span>System view</span>
           <button className={systemMode === "learner" ? "active" : ""} onClick={() => { setSystemMode("learner"); setView("home"); setMenuOpen(false); }}><Home /> Learner View</button>
           {hasStaffAccess && <button className={systemMode === "facilitator" ? "active" : ""} disabled={!staffRoles.some((role) => ["FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role))} onClick={() => { setSystemMode("facilitator"); setView("operations"); setMenuOpen(false); }}><LayoutDashboard /> Facilitator View</button>}
-          {hasStaffAccess && <button className={systemMode === "audit" ? "active" : ""} disabled={!staffRoles.includes("SYSTEM_ADMIN")} onClick={() => { setSystemMode("audit"); setView("operations"); setMenuOpen(false); }}><Search /> Audit View</button>}
+          {hasStaffAccess && <button className={systemMode === "admin" ? "active" : ""} disabled={!staffRoles.includes("SYSTEM_ADMIN")} onClick={() => { setSystemMode("admin"); setView("operations"); setMenuOpen(false); }}><Search /> BIS Administrator</button>}
         </div>
         <nav className="sidebar-nav" aria-label="Learner navigation">
           {nav.map((item) => {
@@ -389,7 +389,6 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
       </aside>
 
       <main className="app-main">
-        <AdaptiveContextBar mode={systemMode} view={view} current={current} hasExperiment={Boolean(state.experiment)} onHelp={() => { setSystemMode("learner"); setView("companion"); }} />
         {error && <div className="error-banner"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
         {view === "home" && <HomeView state={state} name={displayName} onView={setView} onContinue={() => { setStep(current); setView("lab"); }} />}
         {view === "lab" && <LabRunner state={state} step={step} setStep={setStep} saving={saving} act={act} onView={setView} />}
@@ -399,7 +398,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
         {view === "progress" && <ProgressView state={state} onView={setView} />}
         {view === "memory" && <MemoryView state={state} saving={saving} act={act} />}
         {view === "settings" && <SettingsView state={state} saving={saving} act={act} onLock={() => setPrivateVisible(false)} />}
-        {view === "operations" && <OperationsView initialRoles={staffRoles} perspective={systemMode === "audit" ? "audit" : "facilitator"} />}
+        {view === "operations" && <OperationsView initialRoles={staffRoles} perspective={systemMode === "admin" ? "admin" : "facilitator"} />}
       </main>
       {systemMode === "learner" && <nav className="mobile-task-dock" aria-label="Mobile learner navigation">{mobileNav.map((item) => { const Icon = item.icon; return <button key={item.id} className={view === item.id ? "active" : ""} onClick={() => setView(item.id)}><Icon /><span>{item.label}</span></button>; })}</nav>}
     </div>
@@ -410,26 +409,8 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
 
 function StaffOnlyShell({ state, staffRoles, saving, error, act, privateVisible, onReveal, onLock }: { state: Snapshot; staffRoles: string[]; saving: boolean; error: string; act: (payload: Record<string, unknown>) => Promise<unknown>; privateVisible: boolean; onReveal: () => void; onLock: () => void }) {
   const canFacilitate = staffRoles.includes("FACILITATOR") || staffRoles.includes("SAFEGUARDING_OFFICER");
-  const [perspective, setPerspective] = useState<"facilitator" | "audit">(canFacilitate ? "facilitator" : "audit");
-  return <><div className={`staff-only-shell ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}><header><Brand /><div><Badge variant="outline"><LockKeyhole /> Restricted workspace</Badge><span>{state.identity.email}</span><button className="staff-lock" onClick={onLock}><EyeOff /> Hide</button></div></header><nav className="staff-mode-bar" aria-label="System views">{canFacilitate && <button className={perspective === "facilitator" ? "active" : ""} onClick={() => setPerspective("facilitator")}><LayoutDashboard /> Facilitator View</button>}{staffRoles.includes("SYSTEM_ADMIN") && <button className={perspective === "audit" ? "active" : ""} onClick={() => setPerspective("audit")}><Search /> Audit View</button>}</nav>{state.profile && state.consent?.status === "WITHDRAWN" && <div className="staff-consent-note"><div><strong>Your learner investigation is paused.</strong><p>Your staff role remains available and does not override that consent choice.</p></div><Button variant="outline" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>Restore learner consent</Button></div>}{error && <div className="error-banner"><span>{error}</span></div>}<OperationsView initialRoles={staffRoles} perspective={perspective} /></div>{!privateVisible && <PrivacyScreen state={state} staff onReveal={onReveal} />}</>;
-}
-
-const viewGuidance: Record<View, { label: string; meaning: string; now: string; next: string }> = {
-  home: { label: "Home", meaning: "Your investigation overview.", now: "Resume the most relevant task.", next: "BIS returns you to the evidence path." },
-  lab: { label: "My Lab", meaning: "The guided Habit Lab workbook.", now: "Complete the current investigation.", next: "Your answer saves before you move on." },
-  experiment: { label: "Today", meaning: "Today’s real-world observation window.", now: "Record what happened, or no opportunity.", next: "The next day unlocks with time." },
-  evidence: { label: "Review", meaning: "Your evidence and calculation trail.", now: "Read the summary before opening detail.", next: "Use the evidence to refine your explanation." },
-  companion: { label: "Companion", meaning: "Help grounded in your own evidence.", now: "Ask for clarity, retrieval, or a challenge.", next: "You decide what is useful." },
-  progress: { label: "Progress", meaning: "Your place across the full investigation.", now: "Check completed and upcoming milestones.", next: "Open the recommended next action." },
-  memory: { label: "Memory", meaning: "What BIS remembers with your permission.", now: "Inspect or retire a remembered pattern.", next: "Retired items stop guiding continuity." },
-  settings: { label: "Privacy", meaning: "Consent, reminders, and human support.", now: "Review or change your controls.", next: "Changes apply without rewriting evidence." },
-  operations: { label: "System view", meaning: "A role-scoped operational workspace.", now: "Use only the context your role permits.", next: "Every action remains auditable." },
-};
-
-function AdaptiveContextBar({ mode, view, current, hasExperiment, onHelp }: { mode: SystemMode; view: View; current: number; hasExperiment: boolean; onHelp: () => void }) {
-  const guide = viewGuidance[view];
-  const modeLabel = mode === "learner" ? "Learner View" : mode === "facilitator" ? "Facilitator View" : "Audit View";
-  return <section className="adaptive-contextbar" aria-label="Screen orientation"><div className="context-location"><span>Where you are</span><strong>{modeLabel} <ChevronRight /> {guide.label}</strong></div><div><span>What this means</span><p>{guide.meaning}</p></div><div><span>Do now</span><p>{guide.now}</p></div><div><span>Next</span><p>{guide.next}</p></div><button onClick={onHelp}><LifeBuoy /><span>Get help</span><small>{mode === "learner" ? "Open Companion" : "Open learner support"}</small></button><div className="context-progress" aria-label={`Habit Lab investigation ${current} of 9`}><i style={{ width: `${(current / 9) * 100}%` }} /><small>{hasExperiment ? "Experiment configured" : "Phase A"} · {current}/9</small></div></section>;
+  const [perspective, setPerspective] = useState<"facilitator" | "admin">(canFacilitate ? "facilitator" : "admin");
+  return <><div className={`staff-only-shell ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}><header><Brand /><div><Badge variant="outline"><LockKeyhole /> Restricted workspace</Badge><span>{state.identity.email}</span><button className="staff-lock" onClick={onLock}><EyeOff /> Hide</button></div></header><nav className="staff-mode-bar" aria-label="System views">{canFacilitate && <button className={perspective === "facilitator" ? "active" : ""} onClick={() => setPerspective("facilitator")}><LayoutDashboard /> Facilitator View</button>}{staffRoles.includes("SYSTEM_ADMIN") && <button className={perspective === "admin" ? "active" : ""} onClick={() => setPerspective("admin")}><Search /> BIS Administrator</button>}</nav>{state.profile && state.consent?.status === "WITHDRAWN" && <div className="staff-consent-note"><div><strong>Your learner investigation is paused.</strong><p>Your staff role remains available and does not override that consent choice.</p></div><Button variant="outline" disabled={saving} onClick={() => void act({ action: "restoreConsent" })}>Restore learner consent</Button></div>}{error && <div className="error-banner"><span>{error}</span></div>}<OperationsView initialRoles={staffRoles} perspective={perspective} /></div>{!privateVisible && <PrivacyScreen state={state} staff onReveal={onReveal} />}</>;
 }
 
 function PrivacyScreen({ state, staff = false, onReveal }: { state: Snapshot; staff?: boolean; onReveal: () => void }) {
