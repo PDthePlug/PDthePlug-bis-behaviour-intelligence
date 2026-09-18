@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { requireUser } from "@/lib/supabase/require-user";
 import { StaffWorkspaceShell } from "./staff-workspace-shell";
 import "./staff-workspace-hardening.css";
+import "../programme-outcomes-view.css";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
