@@ -369,3 +369,26 @@
 @media(prefers-reduced-motion:reduce){
   .deeper-open-label svg{transition:none}
 }
+
+
+.outcomes-hero-actions{display:grid;gap:10px}
+.outcomes-pdf-link{
+  min-height:46px;display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:0 16px;border-radius:12px;background:var(--ink);color:white;
+  text-decoration:none;font-size:13px;font-weight:850
+}
+.outcomes-pdf-link svg{width:18px}
+.outcomes-insights{
+  padding:26px;border:1px solid var(--border);border-radius:22px;
+  background:linear-gradient(180deg,#fff 0%,#f8f7f3 100%)
+}
+.outcomes-insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.outcomes-insight-grid article{
+  min-height:150px;padding:20px;border:1px solid var(--border);
+  border-radius:16px;background:var(--paper)
+}
+.outcomes-insight-grid h3{margin:0 0 9px;font:600 22px/1.08 var(--font-serif);letter-spacing:-.02em}
+.outcomes-insight-grid p{margin:0;color:var(--muted-foreground);font-size:13px;line-height:1.65}
+@media(max-width:700px){
+  .outcomes-insight-grid{grid-template-columns:1fr}
+}
