@@ -5,6 +5,7 @@ import test from "node:test";
 const app = readFileSync(new URL("../app/bis-app.tsx", import.meta.url), "utf8");
 const operations = readFileSync(new URL("../app/operations-view.tsx", import.meta.url), "utf8");
 const workspace = readFileSync(new URL("../app/workspace/staff-workspace-shell.tsx", import.meta.url), "utf8");
+const facilitator = readFileSync(new URL("../app/facilitator-workspace.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 const staffApi = readFileSync(new URL("../app/api/staff/route.ts", import.meta.url), "utf8");
 
@@ -35,8 +36,11 @@ test("staff workspace is task-first and omits orientation explainer panels", () 
 });
 
 test("facilitator and administrator information architecture uses human labels", () => {
-  for (const label of ["Cohort", "Participants", "Support", "Review", "Access", "Programmes", "Activity", "Advanced system checks"]) {
-    assert.ok(operations.includes(label), `${label} should be present`);
+  for (const label of ["Cohort", "Participants", "Support", "Review"]) {
+    assert.ok(facilitator.includes(label), `${label} should be present in facilitator workspace`);
+  }
+  for (const label of ["Access", "Programmes", "Activity", "Advanced system checks"]) {
+    assert.ok(operations.includes(label), `${label} should be present in administrator workspace`);
   }
   for (const oldLabel of ["Evidence registry", "Calculation trace", "Formula versions", "Provenance map", "Privacy classification"]) {
     assert.doesNotMatch(operations, new RegExp(oldLabel));

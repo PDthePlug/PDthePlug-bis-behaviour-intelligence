@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import {
   ChevronDown,
   Compass,
+  Download,
   Eye,
   FlaskConical,
   Gauge,
@@ -62,6 +63,45 @@ export type SponsorOutcome = {
       participantsRequestingHelp: number;
       supportRequests: number;
       supportRequestRate: number | null;
+    };
+  };
+  learningSummary: null | {
+    cohortId: string;
+    suppressed: boolean;
+    participantCount: number;
+    minimumReportableCohortSize?: number;
+    learningJourney: null | {
+      days: Array<{
+        day: number;
+        reached: number;
+        completed: number;
+        reachedRate: number | null;
+        completionRate: number | null;
+      }>;
+      baselineThemes: Array<{
+        id: string;
+        label: string;
+        area: string;
+        respondents: number;
+        frequentCount: number;
+        frequentShare: number;
+        averageScore: number;
+        scale: string;
+      }>;
+      skillShifts: Array<{
+        id: string;
+        label: string;
+        pairedParticipants: number;
+        averagePre: number;
+        averagePost: number;
+        averageShift: number;
+      }>;
+      activity: {
+        participantsWithHandbookActivity: number;
+        participantsWithStructuredResponses: number;
+        structuredResponsesRecorded: number;
+      };
+      privacyNote: string;
     };
   };
   deepAnalysis: null | {
@@ -235,6 +275,153 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   return signals;
 }
 
+function outcomeInsights(outcome: SponsorOutcome) {
+  const metrics = outcome.metrics;
+  if (!metrics) return [] as Array<{ title: string; body: string }>;
+  const insights: Array<{ title: string; body: string }> = [];
+  const starters = metrics.experiment.participantsStarted;
+  const enough = metrics.evidence.sufficient;
+  const attemptRate = metrics.action.experimentAttemptRate;
+  if (attemptRate !== null) {
+    const actionTitle =
+      attemptRate >= 70
+        ? "Most participants moved into action"
+        : attemptRate >= 40
+          ? "A substantial share moved into action"
+          : attemptRate > 0
+            ? "Some participants moved into action"
+            : "The real-world experiment has not started yet";
+    insights.push({
+      title: actionTitle,
+      body: String(attemptRate) + "% of the group started a real-world experiment. " + String(metrics.action.readyButNotStarted) + " reached the experiment stage but had not started yet.",
+    });
+  }
+  if (starters > 0) {
+    const evidenceShare = ratio(enough, starters);
+    insights.push({
+      title:
+        evidenceShare >= 70
+          ? "The evidence base is strong for most experiment starters"
+          : evidenceShare >= 40
+            ? "The evidence base is mixed"
+            : "More real-world evidence is still needed",
+      body: String(enough) + " of " + String(starters) + " experiment starters have enough real-world opportunities for a stronger behavioural reading. " + String(metrics.evidence.notEnoughYet) + " still need more evidence.",
+    });
+  }
+  if (metrics.prediction.averagePredictionGap !== null) {
+    const groupDifference = metrics.prediction.averagePredictedRate !== null && metrics.prediction.averageActualRate !== null
+      ? Math.abs(metrics.prediction.averagePredictedRate - metrics.prediction.averageActualRate).toFixed(1)
+      : null;
+    insights.push({
+      title: "Group averages can hide what happened for individuals",
+      body: groupDifference === null
+        ? "Across participants, expectations were on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened."
+        : "The group averages are only " + groupDifference + " points apart, but each person's expectation was on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened.",
+    });
+  }
+  if (metrics.support.participantsRequestingHelp > 0) {
+    insights.push({
+      title: "Human support is part of the programme",
+      body: String(metrics.support.participantsRequestingHelp) + " participants requested help (" + String(metrics.support.supportRequestRate ?? 0) + "% of the group). This is a delivery signal, not a failure score.",
+    });
+  }
+  const themes = outcome.deepAnalysis?.experimentLandscape?.themes ?? [];
+  if (themes.length > 0) {
+    insights.push({
+      title: "Behaviour is being tested in recognisable life contexts",
+      body: "The most common reportable areas are " + themes.slice(0, 3).map((theme) => theme.label + " (" + String(theme.participants) + ")").join(", ") + ". Participants can appear in more than one area.",
+    });
+  }
+  return insights.slice(0, 5);
+}
+
+function learningNarratives(outcome: SponsorOutcome) {
+  const journey = outcome.learningSummary?.learningJourney;
+  if (!journey) return [] as Array<{ title: string; body: string }>;
+  const items: Array<{ title: string; body: string }> = [];
+
+  const activeDays = journey.days.filter((day) => day.reached > 0);
+  const first = activeDays[0];
+  const furthest = [...activeDays].reverse().find((day) => day.reached > 0);
+  if (first && furthest) {
+    const retained = ratio(furthest.reached, first.reached);
+    items.push({
+      title:
+        retained >= 80
+          ? "Participation remains strong across the learning journey"
+          : retained >= 60
+            ? "Participation is thinning as the programme progresses"
+            : "Participation falls sharply across the learning journey",
+      body: `${first.reached} participants reached Day ${first.day}; ${furthest.reached} reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} participants have contributed structured learning evidence along the way.`,
+    });
+  }
+
+  const topThemes = journey.baselineThemes.slice(0, 3);
+  if (topThemes.length) {
+    items.push({
+      title: "Some challenges are recurring across the group",
+      body: topThemes
+        .map((theme) => `${theme.label}: ${theme.frequentCount} of ${theme.respondents} reported it often or always`)
+        .join(". ") + ".",
+    });
+  }
+
+  for (const shift of journey.skillShifts) {
+    const direction = shift.averageShift > 0 ? "increased" : shift.averageShift < 0 ? "decreased" : "stayed level";
+    items.push({
+      title: `${shift.label} ${direction}`,
+      body: `Across ${shift.pairedParticipants} participants with both measures, the group average moved from ${shift.averagePre} to ${shift.averagePost} (${shift.averageShift > 0 ? "+" : ""}${shift.averageShift}).`,
+    });
+  }
+
+  return items.slice(0, 4);
+}
+
+function themeRecommendation(area: string) {
+  switch (area) {
+    case "Follow-through":
+      return "Explore smaller commitments, visible follow-up points and clearer ownership of next actions.";
+    case "Focus":
+      return "Explore where distraction is entering the environment and whether focused work needs stronger boundaries.";
+    case "Routine":
+      return "Explore whether routines depend too heavily on motivation instead of predictable cues and practical structure.";
+    case "Impulse control":
+      return "Explore pause points before high-impulse decisions and make the preferred alternative easier to choose.";
+    case "Self-regulation":
+      return "Explore short pause, reset and recovery practices for moments of pressure.";
+    case "Persistence":
+      return "Explore minimum viable actions and support after an early setback rather than relying on motivation alone.";
+    case "Automatic behaviour":
+      return "Explore the situations that repeatedly trigger automatic action and whether the environment can make alternatives easier.";
+    default:
+      return "Explore the conditions around this pattern and test a practical support response.";
+  }
+}
+
+function organisationActions(outcome: SponsorOutcome) {
+  const journey = outcome.learningSummary?.learningJourney;
+  const actions = systemOpportunities(outcome).slice(0, 3).map((item) => ({
+    title: item.title,
+    body: item.question,
+    source: "Programme evidence",
+  }));
+  if (journey) {
+    for (const theme of journey.baselineThemes.slice(0, 3)) {
+      actions.push({
+        title: `Explore ${theme.area.toLowerCase()}`,
+        body: themeRecommendation(theme.area),
+        source: `${theme.frequentCount} of ${theme.respondents} reported ${theme.label.toLowerCase()} often or always`,
+      });
+    }
+  }
+  const seen = new Set<string>();
+  return actions.filter((item) => {
+    if (seen.has(item.title)) return false;
+    seen.add(item.title);
+    return true;
+  }).slice(0, 6);
+}
+
 function Metric({
   label,
   value,
@@ -280,20 +467,25 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           <p className="eyebrow">Programme</p>
           <h1>Outcomes</h1>
         </div>
-        <div className="outcomes-cohort-picker">
-          <label htmlFor="sponsor-cohort">Group</label>
-          <select
-            id="sponsor-cohort"
-            value={outcome.cohort.id}
-            onChange={(event) => setSelectedId(event.target.value)}
-          >
-            {data.cohorts.map((item) => (
-              <option value={item.cohort.id} key={item.cohort.id}>
-                {item.cohort.name}
-              </option>
-            ))}
-          </select>
-          <small>{outcome.cohort.labCode} · {outcome.cohort.labVersion} · {dateRange(outcome)}</small>
+        <div className="outcomes-hero-actions">
+          <div className="outcomes-cohort-picker">
+            <label htmlFor="sponsor-cohort">Group</label>
+            <select
+              id="sponsor-cohort"
+              value={outcome.cohort.id}
+              onChange={(event) => setSelectedId(event.target.value)}
+            >
+              {data.cohorts.map((item) => (
+                <option value={item.cohort.id} key={item.cohort.id}>
+                  {item.cohort.name}
+                </option>
+              ))}
+            </select>
+            <small>{outcome.cohort.labCode} · {outcome.cohort.labVersion} · {dateRange(outcome)}</small>
+          </div>
+          <a className="outcomes-pdf-link" href={"/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id)}>
+            <Download aria-hidden="true" /> Download PDF
+          </a>
         </div>
       </section>
 
@@ -304,11 +496,24 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           value={metrics ? percent(metrics.completionContext.completionRate) : "Suppressed"}
           detail="Programme context"
         />
-        <div className="outcomes-context-note">
-          <LockKeyhole />
-          <span>Group view · individual responses stay private.</span>
-        </div>
       </section>
+
+      {metrics ? (
+        <section className="outcomes-insights">
+          <div className="outcomes-section-heading">
+            <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
+            <Lightbulb />
+          </div>
+          <div className="outcomes-insight-grid">
+            {[...learningNarratives(outcome), ...outcomeInsights(outcome)].slice(0, 6).map((insight) => (
+              <article key={insight.title}>
+                <h3>{insight.title}</h3>
+                <p>{insight.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {outcome.suppressed || !metrics ? (
         <section className="outcomes-suppressed">
@@ -322,6 +527,88 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
         </section>
       ) : (
         <>
+          {outcome.learningSummary?.learningJourney ? (
+            <section className="outcomes-learning-journey">
+              <div className="outcomes-section-heading">
+                <div>
+                  <p className="eyebrow">Learning journey</p>
+                  <h2>What is changing while the programme is happening?</h2>
+                </div>
+                <Compass />
+              </div>
+
+              <div className="journey-activity-strip">
+                <Metric label="Learning activity" value={outcome.learningSummary.learningJourney.activity.participantsWithHandbookActivity} detail="participants" />
+                <Metric label="Structured evidence" value={outcome.learningSummary.learningJourney.activity.participantsWithStructuredResponses} detail="participants" />
+                <Metric label="Learning inputs" value={outcome.learningSummary.learningJourney.activity.structuredResponsesRecorded} detail="recorded" />
+              </div>
+
+              <div className="journey-days" aria-label="Programme day progress">
+                {outcome.learningSummary.learningJourney.days.map((day) => (
+                  <article key={day.day}>
+                    <span>Day {day.day}</span>
+                    <strong>{day.reached}</strong>
+                    <small>reached</small>
+                    <div className="journey-day-bar"><i style={{ width: `${Math.min(100, day.reachedRate ?? 0)}%` }} /></div>
+                    <em>{day.completed} completed</em>
+                  </article>
+                ))}
+              </div>
+
+              <div className="learning-evidence-grid">
+                <section className="surface-card learning-patterns">
+                  <div>
+                    <p className="eyebrow">Recurring challenges</p>
+                    <h3>What is showing up across the group?</h3>
+                  </div>
+                  {outcome.learningSummary.learningJourney.baselineThemes.length ? (
+                    <div className="learning-pattern-list">
+                      {outcome.learningSummary.learningJourney.baselineThemes.slice(0, 6).map((theme) => (
+                        <article key={theme.id}>
+                          <div>
+                            <strong>{theme.label}</strong>
+                            <span>{theme.area}</span>
+                          </div>
+                          <div>
+                            <strong>{theme.frequentShare}%</strong>
+                            <span>{theme.frequentCount} of {theme.respondents} · often/always</span>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="outcome-muted">No recurring structured challenge has reached the reporting threshold yet.</p>
+                  )}
+                </section>
+
+                <section className="surface-card learning-shifts">
+                  <div>
+                    <p className="eyebrow">Growth signals</p>
+                    <h3>Where are group measures moving?</h3>
+                  </div>
+                  {outcome.learningSummary.learningJourney.skillShifts.length ? (
+                    <div className="skill-shift-list">
+                      {outcome.learningSummary.learningJourney.skillShifts.map((shift) => (
+                        <article key={shift.id}>
+                          <strong>{shift.label}</strong>
+                          <div className="shift-values">
+                            <span>{shift.averagePre}</span>
+                            <b>→</b>
+                            <span>{shift.averagePost}</span>
+                            <em>{shift.averageShift > 0 ? "+" : ""}{shift.averageShift}</em>
+                          </div>
+                          <small>{shift.pairedParticipants} paired participants</small>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="outcome-muted">Pre/post group shifts will appear when enough participants have completed both measures.</p>
+                  )}
+                </section>
+              </div>
+            </section>
+          ) : null}
+
           <section className="outcome-question-grid">
             <article className="outcome-question-card">
               <div className="outcome-card-title"><Compass /><span>Action</span></div>
@@ -404,6 +691,25 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           </section>
 
 
+
+          <section className="outcomes-actions">
+            <div className="outcomes-section-heading">
+              <div>
+                <p className="eyebrow">Worth exploring</p>
+                <h2>What can the organisation do with this information?</h2>
+              </div>
+              <Lightbulb />
+            </div>
+            <div className="outcomes-action-grid">
+              {organisationActions(outcome).map((action) => (
+                <article key={action.title}>
+                  <span>{action.source}</span>
+                  <h3>{action.title}</h3>
+                  <p>{action.body}</p>
+                </article>
+              ))}
+            </div>
+          </section>
 
           {outcome.deepAnalysis && !outcome.deepAnalysis.suppressed && outcome.deepAnalysis.experimentLandscape ? (
             <details className="outcomes-deeper-analysis">
@@ -511,15 +817,13 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
         </>
       )}
 
-      <section className="outcomes-privacy">
-        <ShieldCheck />
+      <details className="outcomes-privacy-disclosure">
+        <summary><ShieldCheck /><span>Privacy and reporting boundaries</span><ChevronDown /></summary>
         <div>
-          <strong>Privacy</strong>
-          <p>
-            Individual responses stay private. Small groups are hidden when reporting could point back to a person.
-          </p>
+          <p>Programme reporting uses group patterns and structured measures. Individual responses, private reflections, experiment notes and support wording are not shown here.</p>
+          <p>Small groups and small theme cells are hidden when reporting could point back to a person.</p>
         </div>
-      </section>
+      </details>
     </div>
   );
 }

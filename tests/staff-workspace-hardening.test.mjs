@@ -5,7 +5,7 @@ import test from "node:test";
 const root = new URL("..", import.meta.url);
 const source = (path) => readFile(new URL(path, root), "utf8");
 
-test("workspace is a dedicated programme surface", async () => {
+test("workspace is a dedicated authenticated programme surface", async () => {
   const page = await source("app/workspace/page.tsx");
   assert.match(page, /<StaffWorkspaceShell \/>/);
   assert.match(page, /requireUser\("\/workspace"\)/);
@@ -13,42 +13,65 @@ test("workspace is a dedicated programme surface", async () => {
   assert.match(page, /BIS programme delivery, organisation outcomes and administration/);
 });
 
-test("workspace navigation is concise and role appropriate", async () => {
-  const shell = await source("app/workspace/staff-workspace-shell.tsx");
-  assert.match(shell, /roles\.includes\("FACILITATOR"\)/);
-  assert.match(shell, /roles\.includes\("SAFEGUARDING_OFFICER"\)/);
-  assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
-  assert.match(shell, /roles\.includes\("SPONSOR_VIEWER"\)/);
-  for (const label of ["Facilitator", "Programme Outcomes", "BIS Administrator"]) {
-    assert.match(shell, new RegExp(label));
-  }
-  assert.doesNotMatch(shell, /Audit View/);
-  assert.doesNotMatch(shell, /Behavioural evidence for sponsors/);
-  assert.match(shell, /<OperationsView initialRoles=\{session\.roles\} perspective=\{perspective\} \/>/);
-});
-
-test("workspace opens deliberately and auto hides", async () => {
+test("staff entry resolves roles automatically without a second open-workspace gate", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /fetch\("\/api\/staff"/);
-  assert.match(shell, /setTimeout\(\(\) => setVisible\(false\), 120_000\)/);
+  assert.match(shell, /setSession\(/);
+  assert.match(shell, /setPerspective\(defaultPerspective\(roles\)\)/);
+  assert.doesNotMatch(shell, /Open workspace/);
+  assert.doesNotMatch(shell, /Open staff workspace/);
+  assert.match(shell, /Opening your dashboard/);
+});
+
+test("workspace navigation exists only for roles that can use each surface", async () => {
+  const shell = await source("app/workspace/staff-workspace-shell.tsx");
+  assert.match(shell, /roles\.includes\("FACILITATOR"\)/);
+  assert.match(shell, /roles\.includes\("SPONSOR_VIEWER"\) \|\| roles\.includes\("SYSTEM_ADMIN"\)/);
+  assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
+  assert.match(shell, /facilitatorAvailable \? \(/);
+  assert.match(shell, /outcomesAvailable \? \(/);
+  assert.match(shell, /adminAvailable \? \(/);
+  assert.match(shell, /Programme Outcomes/);
+  assert.match(shell, /BIS Administrator/);
+  assert.doesNotMatch(shell, /Audit View/);
+});
+
+test("manual hide and inactivity use a privacy cover rather than re-authentication", async () => {
+  const shell = await source("app/workspace/staff-workspace-shell.tsx");
+  assert.match(shell, /setTimeout\(\(\) => setHidden\(true\), 120_000\)/);
   assert.match(shell, /document\.visibilityState === "hidden"/);
-  assert.match(shell, /Open workspace/);
-  assert.match(shell, /Hide workspace/);
-  assert.match(shell, /Workspace hides after two minutes of inactivity/);
+  assert.match(shell, /Workspace hidden/);
+  assert.match(shell, /Reveal workspace/);
+  assert.match(shell, /onClick=\{\(\) => setHidden\(true\)\}/);
 });
 
-test("workspace removes orientation explainers and executes each role directly", async () => {
-  const view = await source("app/operations-view.tsx");
-  assert.doesNotMatch(view, /function OperationsOrientation/);
-  for (const phrase of ["Where you are", "What this means", "Do now", "What happens next", "Least-privilege access"]) {
-    assert.doesNotMatch(view, new RegExp(phrase));
-  }
+test("facilitator workspace is four distinct working views instead of page anchors", async () => {
+  const facilitator = await source("app/facilitator-workspace.tsx");
   for (const label of ["Cohort", "Participants", "Support", "Review"]) {
-    assert.match(view, new RegExp(label));
+    assert.match(facilitator, new RegExp(">" + label + "<"));
+  }
+  assert.match(facilitator, /type FacilitatorSection = "cohort" \| "participants" \| "support" \| "review"/);
+  assert.match(facilitator, /setSection\("participants"\)/);
+  assert.doesNotMatch(facilitator, /href="#cohort-dashboard"/);
+  assert.doesNotMatch(facilitator, /href="#learner-summaries"/);
+  assert.doesNotMatch(facilitator, /href="#support-flags"/);
+  assert.doesNotMatch(facilitator, /href="#readiness-review"/);
+});
+
+test("participant cards drill into facilitator-safe progress detail", async () => {
+  const facilitator = await source("app/facilitator-workspace.tsx");
+  assert.match(facilitator, /participant-card-button/);
+  assert.match(facilitator, /setLearnerId\(learner\.userId\)/);
+  assert.match(facilitator, /Open participant/);
+  for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Observed strengths", "Where support may help", "Support history"]) {
+    assert.match(facilitator, new RegExp(field));
+  }
+  for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "hypothesis", "Companion"]) {
+    assert.doesNotMatch(facilitator, new RegExp(privateField));
   }
 });
 
-test("BIS Administrator is the primary system-owner surface and technical checks are secondary", async () => {
+test("BIS Administrator remains the system-owner surface and technical checks are secondary", async () => {
   const view = await source("app/operations-view.tsx");
   assert.match(view, /<h1>Administrator<\/h1>/);
   for (const label of ["Access", "Programmes", "Participants", "Activity", "Safeguarding cases"]) {
@@ -59,10 +82,9 @@ test("BIS Administrator is the primary system-owner surface and technical checks
   const adminIndex = view.indexOf("<AdminPanel");
   const checksIndex = view.indexOf("Advanced system checks");
   assert.ok(adminIndex >= 0 && checksIndex > adminIndex, "system management should appear before advanced checks");
-  assert.doesNotMatch(view, /Open governance controls/);
 });
 
-test("advanced checks use understandable labels while preserving the underlying assurance tools", async () => {
+test("advanced checks use understandable labels while preserving assurance tools", async () => {
   const view = await source("app/operations-view.tsx");
   for (const label of [
     "What BIS measures",
@@ -78,12 +100,38 @@ test("advanced checks use understandable labels while preserving the underlying 
   }
 });
 
-test("staff hardening layer enforces readable text, touch targets and mobile reflow", async () => {
+test("staff hardening layer covers facilitator drilldown and mobile reflow", async () => {
   const css = await source("app/workspace/staff-workspace-hardening.css");
   assert.match(css, /\.staff-workspace-learner-link,[\s\S]*min-height:44px/);
-  assert.match(css, /\.staff-workspace-shell \.ops-learner-card dt\{font-size:12px/);
-  assert.match(css, /\.staff-workspace-shell \.ops-learner-card dd\{font-size:14px/);
+  assert.match(css, /\.facilitator-subnav/);
+  assert.match(css, /\.participant-card-button/);
+  assert.match(css, /\.support-attention-grid/);
+  assert.match(css, /\.review-participant-list/);
   assert.match(css, /@media\(max-width:700px\)/);
-  assert.match(css, /\.staff-workspace-shell \.ops-learner-grid,[\s\S]*grid-template-columns:1fr/);
   assert.match(css, /prefers-reduced-motion:reduce/);
+});
+
+
+test("learner-only profiles do not advertise staff access", async () => {
+  const profile = await source("app/profile/profile-dashboard.tsx");
+  assert.match(profile, /"SPONSOR_VIEWER"/);
+  assert.match(profile, /\{staff \? \(/);
+  assert.match(profile, /Open staff dashboard/);
+  assert.match(profile, /\) : null\}/);
+  assert.doesNotMatch(profile, /cannot be self-registered/i);
+  assert.doesNotMatch(profile, /Facilitator and Audit access/i);
+});
+
+test("participant insight labels stay behavioural rather than personality based", async () => {
+  const facilitator = await source("app/facilitator-workspace.tsx");
+  for (const strength of [
+    "Learning momentum",
+    "Moved from planning into action",
+    "Consistent observation",
+    "Repeated real-world testing",
+    "Evidence ready",
+  ]) {
+    assert.match(facilitator, new RegExp(strength));
+  }
+  assert.match(facilitator, /observable programme behaviour, not personality or ability/);
 });

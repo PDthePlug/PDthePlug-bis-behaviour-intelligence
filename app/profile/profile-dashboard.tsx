@@ -32,7 +32,7 @@ const editionLabels: Record<string, string> = {
 
 function hasStaffRole(roles: string[]) {
   return roles.some((role) =>
-    ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role),
+    ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER"].includes(role),
   );
 }
 
@@ -112,26 +112,18 @@ export function ProfileDashboard({
           <Link className="profile-secondary" href="/habit">Open learner experience</Link>
         </article>
 
-        <article className="profile-card profile-access-card">
-          <div className="profile-card-icon"><ShieldCheck aria-hidden="true" /></div>
-          <div>
-            <p className="profile-label">Access</p>
-            <h2>Staff workspace</h2>
-          </div>
-          {staff ? (
-            <>
-              <p>This account has an assigned BIS staff role.</p>
-              <Link className="profile-secondary" href="/workspace">
-                <Building2 aria-hidden="true" /> Open staff workspace
-              </Link>
-            </>
-          ) : (
-            <p>
-              Facilitator and Audit access is assigned by a BIS administrator. It cannot be
-              self-registered from a learner account.
-            </p>
-          )}
-        </article>
+        {staff ? (
+          <article className="profile-card profile-access-card">
+            <div className="profile-card-icon"><ShieldCheck aria-hidden="true" /></div>
+            <div>
+              <p className="profile-label">Staff</p>
+              <h2>Programme workspace</h2>
+            </div>
+            <Link className="profile-secondary" href="/workspace">
+              <Building2 aria-hidden="true" /> Open staff dashboard
+            </Link>
+          </article>
+        ) : null}
 
         <article className="profile-card profile-signout-card">
           <div>

@@ -27,6 +27,7 @@ import {
 import type { Identity, StaffRole } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { LAB_VERSION } from "../../../lib/habit-lab";
+import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib/programme-report-pdf";
 
 const SUPPORTED_LAB_VERSIONS = [LAB_VERSION] as const;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -356,16 +357,19 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
+      client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
     ]);
     if (outcomeResult.error) throw new Error(outcomeResult.error.message);
     if (deeperResult.error) throw new Error(deeperResult.error.message);
+    if (learningResult.error) throw new Error(learningResult.error.message);
     if (outcomeResult.data) {
       cohorts.push({
         ...outcomeResult.data,
         deepAnalysis: deeperResult.data ?? null,
+        learningSummary: learningResult.data ?? null,
       });
     }
   }
@@ -421,7 +425,7 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
     privacyBoundary: {
       facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
-      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "aggregate system opportunity signals"],
+      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals"],
       sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },
@@ -432,12 +436,44 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
   };
 }
 
-async function getHandler() {
+async function getHandler(request: Request) {
   const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   try {
     const roles = await getRoles(identity);
     requireAnyRole(roles, [...STAFF_ROLES]);
+
+    const url = new URL(request.url);
+    if (url.searchParams.get("report") === "pdf") {
+      if (!hasRole(roles, "SPONSOR_VIEWER") && !hasRole(roles, "SYSTEM_ADMIN")) {
+        throw new AccessError("Organisation report access is required.", 403);
+      }
+
+      const cohortId = String(url.searchParams.get("cohortId") ?? "").trim();
+      if (!cohortId) throw new Error("Choose a programme group to export.");
+
+      const snapshot = await sponsorSnapshot(identity, roles);
+      const outcome = snapshot.cohorts.find((item) => item.cohort?.id === cohortId);
+      if (!outcome) throw new AccessError("This programme report is not available to your account.", 403);
+
+      const pdf = renderProgrammeOutcomePdf(outcome);
+      const filename = programmeReportFilename(outcome.cohort.name);
+      await staffAudit(identity, "PROGRAMME_REPORT_EXPORTED", "PILOT_COHORT", cohortId, {
+        format: "PDF",
+        participantCount: outcome.participantCount,
+      });
+
+      return new Response(pdf, {
+        status: 200,
+        headers: {
+          "content-type": "application/pdf",
+          "content-disposition": 'attachment; filename="' + filename + '"',
+          "cache-control": "private, no-store",
+          "x-content-type-options": "nosniff",
+        },
+      });
+    }
+
     return Response.json(await staffSnapshot(identity, roles));
   } catch (error) {
     return errorResponse(error);
@@ -703,8 +739,7 @@ async function postHandler(request: Request) {
 }
 
 export async function GET(request: Request) {
-  void request;
-  return withSupabaseRequest(() => getHandler());
+  return withSupabaseRequest(() => getHandler(request));
 }
 
 export async function POST(request: Request) {

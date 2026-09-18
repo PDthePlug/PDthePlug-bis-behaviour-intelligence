@@ -18,14 +18,15 @@ test("Profile is an authenticated learner destination with sign out", async () =
   assert.match(dashboard, /Sign out or switch account/);
 });
 
-test("staff access remains assigned rather than self-registered", async () => {
+test("staff access remains assigned and invisible to learner-only profiles", async () => {
   const staff = await source("app/workspace/staff-workspace-shell.tsx");
   const profile = await source("app/profile/profile-dashboard.tsx");
 
-  assert.match(staff, /Staff access is assigned by a BIS administrator/);
+  assert.match(staff, /fetch\("\/api\/staff"/);
   assert.match(staff, /href="\/profile"/);
-  assert.match(profile, /Facilitator and Audit access is assigned by a BIS administrator/);
-  assert.match(profile, /cannot be\s+\s*self-registered|cannot be\s*self-registered/);
+  assert.match(profile, /const staff = hasStaffRole\(roles\)/);
+  assert.match(profile, /\{staff \? \(/);
+  assert.match(profile, /Open staff dashboard/);
   assert.doesNotMatch(staff, /register as facilitator/i);
   assert.doesNotMatch(profile, /register as facilitator/i);
 });

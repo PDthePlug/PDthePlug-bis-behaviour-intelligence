@@ -1,0 +1,41 @@
+name: BIS CI
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+      - "release/**"
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: bis-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Acceptance
+        run: npm run test:acceptance
+
+      - name: TypeScript
+        run: npx tsc --noEmit
