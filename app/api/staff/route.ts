@@ -27,6 +27,7 @@ import {
 import type { Identity, StaffRole } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { LAB_VERSION } from "../../../lib/habit-lab";
+import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib/programme-report-pdf";
 
 const SUPPORTED_LAB_VERSIONS = [LAB_VERSION] as const;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -432,12 +433,44 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
   };
 }
 
-async function getHandler() {
+async function getHandler(request: Request) {
   const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   try {
     const roles = await getRoles(identity);
     requireAnyRole(roles, [...STAFF_ROLES]);
+
+    const url = new URL(request.url);
+    if (url.searchParams.get("report") === "pdf") {
+      if (!hasRole(roles, "SPONSOR_VIEWER") && !hasRole(roles, "SYSTEM_ADMIN")) {
+        throw new AccessError("Organisation report access is required.", 403);
+      }
+
+      const cohortId = String(url.searchParams.get("cohortId") ?? "").trim();
+      if (!cohortId) throw new Error("Choose a programme group to export.");
+
+      const snapshot = await sponsorSnapshot(identity, roles);
+      const outcome = snapshot.cohorts.find((item) => item.cohort?.id === cohortId);
+      if (!outcome) throw new AccessError("This programme report is not available to your account.", 403);
+
+      const pdf = renderProgrammeOutcomePdf(outcome);
+      const filename = programmeReportFilename(outcome.cohort.name);
+      await staffAudit(identity, "PROGRAMME_REPORT_EXPORTED", "PILOT_COHORT", cohortId, {
+        format: "PDF",
+        participantCount: outcome.participantCount,
+      });
+
+      return new Response(pdf, {
+        status: 200,
+        headers: {
+          "content-type": "application/pdf",
+          "content-disposition": 'attachment; filename="' + filename + '"',
+          "cache-control": "private, no-store",
+          "x-content-type-options": "nosniff",
+        },
+      });
+    }
+
     return Response.json(await staffSnapshot(identity, roles));
   } catch (error) {
     return errorResponse(error);
@@ -703,8 +736,7 @@ async function postHandler(request: Request) {
 }
 
 export async function GET(request: Request) {
-  void request;
-  return withSupabaseRequest(() => getHandler());
+  return withSupabaseRequest(() => getHandler(request));
 }
 
 export async function POST(request: Request) {
