@@ -53,11 +53,11 @@ export const BIS_MODULE_TEMPLATE = {
 } as const;
 
 export function modulesForVolume(volume: BISVolume) {
-  return BIS_MODULES.filter((module) => module.volume === volume);
+  return BIS_MODULES.filter((item) => item.volume === volume);
 }
 
 export function moduleByCode(code: string) {
-  return BIS_MODULES.find((module) => module.code === code);
+  return BIS_MODULES.find((item) => item.code === code);
 }
 
 export function isModuleOpen(item: BISModule, mode: "learning" | "lab") {
