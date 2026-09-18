@@ -13,9 +13,9 @@ test("BIS catalogue defines exactly 32 current modules across 12 + 12 + 8", asyn
     catalogue.volumes.map((volume) => [volume.volume, volume.count]),
     [[1, 12], [2, 12], [3, 8]],
   );
-  assert.equal(catalogue.modules.filter((module) => module.volume === 1).length, 12);
-  assert.equal(catalogue.modules.filter((module) => module.volume === 2).length, 12);
-  assert.equal(catalogue.modules.filter((module) => module.volume === 3).length, 8);
+  assert.equal(catalogue.modules.filter((item) => item.volume === 1).length, 12);
+  assert.equal(catalogue.modules.filter((item) => item.volume === 2).length, 12);
+  assert.equal(catalogue.modules.filter((item) => item.volume === 3).length, 8);
 });
 
 test("catalogue identities and positions are unique and continuous", async () => {
@@ -72,9 +72,9 @@ test("a live catalogue surface always has a real route", async () => {
 test("Volume 1 digital sources 2-5 are represented as source-ready, not falsely live", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
   for (const code of ["DEC", "MON", "IDN", "ATT"]) {
-    const module = catalogue.modules.find((item) => item.code === code);
-    assert.equal(module?.learningStatus, "source_ready");
-    assert.equal(module?.learningHref, null);
+    const entry = catalogue.modules.find((item) => item.code === code);
+    assert.equal(entry?.learningStatus, "source_ready");
+    assert.equal(entry?.learningHref, null);
   }
 });
 
