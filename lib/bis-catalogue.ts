@@ -29,6 +29,17 @@ export const BIS_FUTURE_SOURCE_CANDIDATES = catalogue.futureSourceCandidates;
 
 export const BIS_MODULE_TEMPLATE = {
   editions: ["school", "emerging_adult", "workplace"] as const,
+  learning: {
+    programmeDays: 10,
+    includesWeekendFieldwork: true,
+    defaultStatus: "catalogued" as const,
+  },
+  lab: {
+    phaseAMinutes: 90,
+    phaseBDays: 7,
+    standardInvestigationCount: 9,
+    defaultStatus: "planned" as const,
+  },
   programmePositions: [
     "Welcome",
     "Day 1",
@@ -51,6 +62,21 @@ export const BIS_MODULE_TEMPLATE = {
     labEvidence: (code: string) => `${code}.*`,
   },
 } as const;
+
+export type BISModuleScaffoldInput = Pick<
+  BISModule,
+  "global" | "volume" | "position" | "code" | "slug" | "title"
+>;
+
+export function createModuleScaffold(input: BISModuleScaffoldInput): BISModule {
+  return {
+    ...input,
+    learningStatus: BIS_MODULE_TEMPLATE.learning.defaultStatus,
+    learningHref: null,
+    labStatus: BIS_MODULE_TEMPLATE.lab.defaultStatus,
+    labHref: null,
+  };
+}
 
 export function modulesForVolume(volume: BISVolume) {
   return BIS_MODULES.filter((item) => item.volume === volume);
