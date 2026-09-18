@@ -174,15 +174,17 @@ async function loadProgramme(edition: Edition): Promise<HabitProgramme> {
 
 export function ProgrammePlayer({
   initialSection = "today",
+  initialLearnMode = "library",
 }: {
   initialSection?: AppSection;
+  initialLearnMode?: LearnMode;
 }) {
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const [programme, setProgramme] = useState<HabitProgramme | null>(null);
   const [selected, setSelected] = useState(0);
   const [section, setSection] = useState<AppSection>(initialSection);
-  const [learnMode, setLearnMode] = useState<LearnMode>("library");
+  const [learnMode, setLearnMode] = useState<LearnMode>(initialLearnMode);
   const [menuOpen, setMenuOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "dirty" | "saving">("saved");
@@ -606,9 +608,9 @@ export function ProgrammePlayer({
           </section>
         ) : (
           <section className="prototype-page prototype-reader">
-            <button type="button" className="prototype-back-link" onClick={() => setLearnMode("library")}>
+            <Link className="prototype-back-link" href="/learn">
               <ArrowLeft /> All handbooks
-            </button>
+            </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
               <div className="prototype-reader-compact-head">
@@ -768,14 +770,14 @@ export function ProgrammePlayer({
           <button
             type="button"
             className={section === "learn" ? "active" : ""}
-            onClick={() => openLearn("library")}
+            onClick={() => window.location.assign("/learn")}
           >
             <BookOpen />
-            <span><strong>Learn</strong><small>Handbooks, programme map and workbook</small></span>
+            <span><strong>Learn</strong><small>Browse handbooks</small></span>
           </button>
-          <Link href="/habit-lab?returnTo=%2Fhabit">
+          <Link href="/labs">
             <FlaskConical />
-            <span><strong>Lab</strong><small>Habit Lab Phase A and investigation record</small></span>
+            <span><strong>Lab</strong><small>Browse investigations</small></span>
           </Link>
           <Link href="/habit-lab/experiment?returnTo=%2Fhabit">
             <CalendarDays />
