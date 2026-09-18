@@ -283,14 +283,28 @@ function outcomeInsights(outcome: SponsorOutcome) {
   const enough = metrics.evidence.sufficient;
   const attemptRate = metrics.action.experimentAttemptRate;
   if (attemptRate !== null) {
+    const actionTitle =
+      attemptRate >= 70
+        ? "Most participants moved into action"
+        : attemptRate >= 40
+          ? "A substantial share moved into action"
+          : attemptRate > 0
+            ? "Some participants moved into action"
+            : "The real-world experiment has not started yet";
     insights.push({
-      title: "Most participants moved into action",
+      title: actionTitle,
       body: String(attemptRate) + "% of the group started a real-world experiment. " + String(metrics.action.readyButNotStarted) + " reached the experiment stage but had not started yet.",
     });
   }
   if (starters > 0) {
+    const evidenceShare = ratio(enough, starters);
     insights.push({
-      title: "The evidence base is becoming usable",
+      title:
+        evidenceShare >= 70
+          ? "The evidence base is strong for most experiment starters"
+          : evidenceShare >= 40
+            ? "The evidence base is mixed"
+            : "More real-world evidence is still needed",
       body: String(enough) + " of " + String(starters) + " experiment starters have enough real-world opportunities for a stronger behavioural reading. " + String(metrics.evidence.notEnoughYet) + " still need more evidence.",
     });
   }
@@ -327,11 +341,18 @@ function learningNarratives(outcome: SponsorOutcome) {
   const items: Array<{ title: string; body: string }> = [];
 
   const activeDays = journey.days.filter((day) => day.reached > 0);
+  const first = activeDays[0];
   const furthest = [...activeDays].reverse().find((day) => day.reached > 0);
-  if (furthest) {
+  if (first && furthest) {
+    const retained = ratio(furthest.reached, first.reached);
     items.push({
-      title: "Learning is moving beyond attendance",
-      body: `${furthest.reached} of ${outcome.participantCount} participants have reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} participants have contributed structured learning evidence along the way.`,
+      title:
+        retained >= 80
+          ? "Participation remains strong across the learning journey"
+          : retained >= 60
+            ? "Participation is thinning as the programme progresses"
+            : "Participation falls sharply across the learning journey",
+      body: `${first.reached} participants reached Day ${first.day}; ${furthest.reached} reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} participants have contributed structured learning evidence along the way.`,
     });
   }
 
