@@ -98,6 +98,13 @@ test("module template freezes three editions and the 13-position handbook patter
     assert.ok(contract.includes(`"${position}"`), `${position} is required`);
   }
   assert.match(contract, /handoffProgrammeDay:\s*3/);
+  assert.match(contract, /programmeDays:\s*10/);
+  assert.match(contract, /phaseAMinutes:\s*90/);
+  assert.match(contract, /phaseBDays:\s*7/);
+  assert.match(contract, /standardInvestigationCount:\s*9/);
+  assert.match(contract, /createModuleScaffold/);
+  assert.match(contract, /learningStatus:\s*BIS_MODULE_TEMPLATE\.learning\.defaultStatus/);
+  assert.match(contract, /labStatus:\s*BIS_MODULE_TEMPLATE\.lab\.defaultStatus/);
   assert.match(contract, /programmeStep:.*PROGRAMME/);
   assert.match(contract, /workbookResponse:.*WB/);
 });
