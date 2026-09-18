@@ -12,8 +12,8 @@ const labLayout = readFileSync(new URL("../app/habit-lab/layout.tsx", import.met
 test("learner shell uses concise task and account language", () => {
   for (const phrase of [
     "Your next step",
-    "Handbook and workbook",
-    "Guided Habit investigation",
+    "Browse handbooks",
+    "Browse investigations",
     "Seven days of real-world observation",
     "Account and sign out",
   ]) {

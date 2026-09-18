@@ -21,11 +21,11 @@ test("Today and Learn are distinct route-owned destinations", async () => {
   assert.match(player, /openLearn\("reader"\)[\s\S]*Continue learning/);
 });
 
-test("Learn opens the shared 32-handbook catalogue without profile explanation", async () => {
+test("Learn opens the shared 34-handbook catalogue without profile explanation", async () => {
   const library = await source("app/catalogue/module-library.tsx");
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
 
-  assert.equal(catalogue.modules.length, 32);
+  assert.equal(catalogue.modules.length, 34);
   assert.match(library, /Learning library/);
   assert.match(library, /Choose a handbook to open or continue/);
   assert.doesNotMatch(library, /Learner profile context/);
