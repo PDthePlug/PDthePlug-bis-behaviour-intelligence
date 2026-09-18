@@ -79,11 +79,11 @@ test("learner application has one bottom hamburger navigation rather than a menu
   assert.doesNotMatch(layout, /programme-owner\.css/);
 });
 
-test("Learn owns the shared 32-handbook catalogue while Habit owns its selected programme map", async () => {
+test("Learn owns the shared 34-handbook catalogue while Habit owns its selected programme map", async () => {
   const player = await source("app/learning/programme-player.tsx");
   const library = await source("app/catalogue/module-library.tsx");
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
-  assert.equal(catalogue.modules.length, 32);
+  assert.equal(catalogue.modules.length, 34);
   assert.match(library, /BIS_MODULES/);
   assert.match(player, /prototype-programme-map/);
   assert.match(player, /href="\/learn"/);
