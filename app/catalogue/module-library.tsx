@@ -25,7 +25,7 @@ function statusLabel(
 export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
   const [volume, setVolume] = useState<BISVolume>(1);
   const modules = useMemo(
-    () => BIS_MODULES.filter((module) => module.volume === volume),
+    () => BIS_MODULES.filter((module) => item.volume === volume),
     [volume],
   );
   const title = mode === "learning" ? "Learning library" : "Lab library";
@@ -72,21 +72,21 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
       </div>
 
       <section className="bis-module-grid" aria-label={title}>
-        {modules.map((module) => {
-          const status = mode === "learning" ? module.learningStatus : module.labStatus;
-          const open = isModuleOpen(module, mode);
-          const href = moduleHref(module, mode);
+        {modules.map((item) => {
+          const status = mode === "learning" ? item.learningStatus : item.labStatus;
+          const open = isModuleOpen(item, mode);
+          const href = moduleHref(item, mode);
           const Icon = mode === "learning" ? BookOpen : FlaskConical;
 
           const body = (
             <>
               <div className="bis-module-card-top">
-                <span>{String(module.global).padStart(2, "0")}</span>
+                <span>{String(item.global).padStart(2, "0")}</span>
                 <Icon aria-hidden="true" />
               </div>
               <div className="bis-module-card-copy">
-                <small>Volume {module.volume} · {mode === "learning" ? "Handbook" : "Lab"} {module.position}</small>
-                <h3>{module.title}</h3>
+                <small>Volume {item.volume} · {mode === "learning" ? "Handbook" : "Lab"} {item.position}</small>
+                <h3>{item.title}</h3>
               </div>
               <div className="bis-module-card-foot">
                 <span className={open ? "open" : ""}>{statusLabel(mode, status)}</span>
@@ -96,11 +96,11 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
           );
 
           return open && href ? (
-            <Link className="bis-module-card" href={href} key={module.code}>
+            <Link className="bis-module-card" href={href} key={item.code}>
               {body}
             </Link>
           ) : (
-            <article className="bis-module-card unavailable" key={module.code} aria-disabled="true">
+            <article className="bis-module-card unavailable" key={item.code} aria-disabled="true">
               {body}
             </article>
           );
