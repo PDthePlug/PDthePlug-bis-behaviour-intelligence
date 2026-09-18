@@ -86,7 +86,7 @@ test("handbook and Lab libraries render from the same catalogue", async () => {
   assert.match(component, /BIS_MODULES/);
   assert.match(component, /BIS_VOLUMES/);
   assert.match(component, /mode === "learning"/);
-  assert.match(component, /mode === "lab"/);
+  assert.match(component, /type LibraryMode = "learning" \| "lab"/);
   assert.match(learnPage, /<ModuleLibrary mode="learning" \/>/);
   assert.match(labsPage, /<ModuleLibrary mode="lab" \/>/);
 });
