@@ -111,6 +111,13 @@ export type SponsorSnapshot = {
   };
 };
 
+function experimentSummary(labCode: string) {
+  if (labCode === "HAB") return "People tested a different response when a familiar habit situation appeared.";
+  if (labCode === "DEC") return "People tested what happened when they paused before making a decision.";
+  if (labCode === "MON") return "People tested what happened when they paused before spending.";
+  return "People tested a chosen response in real situations.";
+}
+
 function percent(value: number | null | undefined) {
   return value === null || value === undefined ? "—" : `${value}%`;
 }
@@ -196,7 +203,7 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
     signals.push({
       id: "support-demand",
       title: "People are asking for help",
-      evidence: `${metrics.support.participantsRequestingHelp} participants requested human help (${helpRate}% of the cohort).`,
+      evidence: `${metrics.support.participantsRequestingHelp} participants requested human help (${helpRate}% of the group).`,
       question: "Look for moments that may need clearer facilitation, more regular check-ins, or an easier way to ask for help.",
       level: "INVESTIGATE",
     });
@@ -274,7 +281,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           <h1>Outcomes</h1>
         </div>
         <div className="outcomes-cohort-picker">
-          <label htmlFor="sponsor-cohort">Cohort</label>
+          <label htmlFor="sponsor-cohort">Group</label>
           <select
             id="sponsor-cohort"
             value={outcome.cohort.id}
@@ -309,7 +316,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           <p className="eyebrow">Small group privacy</p>
           <h2>Too few participants to report behavioural outcomes safely.</h2>
           <p>
-            This cohort has {outcome.participantCount} participant{outcome.participantCount === 1 ? "" : "s"}.
+            This group has {outcome.participantCount} participant{outcome.participantCount === 1 ? "" : "s"}.
             Results appear from {outcome.minimumReportableCohortSize} participants so no group pattern can point back to one person.
           </p>
         </section>
@@ -325,7 +332,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                 <Metric label="Ready, not started" value={metrics.action.readyButNotStarted} />
               </div>
               <p>
-                {percent(metrics.action.experimentAttemptRate)} of the cohort has started a real-world experiment.
+                {percent(metrics.action.experimentAttemptRate)} of the group has started a real-world experiment.
                 “Ready, not started” shows the transition point where facilitator support may matter.
               </p>
             </article>
@@ -336,7 +343,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
               <div className="outcome-metric-row">
                 <Metric label="Expected" value={percent(metrics.prediction.averagePredictedRate)} />
                 <Metric label="Observed" value={percent(metrics.prediction.averageActualRate)} />
-                <Metric label="Difference" value={metrics.prediction.averagePredictionGap === null ? "—" : `${metrics.prediction.averagePredictionGap} pp`} />
+                <Metric label="Difference" value={metrics.prediction.averagePredictionGap === null ? "—" : `${metrics.prediction.averagePredictionGap} points`} />
               </div>
               <p>
                 The difference shows where behaviour in practice did not match what people expected beforehand.
@@ -374,11 +381,11 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
               <h2>What happened the next time?</h2>
               <div className="outcome-metric-row">
                 <Metric label="People with a repeat situation" value={metrics.change.repeatOpportunityParticipants} />
-                <Metric label="Changed toward the alternative" value={metrics.change.improvedLaterResponse} />
-                <Metric label="Changed away / same" value={`${metrics.change.changedOtherDirection} / ${metrics.change.sameLaterResponse}`} />
+                <Metric label="Moved toward the alternative" value={metrics.change.improvedLaterResponse} />
+                <Metric label="Stayed the same" value={metrics.change.sameLaterResponse} />
               </div>
               <p>
-                This compares the first and latest similar situation for people who had another chance to respond.
+                This compares the first and latest similar situation. {metrics.change.changedOtherDirection} participant{metrics.change.changedOtherDirection === 1 ? "" : "s"} changed in another direction.
               </p>
             </article>
 
@@ -416,7 +423,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                     <div>
                       <p className="eyebrow">What people explored</p>
                       <h3>{outcome.deepAnalysis.experimentLandscape.archetype.label}</h3>
-                      <p>{outcome.deepAnalysis.experimentLandscape.archetype.description}</p>
+                      <p>{experimentSummary(outcome.cohort.labCode)}</p>
                     </div>
                     <FlaskConical />
                   </div>
