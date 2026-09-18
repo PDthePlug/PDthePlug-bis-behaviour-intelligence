@@ -14,14 +14,25 @@ test("programme outcomes expose a real PDF export route", async () => {
 
   assert.match(view, /Download PDF/);
   assert.match(view, /report=pdf/);
-  assert.match(route, /url\.searchParams\.get\("report"\) === "pdf"/);
+  assert.match(route, /searchParams\.get\("report"\)/);
   assert.match(route, /content-type": "application\/pdf"/);
   assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
   assert.match(pdf, /%PDF-1\.4/);
-  assert.match(pdf, /Programme Outcomes Report/);
-  assert.match(pdf, /LEARNING JOURNEY/);
-  assert.match(pdf, /Recurring structured challenges/);
-  assert.match(pdf, /Group shifts/);
+  assert.match(pdf, /canvas\.textAt\(MARGIN, 714, "Programme"/);
+  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Outcomes Report"/);
+  assert.match(pdf, /Executive summary/);
+  assert.match(pdf, /KEY FINDINGS/);
+  assert.match(pdf, /Learning journey/);
+  assert.match(pdf, /DAY-BY-DAY PROGRESSION/);
+  assert.match(pdf, /RECURRING STRUCTURED CHALLENGES/);
+  assert.match(pdf, /GROUP SHIFTS/);
+  assert.match(pdf, /Behaviour in practice/);
+  assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
+  assert.match(pdf, /Evidence strength/);
+  assert.match(pdf, /Experiment landscape/);
+  assert.match(pdf, /Action plan/);
+  assert.match(pdf, /REPORTING NOTES/);
+  assert.match(pdf, /PROGRAMME OUTCOMES  \|/);
 });
 
 test("demo cohort is explicitly synthetic, isolated and reproducible", async () => {
@@ -57,4 +68,26 @@ test("organisation report summaries adapt to the evidence rather than forcing po
   assert.match(view, /The evidence base is mixed/);
   assert.match(view, /More real-world evidence is still needed/);
   assert.match(view, /Some participants moved into action/);
+});
+
+
+test("PDF engine includes reusable professional report primitives", async () => {
+  const pdf = await source("lib/programme-report-pdf.ts");
+
+  for (const primitive of [
+    "metricCards(",
+    "twoColumnCards(",
+    "horizontalBars(",
+    "stackedBar(",
+    "callout(",
+    "section(",
+  ]) {
+    assert.match(pdf, new RegExp(primitive.replace(/[()]/g, "\\$&")));
+  }
+
+  assert.match(pdf, /Times-Bold/);
+  assert.match(pdf, /BEHAVIOUR INTELLIGENCE SERIES/);
+  assert.match(pdf, /GROUP-LEVEL REPORT/);
+  assert.match(pdf, /What the programme evidence is showing/);
+  assert.match(pdf, /What may be worth exploring next/);
 });

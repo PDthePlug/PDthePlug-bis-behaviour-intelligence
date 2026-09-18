@@ -40,17 +40,20 @@ test("programme PDF export requires organisation reporting or system administrat
   assert.match(route, /"cache-control": "private, no-store"/);
 });
 
-test("programme PDF renderer contains aggregate findings and excludes private learner fields", async () => {
+test("programme PDF renderer is a structured institutional report and excludes private learner fields", async () => {
   const pdf = await source("lib/programme-report-pdf.ts");
   assert.match(pdf, /%PDF-1\.4/);
-  assert.match(pdf, /WHAT STANDS OUT/);
-  assert.match(pdf, /Participation and action/);
-  assert.match(pdf, /Expectation vs observed behaviour/);
+  assert.match(pdf, /Executive summary/);
+  assert.match(pdf, /KEY FINDINGS/);
+  assert.match(pdf, /Learning journey/);
+  assert.match(pdf, /Behaviour in practice/);
+  assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
   assert.match(pdf, /Evidence strength/);
   assert.match(pdf, /Human support/);
-  assert.match(pdf, /WHAT MAY BE WORTH CHECKING/);
-  assert.match(pdf, /Individual responses remain private/);
-  for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "notes", "hypothesis"]) {
+  assert.match(pdf, /Experiment landscape/);
+  assert.match(pdf, /Action plan/);
+  assert.match(pdf, /What remains private/);
+  for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "hypothesis"]) {
     assert.doesNotMatch(pdf, new RegExp(privateField));
   }
 });
