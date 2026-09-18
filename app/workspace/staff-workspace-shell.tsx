@@ -7,7 +7,6 @@ import {
   Eye,
   EyeOff,
   LayoutDashboard,
-  LockKeyhole,
   Settings2,
 } from "lucide-react";
 import { OperationsView } from "../operations-view";
