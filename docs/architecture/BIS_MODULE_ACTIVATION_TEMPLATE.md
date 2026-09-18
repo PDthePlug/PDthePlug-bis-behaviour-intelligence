@@ -59,8 +59,8 @@ A Lab may move to `live` only when all of the following are true:
 
 ## Adding a future module
 
-1. Add one entry to `lib/bis-catalogue.json`.
-2. Assign a unique code, slug, volume and position.
+1. Start from the `createModuleScaffold()` contract in `lib/bis-catalogue.ts`.
+2. Assign a unique code, slug, volume and position, then add the resulting entry to `lib/bis-catalogue.json`.
 3. Leave both surfaces non-live initially.
 4. Migrate and validate all three handbook Editions.
 5. Register content releases.
