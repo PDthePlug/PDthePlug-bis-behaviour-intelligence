@@ -209,18 +209,18 @@ begin
         where experiment_id is not null
           and eligible_count >= minimum_evidence_threshold
       )::integer as evidence_sufficient,
-      round(avg(predicted_value)::numeric, 1) filter (
+      round((avg(predicted_value) filter (
         where experiment_id is not null
-      ) as average_predicted_rate,
-      round(avg(actual_rate)::numeric, 1) filter (
+      ))::numeric, 1) as average_predicted_rate,
+      round((avg(actual_rate) filter (
         where actual_rate is not null
-      ) as average_actual_rate,
-      round(avg(prediction_accuracy)::numeric, 1) filter (
+      ))::numeric, 1) as average_actual_rate,
+      round((avg(prediction_accuracy) filter (
         where prediction_accuracy is not null
-      ) as average_prediction_accuracy,
-      round(avg(100 - prediction_accuracy)::numeric, 1) filter (
+      ))::numeric, 1) as average_prediction_accuracy,
+      round((avg(100 - prediction_accuracy) filter (
         where prediction_accuracy is not null
-      ) as average_prediction_gap,
+      ))::numeric, 1) as average_prediction_gap,
       count(*) filter (
         where eligible_count >= 2
           and first_response is not null
