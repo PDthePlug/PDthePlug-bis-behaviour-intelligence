@@ -3,11 +3,14 @@
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
+  ChevronDown,
   CircleHelp,
   Compass,
   Eye,
   FlaskConical,
   Gauge,
+  Layers3,
+  Lightbulb,
   LockKeyhole,
   MessageCircleQuestion,
   Repeat2,
@@ -64,6 +67,36 @@ export type SponsorOutcome = {
       supportRequestRate: number | null;
     };
   };
+  deepAnalysis: null | {
+    cohortId: string;
+    suppressed: boolean;
+    participantCount: number;
+    minimumReportableCohortSize: number;
+    minimumReportableThemeSize: number;
+    experimentLandscape: null | {
+      archetype: {
+        code: string;
+        label: string;
+        description: string;
+      };
+      participantsStarted: number;
+      participantsWithStructuredThemes: number;
+      participantsWithoutStructuredThemes: number;
+      themes: Array<{
+        key: string;
+        label: string;
+        participants: number;
+        shareOfStarted: number;
+      }>;
+      suppressedSmallThemeCount: number;
+      themeSource: string;
+    };
+    interpretationBoundary?: {
+      descriptiveNotCausal: boolean;
+      rawExperimentWordingExcluded: boolean;
+      note: string;
+    };
+  };
 };
 
 export type SponsorSnapshot = {
@@ -91,6 +124,111 @@ function dateRange(outcome: SponsorOutcome) {
     return `${outcome.cohort.startsOn} → ${outcome.cohort.endsOn}`;
   }
   return outcome.cohort.startsOn ?? outcome.cohort.endsOn ?? "Dates not set";
+}
+
+type SystemOpportunity = {
+  id: string;
+  title: string;
+  evidence: string;
+  question: string;
+  level: "INVESTIGATE" | "WATCH" | "CONTEXT";
+};
+
+function ratio(part: number, whole: number) {
+  return whole > 0 ? (part / whole) * 100 : 0;
+}
+
+function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
+  const metrics = outcome.metrics;
+  const landscape = outcome.deepAnalysis?.experimentLandscape;
+  if (!metrics) return [];
+
+  const signals: SystemOpportunity[] = [];
+  const reached = metrics.action.reachedExperimentStage;
+  const started = metrics.action.startedExperiment;
+  const readyNotStarted = metrics.action.readyButNotStarted;
+  const activationGap = ratio(readyNotStarted, reached);
+
+  if (reached >= 3 && readyNotStarted >= 2 && activationGap >= 25) {
+    signals.push({
+      id: "activation-friction",
+      title: "Activation friction",
+      evidence: `${readyNotStarted} of ${reached} participants who reached the experiment stage had not started yet.`,
+      question: "Investigate whether timing, instructions, facilitator support, workload, or access to a suitable real-world moment is making it harder to begin.",
+      level: "INVESTIGATE",
+    });
+  }
+
+  const insufficient = metrics.evidence.notEnoughYet;
+  const insufficientRate = ratio(insufficient, started);
+  if (started >= 3 && insufficientRate >= 40) {
+    signals.push({
+      id: "opportunity-scarcity",
+      title: "Too little real-world exposure",
+      evidence: `${insufficient} of ${started} experiment starters still have limited or no usable opportunity evidence.`,
+      question: "Check whether the situations BIS asks people to observe actually occur often enough during the programme window, or whether the experiment design needs a more reachable minimum version.",
+      level: "INVESTIGATE",
+    });
+  }
+
+  const predictionGap = metrics.prediction.averagePredictionGap;
+  if (predictionGap !== null && predictionGap >= 20) {
+    signals.push({
+      id: "prediction-gap",
+      title: "Prediction and practice are far apart",
+      evidence: `The cohort's average prediction gap is ${predictionGap} percentage points.`,
+      question: "Explore whether participants are over- or under-estimating their control, whether the chosen alternative is realistic, or whether environmental conditions are affecting behaviour in practice.",
+      level: "WATCH",
+    });
+  }
+
+  const repeat = metrics.change.repeatOpportunityParticipants;
+  const repeatRate = ratio(repeat, started);
+  if (started >= 3 && repeatRate < 50) {
+    signals.push({
+      id: "repeat-exposure",
+      title: "Limited repeat exposure",
+      evidence: `Only ${repeat} of ${started} experiment starters have at least two comparable opportunities.`,
+      question: "Before claiming behavioural change, consider whether the programme needs a longer evidence window or experiments built around more frequently occurring situations.",
+      level: "WATCH",
+    });
+  }
+
+  const helpRate = metrics.support.supportRequestRate ?? 0;
+  if (metrics.support.participantsRequestingHelp >= 2 && helpRate >= 20) {
+    signals.push({
+      id: "support-demand",
+      title: "Human support demand is material",
+      evidence: `${metrics.support.participantsRequestingHelp} participants requested human help (${helpRate}% of the cohort).`,
+      question: "Look for programme moments that may need clearer facilitation, more structured check-ins, or an easier escalation path—without treating help-seeking as failure.",
+      level: "INVESTIGATE",
+    });
+  }
+
+  if (landscape && landscape.participantsStarted >= 3) {
+    const untaggedRate = ratio(landscape.participantsWithoutStructuredThemes, landscape.participantsStarted);
+    if (untaggedRate >= 30) {
+      signals.push({
+        id: "context-coverage",
+        title: "Experiment context is under-specified",
+        evidence: `${landscape.participantsWithoutStructuredThemes} of ${landscape.participantsStarted} experiment starters do not yet have a recognised structured impact-domain tag.`,
+        question: "Improve the experiment-design step so sponsors can understand where behaviour is being tested without asking learners to disclose private wording.",
+        level: "CONTEXT",
+      });
+    }
+  }
+
+  if (signals.length === 0) {
+    signals.push({
+      id: "no-threshold-signal",
+      title: "No strong aggregate friction signal yet",
+      evidence: "None of the current cohort-level review thresholds has been triggered.",
+      question: "Keep collecting evidence. This does not prove that no system gap exists; it means the current aggregate data is not yet pointing strongly to one.",
+      level: "CONTEXT",
+    });
+  }
+
+  return signals;
 }
 
 function Metric({
@@ -285,6 +423,112 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
             </div>
             <ArrowRight />
           </section>
+
+          {outcome.deepAnalysis && !outcome.deepAnalysis.suppressed && outcome.deepAnalysis.experimentLandscape ? (
+            <details className="outcomes-deeper-analysis">
+              <summary>
+                <div className="deeper-summary-icon"><Layers3 /></div>
+                <div>
+                  <p className="eyebrow">Deeper analysis</p>
+                  <h2>What were people actually exploring—and what should we investigate next?</h2>
+                  <p>Open a privacy-safe generalisation of experiment contexts and evidence-backed system opportunities.</p>
+                </div>
+                <span className="deeper-open-label">Expand analysis <ChevronDown /></span>
+              </summary>
+
+              <div className="deeper-analysis-body">
+                <section className="experiment-landscape">
+                  <div className="deeper-section-heading">
+                    <div>
+                      <p className="eyebrow">Experiment landscape</p>
+                      <h3>{outcome.deepAnalysis.experimentLandscape.archetype.label}</h3>
+                      <p>{outcome.deepAnalysis.experimentLandscape.archetype.description}</p>
+                    </div>
+                    <FlaskConical />
+                  </div>
+
+                  <div className="landscape-context-row">
+                    <Metric label="Experiments started" value={outcome.deepAnalysis.experimentLandscape.participantsStarted} />
+                    <Metric label="Context-tagged" value={outcome.deepAnalysis.experimentLandscape.participantsWithStructuredThemes} />
+                    <Metric label="Context not tagged" value={outcome.deepAnalysis.experimentLandscape.participantsWithoutStructuredThemes} />
+                  </div>
+
+                  <div className="theme-list">
+                    <div className="theme-list-head">
+                      <div>
+                        <strong>What people were exploring</strong>
+                        <span>Generalised from structured impact-domain tags—not private experiment wording.</span>
+                      </div>
+                      <span>Participants</span>
+                    </div>
+                    {outcome.deepAnalysis.experimentLandscape.themes.length ? (
+                      outcome.deepAnalysis.experimentLandscape.themes.map((theme) => (
+                        <article className="theme-row" key={theme.key}>
+                          <div>
+                            <strong>{theme.label}</strong>
+                            <span>{outcome.deepAnalysis?.experimentLandscape?.archetype.label} × {theme.label}</span>
+                          </div>
+                          <div className="theme-count">
+                            <strong>{theme.participants}</strong>
+                            <span>{theme.shareOfStarted}% of starters</span>
+                          </div>
+                        </article>
+                      ))
+                    ) : (
+                      <div className="theme-empty">
+                        No experiment theme has reached the minimum reportable group size yet.
+                      </div>
+                    )}
+                  </div>
+
+                  {outcome.deepAnalysis.experimentLandscape.suppressedSmallThemeCount > 0 ? (
+                    <p className="theme-suppression-note">
+                      <LockKeyhole /> {outcome.deepAnalysis.experimentLandscape.suppressedSmallThemeCount} smaller theme
+                      {outcome.deepAnalysis.experimentLandscape.suppressedSmallThemeCount === 1 ? " was" : "s were"} hidden
+                      because fewer than {outcome.deepAnalysis.minimumReportableThemeSize} participants shared that category.
+                    </p>
+                  ) : null}
+                </section>
+
+                <section className="system-opportunities">
+                  <div className="deeper-section-heading">
+                    <div>
+                      <p className="eyebrow">System opportunities</p>
+                      <h3>Where should the organisation look more closely?</h3>
+                      <p>These are review signals generated from aggregate evidence. They identify questions to investigate, not causes or diagnoses.</p>
+                    </div>
+                    <Lightbulb />
+                  </div>
+
+                  <div className="opportunity-list">
+                    {systemOpportunities(outcome).map((signal) => (
+                      <article className={`opportunity-card ${signal.level.toLowerCase()}`} key={signal.id}>
+                        <span className="opportunity-level">{signal.level === "INVESTIGATE" ? "Investigate" : signal.level === "WATCH" ? "Watch" : "Context"}</span>
+                        <h4>{signal.title}</h4>
+                        <p className="opportunity-evidence">{signal.evidence}</p>
+                        <div className="opportunity-question">
+                          <strong>Question for the sponsor</strong>
+                          <p>{signal.question}</p>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="analysis-boundary">
+                  <ShieldCheck />
+                  <div>
+                    <strong>Useful context without private disclosure</strong>
+                    <p>
+                      BIS generalises only from the fixed experiment taxonomy and aggregate behaviour evidence.
+                      It does not expose learner triggers, target patterns, rewards, notes, reflections, or support wording.
+                      These patterns are descriptive, not proof that the organisation caused the behaviour.
+                    </p>
+                  </div>
+                </section>
+              </div>
+            </details>
+          ) : null}
         </>
       )}
 
