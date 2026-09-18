@@ -13,10 +13,10 @@ The catalogue may list a module before either product is live. A card must never
 
 - Volume 1 — Core Identity & Behaviour: 12 modules
 - Volume 2 — Advanced & Applied: 12 modules
-- Volume 3 — Applied Thinking: 8 modules
-- Current catalogue total: 32 modules
+- Volume 3 — Applied Thinking: 10 modules
+- Current catalogue total: 34 modules
 
-The source corpus also contains Transferable Skills™ Lab and Meta-Learning™ Lab as later Volume 3 candidates. They are intentionally outside the current 32-module product scope until promoted.
+Volume 3 includes Transferable Skills™ Lab as Lab 9 and Meta-Learning™ Lab as Lab 10. Together with Volumes 1 and 2, the current BIS product scope is 34 modules.
 
 ## Handbook activation contract
 
@@ -54,7 +54,7 @@ A Lab may move to `live` only when all of the following are true:
 
 - `live` — runtime is usable and linked.
 - `source_ready` — authored/digital source exists but production reader migration is incomplete.
-- `catalogued` — part of the 32-module product scope; production learning cartridge is not yet activated.
+- `catalogued` — part of the 34-module product scope; production learning cartridge is not yet activated.
 - `planned` — executable Lab runtime is not yet activated.
 
 ## Adding a future module
