@@ -71,50 +71,7 @@ type Runtime = {
   measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
 };
 
-const handbookCards = [
-  {
-    number: "01",
-    code: "HAB",
-    title: "Habit Lab™",
-    subtitle: "The Habit Investigation Handbook",
-    copy: "Ten days. One repeated behaviour. A seven-day experiment from cue to evidence review.",
-    kind: "reader" as const,
-  },
-  {
-    number: "02",
-    code: "DEC",
-    title: "Decision Lab™",
-    subtitle: "The Decision Investigation Handbook",
-    copy: "Ten days. One decision pattern. A seven-day experiment in deliberate choice.",
-    href: "/decision",
-    kind: "current-lab" as const,
-  },
-  {
-    number: "03",
-    code: "MON",
-    title: "Money Lab™",
-    subtitle: "The Money Investigation Handbook",
-    copy: "Ten days. One spending pattern. A seven-day experiment in seeing the moment before the moment.",
-    href: "/money",
-    kind: "current-lab" as const,
-  },
-  {
-    number: "04",
-    code: "IDN",
-    title: "Identity Lab™",
-    subtitle: "The Self-Story Investigation Handbook",
-    copy: "Ten days. One safe, observable self-claim. Prediction, evidence and refinement.",
-    kind: "source-held" as const,
-  },
-  {
-    number: "05",
-    code: "ATT",
-    title: "Attention Lab™",
-    subtitle: "The Attention Investigation Handbook",
-    copy: "Ten days. One ordinary attention pattern. Conditions, triggers and evidence.",
-    kind: "source-held" as const,
-  },
-] as const;
+
 
 const pageNumber = (page: ProgrammePage) =>
   page.key === "Welcome"
@@ -174,15 +131,17 @@ async function loadProgramme(edition: Edition): Promise<HabitProgramme> {
 
 export function ProgrammePlayer({
   initialSection = "today",
+  initialLearnMode = "library",
 }: {
   initialSection?: AppSection;
+  initialLearnMode?: LearnMode;
 }) {
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const [programme, setProgramme] = useState<HabitProgramme | null>(null);
   const [selected, setSelected] = useState(0);
   const [section, setSection] = useState<AppSection>(initialSection);
-  const [learnMode, setLearnMode] = useState<LearnMode>("library");
+  const [learnMode, setLearnMode] = useState<LearnMode>(initialLearnMode);
   const [menuOpen, setMenuOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "dirty" | "saving">("saved");
@@ -544,71 +503,20 @@ export function ProgrammePlayer({
           </section>
         ) : learnMode === "library" ? (
           <section className="prototype-page prototype-library">
-            <p className="prototype-eyebrow">Volume 1</p>
-            <h1>Learning library.</h1>
-            <p className="prototype-lede">Choose a handbook to open or continue.</p>
-
-            <div className="prototype-section-heading">
-              <div>
-                <p className="prototype-eyebrow">Browse</p>
-                <h2>Handbooks</h2>
-              </div>
-              <span>1–5</span>
-            </div>
-
-            <div className="prototype-handbook-grid">
-              {handbookCards.map((book) => {
-                if (book.kind === "reader") {
-                  return (
-                    <button
-                      type="button"
-                      key={book.code}
-                      className="prototype-handbook-card"
-                      onClick={() => openLearn("reader")}
-                    >
-                      <HandbookCardBody
-                        number={book.number}
-                        title={book.title}
-                        subtitle={book.subtitle}
-                        copy={book.copy}
-                        status={progressPercent > 0 ? `${progressPercent}% reviewed` : "Open handbook"}
-                      />
-                    </button>
-                  );
-                }
-                if (book.kind === "current-lab") {
-                  return (
-                    <Link key={book.code} className="prototype-handbook-card" href={book.href}>
-                      <HandbookCardBody
-                        number={book.number}
-                        title={book.title}
-                        subtitle={book.subtitle}
-                        copy={book.copy}
-                        status="Open Lab"
-                      />
-                    </Link>
-                  );
-                }
-                return (
-                  <article key={book.code} className="prototype-handbook-card source-held">
-                    <HandbookCardBody
-                      number={book.number}
-                      title={book.title}
-                      subtitle={book.subtitle}
-                      copy={book.copy}
-                      status="Coming later"
-                    />
-                  </article>
-                );
-              })}
-            </div>
-
+            <p className="prototype-eyebrow">Learning library</p>
+            <h1>Your handbooks live in one place.</h1>
+            <p className="prototype-lede">
+              Browse all 34 BIS learning modules across Volumes 1, 2 and 3.
+            </p>
+            <Link className="prototype-btn primary" href="/learn">
+              Open handbook library <ArrowRight />
+            </Link>
           </section>
         ) : (
           <section className="prototype-page prototype-reader">
-            <button type="button" className="prototype-back-link" onClick={() => setLearnMode("library")}>
+            <Link className="prototype-back-link" href="/learn">
               <ArrowLeft /> All handbooks
-            </button>
+            </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
               <div className="prototype-reader-compact-head">
@@ -768,14 +676,14 @@ export function ProgrammePlayer({
           <button
             type="button"
             className={section === "learn" ? "active" : ""}
-            onClick={() => openLearn("library")}
+            onClick={() => window.location.assign("/learn")}
           >
             <BookOpen />
-            <span><strong>Learn</strong><small>Handbooks, programme map and workbook</small></span>
+            <span><strong>Learn</strong><small>Browse handbooks</small></span>
           </button>
-          <Link href="/habit-lab?returnTo=%2Fhabit">
+          <Link href="/labs">
             <FlaskConical />
-            <span><strong>Lab</strong><small>Habit Lab Phase A and investigation record</small></span>
+            <span><strong>Lab</strong><small>Browse investigations</small></span>
           </Link>
           <Link href="/habit-lab/experiment?returnTo=%2Fhabit">
             <CalendarDays />
@@ -804,28 +712,3 @@ export function ProgrammePlayer({
   );
 }
 
-function HandbookCardBody({
-  number,
-  title,
-  subtitle,
-  copy,
-  status,
-}: {
-  number: string;
-  title: string;
-  subtitle: string;
-  copy: string;
-  status: string;
-}) {
-  return (
-    <>
-      <div>
-        <div className="prototype-book-number">{number}</div>
-        <div className="prototype-book-meta">{title}</div>
-        <div className="prototype-book-title">{subtitle}</div>
-        <p>{copy}</p>
-      </div>
-      <span className="prototype-book-status">{status}</span>
-    </>
-  );
-}

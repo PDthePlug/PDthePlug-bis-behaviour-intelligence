@@ -45,9 +45,11 @@ function ProgrammeChoice({ active, title, detail, onClick }: { active: boolean; 
 export function ProgrammeEntry({
   initialIdentity,
   initialSection = "today",
+  initialLearnMode = "library",
 }: {
   initialIdentity: { email: string; displayName: string };
   initialSection?: InitialSection;
+  initialLearnMode?: "library" | "reader";
 }) {
   const [snapshot, setSnapshot] = useState<EntrySnapshot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,7 +119,13 @@ export function ProgrammeEntry({
   }
 
   if (snapshot.profile && snapshot.consent?.status === "GRANTED") {
-    return <ProgrammePlayer key={initialSection} initialSection={initialSection} />;
+    return (
+      <ProgrammePlayer
+        key={`${initialSection}:${initialLearnMode}`}
+        initialSection={initialSection}
+        initialLearnMode={initialLearnMode}
+      />
+    );
   }
 
   if (snapshot.profile && snapshot.consent?.status === "WITHDRAWN") {

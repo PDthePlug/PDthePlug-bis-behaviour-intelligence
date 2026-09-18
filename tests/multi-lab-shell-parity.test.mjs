@@ -19,14 +19,13 @@ test("Decision and Money routes are owned by the same BIS multi-Lab shell", () =
   assert.match(moneyLayout, /multi-lab-flow-cleanup\.css/);
 });
 
-test("multi-Lab navigation presents the BIS destinations and Profile", () => {
-  assert.match(shell, /Habit Programme/);
-  assert.match(shell, /Decision Lab/);
-  assert.match(shell, /Money Lab/);
-  assert.match(shell, /Profile/);
+test("multi-Lab navigation returns to the shared BIS catalogue system", () => {
+  for (const label of ["Today", "Learn", "Lab", "Profile"]) {
+    assert.match(shell, new RegExp(`label: "${label}"`));
+  }
   assert.match(shell, /href: "\/habit"/);
-  assert.match(shell, /href: "\/decision"/);
-  assert.match(shell, /href: "\/money"/);
+  assert.match(shell, /href: "\/learn"/);
+  assert.match(shell, /href: "\/labs"/);
   assert.match(shell, /href: "\/profile"/);
   assert.doesNotMatch(shell, /Each Lab keeps its own evidence record/);
 });

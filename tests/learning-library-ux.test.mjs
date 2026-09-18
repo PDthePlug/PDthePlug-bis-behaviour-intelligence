@@ -10,24 +10,26 @@ test("Today and Learn are distinct route-owned destinations", async () => {
   const entry = await source("app/habit/programme-entry.tsx");
   const page = await source("app/habit/page.tsx");
   const shell = await source("app/canonical-adaptive-shell.tsx");
+  const library = await source("app/learn/page.tsx");
 
-  assert.match(page, /params\.section === "learn" \? "learn" : "today"/);
-  assert.match(shell, /href: "\/habit\?section=learn"/);
-  assert.match(entry, /<ProgrammePlayer key=\{initialSection\} initialSection=\{initialSection\} \/>/);
-  assert.match(player, /useState<LearnMode>\("library"\)/);
+  assert.match(shell, /href: "\/learn"/);
+  assert.match(library, /<ModuleLibrary mode="learning" \/>/);
+  assert.match(page, /params\.section === "learn" && params\.module !== "HAB"/);
+  assert.match(page, /redirect\("\/learn"\)/);
+  assert.match(entry, /initialLearnMode=\{initialLearnMode\}/);
+  assert.match(player, /useState<LearnMode>\(initialLearnMode\)/);
   assert.match(player, /openLearn\("reader"\)[\s\S]*Continue learning/);
 });
 
-test("Learn opens a concise handbook library without repeating profile classification", async () => {
-  const player = await source("app/learning/programme-player.tsx");
+test("Learn opens the shared 32-handbook catalogue without profile explanation", async () => {
+  const library = await source("app/catalogue/module-library.tsx");
+  const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
 
-  assert.match(player, /Learning library\./);
-  assert.match(player, /Choose a handbook to open or continue\./);
-  assert.match(player, /<h2>Handbooks<\/h2>/);
-  assert.doesNotMatch(player, /Learner profile context/);
-  assert.doesNotMatch(player, /One learner profile\. One learning environment\./);
-  assert.doesNotMatch(player, /Workplace Edition/);
-  assert.doesNotMatch(player, /deliveryEdition:\s*<strong>|Learner profile context|Workplace Edition/);
+  assert.equal(catalogue.modules.length, 32);
+  assert.match(library, /Learning library/);
+  assert.match(library, /Choose a handbook to open or continue/);
+  assert.doesNotMatch(library, /Learner profile context/);
+  assert.doesNotMatch(library, /Workplace Edition/);
 });
 
 test("handbook reader uses a compact progress header instead of a repeated cover", async () => {

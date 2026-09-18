@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   CalendarDays,
-  ChevronRight,
   FlaskConical,
   House,
   Menu,
@@ -26,8 +25,11 @@ const stageLabels: Record<ShellStage, string> = {
 
 function resolveStage(pathname: string, section: string | null): ShellStage {
   if (pathname.startsWith("/profile")) return "profile";
+  if (pathname.startsWith("/learn")) return "learn";
+  if (pathname.startsWith("/labs")) return "lab";
   if (pathname.startsWith("/habit-lab/experiment")) return "experiment";
   if (pathname.startsWith("/habit-lab")) return "lab";
+  if (pathname.startsWith("/decision") || pathname.startsWith("/money")) return "lab";
   if (section === "learn") return "learn";
   return "today";
 }
@@ -52,15 +54,15 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
       {
         id: "learn" as const,
         label: "Learn",
-        detail: "Handbook and workbook",
-        href: "/habit?section=learn",
+        detail: "Browse handbooks",
+        href: "/learn",
         icon: BookOpen,
       },
       {
         id: "lab" as const,
         label: "Lab",
-        detail: "Guided Habit investigation",
-        href: "/habit-lab",
+        detail: "Browse investigations",
+        href: "/labs",
         icon: FlaskConical,
       },
       {
@@ -132,12 +134,10 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
           <span>BIS</span>
           <div>
             <strong>Behaviour Intelligence Series™</strong>
-            <small>Habit programme</small>
+            <small>Applied Commerce®</small>
           </div>
         </Link>
         <div className="canonical-location" aria-label="Current BIS location">
-          <span>Learner View</span>
-          <ChevronRight />
           <strong>{stageLabels[stage]}</strong>
         </div>
       </header>

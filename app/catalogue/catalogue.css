@@ -1,0 +1,218 @@
+.bis-library-page{
+  width:min(1180px,calc(100% - 40px));
+  margin:0 auto;
+  padding:46px 0 112px;
+}
+.bis-library-hero{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:28px;
+  margin-bottom:28px;
+}
+.bis-library-eyebrow{
+  margin:0 0 8px;
+  color:#69716d;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.bis-library-hero h1{
+  margin:0;
+  font:600 clamp(42px,7vw,76px)/.94 var(--font-serif);
+  letter-spacing:-.045em;
+}
+.bis-library-hero>div:first-child>p:last-child{
+  margin:14px 0 0;
+  color:#69716d;
+  font-size:16px;
+}
+.bis-library-count{
+  display:grid;
+  justify-items:end;
+  flex:0 0 auto;
+}
+.bis-library-count strong{
+  font:600 52px/1 var(--font-serif);
+  letter-spacing:-.04em;
+}
+.bis-library-count span{
+  margin-top:3px;
+  color:#69716d;
+  font-size:12px;
+  font-weight:800;
+}
+.bis-volume-tabs{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  padding:7px;
+  border:1px solid #dedad2;
+  border-radius:18px;
+  background:#ebe8e1;
+}
+.bis-volume-tabs button{
+  min-height:54px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:#5f6863;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-weight:850;
+  cursor:pointer;
+}
+.bis-volume-tabs button.active{
+  background:#fff;
+  color:#173f35;
+  box-shadow:0 5px 16px rgb(23 32 29 / 8%);
+}
+.bis-volume-tabs small{
+  min-width:24px;
+  padding:3px 6px;
+  border-radius:999px;
+  background:rgb(23 63 53 / 8%);
+  font-size:10px;
+}
+.bis-volume-heading{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:18px;
+  margin:32px 0 14px;
+}
+.bis-volume-heading p{
+  margin:0 0 4px;
+  color:#69716d;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.bis-volume-heading h2{
+  margin:0;
+  font:600 clamp(28px,4vw,38px)/1 var(--font-serif);
+}
+.bis-volume-heading>span{
+  color:#69716d;
+  font-size:12px;
+  font-weight:800;
+}
+.bis-module-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.bis-module-card{
+  min-height:210px;
+  padding:20px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:22px;
+  border:1px solid #dedad2;
+  border-radius:20px;
+  background:#fff;
+  color:#17201d;
+  text-decoration:none;
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+a.bis-module-card:hover{
+  transform:translateY(-2px);
+  border-color:#bfcac4;
+  box-shadow:0 16px 38px rgb(23 32 29 / 9%);
+}
+.bis-module-card.unavailable{
+  background:#f7f5f0;
+}
+.bis-module-card-top,
+.bis-module-card-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.bis-module-card-top>span{
+  color:#8a918d;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.bis-module-card-top svg{
+  width:19px;
+  color:#557168;
+}
+.bis-module-card-copy{
+  align-self:end;
+}
+.bis-module-card-copy small{
+  color:#7a827e;
+  font-size:10px;
+  font-weight:800;
+}
+.bis-module-card-copy h3{
+  margin:7px 0 0;
+  font:600 25px/1.08 var(--font-serif);
+  letter-spacing:-.025em;
+}
+.bis-module-card-foot span{
+  min-height:28px;
+  padding:0 10px;
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  background:#ebe8e1;
+  color:#717975;
+  font-size:10px;
+  font-weight:900;
+}
+.bis-module-card-foot span.open{
+  background:#dfeae4;
+  color:#173f35;
+}
+.bis-module-card-foot svg{
+  width:18px;
+}
+.bis-library-page button:focus-visible,
+.bis-library-page a:focus-visible{
+  outline:3px solid color-mix(in srgb,#173f35 45%,white);
+  outline-offset:3px;
+}
+@media(max-width:900px){
+  .bis-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .bis-library-page{
+    width:calc(100% - 28px);
+    padding:30px 0 100px;
+  }
+  .bis-library-hero{
+    align-items:flex-start;
+  }
+  .bis-library-count{
+    display:none;
+  }
+  .bis-volume-tabs{
+    grid-template-columns:1fr;
+  }
+  .bis-volume-tabs button{
+    min-height:48px;
+  }
+  .bis-volume-heading{
+    align-items:flex-start;
+  }
+  .bis-volume-heading>span{
+    display:none;
+  }
+  .bis-module-grid{
+    grid-template-columns:1fr;
+  }
+  .bis-module-card{
+    min-height:168px;
+    gap:16px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .bis-module-card{transition:none}
+}
