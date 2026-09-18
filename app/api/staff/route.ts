@@ -471,7 +471,7 @@ async function postHandler(request: Request) {
           .from(pilotCohorts)
           .where(and(eq(pilotCohorts.id, scopeId), eq(pilotCohorts.status, "ACTIVE")))
           .limit(1);
-        if (!cohort) throw new Error("Choose an active cohort for sponsor access.");
+        if (!cohort) throw new Error("Choose an active programme group for organisation reporting.");
       }
 
       const id = crypto.randomUUID();
