@@ -60,12 +60,12 @@ export function moduleByCode(code: string) {
   return BIS_MODULES.find((module) => module.code === code);
 }
 
-export function isModuleOpen(module: BISModule, mode: "learning" | "lab") {
+export function isModuleOpen(item: BISModule, mode: "learning" | "lab") {
   return mode === "learning"
-    ? module.learningStatus === "live" && Boolean(module.learningHref)
-    : module.labStatus === "live" && Boolean(module.labHref);
+    ? item.learningStatus === "live" && Boolean(item.learningHref)
+    : item.labStatus === "live" && Boolean(item.labHref);
 }
 
-export function moduleHref(module: BISModule, mode: "learning" | "lab") {
-  return mode === "learning" ? module.learningHref : module.labHref;
+export function moduleHref(item: BISModule, mode: "learning" | "lab") {
+  return mode === "learning" ? item.learningHref : item.labHref;
 }
