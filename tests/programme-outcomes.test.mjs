@@ -87,3 +87,70 @@ test("future behavioural questions are registered without being fabricated as cu
   assert.match(route, /label: "Prediction", status: "LIVE"/);
   assert.match(route, /label: "Support", status: "LIVE"/);
 });
+
+
+test("deeper analysis generalises experiment context without exposing experiment wording", async () => {
+  const [route, migration, view] = await Promise.all([
+    source("app/api/staff/route.ts"),
+    source("supabase/migrations/20260918123500_programme_outcomes_deeper_analysis.sql"),
+    source("app/programme-outcomes-view.tsx"),
+  ]);
+
+  assert.match(route, /rpc\("sponsor_cohort_deeper_analysis"/);
+  assert.match(migration, /themeSource', 'Learner-selected structured impact domains only'/);
+  assert.match(migration, /minimumReportableThemeSize', 3/);
+  assert.match(migration, /participants >= 3/);
+  for (const domain of ["Health", "Money", "Relationships", "School", "Work", "Mental wellbeing"]) {
+    assert.match(migration, new RegExp("'" + domain + "'"));
+  }
+  assert.doesNotMatch(migration, /target_pattern/i);
+  assert.doesNotMatch(migration, /target_condition/i);
+  assert.doesNotMatch(migration, /alternative_behaviour/i);
+  assert.doesNotMatch(migration, /expected_reward/i);
+  assert.doesNotMatch(migration, /experiment_events\.notes/i);
+  assert.match(view, /Generalised from structured impact-domain tags—not private experiment wording/);
+});
+
+test("deeper analysis is an explicit expandable sponsor layer", async () => {
+  const [view, css] = await Promise.all([
+    source("app/programme-outcomes-view.tsx"),
+    source("app/programme-outcomes-view.css"),
+  ]);
+
+  assert.match(view, /<details className="outcomes-deeper-analysis">/);
+  assert.match(view, /What were people actually exploring—and what should we investigate next\?/);
+  assert.match(view, /Experiment landscape/);
+  assert.match(view, /System opportunities/);
+  assert.match(view, /Question for the sponsor/);
+  assert.match(css, /\.outcomes-deeper-analysis/);
+  assert.match(css, /\.opportunity-list/);
+});
+
+test("system opportunity signals remain evidence-based review questions rather than causal claims", async () => {
+  const view = await source("app/programme-outcomes-view.tsx");
+
+  for (const signal of [
+    "Activation friction",
+    "Too little real-world exposure",
+    "Prediction and practice are far apart",
+    "Limited repeat exposure",
+    "Human support demand is material",
+    "Experiment context is under-specified",
+  ]) {
+    assert.match(view, new RegExp(signal));
+  }
+
+  assert.match(view, /identify questions to investigate, not causes or diagnoses/);
+  assert.match(view, /descriptive, not proof that the organisation caused the behaviour/);
+  assert.match(view, /does not prove that no system gap exists/);
+});
+
+test("deeper analysis preserves independent small-cell suppression", async () => {
+  const migration = await source("supabase/migrations/20260918123500_programme_outcomes_deeper_analysis.sql");
+
+  assert.match(migration, /if v_member_count < 5 then/);
+  assert.match(migration, /participants < 3/);
+  assert.match(migration, /suppressedSmallThemeCount/);
+  assert.match(migration, /revoke all on function public\.sponsor_cohort_deeper_analysis\(text\) from public, anon/i);
+  assert.match(migration, /grant execute on function public\.sponsor_cohort_deeper_analysis\(text\) to authenticated/i);
+});
