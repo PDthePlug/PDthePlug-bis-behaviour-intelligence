@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BookOpen, FlaskConical, Menu, UserRound, X } from "lucide-react";
 
 type LabSlug = "decision" | "money";
@@ -25,20 +25,20 @@ const definitions: Record<LabSlug, LabShellDefinition> = {
 const destinations = [
   {
     href: "/habit",
-    label: "Habit Programme",
-    detail: "Today, learning, Habit Lab and experiment",
+    label: "Today",
+    detail: "Resume your current journey",
     icon: BookOpen,
   },
   {
-    href: "/decision",
-    label: "Decision Lab",
-    detail: "Decision investigation and field experiment",
-    icon: FlaskConical,
+    href: "/learn",
+    label: "Learn",
+    detail: "Browse handbooks",
+    icon: BookOpen,
   },
   {
-    href: "/money",
-    label: "Money Lab",
-    detail: "Spending investigation and field experiment",
+    href: "/labs",
+    label: "Lab",
+    detail: "Browse investigations",
     icon: FlaskConical,
   },
   {
@@ -55,7 +55,7 @@ export function MultiLabAdaptiveShell({ lab, children }: { lab: LabSlug; childre
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const activeHref = useMemo(() => `/${lab}`, [lab]);
+  const activeHref = "/labs";
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -114,8 +114,7 @@ export function MultiLabAdaptiveShell({ lab, children }: { lab: LabSlug; childre
             <small>Behaviour Intelligence Series</small>
           </div>
         </Link>
-        <div className="multi-lab-context" aria-label="Current learner context">
-          <span>Learner View</span>
+        <div className="multi-lab-context" aria-label="Current Lab">
           <strong>{definition.title}</strong>
         </div>
         <button
