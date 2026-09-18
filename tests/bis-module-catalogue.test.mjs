@@ -20,9 +20,9 @@ test("BIS catalogue defines exactly 32 current modules across 12 + 12 + 8", asyn
 
 test("catalogue identities and positions are unique and continuous", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
-  const codes = catalogue.modules.map((module) => module.code);
-  const slugs = catalogue.modules.map((module) => module.slug);
-  const globals = catalogue.modules.map((module) => module.global);
+  const codes = catalogue.modules.map((item) => item.code);
+  const slugs = catalogue.modules.map((item) => item.slug);
+  const globals = catalogue.modules.map((item) => item.global);
   assert.equal(new Set(codes).size, 32);
   assert.equal(new Set(slugs).size, 32);
   assert.equal(new Set(globals).size, 32);
@@ -59,9 +59,9 @@ test("current 32-module scope preserves the sourced volume sequence", async () =
 
 test("a live catalogue surface always has a real route", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
-  for (const module of catalogue.modules) {
-    if (module.learningStatus === "live") assert.ok(module.learningHref, `${module.code} learning route`);
-    if (module.labStatus === "live") assert.ok(module.labHref, `${module.code} Lab route`);
+  for (const item of catalogue.modules) {
+    if (item.learningStatus === "live") assert.ok(item.learningHref, `${item.code} learning route`);
+    if (item.labStatus === "live") assert.ok(item.labHref, `${item.code} Lab route`);
   }
   assert.deepEqual(
     catalogue.modules.filter((m) => m.labStatus === "live").map((m) => m.code),
@@ -108,6 +108,6 @@ test("future source candidates remain outside the current 32 until explicitly pr
     ["Transferable Skills™ Lab", "Meta-Learning™ Lab"],
   );
   for (const candidate of catalogue.futureSourceCandidates) {
-    assert.equal(catalogue.modules.some((module) => module.title === candidate.title), false);
+    assert.equal(catalogue.modules.some((item) => item.title === candidate.title), false);
   }
 });
