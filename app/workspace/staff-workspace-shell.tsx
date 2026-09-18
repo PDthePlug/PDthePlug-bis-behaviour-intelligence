@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Activity,
+  Eye,
   EyeOff,
   LayoutDashboard,
   LockKeyhole,
   Settings2,
-  ShieldCheck,
 } from "lucide-react";
 import { OperationsView } from "../operations-view";
 
@@ -20,7 +20,7 @@ type StaffSession = {
 };
 
 function canFacilitate(roles: string[]) {
-  return roles.includes("FACILITATOR") || roles.includes("SAFEGUARDING_OFFICER");
+  return roles.includes("FACILITATOR");
 }
 
 function canViewOutcomes(roles: string[]) {
@@ -31,22 +31,59 @@ function canAdminister(roles: string[]) {
   return roles.includes("SYSTEM_ADMIN");
 }
 
+function defaultPerspective(roles: string[]): Perspective {
+  if (canFacilitate(roles)) return "facilitator";
+  if (roles.includes("SPONSOR_VIEWER")) return "outcomes";
+  return "admin";
+}
+
 export function StaffWorkspaceShell() {
   const [session, setSession] = useState<StaffSession | null>(null);
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [perspective, setPerspective] = useState<Perspective>("facilitator");
 
   useEffect(() => {
-    if (!visible) return;
-    let timeout = window.setTimeout(() => setVisible(false), 120_000);
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        const response = await fetch("/api/staff", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const payload = (await response.json()) as StaffSession & { error?: string };
+        if (!response.ok) {
+          throw new Error(
+            response.status === 403
+              ? "This account does not have a BIS staff role."
+              : payload.error || "The staff workspace could not be opened.",
+          );
+        }
+        if (controller.signal.aborted) return;
+        const roles = payload.roles ?? [];
+        setSession({ identity: payload.identity, roles });
+        setPerspective(defaultPerspective(roles));
+      } catch (cause) {
+        if (!controller.signal.aborted) {
+          setError(cause instanceof Error ? cause.message : "The staff workspace could not be opened.");
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    })();
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!session || hidden) return;
+    let timeout = window.setTimeout(() => setHidden(true), 120_000);
     const reset = () => {
       window.clearTimeout(timeout);
-      timeout = window.setTimeout(() => setVisible(false), 120_000);
+      timeout = window.setTimeout(() => setHidden(true), 120_000);
     };
     const hideWhenBackgrounded = () => {
-      if (document.visibilityState === "hidden") setVisible(false);
+      if (document.visibilityState === "hidden") setHidden(true);
     };
 
     document.addEventListener("visibilitychange", hideWhenBackgrounded);
@@ -61,62 +98,46 @@ export function StaffWorkspaceShell() {
         window.removeEventListener(event, reset);
       }
     };
-  }, [visible]);
+  }, [session, hidden]);
 
-  async function openWorkspace() {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("/api/staff", { cache: "no-store" });
-      const payload = (await response.json()) as StaffSession & { error?: string };
-      if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error(
-            "This signed-in account does not have a BIS staff role. Staff access is assigned by a BIS administrator.",
-          );
-        }
-        throw new Error(payload.error || "Your staff workspace could not be opened.");
-      }
-
-      const roles = payload.roles ?? [];
-      if (!canFacilitate(roles) && !canViewOutcomes(roles) && !canAdminister(roles)) {
-        throw new Error("Your account does not currently have a BIS staff role.");
-      }
-
-      setSession({ identity: payload.identity, roles });
-      setPerspective(
-        canFacilitate(roles)
-          ? "facilitator"
-          : canAdminister(roles)
-            ? "admin"
-            : "outcomes",
-      );
-      setVisible(true);
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Your staff workspace could not be opened.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (!visible || !session) {
+  if (loading) {
     return (
       <main className="staff-gate">
-        <section className="staff-gate-card" aria-labelledby="staff-gate-title">
+        <section className="staff-gate-card">
           <div className="staff-gate-mark" aria-hidden="true">BIS</div>
-          <p className="staff-gate-eyebrow">BIS</p>
-          <h1 id="staff-gate-title">Programme workspace</h1>
-          <div className="staff-gate-privacy">
-            <ShieldCheck aria-hidden="true" />
-            <p>Workspace hides after two minutes of inactivity.</p>
-          </div>
-          {error ? <p className="staff-gate-error" role="alert">{error}</p> : null}
-          <button className="staff-gate-primary" type="button" onClick={() => void openWorkspace()} disabled={loading}>
-            <LockKeyhole aria-hidden="true" />
-            <span>{loading ? "Opening…" : "Open workspace"}</span>
+          <p className="staff-gate-eyebrow">Programme workspace</p>
+          <h1>Opening your dashboard…</h1>
+        </section>
+      </main>
+    );
+  }
+
+  if (!session) {
+    return (
+      <main className="staff-gate">
+        <section className="staff-gate-card">
+          <div className="staff-gate-mark" aria-hidden="true">BIS</div>
+          <p className="staff-gate-eyebrow">Staff access</p>
+          <h1>Workspace unavailable</h1>
+          <p className="staff-gate-error" role="alert">{error}</p>
+          <Link className="staff-gate-secondary" href="/profile">Back to profile</Link>
+        </section>
+      </main>
+    );
+  }
+
+  if (hidden) {
+    return (
+      <main className="staff-gate">
+        <section className="staff-gate-card">
+          <div className="staff-gate-mark" aria-hidden="true">BIS</div>
+          <p className="staff-gate-eyebrow">Privacy</p>
+          <h1>Workspace hidden</h1>
+          <button className="staff-gate-primary" type="button" onClick={() => setHidden(false)}>
+            <Eye aria-hidden="true" />
+            <span>Reveal workspace</span>
           </button>
-          <Link className="staff-gate-secondary" href="/profile">Profile and account</Link>
-          <Link className="staff-gate-secondary" href="/habit">Learner experience</Link>
+          <Link className="staff-gate-secondary" href="/profile">Profile</Link>
         </section>
       </main>
     );
@@ -137,8 +158,8 @@ export function StaffWorkspaceShell() {
           <span className="staff-workspace-identity">{session.identity.email}</span>
           <Link className="staff-workspace-learner-link" href="/profile">Profile</Link>
           <Link className="staff-workspace-learner-link" href="/habit">Learner experience</Link>
-          <button type="button" className="staff-workspace-hide" onClick={() => setVisible(false)}>
-            <EyeOff aria-hidden="true" /> Hide workspace
+          <button type="button" className="staff-workspace-hide" onClick={() => setHidden(true)}>
+            <EyeOff aria-hidden="true" /> Hide
           </button>
         </div>
       </header>
