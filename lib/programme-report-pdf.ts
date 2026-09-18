@@ -97,8 +97,8 @@ function reportInsights(outcome: Outcome) {
         : null;
     lines.push(
       groupDifference === null
-        ? "The average person-level prediction gap is " + String(metrics.prediction.averagePredictionGap) + " points."
-        : "Expected and observed behaviour are only " + groupDifference + " points apart at group-average level, while the average person-level prediction gap is " + String(metrics.prediction.averagePredictionGap) + " points."
+        ? "Across participants, expectations were on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened."
+        : "The group averages are only " + groupDifference + " points apart, but each person's expectation was on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened."
     );
   }
   if (metrics.support.participantsRequestingHelp > 0) {
@@ -223,7 +223,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
   draw(
     "Average expected rate: " + percent(metrics.prediction.averagePredictedRate) +
     " | Average observed rate: " + percent(metrics.prediction.averageActualRate) +
-    " | Average person-level prediction gap: " +
+    " | Average expectation difference: " +
     (metrics.prediction.averagePredictionGap === null ? "-" : String(metrics.prediction.averagePredictionGap) + " points"),
     { size: 10, gapAfter: 9 }
   );
