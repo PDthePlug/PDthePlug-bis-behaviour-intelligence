@@ -26,6 +26,8 @@ test("sponsor snapshot is aggregate-only and delegates calculation to the protec
   const sponsor = route.slice(start, end);
 
   assert.match(sponsor, /rpc\("sponsor_cohort_outcomes"/);
+  assert.match(sponsor, /rpc\("sponsor_cohort_deeper_analysis"/);
+  assert.match(sponsor, /rpc\("sponsor_cohort_learning_summary"/);
   assert.match(sponsor, /minimumReportableCohortSize: 5/);
   assert.doesNotMatch(sponsor, /learners\./);
   assert.doesNotMatch(sponsor, /responses/);
@@ -173,7 +175,7 @@ test("organisation experience hides implementation language and explanatory prod
     assert.doesNotMatch(view, new RegExp(phrase, "i"));
   }
 
-  assert.match(view, /Group view · individual responses stay private/);
+  assert.match(view, /Privacy and reporting boundaries/);
   assert.match(view, /Areas people were exploring/);
   assert.match(view, /What may be worth checking\?/);
 });
@@ -195,4 +197,54 @@ test("organisation outcome labels use plain language", async () => {
   assert.doesNotMatch(view, /Eligible opportunities/);
   assert.doesNotMatch(view, /Cohort request rate/);
   assert.doesNotMatch(view, /Changed toward protocol/);
+});
+
+
+test("organisation reporting includes the learning journey beyond the experiment", async () => {
+  const [view, migration] = await Promise.all([
+    source("app/programme-outcomes-view.tsx"),
+    source("supabase/migrations/20260918152000_programme_outcomes_learning_summary.sql"),
+  ]);
+
+  for (const label of [
+    "Learning journey",
+    "Recurring challenges",
+    "Growth signals",
+    "What is changing while the programme is happening?",
+    "What can the organisation do with this information?",
+  ]) {
+    assert.match(view, new RegExp(label.replace(/[?]/g, "\\?")));
+  }
+
+  assert.match(migration, /handbook_progress/);
+  assert.match(migration, /HAB\.CONTROL\.PRE/);
+  assert.match(migration, /HAB\.CONTROL\.POST/);
+  assert.match(migration, /HAB\.EQUATION\.CONFIDENCE_PRE/);
+  assert.match(migration, /HAB\.EQUATION\.CONFIDENCE_POST/);
+  assert.match(migration, /Never to Always/);
+  assert.match(migration, /frequent_count >= 3/);
+  assert.match(migration, /if v_member_count < 5 then/);
+});
+
+test("learning summary never returns private free-text response content", async () => {
+  const migration = await source("supabase/migrations/20260918152000_programme_outcomes_learning_summary.sql");
+
+  for (const privateField of [
+    "HAB.CUE.TEXT",
+    "HAB.ROUTINE.TEXT",
+    "HAB.EMOTION.TEXT",
+    "HAB.EQUATION.TEXT",
+    "HAB.I9.FUTURE_LETTER",
+  ]) {
+    assert.doesNotMatch(migration, new RegExp(privateField.replace(/[.]/g, "\\.")));
+  }
+  assert.match(migration, /Free-text reflections are excluded/);
+  assert.doesNotMatch(migration, /jsonb_build_object\([^)]*'value'/s);
+});
+
+test("privacy explanation is optional instead of occupying the report", async () => {
+  const view = await source("app/programme-outcomes-view.tsx");
+  assert.match(view, /<details className="outcomes-privacy-disclosure">/);
+  assert.match(view, /Privacy and reporting boundaries/);
+  assert.doesNotMatch(view, /className="outcomes-privacy"/);
 });
