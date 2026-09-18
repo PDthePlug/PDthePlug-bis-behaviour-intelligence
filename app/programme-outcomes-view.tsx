@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import {
   ChevronDown,
   Compass,
+  Download,
   Eye,
   FlaskConical,
   Gauge,
@@ -235,6 +236,52 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   return signals;
 }
 
+function outcomeInsights(outcome: SponsorOutcome) {
+  const metrics = outcome.metrics;
+  if (!metrics) return [] as Array<{ title: string; body: string }>;
+  const insights: Array<{ title: string; body: string }> = [];
+  const starters = metrics.experiment.participantsStarted;
+  const enough = metrics.evidence.sufficient;
+  const attemptRate = metrics.action.experimentAttemptRate;
+  if (attemptRate !== null) {
+    insights.push({
+      title: "Most participants moved into action",
+      body: String(attemptRate) + "% of the group started a real-world experiment. " + String(metrics.action.readyButNotStarted) + " reached the experiment stage but had not started yet.",
+    });
+  }
+  if (starters > 0) {
+    insights.push({
+      title: "The evidence base is becoming usable",
+      body: String(enough) + " of " + String(starters) + " experiment starters have enough real-world opportunities for a stronger behavioural reading. " + String(metrics.evidence.notEnoughYet) + " still need more evidence.",
+    });
+  }
+  if (metrics.prediction.averagePredictionGap !== null) {
+    const groupDifference = metrics.prediction.averagePredictedRate !== null && metrics.prediction.averageActualRate !== null
+      ? Math.abs(metrics.prediction.averagePredictedRate - metrics.prediction.averageActualRate).toFixed(1)
+      : null;
+    insights.push({
+      title: "Group averages can hide individual miscalibration",
+      body: groupDifference === null
+        ? "The average person-level prediction gap is " + String(metrics.prediction.averagePredictionGap) + " points."
+        : "Expected and observed behaviour are only " + groupDifference + " points apart at group-average level, while the average person-level prediction gap is " + String(metrics.prediction.averagePredictionGap) + " points.",
+    });
+  }
+  if (metrics.support.participantsRequestingHelp > 0) {
+    insights.push({
+      title: "Human support is part of the programme",
+      body: String(metrics.support.participantsRequestingHelp) + " participants requested help (" + String(metrics.support.supportRequestRate ?? 0) + "% of the group). This is a delivery signal, not a failure score.",
+    });
+  }
+  const themes = outcome.deepAnalysis?.experimentLandscape?.themes ?? [];
+  if (themes.length > 0) {
+    insights.push({
+      title: "Behaviour is being tested in recognisable life contexts",
+      body: "The most common reportable areas are " + themes.slice(0, 3).map((theme) => theme.label + " (" + String(theme.participants) + ")").join(", ") + ". Participants can appear in more than one area.",
+    });
+  }
+  return insights.slice(0, 5);
+}
+
 function Metric({
   label,
   value,
@@ -280,20 +327,25 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           <p className="eyebrow">Programme</p>
           <h1>Outcomes</h1>
         </div>
-        <div className="outcomes-cohort-picker">
-          <label htmlFor="sponsor-cohort">Group</label>
-          <select
-            id="sponsor-cohort"
-            value={outcome.cohort.id}
-            onChange={(event) => setSelectedId(event.target.value)}
-          >
-            {data.cohorts.map((item) => (
-              <option value={item.cohort.id} key={item.cohort.id}>
-                {item.cohort.name}
-              </option>
-            ))}
-          </select>
-          <small>{outcome.cohort.labCode} · {outcome.cohort.labVersion} · {dateRange(outcome)}</small>
+        <div className="outcomes-hero-actions">
+          <div className="outcomes-cohort-picker">
+            <label htmlFor="sponsor-cohort">Group</label>
+            <select
+              id="sponsor-cohort"
+              value={outcome.cohort.id}
+              onChange={(event) => setSelectedId(event.target.value)}
+            >
+              {data.cohorts.map((item) => (
+                <option value={item.cohort.id} key={item.cohort.id}>
+                  {item.cohort.name}
+                </option>
+              ))}
+            </select>
+            <small>{outcome.cohort.labCode} · {outcome.cohort.labVersion} · {dateRange(outcome)}</small>
+          </div>
+          <a className="outcomes-pdf-link" href={"/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id)}>
+            <Download aria-hidden="true" /> Download PDF
+          </a>
         </div>
       </section>
 
@@ -309,6 +361,23 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           <span>Group view · individual responses stay private.</span>
         </div>
       </section>
+
+      {metrics ? (
+        <section className="outcomes-insights">
+          <div className="outcomes-section-heading">
+            <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
+            <Lightbulb />
+          </div>
+          <div className="outcomes-insight-grid">
+            {outcomeInsights(outcome).map((insight) => (
+              <article key={insight.title}>
+                <h3>{insight.title}</h3>
+                <p>{insight.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {outcome.suppressed || !metrics ? (
         <section className="outcomes-suppressed">
