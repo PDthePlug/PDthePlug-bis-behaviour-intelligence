@@ -22,8 +22,8 @@ test("authenticated root and auth defaults resolve through BIS role routing", as
   assert.match(router, /FACILITATOR/);
   assert.match(router, /SAFEGUARDING_OFFICER/);
   assert.match(router, /staff \? "\/workspace" : "\/habit"/);
-  assert.match(signIn, /: "\/"/);
-  assert.match(callback, /: "\/"/);
+  assert.match(signIn, /safeReturnPath\(params\.next\)/);
+  assert.match(callback, /safeReturnPath\(url\.searchParams\.get\("next"\)\)/);
 });
 
 test("learner profile setup opens the prototype-derived BIS shell without forcing the formal baseline", async () => {

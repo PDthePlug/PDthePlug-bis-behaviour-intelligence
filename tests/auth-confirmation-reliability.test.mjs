@@ -7,7 +7,7 @@ const source = (path) => readFile(new URL(path, root), "utf8");
 
 test("production verification returns to the canonical BIS deployment", async () => {
   const redirect = await source("lib/auth-redirect.ts");
-  assert.match(redirect, /https:\/\/bis-behaviour-intelligence\.vercel\.app/);
+  assert.match(redirect, /https:\/\/www\.bisportal\.online/);
   assert.match(redirect, /\/auth\/callback\?next=/);
   assert.match(redirect, /localhost/);
   assert.match(redirect, /runtimeOrigin/);

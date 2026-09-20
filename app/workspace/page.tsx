@@ -6,6 +6,7 @@ import "../programme-outcomes-view.css";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
+  alternates: { canonical: "/workspace" },
   title: "BIS Programme Workspace",
   description: "BIS programme delivery, organisation outcomes and administration."
 };

@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
+import { BIS_PRODUCTION_ORIGIN } from "@/lib/auth-redirect";
 import "./globals.css";
 import "./learning/programme-player.css";
 import "./habit-lab/focused-runtime.css";
 
-const metadataBase = new URL(
-  process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : process.env.NEXT_PUBLIC_APP_URL ?? "https://bis-behaviour-intelligence.vercel.app",
-);
+const metadataBase = new URL(BIS_PRODUCTION_ORIGIN);
 
 export const metadata: Metadata = {
   metadataBase,
@@ -18,6 +15,8 @@ export const metadata: Metadata = {
   description:
     "Investigate habits, decisions and spending behaviour through private evidence from your own life.",
   openGraph: {
+    url: BIS_PRODUCTION_ORIGIN,
+    siteName: "BIS",
     title: "BIS — Behaviour Intelligence System",
     description:
       "Investigate a pattern. Test it in real life. Evidence before judgment.",

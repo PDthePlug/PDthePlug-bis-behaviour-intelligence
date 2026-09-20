@@ -33,7 +33,7 @@ test("every primary learner and staff surface requires authenticated identity", 
 });
 
 test("auth callback keeps only local return paths and preserves them on failure", () => {
-  assert.match(callbackRoute, /value\?\.startsWith\("\/"\) && !value\.startsWith\("\/\/"\)/);
+  assert.match(callbackRoute, /import \{ applicationOrigin, safeReturnPath \}/);
   assert.match(callbackRoute, /const next = safeReturnPath\(url\.searchParams\.get\("next"\)\)/);
   assert.match(callbackRoute, /signInUrl\.searchParams\.set\("error", "confirmation"\)/);
   assert.match(callbackRoute, /signInUrl\.searchParams\.set\("next", next\)/);
@@ -56,9 +56,9 @@ test("authentication failures do not expose arbitrary provider messages", () => 
   assert.match(signInForm, /BIS could not complete that request\. Check your details and try again\./);
 });
 
-test("release metadata resolves to the Vercel production product rather than a retired host", () => {
-  assert.match(rootLayout, /VERCEL_PROJECT_PRODUCTION_URL/);
-  assert.match(rootLayout, /https:\/\/bis-behaviour-intelligence\.vercel\.app/);
+test("release metadata resolves to the canonical BIS origin", () => {
+  assert.match(rootLayout, /new URL\(BIS_PRODUCTION_ORIGIN\)/);
+  assert.doesNotMatch(rootLayout, /VERCEL_PROJECT_PRODUCTION_URL|vercel\.app/);
   assert.doesNotMatch(rootLayout, /chatgpt\.site/);
 });
 
