@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { stripTypeScriptTypes } from "node:module";
 import test from "node:test";
+import "next/dist/server/node-environment-baseline.js";
 import { unstable_getResponseFromNextConfig } from "next/experimental/testing/server.js";
 
 const auth = await readFile(new URL("../lib/auth-redirect.ts", import.meta.url), "utf8");

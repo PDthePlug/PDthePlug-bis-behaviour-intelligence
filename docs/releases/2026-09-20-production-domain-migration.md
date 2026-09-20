@@ -63,7 +63,7 @@ Google returns to Supabase first; Supabase then returns to the BIS callback. Rep
 
 ## Acceptance
 
-Automated: local origin and return-path tests; callback success/failure/recovery with a stubbed provider; Next.js redirect tests; existing lint, acceptance and TypeScript CI; production build.
+Local verification passed: lint, all 164 acceptance tests (including Next.js redirects and callback success/failure/recovery with a stubbed provider), TypeScript and the production build. Hosted CI and live acceptance remain separate gates.
 
 Live acceptance still requires:
 - www TLS and intended production revision.
