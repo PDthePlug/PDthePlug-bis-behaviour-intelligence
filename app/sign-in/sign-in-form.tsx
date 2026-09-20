@@ -3,9 +3,10 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { confirmationRedirectUrl } from "@/lib/auth-redirect";
+import { applicationOrigin, confirmationRedirectUrl, safeReturnPath } from "@/lib/auth-redirect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -76,11 +77,21 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
     setResendCooldown(0);
   }
 
+  function onCanonicalOrigin() {
+    const origin = applicationOrigin(window.location.origin);
+    if (origin === window.location.origin) return true;
+    const url = new URL("/sign-in", origin);
+    url.searchParams.set("next", safeReturnPath(next));
+    window.location.replace(url.toString());
+    return false;
+  }
+
   function callbackUrl() {
     return confirmationRedirectUrl(next, window.location.origin);
   }
 
   async function continueWithGoogle() {
+    if (!onCanonicalOrigin()) return;
     setGoogleBusy(true);
     setError("");
     setMessage("");
@@ -101,6 +112,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
   }
 
   async function resendConfirmation() {
+    if (!onCanonicalOrigin()) return;
     const targetEmail = email.trim();
     if (!targetEmail) {
       setError("Enter the email address used for this BIS account first.");
@@ -129,6 +141,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!onCanonicalOrigin()) return;
     setBusy(true);
     setError("");
     setMessage("");
@@ -211,6 +224,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
           {error ? <p className="field-error" role="alert">{error}</p> : null}
           {message ? <p className="auth-message" role="status">{message}</p> : null}
           <Button size="lg" className="w-full" disabled={busy || googleBusy || resendBusy}>{busy ? "Please wait…" : mode === "signin" ? <>Enter BIS <ArrowRight /></> : <>Create account <ArrowRight /></>}</Button>
+          {mode === "signin" ? <Link href="/forgot-password" className="text-sm underline">Forgot your password?</Link> : null}
           {confirmationPending ? (
             <Button
               type="button"

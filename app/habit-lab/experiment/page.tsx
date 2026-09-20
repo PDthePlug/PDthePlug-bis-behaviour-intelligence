@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Your seven-day Habit Lab field experiment inside the BIS Habit programme.",
 };
 
+export const metadata = { alternates: { canonical: "/habit-lab/experiment" } };
+
 export default function HabitExperimentPage() {
   return <HabitLabShell view="experiment" />;
 }

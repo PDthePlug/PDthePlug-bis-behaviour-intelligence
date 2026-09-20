@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { applicationOrigin } from "@/lib/auth-redirect";
 import { createClient } from "@/lib/supabase/server";
 
 async function signOut(request: Request) {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/sign-in", request.url), { status: 303 });
+  return NextResponse.redirect(new URL("/sign-in", applicationOrigin(new URL(request.url).origin)), { status: 303 });
 }
 
 export async function GET(request: Request) {

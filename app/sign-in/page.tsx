@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
+import { safeReturnPath } from "@/lib/auth-redirect";
 import { SignInForm } from "./sign-in-form";
 import "./sign-in-cleanup.css";
 
 export const metadata: Metadata = {
   title: "Sign in",
+  alternates: { canonical: "/sign-in" },
+  robots: { index: false, follow: false },
   description: "Sign in to continue in BIS.",
 };
-
-function safeReturnPath(value: string | undefined) {
-  return value?.startsWith("/") && !value.startsWith("//") ? value : "/";
-}
 
 function safeCallbackError(value: string | undefined) {
   if (value === "confirmation") {

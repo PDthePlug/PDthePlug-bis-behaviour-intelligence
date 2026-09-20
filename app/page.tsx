@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/supabase/require-user";
 import { RoleRouter } from "./role-router";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 export const dynamic = "force-dynamic";
 
 export default async function Home({

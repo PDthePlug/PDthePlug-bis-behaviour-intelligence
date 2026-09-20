@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "BIS programme delivery, organisation outcomes and administration."
 };
 
+export const metadata = { alternates: { canonical: "/workspace" } };
+
 export default async function WorkspacePage() {
   await requireUser("/workspace");
   return <StaffWorkspaceShell />;
