@@ -70,12 +70,12 @@ test("a live catalogue surface always has a real route", async () => {
   );
 });
 
-test("Volume 1 digital sources 2-5 are represented as source-ready, not falsely live", async () => {
+test("Imported Volume 1 handbooks 2-5 have working learning routes", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
   for (const code of ["DEC", "MON", "IDN", "ATT"]) {
     const entry = catalogue.modules.find((item) => item.code === code);
-    assert.equal(entry?.learningStatus, "source_ready");
-    assert.equal(entry?.learningHref, null);
+    assert.equal(entry?.learningStatus, "live");
+    assert.equal(entry?.learningHref, `/handbooks/${code.toLowerCase()}`);
   }
 });
 
@@ -121,3 +121,4 @@ test("Volume 3 Labs 9 and 10 are part of the canonical 34-module catalogue", asy
     [33, 34],
   );
 });
+

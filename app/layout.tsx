@@ -3,6 +3,7 @@ import { BIS_PRODUCTION_ORIGIN } from "@/lib/auth-redirect";
 import "./globals.css";
 import "./learning/programme-player.css";
 import "./habit-lab/focused-runtime.css";
+import "./responsive-readiness.css";
 
 const metadataBase = new URL(BIS_PRODUCTION_ORIGIN);
 

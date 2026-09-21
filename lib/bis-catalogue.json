@@ -38,8 +38,8 @@
       "code": "DEC",
       "slug": "decision",
       "title": "Decision Lab™",
-      "learningStatus": "source_ready",
-      "learningHref": null,
+      "learningStatus": "live",
+      "learningHref": "/handbooks/dec",
       "labStatus": "live",
       "labHref": "/decision"
     },
@@ -50,8 +50,8 @@
       "code": "MON",
       "slug": "money",
       "title": "Money Lab™",
-      "learningStatus": "source_ready",
-      "learningHref": null,
+      "learningStatus": "live",
+      "learningHref": "/handbooks/mon",
       "labStatus": "live",
       "labHref": "/money"
     },
@@ -62,8 +62,8 @@
       "code": "IDN",
       "slug": "identity",
       "title": "Identity Lab™",
-      "learningStatus": "source_ready",
-      "learningHref": null,
+      "learningStatus": "live",
+      "learningHref": "/handbooks/idn",
       "labStatus": "planned",
       "labHref": null
     },
@@ -74,8 +74,8 @@
       "code": "ATT",
       "slug": "attention",
       "title": "Attention Lab™",
-      "learningStatus": "source_ready",
-      "learningHref": null,
+      "learningStatus": "live",
+      "learningHref": "/handbooks/att",
       "labStatus": "planned",
       "labHref": null
     },

@@ -25,13 +25,13 @@ export type ProgrammePage = {
 
 export type HabitProgramme = {
   schemaVersion: "2.0";
-  handbookId: "habit-lab-volume-1";
-  labCode: "HAB";
-  slug: "habit";
-  title: "Habit Lab™";
-  subtitle: "The Habit Investigation Handbook";
-  contentVersion: "1.4";
-  runtimeVersion: "programme-player-1";
+  handbookId: string;
+  labCode: "HAB" | "DEC" | "MON" | "IDN" | "ATT";
+  slug: string;
+  title: string;
+  subtitle: string;
+  contentVersion: string;
+  runtimeVersion: string;
   sourceTrace: {
     authority: string;
     prototype: string;
@@ -46,3 +46,4 @@ export type HabitProgramme = {
     pages: ProgrammePage[];
   };
 };
+
