@@ -17,6 +17,8 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { BIS_MODULES } from "../../lib/bis-catalogue";
+import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
 
 type Edition = HabitProgramme["edition"];
@@ -111,12 +113,13 @@ function splitDayThree(page: ProgrammePage) {
       };
 }
 
-async function loadProgramme(edition: Edition): Promise<HabitProgramme> {
-  const response = await fetch(`/programmes/habit-${edition}.json.gz.b64`, {
+async function loadProgramme(edition: Edition, code: HabitProgramme["labCode"]): Promise<HabitProgramme> {
+  const slug = ({ HAB: "habit", DEC: "decision", MON: "money", IDN: "identity", ATT: "attention" })[code];
+  const response = await fetch(`/handbooks/v1/${slug}-${edition}.json.gz.b64`, {
     cache: "force-cache",
   });
   if (!response.ok) {
-    throw new Error("The complete Habit programme material could not be loaded.");
+    throw new Error("The complete handbook material could not be loaded.");
   }
   if (!("DecompressionStream" in globalThis)) {
     throw new Error("This browser cannot open the compressed programme material.");
@@ -130,9 +133,11 @@ async function loadProgramme(edition: Edition): Promise<HabitProgramme> {
 }
 
 export function ProgrammePlayer({
+  moduleCode = "HAB",
   initialSection = "today",
   initialLearnMode = "library",
 }: {
+  moduleCode?: HabitProgramme["labCode"];
   initialSection?: AppSection;
   initialLearnMode?: LearnMode;
 }) {
@@ -144,10 +149,11 @@ export function ProgrammePlayer({
   const [learnMode, setLearnMode] = useState<LearnMode>(initialLearnMode);
   const [menuOpen, setMenuOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saveState, setSaveState] = useState<"saved" | "dirty" | "saving">("saved");
+  const [saveState, setSaveState] = useState<"saved" | "dirty" | "saving" | "error">("saved");
   const [error, setError] = useState("");
   const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const dirty = useRef(new Set<string>());
+  const queue = useRef(new WorkbookSaveQueue());
+  const [completing, setCompleting] = useState(false);
   const documentRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -155,7 +161,7 @@ export function ProgrammePlayer({
     void (async () => {
       try {
         const [learningResponse, runtimeResponse] = await Promise.all([
-          fetch("/api/learning", { cache: "no-store", signal: controller.signal }),
+          fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
           fetch("/api/bis", { cache: "no-store", signal: controller.signal }),
         ]);
         const learning = (await learningResponse.json()) as LearningSnapshot & { error?: string };
@@ -166,7 +172,7 @@ export function ProgrammePlayer({
         if (!runtimeResponse.ok) {
           throw new Error(live.error || "Your Habit Lab record could not be loaded.");
         }
-        const loaded = await loadProgramme(learning.profile.deliveryEdition);
+        const loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode);
         if (controller.signal.aborted) return;
         setSnapshot(learning);
         setRuntime(live);
@@ -179,7 +185,7 @@ export function ProgrammePlayer({
             ]),
           ),
         );
-        const latest = learning.progress.find((item) => item.labCode === "HAB");
+        const latest = learning.progress.find((item) => item.labCode === moduleCode);
         const index = latest
           ? loaded.treatment.pages.findIndex((item) => item.id === latest.semanticStepId)
           : -1;
@@ -193,9 +199,9 @@ export function ProgrammePlayer({
       }
     })();
     return () => controller.abort();
-  }, []);
+  }, [moduleCode]);
 
-  const release = snapshot?.releases.find((item) => item.labCode === "HAB");
+  const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
   const completed = useMemo(
     () =>
@@ -203,13 +209,13 @@ export function ProgrammePlayer({
         snapshot?.progress
           .filter(
             (item) =>
-              item.labCode === "HAB" &&
+              item.labCode === moduleCode &&
               item.status === "COMPLETED" &&
               (!release || item.contentReleaseId === release.id),
           )
           .map((item) => item.semanticStepId) ?? [],
       ),
-    [snapshot, release],
+    [snapshot, release, moduleCode],
   );
   const experimentDay = currentExperimentDay(runtime?.experiment ?? null);
   const phaseAComplete = Boolean(runtime?.enrolment?.phaseACompletedAt || runtime?.experiment);
@@ -237,80 +243,39 @@ export function ProgrammePlayer({
     }));
   }, []);
 
-  const saveDirtyResponses = useCallback(async () => {
-    if (!snapshot || !page || !release || dirty.current.size === 0 || saving) return;
-    const elements = [
-      ...(documentRef.current?.querySelectorAll<HTMLTextAreaElement>(
-        "textarea[data-field-id]",
-      ) ?? []),
-    ];
-    const ids = [...dirty.current];
-    const items = ids.flatMap((id) => {
-      const field = elements.find((candidate) => candidate.dataset.fieldId === id);
-      return !field || field.dataset.purpose !== "LEARNING_RESPONSE" || !field.dataset.sourceKey
-        ? []
-        : [
-            {
-              semanticFieldId: id,
-              sourceFieldKey: field.dataset.sourceKey,
-              semanticStepId: page.id,
-              value: drafts[id] ?? "",
-            },
-          ];
-    });
-    if (!items.length) {
-      dirty.current.clear();
-      setSaveState("saved");
-      return;
-    }
+  const saveDirtyResponses = useCallback(async (): Promise<boolean> => {
+    if (!release) return queue.current.size === 0;
+    if (queue.current.size === 0) return true;
     setSaving(true);
     setSaveState("saving");
-    setError("");
-    try {
-      const response = await fetch("/api/learning", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          action: "saveWorkbookResponses",
-          labCode: "HAB",
-          contentReleaseId: release.id,
-          items,
-        }),
-      });
-      const data = (await response.json()) as LearningSnapshot & { error?: string };
-      if (!response.ok) {
-        throw new Error(data.error || "Your workbook responses could not be saved.");
+    const success = await queue.current.flush(async (items) => {
+      try {
+        const response = await fetch("/api/learning", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ action: "saveWorkbookResponses", labCode: programme?.labCode ?? "HAB", contentReleaseId: release.id, items }),
+        });
+        const data = await response.json() as LearningSnapshot & { error?: string };
+        if (!response.ok) throw new Error(data.error || "Your workbook responses could not be saved.");
+        mergeSnapshot(data);
+      } catch (cause) {
+        setError((cause instanceof Error ? cause.message : "Your workbook responses could not be saved.") + " Your edits are still here. Retry before leaving this page.");
+        throw cause;
       }
-      ids.forEach((id) => dirty.current.delete(id));
-      mergeSnapshot(data);
-      setSaveState("saved");
-    } catch (cause) {
-      setError(
-        cause instanceof Error ? cause.message : "Your workbook responses could not be saved.",
-      );
-      setSaveState("dirty");
-    } finally {
-      setSaving(false);
-    }
-  }, [drafts, mergeSnapshot, page, release, saving, snapshot]);
+    });
+    setSaving(false);
+    setSaveState(success ? "saved" : "error");
+    if (success) setError("");
+    return success;
+  }, [mergeSnapshot, programme, release]);
 
   useEffect(() => {
-    if (!page || !release || completed.has(page.id)) return;
-    const controller = new AbortController();
-    void fetch("/api/learning", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        action: "saveProgress",
-        labCode: "HAB",
-        contentReleaseId: release.id,
-        semanticStepId: page.id,
-        status: "STARTED",
-      }),
-      signal: controller.signal,
-    }).catch(() => undefined);
-    return () => controller.abort();
-  }, [page, release, completed]);
+    const guard = (event: BeforeUnloadEvent) => {
+      if (queue.current.size) { event.preventDefault(); event.returnValue = ""; }
+    };
+    window.addEventListener("beforeunload", guard);
+    return () => window.removeEventListener("beforeunload", guard);
+  }, []);
 
   useEffect(() => {
     if (!page || section !== "learn" || learnMode !== "reader") return;
@@ -345,18 +310,21 @@ export function ProgrammePlayer({
     ) {
       return;
     }
-    dirty.current.add(target.dataset.fieldId);
+    if (!page || !target.dataset.sourceKey) return;
+    queue.current.edit({ semanticFieldId: target.dataset.fieldId, semanticStepId: page.id, sourceFieldKey: target.dataset.sourceKey, value: target.value });
     setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: target.value }));
     setSaveState("dirty");
   }
 
   function openToday() {
+    if (completing) return;
     setSection("today");
     setMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function openLearn(mode: LearnMode = "library") {
+    if (completing) return;
     setSection("learn");
     setLearnMode(mode);
     setMenuOpen(false);
@@ -364,12 +332,13 @@ export function ProgrammePlayer({
   }
 
   async function completePage() {
-    if (!page || !release || saving) return;
-    if (page.key === "Day 3" && !phaseAComplete) {
+    if (!page || !release || saving || completing) return;
+    if (moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete) {
       setError("Complete Habit Lab Phase A before marking Programme Day 3 complete.");
       return;
     }
-    await saveDirtyResponses();
+    setCompleting(true);
+    if (!(await saveDirtyResponses())) { setCompleting(false); return; }
     setSaving(true);
     setError("");
     try {
@@ -378,7 +347,7 @@ export function ProgrammePlayer({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           action: "saveProgress",
-          labCode: "HAB",
+          labCode: moduleCode,
           contentReleaseId: release.id,
           semanticStepId: page.id,
           status: "COMPLETED",
@@ -397,6 +366,7 @@ export function ProgrammePlayer({
       setError(cause instanceof Error ? cause.message : "Programme progress could not be saved.");
     } finally {
       setSaving(false);
+      setCompleting(false);
     }
   }
 
@@ -420,10 +390,16 @@ export function ProgrammePlayer({
     );
   }
 
-  const dayThree = page.key === "Day 3" ? splitDayThree(page) : null;
+  const dayThree = moduleCode === "HAB" && page.key === "Day 3" ? splitDayThree(page) : null;
 
   return (
-    <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition}>
+    <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition} onClickCapture={(event) => {
+      const link = (event.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
+      if (link && completing) { event.preventDefault(); return; }
+      if (!link || !queue.current.size || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      void saveDirtyResponses().then((saved) => { if (saved) window.location.assign(link.href); });
+    }}>
       <header className="prototype-topbar">
         <button
           type="button"
@@ -459,7 +435,7 @@ export function ProgrammePlayer({
                 <div className="prototype-progress-track">
                   <i style={{ width: `${progressPercent}%` }} />
                 </div>
-                <small>{progressPercent}% of the Habit programme reviewed</small>
+                <small>{progressPercent}% of this handbook reviewed</small>
               </div>
             </div>
 
@@ -473,7 +449,7 @@ export function ProgrammePlayer({
                 </button>
               </article>
 
-              {page.key === "Day 3" && !phaseAComplete ? (
+              {moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete ? (
                 <article className="prototype-card prototype-action-card">
                   <FlaskConical />
                   <p className="prototype-eyebrow">Day 3 · Habit Lab</p>
@@ -485,7 +461,7 @@ export function ProgrammePlayer({
                 </article>
               ) : null}
 
-              {runtime.experiment ? (
+              {moduleCode === "HAB" && runtime.experiment ? (
                 <article className="prototype-card prototype-action-card">
                   <CalendarDays />
                   <p className="prototype-eyebrow">Field experiment</p>
@@ -521,7 +497,7 @@ export function ProgrammePlayer({
             <div className="prototype-reader-hero prototype-reader-hero-compact">
               <div className="prototype-reader-compact-head">
                 <div>
-                  <p className="prototype-eyebrow">Habit Investigation Handbook</p>
+                  <p className="prototype-eyebrow">{programme.subtitle}</p>
                   <h1>{page.programmeDay ? `Day ${page.programmeDay} of 10` : page.key}</h1>
                 </div>
                 <strong>{progressPercent}%</strong>
@@ -534,7 +510,7 @@ export function ProgrammePlayer({
               </div>
             </div>
 
-            <details className="prototype-programme-map">
+            <details className="prototype-programme-map" open>
               <summary>
                 <span>
                   <LibraryBig /> Programme map
@@ -546,6 +522,7 @@ export function ProgrammePlayer({
                   <button
                     type="button"
                     key={item.id}
+                    disabled={completing}
                     className={`${index === selected ? "current" : ""} ${completed.has(item.id) ? "complete" : ""}`}
                     onClick={() => {
                       setSelected(index);
@@ -568,9 +545,11 @@ export function ProgrammePlayer({
                 ? "Saving workbook responses…"
                 : saveState === "dirty"
                   ? "Changes waiting to save…"
-                  : "Workbook responses saved"}
+                  : saveState === "error" ? "Not saved — retry before leaving" : "Workbook responses saved"}
+              {saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
 
+            <fieldset className="workbook-fields" disabled={completing}>
             <article ref={documentRef} className="prototype-document" onInput={onDocumentInput}>
               {dayThree ? (
                 <>
@@ -613,7 +592,16 @@ export function ProgrammePlayer({
                 <div dangerouslySetInnerHTML={{ __html: page.html }} />
               )}
             </article>
+            </fieldset>
 
+            {page.key === "Certificate" && completed.has(page.id) ? (
+              <section className="handbook-next" aria-label="Continue learning">
+                <h2>Choose your next handbook</h2>
+                <p>Your page review is saved. All five handbooks are open; choose any one.</p>
+                <div>{BIS_MODULES.filter((item) => item.learningStatus === "live" && item.code !== moduleCode).map((item) => <Link key={item.code} href={item.learningHref!}>{item.title}<ArrowRight /></Link>)}</div>
+              </section>
+            ) : null}
+            {moduleCode !== "HAB" && page.key === "Day 3" ? <p className="handbook-learning-note">These are private handbook reflections. Formal Lab investigations and their evidence records remain separate. {moduleCode === "DEC" || moduleCode === "MON" ? <Link href={moduleCode === "DEC" ? "/decision" : "/money"}>Open the live {programme.title}</Link> : null}</p> : null}
             {error ? (
               <p className="prototype-error" role="alert">
                 {error}
@@ -624,7 +612,7 @@ export function ProgrammePlayer({
               <button
                 type="button"
                 onClick={() => setSelected(Math.max(0, selected - 1))}
-                disabled={selected === 0}
+                disabled={selected === 0 || completing}
               >
                 <ArrowLeft /> Previous
               </button>
@@ -632,9 +620,9 @@ export function ProgrammePlayer({
                 type="button"
                 className="primary"
                 onClick={() => void completePage()}
-                disabled={saving || (page.key === "Day 3" && !phaseAComplete)}
+                disabled={saving || completing || (moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete)}
               >
-                {page.key === "Day 3" && !phaseAComplete
+                {moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete
                   ? "Complete Phase A first"
                   : completed.has(page.id)
                     ? "Reviewed"
@@ -676,7 +664,7 @@ export function ProgrammePlayer({
           <button
             type="button"
             className={section === "learn" ? "active" : ""}
-            onClick={() => window.location.assign("/learn")}
+            onClick={() => { void saveDirtyResponses().then((saved) => { if (saved) window.location.assign("/learn"); }); }}
           >
             <BookOpen />
             <span><strong>Learn</strong><small>Browse handbooks</small></span>
@@ -711,4 +699,5 @@ export function ProgrammePlayer({
     </div>
   );
 }
+
 

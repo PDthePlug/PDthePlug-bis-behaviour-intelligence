@@ -37,7 +37,7 @@ test("handbook reader uses a compact progress header instead of a repeated cover
   const css = await source("app/learner-readability.css");
 
   assert.match(player, /prototype-reader-hero-compact/);
-  assert.match(player, /Habit Investigation Handbook/);
+  assert.match(player, /programme.subtitle/);
   assert.match(player, /Day \$\{page\.programmeDay\} of 10/);
   assert.match(player, /\{progressPercent\}%/);
   assert.doesNotMatch(player, /Ten days\. One repeated behaviour\. Your learning material stays here/);
@@ -60,3 +60,4 @@ test("delivery edition stays in the data model and Profile but not repeated lear
   assert.match(profile, /Emerging Adult Edition/);
   assert.match(profile, /Workplace Edition/);
 });
+

@@ -1,0 +1,141 @@
+{
+  "source": "BIS_Volume1_learning_Handbooks_1-5_v13(1).html",
+  "sourceSha256": "a3a1f0b832ec066a8d80b103e17e502dd0d524437dd37e5114c54404186e2977",
+  "handbooks": [
+    {
+      "code": "HAB",
+      "edition": "school",
+      "version": "1.4",
+      "asset": "habit-school.json.gz.b64",
+      "sha256": "caff62d8656ce1b6507b2bcdcfcb9dc9aed6d6fb391ac99e25f8415a68138158",
+      "pages": 13,
+      "fields": 169
+    },
+    {
+      "code": "HAB",
+      "edition": "emerging_adult",
+      "version": "1.4",
+      "asset": "habit-emerging_adult.json.gz.b64",
+      "sha256": "a074b423ad8cc0ecec53da235ecbe2aaed315d559d40542d8656e29f4a8fd37a",
+      "pages": 13,
+      "fields": 176
+    },
+    {
+      "code": "HAB",
+      "edition": "workplace",
+      "version": "1.4",
+      "asset": "habit-workplace.json.gz.b64",
+      "sha256": "645e89b8a7f09082dd5e8a279b912e8e4df9815d5f759dd640012f63a68e0350",
+      "pages": 13,
+      "fields": 170
+    },
+    {
+      "code": "DEC",
+      "edition": "school",
+      "version": "1.7",
+      "asset": "decision-school.json.gz.b64",
+      "sha256": "5f40e0e919215577ed039fb0ee34b7e7236d7ac7d75a6e21e85373ab1c25e758",
+      "pages": 13,
+      "fields": 428
+    },
+    {
+      "code": "DEC",
+      "edition": "emerging_adult",
+      "version": "1.7",
+      "asset": "decision-emerging_adult.json.gz.b64",
+      "sha256": "8233f7f7f19b1b17ce2f7c562941cb85a453e8364f3122abc0eeea9d82747745",
+      "pages": 13,
+      "fields": 433
+    },
+    {
+      "code": "DEC",
+      "edition": "workplace",
+      "version": "1.7",
+      "asset": "decision-workplace.json.gz.b64",
+      "sha256": "197d820209dc737a8f3ac0f6425878fad8a5f3240ed2ff382896e33869b4a415",
+      "pages": 13,
+      "fields": 433
+    },
+    {
+      "code": "MON",
+      "edition": "school",
+      "version": "1.2",
+      "asset": "money-school.json.gz.b64",
+      "sha256": "cbd3fd6168b5df1510ff623419de73e22b1ab9fa929a12e599aa60a70536b00d",
+      "pages": 13,
+      "fields": 207
+    },
+    {
+      "code": "MON",
+      "edition": "emerging_adult",
+      "version": "1.2",
+      "asset": "money-emerging_adult.json.gz.b64",
+      "sha256": "7bd0e05bb3b5d0bf4e0ab57ed98fbb1e82636b57b071879ed05a951224149672",
+      "pages": 13,
+      "fields": 284
+    },
+    {
+      "code": "MON",
+      "edition": "workplace",
+      "version": "1.2",
+      "asset": "money-workplace.json.gz.b64",
+      "sha256": "77a035713e91bbdaeafa83df1bc98bafc66add446cda2323e069252939e34837",
+      "pages": 13,
+      "fields": 175
+    },
+    {
+      "code": "IDN",
+      "edition": "school",
+      "version": "1.2.1",
+      "asset": "identity-school.json.gz.b64",
+      "sha256": "e963ce403b6d10131844a16695766c96de10c174e815b348c54f05fa036dbf4e",
+      "pages": 13,
+      "fields": 159
+    },
+    {
+      "code": "IDN",
+      "edition": "emerging_adult",
+      "version": "1.2.1",
+      "asset": "identity-emerging_adult.json.gz.b64",
+      "sha256": "8658c2496e25cac1545db2d51d6b96c68dbf1bfe83ff8a93f88fb051cfbbd332",
+      "pages": 13,
+      "fields": 159
+    },
+    {
+      "code": "IDN",
+      "edition": "workplace",
+      "version": "1.2.1",
+      "asset": "identity-workplace.json.gz.b64",
+      "sha256": "2e5d71f763c1155347c311aaa61dd2c4ba392c2f669e1142c26223091cb16c32",
+      "pages": 13,
+      "fields": 159
+    },
+    {
+      "code": "ATT",
+      "edition": "school",
+      "version": "1.0",
+      "asset": "attention-school.json.gz.b64",
+      "sha256": "c4b413ff6b9bbed4eec9ec1a408d8ae03379ea3995e2591576fbe75fbdb89b9e",
+      "pages": 13,
+      "fields": 170
+    },
+    {
+      "code": "ATT",
+      "edition": "emerging_adult",
+      "version": "1.0",
+      "asset": "attention-emerging_adult.json.gz.b64",
+      "sha256": "1f79b0fd4ae0d7e25b7291da893e382fc73a9be50c821aa4d924ea47c7ab2566",
+      "pages": 13,
+      "fields": 168
+    },
+    {
+      "code": "ATT",
+      "edition": "workplace",
+      "version": "1.0",
+      "asset": "attention-workplace.json.gz.b64",
+      "sha256": "85b23c100370e48d0682c21d14e6bb2038fc5186ff6b7fa12036fa0d29e27ca2",
+      "pages": 13,
+      "fields": 168
+    }
+  ]
+}

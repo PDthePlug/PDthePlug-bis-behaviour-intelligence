@@ -43,10 +43,12 @@ function ProgrammeChoice({ active, title, detail, onClick }: { active: boolean; 
 }
 
 export function ProgrammeEntry({
+  moduleCode = "HAB",
   initialIdentity,
   initialSection = "today",
   initialLearnMode = "library",
 }: {
+  moduleCode?: "HAB" | "DEC" | "MON" | "IDN" | "ATT";
   initialIdentity: { email: string; displayName: string };
   initialSection?: InitialSection;
   initialLearnMode?: "library" | "reader";
@@ -121,7 +123,8 @@ export function ProgrammeEntry({
   if (snapshot.profile && snapshot.consent?.status === "GRANTED") {
     return (
       <ProgrammePlayer
-        key={`${initialSection}:${initialLearnMode}`}
+        key={`${moduleCode}:${initialSection}:${initialLearnMode}`}
+        moduleCode={moduleCode}
         initialSection={initialSection}
         initialLearnMode={initialLearnMode}
       />
@@ -174,3 +177,4 @@ export function ProgrammeEntry({
     </main>
   );
 }
+
