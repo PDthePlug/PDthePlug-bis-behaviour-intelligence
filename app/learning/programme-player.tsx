@@ -155,6 +155,15 @@ export function ProgrammePlayer({
   const queue = useRef(new WorkbookSaveQueue());
   const [completing, setCompleting] = useState(false);
   const documentRef = useRef<HTMLElement | null>(null);
+  const [mapOpen, setMapOpen] = useState(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1100px)");
+    const sync = () => setMapOpen(desktop.matches);
+    const frame = requestAnimationFrame(sync);
+    desktop.addEventListener("change", sync);
+    return () => { cancelAnimationFrame(frame); desktop.removeEventListener("change", sync); };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -268,6 +277,21 @@ export function ProgrammePlayer({
     if (success) setError("");
     return success;
   }, [mergeSnapshot, programme, release]);
+
+  // Capture document-wide links, including the shared shell outside this player.
+  useEffect(() => {
+    const guardNavigation = (event: MouseEvent) => {
+      const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+      if (!link || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.target === "_blank" || link.hasAttribute("download")) return;
+      if (link.getAttribute("href")?.startsWith("#")) return;
+      if (!completing && !queue.current.size) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (!completing) void saveDirtyResponses().then((saved) => { if (saved) window.location.assign(link.href); });
+    };
+    document.addEventListener("click", guardNavigation, true);
+    return () => document.removeEventListener("click", guardNavigation, true);
+  }, [completing, saveDirtyResponses]);
 
   useEffect(() => {
     const guard = (event: BeforeUnloadEvent) => {
@@ -393,13 +417,7 @@ export function ProgrammePlayer({
   const dayThree = moduleCode === "HAB" && page.key === "Day 3" ? splitDayThree(page) : null;
 
   return (
-    <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition} onClickCapture={(event) => {
-      const link = (event.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
-      if (link && completing) { event.preventDefault(); return; }
-      if (!link || !queue.current.size || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-      event.preventDefault();
-      void saveDirtyResponses().then((saved) => { if (saved) window.location.assign(link.href); });
-    }}>
+    <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition}>
       <header className="prototype-topbar">
         <button
           type="button"
@@ -510,7 +528,7 @@ export function ProgrammePlayer({
               </div>
             </div>
 
-            <details className="prototype-programme-map" open>
+            <details className="prototype-programme-map" open={mapOpen} onToggle={(event) => setMapOpen(event.currentTarget.open)}>
               <summary>
                 <span>
                   <LibraryBig /> Programme map

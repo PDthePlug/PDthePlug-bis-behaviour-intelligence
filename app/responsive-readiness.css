@@ -62,3 +62,57 @@
  .prototype-document td[data-label]::before{content:attr(data-label);display:block;font-size:12px;font-weight:750;color:#27675c;margin-bottom:4px}
  .prototype-document td:last-child{border-bottom:0}
 }
+
+/* Compact phone composition from the accepted mobile references. Keep native
+   viewport scaling and 44px actions; reflow content instead of shrinking a page. */
+@media(max-width:700px){
+ .canonical-shell .canonical-topbar{height:58px;padding:0 10px;gap:8px}
+ .canonical-shell .canonical-brand{gap:8px}
+ .canonical-shell .canonical-brand>span{width:34px;height:34px;border-radius:10px}
+ .canonical-shell .canonical-brand strong{font-size:11px;white-space:normal;line-height:1.25}
+ .canonical-shell .canonical-brand small{display:block;font-size:10px;line-height:1.4}
+ .canonical-shell .canonical-location{flex-shrink:0}
+ .canonical-shell .canonical-location strong{font-size:11px}
+ .canonical-shell .canonical-menu-trigger{min-width:104px;height:44px;padding:0 16px;font-size:12px}
+ .canonical-shell .bis-library-page{width:calc(100% - 24px);padding:26px 0 100px}
+ .canonical-shell .bis-library-hero{gap:12px;margin-bottom:20px;align-items:flex-end}
+ .canonical-shell .bis-library-hero h1{font-size:clamp(32px,8.7vw,46px)}
+ .canonical-shell .bis-library-eyebrow{font-size:9px;letter-spacing:.06em}
+ .canonical-shell .bis-library-hero>div:first-child>p:last-child{font-size:13px;line-height:1.5;margin-top:10px}
+ .canonical-shell .bis-library-count{display:grid}
+ .canonical-shell .bis-library-count strong{font-size:36px}
+ .canonical-shell .bis-library-count span{font-size:10px}
+ .canonical-shell .bis-volume-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:13px}
+ .canonical-shell .bis-volume-tabs button{min-width:0;min-height:44px;font-size:12px;gap:4px;padding:4px}
+ .canonical-shell .bis-volume-tabs small{min-width:18px;font-size:9px;padding:2px 4px}
+ .canonical-shell .bis-volume-heading{margin:22px 0 12px;gap:10px;align-items:end}
+ .canonical-shell .bis-volume-heading h2{font-size:clamp(23px,6vw,30px);line-height:1.08}
+ .canonical-shell .bis-volume-heading p{font-size:10px}
+ .canonical-shell .bis-volume-heading>span{display:block;flex-shrink:0;font-size:10px}
+ .canonical-shell .bis-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .canonical-shell .bis-module-card{min-width:0;min-height:178px;padding:13px;gap:16px;border-radius:16px}
+ .canonical-shell .bis-module-card-copy h3{font-size:clamp(20px,5.5vw,26px);overflow-wrap:anywhere}
+ .canonical-shell .bis-module-card-copy small{font-size:9px}
+ .canonical-shell .bis-module-card-top svg{width:16px}
+ .canonical-shell .bis-module-card-foot span{font-size:9px;padding:0 8px;min-height:25px}
+ .canonical-shell .profile-page{width:calc(100% - 24px);padding:24px 0 100px}
+ .canonical-shell .profile-hero{margin-bottom:22px}
+ .canonical-shell .profile-hero h1{font-size:38px}
+ .canonical-shell .profile-hero>p:last-child{font-size:14px}
+ .canonical-shell .profile-card{padding:18px;gap:14px;border-radius:18px}
+ .canonical-shell .profile-card h2{font-size:25px}
+ .canonical-shell .profile-card dl div{grid-template-columns:78px minmax(0,1fr);gap:10px;padding:12px 0}
+ .canonical-shell .profile-card dd{font-size:13px}
+ .canonical-shell .prototype-page{padding-top:20px}
+ .canonical-shell .prototype-today-hero{padding:22px;gap:18px;border-radius:20px}
+ .canonical-shell .prototype-today-hero h1{font-size:32px;line-height:1.12}
+ .canonical-shell .prototype-card{padding:20px}
+ .canonical-shell .prototype-card h2{font-size:23px}
+ .canonical-shell .prototype-card p,.canonical-shell .prototype-card small{font-size:14px}
+ .canonical-shell .prototype-document{padding:20px 16px;border-radius:18px}
+ .canonical-shell .prototype-document p,.canonical-shell .prototype-document li,.canonical-shell .prototype-document blockquote{font-size:15px;line-height:1.7}
+ .canonical-shell .prototype-document h2{font-size:26px}
+ .canonical-shell .prototype-document .handbook-callout{padding:14px;font-size:14px}
+ .canonical-shell .prototype-programme-map>summary{flex-wrap:wrap;gap:10px;padding:16px}
+ .canonical-shell .prototype-programme-map>summary strong{font-size:12px;line-height:1.5}
+}

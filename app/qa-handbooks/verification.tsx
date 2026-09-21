@@ -5,6 +5,10 @@ import { ModuleLibrary } from "../catalogue/module-library";
 import { ProgrammeOutcomesView, type SponsorSnapshot } from "../programme-outcomes-view";
 import "../programme-outcomes-view.css";
 import "../workspace/staff-workspace-hardening.css";
+import { CanonicalAdaptiveShell } from "../canonical-adaptive-shell";
+import "../canonical-shell.css";
+import "../learner-readability.css";
+import "../catalogue/catalogue.css";
 import manifest from "../../public/handbooks/v1/manifest.json";
 
 const report: SponsorSnapshot = {
@@ -47,5 +51,5 @@ export function HandbookVerification({ initialFrame, initialView, initialPage }:
   },[frame,initialView,initialPage]);
   if(!ready)return <p>Opening synthetic verification fixture…</p>;
   if(!frame)return <main style={{padding:12}}><h1>Handbook verification · synthetic data</h1><label>Viewport <select aria-label="Viewport" value={width} onChange={e=>setWidth(Number(e.target.value))}>{[320,390,768,1280].map(w=><option key={w}>{w}</option>)}</select></label> <label>Surface <select aria-label="Surface" value={view} onChange={e=>setView(e.target.value)}>{["HAB","DEC","MON","IDN","ATT","library","outcomes"].map(x=><option key={x}>{x}</option>)}</select></label> <label>Page <select aria-label="Page" value={page} onChange={e=>setPage(e.target.value)}>{["DAY2","CERTIFICATE"].map(x=><option key={x}>{x}</option>)}</select></label><iframe title="BIS verification viewport" key={`${view}:${page}`} src={`/qa-handbooks?frame=1&view=${view}&page=${page}`} style={{display:"block",width,height:1000,border:"1px solid #999",marginTop:12}} /></main>;
-  return <><div style={{position:"relative",zIndex:200,background:"#fff6ce",padding:12,fontSize:12}}><strong>Synthetic QA fixture</strong> <button id="qa-fail" aria-pressed={fail} onClick={()=>setFail(!fail)}>Fail saves: {fail?"on":"off"}</button><p role="status">{status}</p></div>{view==="outcomes"?<div className="staff-workspace-shell"><nav className="staff-workspace-switcher">{["Facilitator","Programme Outcomes","BIS Administrator"].map(x=><button key={x}><span>•</span><span><strong>{x}</strong></span></button>)}</nav><main className="staff-workspace-main"><div className="page-wrap operations-view"><ProgrammeOutcomesView data={report}/></div></main></div>:view==="library"?<ModuleLibrary mode="learning"/>:<ProgrammePlayer moduleCode={view as "HAB"|"DEC"|"MON"|"IDN"|"ATT"} initialSection="learn" initialLearnMode="reader"/>}</>;
+  return <><div style={{position:"relative",zIndex:200,background:"#fff6ce",padding:12,fontSize:12}}><strong>Synthetic QA fixture</strong> <button id="qa-fail" aria-pressed={fail} onClick={()=>setFail(!fail)}>Fail saves: {fail?"on":"off"}</button><p role="status">{status}</p></div>{view==="outcomes"?<div className="staff-workspace-shell"><nav className="staff-workspace-switcher">{["Facilitator","Programme Outcomes","BIS Administrator"].map(x=><button key={x}><span>•</span><span><strong>{x}</strong></span></button>)}</nav><main className="staff-workspace-main"><div className="page-wrap operations-view"><ProgrammeOutcomesView data={report}/></div></main></div>:<CanonicalAdaptiveShell>{view==="library"?<ModuleLibrary mode="learning"/>:<ProgrammePlayer moduleCode={view as "HAB"|"DEC"|"MON"|"IDN"|"ATT"} initialSection="learn" initialLearnMode="reader"/>}</CanonicalAdaptiveShell>}</>;
 }
