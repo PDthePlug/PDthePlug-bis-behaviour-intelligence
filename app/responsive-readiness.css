@@ -103,16 +103,16 @@
  .canonical-shell .profile-card h2{font-size:25px}
  .canonical-shell .profile-card dl div{grid-template-columns:78px minmax(0,1fr);gap:10px;padding:12px 0}
  .canonical-shell .profile-card dd{font-size:13px}
- .canonical-shell .prototype-page{padding-top:20px}
- .canonical-shell .prototype-today-hero{padding:22px;gap:18px;border-radius:20px}
- .canonical-shell .prototype-today-hero h1{font-size:32px;line-height:1.12}
- .canonical-shell .prototype-card{padding:20px}
- .canonical-shell .prototype-card h2{font-size:23px}
- .canonical-shell .prototype-card p,.canonical-shell .prototype-card small{font-size:14px}
- .canonical-shell .prototype-document{padding:20px 16px;border-radius:18px}
- .canonical-shell .prototype-document p,.canonical-shell .prototype-document li,.canonical-shell .prototype-document blockquote{font-size:15px;line-height:1.7}
- .canonical-shell .prototype-document h2{font-size:26px}
- .canonical-shell .prototype-document .handbook-callout{padding:14px;font-size:14px}
- .canonical-shell .prototype-programme-map>summary{flex-wrap:wrap;gap:10px;padding:16px}
- .canonical-shell .prototype-programme-map>summary strong{font-size:12px;line-height:1.5}
+ .canonical-shell .prototype-player .prototype-page{padding-top:20px}
+ .canonical-shell .prototype-player .prototype-today-hero{padding:22px;gap:18px;border-radius:20px}
+ .canonical-shell .prototype-player .prototype-today-hero h1{font-size:32px;line-height:1.12}
+ .canonical-shell .prototype-player .prototype-card{padding:20px}
+ .canonical-shell .prototype-player .prototype-card h2{font-size:23px}
+ .canonical-shell .prototype-player .prototype-card p,.canonical-shell .prototype-player .prototype-card small{font-size:14px}
+ .canonical-shell .prototype-player .prototype-document{padding:20px 16px;border-radius:18px}
+ .canonical-shell .prototype-player .prototype-document p,.canonical-shell .prototype-player .prototype-document li,.canonical-shell .prototype-player .prototype-document blockquote{font-size:15px;line-height:1.7}
+ .canonical-shell .prototype-player .prototype-document h2{font-size:26px}
+ .canonical-shell .prototype-player .prototype-document .handbook-callout{padding:14px;font-size:14px}
+ .canonical-shell .prototype-player .prototype-programme-map>summary{flex-wrap:wrap;gap:10px;padding:16px}
+ .canonical-shell .prototype-player .prototype-programme-map>summary strong{font-size:12px;line-height:1.5}
 }
