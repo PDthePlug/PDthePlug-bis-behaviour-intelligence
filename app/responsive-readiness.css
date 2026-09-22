@@ -46,9 +46,6 @@
  .programme-outcomes .journey-days{grid-template-columns:repeat(5,minmax(0,1fr))}
  .programme-outcomes .outcomes-hero h1{font-size:clamp(30px,8vw,42px);line-height:1.08}
  .programme-outcomes .outcomes-pdf-link{white-space:normal;text-align:center;min-width:0}
- .staff-workspace-shell .staff-workspace-switcher{position:relative;top:auto;display:flex;flex-wrap:wrap;padding:8px 12px;gap:4px}
- .staff-workspace-shell .staff-workspace-switcher button{flex:1 1 140px;min-width:0;min-height:44px;padding:9px;grid-template-columns:18px minmax(0,1fr);gap:6px}
- .staff-workspace-shell .staff-workspace-switcher strong{font-size:12px}
  .staff-workspace-shell .staff-workspace-switcher small{display:none}
  .habit-lab-route .investigation-rail{position:relative;top:auto;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));padding:8px;gap:0;overflow:visible}
  .habit-lab-route .investigation-rail button{min-width:0;width:100%;padding:4px 0;grid-template-columns:1fr;min-height:44px}
@@ -63,56 +60,129 @@
  .prototype-document td:last-child{border-bottom:0}
 }
 
-/* Compact phone composition from the accepted mobile references. Keep native
-   viewport scaling and 44px actions; reflow content instead of shrinking a page. */
+/* Phone density follows the supplied references at a native device viewport.
+   Keep zoom available, text inputs at 16px and primary touch actions at 44px.
+   Component-scoped selectors outrank route styles loaded after the root layout. */
 @media(max-width:700px){
- .canonical-shell .canonical-topbar{height:58px;padding:0 10px;gap:8px}
- .canonical-shell .canonical-brand{gap:8px}
- .canonical-shell .canonical-brand>span{width:34px;height:34px;border-radius:10px}
- .canonical-shell .canonical-brand strong{font-size:11px;white-space:normal;line-height:1.25}
- .canonical-shell .canonical-brand small{display:block;font-size:10px;line-height:1.4}
+ .canonical-shell .canonical-topbar{height:44px;padding:0 10px;gap:8px}
+ .canonical-shell .canonical-brand{gap:7px}
+ .canonical-shell .canonical-brand>span{width:28px;height:28px;border-radius:8px;font-size:9px}
+ .canonical-shell .canonical-brand strong{font-size:10px;white-space:normal;line-height:1.25}
+ .canonical-shell .canonical-topbar .canonical-brand small{display:block;font-size:9px;line-height:1.35}
  .canonical-shell .canonical-location{flex-shrink:0}
- .canonical-shell .canonical-location strong{font-size:11px}
- .canonical-shell .canonical-menu-trigger{min-width:104px;height:44px;padding:0 16px;font-size:12px}
- .canonical-shell .bis-library-page{width:calc(100% - 24px);padding:26px 0 100px}
- .canonical-shell .bis-library-hero{gap:12px;margin-bottom:20px;align-items:flex-end}
- .canonical-shell .bis-library-hero h1{font-size:clamp(32px,8.7vw,46px)}
- .canonical-shell .bis-library-eyebrow{font-size:9px;letter-spacing:.06em}
- .canonical-shell .bis-library-hero>div:first-child>p:last-child{font-size:13px;line-height:1.5;margin-top:10px}
+ .canonical-shell .canonical-location strong{font-size:10px}
+ .canonical-shell .canonical-task{min-height:calc(100svh - 44px)}
+ .canonical-shell .canonical-menu-trigger{min-width:96px;height:44px;padding:0 14px;font-size:11px;bottom:max(10px,env(safe-area-inset-bottom))}
+ .canonical-shell .canonical-menu-trigger svg{width:16px}
+
+ .canonical-shell .bis-library-page{width:calc(100% - 24px);padding:26px 0 90px}
+ .canonical-shell .bis-library-hero{gap:10px;margin-bottom:18px;align-items:flex-end}
+ .canonical-shell .bis-library-hero h1{font-size:clamp(26px,7.7vw,38px);line-height:1.02}
+ .canonical-shell .bis-library-eyebrow{font-size:9px;letter-spacing:.06em;margin-bottom:7px}
+ .canonical-shell .bis-library-hero>div:first-child>p:last-child{font-size:12px;line-height:1.5;margin-top:8px}
  .canonical-shell .bis-library-count{display:grid}
- .canonical-shell .bis-library-count strong{font-size:36px}
- .canonical-shell .bis-library-count span{font-size:10px}
- .canonical-shell .bis-volume-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px;border-radius:13px}
- .canonical-shell .bis-volume-tabs button{min-width:0;min-height:44px;font-size:12px;gap:4px;padding:4px}
- .canonical-shell .bis-volume-tabs small{min-width:18px;font-size:9px;padding:2px 4px}
- .canonical-shell .bis-volume-heading{margin:22px 0 12px;gap:10px;align-items:end}
- .canonical-shell .bis-volume-heading h2{font-size:clamp(23px,6vw,30px);line-height:1.08}
- .canonical-shell .bis-volume-heading p{font-size:10px}
- .canonical-shell .bis-volume-heading>span{display:block;flex-shrink:0;font-size:10px}
+ .canonical-shell .bis-library-count strong{font-size:32px}
+ .canonical-shell .bis-library-count span{font-size:9px}
+ .canonical-shell .bis-volume-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:3px;border-radius:12px}
+ .canonical-shell .bis-volume-tabs button{min-width:0;min-height:44px;font-size:12px;gap:4px;padding:3px}
+ .canonical-shell .bis-volume-tabs small{min-width:16px;font-size:9px;padding:2px 3px}
+ .canonical-shell .bis-volume-heading{margin:20px 0 10px;gap:8px;align-items:end}
+ .canonical-shell .bis-volume-heading h2{font-size:clamp(20px,5.6vw,28px);line-height:1.08}
+ .canonical-shell .bis-volume-heading p{font-size:9px}
+ .canonical-shell .bis-volume-heading>span{display:block;flex-shrink:0;font-size:9px}
  .canonical-shell .bis-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .canonical-shell .bis-module-card{min-width:0;min-height:178px;padding:13px;gap:16px;border-radius:16px}
- .canonical-shell .bis-module-card-copy h3{font-size:clamp(20px,5.5vw,26px);overflow-wrap:anywhere}
- .canonical-shell .bis-module-card-copy small{font-size:9px}
- .canonical-shell .bis-module-card-top svg{width:16px}
- .canonical-shell .bis-module-card-foot span{font-size:9px;padding:0 8px;min-height:25px}
- .canonical-shell .profile-page{width:calc(100% - 24px);padding:24px 0 100px}
- .canonical-shell .profile-hero{margin-bottom:22px}
- .canonical-shell .profile-hero h1{font-size:38px}
- .canonical-shell .profile-hero>p:last-child{font-size:14px}
- .canonical-shell .profile-card{padding:18px;gap:14px;border-radius:18px}
- .canonical-shell .profile-card h2{font-size:25px}
- .canonical-shell .profile-card dl div{grid-template-columns:78px minmax(0,1fr);gap:10px;padding:12px 0}
- .canonical-shell .profile-card dd{font-size:13px}
- .canonical-shell .prototype-player .prototype-page{padding-top:20px}
- .canonical-shell .prototype-player .prototype-today-hero{padding:22px;gap:18px;border-radius:20px}
- .canonical-shell .prototype-player .prototype-today-hero h1{font-size:32px;line-height:1.12}
- .canonical-shell .prototype-player .prototype-card{padding:20px}
- .canonical-shell .prototype-player .prototype-card h2{font-size:23px}
- .canonical-shell .prototype-player .prototype-card p,.canonical-shell .prototype-player .prototype-card small{font-size:14px}
- .canonical-shell .prototype-player .prototype-document{padding:20px 16px;border-radius:18px}
- .canonical-shell .prototype-player .prototype-document p,.canonical-shell .prototype-player .prototype-document li,.canonical-shell .prototype-player .prototype-document blockquote{font-size:15px;line-height:1.7}
- .canonical-shell .prototype-player .prototype-document h2{font-size:26px}
- .canonical-shell .prototype-player .prototype-document .handbook-callout{padding:14px;font-size:14px}
- .canonical-shell .prototype-player .prototype-programme-map>summary{flex-wrap:wrap;gap:10px;padding:16px}
- .canonical-shell .prototype-player .prototype-programme-map>summary strong{font-size:12px;line-height:1.5}
+ .canonical-shell .bis-module-card{min-width:0;min-height:138px;padding:12px;gap:10px;border-radius:14px}
+ .canonical-shell .bis-module-card-copy h3{font-size:clamp(18px,5.1vw,25px);overflow-wrap:anywhere;margin-top:5px}
+ .canonical-shell .bis-module-card-copy small{font-size:9px;line-height:1.3}
+ .canonical-shell .bis-module-card-top>span{font-size:9px}
+ .canonical-shell .bis-module-card-top svg{width:14px;height:14px}
+ .canonical-shell .bis-module-card-foot span{font-size:9px;padding:0 7px;min-height:22px}
+ .canonical-shell .bis-module-card-foot svg{width:15px;height:15px}
+
+ .canonical-shell .profile-page{width:calc(100% - 20px);padding:20px 0 90px}
+ .canonical-shell .profile-hero{margin-bottom:20px}
+ .canonical-shell .profile-hero h1{font-size:32px;margin:6px 0 8px;line-height:1.05}
+ .canonical-shell .profile-hero>p:last-child{font-size:13px;line-height:1.5}
+ .canonical-shell .profile-grid{gap:10px}
+ .canonical-shell .profile-card{padding:16px;gap:12px;border-radius:16px}
+ .canonical-shell .profile-card-icon{width:30px;height:30px;border-radius:10px}
+ .canonical-shell .profile-card-icon svg{width:17px;height:17px}
+ .canonical-shell .profile-label{font-size:9px}
+ .canonical-shell .profile-card h2{font-size:22px}
+ .canonical-shell .profile-card dl div{grid-template-columns:72px minmax(0,1fr);gap:10px;padding:10px 0}
+ .canonical-shell .profile-card :is(dt,dd){font-size:12px;line-height:1.45}
+ .canonical-shell .profile-card>p,.canonical-shell .profile-card>div>p:last-child{font-size:12px;line-height:1.5}
+ .canonical-shell :is(.profile-secondary,.profile-signout){min-height:44px;font-size:12px;border-radius:10px}
+
+ /* A single outer gutter, rather than width reduction plus nested padding. */
+ .canonical-shell .prototype-player .prototype-main{min-height:calc(100svh - 44px)}
+ .canonical-shell .prototype-player .prototype-page{width:calc(100% - 32px);padding:18px 0 90px}
+ .canonical-shell .prototype-player .prototype-today-hero{padding:16px;gap:14px;border-radius:17px;margin-bottom:12px}
+ .canonical-shell .prototype-player .prototype-today-hero h1{font-size:clamp(25px,6.8vw,34px);line-height:1.12;margin:7px 0 10px}
+ .canonical-shell .prototype-player .prototype-today-status{padding:14px;gap:6px;border-radius:14px}
+ .canonical-shell .prototype-player .prototype-today-status>strong{font-size:16px;line-height:1.4}
+ .canonical-shell .prototype-player .prototype-today-status>span{font-size:9px}
+ .canonical-shell .prototype-player .prototype-today-status>small{font-size:10px}
+ .canonical-shell .prototype-player .prototype-dashboard-grid{gap:12px}
+ .canonical-shell .prototype-player .prototype-card{padding:17px;border-radius:15px;min-height:0}
+ .canonical-shell .prototype-player .prototype-card :is(h2,h3){font-size:19px;line-height:1.25;margin:7px 0 8px;text-wrap:pretty}
+ .canonical-shell .prototype-player .prototype-card p,.canonical-shell .prototype-player .prototype-card small{font-size:13px;line-height:1.55}
+ .canonical-shell .prototype-player .prototype-card>svg{width:22px;height:22px;margin-bottom:8px}
+ .canonical-shell .prototype-player .prototype-eyebrow{font-size:9px;line-height:1.4}
+ .canonical-shell .prototype-player .prototype-card .prototype-eyebrow{font-size:10px}
+ .canonical-shell .prototype-player .prototype-btn{font-size:12px;min-height:44px;padding:0 13px}
+ .canonical-shell .prototype-player .prototype-document{padding:18px 14px;border-radius:16px;font-size:14px}
+ .canonical-shell .prototype-player .prototype-document :is(p,li,blockquote){font-size:14px;line-height:1.65}
+ .canonical-shell .prototype-player .prototype-document h1{font-size:30px;line-height:1.12}
+ .canonical-shell .prototype-player .prototype-document h2{font-size:22px;padding:10px 12px;margin:24px 0 12px;line-height:1.2}
+ .canonical-shell .prototype-player .prototype-document h3{font-size:18px;line-height:1.3}
+ .canonical-shell .prototype-player .prototype-document .handbook-callout{padding:12px;font-size:13px;line-height:1.6}
+ .canonical-shell .prototype-player .prototype-document :is(textarea,input,select){font-size:16px}
+ .canonical-shell .prototype-player .prototype-programme-map>summary{flex-wrap:wrap;gap:8px;padding:12px}
+ .canonical-shell .prototype-player .prototype-programme-map>summary strong{font-size:11px;line-height:1.5}
+ .canonical-shell .prototype-player .prototype-save-state{font-size:11px;gap:8px;margin:10px 0}
+ .canonical-shell .prototype-player .prototype-reader-compact-head{gap:10px}
+
+ /* Centre loading within the space below the header, not a second full screen. */
+ .canonical-shell .learning-state{min-height:calc(100svh - 44px);padding:24px 20px 84px}
+ .canonical-shell .learning-state h1{font-size:27px;line-height:1.15;max-width:24ch;margin:18px 0 10px}
+ .canonical-shell .learning-state p{font-size:13px;line-height:1.5}
+ .canonical-shell .learning-loader{width:30px;height:30px}
+
+ /* Staff phone navigation mirrors the stacked reference; it scrolls with the
+    page so the controls never cover the cohort or report being read. */
+ .staff-workspace-shell{display:flex;flex-direction:column;min-height:100svh}
+ .staff-workspace-shell .staff-workspace-header{position:relative;min-height:0;flex-direction:column;align-items:stretch;gap:8px;padding:10px}
+ .staff-workspace-shell .staff-workspace-brand{gap:8px}
+ .staff-workspace-shell .staff-workspace-brand>span{width:30px;height:30px;border-radius:9px;font-size:9px}
+ .staff-workspace-shell .staff-workspace-brand strong{font-size:11px;line-height:1.3}
+ .staff-workspace-shell .staff-workspace-brand small{font-size:10px}
+ .staff-workspace-shell .staff-workspace-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .staff-workspace-shell .staff-workspace-identity{grid-column:1/-1;max-width:100%;font-size:11px}
+ .staff-workspace-shell :is(.staff-workspace-learner-link,.staff-workspace-hide){min-height:44px;padding:0 8px;font-size:11px;border-radius:9px}
+ .staff-workspace-shell .staff-workspace-switcher{position:static;display:grid;grid-template-columns:minmax(0,1fr);padding:6px 8px;gap:3px}
+ .staff-workspace-shell .staff-workspace-switcher button{min-height:44px;padding:8px 12px;gap:10px;grid-template-columns:18px minmax(0,1fr)}
+ .staff-workspace-shell .staff-workspace-switcher strong{font-size:12px}
+ .staff-workspace-shell .staff-workspace-main{flex:1;display:flex;flex-direction:column}
+ .staff-workspace-shell .staff-workspace-main .ops-loading{flex:1;min-height:220px;padding:32px 16px}
+ .staff-workspace-shell .staff-workspace-main .ops-loading h2{font-size:15px;line-height:1.5}
+ .staff-workspace-shell .staff-workspace-main .operations-view{padding:18px 12px 80px}
+ .staff-workspace-shell .staff-workspace-main .facilitator-workspace{gap:14px}
+ .staff-workspace-shell .staff-workspace-main .facilitator-view-head{gap:16px}
+ .staff-workspace-shell .staff-workspace-main :is(.facilitator-view-head,.page-intro) h1{font-size:30px;line-height:1.08}
+ .staff-workspace-shell .staff-workspace-main .facilitator-cohort-picker{width:min(360px,100%)}
+ .staff-workspace-shell .staff-workspace-main .facilitator-subnav{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:4px;border-radius:13px;overflow:visible}
+ .staff-workspace-shell .staff-workspace-main .facilitator-subnav button{min-width:0;padding:4px;font-size:11px;white-space:normal;overflow-wrap:anywhere}
+ .staff-workspace-shell .staff-workspace-main :is(.ops-cohort-banner,.ops-safeguard-banner){padding:16px;gap:14px;border-radius:16px}
+ .staff-workspace-shell .staff-workspace-main :is(.ops-cohort-banner,.ops-safeguard-banner) h2{font-size:22px;line-height:1.15;overflow-wrap:anywhere}
+ .staff-workspace-shell .staff-workspace-main .ops-cohort-banner p:last-child{font-size:11px;line-height:1.5}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics{gap:10px}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics article{min-height:108px;padding:16px;border-radius:16px;gap:6px}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics strong{font-size:30px}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics span{font-size:11px}
+ .staff-workspace-shell .staff-workspace-main .ops-section{padding:18px 16px}
+ .staff-workspace-shell .staff-workspace-main :is(.ops-section-heading,.section-title) h2{font-size:23px;line-height:1.15}
+ .staff-workspace-shell .staff-workspace-main .programme-outcomes{gap:16px}
+ .staff-workspace-shell .staff-workspace-main .outcomes-hero h1{font-size:30px;line-height:1.1}
+ .staff-workspace-shell .staff-workspace-main .outcomes-insight h3{font-size:22px;line-height:1.2}
 }
