@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -80,7 +82,7 @@ function displayOf(state: Snapshot, id: string, fallback = "Not recorded") {
 }
 
 function Brand() {
-  return <Link className="brand" href="/"><span className="brand-symbol">B</span><div><strong>BIS</strong><small>Behaviour Intelligence</small></div></Link>;
+  return <Link className="brand" href="/"><span className="brand-symbol"><BisMark /></span><div><strong>BIS</strong><small>Behaviour Intelligence</small></div></Link>;
 }
 
 export function CoreLabExperience({ definition }: { definition: CoreLabDefinition }) {
@@ -513,3 +515,4 @@ function PauseCard({ question }: { question: string }) {
 function SaveFooter({ saving, disabled, onSave, label = "Save and continue" }: { saving: boolean; disabled: boolean; onSave: () => Promise<void>; label?: string }) {
   return <div className="step-footer"><span><ShieldCheck /> Saved as private, traceable evidence.</span><Button size="lg" disabled={saving || disabled} onClick={() => void onSave()}>{saving ? "Saving…" : label} {!saving && <ArrowRight />}</Button></div>;
 }
+

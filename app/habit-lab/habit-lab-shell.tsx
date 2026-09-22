@@ -1,3 +1,4 @@
+import { BisMark } from "@/components/brand/bis-mark";
 import { FlaskConical } from "lucide-react";
 import { BISApp } from "../bis-app";
 import { HabitRouteBridge, type RequestedHabitView } from "../habit-route-bridge";
@@ -18,7 +19,7 @@ export async function HabitLabShell({ view }: { view: RequestedHabitView }) {
     <div className="habit-lab-route">
       <header className="habit-lab-route-header">
         <div className="habit-lab-brand">
-          <span>BIS</span>
+          <span><BisMark /></span>
           <div>
             <small>{view === "experiment" ? "Field experiment" : "Day 3 · Live investigation"}</small>
             <strong>{view === "experiment" ? "Habit Lab Experiment" : "Habit Lab Phase A"}</strong>
@@ -32,3 +33,4 @@ export async function HabitLabShell({ view }: { view: RequestedHabitView }) {
     </div>
   );
 }
+

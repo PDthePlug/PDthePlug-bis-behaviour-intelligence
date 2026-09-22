@@ -1,0 +1,2 @@
+.bis-brand-image{display:block;width:100%;height:100%;object-fit:contain;border-radius:inherit}
+.brand-symbol:has(.bis-brand-image),.staff-gate-mark:has(.bis-brand-image){padding:0;overflow:hidden}

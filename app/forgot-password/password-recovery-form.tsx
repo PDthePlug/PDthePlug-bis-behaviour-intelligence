@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -55,7 +57,7 @@ export function PasswordRecoveryForm({ mode }: { mode: "request" | "reset" }) {
   return (
     <main className="auth-shell">
       <section className="auth-story auth-story-simplified">
-        <div className="brand"><span className="brand-symbol">B</span><div><strong>BIS</strong><small>Behaviour Intelligence</small></div></div>
+        <div className="brand"><span className="brand-symbol"><BisMark /></span><div><strong>BIS</strong><small>Behaviour Intelligence</small></div></div>
         <div><p className="eyebrow">Your BIS account</p><h1>Continue your journey.</h1></div>
       </section>
       <section className="auth-card surface-card">

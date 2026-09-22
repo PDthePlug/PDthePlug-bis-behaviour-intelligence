@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { BookOpen, FlaskConical, Menu, UserRound, X } from "lucide-react";
@@ -108,7 +110,7 @@ export function MultiLabAdaptiveShell({ lab, children }: { lab: LabSlug; childre
 
       <header className="multi-lab-topbar">
         <Link className="multi-lab-brand" href="/habit" aria-label="BIS learner home">
-          <span>B</span>
+          <span><BisMark /></span>
           <div>
             <strong>BIS</strong>
             <small>Behaviour Intelligence Series</small>
@@ -188,3 +190,4 @@ export function MultiLabAdaptiveShell({ lab, children }: { lab: LabSlug; childre
     </div>
   );
 }
+

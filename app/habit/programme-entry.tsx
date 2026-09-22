@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, LockKeyhole, ShieldCheck } from "lucide-react";
@@ -32,7 +34,7 @@ type InitialSection = "today" | "learn";
 function Brand() {
   return (
     <div className="brand">
-      <span className="brand-symbol">B</span>
+      <span className="brand-symbol"><BisMark /></span>
       <div><strong>BIS</strong><small>Behaviour Intelligence</small></div>
     </div>
   );

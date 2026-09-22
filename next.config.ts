@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
     }));
   },
   async headers() {
-    return ["/auth/:path*", "/sign-in", "/forgot-password", "/reset-password"].map((source) => ({
+    const authHeaders = ["/auth/:path*", "/sign-in", "/forgot-password", "/reset-password"].map((source) => ({
       source,
       headers: [
         { key: "Cache-Control", value: "private, no-store" },
@@ -19,6 +19,15 @@ const nextConfig: NextConfig = {
         { key: "X-Robots-Tag", value: "noindex, nofollow" },
       ],
     }));
+    return [...authHeaders, {
+      source: "/sw.js",
+      headers: [
+        { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+        { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+        { key: "Service-Worker-Allowed", value: "/" },
+        { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
+      ],
+    }];
   },
   outputFileTracingIncludes: {
     "/programmes/[asset]": ["./public/programmes/chunks/**/*"],

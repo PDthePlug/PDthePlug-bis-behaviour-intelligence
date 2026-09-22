@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
@@ -425,7 +427,7 @@ export function ProgrammePlayer({
           onClick={() => openToday()}
           aria-label="Go to Today"
         >
-          <span>BIS</span>
+          <span><BisMark /></span>
           <strong>Behaviour Intelligence Series™</strong>
         </button>
         <div className="prototype-top-context">
@@ -664,7 +666,7 @@ export function ProgrammePlayer({
       <nav className={`prototype-bottom-sheet ${menuOpen ? "open" : ""}`} aria-label="BIS learner menu">
         <div className="prototype-bottom-sheet-head">
           <div>
-            <span>BIS</span>
+            <span><BisMark /></span>
             <div>
               <strong>Behaviour Intelligence Series™</strong>
               <small>Learner menu</small>

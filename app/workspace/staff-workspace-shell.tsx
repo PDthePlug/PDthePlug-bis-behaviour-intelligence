@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -103,7 +105,7 @@ export function StaffWorkspaceShell() {
     return (
       <main className="staff-gate">
         <section className="staff-gate-card">
-          <div className="staff-gate-mark" aria-hidden="true">BIS</div>
+          <div className="staff-gate-mark" aria-hidden="true"><BisMark /></div>
           <p className="staff-gate-eyebrow">Programme workspace</p>
           <h1>Opening your dashboard…</h1>
         </section>
@@ -115,7 +117,7 @@ export function StaffWorkspaceShell() {
     return (
       <main className="staff-gate">
         <section className="staff-gate-card">
-          <div className="staff-gate-mark" aria-hidden="true">BIS</div>
+          <div className="staff-gate-mark" aria-hidden="true"><BisMark /></div>
           <p className="staff-gate-eyebrow">Staff access</p>
           <h1>Workspace unavailable</h1>
           <p className="staff-gate-error" role="alert">{error}</p>
@@ -129,7 +131,7 @@ export function StaffWorkspaceShell() {
     return (
       <main className="staff-gate">
         <section className="staff-gate-card">
-          <div className="staff-gate-mark" aria-hidden="true">BIS</div>
+          <div className="staff-gate-mark" aria-hidden="true"><BisMark /></div>
           <p className="staff-gate-eyebrow">Privacy</p>
           <h1>Workspace hidden</h1>
           <button className="staff-gate-primary" type="button" onClick={() => setHidden(false)}>
@@ -150,7 +152,7 @@ export function StaffWorkspaceShell() {
     <div className="staff-workspace-shell">
       <header className="staff-workspace-header">
         <Link className="staff-workspace-brand" href="/workspace" aria-label="BIS staff workspace home">
-          <span>BIS</span>
+          <span><BisMark /></span>
           <div><strong>Behaviour Intelligence Series™</strong><small>Programme workspace</small></div>
         </Link>
         <div className="staff-workspace-actions">
@@ -205,3 +207,4 @@ export function StaffWorkspaceShell() {
     </div>
   );
 }
+

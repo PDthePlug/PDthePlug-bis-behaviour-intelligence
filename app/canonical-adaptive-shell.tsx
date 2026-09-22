@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -131,7 +133,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
 
       <header className="canonical-topbar">
         <Link className="canonical-brand" href="/habit" aria-label="BIS Today">
-          <span>BIS</span>
+          <span><BisMark /></span>
           <div>
             <strong>Behaviour Intelligence Series™</strong>
             <small>Applied Commerce®</small>
@@ -162,7 +164,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
           >
             <div className="canonical-menu-head">
               <div>
-                <span>BIS</span>
+                <span><BisMark /></span>
                 <div>
                   <strong>Behaviour Intelligence Series™</strong>
                   <small>Learner menu</small>

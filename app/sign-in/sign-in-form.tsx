@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -189,7 +191,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
   return (
     <main className="auth-shell">
       <section className="auth-story auth-story-simplified">
-        <div className="brand"><span className="brand-symbol">B</span><div><strong>BIS</strong><small>Behaviour Intelligence</small></div></div>
+        <div className="brand"><span className="brand-symbol"><BisMark /></span><div><strong>BIS</strong><small>Behaviour Intelligence</small></div></div>
         <div>
           <p className="eyebrow">Behaviour Intelligence Series™</p>
           <h1>Behaviour comes before results.</h1>
@@ -197,8 +199,8 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
       </section>
       <section className="auth-card surface-card">
         <p className="eyebrow">{mode === "signin" ? "Welcome back" : "Create your BIS identity"}</p>
-        <h2>{mode === "signin" ? "Continue where you belong." : "Create your BIS account."}</h2>
-        <p>{mode === "signin" ? "After sign-in, BIS routes you to your learner experience or role-restricted workspace." : "After signup, your learner profile will resolve the correct authored handbook edition."}</p>
+        <h2>{mode === "signin" ? "Every habit tells a story." : "Create your BIS account."}</h2>
+        <p>{mode === "signin" ? "Let's discover yours." : "After signup, your learner profile will resolve the correct authored handbook edition."}</p>
         <div className="auth-mode" role="tablist" aria-label="Account action">
           <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "active" : ""} onClick={() => changeMode("signin")}>Sign in</button>
           <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "active" : ""} onClick={() => changeMode("signup")}>Create account</button>

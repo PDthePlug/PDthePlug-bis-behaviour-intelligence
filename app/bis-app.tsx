@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -425,7 +427,7 @@ function PrivacyPaused({ state, saving, error, onRestore }: { state: Snapshot; s
 function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`brand ${compact ? "brand-compact" : ""}`}>
-      <span className="brand-symbol">B</span>
+      <span className="brand-symbol"><BisMark /></span>
       <div><strong>BIS</strong><small>Behaviour Intelligence</small></div>
     </div>
   );

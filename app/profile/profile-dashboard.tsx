@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { InstallCard } from "@/components/pwa/install-card";
 import { useEffect, useState } from "react";
 import {
   BookOpen,
@@ -125,6 +126,8 @@ export function ProfileDashboard({
           </article>
         ) : null}
 
+        <InstallCard />
+
         <article className="profile-card profile-signout-card">
           <div>
             <p className="profile-label">Account action</p>
@@ -141,3 +144,4 @@ export function ProfileDashboard({
     </main>
   );
 }
+

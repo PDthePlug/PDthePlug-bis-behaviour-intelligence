@@ -1,5 +1,7 @@
 "use client";
 
+import { BisMark } from "@/components/brand/bis-mark";
+
 import { useState } from "react";
 import Link from "next/link";
 import { BookOpen, CalendarDays, FlaskConical, House, Menu, X } from "lucide-react";
@@ -21,7 +23,7 @@ export function FocusedLearnerMenu({ active }: { active: RequestedHabitView }) {
       <nav className={`prototype-bottom-sheet ${open ? "open" : ""}`} aria-label="BIS learner menu">
         <div className="prototype-bottom-sheet-head">
           <div>
-            <span>BIS</span>
+            <span><BisMark /></span>
             <div><strong>Behaviour Intelligence Series™</strong><small>Applied Commerce®</small></div>
           </div>
           <button type="button" onClick={() => setOpen(false)} aria-label="Close BIS menu"><X /></button>
@@ -45,3 +47,4 @@ export function FocusedLearnerMenu({ active }: { active: RequestedHabitView }) {
     </>
   );
 }
+
