@@ -9,7 +9,8 @@ test("defines BIS product metadata without starter copy", async () => {
   ]);
 
   const product = `${layout}\n${experience}`;
-  assert.match(product, /BIS — Behaviour Intelligence System/);
+  assert.match(product, /BIS — Behaviour Intelligence Series/);
   assert.match(product, /Understand a pattern in your behaviour/);
   assert.doesNotMatch(product, /Starter Project/);
 });
+
