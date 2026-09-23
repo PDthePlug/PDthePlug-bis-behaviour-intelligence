@@ -1,5 +1,7 @@
 "use client";
 
+import { EvidenceImages } from "@/components/evidence/evidence-images";
+
 import { BisMark } from "@/components/brand/bis-mark";
 
 import { useEffect, useState } from "react";
@@ -644,16 +646,17 @@ function InvestigationTwo({ state, saving, act, next }: StepProps) {
     insight: valueOf(state, "HAB.I2.INSIGHT.TEXT"),
   });
   const [examples, setExamples] = useState(false);
+  const [attachmentBlocked, setAttachmentBlocked] = useState(false);
   const ready = Object.values(form).every(Boolean);
   return (
     <div className="investigation-stack">
       <PromptSection number="01" title="Name the repeated pattern" prompt="What habit feels hardest to change—the one that costs you more than you want to admit?"><TextField value={form.pattern} onChange={(pattern) => setForm({ ...form, pattern })} placeholder="Name one specific repeated behaviour…" /></PromptSection>
-      <PromptSection number="02" title="Find one piece of evidence" prompt="Think of one piece of evidence from the last seven days—a screenshot, object, message, photo, app history, calendar entry or something else."><TextField value={form.evidence} onChange={(evidence) => setForm({ ...form, evidence })} placeholder="Describe the evidence. Uploading anything is optional." /><TextField value={form.evidenceMeaning} onChange={(evidenceMeaning) => setForm({ ...form, evidenceMeaning })} placeholder="What does this show that memory alone might not?" /></PromptSection>
+      <PromptSection number="02" title="Find one piece of evidence" prompt="Think of one piece of evidence from the last seven days—a screenshot, object, message, photo, app history, calendar entry or something else."><TextField value={form.evidence} onChange={(evidence) => setForm({ ...form, evidence })} placeholder="Describe the evidence. Uploading anything is optional." /><TextField value={form.evidenceMeaning} onChange={(evidenceMeaning) => setForm({ ...form, evidenceMeaning })} placeholder="What does this show that memory alone might not?" />{state.enrolment && <EvidenceImages key={state.enrolment.id} enrollmentId={state.enrolment.id} onBlockedChange={setAttachmentBlocked} />}</PromptSection>
       <PromptSection number="03" title="Investigate the reward" prompt="What does this pattern give you—even if it also costs you?"><TextField value={form.obvious} onChange={(obvious) => setForm({ ...form, obvious })} placeholder="The obvious reward…" /><TextField value={form.lessObvious} onChange={(lessObvious) => setForm({ ...form, lessObvious })} placeholder="The feeling or less-obvious reward…" />{!examples ? <Button variant="ghost" className="self-start" onClick={() => setExamples(true)}>Still stuck? Show me examples</Button> : <div className="example-box">Some people discover relief from boredom, escape from a difficult feeling, a sense of control, temporary numbness or avoiding something uncomfortable. These are examples, not answers about you.</div>}</PromptSection>
       <PromptSection number="04" title="Observer question" prompt="If someone had been watching your behaviour, what might they have guessed about the reward you were seeking?"><TextField value={form.observer} onChange={(observer) => setForm({ ...form, observer })} /></PromptSection>
       <PromptSection number="05" title="Today’s insight" prompt="Finish this without thinking too hard: lately I’m noticing…"><TextField value={form.insight} onChange={(insight) => setForm({ ...form, insight })} /></PromptSection>
       <PauseCard question="Is there anything I’m hesitating to write down? If so, what?" />
-      <StepFooter saving={saving} disabled={!ready} onSave={async () => { await act({ action: "saveResponses", items: [
+      <StepFooter saving={saving} disabled={!ready || attachmentBlocked} onSave={async () => { await act({ action: "saveResponses", items: [
         { semanticFieldId: "HAB.PATTERN.TARGET", value: form.pattern, investigation: 2 },
         { semanticFieldId: "HAB.EVIDENCE.INITIAL", value: form.evidence, investigation: 2 },
         { semanticFieldId: "HAB.EVIDENCE.INITIAL_MEANING", value: form.evidenceMeaning, investigation: 2 },
