@@ -95,7 +95,12 @@ export const contentLibraryVersions = sqliteTable(
     validationReport: text("validation_report").notNull().default("{}"),
     status: text("status").notNull().default("DRAFT"),
     releaseNotes: text("release_notes").notNull().default(""),
-    createdBy: text("created_by").notNull(),
+    compilerStatus: text("compiler_status").notNull().default("NOT_COMPILED"),
+    compilerReport: text("compiler_report").notNull().default("{}"),
+    compilerVersion: text("compiler_version"),
+    compiledAt: text("compiled_at"),
+    compiledBy: text("compiled_by"),
+    createdBy: text("created_by"),
     validatedAt: text("validated_at"),
     approvedAt: text("approved_at"),
     approvedBy: text("approved_by"),
@@ -107,6 +112,70 @@ export const contentLibraryVersions = sqliteTable(
     uniqueIndex("uq_content_library_item_version").on(table.itemId, table.version),
     index("idx_content_library_versions_item_status").on(table.itemId, table.status),
     index("idx_content_library_versions_runtime").on(table.runtimeStatus, table.validationStatus),
+  ],
+);
+
+
+export const contentSourceFiles = sqliteTable(
+  "content_source_files",
+  {
+    id: text("id").primaryKey(),
+    versionId: text("version_id").notNull(),
+    itemId: text("item_id").notNull(),
+    sourceKey: text("source_key").notNull(),
+    deliveryEdition: text("delivery_edition"),
+    sourceFormat: text("source_format").notNull(),
+    fileName: text("file_name").notNull(),
+    storagePath: text("storage_path").notNull(),
+    sourceHash: text("source_hash"),
+    sourceBytes: integer("source_bytes").notNull(),
+    mimeType: text("mime_type"),
+    createdBy: text("created_by").notNull(),
+    createdAt: timestamp(),
+    updatedAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_content_source_file_version_key").on(table.versionId, table.sourceKey),
+    index("idx_content_source_files_item").on(table.itemId, table.versionId),
+  ],
+);
+
+export const contentRuntimeArtifacts = sqliteTable(
+  "content_runtime_artifacts",
+  {
+    id: text("id").primaryKey(),
+    versionId: text("version_id").notNull(),
+    itemId: text("item_id").notNull(),
+    artifactKey: text("artifact_key").notNull(),
+    deliveryEdition: text("delivery_edition"),
+    storagePath: text("storage_path").notNull(),
+    artifactHash: text("artifact_hash").notNull(),
+    artifactBytes: integer("artifact_bytes").notNull(),
+    mimeType: text("mime_type").notNull().default("application/json"),
+    compilerVersion: text("compiler_version").notNull(),
+    createdAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_content_runtime_artifact_key").on(table.versionId, table.artifactKey),
+    index("idx_content_runtime_artifacts_item").on(table.itemId, table.versionId),
+  ],
+);
+
+export const contentRuntimeActivations = sqliteTable(
+  "content_runtime_activations",
+  {
+    id: text("id").primaryKey(),
+    itemId: text("item_id").notNull(),
+    versionId: text("version_id").notNull(),
+    runtimeMode: text("runtime_mode").notNull().default("DYNAMIC"),
+    status: text("status").notNull().default("ACTIVE"),
+    activatedBy: text("activated_by").notNull(),
+    activatedAt: timestamp(),
+    deactivatedAt: text("deactivated_at"),
+    supersedesActivationId: text("supersedes_activation_id"),
+  },
+  (table) => [
+    index("idx_content_runtime_version").on(table.versionId, table.status),
   ],
 );
 
