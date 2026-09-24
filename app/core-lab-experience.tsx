@@ -5,13 +5,11 @@ import { BisMark } from "@/components/brand/bis-mark";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   ArrowRight,
   BookOpen,
   CalendarDays,
   Check,
   Eye,
-  EyeOff,
   FlaskConical,
   LockKeyhole,
   Search,
