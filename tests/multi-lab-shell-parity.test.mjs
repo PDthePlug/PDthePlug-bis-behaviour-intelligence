@@ -36,7 +36,7 @@ test("one universal investigation frame owns progress, navigation and mission pr
 
 test("Habit and Core Labs both render through the same investigation frame", () => {
   assert.match(habitEngine, /<LabInvestigationFrame/);
-  assert.match(habitEngine, /labTitle="Habit Lab"/);
+  assert.match(habitEngine, /labTitle=\{labExperienceManifest\.HAB\.shortTitle\}/);
   assert.match(habitEngine, /investigations=\{investigations\}/);
   assert.match(coreEngine, /<LabInvestigationFrame/);
   assert.match(coreEngine, /labTitle=\{definition\.shortTitle\}/);
