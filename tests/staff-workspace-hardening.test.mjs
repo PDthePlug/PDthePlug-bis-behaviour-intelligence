@@ -17,7 +17,9 @@ test("staff entry resolves roles automatically without a second open-workspace g
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /fetch\("\/api\/staff"/);
   assert.match(shell, /setSession\(/);
-  assert.match(shell, /setPerspective\(defaultPerspective\(roles\)\)/);
+  assert.match(shell, /defaultPerspective\(session\.roles\)/);
+  assert.match(shell, /params\.set\("view", next\)/);
+  assert.match(shell, /router\.push\(/);
   assert.doesNotMatch(shell, /Open workspace/);
   assert.doesNotMatch(shell, /Open staff workspace/);
   assert.match(shell, /Opening your dashboard/);
