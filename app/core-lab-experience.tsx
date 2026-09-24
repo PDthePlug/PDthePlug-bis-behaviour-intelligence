@@ -163,8 +163,9 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
     ? Math.min(maxStep, requestedStep)
     : step;
 
-  function goToStep(next: number) {
-    const target = Math.max(1, Math.min(maxStep, next));
+  function goToStep(next: number, allowAdvance = false) {
+    const maxAllowed = allowAdvance ? Math.min(9, maxStep + 1) : maxStep;
+    const target = Math.max(1, Math.min(maxAllowed, next));
     const params = new URLSearchParams(searchParams.toString());
     params.set("step", String(target));
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
@@ -182,14 +183,14 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
         maxStep={maxStep}
         onSelect={goToStep}
       >
-        {activeStep === 1 && <StoryOne definition={definition} state={state} saving={saving} act={act} next={() => goToStep(2)} />}
-        {activeStep === 2 && <FieldsStep fields={definition.sections[2]} pauseQuestion={definition.pauses[2]} state={state} saving={saving} act={act} next={() => goToStep(3)} />}
-        {activeStep === 3 && <StoryTwo definition={definition} state={state} saving={saving} act={act} next={() => goToStep(4)} />}
-        {activeStep === 4 && <FieldsStep fields={definition.sections[4]} pauseQuestion={definition.pauses[4]} state={state} saving={saving} act={act} next={() => goToStep(5)} />}
-        {activeStep === 5 && <EquationStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(6)} />}
-        {activeStep === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(7)} />}
-        {activeStep === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(8)} />}
-        {activeStep === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(9)} />}
+        {activeStep === 1 && <StoryOne definition={definition} state={state} saving={saving} act={act} next={() => goToStep(2, true)} />}
+        {activeStep === 2 && <FieldsStep fields={definition.sections[2]} pauseQuestion={definition.pauses[2]} state={state} saving={saving} act={act} next={() => goToStep(3, true)} />}
+        {activeStep === 3 && <StoryTwo definition={definition} state={state} saving={saving} act={act} next={() => goToStep(4, true)} />}
+        {activeStep === 4 && <FieldsStep fields={definition.sections[4]} pauseQuestion={definition.pauses[4]} state={state} saving={saving} act={act} next={() => goToStep(5, true)} />}
+        {activeStep === 5 && <EquationStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(6, true)} />}
+        {activeStep === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(7, true)} />}
+        {activeStep === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(8, true)} />}
+        {activeStep === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(9, true)} />}
         {activeStep === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} />}
       </LabInvestigationFrame>
     </div>
