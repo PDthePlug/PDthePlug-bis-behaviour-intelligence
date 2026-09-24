@@ -157,6 +157,24 @@
 .content-version-source{
   display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px;border:1px solid var(--border);border-radius:16px;background:#f8f8f5;
 }
+.content-edition-note{
+  display:flex;align-items:flex-start;gap:12px;padding:15px 16px;border:1px solid #2f827629;border-radius:16px;background:#eef6f3;
+}
+.content-edition-note>svg{width:20px;flex:0 0 auto;color:var(--teal)}
+.content-edition-note>div{display:grid;gap:3px}
+.content-edition-note strong{font-size:12px}
+.content-edition-note p{margin:0;color:var(--muted-foreground);font-size:11px;line-height:1.55}
+.content-source-stack{display:grid;gap:9px}
+.content-source-slot{
+  min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 15px;border:1px solid var(--border);border-radius:16px;background:#f8f8f5;
+}
+.content-source-slot>div{display:flex;align-items:center;gap:11px;min-width:0}
+.content-source-slot>div>svg{width:20px;flex:0 0 auto;color:var(--teal)}
+.content-source-slot-copy{display:grid;min-width:0;gap:2px}
+.content-source-slot-copy strong{font-size:12px}
+.content-source-slot-copy small{max-width:620px;overflow:hidden;color:var(--muted-foreground);font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.content-validation-summary>small{color:var(--muted-foreground);font-size:10px}
+
 .content-version-source>div{display:flex;align-items:center;gap:11px;min-width:0}
 .content-version-source svg{width:20px;flex:0 0 auto;color:var(--teal)}
 .content-version-source span{display:grid;min-width:0;gap:2px}
@@ -221,9 +239,9 @@
   .content-detail-mark{display:none}
   .content-create-grid,.version-create-grid{grid-template-columns:1fr}
   .content-create-grid .wide,.version-create-grid .wide{grid-column:auto}
-  .content-version-card>header,.content-version-source{align-items:stretch;flex-direction:column}
+  .content-version-card>header,.content-version-source,.content-source-slot{align-items:stretch;flex-direction:column}
   .content-status-row{justify-content:flex-start}
-  .content-version-source [data-slot="button"]{width:100%}
+  .content-version-source [data-slot="button"],.content-source-slot [data-slot="button"]{width:100%}
 }
 @media(max-width:430px){
   .content-studio-header-actions{grid-template-columns:1fr}
