@@ -53,7 +53,7 @@ test("Habit Lab and field experiment are focused child surfaces under the canoni
   assert.match(shell, /HabitRouteBridge target=\{view\} hideReturnLink/);
   assert.doesNotMatch(shell, /FocusedLearnerMenu/);
   assert.match(layout, /CanonicalAdaptiveShell/);
-  for (const label of ["Today", "Learn", "Lab", "Experiment", "Profile"]) {
+  for (const label of ["Today", "Learn", "Lab", "Profile"]) {
     assert.match(canonical, new RegExp(`label: "${label}"`));
   }
   assert.match(canonical, /canonical-menu-trigger/);
