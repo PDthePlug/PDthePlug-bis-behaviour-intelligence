@@ -5,17 +5,139 @@
     "code": "FOC",
     "version": "1.0",
     "title": "Focus Learning Module",
-    "shortTitle": "Focus",
-    "description": "A guided learning journey that prepares learners for Focus Lab."
+    "subtitle": "The Focus Investigation Handbook",
+    "slug": "focus",
+    "handbookId": "focus-lab-volume-1"
   },
   "linkedLabCode": "FOC",
+  "edition": "school",
+  "runtimeVersion": "programme-player-3",
+  "sourceTrace": {
+    "authority": "Approved BIS authored source",
+    "prototype": "Content Studio edition package",
+    "rule": "Authored wording and page order preserved; learner responses remain private."
+  },
   "treatment": {
+    "label": "School",
+    "sourceId": "FOC-1.0-school",
+    "privacySummary": "Private learning responses",
     "pages": [
       {
-        "id": "FOC.DAY01.INTRO",
-        "day": 1,
-        "title": "Start here",
-        "html": "<h2>Start here</h2><p>Introduce the investigation.</p><p>What do you notice?</p>"
+        "id": "FOC.PROGRAMME.WELCOME",
+        "key": "Welcome",
+        "label": "Welcome",
+        "phase": "ORIENTATION",
+        "programmeDay": null,
+        "experimentPosition": null,
+        "html": "<h2>Welcome to Focus</h2><p>This is the School edition introduction.</p><p>What would you like to notice about your focus?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY1",
+        "key": "Day 1",
+        "label": "Day 1",
+        "phase": "LEARN",
+        "programmeDay": 1,
+        "experimentPosition": null,
+        "html": "<h2>Day 1</h2><p>Authored Day 1 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY2",
+        "key": "Day 2",
+        "label": "Day 2",
+        "phase": "LEARN",
+        "programmeDay": 2,
+        "experimentPosition": null,
+        "html": "<h2>Day 2</h2><p>Authored Day 2 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY3",
+        "key": "Day 3",
+        "label": "Day 3",
+        "phase": "LAB",
+        "programmeDay": 3,
+        "experimentPosition": null,
+        "html": "<h2>Day 3</h2><p>Authored Day 3 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY4",
+        "key": "Day 4",
+        "label": "Day 4",
+        "phase": "LEARN",
+        "programmeDay": 4,
+        "experimentPosition": null,
+        "html": "<h2>Day 4</h2><p>Authored Day 4 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY5",
+        "key": "Day 5",
+        "label": "Day 5",
+        "phase": "LEARN",
+        "programmeDay": 5,
+        "experimentPosition": null,
+        "html": "<h2>Day 5</h2><p>Authored Day 5 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.WEEKEND",
+        "key": "Weekend",
+        "label": "Weekend",
+        "phase": "EXPERIMENT",
+        "programmeDay": null,
+        "experimentPosition": null,
+        "html": "<h2>Weekend</h2><p>Authored Weekend learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY6",
+        "key": "Day 6",
+        "label": "Day 6",
+        "phase": "LEARN",
+        "programmeDay": 6,
+        "experimentPosition": null,
+        "html": "<h2>Day 6</h2><p>Authored Day 6 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY7",
+        "key": "Day 7",
+        "label": "Day 7",
+        "phase": "LEARN",
+        "programmeDay": 7,
+        "experimentPosition": null,
+        "html": "<h2>Day 7</h2><p>Authored Day 7 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY8",
+        "key": "Day 8",
+        "label": "Day 8",
+        "phase": "LEARN",
+        "programmeDay": 8,
+        "experimentPosition": null,
+        "html": "<h2>Day 8</h2><p>Authored Day 8 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY9",
+        "key": "Day 9",
+        "label": "Day 9",
+        "phase": "LEARN",
+        "programmeDay": 9,
+        "experimentPosition": null,
+        "html": "<h2>Day 9</h2><p>Authored Day 9 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.DAY10",
+        "key": "Day 10",
+        "label": "Day 10",
+        "phase": "LEARN",
+        "programmeDay": 10,
+        "experimentPosition": null,
+        "html": "<h2>Day 10</h2><p>Authored Day 10 learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
+      },
+      {
+        "id": "FOC.PROGRAMME.CERTIFICATE",
+        "key": "Certificate",
+        "label": "Certificate",
+        "phase": "CERTIFICATE",
+        "programmeDay": null,
+        "experimentPosition": null,
+        "html": "<h2>Certificate</h2><p>Authored Certificate learning content for this edition.</p><p>What did you notice?</p><textarea></textarea>"
       }
     ]
   }
