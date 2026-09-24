@@ -165,8 +165,8 @@ export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  if (loading) return <main className="content-studio-gate"><LoaderCircle className="spin" /><h1>Opening Lab…</h1></main>;
-  if (!snapshot) return <main className="content-studio-gate"><LockKeyhole /><h1>Lab unavailable</h1><p>{error}</p></main>;
+  if (loading) return <main className="learning-state"><LoaderCircle className="learning-loader" /><h1>Opening Lab…</h1></main>;
+  if (!snapshot) return <main className="learning-state"><LockKeyhole /><h1>Lab unavailable</h1><p>{error}</p></main>;
 
   if (!snapshot.enrolment) {
     return (
