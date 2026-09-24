@@ -51,7 +51,7 @@ test("facilitator workspace is four distinct working views instead of page ancho
     assert.match(facilitator, new RegExp(">" + label + "<"));
   }
   assert.match(facilitator, /type FacilitatorSection = "cohort" \| "participants" \| "support" \| "review"/);
-  assert.match(facilitator, /setSection\("participants"\)/);
+  assert.match(facilitator, /navigateWorkspace\(\{ section: "participants"/);
   assert.doesNotMatch(facilitator, /href="#cohort-dashboard"/);
   assert.doesNotMatch(facilitator, /href="#learner-summaries"/);
   assert.doesNotMatch(facilitator, /href="#support-flags"/);
@@ -61,7 +61,7 @@ test("facilitator workspace is four distinct working views instead of page ancho
 test("participant cards drill into facilitator-safe progress detail", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
   assert.match(facilitator, /participant-card-button/);
-  assert.match(facilitator, /setLearnerId\(learner\.userId\)/);
+  assert.match(facilitator, /learner: learner\.userId/);
   assert.match(facilitator, /Open learner/);
   for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Observed strengths", "Where support may help", "Support history"]) {
     assert.match(facilitator, new RegExp(field));
