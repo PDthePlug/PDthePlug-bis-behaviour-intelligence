@@ -69,12 +69,12 @@ test("private uploaded sources are confirmed and fingerprinted before validation
   assert.match(api, /sourceBytes: bytes\.byteLength/);
 });
 
-test("Content Studio accepts source documents but only BIS JSON packages can be activation-ready", async () => {
+test("Content Studio accepts editorial source formats and defers execution to the compiler", async () => {
   const contract = await source("lib/content-studio.ts");
   for (const format of ["BIS_PACKAGE_JSON", "DOCX", "PDF", "HTML", "MARKDOWN", "ZIP"]) {
     assert.ok(contract.includes('"' + format + '"'));
   }
-  assert.match(contract, /needs to be converted into a BIS package before it can be activated/);
+  assert.match(contract, /Content Compiler will run the approved source adapter/);
   assert.match(contract, /runtimeStatus: valid \? "REQUIRES_ADAPTER" : "BLOCKED"/);
   assert.match(contract, /unsafeHtml/);
 });
