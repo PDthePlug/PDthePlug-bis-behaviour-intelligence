@@ -1,9 +1,10 @@
-import { MultiLabAdaptiveShell } from "../multi-lab-adaptive-shell";
-import "../multi-lab-shell.css";
-import "../multi-lab-flow-cleanup.css";
+import { CanonicalAdaptiveShell } from "../canonical-adaptive-shell";
+import "../canonical-shell.css";
+import "../learner-readability.css";
+import "../lab-investigation-frame.css";
 
 export const metadata = { alternates: { canonical: "/money" } };
 
 export default function MoneyLayout({ children }: { children: React.ReactNode }) {
-  return <MultiLabAdaptiveShell lab="money">{children}</MultiLabAdaptiveShell>;
+  return <CanonicalAdaptiveShell>{children}</CanonicalAdaptiveShell>;
 }
