@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Archive,
-  ArrowLeft,
   ArrowRight,
   BarChart3,
   Bell,
