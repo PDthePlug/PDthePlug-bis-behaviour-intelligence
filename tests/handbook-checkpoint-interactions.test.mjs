@@ -28,8 +28,8 @@ test("suggested checkpoint answers are collapsed by default and excluded from re
   const css = await source("app/learning/programme-player.css");
   assert.match(enhancement, /document\.createElement\("details"\)/);
   assert.match(enhancement, /checkpoint-answer-panel/);
-  assert.match(enhancement, /<strong>Answers<\\/strong><small>Tap to reveal<\\/small>/);
-  assert.match(enhancement, /<strong>Answers<\\/strong><small>Tap to hide<\\/small>/);
+  assert.ok(enhancement.includes('<strong>Answers</strong><small>Tap to reveal</small>'));
+  assert.ok(enhancement.includes('<strong>Answers</strong><small>Tap to hide</small>'));
   assert.match(enhancement, /closest\("\.checkpoint-answer-panel"\)/);
   assert.doesNotMatch(enhancement, /details\.open\s*=\s*true/);
   assert.match(css, /\.checkpoint-answer-panel\[open\]/);
