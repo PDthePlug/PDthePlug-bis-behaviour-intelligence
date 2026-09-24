@@ -74,7 +74,18 @@ The handbook reader still applies the universal learner interaction hardening af
 
 Content Studio can retain BIS JSON, DOCX, PDF, HTML, Markdown and ZIP source files.
 
-Runtime compilation v1 is deliberately deterministic: **automatic activation currently compiles BIS JSON edition packages and BIS JSON Universal Lab packages.** Other source formats stay in the private source archive until an approved format adapter converts them into the BIS package contract. They never become executable merely because they were uploaded.
+Learning-module compilation is deliberately deterministic and now includes approved source adapters:
+
+- **BIS JSON** — compiled directly;
+- **DOCX** — extracts authored Word paragraphs/tables and requires the 13 canonical programme headings;
+- **PDF** — extracts text from text-based PDF streams and requires the 13 canonical programme headings;
+- **HTML** — preserves safe authored blocks and rejects executable markup;
+- **Markdown** — converts authored headings/paragraphs into the programme contract;
+- **ZIP** — accepts an edition JSON package or DOCX source inside the archive.
+
+Scanned/image-only PDFs are rejected rather than guessed. Every adapted source must still produce the same 13-position BIS programme structure before it can activate.
+
+Universal Lab activation remains stricter because Lab evidence semantics must not be inferred from prose: a Lab source must be a Universal Lab JSON package, or a ZIP containing that JSON package.
 
 Reference template: `content/templates/learning-module.package.example.json`.
 
