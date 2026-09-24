@@ -185,7 +185,7 @@ export function StaffWorkspaceShell() {
             aria-current={perspective === "outcomes" ? "page" : undefined}
           >
             <Activity aria-hidden="true" />
-            <span><strong>Programme Outcomes</strong></span>
+            <span><strong>Programme results</strong></span>
           </button>
         ) : null}
         {adminAvailable ? (
@@ -196,7 +196,7 @@ export function StaffWorkspaceShell() {
             aria-current={perspective === "admin" ? "page" : undefined}
           >
             <Settings2 aria-hidden="true" />
-            <span><strong>BIS Administrator</strong></span>
+            <span><strong>Administration</strong></span>
           </button>
         ) : null}
       </nav>
