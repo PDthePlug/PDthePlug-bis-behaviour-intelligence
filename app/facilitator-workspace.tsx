@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Activity, Check, ClipboardCheck, ShieldAlert, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -155,20 +156,40 @@ export function FacilitatorWorkspace({
   saving: boolean;
   act: (payload: Record<string, unknown>) => Promise<boolean>;
 }) {
-  const [section, setSection] = useState<FacilitatorSection>("cohort");
-  const [cohortId, setCohortId] = useState(data.cohorts[0]?.id ?? "");
-  const [learnerId, setLearnerId] = useState("");
+  const [supportLearnerId, setSupportLearnerId] = useState("");
   const [noteCategory, setNoteCategory] = useState("CHECK_IN");
   const [note, setNote] = useState("");
   const [referralCategory, setReferralCategory] = useState("WELLBEING_CONCERN");
   const [referral, setReferral] = useState("");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const cohort = data.cohorts.find((item) => item.id === cohortId) ?? data.cohorts[0];
+  const requestedSection = searchParams.get("section");
+  const section: FacilitatorSection =
+    requestedSection === "participants" || requestedSection === "support" || requestedSection === "review"
+      ? requestedSection
+      : "cohort";
+  const requestedGroup = searchParams.get("group");
+  const cohort = data.cohorts.find((item) => item.id === requestedGroup) ?? data.cohorts[0];
   const participants = useMemo(
     () => data.learners.filter((learner) => cohort?.memberIds?.includes(learner.userId)),
     [data.learners, cohort],
   );
-  const selected = participants.find((learner) => learner.userId === learnerId);
+  const selectedLearnerId = searchParams.get("learner") ?? "";
+  const selected = participants.find((learner) => learner.userId === selectedLearnerId);
+
+  function navigateWorkspace(patch: { section?: FacilitatorSection; learner?: string | null; group?: string | null }) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", "facilitator");
+    if (patch.section) params.set("section", patch.section);
+    if (patch.learner === null) params.delete("learner");
+    else if (patch.learner) params.set("learner", patch.learner);
+    if (patch.group === null) params.delete("group");
+    else if (patch.group) params.set("group", patch.group);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   if (!cohort) {
     return <div className="ops-empty surface-card"><Users /><h2>No group assigned.</h2><p>A BIS administrator can assign you to a programme group.</p></div>;
@@ -211,7 +232,7 @@ export function FacilitatorWorkspace({
         {data.cohorts.length > 1 ? (
           <label className="facilitator-cohort-picker">
             <span>Group</span>
-            <Select value={cohort.id} onValueChange={(value) => { setCohortId(value); setLearnerId(""); }}>
+            <Select value={cohort.id} onValueChange={(value) => navigateWorkspace({ group: value, learner: null })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>{data.cohorts.map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}</SelectContent>
             </Select>
@@ -220,10 +241,10 @@ export function FacilitatorWorkspace({
       </div>
 
       <nav className="facilitator-subnav" aria-label="Facilitator workspace">
-        <button type="button" className={section === "cohort" ? "active" : ""} onClick={() => { setSection("cohort"); setLearnerId(""); }}>Group</button>
-        <button type="button" className={section === "participants" ? "active" : ""} onClick={() => setSection("participants")}>Learners</button>
-        <button type="button" className={section === "support" ? "active" : ""} onClick={() => setSection("support")}>Support</button>
-        <button type="button" className={section === "review" ? "active" : ""} onClick={() => { setSection("review"); setLearnerId(""); }}>Review</button>
+        <button type="button" className={section === "cohort" ? "active" : ""} onClick={() => navigateWorkspace({ section: "cohort", learner: null })}>Group</button>
+        <button type="button" className={section === "participants" ? "active" : ""} onClick={() => navigateWorkspace({ section: "participants", learner: null })}>Learners</button>
+        <button type="button" className={section === "support" ? "active" : ""} onClick={() => navigateWorkspace({ section: "support", learner: null })}>Support</button>
+        <button type="button" className={section === "review" ? "active" : ""} onClick={() => navigateWorkspace({ section: "review", learner: null })}>Review</button>
       </nav>
 
       {section === "cohort" ? (
@@ -272,7 +293,7 @@ export function FacilitatorWorkspace({
       {section === "participants" ? (
         selected ? (
           <div className="participant-detail">
-            <button type="button" className="participant-back" onClick={() => setLearnerId("")}>← All learners</button>
+            <button type="button" className="participant-back" onClick={() => navigateWorkspace({ section: "participants", learner: null })}>← All learners</button>
             <section className="surface-card ops-section participant-detail-hero">
               <div className="section-title">
                 <div><p className="eyebrow">Learner</p><h2>{selected.displayName}</h2><p>{selected.email}</p></div>
@@ -335,7 +356,7 @@ export function FacilitatorWorkspace({
             <div className="ops-section-heading"><div><p className="eyebrow">{cohort.name}</p><h2>{participants.length} learners</h2></div><Badge variant="outline">Private responses hidden</Badge></div>
             <div className="ops-learner-grid participant-grid">
               {participants.map((learner) => (
-                <button type="button" className="participant-card-button" key={learner.userId} onClick={() => setLearnerId(learner.userId)}>
+                <button type="button" className="participant-card-button" key={learner.userId} onClick={() => navigateWorkspace({ section: "participants", learner: learner.userId })}>
                   <ParticipantCard learner={learner} />
                   <span className="participant-open">Open learner →</span>
                 </button>
@@ -363,19 +384,19 @@ export function FacilitatorWorkspace({
             <div className="surface-card ops-section">
               <div className="section-title"><div><p className="eyebrow">Add support</p><h2>Staff note</h2></div><ClipboardCheck /></div>
               <div className="ops-form-stack">
-                <label>Learner<Select value={learnerId} onValueChange={setLearnerId}><SelectTrigger><SelectValue placeholder="Choose learner" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
+                <label>Learner<Select value={supportLearnerId} onValueChange={setSupportLearnerId}><SelectTrigger><SelectValue placeholder="Choose learner" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
                 <label>Category<Select value={noteCategory} onValueChange={setNoteCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="CHECK_IN">Check-in</SelectItem><SelectItem value="ATTENDANCE">Attendance</SelectItem><SelectItem value="EXPERIMENT_SUPPORT">Experiment support</SelectItem><SelectItem value="GENERAL">General</SelectItem></SelectContent></Select></label>
                 <label>Support note<Textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Factual support action or follow-up…" /></label>
-                <Button disabled={saving || !learnerId || !note.trim()} onClick={async () => { if (await act({ action: "addFacilitatorNote", cohortId: cohort.id, learnerUserId: learnerId, category: noteCategory, content: note })) setNote(""); }}>Save staff note</Button>
+                <Button disabled={saving || !supportLearnerId || !note.trim()} onClick={async () => { if (await act({ action: "addFacilitatorNote", cohortId: cohort.id, learnerUserId: supportLearnerId, category: noteCategory, content: note })) setNote(""); }}>Save staff note</Button>
               </div>
             </div>
             <div className="surface-card ops-section safeguard-referral">
               <div className="section-title"><div><p className="eyebrow">Safeguarding</p><h2>Refer a concern</h2></div><ShieldAlert /></div>
               <div className="ops-form-stack">
-                <label>Learner<Select value={learnerId} onValueChange={setLearnerId}><SelectTrigger><SelectValue placeholder="Choose learner" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
+                <label>Learner<Select value={supportLearnerId} onValueChange={setSupportLearnerId}><SelectTrigger><SelectValue placeholder="Choose learner" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
                 <label>Category<Select value={referralCategory} onValueChange={setReferralCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="WELLBEING_CONCERN">Wellbeing concern</SelectItem><SelectItem value="DISCLOSURE">Disclosure</SelectItem><SelectItem value="IMMEDIATE_SAFETY">Immediate safety</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></label>
                 <label>Factual summary<Textarea value={referral} onChange={(event) => setReferral(event.target.value)} placeholder="Minimum necessary factual context…" /></label>
-                <Button disabled={saving || !learnerId || !referral.trim()} onClick={async () => { if (await act({ action: "openSafeguardingCase", cohortId: cohort.id, learnerUserId: learnerId, category: referralCategory, summary: referral })) setReferral(""); }}>Send to safeguarding</Button>
+                <Button disabled={saving || !supportLearnerId || !referral.trim()} onClick={async () => { if (await act({ action: "openSafeguardingCase", cohortId: cohort.id, learnerUserId: supportLearnerId, category: referralCategory, summary: referral })) setReferral(""); }}>Send to safeguarding</Button>
               </div>
             </div>
           </section>
@@ -406,7 +427,7 @@ export function FacilitatorWorkspace({
                 const threshold = learner.experiment?.minimumEvidenceThreshold ?? 3;
                 const stage = learner.enrolment?.currentInvestigation ?? 0;
                 const readiness = stage >= 8 && count >= threshold ? "Ready for evidence review" : stage >= 8 ? "Review stage · more real-world evidence useful" : learner.experiment ? "Experiment still building" : "Not yet at review stage";
-                return <button key={learner.userId} type="button" onClick={() => { setSection("participants"); setLearnerId(learner.userId); }}><span><strong>{learner.displayName}</strong><small>{position(learner)}</small></span><Badge variant="outline">{readiness}</Badge></button>;
+                return <button key={learner.userId} type="button" onClick={() => navigateWorkspace({ section: "participants", learner: learner.userId })}><span><strong>{learner.displayName}</strong><small>{position(learner)}</small></span><Badge variant="outline">{readiness}</Badge></button>;
               })}
             </div>
           </section>
