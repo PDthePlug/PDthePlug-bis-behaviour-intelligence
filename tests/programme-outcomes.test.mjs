@@ -58,13 +58,13 @@ test("programme outcomes answer useful organisation questions rather than only c
     "Are people actually testing this in real life?",
     "How much can we responsibly say?",
     "What happened the next time?",
-    "Did participants ask for help when they got stuck?",
+    "Did learners ask for help when they got stuck?",
   ]) {
     assert.match(view, new RegExp(question.replace(/[?]/g, "\\?")));
   }
 
   assert.match(view, /Completion/);
-  assert.match(view, /Programme context/);
+  assert.match(view, /Across this programme/);
   assert.match(view, /not enough evidence yet/i);
 });
 
