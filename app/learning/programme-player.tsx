@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { BIS_MODULES } from "../../lib/bis-catalogue";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
+import { enhanceHandbookDocument } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
 
 type Edition = HabitProgramme["edition"];
@@ -346,9 +347,12 @@ export function ProgrammePlayer({
 
   useEffect(() => {
     if (!page || section !== "learn" || learnMode !== "reader") return;
-    const frame = requestAnimationFrame(() =>
-      documentRef.current
-        ?.querySelectorAll<HTMLTextAreaElement>("textarea[data-field-id]")
+    const frame = requestAnimationFrame(() => {
+      const documentRoot = documentRef.current;
+      if (!documentRoot) return;
+      enhanceHandbookDocument(documentRoot, moduleCode, page.id);
+      documentRoot
+        .querySelectorAll<HTMLTextAreaElement>("textarea[data-field-id]")
         .forEach((field) => {
           const id = field.dataset.fieldId;
           if (!id) return;
@@ -357,10 +361,10 @@ export function ProgrammePlayer({
             field.disabled = true;
             field.placeholder = "Captured in the live Habit Lab";
           }
-        }),
-    );
+        });
+    });
     return () => cancelAnimationFrame(frame);
-  }, [drafts, learnMode, page, section, snapshot?.workbookResponses]);
+  }, [drafts, learnMode, moduleCode, page, section, snapshot?.workbookResponses]);
 
   useEffect(() => {
     if (saveState !== "dirty") return;
