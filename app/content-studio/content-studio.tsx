@@ -47,6 +47,27 @@ type CheckResult = {
   detail: string;
 };
 
+type ContentSourceFile = {
+  id: string;
+  versionId: string;
+  sourceKey: string;
+  deliveryEdition: string | null;
+  sourceFormat: string;
+  fileName: string;
+  storagePath: string;
+  sourceHash: string | null;
+  sourceBytes: number;
+  mimeType: string | null;
+};
+
+type RuntimeArtifact = {
+  id: string;
+  artifactKey: string;
+  deliveryEdition: string | null;
+  artifactHash: string;
+  artifactBytes: number;
+};
+
 type ContentVersion = {
   id: string;
   itemId: string;
@@ -69,6 +90,12 @@ type ContentVersion = {
   };
   status: string;
   releaseNotes: string;
+  compilerStatus: string;
+  compilerReport: { summary?: string; requiredEditions?: string[]; artifactKeys?: string[] };
+  compilerVersion: string | null;
+  compiledAt: string | null;
+  sourceFiles: ContentSourceFile[];
+  artifacts: RuntimeArtifact[];
   createdAt: string;
   updatedAt: string;
 };
@@ -83,6 +110,13 @@ type ContentItem = {
   routePath: string | null;
   linkedLabItemId: string | null;
   status: string;
+  activeActivation: null | {
+    id: string;
+    versionId: string;
+    runtimeMode: "STATIC" | "DYNAMIC";
+    status: string;
+    activatedAt: string;
+  };
   versions: ContentVersion[];
 };
 
@@ -93,6 +127,8 @@ type StudioSnapshot = {
     drafts: number;
     live: number;
     ready: number;
+    compiled: number;
+    activeDynamic: number;
   };
   items: ContentItem[];
 };
@@ -259,7 +295,11 @@ export function ContentStudio() {
     setReleaseNotes("");
   }
 
-  async function uploadSource(contentVersion: ContentVersion, file: File) {
+  async function uploadSource(
+    contentVersion: ContentVersion,
+    sourceKey: "school" | "emerging_adult" | "workplace" | "lab",
+    file: File,
+  ) {
     const detected = sourceFormatFor(file.name, file.type);
     if (!detected) {
       setError("Choose a BIS package JSON, DOCX, PDF, HTML, Markdown or ZIP source.");
@@ -274,7 +314,8 @@ export function ContentStudio() {
       return;
     }
 
-    setUploadingVersionId(contentVersion.id);
+    const uploadKey = `${contentVersion.id}:${sourceKey}`;
+    setUploadingVersionId(uploadKey);
     setError("");
     setMessage("");
     try {
@@ -282,8 +323,8 @@ export function ContentStudio() {
         .replace(/[^A-Za-z0-9._-]+/g, "-")
         .replace(/^-+|-+$/g, "")
         .slice(-140) || "source";
-      const path = `sources/${contentVersion.id}/${safeName}`;
-      const upload = await client.storage.from(CONTENT_STUDIO_BUCKET).upload(path, file, {
+      const storagePath = `sources/${contentVersion.id}/${sourceKey}/${safeName}`;
+      const upload = await client.storage.from(CONTENT_STUDIO_BUCKET).upload(storagePath, file, {
         contentType: file.type || undefined,
         cacheControl: "0",
         upsert: true,
@@ -293,22 +334,28 @@ export function ContentStudio() {
       const attached = await act({
         action: "attachSource",
         versionId: contentVersion.id,
+        sourceKey,
+        deliveryEdition: sourceKey === "lab" ? null : sourceKey,
         sourceFileName: file.name,
-        sourceStoragePath: path,
+        sourceStoragePath: storagePath,
         sourceBytes: file.size,
         mimeType: file.type || null,
         sourceFormat: detected,
       });
       if (!attached) {
-        await client.storage.from(CONTENT_STUDIO_BUCKET).remove([path]);
+        await client.storage.from(CONTENT_STUDIO_BUCKET).remove([storagePath]);
         return;
       }
-      setMessage("Source uploaded privately. Validate the draft when you are ready.");
+      setMessage(
+        sourceKey === "lab"
+          ? "Lab source uploaded privately."
+          : `${sourceKey.replace("_", " ")} edition uploaded privately.`,
+      );
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "The source upload failed.");
     } finally {
       setUploadingVersionId("");
-      const input = fileInputs.current[contentVersion.id];
+      const input = fileInputs.current[uploadKey];
       if (input) input.value = "";
     }
   }
