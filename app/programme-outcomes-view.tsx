@@ -243,7 +243,7 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
     signals.push({
       id: "support-demand",
       title: "People are asking for help",
-      evidence: `${metrics.support.participantsRequestingHelp} participants requested human help (${helpRate}% of the group).`,
+      evidence: `${metrics.support.participantsRequestingHelp} learners requested human help (${helpRate}% of the group).`,
       question: "Look for moments that may need clearer facilitation, more regular check-ins, or an easier way to ask for help.",
       level: "INVESTIGATE",
     });
@@ -322,7 +322,7 @@ function outcomeInsights(outcome: SponsorOutcome) {
   if (metrics.support.participantsRequestingHelp > 0) {
     insights.push({
       title: "Human support is part of the programme",
-      body: String(metrics.support.participantsRequestingHelp) + " participants requested help (" + String(metrics.support.supportRequestRate ?? 0) + "% of the group). This is a delivery signal, not a failure score.",
+      body: String(metrics.support.participantsRequestingHelp) + " learners requested help (" + String(metrics.support.supportRequestRate ?? 0) + "% of the group). This is a delivery signal, not a failure score.",
     });
   }
   const themes = outcome.deepAnalysis?.experimentLandscape?.themes ?? [];
@@ -352,7 +352,7 @@ function learningNarratives(outcome: SponsorOutcome) {
           : retained >= 60
             ? "Participation is thinning as the programme progresses"
             : "Participation falls sharply across the learning journey",
-      body: `${first.reached} participants reached Day ${first.day}; ${furthest.reached} reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} participants have contributed structured learning evidence along the way.`,
+      body: `${first.reached} participants reached Day ${first.day}; ${furthest.reached} reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} participants have contributed usable learning responses along the way.`,
     });
   }
 
@@ -451,9 +451,9 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
     return (
       <section className="programme-outcomes-empty">
         <ShieldCheck />
-        <p className="eyebrow">Programme Outcomes</p>
+        <p className="eyebrow">Programme results</p>
         <h2>No programme assigned.</h2>
-        <p>A BIS Administrator can add this organisation account to a programme.</p>
+        <p>A BIS administrator can give this account access to a programme.</p>
       </section>
     );
   }
@@ -465,7 +465,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
       <section className="outcomes-hero">
         <div>
           <p className="eyebrow">Programme</p>
-          <h1>Outcomes</h1>
+          <h1>Results</h1>
         </div>
         <div className="outcomes-hero-actions">
           <div className="outcomes-cohort-picker">
@@ -490,11 +490,11 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
       </section>
 
       <section className="outcomes-context">
-        <Metric label="Participants" value={outcome.participantCount} />
+        <Metric label="Learners" value={outcome.participantCount} />
         <Metric
           label="Completion"
           value={metrics ? percent(metrics.completionContext.completionRate) : "Suppressed"}
-          detail="Programme context"
+          detail="Across this programme"
         />
       </section>
 
@@ -519,10 +519,10 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
         <section className="outcomes-suppressed">
           <LockKeyhole />
           <p className="eyebrow">Small group privacy</p>
-          <h2>Too few participants to report behavioural outcomes safely.</h2>
+          <h2>Too few learners to report group results safely.</h2>
           <p>
-            This group has {outcome.participantCount} participant{outcome.participantCount === 1 ? "" : "s"}.
-            Results appear from {outcome.minimumReportableCohortSize} participants so no group pattern can point back to one person.
+            This group has {outcome.participantCount} learner{outcome.participantCount === 1 ? "" : "s"}.
+            Results appear from {outcome.minimumReportableCohortSize} learners so no group pattern can point back to one person.
           </p>
         </section>
       ) : (
@@ -538,9 +538,9 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
               </div>
 
               <div className="journey-activity-strip">
-                <Metric label="Learning activity" value={outcome.learningSummary.learningJourney.activity.participantsWithHandbookActivity} detail="participants" />
-                <Metric label="Structured evidence" value={outcome.learningSummary.learningJourney.activity.participantsWithStructuredResponses} detail="participants" />
-                <Metric label="Learning inputs" value={outcome.learningSummary.learningJourney.activity.structuredResponsesRecorded} detail="recorded" />
+                <Metric label="Learners active" value={outcome.learningSummary.learningJourney.activity.participantsWithHandbookActivity} detail="learners" />
+                <Metric label="Usable responses" value={outcome.learningSummary.learningJourney.activity.participantsWithStructuredResponses} detail="learners" />
+                <Metric label="Responses recorded" value={outcome.learningSummary.learningJourney.activity.structuredResponsesRecorded} detail="total" />
               </div>
 
               <div className="journey-days" aria-label="Programme day progress">
@@ -577,7 +577,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                       ))}
                     </div>
                   ) : (
-                    <p className="outcome-muted">No recurring structured challenge has reached the reporting threshold yet.</p>
+                    <p className="outcome-muted">No recurring challenge has reached the reporting threshold yet.</p>
                   )}
                 </section>
 
@@ -597,7 +597,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                             <span>{shift.averagePost}</span>
                             <em>{shift.averageShift > 0 ? "+" : ""}{shift.averageShift}</em>
                           </div>
-                          <small>{shift.pairedParticipants} paired participants</small>
+                          <small>{shift.pairedParticipants} learners with both check-ins</small>
                         </article>
                       ))}
                     </div>
@@ -659,7 +659,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                 <Metric label="Nothing yet" value={metrics.evidence.none} />
               </div>
               <p>
-                For {metrics.evidence.notEnoughYet} participant{metrics.evidence.notEnoughYet === 1 ? "" : "s"}, there is not enough evidence yet to say anything useful. BIS leaves that result open rather than forcing a conclusion.
+                For {metrics.evidence.notEnoughYet} learner{metrics.evidence.notEnoughYet === 1 ? "" : "s"}, there is not enough evidence yet to say anything useful. BIS leaves that result open rather than forcing a conclusion.
               </p>
             </article>
 
@@ -672,13 +672,13 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                 <Metric label="Stayed the same" value={metrics.change.sameLaterResponse} />
               </div>
               <p>
-                This compares the first and latest similar situation. {metrics.change.changedOtherDirection} participant{metrics.change.changedOtherDirection === 1 ? "" : "s"} changed in another direction.
+                This compares the first and latest similar situation. {metrics.change.changedOtherDirection} learner{metrics.change.changedOtherDirection === 1 ? "" : "s"} changed in another direction.
               </p>
             </article>
 
             <article className="outcome-question-card">
               <div className="outcome-card-title"><MessageCircleQuestion /><span>Support</span></div>
-              <h2>Did participants ask for help when they got stuck?</h2>
+              <h2>Did learners ask for help when they got stuck?</h2>
               <div className="outcome-metric-row">
                 <Metric label="People who asked for help" value={metrics.support.participantsRequestingHelp} />
                 <Metric label="Support requests" value={metrics.support.supportRequests} />
@@ -746,7 +746,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                         <strong>Areas people were exploring</strong>
                         <span>Grouped broadly to protect privacy.</span>
                       </div>
-                      <span>Participants</span>
+                      <span>Learners</span>
                     </div>
                     {outcome.deepAnalysis.experimentLandscape.themes.length ? (
                       outcome.deepAnalysis.experimentLandscape.themes.map((theme) => (
@@ -757,7 +757,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                           </div>
                           <div className="theme-count">
                             <strong>{theme.participants}</strong>
-                            <span>{theme.shareOfStarted}% of starters</span>
+                            <span>{theme.shareOfStarted}% of experiment starters</span>
                           </div>
                         </article>
                       ))
@@ -772,7 +772,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                     <p className="theme-suppression-note">
                       <LockKeyhole /> {outcome.deepAnalysis.experimentLandscape.suppressedSmallThemeCount} smaller theme
                       {outcome.deepAnalysis.experimentLandscape.suppressedSmallThemeCount === 1 ? " was" : "s were"} hidden
-                      because fewer than {outcome.deepAnalysis.minimumReportableThemeSize} participants shared that category.
+                      because fewer than {outcome.deepAnalysis.minimumReportableThemeSize} learners shared that category.
                     </p>
                   ) : null}
                 </section>
