@@ -20,6 +20,7 @@ test("every uncovered question can receive a stable private workbook response", 
   assert.match(enhancement, /dataset\.privacyClass = "P3"/);
   assert.match(enhancement, /placeholder = "Write your answer…"/);
   assert.match(enhancement, /hasExistingAnswerSpace/);
+  assert.match(enhancement, /p,li,h2,h3,h4/);
 });
 
 test("suggested checkpoint answers are collapsed by default and excluded from response generation", async () => {
