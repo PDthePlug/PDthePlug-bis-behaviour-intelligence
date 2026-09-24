@@ -180,6 +180,7 @@ export function StaffWorkspaceShell() {
           <span className="staff-workspace-identity">{session.identity.email}</span>
           <Link className="staff-workspace-learner-link" href="/profile">Profile</Link>
           <Link className="staff-workspace-learner-link" href="/habit">Learner experience</Link>
+          {adminAvailable ? <Link className="staff-workspace-learner-link" href="/content-studio">Content Studio</Link> : null}
           <button type="button" className="staff-workspace-hide" onClick={() => setHidden(true)}>
             <EyeOff aria-hidden="true" /> Hide
           </button>
