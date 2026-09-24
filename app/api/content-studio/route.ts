@@ -1,9 +1,13 @@
-import { asc, desc, eq } from "../../../db/query";
+import { and, asc, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   contentLibraryItems,
   contentLibraryVersions,
+  contentReleases,
+  contentRuntimeActivations,
+  contentRuntimeArtifacts,
+  contentSourceFiles,
 } from "../../../db/schema";
 import {
   CONTENT_KINDS,
@@ -16,6 +20,13 @@ import {
   type ContentKind,
   type ContentSourceFormat,
 } from "../../../lib/content-studio";
+import {
+  CONTENT_COMPILER_VERSION,
+  LEARNING_EDITION_KEYS,
+  compileLearningEdition,
+  compileUniversalLab,
+} from "../../../lib/content-compiler";
+import type { DeliveryEdition } from "../../../lib/learning-foundation";
 import {
   AccessError,
   getRoles,
@@ -71,18 +82,25 @@ async function audit(
 
 async function snapshot() {
   const db = getDb();
-  const [items, versions] = await Promise.all([
+  const [items, versions, sourceFiles, artifacts, activations] = await Promise.all([
     db.select().from(contentLibraryItems).orderBy(asc(contentLibraryItems.kind), asc(contentLibraryItems.title)),
     db.select().from(contentLibraryVersions).orderBy(desc(contentLibraryVersions.createdAt)),
+    db.select().from(contentSourceFiles).orderBy(desc(contentSourceFiles.createdAt)),
+    db.select().from(contentRuntimeArtifacts).orderBy(desc(contentRuntimeArtifacts.createdAt)),
+    db.select().from(contentRuntimeActivations).orderBy(desc(contentRuntimeActivations.activatedAt)),
   ]);
   const mappedVersions = versions.map((row) => ({
     ...row,
     deliveryEditions: parseJson(row.deliveryEditions, []),
     manifest: parseJson(row.manifest, {}),
     validationReport: parseJson(row.validationReport, {}),
+    compilerReport: parseJson(row.compilerReport, {}),
+    sourceFiles: sourceFiles.filter((source) => source.versionId === row.id),
+    artifacts: artifacts.filter((artifact) => artifact.versionId === row.id),
   }));
   const mappedItems = items.map((item) => ({
     ...item,
+    activeActivation: activations.find((activation) => activation.itemId === item.id && activation.status === "ACTIVE") ?? null,
     versions: mappedVersions.filter((version) => version.itemId === item.id),
   }));
   return {
@@ -92,6 +110,8 @@ async function snapshot() {
       drafts: versions.filter((version) => ["DRAFT", "VALIDATED", "APPROVED"].includes(version.status)).length,
       live: versions.filter((version) => version.runtimeStatus === "LIVE" && version.status === "PUBLISHED").length,
       ready: versions.filter((version) => version.runtimeStatus === "READY" && ["VALIDATED", "APPROVED"].includes(version.status)).length,
+      compiled: versions.filter((version) => version.compilerStatus === "COMPILED").length,
+      activeDynamic: activations.filter((activation) => activation.status === "ACTIVE" && activation.runtimeMode === "DYNAMIC").length,
     },
     items: mappedItems,
   };
@@ -184,6 +204,8 @@ async function postHandler(request: Request) {
 
     if (action === "attachSource") {
       const versionId = String(body.versionId ?? "");
+      const sourceKey = String(body.sourceKey ?? "");
+      const deliveryEdition = String(body.deliveryEdition ?? "") || null;
       const sourceFileName = String(body.sourceFileName ?? "").trim();
       const sourceStoragePath = String(body.sourceStoragePath ?? "").trim();
       const sourceBytes = Number(body.sourceBytes ?? 0);
@@ -191,42 +213,190 @@ async function postHandler(request: Request) {
       const sourceFormat = String(body.sourceFormat ?? "") as ContentSourceFormat;
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version || version.status !== "DRAFT") throw new Error("Choose an editable draft version.");
+      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
+      if (!item) throw new Error("The parent content item was not found.");
+      const expectedKeys = item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : ["lab"];
+      if (!expectedKeys.includes(sourceKey as DeliveryEdition | "lab")) throw new Error("Choose the correct source slot for this content.");
+      if (item.kind === "LEARNING_MODULE" && deliveryEdition !== sourceKey) throw new Error("The learning source must match its delivery edition.");
+      if (item.kind === "LAB" && deliveryEdition) throw new Error("Lab sources do not use delivery editions.");
       if (!sourceFileName || sourceFileName.length > 180) throw new Error("The source file name is not valid.");
-      if (!sourceStoragePath.startsWith(`sources/${versionId}/`)) throw new Error("The source upload path does not match this draft.");
+      if (!sourceStoragePath.startsWith(`sources/${versionId}/${sourceKey}/`)) throw new Error("The source upload path does not match this draft slot.");
       if (!Number.isFinite(sourceBytes) || sourceBytes < 1 || sourceBytes > 26_214_400) throw new Error("Use a source file up to 25 MB.");
       if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Choose a supported source format.");
 
       const list = await requestSupabaseClient().storage
         .from(CONTENT_STUDIO_BUCKET)
-        .list(`sources/${versionId}`, { limit: 100 });
-      if (list.error || !list.data.some((item) => sourceStoragePath.endsWith(`/${item.name}`))) {
+        .list(`sources/${versionId}/${sourceKey}`, { limit: 100 });
+      if (list.error || !list.data.some((entry) => sourceStoragePath.endsWith(`/${entry.name}`))) {
         throw new Error("The uploaded source could not be confirmed.");
       }
 
+      const id = `${versionId}:source:${sourceKey}`;
       const now = new Date().toISOString();
-      await db.update(contentLibraryVersions).set({
-        sourceFileName,
-        sourceStoragePath,
+      await db.insert(contentSourceFiles).values({
+        id,
+        versionId,
+        itemId: item.id,
+        sourceKey,
+        deliveryEdition,
+        sourceFormat,
+        fileName: sourceFileName,
+        storagePath: sourceStoragePath,
+        sourceHash: null,
         sourceBytes,
         mimeType,
-        sourceFormat,
-        sourceHash: null,
+        createdBy: identity.id,
+        updatedAt: now,
+      }).onConflictDoUpdate({
+        target: [contentSourceFiles.versionId, contentSourceFiles.sourceKey],
+        set: {
+          deliveryEdition,
+          sourceFormat,
+          fileName: sourceFileName,
+          storagePath: sourceStoragePath,
+          sourceHash: null,
+          sourceBytes,
+          mimeType,
+          updatedAt: now,
+        },
+      });
+
+      await db.update(contentLibraryVersions).set({
+        compilerStatus: "NOT_COMPILED",
+        compilerReport: "{}",
+        compilerVersion: null,
+        compiledAt: null,
+        compiledBy: null,
         validationStatus: "PENDING",
         runtimeStatus: "REQUIRES_ADAPTER",
         validationReport: "{}",
         manifest: "{}",
-        validatedAt: null,
-        approvedAt: null,
-        approvedBy: null,
         updatedAt: now,
       }).where(eq(contentLibraryVersions.id, versionId));
       await audit(identity.id, "CONTENT_SOURCE_ATTACHED", "CONTENT_LIBRARY_VERSION", versionId, {
+        sourceKey,
+        deliveryEdition,
         sourceFileName,
         sourceBytes,
         mimeType,
         sourceFormat,
       });
       return Response.json(await snapshot());
+    }
+
+    if (action === "compileVersion") {
+      const versionId = String(body.versionId ?? "");
+      const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
+      if (!version || version.status !== "DRAFT") throw new Error("Choose an editable draft version.");
+      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
+      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      const sources = await db.select().from(contentSourceFiles).where(eq(contentSourceFiles.versionId, versionId));
+      const expectedKeys = item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : ["lab"];
+      const missing = expectedKeys.filter((key) => !sources.some((source) => source.sourceKey === key));
+      if (missing.length) throw new Error(item.kind === "LEARNING_MODULE"
+        ? `Every learning module has three editions. Upload: ${missing.join(", ")}.`
+        : "Upload the Lab source before compiling.");
+
+      const compiled = [];
+      try {
+        if (item.kind === "LEARNING_MODULE") {
+          for (const edition of LEARNING_EDITION_KEYS) {
+            const source = sources.find((entry) => entry.sourceKey === edition)!;
+            if (source.sourceFormat !== "BIS_PACKAGE_JSON") {
+              throw new Error(`${edition}: ${source.sourceFormat} is stored safely, but the automatic adapter is not production-ready yet. Convert this edition to a BIS JSON source package.`);
+            }
+            const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(source.storagePath);
+            if (download.error || !download.data) throw new Error(`${edition}: source file could not be opened.`);
+            const bytes = new Uint8Array(await download.data.arrayBuffer());
+            const sourceHash = await sha256Hex(bytes);
+            await db.update(contentSourceFiles).set({ sourceHash, sourceBytes: bytes.byteLength, updatedAt: new Date().toISOString() }).where(eq(contentSourceFiles.id, source.id));
+            compiled.push(await compileLearningEdition(bytes, item.code, version.version, edition));
+          }
+        } else {
+          const source = sources.find((entry) => entry.sourceKey === "lab")!;
+          if (source.sourceFormat !== "BIS_PACKAGE_JSON") {
+            throw new Error(`${source.sourceFormat} is stored safely, but executable Lab compilation currently requires a BIS JSON Lab package.`);
+          }
+          const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(source.storagePath);
+          if (download.error || !download.data) throw new Error("Lab source file could not be opened.");
+          const bytes = new Uint8Array(await download.data.arrayBuffer());
+          const sourceHash = await sha256Hex(bytes);
+          await db.update(contentSourceFiles).set({ sourceHash, sourceBytes: bytes.byteLength, updatedAt: new Date().toISOString() }).where(eq(contentSourceFiles.id, source.id));
+          compiled.push(await compileUniversalLab(bytes, item.code, version.version));
+        }
+
+        for (const artifact of compiled) {
+          const storagePath = `runtime/${versionId}/${artifact.artifactKey.replace(":", "/")}.json`;
+          const upload = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).upload(
+            storagePath,
+            new TextEncoder().encode(artifact.content),
+            { contentType: artifact.mimeType, cacheControl: "0", upsert: true },
+          );
+          if (upload.error) throw new Error(upload.error.message);
+          const id = `${versionId}:artifact:${artifact.artifactKey}`;
+          await db.insert(contentRuntimeArtifacts).values({
+            id,
+            versionId,
+            itemId: item.id,
+            artifactKey: artifact.artifactKey,
+            deliveryEdition: artifact.deliveryEdition,
+            storagePath,
+            artifactHash: artifact.hash,
+            artifactBytes: artifact.bytes,
+            mimeType: artifact.mimeType,
+            compilerVersion: CONTENT_COMPILER_VERSION,
+          }).onConflictDoUpdate({
+            target: [contentRuntimeArtifacts.versionId, contentRuntimeArtifacts.artifactKey],
+            set: {
+              deliveryEdition: artifact.deliveryEdition,
+              storagePath,
+              artifactHash: artifact.hash,
+              artifactBytes: artifact.bytes,
+              mimeType: artifact.mimeType,
+              compilerVersion: CONTENT_COMPILER_VERSION,
+            },
+          });
+        }
+
+        const now = new Date().toISOString();
+        const report = {
+          summary: item.kind === "LEARNING_MODULE"
+            ? "Compiled all three delivery editions into runtime programmes."
+            : "Compiled the Universal Lab package.",
+          compilerVersion: CONTENT_COMPILER_VERSION,
+          artifactKeys: compiled.map((artifact) => artifact.artifactKey),
+          requiredEditions: item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : [],
+        };
+        await db.update(contentLibraryVersions).set({
+          compilerStatus: "COMPILED",
+          compilerReport: JSON.stringify(report),
+          compilerVersion: CONTENT_COMPILER_VERSION,
+          compiledAt: now,
+          compiledBy: identity.id,
+          validationStatus: "VALID",
+          runtimeStatus: "READY",
+          validationReport: JSON.stringify({ summary: report.summary, activationReady: true }),
+          manifest: JSON.stringify(report),
+          status: "VALIDATED",
+          validatedAt: now,
+          updatedAt: now,
+        }).where(eq(contentLibraryVersions.id, versionId));
+        await audit(identity.id, "CONTENT_VERSION_COMPILED", "CONTENT_LIBRARY_VERSION", versionId, report);
+        return Response.json(await snapshot());
+      } catch (compileError) {
+        const now = new Date().toISOString();
+        const detail = compileError instanceof Error ? compileError.message : "Compilation failed.";
+        await db.update(contentLibraryVersions).set({
+          compilerStatus: "FAILED",
+          compilerReport: JSON.stringify({ summary: detail, compilerVersion: CONTENT_COMPILER_VERSION }),
+          validationStatus: "INVALID",
+          runtimeStatus: "BLOCKED",
+          validationReport: JSON.stringify({ summary: detail, activationReady: false }),
+          updatedAt: now,
+        }).where(eq(contentLibraryVersions.id, versionId));
+        await audit(identity.id, "CONTENT_VERSION_COMPILE_FAILED", "CONTENT_LIBRARY_VERSION", versionId, { detail });
+        throw compileError;
+      }
     }
 
     if (action === "validateVersion") {
@@ -299,6 +469,133 @@ async function postHandler(request: Request) {
         updatedAt: now,
       }).where(eq(contentLibraryVersions.id, versionId));
       await audit(identity.id, "CONTENT_VERSION_REOPENED", "CONTENT_LIBRARY_VERSION", versionId);
+      return Response.json(await snapshot());
+    }
+
+    if (action === "activateVersion") {
+      const versionId = String(body.versionId ?? "");
+      const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
+      if (!version || version.status !== "APPROVED" || version.compilerStatus !== "COMPILED" || version.runtimeStatus !== "READY") {
+        throw new Error("Compile, validate and approve this version before activation.");
+      }
+      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
+      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
+      if (item.kind === "LEARNING_MODULE") {
+        const editions = artifacts.map((artifact) => artifact.deliveryEdition).filter(Boolean);
+        const missing = LEARNING_EDITION_KEYS.filter((edition) => !editions.includes(edition));
+        if (missing.length) throw new Error(`Activation blocked: missing compiled editions ${missing.join(", ")}.`);
+      } else if (!artifacts.some((artifact) => artifact.artifactKey === "lab:universal")) {
+        throw new Error("Activation blocked: the Universal Lab runtime artifact is missing.");
+      }
+
+      const activeRows = await db.select().from(contentRuntimeActivations).where(and(
+        eq(contentRuntimeActivations.itemId, item.id),
+        eq(contentRuntimeActivations.status, "ACTIVE"),
+      ));
+      const previous = activeRows[0] ?? null;
+      const now = new Date().toISOString();
+      if (previous) {
+        await db.update(contentRuntimeActivations).set({ status: "SUPERSEDED", deactivatedAt: now }).where(eq(contentRuntimeActivations.id, previous.id));
+        await db.update(contentLibraryVersions).set({ runtimeStatus: "READY", updatedAt: now }).where(eq(contentLibraryVersions.id, previous.versionId));
+      }
+
+      const activationId = crypto.randomUUID();
+      await db.insert(contentRuntimeActivations).values({
+        id: activationId,
+        itemId: item.id,
+        versionId,
+        runtimeMode: "DYNAMIC",
+        status: "ACTIVE",
+        activatedBy: identity.id,
+        supersedesActivationId: previous?.id ?? null,
+      });
+
+      if (item.kind === "LEARNING_MODULE") {
+        for (const edition of LEARNING_EDITION_KEYS) {
+          const artifact = artifacts.find((entry) => entry.deliveryEdition === edition)!;
+          const existingPublished = await db.select().from(contentReleases).where(and(
+            eq(contentReleases.labCode, item.code),
+            eq(contentReleases.deliveryEdition, edition),
+            eq(contentReleases.status, "PUBLISHED"),
+          ));
+          for (const release of existingPublished) {
+            await db.update(contentReleases).set({ status: "CONTROLLED" }).where(eq(contentReleases.id, release.id));
+          }
+          const releaseId = `${item.code}:${edition}:${version.version}:${artifact.artifactHash.slice(0, 8)}`;
+          await db.insert(contentReleases).values({
+            id: releaseId,
+            handbookId: `${item.slug}-content-studio`,
+            labCode: item.code,
+            deliveryEdition: edition,
+            contentVersion: version.version,
+            runtimeVersion: "programme-player-3",
+            schemaVersion: version.schemaVersion,
+            releaseHash: artifact.artifactHash,
+            status: "PUBLISHED",
+            releasedAt: now,
+          }).onConflictDoUpdate({
+            target: [contentReleases.labCode, contentReleases.deliveryEdition, contentReleases.contentVersion, contentReleases.releaseHash],
+            set: { status: "PUBLISHED", releasedAt: now },
+          });
+        }
+      }
+
+      const routePath = item.kind === "LEARNING_MODULE" ? `/handbooks/${item.code.toLowerCase()}` : `/labs/${item.code.toLowerCase()}`;
+      await db.update(contentLibraryItems).set({ routePath, updatedAt: now }).where(eq(contentLibraryItems.id, item.id));
+      await db.update(contentLibraryVersions).set({
+        status: "PUBLISHED",
+        runtimeStatus: "LIVE",
+        publishedAt: now,
+        updatedAt: now,
+      }).where(eq(contentLibraryVersions.id, versionId));
+      await audit(identity.id, "CONTENT_VERSION_ACTIVATED", "CONTENT_LIBRARY_VERSION", versionId, {
+        itemId: item.id,
+        kind: item.kind,
+        routePath,
+        editions: item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : [],
+        supersedes: previous?.versionId ?? null,
+      });
+      return Response.json(await snapshot());
+    }
+
+    if (action === "rollbackActivation") {
+      const itemId = String(body.itemId ?? "");
+      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
+      if (!item) throw new Error("That content item was not found.");
+      const activationRows = await db.select().from(contentRuntimeActivations).where(eq(contentRuntimeActivations.itemId, itemId)).orderBy(desc(contentRuntimeActivations.activatedAt));
+      const current = activationRows.find((activation) => activation.status === "ACTIVE");
+      const previous = activationRows.find((activation) => activation.status === "SUPERSEDED");
+      if (!current || !previous) throw new Error("There is no previous runtime version available for rollback.");
+      const [currentVersion] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, current.versionId)).limit(1);
+      const [previousVersion] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, previous.versionId)).limit(1);
+      if (!currentVersion || !previousVersion) throw new Error("Rollback version records are incomplete.");
+      const now = new Date().toISOString();
+      await db.update(contentRuntimeActivations).set({ status: "ROLLED_BACK", deactivatedAt: now }).where(eq(contentRuntimeActivations.id, current.id));
+      await db.update(contentRuntimeActivations).set({ status: "ACTIVE", deactivatedAt: null }).where(eq(contentRuntimeActivations.id, previous.id));
+      await db.update(contentLibraryVersions).set({ runtimeStatus: "READY", updatedAt: now }).where(eq(contentLibraryVersions.id, currentVersion.id));
+      await db.update(contentLibraryVersions).set({ runtimeStatus: "LIVE", status: "PUBLISHED", publishedAt: now, updatedAt: now }).where(eq(contentLibraryVersions.id, previousVersion.id));
+
+      if (item.kind === "LEARNING_MODULE") {
+        const currentReleases = await db.select().from(contentReleases).where(and(
+          eq(contentReleases.labCode, item.code),
+          eq(contentReleases.contentVersion, currentVersion.version),
+        ));
+        for (const release of currentReleases) {
+          if (release.status === "PUBLISHED") await db.update(contentReleases).set({ status: "CONTROLLED" }).where(eq(contentReleases.id, release.id));
+        }
+        const previousReleases = await db.select().from(contentReleases).where(and(
+          eq(contentReleases.labCode, item.code),
+          eq(contentReleases.contentVersion, previousVersion.version),
+        ));
+        for (const release of previousReleases) {
+          await db.update(contentReleases).set({ status: "PUBLISHED", releasedAt: now }).where(eq(contentReleases.id, release.id));
+        }
+      }
+      await audit(identity.id, "CONTENT_RUNTIME_ROLLED_BACK", "CONTENT_LIBRARY_ITEM", itemId, {
+        fromVersion: currentVersion.version,
+        toVersion: previousVersion.version,
+      });
       return Response.json(await snapshot());
     }
 
