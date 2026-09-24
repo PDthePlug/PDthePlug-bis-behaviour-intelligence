@@ -197,7 +197,7 @@ function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
     signals.push({
       id: "activation-friction",
       title: "People reached the test but did not start",
-      evidence: `${readyNotStarted} of ${reached} participants who reached the experiment stage had not started yet.`,
+      evidence: `${readyNotStarted} of ${reached} learners who reached the experiment stage had not started yet.`,
       question: "Check whether timing, instructions, workload, support, or access to a suitable situation is making it harder to begin.",
       level: "INVESTIGATE",
     });
@@ -285,11 +285,11 @@ function outcomeInsights(outcome: SponsorOutcome) {
   if (attemptRate !== null) {
     const actionTitle =
       attemptRate >= 70
-        ? "Most participants moved into action"
+        ? "Most learners moved into action"
         : attemptRate >= 40
           ? "A substantial share moved into action"
           : attemptRate > 0
-            ? "Some participants moved into action"
+            ? "Some learners moved into action"
             : "The real-world experiment has not started yet";
     insights.push({
       title: actionTitle,
@@ -315,7 +315,7 @@ function outcomeInsights(outcome: SponsorOutcome) {
     insights.push({
       title: "Group averages can hide what happened for individuals",
       body: groupDifference === null
-        ? "Across participants, expectations were on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened."
+        ? "Across learners, expectations were on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened."
         : "The group averages are only " + groupDifference + " points apart, but each person's expectation was on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened.",
     });
   }
@@ -329,7 +329,7 @@ function outcomeInsights(outcome: SponsorOutcome) {
   if (themes.length > 0) {
     insights.push({
       title: "Behaviour is being tested in recognisable life contexts",
-      body: "The most common reportable areas are " + themes.slice(0, 3).map((theme) => theme.label + " (" + String(theme.participants) + ")").join(", ") + ". Participants can appear in more than one area.",
+      body: "The most common reportable areas are " + themes.slice(0, 3).map((theme) => theme.label + " (" + String(theme.participants) + ")").join(", ") + ". Learners can appear in more than one area.",
     });
   }
   return insights.slice(0, 5);
@@ -352,7 +352,7 @@ function learningNarratives(outcome: SponsorOutcome) {
           : retained >= 60
             ? "Participation is thinning as the programme progresses"
             : "Participation falls sharply across the learning journey",
-      body: `${first.reached} participants reached Day ${first.day}; ${furthest.reached} reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} participants have contributed usable learning responses along the way.`,
+      body: `${first.reached} learners reached Day ${first.day}; ${furthest.reached} reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} learners have contributed usable learning responses along the way.`,
     });
   }
 
@@ -370,7 +370,7 @@ function learningNarratives(outcome: SponsorOutcome) {
     const direction = shift.averageShift > 0 ? "increased" : shift.averageShift < 0 ? "decreased" : "stayed level";
     items.push({
       title: `${shift.label} ${direction}`,
-      body: `Across ${shift.pairedParticipants} participants with both measures, the group average moved from ${shift.averagePre} to ${shift.averagePost} (${shift.averageShift > 0 ? "+" : ""}${shift.averageShift}).`,
+      body: `Across ${shift.pairedParticipants} learners with both check-ins, the group average moved from ${shift.averagePre} to ${shift.averagePost} (${shift.averageShift > 0 ? "+" : ""}${shift.averageShift}).`,
     });
   }
 
@@ -602,7 +602,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                       ))}
                     </div>
                   ) : (
-                    <p className="outcome-muted">Pre/post group shifts will appear when enough participants have completed both measures.</p>
+                    <p className="outcome-muted">Before-and-after group shifts will appear when enough learners have completed both check-ins.</p>
                   )}
                 </section>
               </div>
@@ -820,7 +820,7 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
       <details className="outcomes-privacy-disclosure">
         <summary><ShieldCheck /><span>Privacy and reporting boundaries</span><ChevronDown /></summary>
         <div>
-          <p>Programme reporting uses group patterns and structured measures. Individual responses, private reflections, experiment notes and support wording are not shown here.</p>
+          <p>Programme reporting uses group patterns and programme measures. Individual responses, private reflections, experiment notes and support wording are not shown here.</p>
           <p>Small groups and small theme cells are hidden when reporting could point back to a person.</p>
         </div>
       </details>
