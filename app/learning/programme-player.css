@@ -27,9 +27,9 @@
 .checkpoint-answer-panel>summary::-webkit-details-marker{display:none}
 .checkpoint-answer-panel>summary::after{content:"+";display:grid;width:28px;height:28px;place-items:center;border:1px solid #d8d4cb;border-radius:999px;background:#fff;font-size:17px;line-height:1}
 .checkpoint-answer-panel[open]>summary::after{content:"−"}
-.checkpoint-answer-label.open{display:none}
+.checkpoint-answer-label{display:grid;gap:1px}.checkpoint-answer-label strong{font-size:13px}.checkpoint-answer-label small{color:#7b837f;font-size:10px;font-weight:650}.checkpoint-answer-label.open{display:none}
 .checkpoint-answer-panel[open] .checkpoint-answer-label.closed{display:none}
-.checkpoint-answer-panel[open] .checkpoint-answer-label.open{display:inline}
+.checkpoint-answer-panel[open] .checkpoint-answer-label.open{display:grid}
 .checkpoint-answer-body{padding:0 16px 16px;border-top:1px solid #e4e0d8}
 .checkpoint-answer-body>:first-child{margin-top:16px}
 .checkpoint-answer-body>:last-child{margin-bottom:0}
