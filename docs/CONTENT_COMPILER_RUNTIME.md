@@ -163,3 +163,51 @@ All compile, approval, activation and rollback operations remain `SYSTEM_ADMIN` 
 ## Production rollout note
 
 This architecture is designed so existing built-in BIS content remains on its current STATIC runtime until a Super User deliberately activates a compiled replacement. Applying the compiler migration or deploying this code does not automatically switch any learner to a new content version.
+
+
+## Content Preview + Activation UAT
+
+A compiled version does not become activation-safe merely because it passed structural validation.
+
+Before a dynamic version can activate, a Super User must complete an artifact-bound UAT review.
+
+### Runtime preview
+
+Content Studio opens compiled content in the same learner renderer used after activation:
+
+- Learning Modules use the Programme Player.
+- Universal Labs use the shared nine-investigation Lab renderer.
+- Learning Module UAT must preview School, Emerging Adult and Workplace.
+- The preview workspace provides desktop and mobile viewport frames.
+- Preview inputs are local-only and never write learner progress, workbook responses, Lab responses or evidence.
+
+Opening a preview records the exact runtime artifact hash that was inspected.
+
+### Manual UAT checks
+
+The reviewer confirms:
+
+1. authored wording, page order, headings, media and examples;
+2. navigation and browser/task flow;
+3. learner inputs, pass controls and privacy wording;
+4. desktop and mobile usability;
+5. module/Lab handoffs and completion states;
+6. learner-facing language is clear and free of implementation jargon.
+
+Reviewer notes may be retained with the UAT record.
+
+### Sign-off and invalidation
+
+The UAT record stores a fingerprint of the complete compiled artifact set.
+
+A PASSED sign-off is valid only while that fingerprint still matches the current runtime artifacts. Replacing a source, reopening the draft or recompiling resets the review. Re-opening the same already-signed artifact set for inspection does not invalidate its existing sign-off.
+
+Activation is rejected server-side unless:
+
+- the version is compiled, validated and approved;
+- every required runtime artifact has been previewed;
+- every manual UAT check is complete;
+- the UAT status is PASSED;
+- the signed artifact fingerprint still matches the compiled runtime.
+
+This keeps visual/runtime approval separate from compilation while making both mandatory for production activation.
