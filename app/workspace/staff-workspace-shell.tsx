@@ -3,6 +3,7 @@
 import { BisMark } from "@/components/brand/bis-mark";
 
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Activity,
@@ -43,7 +44,9 @@ export function StaffWorkspaceShell() {
   const [hidden, setHidden] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [perspective, setPerspective] = useState<Perspective>("facilitator");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,7 +67,6 @@ export function StaffWorkspaceShell() {
         if (controller.signal.aborted) return;
         const roles = payload.roles ?? [];
         setSession({ identity: payload.identity, roles });
-        setPerspective(defaultPerspective(roles));
       } catch (cause) {
         if (!controller.signal.aborted) {
           setError(cause instanceof Error ? cause.message : "The staff workspace could not be opened.");
@@ -147,6 +149,25 @@ export function StaffWorkspaceShell() {
   const facilitatorAvailable = canFacilitate(session.roles);
   const outcomesAvailable = canViewOutcomes(session.roles);
   const adminAvailable = canAdminister(session.roles);
+  const requestedPerspective = searchParams.get("view") as Perspective | null;
+  const perspective =
+    requestedPerspective === "facilitator" && facilitatorAvailable
+      ? "facilitator"
+      : requestedPerspective === "outcomes" && outcomesAvailable
+        ? "outcomes"
+        : requestedPerspective === "admin" && adminAvailable
+          ? "admin"
+          : defaultPerspective(session.roles);
+
+  function openPerspective(next: Perspective) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", next);
+    params.delete("section");
+    params.delete("learner");
+    params.delete("group");
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   return (
     <div className="staff-workspace-shell">
@@ -170,7 +191,7 @@ export function StaffWorkspaceShell() {
           <button
             type="button"
             className={perspective === "facilitator" ? "active" : ""}
-            onClick={() => setPerspective("facilitator")}
+            onClick={() => openPerspective("facilitator")}
             aria-current={perspective === "facilitator" ? "page" : undefined}
           >
             <LayoutDashboard aria-hidden="true" />
@@ -181,7 +202,7 @@ export function StaffWorkspaceShell() {
           <button
             type="button"
             className={perspective === "outcomes" ? "active" : ""}
-            onClick={() => setPerspective("outcomes")}
+            onClick={() => openPerspective("outcomes")}
             aria-current={perspective === "outcomes" ? "page" : undefined}
           >
             <Activity aria-hidden="true" />
@@ -192,7 +213,7 @@ export function StaffWorkspaceShell() {
           <button
             type="button"
             className={perspective === "admin" ? "active" : ""}
-            onClick={() => setPerspective("admin")}
+            onClick={() => openPerspective("admin")}
             aria-current={perspective === "admin" ? "page" : undefined}
           >
             <Settings2 aria-hidden="true" />
