@@ -70,7 +70,7 @@ function hasExistingAnswerSpace(element: HTMLElement) {
   if (element.querySelector("textarea[data-field-id]")) return true;
   let cursor = element.nextElementSibling;
   let inspected = 0;
-  while (cursor && inspected < 2) {
+  while (cursor && inspected < 5) {
     if (cursor.matches("textarea[data-field-id]") || cursor.querySelector("textarea[data-field-id]")) {
       return true;
     }
