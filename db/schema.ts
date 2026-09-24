@@ -51,6 +51,65 @@ export const contentReleases = sqliteTable(
   ],
 );
 
+
+export const contentLibraryItems = sqliteTable(
+  "content_library_items",
+  {
+    id: text("id").primaryKey(),
+    kind: text("kind").notNull(),
+    code: text("code").notNull(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    summary: text("summary").notNull().default(""),
+    routePath: text("route_path"),
+    linkedLabItemId: text("linked_lab_item_id"),
+    status: text("status").notNull().default("ACTIVE"),
+    createdBy: text("created_by").notNull(),
+    createdAt: timestamp(),
+    updatedAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_content_library_kind_code").on(table.kind, table.code),
+    uniqueIndex("uq_content_library_kind_slug").on(table.kind, table.slug),
+    index("idx_content_library_items_kind_status").on(table.kind, table.status),
+  ],
+);
+
+export const contentLibraryVersions = sqliteTable(
+  "content_library_versions",
+  {
+    id: text("id").primaryKey(),
+    itemId: text("item_id").notNull(),
+    version: text("version").notNull(),
+    schemaVersion: text("schema_version").notNull().default("1.0"),
+    sourceFormat: text("source_format").notNull().default("BIS_PACKAGE_JSON"),
+    sourceFileName: text("source_file_name"),
+    sourceStoragePath: text("source_storage_path"),
+    sourceHash: text("source_hash"),
+    sourceBytes: integer("source_bytes"),
+    mimeType: text("mime_type"),
+    deliveryEditions: text("delivery_editions").notNull().default('["school","emerging_adult","workplace"]'),
+    manifest: text("manifest").notNull().default("{}"),
+    validationStatus: text("validation_status").notNull().default("PENDING"),
+    runtimeStatus: text("runtime_status").notNull().default("REQUIRES_ADAPTER"),
+    validationReport: text("validation_report").notNull().default("{}"),
+    status: text("status").notNull().default("DRAFT"),
+    releaseNotes: text("release_notes").notNull().default(""),
+    createdBy: text("created_by").notNull(),
+    validatedAt: text("validated_at"),
+    approvedAt: text("approved_at"),
+    approvedBy: text("approved_by"),
+    publishedAt: text("published_at"),
+    createdAt: timestamp(),
+    updatedAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_content_library_item_version").on(table.itemId, table.version),
+    index("idx_content_library_versions_item_status").on(table.itemId, table.status),
+    index("idx_content_library_versions_runtime").on(table.runtimeStatus, table.validationStatus),
+  ],
+);
+
 export const consentRecords = sqliteTable(
   "consent_records",
   {
