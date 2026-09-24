@@ -27,6 +27,7 @@ import {
   compileUniversalLab,
 } from "../../../lib/content-compiler";
 import type { DeliveryEdition } from "../../../lib/learning-foundation";
+import { adaptLabSource, adaptLearningSource } from "../../../lib/content-source-adapters";
 import {
   AccessError,
   getRoles,
@@ -302,27 +303,30 @@ async function postHandler(request: Request) {
         if (item.kind === "LEARNING_MODULE") {
           for (const edition of LEARNING_EDITION_KEYS) {
             const source = sources.find((entry) => entry.sourceKey === edition)!;
-            if (source.sourceFormat !== "BIS_PACKAGE_JSON") {
-              throw new Error(`${edition}: ${source.sourceFormat} is stored safely, but the automatic adapter is not production-ready yet. Convert this edition to a BIS JSON source package.`);
-            }
             const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(source.storagePath);
             if (download.error || !download.data) throw new Error(`${edition}: source file could not be opened.`);
             const bytes = new Uint8Array(await download.data.arrayBuffer());
             const sourceHash = await sha256Hex(bytes);
             await db.update(contentSourceFiles).set({ sourceHash, sourceBytes: bytes.byteLength, updatedAt: new Date().toISOString() }).where(eq(contentSourceFiles.id, source.id));
-            compiled.push(await compileLearningEdition(bytes, item.code, version.version, edition));
+            const adapted = await adaptLearningSource(
+              bytes,
+              source.sourceFormat as ContentSourceFormat,
+              item.code,
+              version.version,
+              edition,
+              { title: item.title, slug: item.slug },
+            );
+            compiled.push(await compileLearningEdition(adapted, item.code, version.version, edition));
           }
         } else {
           const source = sources.find((entry) => entry.sourceKey === "lab")!;
-          if (source.sourceFormat !== "BIS_PACKAGE_JSON") {
-            throw new Error(`${source.sourceFormat} is stored safely, but executable Lab compilation currently requires a BIS JSON Lab package.`);
-          }
           const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(source.storagePath);
           if (download.error || !download.data) throw new Error("Lab source file could not be opened.");
           const bytes = new Uint8Array(await download.data.arrayBuffer());
           const sourceHash = await sha256Hex(bytes);
           await db.update(contentSourceFiles).set({ sourceHash, sourceBytes: bytes.byteLength, updatedAt: new Date().toISOString() }).where(eq(contentSourceFiles.id, source.id));
-          compiled.push(await compileUniversalLab(bytes, item.code, version.version));
+          const adapted = adaptLabSource(bytes, source.sourceFormat as ContentSourceFormat);
+          compiled.push(await compileUniversalLab(adapted, item.code, version.version));
         }
 
         for (const artifact of compiled) {
