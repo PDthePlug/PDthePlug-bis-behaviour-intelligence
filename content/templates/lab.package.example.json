@@ -1,0 +1,113 @@
+{
+  "kind": "LAB",
+  "schemaVersion": "universal-lab-v1",
+  "runtimeProfile": "UNIVERSAL_V1",
+  "identity": {
+    "code": "FOC",
+    "version": "1.0",
+    "title": "Focus Lab™",
+    "shortTitle": "Focus Lab",
+    "accent": "#2f8276"
+  },
+  "investigations": [
+    {
+      "number": 1,
+      "title": "The Hook",
+      "mission": "Notice the pattern before trying to change it.",
+      "phase": "Investigation",
+      "time": "5 minutes",
+      "difficulty": "Observe",
+      "produces": [
+        "A prediction"
+      ]
+    },
+    {
+      "number": 2,
+      "title": "The Pattern",
+      "mission": "Find evidence that the pattern exists.",
+      "phase": "Investigation",
+      "time": "5 minutes",
+      "difficulty": "Observe",
+      "produces": [
+        "One evidence record"
+      ]
+    },
+    {
+      "number": 3,
+      "title": "The Revelation",
+      "mission": "Learn what the evidence may be showing.",
+      "phase": "Investigation",
+      "time": "5 minutes",
+      "difficulty": "Analyse",
+      "produces": [
+        "A working insight"
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Mapping",
+      "mission": "Map one real example carefully.",
+      "phase": "Investigation",
+      "time": "15 minutes",
+      "difficulty": "Challenge",
+      "produces": [
+        "A behaviour map"
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Equation",
+      "mission": "Write a testable explanation.",
+      "phase": "Investigation",
+      "time": "10 minutes",
+      "difficulty": "Deep integration",
+      "produces": [
+        "A working equation"
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Contract",
+      "mission": "Design a real-world test.",
+      "phase": "Investigation",
+      "time": "10 minutes",
+      "difficulty": "Challenge",
+      "produces": [
+        "An experiment contract"
+      ]
+    },
+    {
+      "number": 7,
+      "title": "Experiment",
+      "mission": "Collect evidence in real situations.",
+      "phase": "Experiment",
+      "time": "Daily tracking",
+      "difficulty": "Analyse",
+      "produces": [
+        "Experiment observations"
+      ]
+    },
+    {
+      "number": 8,
+      "title": "Evidence Review",
+      "mission": "Review what happened without forcing a conclusion.",
+      "phase": "Review",
+      "time": "10 minutes",
+      "difficulty": "Analyse",
+      "produces": [
+        "A final reflection"
+      ]
+    },
+    {
+      "number": 9,
+      "title": "Behaviour Profile",
+      "mission": "Bring the investigation together.",
+      "phase": "Synthesis",
+      "time": "10 minutes",
+      "difficulty": "Deep integration",
+      "produces": [
+        "A behaviour profile"
+      ]
+    }
+  ]
+}
