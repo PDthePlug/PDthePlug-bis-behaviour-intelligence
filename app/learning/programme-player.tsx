@@ -200,10 +200,15 @@ export function ProgrammePlayer({
             ]),
           ),
         );
+        const requestedPage = Number(new URLSearchParams(window.location.search).get("page"));
+        const requestedIndex = Number.isInteger(requestedPage) && requestedPage >= 1
+          ? Math.min(loaded.treatment.pages.length - 1, requestedPage - 1)
+          : -1;
         const latest = learning.progress.find((item) => item.labCode === moduleCode);
-        const index = latest
+        const progressIndex = latest
           ? loaded.treatment.pages.findIndex((item) => item.id === latest.semanticStepId)
           : -1;
+        const index = requestedIndex >= 0 ? requestedIndex : progressIndex;
         if (index >= 0) setSelected(index);
       } catch (cause) {
         if (!controller.signal.aborted) {
@@ -218,11 +223,16 @@ export function ProgrammePlayer({
 
   useEffect(() => {
     if (!programme) return;
-    const requestedPage = Number(searchParams.get("page"));
-    if (!Number.isInteger(requestedPage) || requestedPage < 1) return;
-    const index = Math.min(programme.treatment.pages.length - 1, requestedPage - 1);
-    setSelected((current) => current === index ? current : index);
-  }, [programme, searchParams]);
+    const onHistoryChange = () => {
+      const requestedPage = Number(new URLSearchParams(window.location.search).get("page"));
+      if (!Number.isInteger(requestedPage) || requestedPage < 1) return;
+      const index = Math.min(programme.treatment.pages.length - 1, requestedPage - 1);
+      setSelected(index);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    window.addEventListener("popstate", onHistoryChange);
+    return () => window.removeEventListener("popstate", onHistoryChange);
+  }, [programme]);
 
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
