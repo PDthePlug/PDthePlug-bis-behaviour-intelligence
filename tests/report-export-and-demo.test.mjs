@@ -70,7 +70,7 @@ test("organisation report summaries adapt to the evidence rather than forcing po
   assert.match(view, /Participation remains strong across the learning journey/);
   assert.match(view, /The evidence base is mixed/);
   assert.match(view, /More real-world evidence is still needed/);
-  assert.match(view, /Some participants moved into action/);
+  assert.match(view, /Some learners moved into action/);
 });
 
 
