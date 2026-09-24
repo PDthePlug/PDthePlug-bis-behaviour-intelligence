@@ -54,8 +54,8 @@ function collapseSuggestedAnswers(root: HTMLElement) {
     details.className = "checkpoint-answer-panel";
     const summary = document.createElement("summary");
     summary.innerHTML =
-      '<span class="checkpoint-answer-label closed">Show suggested answers</span>' +
-      '<span class="checkpoint-answer-label open">Hide suggested answers</span>';
+      '<span class="checkpoint-answer-label closed"><strong>Answers</strong><small>Tap to reveal</small></span>' +
+      '<span class="checkpoint-answer-label open"><strong>Answers</strong><small>Tap to hide</small></span>';
     const body = document.createElement("div");
     body.className = "checkpoint-answer-body";
 
