@@ -17,7 +17,9 @@ test("staff entry resolves roles automatically without a second open-workspace g
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /fetch\("\/api\/staff"/);
   assert.match(shell, /setSession\(/);
-  assert.match(shell, /setPerspective\(defaultPerspective\(roles\)\)/);
+  assert.match(shell, /defaultPerspective\(session\.roles\)/);
+  assert.match(shell, /params\.set\("view", next\)/);
+  assert.match(shell, /router\.push\(/);
   assert.doesNotMatch(shell, /Open workspace/);
   assert.doesNotMatch(shell, /Open staff workspace/);
   assert.match(shell, /Opening your dashboard/);
@@ -31,8 +33,8 @@ test("workspace navigation exists only for roles that can use each surface", asy
   assert.match(shell, /facilitatorAvailable \? \(/);
   assert.match(shell, /outcomesAvailable \? \(/);
   assert.match(shell, /adminAvailable \? \(/);
-  assert.match(shell, /Programme Outcomes/);
-  assert.match(shell, /BIS Administrator/);
+  assert.match(shell, /Programme results/);
+  assert.match(shell, /Administration/);
   assert.doesNotMatch(shell, /Audit View/);
 });
 
@@ -47,11 +49,11 @@ test("manual hide and inactivity use a privacy cover rather than re-authenticati
 
 test("facilitator workspace is four distinct working views instead of page anchors", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
-  for (const label of ["Cohort", "Participants", "Support", "Review"]) {
+  for (const label of ["Group", "Learners", "Support", "Review"]) {
     assert.match(facilitator, new RegExp(">" + label + "<"));
   }
   assert.match(facilitator, /type FacilitatorSection = "cohort" \| "participants" \| "support" \| "review"/);
-  assert.match(facilitator, /setSection\("participants"\)/);
+  assert.match(facilitator, /navigateWorkspace\(\{ section: "participants"/);
   assert.doesNotMatch(facilitator, /href="#cohort-dashboard"/);
   assert.doesNotMatch(facilitator, /href="#learner-summaries"/);
   assert.doesNotMatch(facilitator, /href="#support-flags"/);
@@ -61,8 +63,8 @@ test("facilitator workspace is four distinct working views instead of page ancho
 test("participant cards drill into facilitator-safe progress detail", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
   assert.match(facilitator, /participant-card-button/);
-  assert.match(facilitator, /setLearnerId\(learner\.userId\)/);
-  assert.match(facilitator, /Open participant/);
+  assert.match(facilitator, /learner: learner\.userId/);
+  assert.match(facilitator, /Open learner/);
   for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Observed strengths", "Where support may help", "Support history"]) {
     assert.match(facilitator, new RegExp(field));
   }
@@ -71,14 +73,14 @@ test("participant cards drill into facilitator-safe progress detail", async () =
   }
 });
 
-test("BIS Administrator remains the system-owner surface and technical checks are secondary", async () => {
+test("Administration remains the system-owner surface and technical checks are secondary", async () => {
   const view = await source("app/operations-view.tsx");
-  assert.match(view, /<h1>Administrator<\/h1>/);
-  for (const label of ["Access", "Programmes", "Participants", "Activity", "Safeguarding cases"]) {
+  assert.match(view, /<h1>Administration<\/h1>/);
+  for (const label of ["Access", "Programmes", "Learners", "Activity", "Open support cases"]) {
     assert.match(view, new RegExp(label));
   }
   assert.match(view, /Advanced system checks/);
-  assert.match(view, /Evidence and calculation checks/);
+  assert.match(view, /How BIS reaches and protects results/);
   const adminIndex = view.indexOf("<AdminPanel");
   const checksIndex = view.indexOf("Advanced system checks");
   assert.ok(adminIndex >= 0 && checksIndex > adminIndex, "system management should appear before advanced checks");

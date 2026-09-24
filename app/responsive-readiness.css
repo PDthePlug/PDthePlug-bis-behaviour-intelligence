@@ -42,7 +42,8 @@
  .handbook-next>div{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:700px){
- .programme-outcomes .outcomes-context,.programme-outcomes .outcomes-hero,.programme-outcomes .learning-evidence-grid{grid-template-columns:minmax(0,1fr)}
+ .programme-outcomes .outcomes-hero,.programme-outcomes .learning-evidence-grid{grid-template-columns:minmax(0,1fr)}
+ .programme-outcomes .outcomes-context{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .programme-outcomes .journey-days{grid-template-columns:repeat(5,minmax(0,1fr))}
  .programme-outcomes .outcomes-hero h1{font-size:clamp(30px,8vw,42px);line-height:1.08}
  .programme-outcomes .outcomes-pdf-link{white-space:normal;text-align:center;min-width:0}
@@ -149,8 +150,8 @@
  .canonical-shell .learning-state p{font-size:13px;line-height:1.5}
  .canonical-shell .learning-loader{width:30px;height:30px}
 
- /* Staff phone navigation mirrors the stacked reference; it scrolls with the
-    page so the controls never cover the cohort or report being read. */
+ /* Staff phone navigation preserves information density: views remain compact,
+    while the content surface carries the hierarchy. */
  .staff-workspace-shell{display:flex;flex-direction:column;min-height:100svh}
  .staff-workspace-shell .staff-workspace-header{position:relative;min-height:0;flex-direction:column;align-items:stretch;gap:8px;padding:10px}
  .staff-workspace-shell .staff-workspace-brand{gap:8px}
@@ -160,29 +161,49 @@
  .staff-workspace-shell .staff-workspace-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
  .staff-workspace-shell .staff-workspace-identity{grid-column:1/-1;max-width:100%;font-size:11px}
  .staff-workspace-shell :is(.staff-workspace-learner-link,.staff-workspace-hide){min-height:44px;padding:0 8px;font-size:11px;border-radius:9px}
- .staff-workspace-shell .staff-workspace-switcher{position:static;display:grid;grid-template-columns:minmax(0,1fr);padding:6px 8px;gap:3px}
- .staff-workspace-shell .staff-workspace-switcher button{min-height:44px;padding:8px 12px;gap:10px;grid-template-columns:18px minmax(0,1fr)}
- .staff-workspace-shell .staff-workspace-switcher strong{font-size:12px}
+ .staff-workspace-shell .staff-workspace-switcher{position:sticky;top:0;display:grid;grid-template-columns:repeat(3,minmax(112px,1fr));padding:6px 8px;gap:4px;overflow-x:auto;scrollbar-width:none}
+ .staff-workspace-shell .staff-workspace-switcher button{min-height:42px;padding:6px 8px;gap:7px;grid-template-columns:16px minmax(0,1fr);border-radius:10px}
+ .staff-workspace-shell .staff-workspace-switcher strong{font-size:11px;line-height:1.2}
  .staff-workspace-shell .staff-workspace-main{flex:1;display:flex;flex-direction:column}
  .staff-workspace-shell .staff-workspace-main .ops-loading{flex:1;min-height:220px;padding:32px 16px}
  .staff-workspace-shell .staff-workspace-main .ops-loading h2{font-size:15px;line-height:1.5}
  .staff-workspace-shell .staff-workspace-main .operations-view{padding:18px 12px 80px}
  .staff-workspace-shell .staff-workspace-main .facilitator-workspace{gap:14px}
  .staff-workspace-shell .staff-workspace-main .facilitator-view-head{gap:16px}
- .staff-workspace-shell .staff-workspace-main :is(.facilitator-view-head,.page-intro) h1{font-size:30px;line-height:1.08}
+ .staff-workspace-shell .staff-workspace-main :is(.facilitator-view-head,.page-intro) h1{font-size:28px;line-height:1.08}
  .staff-workspace-shell .staff-workspace-main .facilitator-cohort-picker{width:min(360px,100%)}
  .staff-workspace-shell .staff-workspace-main .facilitator-subnav{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:4px;border-radius:13px;overflow:visible}
  .staff-workspace-shell .staff-workspace-main .facilitator-subnav button{min-width:0;padding:4px;font-size:11px;white-space:normal;overflow-wrap:anywhere}
  .staff-workspace-shell .staff-workspace-main :is(.ops-cohort-banner,.ops-safeguard-banner){padding:16px;gap:14px;border-radius:16px}
  .staff-workspace-shell .staff-workspace-main :is(.ops-cohort-banner,.ops-safeguard-banner) h2{font-size:22px;line-height:1.15;overflow-wrap:anywhere}
  .staff-workspace-shell .staff-workspace-main .ops-cohort-banner p:last-child{font-size:11px;line-height:1.5}
- .staff-workspace-shell .staff-workspace-main .ops-metrics{gap:10px}
- .staff-workspace-shell .staff-workspace-main .ops-metrics article{min-height:108px;padding:16px;border-radius:16px;gap:6px}
- .staff-workspace-shell .staff-workspace-main .ops-metrics strong{font-size:30px}
- .staff-workspace-shell .staff-workspace-main .ops-metrics span{font-size:11px}
- .staff-workspace-shell .staff-workspace-main .ops-section{padding:18px 16px}
- .staff-workspace-shell .staff-workspace-main :is(.ops-section-heading,.section-title) h2{font-size:23px;line-height:1.15}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics article{min-height:92px;padding:13px;border-radius:14px;gap:4px}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics strong{font-size:27px;line-height:1}
+ .staff-workspace-shell .staff-workspace-main .ops-metrics span{font-size:9px;line-height:1.25;letter-spacing:.055em}
+ .staff-workspace-shell .staff-workspace-main .ops-section{padding:16px 14px}
+ .staff-workspace-shell .staff-workspace-main :is(.ops-section-heading,.section-title) h2{font-size:21px;line-height:1.15}
  .staff-workspace-shell .staff-workspace-main .programme-outcomes{gap:16px}
- .staff-workspace-shell .staff-workspace-main .outcomes-hero h1{font-size:30px;line-height:1.1}
+ .staff-workspace-shell .staff-workspace-main .outcomes-hero h1{font-size:28px;line-height:1.08;margin:3px 0 6px}
  .staff-workspace-shell .staff-workspace-main .outcomes-insight h3{font-size:22px;line-height:1.2}
+ .staff-workspace-shell .staff-workspace-main .outcomes-context>.outcome-metric{padding:13px;border-radius:13px}
+ .staff-workspace-shell .staff-workspace-main .outcome-metric>span{font-size:9px;line-height:1.25}
+ .staff-workspace-shell .staff-workspace-main .outcome-metric>strong{font-size:26px}
+ .staff-workspace-shell .staff-workspace-main .outcomes-insights,
+ .staff-workspace-shell .staff-workspace-main .outcomes-learning-journey,
+ .staff-workspace-shell .staff-workspace-main .outcomes-actions{padding:16px 14px;border-radius:16px}
+ .staff-workspace-shell .staff-workspace-main .outcomes-insight-grid article{min-height:0;padding:15px;border-radius:13px}
+ .staff-workspace-shell .staff-workspace-main .outcomes-insight-grid h3{font-size:20px}
+ .staff-workspace-shell .staff-workspace-main .journey-activity-strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .staff-workspace-shell .staff-workspace-main .journey-activity-strip .outcome-metric{padding:10px 8px;border-radius:11px}
+ .staff-workspace-shell .staff-workspace-main .journey-activity-strip .outcome-metric>strong{font-size:24px}
+ .staff-workspace-shell .staff-workspace-main .journey-days{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;overflow:visible}
+ .staff-workspace-shell .staff-workspace-main .journey-days article{min-width:0;padding:10px 8px;border-radius:11px}
+ .staff-workspace-shell .staff-workspace-main .journey-days article>strong{font-size:22px}
+ .staff-workspace-shell .staff-workspace-main .outcome-question-card{min-height:0;padding:16px 14px;gap:13px;border-radius:16px}
+ .staff-workspace-shell .staff-workspace-main .outcome-question-card h2{font-size:22px}
+ .staff-workspace-shell .staff-workspace-main .outcome-metric-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:10px 0}
+ .staff-workspace-shell .staff-workspace-main .landscape-context-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .staff-workspace-shell .staff-workspace-main .landscape-context-row .outcome-metric{padding:10px 8px}
+ .staff-workspace-shell .staff-workspace-main .theme-row{padding:12px 14px}
 }

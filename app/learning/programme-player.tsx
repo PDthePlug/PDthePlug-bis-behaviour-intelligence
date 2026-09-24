@@ -3,6 +3,7 @@
 import { BisMark } from "@/components/brand/bis-mark";
 
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
@@ -158,6 +159,9 @@ export function ProgrammePlayer({
   const [completing, setCompleting] = useState(false);
   const documentRef = useRef<HTMLElement | null>(null);
   const [mapOpen, setMapOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1100px)");
@@ -196,10 +200,15 @@ export function ProgrammePlayer({
             ]),
           ),
         );
+        const requestedPage = Number(new URLSearchParams(window.location.search).get("page"));
+        const requestedIndex = Number.isInteger(requestedPage) && requestedPage >= 1
+          ? Math.min(loaded.treatment.pages.length - 1, requestedPage - 1)
+          : -1;
         const latest = learning.progress.find((item) => item.labCode === moduleCode);
-        const index = latest
+        const progressIndex = latest
           ? loaded.treatment.pages.findIndex((item) => item.id === latest.semanticStepId)
           : -1;
+        const index = requestedIndex >= 0 ? requestedIndex : progressIndex;
         if (index >= 0) setSelected(index);
       } catch (cause) {
         if (!controller.signal.aborted) {
@@ -211,6 +220,19 @@ export function ProgrammePlayer({
     })();
     return () => controller.abort();
   }, [moduleCode]);
+
+  useEffect(() => {
+    if (!programme) return;
+    const onHistoryChange = () => {
+      const requestedPage = Number(new URLSearchParams(window.location.search).get("page"));
+      if (!Number.isInteger(requestedPage) || requestedPage < 1) return;
+      const index = Math.min(programme.treatment.pages.length - 1, requestedPage - 1);
+      setSelected(index);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    window.addEventListener("popstate", onHistoryChange);
+    return () => window.removeEventListener("popstate", onHistoryChange);
+  }, [programme]);
 
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
@@ -243,6 +265,17 @@ export function ProgrammePlayer({
       ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role),
     ),
   );
+
+  const goToProgrammePage = useCallback((index: number) => {
+    if (!programme) return;
+    const next = Math.max(0, Math.min(programme.treatment.pages.length - 1, index));
+    setSelected(next);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("section", "learn");
+    params.set("page", String(next + 1));
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pathname, programme, router, searchParams]);
 
   const mergeSnapshot = useCallback((data: LearningSnapshot) => {
     setSnapshot(data);
@@ -289,11 +322,19 @@ export function ProgrammePlayer({
       if (!completing && !queue.current.size) return;
       event.preventDefault();
       event.stopPropagation();
-      if (!completing) void saveDirtyResponses().then((saved) => { if (saved) window.location.assign(link.href); });
+      if (!completing) void saveDirtyResponses().then((saved) => {
+        if (!saved) return;
+        const target = new URL(link.href, window.location.href);
+        if (target.origin === window.location.origin) {
+          router.push(`${target.pathname}${target.search}${target.hash}`);
+        } else {
+          window.location.assign(link.href);
+        }
+      });
     };
     document.addEventListener("click", guardNavigation, true);
     return () => document.removeEventListener("click", guardNavigation, true);
-  }, [completing, saveDirtyResponses]);
+  }, [completing, router, saveDirtyResponses]);
 
   useEffect(() => {
     const guard = (event: BeforeUnloadEvent) => {
@@ -385,8 +426,7 @@ export function ProgrammePlayer({
       }
       mergeSnapshot(data);
       if (programme && selected < programme.treatment.pages.length - 1) {
-        setSelected((value) => value + 1);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        goToProgrammePage(selected + 1);
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Programme progress could not be saved.");
@@ -511,7 +551,7 @@ export function ProgrammePlayer({
         ) : (
           <section className="prototype-page prototype-reader">
             <Link className="prototype-back-link" href="/learn">
-              <ArrowLeft /> All handbooks
+              <ArrowLeft /> Exit reader
             </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
@@ -544,10 +584,7 @@ export function ProgrammePlayer({
                     key={item.id}
                     disabled={completing}
                     className={`${index === selected ? "current" : ""} ${completed.has(item.id) ? "complete" : ""}`}
-                    onClick={() => {
-                      setSelected(index);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
+                    onClick={() => goToProgrammePage(index)}
                   >
                     <span>{completed.has(item.id) ? <Check /> : pageNumber(item)}</span>
                     <div>
@@ -631,7 +668,7 @@ export function ProgrammePlayer({
             <footer className="prototype-reader-footer">
               <button
                 type="button"
-                onClick={() => setSelected(Math.max(0, selected - 1))}
+                onClick={() => goToProgrammePage(selected - 1)}
                 disabled={selected === 0 || completing}
               >
                 <ArrowLeft /> Previous

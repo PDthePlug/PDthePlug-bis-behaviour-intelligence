@@ -19,12 +19,12 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
   assert.match(pdf, /%PDF-1\.4/);
   assert.match(pdf, /canvas\.textAt\(MARGIN, 714, "Programme"/);
-  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Outcomes Report"/);
+  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Results Report"/);
   assert.match(pdf, /Executive summary/);
   assert.match(pdf, /KEY FINDINGS/);
   assert.match(pdf, /Learning journey/);
   assert.match(pdf, /DAY-BY-DAY PROGRESSION/);
-  assert.match(pdf, /RECURRING STRUCTURED CHALLENGES/);
+  assert.match(pdf, /RECURRING CHALLENGES/);
   assert.match(pdf, /GROUP SHIFTS/);
   assert.match(pdf, /Behaviour in practice/);
   assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
@@ -32,17 +32,20 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(pdf, /Experiment landscape/);
   assert.match(pdf, /Action plan/);
   assert.match(pdf, /REPORTING NOTES/);
-  assert.match(pdf, /PROGRAMME OUTCOMES  \|/);
+  assert.match(pdf, /PROGRAMME RESULTS  \|/);
 });
 
 test("demo cohort is explicitly synthetic, isolated and reproducible", async () => {
   const seed = await source("scripts/seed-bis-reporting-demo.sql");
 
-  assert.match(seed, /BIS-DEMO-HAB-20/);
-  assert.match(seed, /BIS Demonstration — 20-person Habit Lab/);
+  assert.match(seed, /LEAP9-DEMO-HAB-20/);
+  assert.match(seed, /'Leap9'/);
   assert.match(seed, /for i in 1\.\.20 loop/);
+  assert.match(seed, /leap9\.demo\./);
   assert.match(seed, /@bis\.invalid/);
   assert.match(seed, /DEMO-HAB-/);
+  assert.match(seed, /Thando Mokoena/);
+  assert.match(seed, /Lwazi Nxumalo/);
   assert.match(seed, /Synthetic demonstration support request/);
   assert.doesNotMatch(seed, /insert into auth\.users/i);
   assert.match(seed, /on conflict/);
@@ -67,7 +70,7 @@ test("organisation report summaries adapt to the evidence rather than forcing po
   assert.match(view, /Participation remains strong across the learning journey/);
   assert.match(view, /The evidence base is mixed/);
   assert.match(view, /More real-world evidence is still needed/);
-  assert.match(view, /Some participants moved into action/);
+  assert.match(view, /Some learners moved into action/);
 });
 
 

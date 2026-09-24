@@ -1,11 +1,17 @@
--- BIS reporting demonstration cohort
+-- Leap9 reporting demonstration cohort
 -- 20 synthetic participants; no auth accounts and no real participant data.
 -- Idempotent: all rows use DEMO-prefixed stable IDs.
 
 do $$
 declare
   v_owner_id text;
-  v_cohort_id constant text := 'BIS-DEMO-HAB-20';
+  v_cohort_id constant text := 'LEAP9-DEMO-HAB-20';
+  v_names constant text[] := array[
+    'Thando Mokoena','Lerato Nkosi','Sipho Dlamini','Naledi Molefe','Kabelo Ndlovu',
+    'Zinhle Khumalo','Aphiwe Maseko','Karabo Modise','Lethabo Mthembu','Ayanda Naidoo',
+    'Tshepo Radebe','Nandi Zulu','Musa Mkhize','Keitumetse Seabi','Sibusiso Mahlangu',
+    'Boitumelo Moagi','Refilwe Mokoena','Themba Cele','Palesa Moeketsi','Lwazi Nxumalo'
+  ];
   v_release_id constant text := 'HAB:workplace:1.4:cd25fa48';
   i integer;
   d integer;
@@ -25,14 +31,14 @@ begin
   limit 1;
 
   if v_owner_id is null then
-    raise exception 'BIS demo seed requires the existing administrator learner identity.';
+    raise exception 'Leap9 demo seed requires the existing administrator learner identity.';
   end if;
 
   insert into public.pilot_cohorts (
     id,name,lab_code,lab_version,facilitator_email,status,starts_on,ends_on,created_by
   ) values (
     v_cohort_id,
-    'BIS Demonstration — 20-person Habit Lab',
+    'Leap9',
     'HAB','4.5.2','pdmpofu@gmail.com','ACTIVE','2026-09-07','2026-09-18',v_owner_id
   )
   on conflict (id) do update set
@@ -47,7 +53,7 @@ begin
 
   for i in 1..20 loop
     v_user_id := 'DEMO-HAB-' || lpad(i::text,2,'0');
-    v_email := 'demo.habit.' || lpad(i::text,2,'0') || '@bis.invalid';
+    v_email := 'leap9.demo.' || lpad(i::text,2,'0') || '@bis.invalid';
     v_step := case
       when i <= 4 then 9
       when i <= 8 then 8
@@ -61,7 +67,7 @@ begin
       user_id,email,display_name,age_band,mode,language,timezone,status,
       delivery_edition,delivery_context
     ) values (
-      v_user_id,v_email,'Demo Participant ' || lpad(i::text,2,'0'),
+      v_user_id,v_email,v_names[i],
       '18-25','FACILITATED','en','Africa/Johannesburg','ACTIVE',
       'workplace','workplace_programme'
     )

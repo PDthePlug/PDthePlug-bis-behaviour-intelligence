@@ -201,7 +201,7 @@ class ReportCanvas {
         this.textCmd(
           547,
           18,
-          "PROGRAMME OUTCOMES  |  " + String(index + 1) + " / " + String(total),
+          "PROGRAMME RESULTS  |  " + String(index + 1) + " / " + String(total),
           7.5,
           true,
           C.muted,
@@ -510,7 +510,7 @@ function executiveFindings(outcome: Outcome) {
         : "Human support demand is currently limited",
     body:
       String(metrics.support.participantsRequestingHelp) +
-      " participants asked for help (" +
+      " learners asked for help (" +
       percent(metrics.support.supportRequestRate) +
       " of the group).",
   });
@@ -636,7 +636,7 @@ function drawCover(canvas: ReportCanvas, outcome: Outcome, generatedAt: Date) {
   );
 
   canvas.textAt(MARGIN, 714, "Programme", 34, true, C.white, true);
-  canvas.textAt(MARGIN, 676, "Outcomes Report", 34, true, C.white, true);
+  canvas.textAt(MARGIN, 676, "Results Report", 34, true, C.white, true);
 
   let nameY = 620;
   for (const line of wrap(outcome.cohort.name, 470, 17, true).slice(0, 2)) {
@@ -678,11 +678,11 @@ function drawCover(canvas: ReportCanvas, outcome: Outcome, generatedAt: Date) {
   const metrics = outcome.metrics;
   const coverCards = metrics
     ? [
-        { label: "Participants", value: String(outcome.participantCount), detail: "programme group", tone: "plain" as const },
+        { label: "Learners", value: String(outcome.participantCount), detail: "programme group", tone: "plain" as const },
         {
           label: "Started experiment",
           value: percent(metrics.action.experimentAttemptRate),
-          detail: String(metrics.action.startedExperiment) + " participants",
+          detail: String(metrics.action.startedExperiment) + " learners",
           tone: "teal" as const,
         },
         {
@@ -694,11 +694,11 @@ function drawCover(canvas: ReportCanvas, outcome: Outcome, generatedAt: Date) {
         {
           label: "Asked for help",
           value: percent(metrics.support.supportRequestRate),
-          detail: String(metrics.support.participantsRequestingHelp) + " participants",
+          detail: String(metrics.support.participantsRequestingHelp) + " learners",
           tone: "plain" as const,
         },
       ]
-    : [{ label: "Participants", value: String(outcome.participantCount), detail: "programme group", tone: "plain" as const }];
+    : [{ label: "Learners", value: String(outcome.participantCount), detail: "programme group", tone: "plain" as const }];
 
   canvas.metricCards(coverCards, 4);
 
@@ -707,19 +707,19 @@ function drawCover(canvas: ReportCanvas, outcome: Outcome, generatedAt: Date) {
     canvas.callout(
       retention.title,
       String(retention.first.reached) +
-        " participants reached Day " +
+        " learners reached Day " +
         String(retention.first.day) +
         "; " +
         String(retention.last.reached) +
         " reached Day " +
         String(retention.last.day) +
-        ". This report combines learning activity, structured programme measures and real-world experiment evidence.",
+        ". This report combines learning activity, programme measures and real-world experiment evidence.",
       retention.retained >= 60 ? "teal" : "warm"
     );
   } else {
     canvas.callout(
-      "A group-level evidence report",
-      "This report summarises structured programme activity and behavioural evidence without exposing private participant wording.",
+      "A group-level programme report",
+      "This report summarises programme activity and behavioural evidence without exposing private learner wording.",
       "teal"
     );
   }
@@ -776,7 +776,7 @@ function drawExecutiveSummary(canvas: ReportCanvas, outcome: Outcome) {
       {
         label: "Help requested",
         value: percent(metrics.support.supportRequestRate),
-        detail: String(metrics.support.participantsRequestingHelp) + " participants",
+        detail: String(metrics.support.participantsRequestingHelp) + " learners",
         tone: "plain",
       },
     ],
@@ -796,7 +796,7 @@ function drawExecutiveSummary(canvas: ReportCanvas, outcome: Outcome) {
     canvas.callout(
       "Participation through the programme",
       String(retention.first.reached) +
-        " participants reached Day " +
+        " learners reached Day " +
         String(retention.first.day) +
         "; " +
         String(retention.last.reached) +
@@ -817,8 +817,8 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
   canvas.page(C.paper);
   canvas.section(
     "Learning journey",
-    "How participation and structured learning evidence developed",
-    "The programme produces evidence before and beyond the formal experiment. This section shows progression, recurring structured challenges and paired group shifts."
+    "How participation and learning responses developed",
+    "The programme produces evidence before and beyond the formal experiment. This section shows progression, recurring challenges and before-and-after group shifts."
   );
 
   canvas.metricCards(
@@ -826,17 +826,17 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
       {
         label: "Learning activity",
         value: String(journey.activity.participantsWithHandbookActivity),
-        detail: "participants",
+        detail: "learners",
         tone: "plain",
       },
       {
-        label: "Structured evidence",
+        label: "Usable responses",
         value: String(journey.activity.participantsWithStructuredResponses),
-        detail: "participants",
+        detail: "learners",
         tone: "teal",
       },
       {
-        label: "Learning inputs",
+        label: "Responses recorded",
         value: String(journey.activity.structuredResponsesRecorded),
         detail: "recorded",
         tone: "warm",
@@ -894,7 +894,7 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
 
   if (journey.baselineThemes.length) {
     canvas.rule(10);
-    canvas.text("RECURRING STRUCTURED CHALLENGES", {
+    canvas.text("RECURRING CHALLENGES", {
       size: 8.5,
       bold: true,
       color: C.teal,
@@ -939,7 +939,7 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
       canvas.textAt(
         x + 14,
         y + 64,
-        String(shift.pairedParticipants) + " paired participants",
+        String(shift.pairedParticipants) + " learners with both check-ins",
         7.5,
         false,
         C.muted
@@ -996,7 +996,7 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
   canvas.page(C.paper);
   canvas.section(
     "Behaviour in practice",
-    "What happened when participants tested behaviour in real situations",
+    "What happened when learners tested behaviour in real situations",
     "This section separates attendance from action, expectation from observed behaviour, and one-off attempts from repeat evidence."
   );
 
@@ -1012,7 +1012,7 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
       {
         label: "Reached experiment stage",
         value: String(metrics.action.reachedExperimentStage),
-        detail: "participants",
+        detail: "learners",
         tone: "plain",
       },
       {
@@ -1024,7 +1024,7 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
       {
         label: "Evidence ready",
         value: String(metrics.evidence.sufficient),
-        detail: "participants",
+        detail: "learners",
         tone: "warm",
       },
       {
@@ -1092,10 +1092,10 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
   canvas.y -= 35;
 
   canvas.callout(
-    "The important gap is at participant level",
+    "The important gap is at learner level",
     gap === null
       ? "There is not enough paired expectation data yet."
-      : "The group averages can look similar while individual expectations differ. Across participants, the average individual expectation difference is " +
+      : "The group averages can look similar while individual expectations differ. Across learners, the average individual expectation difference is " +
           fixed(gap) +
           " points.",
     "teal"
@@ -1135,13 +1135,13 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
     ],
     "What happened on repeat situations",
     String(metrics.change.repeatOpportunityParticipants) +
-      " participants had at least two comparable opportunities"
+      " learners had at least two comparable opportunities"
   );
 
   canvas.callout(
     "Human support",
     String(metrics.support.participantsRequestingHelp) +
-      " participants asked for help (" +
+      " learners asked for help (" +
       percent(metrics.support.supportRequestRate) +
       " of the group). This is a delivery signal: it shows where facilitator capacity is part of programme effectiveness.",
     (metrics.support.supportRequestRate ?? 0) >= 20 ? "warm" : "teal"
@@ -1153,7 +1153,7 @@ function drawExperimentLandscape(canvas: ReportCanvas, outcome: Outcome) {
   canvas.page(C.paper);
   canvas.section(
     "Experiment landscape",
-    "Where participants were testing behaviour",
+    "Where learners were testing behaviour",
     "Broad experiment contexts help an organisation understand where behaviour is being tested without exposing private experiment wording."
   );
 
@@ -1170,7 +1170,7 @@ function drawExperimentLandscape(canvas: ReportCanvas, outcome: Outcome) {
   } else {
     canvas.callout(
       "No reportable experiment themes yet",
-      "Broad experiment contexts will appear when enough participants share a reportable category.",
+      "Broad experiment contexts will appear when enough learners share a reportable category.",
       "teal"
     );
   }
@@ -1191,7 +1191,7 @@ function drawExperimentLandscape(canvas: ReportCanvas, outcome: Outcome) {
       String(theme.frequentCount) +
       " of " +
       String(theme.respondents) +
-      " participants reported this often or always (" +
+      " learners reported this often or always (" +
       fixed(theme.frequentShare) +
       "%).",
   }));
@@ -1252,12 +1252,12 @@ function drawActionPlan(canvas: ReportCanvas, outcome: Outcome) {
     {
       kicker: "Evidence",
       title: "What this report uses",
-      body: "Programme-day activity, fixed structured learning fields, paired numerical measures, real-world experiment events, calculated BIS measures and aggregate support signals.",
+      body: "Programme-day activity, fixed learning check-ins, before-and-after measures, real-world experiment events, calculated BIS measures and group-level support indicators.",
     },
     {
       kicker: "Interpretation",
       title: "What this report does not claim",
-      body: "The report does not diagnose participants, rank people, prove causality or treat one successful attempt as behavioural change.",
+      body: "The report does not diagnose learners, rank people, prove causality or treat one successful attempt as behavioural change.",
     },
     {
       kicker: "Privacy",
@@ -1268,20 +1268,20 @@ function drawActionPlan(canvas: ReportCanvas, outcome: Outcome) {
       kicker: "Small groups",
       title: "When BIS withholds detail",
       body:
-        "Cohorts below " +
+        "Groups below " +
         String(outcome.minimumReportableCohortSize) +
         " are suppressed and small theme cells may be hidden when a group pattern could point back to an individual.",
     },
   ]);
 
-  canvas.text("Generated by BIS Programme Outcomes", {
+  canvas.text("Generated by BIS Programme Results", {
     size: 8,
     bold: true,
     color: C.muted,
     gapAfter: 2,
   });
   canvas.text(
-    "Behaviour Intelligence Series is designed to connect structured learning with observable real-world behaviour while preserving participant privacy.",
+    "Behaviour Intelligence Series is designed to connect learning with observable real-world behaviour while preserving learner privacy.",
     { size: 8.5, color: C.muted, lineHeight: 12 }
   );
 }
@@ -1298,7 +1298,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
     );
     canvas.callout(
       "Report withheld",
-      "Programme Outcomes requires at least " +
+      "Programme Results requires at least " +
         String(outcome.minimumReportableCohortSize) +
         " participants before group-level behavioural findings are shown.",
       "warm"
@@ -1384,5 +1384,5 @@ export function programmeReportFilename(name: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-  return (safe || "bis-programme-outcomes") + ".pdf";
+  return (safe || "bis-programme-results") + ".pdf";
 }
