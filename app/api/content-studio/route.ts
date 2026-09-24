@@ -438,8 +438,8 @@ async function postHandler(request: Request) {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version) throw new Error("That draft version was not found.");
-      if (version.validationStatus !== "VALID" || version.status !== "VALIDATED") {
-        throw new Error("Validate this version successfully before approval.");
+      if (version.validationStatus !== "VALID" || version.status !== "VALIDATED" || version.compilerStatus !== "COMPILED") {
+        throw new Error("Compile and validate this version successfully before approval.");
       }
       const now = new Date().toISOString();
       await db.update(contentLibraryVersions).set({
@@ -461,6 +461,11 @@ async function postHandler(request: Request) {
       const now = new Date().toISOString();
       await db.update(contentLibraryVersions).set({
         status: "DRAFT",
+        compilerStatus: "NOT_COMPILED",
+        compilerReport: "{}",
+        compilerVersion: null,
+        compiledAt: null,
+        compiledBy: null,
         validationStatus: "PENDING",
         runtimeStatus: "REQUIRES_ADAPTER",
         validationReport: "{}",
