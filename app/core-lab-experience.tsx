@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import type { CoreLabDefinition, LabField } from "@/lib/core-labs";
+import { LabInvestigationFrame } from "./lab-investigation-frame";
 
 type Snapshot = {
   lab: { code: string; slug: string; version: string; title: string };
@@ -154,36 +155,29 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
   const baselineComplete = Boolean(state.responses[definition.preMetric.id]) && definition.baselineItems.every(([id]) => Boolean(state.responses[id]));
   if (!baselineComplete) return <><div className={privateVisible ? "" : "privacy-obscured"} aria-hidden={!privateVisible}><Baseline definition={definition} state={state} saving={saving} error={error} act={act} /></div>{!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}</>;
 
+  const maxStep = Math.max(1, state.enrolment?.currentInvestigation ?? 1, step);
+
   return <>
-    <div className={`corelab-shell ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible} style={{ "--lab-accent": definition.accent } as React.CSSProperties}>
-      <header className="corelab-header">
-        <Brand />
-        <nav aria-label="Lab switcher"><Link href="/">Habit Lab</Link><Link className={definition.code === "DEC" ? "active" : ""} href="/decision">Decision Lab</Link><Link className={definition.code === "MON" ? "active" : ""} href="/money">Money Lab</Link></nav>
-        <button className="corelab-hide" onClick={() => setPrivateVisible(false)}><EyeOff /> Hide</button>
-      </header>
-      <div className="corelab-progressbar"><span>{definition.title} · Version {definition.version}</span><Progress value={(step / 9) * 100} /><strong>{step}/9</strong></div>
+    <div className={`corelab-shell universal-corelab ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible} style={{ "--lab-accent": definition.accent } as React.CSSProperties}>
       {error && <div className="error-banner corelab-error"><span>{error}</span></div>}
-      <main className="corelab-layout">
-        <aside className="corelab-rail" aria-label={`${definition.shortTitle} investigations`}>
-          <Link href="/" className="corelab-back"><ArrowLeft /> All Labs</Link>
-          {definition.investigations.map((item) => {
-            const max = Math.max(1, state.enrolment?.currentInvestigation ?? 1, step);
-            return <button key={item.number} disabled={item.number > max} className={step === item.number ? "current" : item.number < max ? "complete" : ""} onClick={() => setStep(item.number)}><span>{item.number < max ? <Check /> : item.number}</span><div><small>{item.phase}</small><strong>{item.title}</strong></div></button>;
-          })}
-        </aside>
-        <section className="corelab-stage">
-          <LabMission definition={definition} step={step} />
-          {step === 1 && <StoryOne definition={definition} state={state} saving={saving} act={act} next={() => setStep(2)} />}
-          {step === 2 && <FieldsStep fields={definition.sections[2]} pauseQuestion={definition.pauses[2]} state={state} saving={saving} act={act} next={() => setStep(3)} />}
-          {step === 3 && <StoryTwo definition={definition} state={state} saving={saving} act={act} next={() => setStep(4)} />}
-          {step === 4 && <FieldsStep fields={definition.sections[4]} pauseQuestion={definition.pauses[4]} state={state} saving={saving} act={act} next={() => setStep(5)} />}
-          {step === 5 && <EquationStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(6)} />}
-          {step === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(7)} />}
-          {step === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(8)} />}
-          {step === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(9)} />}
-          {step === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} />}
-        </section>
-      </main>
+      <LabInvestigationFrame
+        labTitle={definition.shortTitle}
+        accent={definition.accent}
+        investigations={definition.investigations}
+        step={step}
+        maxStep={maxStep}
+        onSelect={setStep}
+      >
+        {step === 1 && <StoryOne definition={definition} state={state} saving={saving} act={act} next={() => setStep(2)} />}
+        {step === 2 && <FieldsStep fields={definition.sections[2]} pauseQuestion={definition.pauses[2]} state={state} saving={saving} act={act} next={() => setStep(3)} />}
+        {step === 3 && <StoryTwo definition={definition} state={state} saving={saving} act={act} next={() => setStep(4)} />}
+        {step === 4 && <FieldsStep fields={definition.sections[4]} pauseQuestion={definition.pauses[4]} state={state} saving={saving} act={act} next={() => setStep(5)} />}
+        {step === 5 && <EquationStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(6)} />}
+        {step === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(7)} />}
+        {step === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(8)} />}
+        {step === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(9)} />}
+        {step === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} />}
+      </LabInvestigationFrame>
     </div>
     {!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}
   </>;
@@ -221,11 +215,6 @@ function Baseline({ definition, state, saving, error, act }: { definition: CoreL
   const [metricPass, setMetricPass] = useState(state.responses[definition.preMetric.id]?.status === "PASS");
   const complete = definition.baselineItems.every(([id]) => ratings[id]);
   return <main className="baseline-shell corelab-baseline" style={{ "--lab-accent": definition.accent } as React.CSSProperties}><div className="baseline-top"><Brand /><div><Badge variant="outline">Starting point</Badge><strong>{definition.shortTitle}</strong></div></div><section className="baseline-layout"><div className="baseline-copy"><p className="eyebrow">{definition.code === "DEC" ? "Decision" : "Spending Behaviour"} Baseline — Pre</p><h1>Create your starting point.</h1><p>Before you begin, complete this diagnostic. Be honest. This is evidence, not judgment. The only thing being tested is the pattern, not you.</p><div className="baseline-principles"><div><ShieldCheck /><span><strong>Private</strong>Separate from your other Labs</span></div><div><Eye /><span><strong>Editable</strong>Corrections keep a trace</span></div><div><Search /><span><strong>Descriptive</strong>No overall personality score</span></div></div></div><div className="surface-card baseline-card"><div className="section-title"><div><p className="eyebrow">BEI-02 · {definition.code === "DEC" ? "Decision Baseline Profile" : "Spending Behaviour Baseline Profile"}</p><h2>{definition.code === "DEC" ? "When you face a decision that matters to you, how often do you…" : "When you have a spending moment, how often do you…"}</h2></div><Badge>10 items</Badge></div><div className="baseline-items">{definition.baselineItems.map(([id, label], index) => <div key={id}><span className="baseline-index">{String(index + 1).padStart(2, "0")}</span><label>{label}</label><Select value={ratings[id]} onValueChange={(value) => setRatings({ ...ratings, [id]: value })}><SelectTrigger className="baseline-select"><SelectValue placeholder="Choose" /></SelectTrigger><SelectContent>{scale.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}<SelectItem value="__PASS__">Prefer not to answer</SelectItem></SelectContent></Select></div>)}</div><div className={`control-rating ${metricPass ? "passed" : ""}`}><div><p className="eyebrow">{definition.preMetric.label}</p><h3>{definition.preMetric.prompt}</h3><p>1 = {definition.preMetric.low} · 10 = {definition.preMetric.high}</p></div><strong>{metricPass ? "Passed" : <>{metric}<span>/10</span></>}</strong>{!metricPass && <Slider value={[metric]} min={1} max={10} step={1} onValueChange={([value]) => setMetric(value)} />}<PassControl passed={metricPass} onChange={setMetricPass} /></div>{error && <p className="field-error">{error}</p>}<Button className="w-full" size="lg" disabled={saving || !complete} onClick={() => void act({ action: "saveResponses", items: [...definition.baselineItems.map(([semanticFieldId]) => ({ semanticFieldId, value: ratings[semanticFieldId], responseStatus: ratings[semanticFieldId] === "__PASS__" ? "PASS" : "ANSWERED" })), { semanticFieldId: definition.preMetric.id, value: metric, responseStatus: metricPass ? "PASS" : "ANSWERED" }] })}>{saving ? "Saving…" : <>Enter {definition.shortTitle} <ArrowRight /></>}</Button></div></section></main>;
-}
-
-function LabMission({ definition, step }: { definition: CoreLabDefinition; step: number }) {
-  const item = definition.investigations[step - 1];
-  return <div className="mission-line corelab-mission"><div><p className="eyebrow">{step <= 6 ? "Phase A · The Investigation" : "Phase B · The Experiment"} · Investigation {step} of 9</p><h1>{item.title}</h1><p><strong>Mission:</strong> {item.mission}</p><div className="mission-produces"><strong>You will produce:</strong>{item.produces.map((output) => <span key={output}>☐ {output}</span>)}</div>{step >= 4 && <p className="canonical-note">⭐ Evidence Point · This page becomes part of your Behaviour Profile.</p>}</div><div className="mission-meta"><Badge variant="outline">Time: {item.time}</Badge><Badge variant="outline">Difficulty: {item.difficulty}</Badge></div></div>;
 }
 
 function StoryOne({ definition, state, saving, act, next }: StepProps & { definition: CoreLabDefinition }) {
