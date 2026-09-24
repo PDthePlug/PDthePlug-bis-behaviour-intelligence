@@ -1,0 +1,290 @@
+/* BIS Universal Lab Experience v1
+   Habit, Decision and Money share this navigation, mission and responsive grammar. */
+
+.universal-lab-frame{
+  --lab-frame-accent:#c9684d;
+  width:100%;
+  min-height:100vh;
+  background:var(--background,#f4f5f3);
+  color:var(--ink,#17313a);
+}
+.universal-lab-progress{
+  position:sticky;
+  z-index:54;
+  top:70px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  min-height:58px;
+  padding:0 max(24px,calc((100vw - 1320px)/2));
+  border-bottom:1px solid var(--border,#d9ddda);
+  background:rgba(240,244,242,.96);
+  backdrop-filter:blur(16px);
+}
+.universal-lab-progress [data-slot="progress"]{height:7px;background:#c9d1cf}
+.universal-lab-progress [data-slot="progress-indicator"]{background:var(--lab-frame-accent)}
+.universal-lab-progress strong{font:700 15px var(--font-sans);color:var(--ink)}
+
+.universal-investigation-nav{
+  display:flex;
+  width:100%;
+  gap:9px;
+  overflow-x:auto;
+  padding:16px max(24px,calc((100vw - 1320px)/2));
+  border-bottom:1px solid var(--border,#d9ddda);
+  background:#eef2f0;
+  scrollbar-width:thin;
+}
+.universal-investigation-nav button{
+  display:grid;
+  flex:0 0 190px;
+  grid-template-columns:34px minmax(0,1fr);
+  align-items:center;
+  gap:11px;
+  min-height:72px;
+  padding:11px 13px;
+  border:1px solid transparent;
+  border-radius:16px;
+  background:transparent;
+  color:#83908c;
+  text-align:left;
+}
+.universal-investigation-nav button>span{
+  display:grid;
+  width:34px;
+  height:34px;
+  place-items:center;
+  border:1px solid #c9cfcc;
+  border-radius:50%;
+  font-size:12px;
+  font-weight:800;
+}
+.universal-investigation-nav button>span svg{width:15px}
+.universal-investigation-nav button>div{display:grid;min-width:0;gap:2px}
+.universal-investigation-nav small{
+  color:inherit;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.universal-investigation-nav strong{
+  overflow:hidden;
+  color:inherit;
+  font-size:13px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.universal-investigation-nav button.current{
+  border-color:#ffffffcc;
+  background:white;
+  color:var(--ink);
+  box-shadow:0 9px 24px rgb(22 49 58 / 8%);
+}
+.universal-investigation-nav button.current>span{
+  border-color:var(--lab-frame-accent);
+  background:var(--lab-frame-accent);
+  color:white;
+}
+.universal-investigation-nav button.complete>span{
+  border-color:#2f8276;
+  background:#2f8276;
+  color:white;
+}
+.universal-investigation-nav button:disabled{opacity:.38}
+
+.universal-lab-stage{
+  width:min(1180px,calc(100% - 48px));
+  margin:0 auto;
+  padding:46px 0 96px;
+}
+.universal-lab-mission{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:32px;
+  margin-bottom:36px;
+}
+.universal-lab-mission-copy{min-width:0}
+.universal-lab-mission .eyebrow{
+  margin:0 0 10px;
+  color:#2f8276;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+.universal-lab-mission h1{
+  margin:0;
+  font:600 clamp(42px,6vw,72px)/.98 var(--font-serif);
+  letter-spacing:-.045em;
+}
+.universal-lab-mission-copy>p:not(.eyebrow){
+  max-width:720px;
+  margin:15px 0 0;
+  color:#66736f;
+  font-size:18px;
+  line-height:1.6;
+}
+.universal-lab-produces{
+  display:grid;
+  gap:5px;
+  margin-top:22px;
+  padding-left:18px;
+}
+.universal-lab-produces strong{font-size:13px}
+.universal-lab-produces span{font-size:14px;line-height:1.45}
+.universal-lab-meta{
+  display:flex;
+  max-width:330px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+.universal-lab-meta small{
+  flex-basis:100%;
+  color:#78837f;
+  font-size:11px;
+  font-weight:750;
+  text-align:right;
+  text-transform:uppercase;
+}
+
+@media(max-width:820px){
+  .universal-lab-progress{
+    top:64px;
+    min-height:66px;
+    padding:0 27px;
+  }
+  .universal-investigation-nav{
+    display:grid;
+    grid-template-columns:repeat(9,minmax(0,1fr));
+    gap:5px;
+    overflow:visible;
+    padding:14px 16px;
+  }
+  .universal-investigation-nav button{
+    display:grid;
+    min-width:0;
+    min-height:58px;
+    grid-template-columns:1fr;
+    justify-items:center;
+    padding:8px 2px;
+    border-radius:14px;
+  }
+  .universal-investigation-nav button>span{
+    width:30px;
+    height:30px;
+    font-size:11px;
+  }
+  .universal-investigation-nav button>div{display:none}
+  .universal-investigation-nav button.current{
+    border-color:#ffffffcc;
+    background:white;
+    box-shadow:0 8px 18px rgb(22 49 58 / 8%);
+  }
+  .universal-lab-stage{
+    width:calc(100% - 54px);
+    padding:54px 0 88px;
+  }
+  .universal-lab-mission{
+    display:grid;
+    gap:18px;
+    margin-bottom:40px;
+  }
+  .universal-lab-mission h1{font-size:clamp(42px,11vw,58px)}
+  .universal-lab-mission-copy>p:not(.eyebrow){font-size:18px}
+  .universal-lab-meta{max-width:none;justify-content:flex-start}
+  .universal-lab-meta small{display:none}
+}
+@media(max-width:430px){
+  .universal-lab-progress{
+    top:64px;
+    min-height:66px;
+    grid-template-columns:minmax(0,1fr) auto;
+    padding:0 27px;
+  }
+  .universal-lab-progress [data-slot="progress"]{height:7px}
+  .universal-lab-progress strong{font-size:15px}
+  .universal-investigation-nav{
+    gap:4px;
+    padding:14px 12px;
+  }
+  .universal-investigation-nav button{
+    min-height:54px;
+    padding:7px 1px;
+  }
+  .universal-investigation-nav button>span{
+    width:28px;
+    height:28px;
+    font-size:10px;
+  }
+  .universal-lab-stage{
+    width:calc(100% - 54px);
+    padding-top:50px;
+  }
+  .universal-lab-mission .eyebrow{font-size:11px}
+  .universal-lab-mission h1{font-size:44px}
+  .universal-lab-mission-copy>p:not(.eyebrow){font-size:17px;line-height:1.55}
+  .universal-lab-produces{padding-left:18px}
+  .universal-lab-produces span{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .universal-lab-frame *{scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+
+
+/* Canonical shell owns all learner-level chrome. Individual Lab engines only render task content. */
+.canonical-shell .corelab-welcome>header{display:none}
+.canonical-shell .corelab-loading>.brand,
+.canonical-shell .corelab-empty>.brand{display:none}
+.canonical-shell .corelab-welcome .fidelity-hero [data-slot="badge"],
+.canonical-shell .corelab-welcome .fidelity-hero dl{display:none}
+.canonical-shell .corelab-welcome,
+.canonical-shell .corelab-shell,
+.canonical-shell .corelab-loading,
+.canonical-shell .corelab-empty{min-height:auto}
+.canonical-shell .corelab-welcome{padding-top:24px}
+.canonical-shell .corelab-empty{padding-top:32px}
+
+.universal-habit-route .app-main{padding-top:0!important}
+.universal-habit-route .runner-shell{
+  width:100%!important;
+  max-width:none!important;
+  min-height:auto!important;
+  padding:0!important;
+}
+.universal-habit-route .runner-content{padding:0!important}
+.universal-habit-route .runner-topbar,
+.universal-habit-route .investigation-rail{display:none!important}
+.universal-habit-route .habit-lab-route-header{display:none!important}
+
+/* Shared content grammar beneath the universal mission header. */
+.universal-lab-stage .investigation-stack{width:100%;max-width:none}
+.universal-lab-stage .story-card,
+.universal-lab-stage .prompt-card,
+.universal-lab-stage .prompt-section,
+.universal-lab-stage .mapping-banner,
+.universal-lab-stage .equation-card,
+.universal-lab-stage .contract-intro,
+.universal-lab-stage .corelab-profile{
+  border-radius:22px;
+}
+.universal-lab-stage .story-card{background:#fffaf0}
+.universal-lab-stage .story-heading h2{font-size:clamp(31px,4.5vw,48px);line-height:1.12}
+.universal-lab-stage .story-card>p{font-size:17px;line-height:1.72}
+.universal-lab-stage .prompt-section{overflow:hidden}
+.universal-lab-stage .step-footer{margin-top:8px}
+
+@media(max-width:820px){
+  .canonical-shell .corelab-welcome{padding:18px 16px 80px}
+  .universal-habit-route .app-main{min-height:auto!important}
+  .universal-lab-stage .story-card,
+  .universal-lab-stage .prompt-card,
+  .universal-lab-stage .prompt-section,
+  .universal-lab-stage .mapping-banner,
+  .universal-lab-stage .equation-card,
+  .universal-lab-stage .contract-intro,
+  .universal-lab-stage .corelab-profile{border-radius:22px}
+}

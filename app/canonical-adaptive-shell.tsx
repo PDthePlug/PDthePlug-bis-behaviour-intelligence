@@ -41,6 +41,11 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
   const searchParams = useSearchParams();
   const stage = resolveStage(pathname, searchParams.get("section"));
   const [menuOpen, setMenuOpen] = useState(false);
+  const experimentHref = pathname.startsWith("/decision")
+    ? "/decision?step=7"
+    : pathname.startsWith("/money")
+      ? "/money?step=7"
+      : "/habit-lab/experiment";
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
@@ -71,7 +76,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         id: "experiment" as const,
         label: "Experiment",
         detail: "Seven days of real-world observation",
-        href: "/habit-lab/experiment",
+        href: experimentHref,
         icon: CalendarDays,
       },
       {
@@ -82,7 +87,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         icon: UserRound,
       },
     ],
-    [],
+    [experimentHref],
   );
 
   useEffect(() => {

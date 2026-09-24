@@ -40,24 +40,23 @@ test("learner profile setup opens the prototype-derived BIS shell without forcin
   assert.match(habitPage, /params\.section === "learn" \? "learn" : "today"/);
 });
 
-test("Habit Lab and field experiment are focused child surfaces under the same bottom BIS menu", async () => {
-  const [lab, experiment, shell, menu, focusedCss] = await Promise.all([
+test("Habit Lab and field experiment are focused child surfaces under the canonical BIS learner menu", async () => {
+  const [lab, experiment, shell, layout, canonical] = await Promise.all([
     source("app/habit-lab/page.tsx"),
     source("app/habit-lab/experiment/page.tsx"),
     source("app/habit-lab/habit-lab-shell.tsx"),
-    source("app/habit-lab/focused-learner-menu.tsx"),
-    source("app/habit-lab/focused-runtime.css"),
+    source("app/habit-lab/layout.tsx"),
+    source("app/canonical-adaptive-shell.tsx"),
   ]);
   assert.match(lab, /view="lab"/);
   assert.match(experiment, /view="experiment"/);
   assert.match(shell, /HabitRouteBridge target=\{view\} hideReturnLink/);
-  assert.match(shell, /<FocusedLearnerMenu active=\{view\} \/>/);
-  assert.match(menu, /<strong>Today<\/strong>/);
-  assert.match(menu, /<strong>Learn<\/strong>/);
-  assert.match(menu, /<strong>Lab<\/strong>/);
-  assert.match(menu, /<strong>Experiment<\/strong>/);
-  assert.match(focusedCss, /\.habit-lab-route \.sidebar[\s\S]*display:none!important/);
-  assert.match(focusedCss, /\.habit-lab-route \.mobile-task-dock/);
+  assert.doesNotMatch(shell, /FocusedLearnerMenu/);
+  assert.match(layout, /CanonicalAdaptiveShell/);
+  for (const label of ["Today", "Learn", "Lab", "Experiment", "Profile"]) {
+    assert.match(canonical, new RegExp(`label: "${label}"`));
+  }
+  assert.match(canonical, /canonical-menu-trigger/);
 });
 
 test("learner application has one bottom hamburger navigation rather than a menu inside a menu", async () => {

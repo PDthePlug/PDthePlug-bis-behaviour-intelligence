@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Archive,
-  ArrowLeft,
   ArrowRight,
   BarChart3,
   Bell,
@@ -63,6 +62,8 @@ import {
 } from "@/lib/habit-lab";
 import { getExperimentTiming } from "@/lib/experiment-timing.mjs";
 import { OperationsView } from "./operations-view";
+import { LabInvestigationFrame } from "./lab-investigation-frame";
+import { labExperienceManifest } from "@/lib/lab-experience-manifest";
 
 type Snapshot = {
   identity: { id: string; email: string; displayName: string };
@@ -587,35 +588,27 @@ function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: 
 }
 
 function LabRunner({ state, step, setStep, saving, act, onView }: { state: Snapshot; step: number; setStep: (step: number) => void; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void }) {
-  const info = investigations[step - 1];
-  const maxStep = Math.max(1, state.enrolment?.currentInvestigation || 1);
+  const maxStep = Math.max(1, state.enrolment?.currentInvestigation || 1, step);
   return (
-    <div className="runner-shell">
-      <div className="runner-topbar">
-        <button className="back-link" onClick={() => onView("home")}><ArrowLeft /> Back home</button>
-        <div className="runner-progress"><span>Investigation {step} of 9</span><Progress value={(step / 9) * 100} /></div>
-      </div>
-      <div className="runner-layout">
-        <aside className="investigation-rail" aria-label="Habit Lab investigations">
-          {investigations.map((item) => {
-            const available = item.number <= Math.max(maxStep, step);
-            const complete = item.number < maxStep;
-            return <button key={item.number} disabled={!available} className={step === item.number ? "current" : complete ? "complete" : ""} onClick={() => setStep(item.number)}><span>{complete ? <Check /> : item.number}</span><div><small>{item.phase}</small><strong>{item.title}</strong></div></button>;
-          })}
-        </aside>
-        <section className="runner-content">
-          <div className="mission-line"><div><p className="eyebrow">Mission</p><h1>{info.title}</h1><p>{info.mission}</p></div><Badge variant="outline">{info.time}</Badge></div>
-          {step === 1 && <InvestigationOne state={state} saving={saving} act={act} next={() => setStep(2)} />}
-          {step === 2 && <InvestigationTwo state={state} saving={saving} act={act} next={() => setStep(3)} />}
-          {step === 3 && <InvestigationThree state={state} saving={saving} act={act} next={() => setStep(4)} />}
-          {step === 4 && <InvestigationFour state={state} saving={saving} act={act} next={() => setStep(5)} />}
-          {step === 5 && <InvestigationFive state={state} saving={saving} act={act} next={() => setStep(6)} />}
-          {step === 6 && <InvestigationSix state={state} saving={saving} act={act} next={() => { setStep(7); onView("experiment"); }} />}
-          {step === 7 && <ExperimentView state={state} saving={saving} act={act} onView={onView} embedded />}
-          {step === 8 && <InvestigationEight state={state} saving={saving} act={act} next={() => setStep(9)} />}
-          {step === 9 && <InvestigationNine state={state} saving={saving} act={act} onView={onView} />}
-        </section>
-      </div>
+    <div className="runner-shell universal-habit-lab">
+      <LabInvestigationFrame
+        labTitle={labExperienceManifest.HAB.shortTitle}
+        accent={labExperienceManifest.HAB.accent}
+        investigations={investigations}
+        step={step}
+        maxStep={maxStep}
+        onSelect={setStep}
+      >
+        {step === 1 && <InvestigationOne state={state} saving={saving} act={act} next={() => setStep(2)} />}
+        {step === 2 && <InvestigationTwo state={state} saving={saving} act={act} next={() => setStep(3)} />}
+        {step === 3 && <InvestigationThree state={state} saving={saving} act={act} next={() => setStep(4)} />}
+        {step === 4 && <InvestigationFour state={state} saving={saving} act={act} next={() => setStep(5)} />}
+        {step === 5 && <InvestigationFive state={state} saving={saving} act={act} next={() => setStep(6)} />}
+        {step === 6 && <InvestigationSix state={state} saving={saving} act={act} next={() => { setStep(7); onView("experiment"); }} />}
+        {step === 7 && <ExperimentView state={state} saving={saving} act={act} onView={onView} embedded />}
+        {step === 8 && <InvestigationEight state={state} saving={saving} act={act} next={() => setStep(9)} />}
+        {step === 9 && <InvestigationNine state={state} saving={saving} act={act} onView={onView} />}
+      </LabInvestigationFrame>
     </div>
   );
 }

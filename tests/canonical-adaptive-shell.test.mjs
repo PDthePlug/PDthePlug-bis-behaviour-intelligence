@@ -21,7 +21,10 @@ test("canonical learner navigation preserves the accepted BIS journey and adds P
   assert.match(shell, /href: "\/habit"/);
   assert.match(shell, /href: "\/learn"/);
   assert.match(shell, /href: "\/labs"/);
-  assert.match(shell, /href: "\/habit-lab\/experiment"/);
+  assert.match(shell, /"\/habit-lab\/experiment"/);
+  assert.match(shell, /"\/decision\?step=7"/);
+  assert.match(shell, /"\/money\?step=7"/);
+  assert.match(shell, /href: experimentHref/);
   assert.match(shell, /href: "\/profile"/);
 });
 
