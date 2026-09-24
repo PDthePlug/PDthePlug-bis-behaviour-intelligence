@@ -836,7 +836,7 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
         tone: "teal",
       },
       {
-        label: "Learning inputs",
+        label: "Responses recorded",
         value: String(journey.activity.structuredResponsesRecorded),
         detail: "recorded",
         tone: "warm",
@@ -894,7 +894,7 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
 
   if (journey.baselineThemes.length) {
     canvas.rule(10);
-    canvas.text("RECURRING STRUCTURED CHALLENGES", {
+    canvas.text("RECURRING CHALLENGES", {
       size: 8.5,
       bold: true,
       color: C.teal,
