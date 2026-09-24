@@ -7,106 +7,206 @@
     "version": "1.0",
     "title": "Focus Lab™",
     "shortTitle": "Focus Lab",
-    "accent": "#2f8276"
+    "accent": "#2f8276",
+    "focus": "Investigate one real focus pattern using evidence."
   },
   "investigations": [
     {
       "number": 1,
       "title": "The Hook",
-      "mission": "Notice the pattern before trying to change it.",
+      "mission": "Notice what happens before a focus choice.",
       "phase": "Investigation",
-      "time": "5 minutes",
+      "time": "10 minutes",
       "difficulty": "Observe",
       "produces": [
         "A prediction"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I1.REFLECTION",
+          "label": "Investigation 1 reflection",
+          "prompt": "What evidence from The Hook matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 2,
       "title": "The Pattern",
-      "mission": "Find evidence that the pattern exists.",
+      "mission": "Name the repeated focus pattern.",
       "phase": "Investigation",
-      "time": "5 minutes",
+      "time": "10 minutes",
       "difficulty": "Observe",
       "produces": [
-        "One evidence record"
+        "A pattern"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I2.REFLECTION",
+          "label": "Investigation 2 reflection",
+          "prompt": "What evidence from The Pattern matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 3,
       "title": "The Revelation",
-      "mission": "Learn what the evidence may be showing.",
+      "mission": "Look for evidence that changes your first explanation.",
       "phase": "Investigation",
-      "time": "5 minutes",
+      "time": "10 minutes",
       "difficulty": "Analyse",
       "produces": [
-        "A working insight"
+        "A revised insight"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I3.REFLECTION",
+          "label": "Investigation 3 reflection",
+          "prompt": "What evidence from The Revelation matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 4,
       "title": "Mapping",
-      "mission": "Map one real example carefully.",
+      "mission": "Map one real focus moment.",
       "phase": "Investigation",
-      "time": "15 minutes",
-      "difficulty": "Challenge",
+      "time": "10 minutes",
+      "difficulty": "Analyse",
       "produces": [
-        "A behaviour map"
+        "A focus map"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I4.REFLECTION",
+          "label": "Investigation 4 reflection",
+          "prompt": "What evidence from Mapping matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 5,
       "title": "Equation",
-      "mission": "Write a testable explanation.",
+      "mission": "Write a testable working explanation.",
       "phase": "Investigation",
       "time": "10 minutes",
-      "difficulty": "Deep integration",
+      "difficulty": "Analyse",
       "produces": [
         "A working equation"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I5.REFLECTION",
+          "label": "Investigation 5 reflection",
+          "prompt": "What evidence from Equation matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 6,
       "title": "Contract",
-      "mission": "Design a real-world test.",
+      "mission": "Choose what you will test in real life.",
       "phase": "Investigation",
       "time": "10 minutes",
       "difficulty": "Challenge",
       "produces": [
-        "An experiment contract"
+        "A test plan"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I6.REFLECTION",
+          "label": "Investigation 6 reflection",
+          "prompt": "What evidence from Contract matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 7,
       "title": "Experiment",
-      "mission": "Collect evidence in real situations.",
+      "mission": "Record what actually happens.",
       "phase": "Experiment",
       "time": "Daily tracking",
-      "difficulty": "Analyse",
+      "difficulty": "Challenge",
       "produces": [
-        "Experiment observations"
+        "Observation evidence"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I7.REFLECTION",
+          "label": "Investigation 7 reflection",
+          "prompt": "What evidence from Experiment matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 8,
       "title": "Evidence Review",
-      "mission": "Review what happened without forcing a conclusion.",
+      "mission": "Review the evidence without forcing a conclusion.",
       "phase": "Review",
       "time": "10 minutes",
-      "difficulty": "Analyse",
+      "difficulty": "Challenge",
       "produces": [
-        "A final reflection"
+        "An evidence review"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I8.REFLECTION",
+          "label": "Investigation 8 reflection",
+          "prompt": "What evidence from Evidence Review matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     },
     {
       "number": 9,
       "title": "Behaviour Profile",
-      "mission": "Bring the investigation together.",
+      "mission": "Bring the evidence together into a behaviour profile.",
       "phase": "Synthesis",
       "time": "10 minutes",
-      "difficulty": "Deep integration",
+      "difficulty": "Challenge",
       "produces": [
         "A behaviour profile"
+      ],
+      "prompts": [
+        {
+          "id": "FOC.I9.REFLECTION",
+          "label": "Investigation 9 reflection",
+          "prompt": "What evidence from Behaviour Profile matters most to your investigation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Write what you actually noticed…"
+        }
       ]
     }
   ]
