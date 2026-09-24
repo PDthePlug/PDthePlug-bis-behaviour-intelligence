@@ -19,12 +19,12 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
   assert.match(pdf, /%PDF-1\.4/);
   assert.match(pdf, /canvas\.textAt\(MARGIN, 714, "Programme"/);
-  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Outcomes Report"/);
+  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Results Report"/);
   assert.match(pdf, /Executive summary/);
   assert.match(pdf, /KEY FINDINGS/);
   assert.match(pdf, /Learning journey/);
   assert.match(pdf, /DAY-BY-DAY PROGRESSION/);
-  assert.match(pdf, /RECURRING STRUCTURED CHALLENGES/);
+  assert.match(pdf, /RECURRING CHALLENGES/);
   assert.match(pdf, /GROUP SHIFTS/);
   assert.match(pdf, /Behaviour in practice/);
   assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
@@ -32,7 +32,7 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(pdf, /Experiment landscape/);
   assert.match(pdf, /Action plan/);
   assert.match(pdf, /REPORTING NOTES/);
-  assert.match(pdf, /PROGRAMME OUTCOMES  \|/);
+  assert.match(pdf, /PROGRAMME RESULTS  \|/);
 });
 
 test("demo cohort is explicitly synthetic, isolated and reproducible", async () => {
