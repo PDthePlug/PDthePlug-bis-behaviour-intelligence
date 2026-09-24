@@ -179,6 +179,30 @@ export const contentRuntimeActivations = sqliteTable(
   ],
 );
 
+export const contentActivationUat = sqliteTable(
+  "content_activation_uat",
+  {
+    id: text("id").primaryKey(),
+    versionId: text("version_id").notNull(),
+    itemId: text("item_id").notNull(),
+    artifactFingerprint: text("artifact_fingerprint").notNull(),
+    previewedArtifacts: text("previewed_artifacts").notNull().default("[]"),
+    checklist: text("checklist").notNull().default("{}"),
+    notes: text("notes").notNull().default(""),
+    status: text("status").notNull().default("IN_REVIEW"),
+    reviewedBy: text("reviewed_by"),
+    reviewedAt: text("reviewed_at"),
+    updatedBy: text("updated_by").notNull(),
+    createdAt: timestamp(),
+    updatedAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_content_activation_uat_version").on(table.versionId),
+    index("idx_content_activation_uat_item").on(table.itemId, table.status),
+  ],
+);
+
+
 export const consentRecords = sqliteTable(
   "consent_records",
   {
