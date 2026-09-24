@@ -313,7 +313,7 @@ export function ProgrammePlayer({
     [snapshot, release, moduleCode],
   );
   const experimentDay = currentExperimentDay(runtime?.experiment ?? null);
-  const phaseAComplete = Boolean(runtime?.enrolment?.phaseACompletedAt || runtime?.experiment);
+  const phaseAComplete = previewMode || Boolean(runtime?.enrolment?.phaseACompletedAt || runtime?.experiment);
   const progressPercent = programme
     ? Math.round(
         (programme.treatment.pages.filter((item) => completed.has(item.id)).length /
