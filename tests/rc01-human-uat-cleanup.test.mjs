@@ -33,23 +33,24 @@ test("staff access remains assigned and invisible to learner-only profiles", asy
 
 test("learner chrome removes repeated help and explanatory footer", async () => {
   const canonical = await source("app/canonical-adaptive-shell.tsx");
-  const multi = await source("app/multi-lab-adaptive-shell.tsx");
 
   assert.doesNotMatch(canonical, /Screen guide/);
   assert.doesNotMatch(canonical, /canonical-menu-foot/);
-  assert.doesNotMatch(multi, /Screen guide/);
-  assert.doesNotMatch(multi, /multi-lab-route-banner/);
-  assert.doesNotMatch(multi, /multi-lab-menu-privacy/);
+  assert.doesNotMatch(canonical, /multi-lab-route-banner/);
+  assert.doesNotMatch(canonical, /multi-lab-menu-privacy/);
 });
 
-test("active Decision and Money tasks begin directly under progress", async () => {
-  const flow = await source("app/multi-lab-flow-cleanup.css");
+test("active Habit, Decision and Money tasks share the universal progress surface", async () => {
+  const flow = await source("app/lab-investigation-frame.css");
   const decision = await source("app/decision/layout.tsx");
   const money = await source("app/money/layout.tsx");
+  const habit = await source("app/habit-lab/layout.tsx");
 
-  assert.match(flow, /corelab-progressbar[\s\S]*margin-top:\s*0/);
-  assert.match(decision, /multi-lab-flow-cleanup\.css/);
-  assert.match(money, /multi-lab-flow-cleanup\.css/);
+  assert.match(flow, /universal-lab-progress/);
+  assert.match(flow, /universal-investigation-nav/);
+  for (const layout of [decision, money, habit]) {
+    assert.match(layout, /lab-investigation-frame\.css/);
+  }
 });
 
 test("sign-in introduction states the BIS idea without implementation explanation", async () => {
