@@ -110,3 +110,22 @@ test("package templates reflect the executable compiler contracts", async () => 
   assert.equal(lab.investigations.length, 9);
   assert.ok(lab.investigations.every((investigation) => investigation.prompts.length >= 1));
 });
+
+
+test("learning source adapters compile structured DOCX PDF HTML Markdown and ZIP without inferring missing structure", async () => {
+  const adapters = await source("lib/content-source-adapters.ts");
+  for (const format of ["DOCX", "PDF", "HTML", "MARKDOWN", "ZIP"]) {
+    assert.ok(adapters.includes('sourceFormat === "' + format + '"'));
+  }
+  assert.match(adapters, /word\/document\.xml/);
+  assert.match(adapters, /could not find all 13 BIS programme headings/);
+  assert.match(adapters, /PDF source contains no extractable text/);
+  assert.match(adapters, /HTML source contains executable content/);
+  assert.match(adapters, /inflateRawSync/);
+});
+
+test("Lab source adapters do not infer evidence semantics from prose", async () => {
+  const adapters = await source("lib/content-source-adapters.ts");
+  assert.match(adapters, /Universal Lab activation requires BIS JSON or a ZIP containing it/);
+  assert.match(adapters, /Lab ZIP package must contain a Universal Lab JSON package/);
+});
