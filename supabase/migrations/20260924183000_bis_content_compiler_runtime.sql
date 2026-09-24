@@ -110,6 +110,15 @@ create policy content_runtime_activations_super_user
   using (private.has_staff_role('SYSTEM_ADMIN'))
   with check (private.has_staff_role('SYSTEM_ADMIN'));
 
+-- Compiled artifacts are learner-facing authored content. Authenticated learners
+-- may read only the runtime/ prefix; raw source files remain Super User only.
+create policy bis_content_runtime_read
+  on storage.objects for select to authenticated
+  using (
+    bucket_id = 'bis-content-studio'
+    and name like 'runtime/%'
+  );
+
 -- Learning runtime codes must be extensible so a future BIS module can be activated
 -- without another schema migration. Namespaces remain short, uppercase BIS codes.
 alter table public.content_releases drop constraint if exists content_releases_lab_code_check;
