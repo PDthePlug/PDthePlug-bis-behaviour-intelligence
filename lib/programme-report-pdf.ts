@@ -201,7 +201,7 @@ class ReportCanvas {
         this.textCmd(
           547,
           18,
-          "PROGRAMME OUTCOMES  |  " + String(index + 1) + " / " + String(total),
+          "PROGRAMME RESULTS  |  " + String(index + 1) + " / " + String(total),
           7.5,
           true,
           C.muted,
