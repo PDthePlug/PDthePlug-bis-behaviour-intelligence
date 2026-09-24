@@ -26,7 +26,7 @@ export type ProgrammePage = {
 export type HabitProgramme = {
   schemaVersion: "2.0";
   handbookId: string;
-  labCode: "HAB" | "DEC" | "MON" | "IDN" | "ATT";
+  labCode: string;
   slug: string;
   title: string;
   subtitle: string;

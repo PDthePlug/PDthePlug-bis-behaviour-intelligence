@@ -42,21 +42,22 @@ test("current BIS modules and Labs are registered as live system content", async
   assert.match(migration, /'LIVE'/);
 });
 
-test("new content follows create, upload, validate and approve gates without auto-publishing", async () => {
+test("new content follows create, edition upload, compile, approve and explicit activation gates", async () => {
   const [api, ui] = await Promise.all([
     source("app/api/content-studio/route.ts"),
     source("app/content-studio/content-studio.tsx"),
   ]);
-  for (const action of ["createItem", "createVersion", "attachSource", "validateVersion", "approveVersion", "reopenVersion"]) {
+  for (const action of ["createItem", "createVersion", "attachSource", "compileVersion", "approveVersion", "activateVersion", "rollbackActivation", "reopenVersion"]) {
     assert.ok(api.includes('action === "' + action + '"'));
   }
   assert.match(ui, /action: "createItem"/);
   assert.match(ui, /action: "createVersion"/);
   assert.match(ui, /action: "attachSource"/);
-  assert.match(ui, /action: "validateVersion"/);
+  assert.match(ui, /action: "compileVersion"/);
   assert.match(ui, /action: "approveVersion"/);
+  assert.match(ui, /action: "activateVersion"/);
+  assert.match(ui, /action: "rollbackActivation"/);
   assert.doesNotMatch(api, /action === "publishVersion"/);
-  assert.match(ui, /Activation remains controlled until the runtime adapter is connected/);
 });
 
 test("private uploaded sources are confirmed and fingerprinted before validation", async () => {
@@ -68,12 +69,12 @@ test("private uploaded sources are confirmed and fingerprinted before validation
   assert.match(api, /sourceBytes: bytes\.byteLength/);
 });
 
-test("Content Studio accepts source documents but only BIS JSON packages can be activation-ready", async () => {
+test("Content Studio accepts editorial source formats and defers execution to the compiler", async () => {
   const contract = await source("lib/content-studio.ts");
   for (const format of ["BIS_PACKAGE_JSON", "DOCX", "PDF", "HTML", "MARKDOWN", "ZIP"]) {
     assert.ok(contract.includes('"' + format + '"'));
   }
-  assert.match(contract, /needs to be converted into a BIS package before it can be activated/);
+  assert.match(contract, /Content Compiler will run the approved source adapter/);
   assert.match(contract, /runtimeStatus: valid \? "REQUIRES_ADAPTER" : "BLOCKED"/);
   assert.match(contract, /unsafeHtml/);
 });

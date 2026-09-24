@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, BookOpen, FlaskConical } from "lucide-react";
 import {
   BIS_MODULES,
@@ -23,8 +23,29 @@ function statusLabel(
   return "Coming soon";
 }
 
+type RuntimeCatalogueItem = {
+  kind: "LEARNING_MODULE" | "LAB";
+  code: string;
+  routePath: string | null;
+  runtimeMode: "STATIC" | "DYNAMIC";
+  version: string;
+  live: boolean;
+};
+
 export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
   const [volume, setVolume] = useState<BISVolume>(1);
+  const [runtimeItems, setRuntimeItems] = useState<RuntimeCatalogueItem[]>([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch("/api/runtime-catalogue", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.ok ? response.json() : { items: [] })
+      .then((data) => {
+        if (!controller.signal.aborted) setRuntimeItems(Array.isArray(data.items) ? data.items : []);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
   const modules = useMemo(
     () => BIS_MODULES.filter((item) => item.volume === volume),
     [volume],
@@ -75,8 +96,15 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
       <section className="bis-module-grid" aria-label={title}>
         {modules.map((item) => {
           const status = mode === "learning" ? item.learningStatus : item.labStatus;
-          const open = isModuleOpen(item, mode);
-          const href = moduleHref(item, mode);
+          const runtime = runtimeItems.find((entry) =>
+            entry.code === item.code &&
+            entry.kind === (mode === "learning" ? "LEARNING_MODULE" : "LAB") &&
+            entry.live,
+          );
+          const dynamic = runtime?.runtimeMode === "DYNAMIC";
+          const open = dynamic ? Boolean(runtime?.routePath) : isModuleOpen(item, mode);
+          const href = dynamic ? runtime?.routePath ?? null : moduleHref(item, mode);
+          const displayStatus = dynamic ? "live" : status;
           const Icon = mode === "learning" ? BookOpen : FlaskConical;
 
           const body = (
@@ -90,7 +118,7 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
                 <h3>{item.title}</h3>
               </div>
               <div className="bis-module-card-foot">
-                <span className={open ? "open" : ""}>{statusLabel(mode, status)}</span>
+                <span className={open ? "open" : ""}>{statusLabel(mode, displayStatus)}</span>
                 {open ? <ArrowRight aria-hidden="true" /> : null}
               </div>
             </>

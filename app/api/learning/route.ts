@@ -2,6 +2,7 @@ import { and, desc, eq, or } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
+  contentLibraryItems,
   contentReleases,
   handbookProgress,
   learners,
@@ -10,8 +11,19 @@ import { identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { isDeliveryEdition } from "../../../lib/learning-foundation";
 
-const STEP_ID = /^[A-Z]{3}\.[A-Z0-9][A-Z0-9._-]{1,119}$/;
-const LAB_CODES = new Set(["HAB", "DEC", "MON", "IDN", "ATT"]);
+const STEP_ID = /^[A-Z][A-Z0-9_-]{1,11}\.[A-Z0-9][A-Z0-9._-]{1,119}$/;
+
+async function learningCode(value: unknown) {
+  const code = String(value ?? "HAB").trim().toUpperCase();
+  if (!/^[A-Z][A-Z0-9_-]{1,11}$/.test(code)) throw new Error("Choose a valid BIS learning module.");
+  const [item] = await getDb().select().from(contentLibraryItems).where(and(
+    eq(contentLibraryItems.kind, "LEARNING_MODULE"),
+    eq(contentLibraryItems.code, code),
+    eq(contentLibraryItems.status, "ACTIVE"),
+  )).limit(1);
+  if (!item) throw new Error("That BIS learning module is not available.");
+  return code;
+}
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Unexpected error";
@@ -117,7 +129,8 @@ async function getHandler(request: Request) {
   const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   try {
-    return Response.json(await learningSnapshot(identity.id, new URL(request.url).searchParams.get("lab") ?? "HAB"));
+    const code = await learningCode(new URL(request.url).searchParams.get("lab") ?? "HAB");
+    return Response.json(await learningSnapshot(identity.id, code));
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
@@ -140,7 +153,7 @@ async function postHandler(request: Request) {
         updatedAt: new Date().toISOString(),
       }).where(eq(learners.userId, identity.id));
       await audit(identity.id, "DELIVERY_EDITION_CHANGED", "LEARNER", identity.id, { deliveryEdition: edition });
-      return Response.json(await learningSnapshot(identity.id, LAB_CODES.has(String(body.labCode)) ? String(body.labCode) : "HAB"));
+      return Response.json(await learningSnapshot(identity.id, await learningCode(body.labCode)));
     }
 
     if (action === "saveProgress") {
@@ -148,7 +161,7 @@ async function postHandler(request: Request) {
       const contentReleaseId = String(body.contentReleaseId ?? "");
       const semanticStepId = String(body.semanticStepId ?? "").trim().toUpperCase();
       const status = body.status === "COMPLETED" ? "COMPLETED" : "STARTED";
-      if (!LAB_CODES.has(labCode)) throw new Error("Choose a valid BIS Lab.");
+      await learningCode(labCode);
       if (!contentReleaseId) throw new Error("A content release is required for progress.");
       if (!STEP_ID.test(semanticStepId) || !semanticStepId.startsWith(`${labCode}.`)) {
         throw new Error("Progress must use a stable semantic step ID in the selected Lab namespace.");
@@ -186,7 +199,7 @@ async function postHandler(request: Request) {
         },
       });
       await audit(identity.id, "HANDBOOK_PROGRESS_SAVED", "CONTENT_RELEASE", contentReleaseId, { labCode, semanticStepId, status });
-      return Response.json(await learningSnapshot(identity.id, LAB_CODES.has(String(body.labCode)) ? String(body.labCode) : "HAB"));
+      return Response.json(await learningSnapshot(identity.id, await learningCode(body.labCode)));
     }
 
     if (action === "saveWorkbookResponses") {
@@ -196,7 +209,7 @@ async function postHandler(request: Request) {
         p_items: body.items,
       });
       if (error) throw new Error(error.message);
-      return Response.json(await learningSnapshot(identity.id, LAB_CODES.has(String(body.labCode)) ? String(body.labCode) : "HAB"));
+      return Response.json(await learningSnapshot(identity.id, await learningCode(body.labCode)));
     }
 
     throw new Error("That learning action is not supported.");

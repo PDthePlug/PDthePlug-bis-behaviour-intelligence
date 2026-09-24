@@ -47,6 +47,27 @@ type CheckResult = {
   detail: string;
 };
 
+type ContentSourceFile = {
+  id: string;
+  versionId: string;
+  sourceKey: string;
+  deliveryEdition: string | null;
+  sourceFormat: string;
+  fileName: string;
+  storagePath: string;
+  sourceHash: string | null;
+  sourceBytes: number;
+  mimeType: string | null;
+};
+
+type RuntimeArtifact = {
+  id: string;
+  artifactKey: string;
+  deliveryEdition: string | null;
+  artifactHash: string;
+  artifactBytes: number;
+};
+
 type ContentVersion = {
   id: string;
   itemId: string;
@@ -69,6 +90,12 @@ type ContentVersion = {
   };
   status: string;
   releaseNotes: string;
+  compilerStatus: string;
+  compilerReport: { summary?: string; requiredEditions?: string[]; artifactKeys?: string[] };
+  compilerVersion: string | null;
+  compiledAt: string | null;
+  sourceFiles: ContentSourceFile[];
+  artifacts: RuntimeArtifact[];
   createdAt: string;
   updatedAt: string;
 };
@@ -83,6 +110,13 @@ type ContentItem = {
   routePath: string | null;
   linkedLabItemId: string | null;
   status: string;
+  activeActivation: null | {
+    id: string;
+    versionId: string;
+    runtimeMode: "STATIC" | "DYNAMIC";
+    status: string;
+    activatedAt: string;
+  };
   versions: ContentVersion[];
 };
 
@@ -93,6 +127,8 @@ type StudioSnapshot = {
     drafts: number;
     live: number;
     ready: number;
+    compiled: number;
+    activeDynamic: number;
   };
   items: ContentItem[];
 };
@@ -112,17 +148,9 @@ function formatDate(value: string | null | undefined) {
   });
 }
 
-function sourceLabel(value: string) {
-  return value === "BIS_PACKAGE_JSON"
-    ? "BIS package"
-    : value === "SYSTEM"
-      ? "Existing system content"
-      : value;
-}
-
 function statusTone(value: string) {
-  if (["LIVE", "PUBLISHED", "VALID", "READY", "APPROVED"].includes(value)) return "good";
-  if (["BLOCKED", "INVALID"].includes(value)) return "bad";
+  if (["LIVE", "PUBLISHED", "VALID", "READY", "APPROVED", "COMPILED"].includes(value)) return "good";
+  if (["BLOCKED", "INVALID", "FAILED"].includes(value)) return "bad";
   if (["REQUIRES_ADAPTER", "PENDING"].includes(value)) return "warn";
   return "neutral";
 }
@@ -259,7 +287,11 @@ export function ContentStudio() {
     setReleaseNotes("");
   }
 
-  async function uploadSource(contentVersion: ContentVersion, file: File) {
+  async function uploadSource(
+    contentVersion: ContentVersion,
+    sourceKey: "school" | "emerging_adult" | "workplace" | "lab",
+    file: File,
+  ) {
     const detected = sourceFormatFor(file.name, file.type);
     if (!detected) {
       setError("Choose a BIS package JSON, DOCX, PDF, HTML, Markdown or ZIP source.");
@@ -274,7 +306,8 @@ export function ContentStudio() {
       return;
     }
 
-    setUploadingVersionId(contentVersion.id);
+    const uploadKey = `${contentVersion.id}:${sourceKey}`;
+    setUploadingVersionId(uploadKey);
     setError("");
     setMessage("");
     try {
@@ -282,8 +315,8 @@ export function ContentStudio() {
         .replace(/[^A-Za-z0-9._-]+/g, "-")
         .replace(/^-+|-+$/g, "")
         .slice(-140) || "source";
-      const path = `sources/${contentVersion.id}/${safeName}`;
-      const upload = await client.storage.from(CONTENT_STUDIO_BUCKET).upload(path, file, {
+      const storagePath = `sources/${contentVersion.id}/${sourceKey}/${safeName}`;
+      const upload = await client.storage.from(CONTENT_STUDIO_BUCKET).upload(storagePath, file, {
         contentType: file.type || undefined,
         cacheControl: "0",
         upsert: true,
@@ -293,22 +326,28 @@ export function ContentStudio() {
       const attached = await act({
         action: "attachSource",
         versionId: contentVersion.id,
+        sourceKey,
+        deliveryEdition: sourceKey === "lab" ? null : sourceKey,
         sourceFileName: file.name,
-        sourceStoragePath: path,
+        sourceStoragePath: storagePath,
         sourceBytes: file.size,
         mimeType: file.type || null,
         sourceFormat: detected,
       });
       if (!attached) {
-        await client.storage.from(CONTENT_STUDIO_BUCKET).remove([path]);
+        await client.storage.from(CONTENT_STUDIO_BUCKET).remove([storagePath]);
         return;
       }
-      setMessage("Source uploaded privately. Validate the draft when you are ready.");
+      setMessage(
+        sourceKey === "lab"
+          ? "Lab source uploaded privately."
+          : `${sourceKey.replace("_", " ")} edition uploaded privately.`,
+      );
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "The source upload failed.");
     } finally {
       setUploadingVersionId("");
-      const input = fileInputs.current[contentVersion.id];
+      const input = fileInputs.current[uploadKey];
       if (input) input.value = "";
     }
   }
@@ -425,7 +464,7 @@ export function ContentStudio() {
 
               <section className="content-studio-card version-create">
                 <div className="content-studio-section-title">
-                  <div><p className="eyebrow">New version</p><h3>Create a controlled draft</h3><p>The draft is private to Super Users until it is deliberately activated in a later release step.</p></div>
+                  <div><p className="eyebrow">New version</p><h3>Create a controlled draft</h3><p>{selected.kind === "LEARNING_MODULE" ? "Every learning-module version is one release with three editions: School, Emerging Adult and Workplace. All three must compile before activation." : "The draft stays private until its Universal Lab package compiles, validates and is deliberately activated."}</p></div>
                   <FileArchive />
                 </div>
                 <div className="version-create-grid">
@@ -444,48 +483,87 @@ export function ContentStudio() {
                 {selected.versions.map((entry) => {
                   const checks = entry.validationReport?.checks ?? [];
                   const canEdit = entry.status === "DRAFT";
-                  const busy = saving || uploadingVersionId === entry.id;
+                  const sourceSlots = selected.kind === "LEARNING_MODULE"
+                    ? [
+                        { key: "school" as const, label: "School edition" },
+                        { key: "emerging_adult" as const, label: "Emerging Adult edition" },
+                        { key: "workplace" as const, label: "Workplace edition" },
+                      ]
+                    : [{ key: "lab" as const, label: "Universal Lab source" }];
+                  const allSourcesReady = sourceSlots.every((slot) =>
+                    entry.sourceFiles.some((source) => source.sourceKey === slot.key),
+                  );
+                  const busy = saving || uploadingVersionId.startsWith(`${entry.id}:`);
+                  const active = selected.activeActivation?.versionId === entry.id;
                   return (
                     <article className="content-version-card" key={entry.id}>
                       <header>
                         <div>
                           <span className="content-version-number">v{entry.version}</span>
-                          <strong>{sourceLabel(entry.sourceFormat)}</strong>
+                          <strong>{selected.kind === "LEARNING_MODULE" ? "Three-edition learning release" : "Universal Lab release"}</strong>
                           <small>Created {formatDate(entry.createdAt)}</small>
                         </div>
                         <div className="content-status-row">
                           <span data-tone={statusTone(entry.status)}>{entry.status}</span>
-                          <span data-tone={statusTone(entry.validationStatus)}>{entry.validationStatus}</span>
+                          <span data-tone={statusTone(entry.compilerStatus)}>{entry.compilerStatus}</span>
                           <span data-tone={statusTone(entry.runtimeStatus)}>{entry.runtimeStatus}</span>
                         </div>
                       </header>
 
-                      <div className="content-version-source">
-                        <div>
-                          <FileCheck2 />
-                          <span><strong>{entry.sourceFileName ?? "No source uploaded"}</strong><small>{formatBytes(entry.sourceBytes)}{entry.sourceHash ? ` · SHA-256 ${entry.sourceHash.slice(0, 12)}…` : ""}</small></span>
+                      {selected.kind === "LEARNING_MODULE" ? (
+                        <div className="content-edition-note">
+                          <BookOpen />
+                          <div>
+                            <strong>Three editions travel together.</strong>
+                            <p>School, Emerging Adult and Workplace are compiled and activated as one module version. BIS will not publish a partial edition set.</p>
+                          </div>
                         </div>
-                        {canEdit ? (
-                          <>
-                            <input
-                              ref={(node) => { fileInputs.current[entry.id] = node; }}
-                              type="file"
-                              accept=".json,.docx,.pdf,.html,.htm,.md,.zip,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/html,text/markdown,application/zip"
-                              hidden
-                              onChange={(event) => {
-                                const file = event.target.files?.[0];
-                                if (file) void uploadSource(entry, file);
-                              }}
-                            />
-                            <Button variant="outline" disabled={busy} onClick={() => fileInputs.current[entry.id]?.click()}>
-                              {uploadingVersionId === entry.id ? <LoaderCircle className="spin" /> : <Upload />}
-                              {entry.sourceFileName ? "Replace source" : "Upload source"}
-                            </Button>
-                          </>
-                        ) : null}
+                      ) : null}
+
+                      <div className="content-source-stack">
+                        {sourceSlots.map((slot) => {
+                          const source = entry.sourceFiles.find((candidate) => candidate.sourceKey === slot.key);
+                          const inputKey = `${entry.id}:${slot.key}`;
+                          return (
+                            <div className="content-source-slot" key={slot.key}>
+                              <div>
+                                <FileCheck2 />
+                                <span className="content-source-slot-copy">
+                                  <strong>{slot.label}</strong>
+                                  <small>{source ? source.fileName : "No source uploaded"}</small>
+                                  {source ? <small>{formatBytes(source.sourceBytes)}{source.sourceHash ? ` · SHA-256 ${source.sourceHash.slice(0, 12)}…` : ""}</small> : null}
+                                </span>
+                              </div>
+                              {canEdit ? (
+                                <>
+                                  <input
+                                    ref={(node) => { fileInputs.current[inputKey] = node; }}
+                                    type="file"
+                                    accept=".json,.docx,.pdf,.html,.htm,.md,.zip,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/html,text/markdown,application/zip"
+                                    hidden
+                                    onChange={(event) => {
+                                      const file = event.target.files?.[0];
+                                      if (file) void uploadSource(entry, slot.key, file);
+                                    }}
+                                  />
+                                  <Button variant="outline" disabled={busy} onClick={() => fileInputs.current[inputKey]?.click()}>
+                                    {uploadingVersionId === inputKey ? <LoaderCircle className="spin" /> : <Upload />}
+                                    {source ? "Replace" : "Upload"}
+                                  </Button>
+                                </>
+                              ) : null}
+                            </div>
+                          );
+                        })}
                       </div>
 
-                      {entry.validationReport?.summary ? (
+                      {entry.compilerReport?.summary ? (
+                        <div className="content-validation-summary">
+                          <strong>{entry.compilerReport.summary}</strong>
+                          {entry.compilerVersion ? <small>Compiler: {entry.compilerVersion}</small> : null}
+                          {entry.artifacts.length ? <small>{entry.artifacts.length} runtime artifact{entry.artifacts.length === 1 ? "" : "s"} ready.</small> : null}
+                        </div>
+                      ) : entry.validationReport?.summary ? (
                         <div className="content-validation-summary">
                           <strong>{entry.validationReport.summary}</strong>
                           {checks.length ? <div className="content-check-list">{checks.map((check) => <div key={check.id} data-status={check.status}><span>{check.status === "PASS" ? <Check /> : <CircleAlert />}</span><div><strong>{check.label}</strong><small>{check.detail}</small></div></div>)}</div> : null}
@@ -495,11 +573,25 @@ export function ContentStudio() {
                       {entry.releaseNotes ? <p className="content-release-notes"><strong>Release notes:</strong> {entry.releaseNotes}</p> : null}
 
                       <footer>
-                        {entry.status === "DRAFT" ? <Button disabled={busy || !entry.sourceStoragePath} onClick={() => void act({ action: "validateVersion", versionId: entry.id }, "Validation complete.")}><FileCheck2 /> Validate</Button> : null}
-                        {entry.status === "VALIDATED" ? <Button disabled={busy} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Version approved for the activation queue.")}><ShieldCheck /> Approve</Button> : null}
+                        {entry.status === "DRAFT" ? (
+                          <Button
+                            disabled={busy || !allSourcesReady}
+                            onClick={() => void act(
+                              { action: "compileVersion", versionId: entry.id },
+                              selected.kind === "LEARNING_MODULE"
+                                ? "All three editions compiled and validated."
+                                : "Lab compiled and validated.",
+                            )}
+                          >
+                            <PackageCheck /> Compile &amp; validate
+                          </Button>
+                        ) : null}
+                        {entry.status === "VALIDATED" ? <Button disabled={busy || entry.compilerStatus !== "COMPILED"} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Version approved for activation.")}><ShieldCheck /> Approve</Button> : null}
+                        {entry.status === "APPROVED" ? <Button disabled={busy || entry.compilerStatus !== "COMPILED"} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, "Version activated. Learners now receive this runtime version.")}><PackageCheck /> Activate</Button> : null}
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "reopenVersion", versionId: entry.id }, "Version reopened as a draft.")}>Reopen draft</Button> : null}
-                        {entry.status === "APPROVED" ? <span className="activation-note"><LockKeyhole /> Activation remains controlled until the runtime adapter is connected.</span> : null}
-                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Live in the current BIS runtime.</span> : null}
+                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> {active ? "Active learner runtime." : "Live version."}</span> : null}
+                        {active && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open live route <ChevronRight /></Link></Button> : null}
+                        {active && selected.activeActivation?.runtimeMode === "DYNAMIC" && selected.versions.some((candidate) => candidate.id !== entry.id && candidate.status === "PUBLISHED" && ["READY", "LIVE"].includes(candidate.runtimeStatus)) ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "rollbackActivation", itemId: selected.id }, "Previous runtime version restored.")}><RefreshCw /> Roll back</Button> : null}
                       </footer>
                     </article>
                   );
@@ -509,7 +601,7 @@ export function ContentStudio() {
               {!selected.versions.some((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") ? (
                 <section className="content-studio-card content-architecture-note">
                   <LockKeyhole />
-                  <div><strong>No learner-facing activation yet.</strong><p>Content Studio deliberately separates loading content from making it executable. A future runtime-activation milestone will bind approved packages to the universal learning and Lab renderers without letting uploads bypass validation.</p></div>
+                  <div><strong>No learner-facing activation yet.</strong><p>Use the controlled path: upload → compile → approve → activate. Learning modules cannot activate until School, Emerging Adult and Workplace have all compiled successfully.</p></div>
                 </section>
               ) : null}
 

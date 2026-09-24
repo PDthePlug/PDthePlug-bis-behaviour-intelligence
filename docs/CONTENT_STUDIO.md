@@ -53,18 +53,20 @@ Create content identity
         ↓
 Create draft version
         ↓
-Upload private source
+Upload required source(s)
+        ↓
+Compile
         ↓
 Validate
         ↓
 Approve
         ↓
-Runtime activation (separate controlled milestone)
+Activate
 ```
 
-The separation between **Approve** and **Activate** is intentional.
+The separation between **Approve** and **Activate** remains intentional. Activation now exists, but it is a separate explicit action after successful compilation and approval.
 
-A malformed or unexpected upload must not be able to replace a live Lab or handbook simply because a Super User uploaded it.
+For learning modules, one version always contains exactly three source slots — **School, Emerging Adult and Workplace** — and all three must compile before the version can activate. A malformed, incomplete or unexpected upload can therefore never replace a live learner experience simply because a Super User uploaded it.
 
 ## Source formats
 
@@ -77,20 +79,21 @@ Content Studio accepts:
 - Markdown
 - ZIP
 
-DOCX, PDF, HTML, Markdown and ZIP sources are valid archival/editorial inputs but currently receive `REQUIRES_ADAPTER`. They must be converted to a BIS package before learner activation.
+For **learning modules**, the Content Compiler has deterministic adapters for DOCX, text-based PDF, safe HTML, Markdown and ZIP, as well as native BIS JSON. The adapter must recover all 13 canonical programme positions; otherwise compilation fails rather than inventing missing structure.
 
-BIS package JSON can be structurally validated and become `READY`, but it is still not automatically published into the learner runtime.
+For **Labs**, runtime evidence semantics remain explicit: activation accepts Universal Lab JSON, or ZIP containing that JSON. DOCX/PDF Lab prose can be retained as source material but is not converted into evidence fields by guesswork.
+
+Compilation never publishes automatically. A compiled version must still be approved and explicitly activated.
 
 ## Learning-module package
 
-A learning package carries:
+A learning-module version carries exactly three edition packages:
 
-- identity: code, title, version;
-- schema version;
-- linked Lab code where applicable;
-- one or more delivery editions;
-- ordered pages;
-- authored HTML/content blocks.
+- School;
+- Emerging Adult;
+- Workplace.
+
+Each edition package carries the same content code and version plus its own authored treatment, ordered pages and response fields. The three editions are compiled, activated and rolled back together.
 
 The current reader continues to enforce learner-response behaviour such as question answer spaces and collapsed answer keys. Authors should not need to redesign those interactions in every module.
 
@@ -151,17 +154,10 @@ The API writes staff audit events for:
 - reopening;
 - archival.
 
-## Deliberate v1 boundary
+## Compiler and activation
 
-v1 lets the Super User **load, catalogue, version, validate and approve** future content.
+The Content Compiler + Runtime Activation milestone extends Content Studio with deterministic runtime artifacts, explicit activation and rollback.
 
-It does not yet dynamically activate arbitrary content into the production learner runtime. That is the next engineering boundary because activation must also update:
+Learning versions compile three runtime artifacts — one for each delivery edition. Universal Lab packages compile one runtime artifact. Only `COMPILED + VALID + APPROVED + READY` versions can activate.
 
-- route/runtime registration;
-- learning release records;
-- Lab/evidence namespaces;
-- assignment compatibility;
-- cohort compatibility;
-- rollback/version pinning.
-
-That activation layer should consume approved Content Studio packages rather than introduce another manual code path.
+See `docs/CONTENT_COMPILER_RUNTIME.md` for the full contract and rollback rules.

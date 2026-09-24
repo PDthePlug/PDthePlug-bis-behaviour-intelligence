@@ -50,7 +50,7 @@ export function ProgrammeEntry({
   initialSection = "today",
   initialLearnMode = "library",
 }: {
-  moduleCode?: "HAB" | "DEC" | "MON" | "IDN" | "ATT";
+  moduleCode?: string;
   initialIdentity: { email: string; displayName: string };
   initialSection?: InitialSection;
   initialLearnMode?: "library" | "reader";

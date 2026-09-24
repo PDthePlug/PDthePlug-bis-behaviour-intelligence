@@ -117,22 +117,32 @@ function splitDayThree(page: ProgrammePage) {
       };
 }
 
-async function loadProgramme(edition: Edition, code: HabitProgramme["labCode"]): Promise<HabitProgramme> {
-  const slug = ({ HAB: "habit", DEC: "decision", MON: "money", IDN: "identity", ATT: "attention" })[code];
+async function loadProgramme(edition: Edition, code: string): Promise<HabitProgramme> {
+  const dynamic = await fetch(
+    `/api/runtime-content?kind=LEARNING_MODULE&code=${encodeURIComponent(code)}&edition=${edition}`,
+    { cache: "no-store" },
+  );
+  if (dynamic.ok) {
+    const result = await dynamic.json() as { payload: HabitProgramme };
+    return result.payload;
+  }
+
+  const slug = ({ HAB: "habit", DEC: "decision", MON: "money", IDN: "identity", ATT: "attention" } as Record<string, string>)[code];
+  if (!slug) {
+    const detail = await dynamic.json().catch(() => null) as { error?: string } | null;
+    throw new Error(detail?.error || "The active learning module could not be loaded.");
+  }
+
   const response = await fetch(`/handbooks/v1/${slug}-${edition}.json.gz.b64`, {
     cache: "force-cache",
   });
-  if (!response.ok) {
-    throw new Error("The complete handbook material could not be loaded.");
-  }
+  if (!response.ok) throw new Error("The complete handbook material could not be loaded.");
   if (!("DecompressionStream" in globalThis)) {
     throw new Error("This browser cannot open the compressed programme material.");
   }
   const binary = atob((await response.text()).trim());
   const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
-  const stream = new Blob([bytes.buffer])
-    .stream()
-    .pipeThrough(new DecompressionStream("gzip"));
+  const stream = new Blob([bytes.buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
   return JSON.parse(await new Response(stream).text()) as HabitProgramme;
 }
 
@@ -141,7 +151,7 @@ export function ProgrammePlayer({
   initialSection = "today",
   initialLearnMode = "library",
 }: {
-  moduleCode?: HabitProgramme["labCode"];
+  moduleCode?: string;
   initialSection?: AppSection;
   initialLearnMode?: LearnMode;
 }) {
