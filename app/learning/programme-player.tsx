@@ -630,7 +630,7 @@ export function ProgrammePlayer({
         ) : (
           <section className="prototype-page prototype-reader">
             <Link className="prototype-back-link" href={previewMode ? "/content-studio" : "/learn"}>
-              <ArrowLeft /> {previewMode ? "Return to Content Studio" : "Exit reader"}
+              <ArrowLeft /> Exit reader
             </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
