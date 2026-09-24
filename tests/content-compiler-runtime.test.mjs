@@ -13,10 +13,11 @@ test("every learning version is a three-edition release", async () => {
   ]);
   assert.match(compiler, /LEARNING_EDITION_KEYS = \[\.\.\.DELIVERY_EDITIONS\]/);
   for (const edition of ["school", "emerging_adult", "workplace"]) {
-    assert.ok(api.includes(edition));
+    assert.ok(compiler.includes(edition) || docs.includes(edition));
     assert.ok(ui.includes(edition));
     assert.ok(docs.includes(edition));
   }
+  assert.match(api, /LEARNING_EDITION_KEYS/);
   assert.match(api, /Every learning module has three editions/);
   assert.match(api, /Activation blocked: missing compiled editions/);
   assert.match(ui, /Three editions travel together/);
