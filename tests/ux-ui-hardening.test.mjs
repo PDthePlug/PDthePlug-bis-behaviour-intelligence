@@ -51,3 +51,16 @@ test("only the Leap9 synthetic demonstration fixture is generated", async () => 
   assert.match(seed, /Thando Mokoena/);
   assert.match(seed, /Lwazi Nxumalo/);
 });
+
+
+test("staff views and facilitator tasks participate in browser history", async () => {
+  const [shell, facilitator] = await Promise.all([
+    source("app/workspace/staff-workspace-shell.tsx"),
+    source("app/facilitator-workspace.tsx"),
+  ]);
+  assert.match(shell, /params\.set\("view", next\)/);
+  assert.match(shell, /router\.push\(/);
+  assert.match(facilitator, /params\.set\("section", patch\.section\)/);
+  assert.match(facilitator, /params\.set\("learner", patch\.learner\)/);
+  assert.match(facilitator, /navigateWorkspace\(\{ section: "participants", learner: learner\.userId \}\)/);
+});
