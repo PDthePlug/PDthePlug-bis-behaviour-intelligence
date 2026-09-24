@@ -78,3 +78,12 @@ test("future Lab presentation is registered through a manifest rather than route
   assert.match(habitEngine, /labExperienceManifest\.HAB\.accent/);
   assert.match(coreEngine, /definition\.accent/);
 });
+
+
+test("Core Lab navigation uses URL history while respecting unlocked progress", () => {
+  assert.match(coreEngine, /useSearchParams/);
+  assert.match(coreEngine, /params\.set\("step", String\(target\)\)/);
+  assert.match(coreEngine, /router\.push\(/);
+  assert.match(coreEngine, /const maxAllowed = allowAdvance \? Math\.min\(9, maxStep \+ 1\) : maxStep/);
+  assert.match(coreEngine, /next=\{\(\) => goToStep\(2, true\)\}/);
+});
