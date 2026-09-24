@@ -1,4 +1,3 @@
-import "server-only";
 import { inflateRawSync, inflateSync } from "node:zlib";
 import type { ContentSourceFormat } from "./content-studio";
 import type { DeliveryEdition } from "./learning-foundation";
