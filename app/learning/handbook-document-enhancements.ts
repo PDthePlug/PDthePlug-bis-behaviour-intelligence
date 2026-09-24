@@ -30,7 +30,7 @@ function isAnswerHeading(element: HTMLElement) {
 }
 
 function isSectionBoundary(element: Element) {
-  if (/^(H1|H2|H3|HR)$/.test(element.tagName)) return true;
+  if (/^(H1|H2|H3|H4|HR)$/.test(element.tagName)) return true;
   if (element.classList.contains("prototype-lab-handoff")) return true;
   return /^✅?\s*checkpoint\b/i.test(normalise(element.textContent ?? ""));
 }
