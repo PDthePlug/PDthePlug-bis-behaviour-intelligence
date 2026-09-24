@@ -230,14 +230,14 @@ export function validateContentSource(
       id: "conversion",
       label: "BIS package conversion",
       status: "WARN",
-      detail: "This source format needs to be converted into a BIS package before it can be activated.",
+      detail: "This source is stored safely. The Content Compiler will run the approved source adapter before activation.",
     });
     const valid = bytes.byteLength > 0;
     return {
       validationStatus: valid ? "VALID" : "INVALID",
       runtimeStatus: valid ? "REQUIRES_ADAPTER" : "BLOCKED",
       report: {
-        summary: valid ? "Source stored. Package conversion is the next step." : "The source could not be validated.",
+        summary: valid ? "Source stored. Compile the draft to run its source adapter and runtime checks." : "The source could not be validated.",
         checks,
         activationReady: false,
       },
