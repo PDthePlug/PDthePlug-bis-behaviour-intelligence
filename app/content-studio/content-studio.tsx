@@ -148,14 +148,6 @@ function formatDate(value: string | null | undefined) {
   });
 }
 
-function sourceLabel(value: string) {
-  return value === "BIS_PACKAGE_JSON"
-    ? "BIS package"
-    : value === "SYSTEM"
-      ? "Existing system content"
-      : value;
-}
-
 function statusTone(value: string) {
   if (["LIVE", "PUBLISHED", "VALID", "READY", "APPROVED", "COMPILED"].includes(value)) return "good";
   if (["BLOCKED", "INVALID", "FAILED"].includes(value)) return "bad";
