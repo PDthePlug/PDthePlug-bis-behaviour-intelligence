@@ -17,7 +17,7 @@ test("learner shell uses the approved navigation language", () => {
 });
 
 test("programme workspace exposes the three role-specific surfaces", () => {
-  for (const label of ["Facilitator", "Programme Outcomes", "BIS Administrator"]) {
+  for (const label of ["Facilitator", "Programme results", "Administration"]) {
     assert.match(workspace, new RegExp(label));
   }
   assert.match(workspace, /roles\.includes\("SYSTEM_ADMIN"\)/);
@@ -36,7 +36,7 @@ test("staff workspace is task-first and omits orientation explainer panels", () 
 });
 
 test("facilitator and administrator information architecture uses human labels", () => {
-  for (const label of ["Cohort", "Participants", "Support", "Review"]) {
+  for (const label of ["Group", "Learners", "Support", "Review"]) {
     assert.ok(facilitator.includes(label), `${label} should be present in facilitator workspace`);
   }
   for (const label of ["Access", "Programmes", "Activity", "Advanced system checks"]) {
