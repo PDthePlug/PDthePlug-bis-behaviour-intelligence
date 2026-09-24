@@ -1,4 +1,4 @@
-type LabCode = "HAB" | "DEC" | "MON" | "IDN" | "ATT";
+type LabCode = string;
 
 const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
 
