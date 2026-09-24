@@ -158,3 +158,8 @@ Raw source files remain restricted to `SYSTEM_ADMIN`.
 Compiled artifacts are stored under the private bucket's `runtime/` prefix. Authenticated learners may read only compiled runtime artifacts; they cannot read `sources/`.
 
 All compile, approval, activation and rollback operations remain `SYSTEM_ADMIN` actions and are audited.
+
+
+## Production rollout note
+
+This architecture is designed so existing built-in BIS content remains on its current STATIC runtime until a Super User deliberately activates a compiled replacement. Applying the compiler migration or deploying this code does not automatically switch any learner to a new content version.
