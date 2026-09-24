@@ -171,7 +171,7 @@ export function FacilitatorWorkspace({
   const selected = participants.find((learner) => learner.userId === learnerId);
 
   if (!cohort) {
-    return <div className="ops-empty surface-card"><Users /><h2>No cohort assigned.</h2><p>A BIS Administrator can assign you to a programme.</p></div>;
+    return <div className="ops-empty surface-card"><Users /><h2>No group assigned.</h2><p>A BIS administrator can assign you to a programme group.</p></div>;
   }
 
   const completed = participants.filter((item) => item.enrolment?.status === "COMPLETED").length;
@@ -206,7 +206,7 @@ export function FacilitatorWorkspace({
       <div className="facilitator-view-head">
         <div>
           <p className="eyebrow">Facilitator</p>
-          <h1>{section === "cohort" ? "Cohort" : section === "participants" ? "Participants" : section === "support" ? "Support" : "Review"}</h1>
+          <h1>{section === "cohort" ? "Group" : section === "participants" ? "Learners" : section === "support" ? "Support" : "Review"}</h1>
         </div>
         {data.cohorts.length > 1 ? (
           <label className="facilitator-cohort-picker">
@@ -220,8 +220,8 @@ export function FacilitatorWorkspace({
       </div>
 
       <nav className="facilitator-subnav" aria-label="Facilitator workspace">
-        <button type="button" className={section === "cohort" ? "active" : ""} onClick={() => { setSection("cohort"); setLearnerId(""); }}>Cohort</button>
-        <button type="button" className={section === "participants" ? "active" : ""} onClick={() => setSection("participants")}>Participants</button>
+        <button type="button" className={section === "cohort" ? "active" : ""} onClick={() => { setSection("cohort"); setLearnerId(""); }}>Group</button>
+        <button type="button" className={section === "participants" ? "active" : ""} onClick={() => setSection("participants")}>Learners</button>
         <button type="button" className={section === "support" ? "active" : ""} onClick={() => setSection("support")}>Support</button>
         <button type="button" className={section === "review" ? "active" : ""} onClick={() => { setSection("review"); setLearnerId(""); }}>Review</button>
       </nav>
@@ -229,11 +229,11 @@ export function FacilitatorWorkspace({
       {section === "cohort" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
-            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>Habit Lab {cohort.labVersion} · {participants.length} participants</p></div>
+            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>Habit Lab {cohort.labVersion} · {participants.length} learners</p></div>
             <Badge variant="outline">{label(cohort.status)}</Badge>
           </section>
           <section className="ops-metrics">
-            <article><Users /><span>Participants</span><strong>{participants.length}</strong></article>
+            <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
             <article><Activity /><span>Experiments started</span><strong>{experiments}</strong></article>
             <article><ClipboardCheck /><span>Review stage</span><strong>{reviewReady}</strong></article>
             <article><ShieldAlert /><span>Needs attention</span><strong>{attention.length}</strong></article>
@@ -259,7 +259,7 @@ export function FacilitatorWorkspace({
             </div>
           </section>
           <section className="surface-card ops-section">
-            <div className="section-title"><div><p className="eyebrow">Recent activity</p><h2>Latest participant movement</h2></div><Activity /></div>
+            <div className="section-title"><div><p className="eyebrow">Recent activity</p><h2>Latest learner movement</h2></div><Activity /></div>
             <div className="ops-record-list">
               {[...participants].sort((a,b) => new Date(b.lastActivityAt ?? 0).getTime() - new Date(a.lastActivityAt ?? 0).getTime()).slice(0,8).map((learner) => (
                 <div key={learner.userId}><span><strong>{learner.displayName}</strong><small>{position(learner)}</small></span><span>{formatDate(learner.lastActivityAt)}</span></div>
@@ -272,10 +272,10 @@ export function FacilitatorWorkspace({
       {section === "participants" ? (
         selected ? (
           <div className="participant-detail">
-            <button type="button" className="participant-back" onClick={() => setLearnerId("")}>← All participants</button>
+            <button type="button" className="participant-back" onClick={() => setLearnerId("")}>← All learners</button>
             <section className="surface-card ops-section participant-detail-hero">
               <div className="section-title">
-                <div><p className="eyebrow">Participant</p><h2>{selected.displayName}</h2><p>{selected.email}</p></div>
+                <div><p className="eyebrow">Learner</p><h2>{selected.displayName}</h2><p>{selected.email}</p></div>
                 <Badge variant="outline">{position(selected)}</Badge>
               </div>
               <section className="ops-metrics participant-detail-metrics">
@@ -326,18 +326,18 @@ export function FacilitatorWorkspace({
               <div className="ops-record-list">
                 {participantNotes.map((item) => <div key={item.id}><span><strong>{label(item.category)}</strong><small>{formatDate(item.createdAt)}</small></span><p>{item.content}</p></div>)}
                 {participantReferrals.map((item) => <div key={item.id}><span><strong>Safeguarding referral</strong><small>{label(item.category)} · {formatDate(item.openedAt)}</small></span><Badge variant="outline">{label(item.status)}</Badge></div>)}
-                {participantNotes.length === 0 && participantReferrals.length === 0 ? <p className="ops-helper">No facilitator notes or referrals for this participant.</p> : null}
+                {participantNotes.length === 0 && participantReferrals.length === 0 ? <p className="ops-helper">No facilitator notes or referrals for this learner.</p> : null}
               </div>
             </section>
           </div>
         ) : (
           <div>
-            <div className="ops-section-heading"><div><p className="eyebrow">{cohort.name}</p><h2>{participants.length} participants</h2></div><Badge variant="outline">Private responses hidden</Badge></div>
+            <div className="ops-section-heading"><div><p className="eyebrow">{cohort.name}</p><h2>{participants.length} learners</h2></div><Badge variant="outline">Private responses hidden</Badge></div>
             <div className="ops-learner-grid participant-grid">
               {participants.map((learner) => (
                 <button type="button" className="participant-card-button" key={learner.userId} onClick={() => setLearnerId(learner.userId)}>
                   <ParticipantCard learner={learner} />
-                  <span className="participant-open">Open participant →</span>
+                  <span className="participant-open">Open learner →</span>
                 </button>
               ))}
             </div>
@@ -348,7 +348,7 @@ export function FacilitatorWorkspace({
       {section === "support" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
-            <div><p className="eyebrow">Support</p><h2>{attention.length ? String(attention.length) + " participant" + (attention.length === 1 ? "" : "s") + " may need a check-in" : "No structural support flags"}</h2><p>These are prompts for human follow-up, not automated judgments.</p></div>
+            <div><p className="eyebrow">Support</p><h2>{attention.length ? String(attention.length) + " learner" + (attention.length === 1 ? "" : "s") + " may need a check-in" : "No structural support flags"}</h2><p>These are prompts for human follow-up, not automated judgments.</p></div>
             <Badge variant="outline">{cohort.name}</Badge>
           </section>
           <div className="support-attention-grid">
@@ -357,13 +357,13 @@ export function FacilitatorWorkspace({
                 <strong>{learner.displayName}</strong><span>{position(learner)}</span><small>Last activity {formatDate(learner.lastActivityAt)}</small>
               </button>
             ))}
-            {attention.length === 0 ? <div className="ops-empty surface-card"><Check /><h2>No participant currently meets the structural check-in rules.</h2></div> : null}
+            {attention.length === 0 ? <div className="ops-empty surface-card"><Check /><h2>No learner currently meets the check-in rules.</h2></div> : null}
           </div>
           <section className="ops-two-column">
             <div className="surface-card ops-section">
               <div className="section-title"><div><p className="eyebrow">Add support</p><h2>Staff note</h2></div><ClipboardCheck /></div>
               <div className="ops-form-stack">
-                <label>Participant<Select value={learnerId} onValueChange={setLearnerId}><SelectTrigger><SelectValue placeholder="Choose participant" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
+                <label>Learner<Select value={learnerId} onValueChange={setLearnerId}><SelectTrigger><SelectValue placeholder="Choose learner" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
                 <label>Category<Select value={noteCategory} onValueChange={setNoteCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="CHECK_IN">Check-in</SelectItem><SelectItem value="ATTENDANCE">Attendance</SelectItem><SelectItem value="EXPERIMENT_SUPPORT">Experiment support</SelectItem><SelectItem value="GENERAL">General</SelectItem></SelectContent></Select></label>
                 <label>Support note<Textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Factual support action or follow-up…" /></label>
                 <Button disabled={saving || !learnerId || !note.trim()} onClick={async () => { if (await act({ action: "addFacilitatorNote", cohortId: cohort.id, learnerUserId: learnerId, category: noteCategory, content: note })) setNote(""); }}>Save staff note</Button>
@@ -372,7 +372,7 @@ export function FacilitatorWorkspace({
             <div className="surface-card ops-section safeguard-referral">
               <div className="section-title"><div><p className="eyebrow">Safeguarding</p><h2>Refer a concern</h2></div><ShieldAlert /></div>
               <div className="ops-form-stack">
-                <label>Participant<Select value={learnerId} onValueChange={setLearnerId}><SelectTrigger><SelectValue placeholder="Choose participant" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
+                <label>Learner<Select value={learnerId} onValueChange={setLearnerId}><SelectTrigger><SelectValue placeholder="Choose learner" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
                 <label>Category<Select value={referralCategory} onValueChange={setReferralCategory}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="WELLBEING_CONCERN">Wellbeing concern</SelectItem><SelectItem value="DISCLOSURE">Disclosure</SelectItem><SelectItem value="IMMEDIATE_SAFETY">Immediate safety</SelectItem><SelectItem value="OTHER">Other</SelectItem></SelectContent></Select></label>
                 <label>Factual summary<Textarea value={referral} onChange={(event) => setReferral(event.target.value)} placeholder="Minimum necessary factual context…" /></label>
                 <Button disabled={saving || !learnerId || !referral.trim()} onClick={async () => { if (await act({ action: "openSafeguardingCase", cohortId: cohort.id, learnerUserId: learnerId, category: referralCategory, summary: referral })) setReferral(""); }}>Send to safeguarding</Button>
@@ -382,8 +382,8 @@ export function FacilitatorWorkspace({
           <section className="surface-card ops-section">
             <div className="section-title"><div><p className="eyebrow">Recent support</p><h2>What the facilitator team has recorded</h2></div><ClipboardCheck /></div>
             <div className="ops-record-list">
-              {data.notes.filter((item) => item.cohortId === cohort.id).map((item) => <div key={item.id}><span><strong>{participants.find((learner) => learner.userId === item.learnerUserId)?.displayName ?? "Participant"}</strong><small>{label(item.category)} · {formatDate(item.createdAt)}</small></span><p>{item.content}</p></div>)}
-              {data.referrals.filter((item) => item.cohortId === cohort.id).map((item) => <div key={item.id}><span><strong>{participants.find((learner) => learner.userId === item.learnerUserId)?.displayName ?? "Participant"}</strong><small>{label(item.category)} · {formatDate(item.openedAt)}</small></span><Badge variant="outline">{label(item.status)}</Badge></div>)}
+              {data.notes.filter((item) => item.cohortId === cohort.id).map((item) => <div key={item.id}><span><strong>{participants.find((learner) => learner.userId === item.learnerUserId)?.displayName ?? "Learner"}</strong><small>{label(item.category)} · {formatDate(item.createdAt)}</small></span><p>{item.content}</p></div>)}
+              {data.referrals.filter((item) => item.cohortId === cohort.id).map((item) => <div key={item.id}><span><strong>{participants.find((learner) => learner.userId === item.learnerUserId)?.displayName ?? "Learner"}</strong><small>{label(item.category)} · {formatDate(item.openedAt)}</small></span><Badge variant="outline">{label(item.status)}</Badge></div>)}
             </div>
           </section>
           <div className="ops-boundary compact"><ShieldAlert /><div><strong>Case management stays restricted</strong><p>Facilitators can refer a concern. Safeguarding officers manage the case.</p></div></div>
@@ -399,7 +399,7 @@ export function FacilitatorWorkspace({
             <article><ShieldAlert /><span>More opportunity needed</span><strong>{participants.filter((item) => item.experiment && (item.experiment.opportunityCount ?? 0) < (item.experiment.minimumEvidenceThreshold ?? 3)).length}</strong></article>
           </section>
           <section className="surface-card ops-section">
-            <div className="section-title"><div><p className="eyebrow">Readiness</p><h2>Who is ready for the next conversation?</h2><p>Use evidence windows and real opportunities to plan the conversation. Do not rank participants.</p></div><ClipboardCheck /></div>
+            <div className="section-title"><div><p className="eyebrow">Readiness</p><h2>Who is ready for the next conversation?</h2><p>Use evidence windows and real opportunities to plan the conversation. Do not rank learners.</p></div><ClipboardCheck /></div>
             <div className="review-participant-list">
               {participants.map((learner) => {
                 const count = learner.experiment?.opportunityCount ?? 0;
