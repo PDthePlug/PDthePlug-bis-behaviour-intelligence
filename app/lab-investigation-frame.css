@@ -213,3 +213,58 @@
 @media(prefers-reduced-motion:reduce){
   .universal-lab-frame *{scroll-behavior:auto!important;transition-duration:.01ms!important}
 }
+
+
+/* Canonical shell owns all learner-level chrome. Individual Lab engines only render task content. */
+.canonical-shell .corelab-welcome>header{display:none}
+.canonical-shell .corelab-loading>.brand,
+.canonical-shell .corelab-empty>.brand{display:none}
+.canonical-shell .corelab-welcome .fidelity-hero [data-slot="badge"],
+.canonical-shell .corelab-welcome .fidelity-hero dl{display:none}
+.canonical-shell .corelab-welcome,
+.canonical-shell .corelab-shell,
+.canonical-shell .corelab-loading,
+.canonical-shell .corelab-empty{min-height:auto}
+.canonical-shell .corelab-welcome{padding-top:24px}
+.canonical-shell .corelab-empty{padding-top:32px}
+
+.universal-habit-route .app-main{padding-top:0!important}
+.universal-habit-route .runner-shell{
+  width:100%!important;
+  max-width:none!important;
+  min-height:auto!important;
+  padding:0!important;
+}
+.universal-habit-route .runner-content{padding:0!important}
+.universal-habit-route .runner-topbar,
+.universal-habit-route .investigation-rail{display:none!important}
+.universal-habit-route .habit-lab-route-header{display:none!important}
+
+/* Shared content grammar beneath the universal mission header. */
+.universal-lab-stage .investigation-stack{width:100%;max-width:none}
+.universal-lab-stage .story-card,
+.universal-lab-stage .prompt-card,
+.universal-lab-stage .prompt-section,
+.universal-lab-stage .mapping-banner,
+.universal-lab-stage .equation-card,
+.universal-lab-stage .contract-intro,
+.universal-lab-stage .corelab-profile{
+  border-radius:22px;
+}
+.universal-lab-stage .story-card{background:#fffaf0}
+.universal-lab-stage .story-heading h2{font-size:clamp(31px,4.5vw,48px);line-height:1.12}
+.universal-lab-stage .story-card>p{font-size:17px;line-height:1.72}
+.universal-lab-stage .prompt-section{overflow:hidden}
+.universal-lab-stage .step-footer{margin-top:8px}
+
+@media(max-width:820px){
+  .canonical-shell .corelab-welcome{padding:18px 16px 80px}
+  .universal-habit-route .app-main{min-height:auto!important}
+  .universal-lab-stage .story-card,
+  .universal-lab-stage .prompt-card,
+  .universal-lab-stage .prompt-section,
+  .universal-lab-stage .mapping-banner,
+  .universal-lab-stage .equation-card,
+  .universal-lab-stage .contract-intro,
+  .universal-lab-stage .corelab-profile{border-radius:22px}
+}
