@@ -1,0 +1,22 @@
+{
+  "kind": "LEARNING_MODULE",
+  "schemaVersion": "2.0",
+  "identity": {
+    "code": "FOC",
+    "version": "1.0",
+    "title": "Focus Learning Module",
+    "shortTitle": "Focus",
+    "description": "A guided learning journey that prepares learners for Focus Lab."
+  },
+  "linkedLabCode": "FOC",
+  "treatment": {
+    "pages": [
+      {
+        "id": "FOC.DAY01.INTRO",
+        "day": 1,
+        "title": "Start here",
+        "html": "<h2>Start here</h2><p>Introduce the investigation.</p><p>What do you notice?</p>"
+      }
+    ]
+  }
+}
