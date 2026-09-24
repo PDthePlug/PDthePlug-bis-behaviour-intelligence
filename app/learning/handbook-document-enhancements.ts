@@ -102,7 +102,7 @@ function createResponse(
 }
 
 function addMissingQuestionResponses(root: HTMLElement, labCode: LabCode, pageId: string) {
-  const candidates = [...root.querySelectorAll<HTMLElement>("p,li,.authored-lines,.handbook-callout")];
+  const candidates = [...root.querySelectorAll<HTMLElement>("p,li,h2,h3,h4,.authored-lines,.handbook-callout")];
   const occurrences = new Map<string, number>();
 
   for (const element of candidates) {
