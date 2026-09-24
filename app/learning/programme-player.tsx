@@ -150,10 +150,14 @@ export function ProgrammePlayer({
   moduleCode = "HAB",
   initialSection = "today",
   initialLearnMode = "library",
+  previewVersionId,
+  previewEdition,
 }: {
   moduleCode?: string;
   initialSection?: AppSection;
   initialLearnMode?: LearnMode;
+  previewVersionId?: string;
+  previewEdition?: Edition;
 }) {
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
@@ -173,6 +177,7 @@ export function ProgrammePlayer({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const previewMode = Boolean(previewVersionId && previewEdition);
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1100px)");
@@ -186,19 +191,65 @@ export function ProgrammePlayer({
     const controller = new AbortController();
     void (async () => {
       try {
-        const [learningResponse, runtimeResponse] = await Promise.all([
-          fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
-          fetch("/api/bis", { cache: "no-store", signal: controller.signal }),
-        ]);
-        const learning = (await learningResponse.json()) as LearningSnapshot & { error?: string };
-        const live = (await runtimeResponse.json()) as Runtime & { error?: string };
-        if (!learningResponse.ok) {
-          throw new Error(learning.error || "Your learning record could not be loaded.");
+        let learning: LearningSnapshot;
+        let live: Runtime;
+        let loaded: HabitProgramme;
+
+        if (previewVersionId && previewEdition) {
+          const previewResponse = await fetch(
+            `/api/content-studio/preview?versionId=${encodeURIComponent(previewVersionId)}&artifact=${encodeURIComponent(`learning:${previewEdition}`)}`,
+            { cache: "no-store", signal: controller.signal },
+          );
+          const preview = await previewResponse.json() as {
+            payload?: HabitProgramme;
+            version?: { version?: string };
+            error?: string;
+          };
+          if (!previewResponse.ok || !preview.payload) {
+            throw new Error(preview.error || "The compiled programme preview could not be loaded.");
+          }
+          loaded = preview.payload;
+          learning = {
+            profile: {
+              displayName: "UAT reviewer",
+              deliveryEdition: previewEdition,
+              deliveryContext: "activation-uat",
+              language: "en",
+              timezone: "Africa/Johannesburg",
+            },
+            releases: [{
+              id: `preview:${previewVersionId}:${previewEdition}`,
+              labCode: moduleCode,
+              contentVersion: preview.version?.version ?? loaded.contentVersion,
+              status: "PREVIEW",
+            }],
+            progress: [],
+            workbookResponses: {},
+          };
+          live = {
+            roles: ["SYSTEM_ADMIN"],
+            enrolment: null,
+            hypothesis: null,
+            experiment: null,
+            events: [],
+            measurements: {},
+          };
+        } else {
+          const [learningResponse, runtimeResponse] = await Promise.all([
+            fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
+            fetch("/api/bis", { cache: "no-store", signal: controller.signal }),
+          ]);
+          learning = (await learningResponse.json()) as LearningSnapshot & { error?: string };
+          live = (await runtimeResponse.json()) as Runtime & { error?: string };
+          if (!learningResponse.ok) {
+            throw new Error((learning as LearningSnapshot & { error?: string }).error || "Your learning record could not be loaded.");
+          }
+          if (!runtimeResponse.ok) {
+            throw new Error((live as Runtime & { error?: string }).error || "Your Habit Lab record could not be loaded.");
+          }
+          loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode);
         }
-        if (!runtimeResponse.ok) {
-          throw new Error(live.error || "Your Habit Lab record could not be loaded.");
-        }
-        const loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode);
+
         if (controller.signal.aborted) return;
         setSnapshot(learning);
         setRuntime(live);
@@ -230,7 +281,7 @@ export function ProgrammePlayer({
       }
     })();
     return () => controller.abort();
-  }, [moduleCode]);
+  }, [moduleCode, previewEdition, previewVersionId]);
 
   useEffect(() => {
     if (!programme) return;
@@ -299,6 +350,7 @@ export function ProgrammePlayer({
   }, []);
 
   const saveDirtyResponses = useCallback(async (): Promise<boolean> => {
+    if (previewMode) return true;
     if (!release) return queue.current.size === 0;
     if (queue.current.size === 0) return true;
     setSaving(true);
@@ -322,7 +374,7 @@ export function ProgrammePlayer({
     setSaveState(success ? "saved" : "error");
     if (success) setError("");
     return success;
-  }, [mergeSnapshot, programme, release]);
+  }, [mergeSnapshot, previewMode, programme, release]);
 
   // Capture document-wide links, including the shared shell outside this player.
   useEffect(() => {
@@ -392,6 +444,10 @@ export function ProgrammePlayer({
       return;
     }
     if (!page || !target.dataset.sourceKey) return;
+    if (previewMode) {
+      setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: target.value }));
+      return;
+    }
     queue.current.edit({ semanticFieldId: target.dataset.fieldId, semanticStepId: page.id, sourceFieldKey: target.dataset.sourceKey, value: target.value });
     setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: target.value }));
     setSaveState("dirty");
@@ -413,7 +469,14 @@ export function ProgrammePlayer({
   }
 
   async function completePage() {
-    if (!page || !release || saving || completing) return;
+    if (!page || saving || completing) return;
+    if (previewMode) {
+      if (programme && selected < programme.treatment.pages.length - 1) {
+        goToProgrammePage(selected + 1);
+      }
+      return;
+    }
+    if (!release) return;
     if (moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete) {
       setError("Complete Habit Lab Phase A before marking Programme Day 3 complete.");
       return;
@@ -485,7 +548,9 @@ export function ProgrammePlayer({
           <strong>Behaviour Intelligence Series™</strong>
         </button>
         <div className="prototype-top-context">
-          {runtime.experiment?.status === "ACTIVE" && experimentDay ? (
+          {previewMode ? (
+            <strong>Activation UAT preview · no learner data is saved</strong>
+          ) : runtime.experiment?.status === "ACTIVE" && experimentDay ? (
             <strong>Experiment Day {experimentDay} of 7</strong>
           ) : null}
         </div>
@@ -564,8 +629,8 @@ export function ProgrammePlayer({
           </section>
         ) : (
           <section className="prototype-page prototype-reader">
-            <Link className="prototype-back-link" href="/learn">
-              <ArrowLeft /> Exit reader
+            <Link className="prototype-back-link" href={previewMode ? "/content-studio" : "/learn"}>
+              <ArrowLeft /> {previewMode ? "Return to Content Studio" : "Exit reader"}
             </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
@@ -612,12 +677,14 @@ export function ProgrammePlayer({
             </details>
 
             <div className="prototype-save-state" aria-live="polite">
-              {saveState === "saving"
-                ? "Saving workbook responses…"
-                : saveState === "dirty"
-                  ? "Changes waiting to save…"
-                  : saveState === "error" ? "Not saved — retry before leaving" : "Workbook responses saved"}
-              {saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
+              {previewMode
+                ? "Activation UAT preview · test responses stay in this browser only"
+                : saveState === "saving"
+                  ? "Saving workbook responses…"
+                  : saveState === "dirty"
+                    ? "Changes waiting to save…"
+                    : saveState === "error" ? "Not saved — retry before leaving" : "Workbook responses saved"}
+              {!previewMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
 
             <fieldset className="workbook-fields" disabled={completing}>
@@ -691,13 +758,15 @@ export function ProgrammePlayer({
                 type="button"
                 className="primary"
                 onClick={() => void completePage()}
-                disabled={saving || completing || (moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete)}
+                disabled={saving || completing || (!previewMode && moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete)}
               >
-                {moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete
-                  ? "Complete Phase A first"
-                  : completed.has(page.id)
-                    ? "Reviewed"
-                    : "Complete & continue"}
+                {previewMode
+                  ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
+                  : moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete
+                    ? "Complete Phase A first"
+                    : completed.has(page.id)
+                      ? "Reviewed"
+                      : "Complete & continue"}
                 <ChevronRight />
               </button>
             </footer>
