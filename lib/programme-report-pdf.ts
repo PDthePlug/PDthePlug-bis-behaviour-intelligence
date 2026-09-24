@@ -7,7 +7,7 @@ type Outcome = {
     startsOn: string | null;
     endsOn: string | null;
   };
-  learnerCount: number;
+  participantCount: number;
   suppressed: boolean;
   minimumReportableCohortSize: number;
   metrics: null | {
@@ -25,19 +25,19 @@ type Outcome = {
       averagePredictionGap: number | null;
     };
     experiment: {
-      learnersStarted: number;
+      participantsStarted: number;
       observationsRecorded: number;
       eligibleOpportunities: number;
     };
     evidence: { sufficient: number; limited: number; none: number; notEnoughYet: number };
     change: {
-      repeatOpportunityLearners: number;
+      repeatOpportunityParticipants: number;
       improvedLaterResponse: number;
       changedOtherDirection: number;
       sameLaterResponse: number;
     };
     support: {
-      learnersRequestingHelp: number;
+      participantsRequestingHelp: number;
       supportRequests: number;
       supportRequestRate: number | null;
     };
@@ -61,14 +61,14 @@ type Outcome = {
       }>;
       skillShifts: Array<{
         label: string;
-        pairedLearners: number;
+        pairedParticipants: number;
         averagePre: number;
         averagePost: number;
         averageShift: number;
       }>;
       activity: {
-        learnersWithHandbookActivity: number;
-        learnersWithStructuredResponses: number;
+        participantsWithHandbookActivity: number;
+        participantsWithStructuredResponses: number;
         structuredResponsesRecorded: number;
       };
     };
@@ -76,8 +76,8 @@ type Outcome = {
   deepAnalysis?: null | {
     suppressed: boolean;
     experimentLandscape: null | {
-      learnersStarted: number;
-      themes: Array<{ label: string; learners: number; shareOfStarted: number }>;
+      participantsStarted: number;
+      themes: Array<{ label: string; participants: number; shareOfStarted: number }>;
     };
   };
 };
@@ -457,7 +457,7 @@ function executiveFindings(outcome: Outcome) {
     kicker: "Action",
     title:
       attempt >= 70
-        ? "Most learners moved into real-world testing"
+        ? "Most participants moved into real-world testing"
         : attempt >= 40
           ? "Real-world testing reached a meaningful share of the group"
           : "Real-world testing remains limited",
@@ -526,10 +526,10 @@ function recommendationItems(outcome: Outcome) {
   if (metrics.action.readyButNotStarted >= 2) {
     items.push({
       title: "Strengthen the transition from learning to action",
-      body: "Review timing, instructions, workload and facilitator prompts at the point where learners are ready to experiment but have not started.",
+      body: "Review timing, instructions, workload and facilitator prompts at the point where participants are ready to experiment but have not started.",
       source:
         String(metrics.action.readyButNotStarted) +
-        " learners reached the experiment stage without starting",
+        " participants reached the experiment stage without starting",
     });
   }
 
@@ -537,7 +537,7 @@ function recommendationItems(outcome: Outcome) {
   if (starters > 0 && metrics.evidence.notEnoughYet / starters >= 0.3) {
     items.push({
       title: "Increase access to repeat situations",
-      body: "Check whether the programme window gives learners enough realistic opportunities to test the behaviour more than once.",
+      body: "Check whether the programme window gives participants enough realistic opportunities to test the behaviour more than once.",
       source:
         String(metrics.evidence.notEnoughYet) +
         " of " +
@@ -549,20 +549,20 @@ function recommendationItems(outcome: Outcome) {
   if ((metrics.support.supportRequestRate ?? 0) >= 20) {
     items.push({
       title: "Position facilitator support at the points of greatest demand",
-      body: "Review when help is requested and move check-ins closer to the moments where learners are most likely to stall.",
+      body: "Review when help is requested and move check-ins closer to the moments where participants are most likely to stall.",
       source:
         String(metrics.support.participantsRequestingHelp) +
-        " learners requested human help",
+        " participants requested human help",
     });
   }
 
-  if (metrics.change.repeatOpportunityLearners > 0) {
+  if (metrics.change.repeatOpportunityParticipants > 0) {
     items.push({
       title: "Use repeat situations as the main change signal",
       body: "Track what happens the next time a comparable situation appears. This is more useful than treating one successful attempt as behavioural change.",
       source:
-        String(metrics.change.repeatOpportunityLearners) +
-        " learners had repeat situations",
+        String(metrics.change.repeatOpportunityParticipants) +
+        " participants had repeat situations",
     });
   }
 
@@ -713,7 +713,7 @@ function drawCover(canvas: ReportCanvas, outcome: Outcome, generatedAt: Date) {
         String(retention.last.reached) +
         " reached Day " +
         String(retention.last.day) +
-        ". This report combines learning activity, structured programme measures and real-world experiment evidence.",
+        ". This report combines learning activity, programme measures and real-world experiment evidence.",
       retention.retained >= 60 ? "teal" : "warm"
     );
   } else {
@@ -769,7 +769,7 @@ function drawExecutiveSummary(canvas: ReportCanvas, outcome: Outcome) {
       },
       {
         label: "Repeat situations",
-        value: String(metrics.change.repeatOpportunityLearners),
+        value: String(metrics.change.repeatOpportunityParticipants),
         detail: String(metrics.change.improvedLaterResponse) + " moved toward alternative",
         tone: "warm",
       },
@@ -826,13 +826,13 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
       {
         label: "Learning activity",
         value: String(journey.activity.participantsWithHandbookActivity),
-        detail: "participants",
+        detail: "learners",
         tone: "plain",
       },
       {
         label: "Usable responses",
         value: String(journey.activity.participantsWithStructuredResponses),
-        detail: "participants",
+        detail: "learners",
         tone: "teal",
       },
       {
@@ -939,7 +939,7 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
       canvas.textAt(
         x + 14,
         y + 64,
-        String(shift.pairedLearners) + " paired learners",
+        String(shift.pairedParticipants) + " learners with both check-ins",
         7.5,
         false,
         C.muted
@@ -1012,7 +1012,7 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
       {
         label: "Reached experiment stage",
         value: String(metrics.action.reachedExperimentStage),
-        detail: "participants",
+        detail: "learners",
         tone: "plain",
       },
       {
@@ -1024,7 +1024,7 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
       {
         label: "Evidence ready",
         value: String(metrics.evidence.sufficient),
-        detail: "participants",
+        detail: "learners",
         tone: "warm",
       },
       {
@@ -1134,7 +1134,7 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
       },
     ],
     "What happened on repeat situations",
-    String(metrics.change.repeatOpportunityLearners) +
+    String(metrics.change.repeatOpportunityParticipants) +
       " learners had at least two comparable opportunities"
   );
 
@@ -1300,7 +1300,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
       "Report withheld",
       "Programme Results requires at least " +
         String(outcome.minimumReportableCohortSize) +
-        " learners before group-level behavioural findings are shown.",
+        " participants before group-level behavioural findings are shown.",
       "warm"
     );
     return canvas.finish();
