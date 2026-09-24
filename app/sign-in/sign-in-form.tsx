@@ -198,7 +198,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
         </div>
       </section>
       <section className="auth-card surface-card">
-        <p className="eyebrow">{mode === "signin" ? "Welcome back" : "Create your BIS identity"}</p>
+        <p className="eyebrow">{mode === "signin" ? "Welcome back" : "New to BIS"}</p>
         <h2>{mode === "signin" ? "Every habit tells a story." : "Create your BIS account."}</h2>
         <p>{mode === "signin" ? "Let's discover yours." : "After signup, your learner profile will resolve the correct authored handbook edition."}</p>
         <div className="auth-mode" role="tablist" aria-label="Account action">
@@ -239,7 +239,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
             </Button>
           ) : null}
         </form>
-        <small>Authentication verifies your identity. BIS privacy, consent and role controls govern what each person can access.</small>
+        <small>Your sign-in keeps your learning and programme access private.</small>
       </section>
     </main>
   );
