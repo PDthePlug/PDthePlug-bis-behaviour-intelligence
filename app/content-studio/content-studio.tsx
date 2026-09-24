@@ -599,7 +599,7 @@ export function ContentStudio() {
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "reopenVersion", versionId: entry.id }, "Version reopened as a draft.")}>Reopen draft</Button> : null}
                         {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> {active ? "Active learner runtime." : "Live version."}</span> : null}
                         {active && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open live route <ChevronRight /></Link></Button> : null}
-                        {active && selected.activeActivation?.runtimeMode === "DYNAMIC" ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "rollbackActivation", itemId: selected.id }, "Previous runtime version restored.")}><RefreshCw /> Roll back</Button> : null}
+                        {active && selected.activeActivation?.runtimeMode === "DYNAMIC" && selected.versions.some((candidate) => candidate.id !== entry.id && candidate.status === "PUBLISHED" && ["READY", "LIVE"].includes(candidate.runtimeStatus)) ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "rollbackActivation", itemId: selected.id }, "Previous runtime version restored.")}><RefreshCw /> Roll back</Button> : null}
                       </footer>
                     </article>
                   );
