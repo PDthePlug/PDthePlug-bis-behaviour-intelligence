@@ -158,19 +158,32 @@
     padding:0 27px;
   }
   .universal-investigation-nav{
-    gap:11px;
-    padding:16px 27px;
+    display:grid;
+    grid-template-columns:repeat(9,minmax(0,1fr));
+    gap:5px;
+    overflow:visible;
+    padding:14px 16px;
   }
   .universal-investigation-nav button{
-    flex-basis:265px;
-    min-height:88px;
-    grid-template-columns:42px minmax(0,1fr);
-    padding:12px 13px;
-    border-radius:17px;
+    display:grid;
+    min-width:0;
+    min-height:58px;
+    grid-template-columns:1fr;
+    justify-items:center;
+    padding:8px 2px;
+    border-radius:14px;
   }
-  .universal-investigation-nav button>span{width:42px;height:42px;font-size:14px}
-  .universal-investigation-nav small{font-size:10px}
-  .universal-investigation-nav strong{font-size:14px}
+  .universal-investigation-nav button>span{
+    width:30px;
+    height:30px;
+    font-size:11px;
+  }
+  .universal-investigation-nav button>div{display:none}
+  .universal-investigation-nav button.current{
+    border-color:#ffffffcc;
+    background:white;
+    box-shadow:0 8px 18px rgb(22 49 58 / 8%);
+  }
   .universal-lab-stage{
     width:calc(100% - 54px);
     padding:54px 0 88px;
@@ -180,7 +193,7 @@
     gap:18px;
     margin-bottom:40px;
   }
-  .universal-lab-mission h1{font-size:clamp(46px,12vw,64px)}
+  .universal-lab-mission h1{font-size:clamp(42px,11vw,58px)}
   .universal-lab-mission-copy>p:not(.eyebrow){font-size:18px}
   .universal-lab-meta{max-width:none;justify-content:flex-start}
   .universal-lab-meta small{display:none}
@@ -195,17 +208,24 @@
   .universal-lab-progress [data-slot="progress"]{height:7px}
   .universal-lab-progress strong{font-size:15px}
   .universal-investigation-nav{
-    padding:16px 27px;
+    gap:4px;
+    padding:14px 12px;
   }
   .universal-investigation-nav button{
-    flex-basis:265px;
+    min-height:54px;
+    padding:7px 1px;
+  }
+  .universal-investigation-nav button>span{
+    width:28px;
+    height:28px;
+    font-size:10px;
   }
   .universal-lab-stage{
     width:calc(100% - 54px);
-    padding-top:54px;
+    padding-top:50px;
   }
   .universal-lab-mission .eyebrow{font-size:11px}
-  .universal-lab-mission h1{font-size:48px}
+  .universal-lab-mission h1{font-size:44px}
   .universal-lab-mission-copy>p:not(.eyebrow){font-size:17px;line-height:1.55}
   .universal-lab-produces{padding-left:18px}
   .universal-lab-produces span{font-size:14px}
