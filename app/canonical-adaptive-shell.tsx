@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
-  CalendarDays,
   FlaskConical,
   House,
   Menu,
@@ -15,13 +14,12 @@ import {
 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-type ShellStage = "today" | "learn" | "lab" | "experiment" | "profile";
+type ShellStage = "today" | "learn" | "lab" | "profile";
 
 const stageLabels: Record<ShellStage, string> = {
   today: "Today",
   learn: "Learn",
   lab: "Lab",
-  experiment: "Experiment",
   profile: "Profile",
 };
 
@@ -29,7 +27,7 @@ function resolveStage(pathname: string, section: string | null): ShellStage {
   if (pathname.startsWith("/profile")) return "profile";
   if (pathname.startsWith("/learn") || pathname.startsWith("/handbooks/")) return "learn";
   if (pathname.startsWith("/labs")) return "lab";
-  if (pathname.startsWith("/habit-lab/experiment")) return "experiment";
+  if (pathname.startsWith("/habit-lab/experiment")) return "lab";
   if (pathname.startsWith("/habit-lab")) return "lab";
   if (pathname.startsWith("/decision") || pathname.startsWith("/money")) return "lab";
   if (section === "learn") return "learn";
@@ -66,13 +64,6 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         detail: "Browse investigations",
         href: "/labs",
         icon: FlaskConical,
-      },
-      {
-        id: "experiment" as const,
-        label: "Experiment",
-        detail: "Seven days of real-world observation",
-        href: "/habit-lab/experiment",
-        icon: CalendarDays,
       },
       {
         id: "profile" as const,
