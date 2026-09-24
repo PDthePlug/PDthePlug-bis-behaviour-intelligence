@@ -63,6 +63,7 @@ import {
 import { getExperimentTiming } from "@/lib/experiment-timing.mjs";
 import { OperationsView } from "./operations-view";
 import { LabInvestigationFrame } from "./lab-investigation-frame";
+import { labExperienceManifest } from "@/lib/lab-experience-manifest";
 
 type Snapshot = {
   identity: { id: string; email: string; displayName: string };
@@ -591,8 +592,8 @@ function LabRunner({ state, step, setStep, saving, act, onView }: { state: Snaps
   return (
     <div className="runner-shell universal-habit-lab">
       <LabInvestigationFrame
-        labTitle="Habit Lab"
-        accent="#e56b50"
+        labTitle={labExperienceManifest.HAB.shortTitle}
+        accent={labExperienceManifest.HAB.accent}
         investigations={investigations}
         step={step}
         maxStep={maxStep}
