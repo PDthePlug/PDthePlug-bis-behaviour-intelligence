@@ -11,7 +11,7 @@
 .universal-lab-progress{
   position:sticky;
   z-index:54;
-  top:64px;
+  top:70px;
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
   align-items:center;
