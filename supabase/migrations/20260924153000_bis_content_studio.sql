@@ -153,8 +153,8 @@ values
 ('content:module:HAB','LEARNING_MODULE','HAB','habit','Habit Lab Learning Module','The guided learning journey that prepares learners for Habit Lab.','/habit','content:lab:HAB','ACTIVE','SYSTEM'),
 ('content:module:DEC','LEARNING_MODULE','DEC','decision','Decision Lab Learning Module','The guided learning journey that prepares learners for Decision Lab.','/decision?section=learn','content:lab:DEC','ACTIVE','SYSTEM'),
 ('content:module:MON','LEARNING_MODULE','MON','money','Money Lab Learning Module','The guided learning journey that prepares learners for Money Lab.','/money?section=learn','content:lab:MON','ACTIVE','SYSTEM'),
-('content:module:IDN','LEARNING_MODULE','IDN','identity','Identity Learning Module','A guided learning investigation into self-claims and evidence.','/identity','ACTIVE','SYSTEM'),
-('content:module:ATT','LEARNING_MODULE','ATT','attention','Attention Learning Module','A guided learning investigation into attention and repeated behaviour.','/attention','ACTIVE','SYSTEM')
+('content:module:IDN','LEARNING_MODULE','IDN','identity','Identity Learning Module','A guided learning investigation into self-claims and evidence.','/identity',null,'ACTIVE','SYSTEM'),
+('content:module:ATT','LEARNING_MODULE','ATT','attention','Attention Learning Module','A guided learning investigation into attention and repeated behaviour.','/attention',null,'ACTIVE','SYSTEM')
 on conflict (id) do nothing;
 
 insert into public.content_library_versions
