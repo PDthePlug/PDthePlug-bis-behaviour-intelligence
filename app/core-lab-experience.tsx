@@ -4,6 +4,7 @@ import { BisMark } from "@/components/brand/bis-mark";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowRight,
   BookOpen,
@@ -91,6 +92,9 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [privateVisible, setPrivateVisible] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // The selected Lab code is fixed for the lifetime of this route.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -154,6 +158,18 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
   if (!baselineComplete) return <><div className={privateVisible ? "" : "privacy-obscured"} aria-hidden={!privateVisible}><Baseline definition={definition} state={state} saving={saving} error={error} act={act} /></div>{!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}</>;
 
   const maxStep = Math.max(1, state.enrolment?.currentInvestigation ?? 1, step);
+  const requestedStep = Number(searchParams.get("step"));
+  const activeStep = Number.isInteger(requestedStep) && requestedStep >= 1
+    ? Math.min(maxStep, requestedStep)
+    : step;
+
+  function goToStep(next: number) {
+    const target = Math.max(1, Math.min(maxStep, next));
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("step", String(target));
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   return <>
     <div className={`corelab-shell universal-corelab ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible} style={{ "--lab-accent": definition.accent } as React.CSSProperties}>
@@ -162,19 +178,19 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
         labTitle={definition.shortTitle}
         accent={definition.accent}
         investigations={definition.investigations}
-        step={step}
+        step={activeStep}
         maxStep={maxStep}
-        onSelect={setStep}
+        onSelect={goToStep}
       >
-        {step === 1 && <StoryOne definition={definition} state={state} saving={saving} act={act} next={() => setStep(2)} />}
-        {step === 2 && <FieldsStep fields={definition.sections[2]} pauseQuestion={definition.pauses[2]} state={state} saving={saving} act={act} next={() => setStep(3)} />}
-        {step === 3 && <StoryTwo definition={definition} state={state} saving={saving} act={act} next={() => setStep(4)} />}
-        {step === 4 && <FieldsStep fields={definition.sections[4]} pauseQuestion={definition.pauses[4]} state={state} saving={saving} act={act} next={() => setStep(5)} />}
-        {step === 5 && <EquationStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(6)} />}
-        {step === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(7)} />}
-        {step === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(8)} />}
-        {step === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={() => setStep(9)} />}
-        {step === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} />}
+        {activeStep === 1 && <StoryOne definition={definition} state={state} saving={saving} act={act} next={() => goToStep(2)} />}
+        {activeStep === 2 && <FieldsStep fields={definition.sections[2]} pauseQuestion={definition.pauses[2]} state={state} saving={saving} act={act} next={() => goToStep(3)} />}
+        {activeStep === 3 && <StoryTwo definition={definition} state={state} saving={saving} act={act} next={() => goToStep(4)} />}
+        {activeStep === 4 && <FieldsStep fields={definition.sections[4]} pauseQuestion={definition.pauses[4]} state={state} saving={saving} act={act} next={() => goToStep(5)} />}
+        {activeStep === 5 && <EquationStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(6)} />}
+        {activeStep === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(7)} />}
+        {activeStep === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(8)} />}
+        {activeStep === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(9)} />}
+        {activeStep === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} />}
       </LabInvestigationFrame>
     </div>
     {!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}
