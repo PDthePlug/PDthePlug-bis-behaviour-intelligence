@@ -166,7 +166,27 @@ export function ContentStudio() {
   }
 
   useEffect(() => {
-    void load();
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        const response = await fetch("/api/content-studio", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error ?? "Content Studio could not open.");
+        if (controller.signal.aborted) return;
+        setData(payload);
+        setSelectedItemId(payload.items?.[0]?.id || "");
+      } catch (cause) {
+        if (!controller.signal.aborted) {
+          setError(cause instanceof Error ? cause.message : "Content Studio could not open.");
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    })();
+    return () => controller.abort();
   }, []);
 
   async function act(payload: Record<string, unknown>, success?: string) {
@@ -262,11 +282,11 @@ export function ContentStudio() {
         .replace(/[^A-Za-z0-9._-]+/g, "-")
         .replace(/^-+|-+$/g, "")
         .slice(-140) || "source";
-      const path = `sources/${contentVersion.id}/${Date.now()}-${safeName}`;
+      const path = `sources/${contentVersion.id}/${safeName}`;
       const upload = await client.storage.from(CONTENT_STUDIO_BUCKET).upload(path, file, {
         contentType: file.type || undefined,
         cacheControl: "0",
-        upsert: false,
+        upsert: true,
       });
       if (upload.error) throw new Error(upload.error.message || "The source upload failed.");
 
