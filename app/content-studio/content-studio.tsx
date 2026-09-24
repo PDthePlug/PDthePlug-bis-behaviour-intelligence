@@ -13,6 +13,8 @@ import {
   FileCheck2,
   FileText,
   FlaskConical,
+  Eye,
+  ClipboardCheck,
   LoaderCircle,
   LockKeyhole,
   PackageCheck,
@@ -24,6 +26,7 @@ import {
 import { BisMark } from "@/components/brand/bis-mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -39,6 +42,11 @@ import {
   type ContentKind,
   type ContentSourceFormat,
 } from "@/lib/content-studio";
+import {
+  CONTENT_UAT_CHECKS,
+  requiredPreviewKeys,
+  type ContentUatChecklist,
+} from "@/lib/content-uat";
 
 type CheckResult = {
   id: string;
@@ -96,6 +104,17 @@ type ContentVersion = {
   compiledAt: string | null;
   sourceFiles: ContentSourceFile[];
   artifacts: RuntimeArtifact[];
+  uat: null | {
+    id: string;
+    artifactFingerprint: string;
+    previewedArtifacts: string[];
+    checklist: ContentUatChecklist;
+    notes: string;
+    status: "IN_REVIEW" | "PASSED";
+    reviewedBy: string | null;
+    reviewedAt: string | null;
+    updatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
 };
@@ -149,7 +168,7 @@ function formatDate(value: string | null | undefined) {
 }
 
 function statusTone(value: string) {
-  if (["LIVE", "PUBLISHED", "VALID", "READY", "APPROVED", "COMPILED"].includes(value)) return "good";
+  if (["LIVE", "PUBLISHED", "VALID", "READY", "APPROVED", "COMPILED", "PASSED"].includes(value)) return "good";
   if (["BLOCKED", "INVALID", "FAILED"].includes(value)) return "bad";
   if (["REQUIRES_ADAPTER", "PENDING"].includes(value)) return "warn";
   return "neutral";
@@ -174,6 +193,7 @@ export function ContentStudio() {
   const [schemaVersion, setSchemaVersion] = useState("1.0");
   const [sourceFormat, setSourceFormat] = useState<ContentSourceFormat>("BIS_PACKAGE_JSON");
   const [releaseNotes, setReleaseNotes] = useState("");
+  const [uatDrafts, setUatDrafts] = useState<Record<string, { checklist: ContentUatChecklist; notes: string }>>({});
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
   const [client] = useState(createClient);
 
@@ -216,6 +236,20 @@ export function ContentStudio() {
     })();
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    const refreshAfterPreview = () => {
+      if (document.visibilityState !== "visible" || saving) return;
+      void fetch("/api/content-studio", { cache: "no-store" })
+        .then(async (response) => {
+          const payload = await response.json();
+          if (response.ok) setData(payload);
+        })
+        .catch(() => {});
+    };
+    window.addEventListener("focus", refreshAfterPreview);
+    return () => window.removeEventListener("focus", refreshAfterPreview);
+  }, [saving]);
 
   async function act(payload: Record<string, unknown>, success?: string) {
     setSaving(true);
@@ -349,6 +383,58 @@ export function ContentStudio() {
       setUploadingVersionId("");
       const input = fileInputs.current[uploadKey];
       if (input) input.value = "";
+    }
+  }
+
+  function uatDraft(entry: ContentVersion) {
+    return uatDrafts[entry.id] ?? {
+      checklist: entry.uat?.checklist ?? {},
+      notes: entry.uat?.notes ?? "",
+    };
+  }
+
+  function updateUatCheck(entry: ContentVersion, id: string, checked: boolean) {
+    const current = uatDraft(entry);
+    setUatDrafts((drafts) => ({
+      ...drafts,
+      [entry.id]: {
+        ...current,
+        checklist: { ...current.checklist, [id]: checked },
+      },
+    }));
+  }
+
+  function updateUatNotes(entry: ContentVersion, notes: string) {
+    const current = uatDraft(entry);
+    setUatDrafts((drafts) => ({
+      ...drafts,
+      [entry.id]: { ...current, notes },
+    }));
+  }
+
+  async function saveUat(entry: ContentVersion, success = "Activation UAT review saved.") {
+    const draft = uatDraft(entry);
+    return act({
+      action: "saveUat",
+      versionId: entry.id,
+      checklist: draft.checklist,
+      notes: draft.notes,
+    }, success);
+  }
+
+  async function signOffUat(entry: ContentVersion) {
+    const saved = await saveUat(entry, "UAT checklist saved.");
+    if (!saved) return;
+    const signed = await act(
+      { action: "signOffUat", versionId: entry.id },
+      "Activation UAT passed. This exact compiled runtime can now be activated after approval.",
+    );
+    if (signed) {
+      setUatDrafts((drafts) => {
+        const next = { ...drafts };
+        delete next[entry.id];
+        return next;
+      });
     }
   }
 
@@ -495,6 +581,12 @@ export function ContentStudio() {
                   );
                   const busy = saving || uploadingVersionId.startsWith(`${entry.id}:`);
                   const active = selected.activeActivation?.versionId === entry.id;
+                  const previewKeys = requiredPreviewKeys(selected.kind);
+                  const previewed = new Set(entry.uat?.previewedArtifacts ?? []);
+                  const allPreviewed = previewKeys.every((key) => previewed.has(key));
+                  const review = uatDraft(entry);
+                  const allChecks = CONTENT_UAT_CHECKS.every((check) => review.checklist[check.id] === true);
+                  const uatPassed = entry.uat?.status === "PASSED";
                   return (
                     <article className="content-version-card" key={entry.id}>
                       <header>
@@ -570,6 +662,106 @@ export function ContentStudio() {
                         </div>
                       ) : null}
 
+                      {entry.compilerStatus === "COMPILED" && ["VALIDATED", "APPROVED", "PUBLISHED"].includes(entry.status) ? (
+                        <section className="content-uat-card">
+                          <header>
+                            <div>
+                              <p className="eyebrow">Activation UAT</p>
+                              <h4>Preview the exact learner runtime before release.</h4>
+                              <p>The sign-off is bound to this compiled artifact set. Recompiling resets the review.</p>
+                            </div>
+                            <span data-tone={statusTone(entry.uat?.status ?? "IN_REVIEW")}>
+                              {entry.uat?.status === "PASSED" ? <><Check /> Passed</> : <><ClipboardCheck /> In review</>}
+                            </span>
+                          </header>
+
+                          <div className="content-uat-previews">
+                            {selected.kind === "LEARNING_MODULE" ? (
+                              [
+                                { key: "learning:school", edition: "school", label: "School" },
+                                { key: "learning:emerging_adult", edition: "emerging_adult", label: "Emerging Adult" },
+                                { key: "learning:workplace", edition: "workplace", label: "Workplace" },
+                              ].map((preview) => (
+                                <div key={preview.key} className={previewed.has(preview.key) ? "reviewed" : ""}>
+                                  <span>{previewed.has(preview.key) ? <Check /> : <Eye />}</span>
+                                  <div><strong>{preview.label}</strong><small>{previewed.has(preview.key) ? "Preview recorded" : "Needs preview"}</small></div>
+                                  <Button asChild size="sm" variant="outline">
+                                    <Link
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LEARNING_MODULE&code=${encodeURIComponent(selected.code)}&edition=${preview.edition}`}
+                                    >
+                                      Preview
+                                    </Link>
+                                  </Button>
+                                </div>
+                              ))
+                            ) : (
+                              <div className={previewed.has("lab:universal") ? "reviewed" : ""}>
+                                <span>{previewed.has("lab:universal") ? <Check /> : <Eye />}</span>
+                                <div><strong>Universal Lab runtime</strong><small>{previewed.has("lab:universal") ? "Preview recorded" : "Needs preview"}</small></div>
+                                <Button asChild size="sm" variant="outline">
+                                  <Link
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LAB&code=${encodeURIComponent(selected.code)}`}
+                                  >
+                                    Preview
+                                  </Link>
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="content-uat-checklist">
+                            {CONTENT_UAT_CHECKS.map((check) => (
+                              <label key={check.id}>
+                                <Checkbox
+                                  checked={review.checklist[check.id] === true}
+                                  disabled={uatPassed}
+                                  onCheckedChange={(value) => updateUatCheck(entry, check.id, value === true)}
+                                />
+                                <span><strong>{check.label}</strong><small>{check.detail}</small></span>
+                              </label>
+                            ))}
+                          </div>
+
+                          <label className="content-uat-notes">
+                            UAT notes
+                            <Textarea
+                              value={review.notes}
+                              disabled={uatPassed}
+                              maxLength={2000}
+                              onChange={(event) => updateUatNotes(entry, event.target.value)}
+                              placeholder="Record anything another reviewer or future you should know before activation."
+                            />
+                          </label>
+
+                          <footer>
+                            <span className={allPreviewed ? "ready" : ""}>
+                              {allPreviewed ? <Check /> : <Eye />}
+                              {allPreviewed
+                                ? selected.kind === "LEARNING_MODULE" ? "All three editions previewed" : "Lab runtime previewed"
+                                : selected.kind === "LEARNING_MODULE" ? "Preview all three editions" : "Preview the Lab runtime"}
+                            </span>
+                            {uatPassed ? (
+                              <p className="content-uat-signed">
+                                <ShieldCheck /> Signed off {formatDate(entry.uat?.reviewedAt)}
+                              </p>
+                            ) : (
+                              <div>
+                                <Button variant="outline" disabled={busy} onClick={() => void saveUat(entry)}>
+                                  Save review
+                                </Button>
+                                <Button disabled={busy || !allPreviewed || !allChecks} onClick={() => void signOffUat(entry)}>
+                                  <ShieldCheck /> Sign off UAT
+                                </Button>
+                              </div>
+                            )}
+                          </footer>
+                        </section>
+                      ) : null}
+
                       {entry.releaseNotes ? <p className="content-release-notes"><strong>Release notes:</strong> {entry.releaseNotes}</p> : null}
 
                       <footer>
@@ -587,7 +779,8 @@ export function ContentStudio() {
                           </Button>
                         ) : null}
                         {entry.status === "VALIDATED" ? <Button disabled={busy || entry.compilerStatus !== "COMPILED"} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Version approved for activation.")}><ShieldCheck /> Approve</Button> : null}
-                        {entry.status === "APPROVED" ? <Button disabled={busy || entry.compilerStatus !== "COMPILED"} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, "Version activated. Learners now receive this runtime version.")}><PackageCheck /> Activate</Button> : null}
+                        {entry.status === "APPROVED" && uatPassed ? <Button disabled={busy || entry.compilerStatus !== "COMPILED"} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, "Version activated. Learners now receive this runtime version.")}><PackageCheck /> Activate</Button> : null}
+                        {entry.status === "APPROVED" && !uatPassed ? <span className="activation-note"><LockKeyhole /> Activation locked until UAT sign-off.</span> : null}
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "reopenVersion", versionId: entry.id }, "Version reopened as a draft.")}>Reopen draft</Button> : null}
                         {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> {active ? "Active learner runtime." : "Live version."}</span> : null}
                         {active && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open live route <ChevronRight /></Link></Button> : null}

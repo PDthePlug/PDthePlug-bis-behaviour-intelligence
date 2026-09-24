@@ -87,6 +87,7 @@ function UniversalInvestigationForm({
   error,
   act,
   onAdvance,
+  previewMode = false,
 }: {
   snapshot: Snapshot;
   investigation: UniversalLabPackage["investigations"][number];
@@ -95,6 +96,7 @@ function UniversalInvestigationForm({
   error: string;
   act: (payload: Record<string, unknown>) => Promise<Snapshot | null>;
   onAdvance: (step: number) => void;
+  previewMode?: boolean;
 }) {
   const [values, setValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(investigation.prompts.map((prompt) => [prompt.id, valueOf(snapshot, prompt.id)])),
@@ -148,7 +150,7 @@ function UniversalInvestigationForm({
         </section>
       ) : (
         <div className="step-footer">
-          <span><ShieldCheck /> Saved as private, traceable evidence.</span>
+          <span><ShieldCheck /> {previewMode ? "Activation UAT preview · test responses are not stored." : "Saved as private, traceable evidence."}</span>
           {step === 9 ? (
             <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
@@ -170,7 +172,13 @@ function UniversalInvestigationForm({
   );
 }
 
-export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
+export function UniversalRuntimeLab({
+  labCode,
+  previewVersionId,
+}: {
+  labCode: string;
+  previewVersionId?: string;
+}) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -180,19 +188,43 @@ export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const previewMode = Boolean(previewVersionId);
 
   useEffect(() => {
     const controller = new AbortController();
     void (async () => {
       try {
-        const response = await fetch(`/api/universal-lab?lab=${encodeURIComponent(labCode)}`, { cache: "no-store", signal: controller.signal });
-        const data = await response.json() as Snapshot & { error?: string };
-        if (!response.ok) throw new Error(data.error ?? "The Lab could not be opened.");
+        let data: Snapshot & { error?: string };
+        if (previewVersionId) {
+          const response = await fetch(
+            `/api/content-studio/preview?versionId=${encodeURIComponent(previewVersionId)}&artifact=${encodeURIComponent("lab:universal")}`,
+            { cache: "no-store", signal: controller.signal },
+          );
+          const preview = await response.json() as {
+            payload?: UniversalLabPackage;
+            version?: { version?: string };
+            error?: string;
+          };
+          if (!response.ok || !preview.payload) {
+            throw new Error(preview.error ?? "The compiled Lab preview could not be opened.");
+          }
+          data = {
+            definition: preview.payload,
+            version: preview.version?.version ?? preview.payload.identity.version,
+            identity: { id: "uat-reviewer", displayName: "UAT reviewer" },
+            enrolment: null,
+            responses: {},
+          };
+        } else {
+          const response = await fetch(`/api/universal-lab?lab=${encodeURIComponent(labCode)}`, { cache: "no-store", signal: controller.signal });
+          data = await response.json() as Snapshot & { error?: string };
+          if (!response.ok) throw new Error(data.error ?? "The Lab could not be opened.");
+        }
         if (controller.signal.aborted) return;
         setSnapshot(data);
         const requested = Number(new URLSearchParams(window.location.search).get("step"));
-        const max = Math.max(1, data.enrolment?.currentInvestigation ?? 1);
-        setStep(Number.isInteger(requested) && requested >= 1 ? Math.min(9, Math.max(1, requested)) : max);
+        const max = previewVersionId ? 9 : Math.max(1, data.enrolment?.currentInvestigation ?? 1);
+        setStep(Number.isInteger(requested) && requested >= 1 ? Math.min(9, Math.max(1, requested)) : previewVersionId ? 1 : max);
       } catch (cause) {
         if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "The Lab could not be opened.");
       } finally {
@@ -200,7 +232,7 @@ export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
       }
     })();
     return () => controller.abort();
-  }, [labCode]);
+  }, [labCode, previewVersionId]);
 
   const investigation = snapshot?.definition.investigations[step - 1];
 
@@ -208,6 +240,49 @@ export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
     setSaving(true);
     setError("");
     try {
+      if (previewMode && snapshot) {
+        const action = String(payload.action ?? "");
+        let data: Snapshot = snapshot;
+        if (action === "openLab") {
+          data = {
+            ...snapshot,
+            enrolment: {
+              id: "uat-preview",
+              status: "IN_PROGRESS",
+              currentInvestigation: 9,
+              completedAt: null,
+            },
+          };
+        } else if (action === "saveInvestigation" && snapshot.enrolment) {
+          const now = new Date().toISOString();
+          const items = Array.isArray(payload.items) ? payload.items : [];
+          const nextResponses = { ...snapshot.responses };
+          for (const raw of items) {
+            if (!raw || typeof raw !== "object") continue;
+            const row = raw as Record<string, unknown>;
+            const id = String(row.semanticFieldId ?? "");
+            if (!id) continue;
+            nextResponses[id] = {
+              value: row.value ?? "",
+              status: row.responseStatus === "PASS" ? "PASS" : "ANSWERED",
+              recordedAt: now,
+            };
+          }
+          data = { ...snapshot, responses: nextResponses };
+        } else if (action === "completeLab" && snapshot.enrolment) {
+          data = {
+            ...snapshot,
+            enrolment: {
+              ...snapshot.enrolment,
+              status: "COMPLETED",
+              completedAt: new Date().toISOString(),
+            },
+          };
+        }
+        setSnapshot(data);
+        return data;
+      }
+
       const response = await fetch("/api/universal-lab", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -227,7 +302,7 @@ export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
 
   function goToStep(next: number) {
     if (!snapshot) return;
-    const max = Math.max(1, snapshot.enrolment?.currentInvestigation ?? 1);
+    const max = previewMode ? 9 : Math.max(1, snapshot.enrolment?.currentInvestigation ?? 1);
     const target = Math.max(1, Math.min(max, next));
     setStep(target);
     const params = new URLSearchParams(searchParams.toString());
@@ -272,7 +347,7 @@ export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
   }
 
   if (!investigation) return null;
-  const maxStep = Math.max(1, snapshot.enrolment.currentInvestigation);
+  const maxStep = previewMode ? 9 : Math.max(1, snapshot.enrolment.currentInvestigation);
 
   return (
     <LabInvestigationFrame
@@ -291,6 +366,7 @@ export function UniversalRuntimeLab({ labCode }: { labCode: string }) {
         saving={saving}
         error={error}
         act={act}
+        previewMode={previewMode}
         onAdvance={(next) => {
           setStep(next);
           const params = new URLSearchParams(searchParams.toString());

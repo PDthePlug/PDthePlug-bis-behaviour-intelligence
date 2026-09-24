@@ -2,6 +2,7 @@ import { and, asc, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
+  contentActivationUat,
   contentLibraryItems,
   contentLibraryVersions,
   contentReleases,
@@ -28,6 +29,12 @@ import {
 } from "../../../lib/content-compiler";
 import type { DeliveryEdition } from "../../../lib/learning-foundation";
 import { adaptLabSource, adaptLearningSource } from "../../../lib/content-source-adapters";
+import {
+  artifactFingerprint,
+  checklistComplete,
+  normalizeUatChecklist,
+  previewCoverageComplete,
+} from "../../../lib/content-uat";
 import {
   AccessError,
   getRoles,
@@ -81,14 +88,33 @@ async function audit(
   });
 }
 
+async function resetUat(versionId: string, actorId: string) {
+  const db = getDb();
+  const [row] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
+  if (!row) return;
+  await db.update(contentActivationUat).set({
+    artifactFingerprint: "PENDING",
+    previewedArtifacts: "[]",
+    checklist: "{}",
+    notes: "",
+    status: "IN_REVIEW",
+    reviewedBy: null,
+    reviewedAt: null,
+    updatedBy: actorId,
+    updatedAt: new Date().toISOString(),
+  }).where(eq(contentActivationUat.id, row.id));
+}
+
+
 async function snapshot() {
   const db = getDb();
-  const [items, versions, sourceFiles, artifacts, activations] = await Promise.all([
+  const [items, versions, sourceFiles, artifacts, activations, uatRows] = await Promise.all([
     db.select().from(contentLibraryItems).orderBy(asc(contentLibraryItems.kind), asc(contentLibraryItems.title)),
     db.select().from(contentLibraryVersions).orderBy(desc(contentLibraryVersions.createdAt)),
     db.select().from(contentSourceFiles).orderBy(desc(contentSourceFiles.createdAt)),
     db.select().from(contentRuntimeArtifacts).orderBy(desc(contentRuntimeArtifacts.createdAt)),
     db.select().from(contentRuntimeActivations).orderBy(desc(contentRuntimeActivations.activatedAt)),
+    db.select().from(contentActivationUat).orderBy(desc(contentActivationUat.updatedAt)),
   ]);
   const mappedVersions = versions.map((row) => ({
     ...row,
@@ -98,6 +124,14 @@ async function snapshot() {
     compilerReport: parseJson(row.compilerReport, {}),
     sourceFiles: sourceFiles.filter((source) => source.versionId === row.id),
     artifacts: artifacts.filter((artifact) => artifact.versionId === row.id),
+    uat: (() => {
+      const uat = uatRows.find((candidate) => candidate.versionId === row.id);
+      return uat ? {
+        ...uat,
+        previewedArtifacts: parseJson(uat.previewedArtifacts, []),
+        checklist: parseJson(uat.checklist, {}),
+      } : null;
+    })(),
   }));
   const mappedItems = items.map((item) => ({
     ...item,
@@ -274,6 +308,7 @@ async function postHandler(request: Request) {
         manifest: "{}",
         updatedAt: now,
       }).where(eq(contentLibraryVersions.id, versionId));
+      await resetUat(versionId, identity.id);
       await audit(identity.id, "CONTENT_SOURCE_ATTACHED", "CONTENT_LIBRARY_VERSION", versionId, {
         sourceKey,
         deliveryEdition,
@@ -385,6 +420,7 @@ async function postHandler(request: Request) {
           validatedAt: now,
           updatedAt: now,
         }).where(eq(contentLibraryVersions.id, versionId));
+        await resetUat(versionId, identity.id);
         await audit(identity.id, "CONTENT_VERSION_COMPILED", "CONTENT_LIBRARY_VERSION", versionId, report);
         return Response.json(await snapshot());
       } catch (compileError) {
@@ -477,7 +513,90 @@ async function postHandler(request: Request) {
         approvedBy: null,
         updatedAt: now,
       }).where(eq(contentLibraryVersions.id, versionId));
+      await resetUat(versionId, identity.id);
       await audit(identity.id, "CONTENT_VERSION_REOPENED", "CONTENT_LIBRARY_VERSION", versionId);
+      return Response.json(await snapshot());
+    }
+
+    if (action === "saveUat") {
+      const versionId = String(body.versionId ?? "");
+      const notes = String(body.notes ?? "").trim();
+      if (notes.length > 2000) throw new Error("Keep UAT notes under 2,000 characters.");
+      const checklist = normalizeUatChecklist(body.checklist);
+      const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
+      if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
+        throw new Error("Compile this version before recording activation UAT.");
+      }
+      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
+      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
+      const fingerprint = await artifactFingerprint(artifacts);
+      const [existing] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
+      const sameArtifactSet = existing?.artifactFingerprint === fingerprint;
+      const now = new Date().toISOString();
+      const values = {
+        itemId: item.id,
+        artifactFingerprint: fingerprint,
+        previewedArtifacts: sameArtifactSet ? existing!.previewedArtifacts : "[]",
+        checklist: JSON.stringify(checklist),
+        notes,
+        status: "IN_REVIEW",
+        reviewedBy: null,
+        reviewedAt: null,
+        updatedBy: identity.id,
+        updatedAt: now,
+      };
+      if (existing) {
+        await db.update(contentActivationUat).set(values).where(eq(contentActivationUat.id, existing.id));
+      } else {
+        await db.insert(contentActivationUat).values({
+          id: `uat:${versionId}`,
+          versionId,
+          ...values,
+        });
+      }
+      await audit(identity.id, "CONTENT_ACTIVATION_UAT_SAVED", "CONTENT_LIBRARY_VERSION", versionId, {
+        checklist,
+        previewedArtifacts: sameArtifactSet ? parseJson(existing?.previewedArtifacts, []) : [],
+      });
+      return Response.json(await snapshot());
+    }
+
+    if (action === "signOffUat") {
+      const versionId = String(body.versionId ?? "");
+      const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
+      if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
+        throw new Error("Compile this version before UAT sign-off.");
+      }
+      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
+      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      const [uat] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
+      if (!uat) throw new Error("Preview the compiled runtime and complete the UAT checklist first.");
+      const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
+      const fingerprint = await artifactFingerprint(artifacts);
+      if (uat.artifactFingerprint !== fingerprint) {
+        throw new Error("The compiled artifacts changed after UAT started. Preview the current build again.");
+      }
+      const previewed = parseJson(uat.previewedArtifacts, []) as string[];
+      const checklist = normalizeUatChecklist(parseJson(uat.checklist, {}));
+      if (!previewCoverageComplete(item.kind as ContentKind, previewed)) {
+        throw new Error(item.kind === "LEARNING_MODULE"
+          ? "Preview School, Emerging Adult and Workplace editions before UAT sign-off."
+          : "Preview the Universal Lab runtime before UAT sign-off.");
+      }
+      if (!checklistComplete(checklist)) throw new Error("Complete every activation UAT check before sign-off.");
+      const now = new Date().toISOString();
+      await db.update(contentActivationUat).set({
+        status: "PASSED",
+        reviewedBy: identity.id,
+        reviewedAt: now,
+        updatedBy: identity.id,
+        updatedAt: now,
+      }).where(eq(contentActivationUat.id, uat.id));
+      await audit(identity.id, "CONTENT_ACTIVATION_UAT_PASSED", "CONTENT_LIBRARY_VERSION", versionId, {
+        artifactFingerprint: fingerprint,
+        previewedArtifacts: previewed,
+      });
       return Response.json(await snapshot());
     }
 
@@ -490,6 +609,19 @@ async function postHandler(request: Request) {
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
       if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
       const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
+      const [uat] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
+      const fingerprint = await artifactFingerprint(artifacts);
+      const uatPreviewed = parseJson(uat?.previewedArtifacts, []) as string[];
+      const uatChecklist = normalizeUatChecklist(parseJson(uat?.checklist, {}));
+      if (
+        !uat ||
+        uat.status !== "PASSED" ||
+        uat.artifactFingerprint !== fingerprint ||
+        !previewCoverageComplete(item.kind as ContentKind, uatPreviewed) ||
+        !checklistComplete(uatChecklist)
+      ) {
+        throw new Error("Activation UAT must be completed and signed off against the current compiled runtime.");
+      }
       if (item.kind === "LEARNING_MODULE") {
         const editions = artifacts.map((artifact) => artifact.deliveryEdition).filter(Boolean);
         const missing = LEARNING_EDITION_KEYS.filter((edition) => !editions.includes(edition));
@@ -564,6 +696,10 @@ async function postHandler(request: Request) {
         routePath,
         editions: item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : [],
         supersedes: previous?.versionId ?? null,
+        uatId: uat.id,
+        uatReviewedBy: uat.reviewedBy,
+        uatReviewedAt: uat.reviewedAt,
+        artifactFingerprint: fingerprint,
       });
       return Response.json(await snapshot());
     }
