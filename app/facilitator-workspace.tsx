@@ -374,7 +374,7 @@ export function FacilitatorWorkspace({
           </section>
           <div className="support-attention-grid">
             {attention.map((learner) => (
-              <button key={learner.userId} type="button" className="surface-card support-attention-card" onClick={() => setLearnerId(learner.userId)}>
+              <button key={learner.userId} type="button" className="surface-card support-attention-card" onClick={() => navigateWorkspace({ section: "participants", learner: learner.userId })}>
                 <strong>{learner.displayName}</strong><span>{position(learner)}</span><small>Last activity {formatDate(learner.lastActivityAt)}</small>
               </button>
             ))}
