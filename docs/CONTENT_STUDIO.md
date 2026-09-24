@@ -79,9 +79,11 @@ Content Studio accepts:
 - Markdown
 - ZIP
 
-DOCX, PDF, HTML, Markdown and ZIP sources are valid archival/editorial inputs but currently receive `REQUIRES_ADAPTER`. They must be converted to a BIS package before learner activation.
+For **learning modules**, the Content Compiler has deterministic adapters for DOCX, text-based PDF, safe HTML, Markdown and ZIP, as well as native BIS JSON. The adapter must recover all 13 canonical programme positions; otherwise compilation fails rather than inventing missing structure.
 
-BIS package JSON can be structurally validated and become `READY`, but it is still not automatically published into the learner runtime.
+For **Labs**, runtime evidence semantics remain explicit: activation accepts Universal Lab JSON, or ZIP containing that JSON. DOCX/PDF Lab prose can be retained as source material but is not converted into evidence fields by guesswork.
+
+Compilation never publishes automatically. A compiled version must still be approved and explicitly activated.
 
 ## Learning-module package
 
