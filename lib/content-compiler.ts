@@ -146,7 +146,7 @@ function defaultPhase(key: string) {
   return "LEARN";
 }
 
-function ensureTextareaBindings(html: string, code: string, pageKey: string) {
+function ensureTextareaBindings(html: string, code: string, edition: DeliveryEdition, pageKey: string) {
   let counter = 0;
   return html.replace(/<textarea\b([^>]*)>/gi, (match, attributes: string) => {
     counter += 1;
@@ -156,7 +156,7 @@ function ensureTextareaBindings(html: string, code: string, pageKey: string) {
     const hasPurpose = /\bdata-purpose\s*=/.test(attributes);
     const hasPrivacy = /\bdata-privacy-class\s*=/.test(attributes);
     let next = attributes;
-    if (!hasId) next += ` data-field-id="${code}.WB.${pageKey.replace(/\s+/g, "").toUpperCase()}.F${String(counter).padStart(3, "0")}"`;
+    if (!hasId) next += ` data-field-id="${code}.WB.${edition.toUpperCase()}.${pageKey.replace(/\s+/g, "").toUpperCase()}.F${String(counter).padStart(3, "0")}"`;
     if (!hasSource) next += ` data-source-key="${pageKey.replace(/\s+/g, "").toLowerCase()}-${counter}"`;
     if (!hasPurpose) next += ' data-purpose="LEARNING_RESPONSE"';
     if (!hasPrivacy) next += ' data-privacy-class="P3"';
@@ -209,7 +209,7 @@ export async function compileLearningEdition(
     if (key !== expectedKey) {
       throw new Error(`${edition}: programme position ${index + 1} must be "${expectedKey}", received "${key || "missing"}".`);
     }
-    const html = ensureTextareaBindings(text(page.html), expectedCode, key);
+    const html = ensureTextareaBindings(text(page.html), expectedCode, edition, key);
     validatePageHtml(html, key);
     const id = programmeStep(expectedCode, key);
     const authoredId = text(page.id);
@@ -233,8 +233,9 @@ export async function compileLearningEdition(
 
   const fieldIds = compiledPages.flatMap((page) => [...page.html.matchAll(/data-field-id="([^"]+)"/g)].map((match) => match[1]));
   if (new Set(fieldIds).size !== fieldIds.length) throw new Error(`${edition}: duplicate workbook field IDs were found.`);
-  if (fieldIds.some((id) => !id.startsWith(`${expectedCode}.WB.`))) {
-    throw new Error(`${edition}: workbook fields must stay inside the ${expectedCode}.WB.* namespace.`);
+  const editionNamespace = `${expectedCode}.WB.${edition.toUpperCase()}.`;
+  if (fieldIds.some((id) => !id.startsWith(editionNamespace))) {
+    throw new Error(`${edition}: workbook fields must stay inside the ${editionNamespace}* namespace.`);
   }
 
   const title = text(identity?.title) || text(source.title) || `${expectedCode} Learning Module`;
