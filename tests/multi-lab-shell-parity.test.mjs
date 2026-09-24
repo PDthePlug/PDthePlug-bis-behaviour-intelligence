@@ -11,6 +11,7 @@ const habitShell = readFileSync("app/habit-lab/habit-lab-shell.tsx", "utf8");
 const habitEngine = readFileSync("app/bis-app.tsx", "utf8");
 const coreEngine = readFileSync("app/core-lab-experience.tsx", "utf8");
 const labApi = readFileSync("app/api/labs/route.ts", "utf8");
+const manifest = readFileSync("lib/lab-experience-manifest.ts", "utf8");
 
 test("Habit, Decision and Money use the same canonical BIS learner shell", () => {
   for (const source of [decisionLayout, moneyLayout, habitLayout]) {
@@ -66,4 +67,14 @@ test("shared presentation does not collapse separate Lab evidence namespaces", (
   assert.match(labApi, /labCode/);
   assert.match(labApi, /DEC|MON/);
   assert.match(habitEngine, /HAB\./);
+});
+
+
+test("future Lab presentation is registered through a manifest rather than route-specific chrome", () => {
+  for (const code of ["HAB", "DEC", "MON"]) {
+    assert.match(manifest, new RegExp(code + ": \\{"));
+  }
+  assert.match(manifest, /investigations: 9/);
+  assert.match(habitEngine, /labExperienceManifest\.HAB\.accent/);
+  assert.match(coreEngine, /definition\.accent/);
 });
