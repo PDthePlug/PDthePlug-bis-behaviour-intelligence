@@ -8,8 +8,10 @@ import {
 import {
   CONTENT_KINDS,
   CONTENT_SOURCE_FORMATS,
+  CONTENT_STUDIO_BUCKET,
   safeContentCode,
   safeContentSlug,
+  sha256Hex,
   validateContentSource,
   type ContentKind,
   type ContentSourceFormat,
@@ -180,6 +182,53 @@ async function postHandler(request: Request) {
       return Response.json(await snapshot(), { status: 201 });
     }
 
+    if (action === "attachSource") {
+      const versionId = String(body.versionId ?? "");
+      const sourceFileName = String(body.sourceFileName ?? "").trim();
+      const sourceStoragePath = String(body.sourceStoragePath ?? "").trim();
+      const sourceBytes = Number(body.sourceBytes ?? 0);
+      const mimeType = String(body.mimeType ?? "").trim() || null;
+      const sourceFormat = String(body.sourceFormat ?? "") as ContentSourceFormat;
+      const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
+      if (!version || version.status !== "DRAFT") throw new Error("Choose an editable draft version.");
+      if (!sourceFileName || sourceFileName.length > 180) throw new Error("The source file name is not valid.");
+      if (!sourceStoragePath.startsWith(`sources/${versionId}/`)) throw new Error("The source upload path does not match this draft.");
+      if (!Number.isFinite(sourceBytes) || sourceBytes < 1 || sourceBytes > 26_214_400) throw new Error("Use a source file up to 25 MB.");
+      if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Choose a supported source format.");
+
+      const list = await requestSupabaseClient().storage
+        .from(CONTENT_STUDIO_BUCKET)
+        .list(`sources/${versionId}`, { limit: 100 });
+      if (list.error || !list.data.some((item) => sourceStoragePath.endsWith(`/${item.name}`))) {
+        throw new Error("The uploaded source could not be confirmed.");
+      }
+
+      const now = new Date().toISOString();
+      await db.update(contentLibraryVersions).set({
+        sourceFileName,
+        sourceStoragePath,
+        sourceBytes,
+        mimeType,
+        sourceFormat,
+        sourceHash: null,
+        validationStatus: "PENDING",
+        runtimeStatus: "REQUIRES_ADAPTER",
+        validationReport: "{}",
+        manifest: "{}",
+        validatedAt: null,
+        approvedAt: null,
+        approvedBy: null,
+        updatedAt: now,
+      }).where(eq(contentLibraryVersions.id, versionId));
+      await audit(identity.id, "CONTENT_SOURCE_ATTACHED", "CONTENT_LIBRARY_VERSION", versionId, {
+        sourceFileName,
+        sourceBytes,
+        mimeType,
+        sourceFormat,
+      });
+      return Response.json(await snapshot());
+    }
+
     if (action === "validateVersion") {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
@@ -194,9 +243,12 @@ async function postHandler(request: Request) {
         .download(version.sourceStoragePath);
       if (download.error || !download.data) throw new Error("The source file could not be opened for validation.");
       const bytes = new Uint8Array(await download.data.arrayBuffer());
+      const sourceHash = await sha256Hex(bytes);
       const result = validateContentSource(item.kind as ContentKind, item.code, version.version, sourceFormat, bytes);
       const now = new Date().toISOString();
       await db.update(contentLibraryVersions).set({
+        sourceHash,
+        sourceBytes: bytes.byteLength,
         validationStatus: result.validationStatus,
         runtimeStatus: result.runtimeStatus,
         validationReport: JSON.stringify(result.report),
