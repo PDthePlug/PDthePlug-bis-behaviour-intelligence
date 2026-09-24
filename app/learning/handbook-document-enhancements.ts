@@ -136,7 +136,11 @@ function addMissingQuestionResponses(root: HTMLElement, labCode: LabCode, pageId
       responseGroup.append(wrapper);
     }
 
-    element.insertAdjacentElement("afterend", responseGroup);
+    if (element.tagName === "LI") {
+      element.append(responseGroup);
+    } else {
+      element.insertAdjacentElement("afterend", responseGroup);
+    }
   }
 }
 
