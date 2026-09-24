@@ -89,9 +89,9 @@ async function handler(request: Request) {
         previewedArtifacts: JSON.stringify([...previewed]),
         checklist: sameArtifactSet ? existing.checklist : "{}",
         notes: sameArtifactSet ? existing.notes : "",
-        status: "IN_REVIEW",
-        reviewedBy: null,
-        reviewedAt: null,
+        status: sameArtifactSet ? existing.status : "IN_REVIEW",
+        reviewedBy: sameArtifactSet ? existing.reviewedBy : null,
+        reviewedAt: sameArtifactSet ? existing.reviewedAt : null,
         updatedBy: identity.id,
         updatedAt: now,
       }).where(eq(contentActivationUat.id, existing.id));
