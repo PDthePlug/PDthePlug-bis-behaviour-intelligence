@@ -205,7 +205,9 @@ function validateLabPackage(payload: Record<string, unknown>, expectedCode: stri
 }
 
 export async function sha256Hex(bytes: Uint8Array) {
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  const input = new Uint8Array(bytes.byteLength);
+  input.set(bytes);
+  const digest = await crypto.subtle.digest("SHA-256", input.buffer);
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
 }
 
