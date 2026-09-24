@@ -335,6 +335,7 @@ export async function compileUniversalLab(
     const introHtml = text(item.introHtml);
     if (introHtml && unsafeHtml.test(introHtml)) throw new Error(`Investigation ${index + 1}: executable HTML is not allowed.`);
     const prompts = (Array.isArray(item.prompts) ? item.prompts : []).map((prompt) => validatePrompt(prompt, expectedCode, index + 1));
+    if (!prompts.length) throw new Error(`Investigation ${index + 1}: add at least one learner prompt.`);
     for (const prompt of prompts) {
       if (seen.has(prompt.id)) throw new Error(`Duplicate Lab prompt ID: ${prompt.id}.`);
       seen.add(prompt.id);
