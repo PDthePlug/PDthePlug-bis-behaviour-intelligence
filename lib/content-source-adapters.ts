@@ -393,9 +393,6 @@ function programmeLabel(key: PageKey, body: SourceBlock[]) {
       && !/^(session|time|mode|difficulty|today you will|you will need|experiment position)\s*:/i.test(text);
   })?.text.replace(/\s+/g, " ").trim();
   if (label) return label;
-  if (key === "Certificate") {
-    return body.find((block) => /\bcertificate\b/i.test(block.text))?.text.replace(/\s+/g, " ").trim() || key;
-  }
   return key;
 }
 
