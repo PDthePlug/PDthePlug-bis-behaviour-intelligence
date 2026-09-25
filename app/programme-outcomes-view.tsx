@@ -245,7 +245,7 @@ function ratio(part: number, whole: number) {
 function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   const metrics = outcome.metrics;
 
-  function useInsightForDecision(insight: { kicker: string; title: string; body: string }) {
+  function prefillDecisionFromInsight(insight: { kicker: string; title: string; body: string }) {
     setDecisionSignal(programmeDecisionSignal(insight.kicker));
     setDecisionTitle(insight.title);
     setDecisionEvidence(insight.body);
@@ -995,7 +995,7 @@ export function ProgrammeOutcomesView({
                     <h3>{insight.title}</h3>
                     <p>{insight.body}</p>
                     {outcome.decisionRegister?.canManage ? (
-                      <button type="button" className="insight-to-decision" onClick={() => useInsightForDecision(insight)}>
+                      <button type="button" className="insight-to-decision" onClick={() => prefillDecisionFromInsight(insight)}>
                         Use in decision
                       </button>
                     ) : null}
