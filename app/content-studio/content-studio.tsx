@@ -3,18 +3,16 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Archive,
   ArrowLeft,
   BookOpen,
   Check,
   ChevronRight,
   CircleAlert,
-  FileArchive,
+  ClipboardCheck,
+  Eye,
   FileCheck2,
   FileText,
   FlaskConical,
-  Eye,
-  ClipboardCheck,
   LoaderCircle,
   LockKeyhole,
   PackageCheck,
@@ -23,10 +21,11 @@ import {
   ShieldCheck,
   Upload,
 } from "lucide-react";
+import { BIS_MODULES } from "@/lib/bis-catalogue";
 import { BisMark } from "@/components/brand/bis-mark";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -40,20 +39,12 @@ import {
   CONTENT_STUDIO_BUCKET,
   sourceFormatFor,
   type ContentKind,
-  type ContentSourceFormat,
 } from "@/lib/content-studio";
 import {
   CONTENT_UAT_CHECKS,
   requiredPreviewKeys,
   type ContentUatChecklist,
 } from "@/lib/content-uat";
-
-type CheckResult = {
-  id: string;
-  label: string;
-  status: "PASS" | "WARN" | "FAIL";
-  detail: string;
-};
 
 type ContentSourceFile = {
   id: string;
@@ -80,27 +71,13 @@ type ContentVersion = {
   id: string;
   itemId: string;
   version: string;
-  schemaVersion: string;
-  sourceFormat: string;
-  sourceFileName: string | null;
-  sourceStoragePath: string | null;
-  sourceHash: string | null;
-  sourceBytes: number | null;
-  mimeType: string | null;
   deliveryEditions: string[];
-  manifest: Record<string, unknown>;
   validationStatus: string;
   runtimeStatus: string;
-  validationReport: {
-    summary?: string;
-    checks?: CheckResult[];
-    activationReady?: boolean;
-  };
   status: string;
   releaseNotes: string;
   compilerStatus: string;
   compilerReport: { summary?: string; requiredEditions?: string[]; artifactKeys?: string[] };
-  compilerVersion: string | null;
   compiledAt: string | null;
   sourceFiles: ContentSourceFile[];
   artifacts: RuntimeArtifact[];
@@ -136,6 +113,12 @@ type ContentItem = {
     status: string;
     activatedAt: string;
   };
+  activeEditions: Array<{
+    id: string;
+    deliveryEdition: string;
+    versionId: string;
+    activatedAt: string;
+  }>;
   versions: ContentVersion[];
 };
 
@@ -152,34 +135,42 @@ type StudioSnapshot = {
   items: ContentItem[];
 };
 
+const editionSlots = [
+  { key: "school", label: "School", note: "School-age learners" },
+  { key: "emerging_adult", label: "Emerging Adult", note: "Young adult learners" },
+  { key: "workplace", label: "Workplace", note: "Workplace programmes" },
+] as const;
+
 function formatBytes(value: number | null | undefined) {
-  if (!value) return "No file";
+  if (!value) return "";
   if (value < 1024 * 1024) return `${Math.max(1, Math.round(value / 1024))} KB`;
   return `${(value / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function formatDate(value: string | null | undefined) {
   if (!value) return "Not yet";
-  return new Date(value).toLocaleString("en-ZA", {
+  return new Date(value).toLocaleDateString("en-ZA", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 }
 
-function statusTone(value: string) {
-  if (["LIVE", "PUBLISHED", "VALID", "READY", "APPROVED", "COMPILED", "PASSED"].includes(value)) return "good";
-  if (["BLOCKED", "INVALID", "FAILED"].includes(value)) return "bad";
-  if (["REQUIRES_ADAPTER", "PENDING"].includes(value)) return "warn";
-  return "neutral";
+function versionState(entry: ContentVersion) {
+  if (entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") return { label: "Published", tone: "good" };
+  if (entry.status === "APPROVED") return { label: "Ready to publish", tone: "good" };
+  if (entry.compilerStatus === "COMPILED") return { label: "Ready to review", tone: "good" };
+  if (entry.compilerStatus === "FAILED" || entry.runtimeStatus === "BLOCKED") return { label: "Needs attention", tone: "bad" };
+  return { label: "In progress", tone: "neutral" };
 }
 
 export function ContentStudio() {
   const [data, setData] = useState<StudioSnapshot | null>(null);
-  const [selectedItemId, setSelectedItemId] = useState("");
+  const [selectedCode, setSelectedCode] = useState("");
+  const [selectedKind, setSelectedKind] = useState<ContentKind>("LEARNING_MODULE");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingVersionId, setUploadingVersionId] = useState("");
+  const [uploadingKey, setUploadingKey] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
@@ -190,9 +181,9 @@ export function ContentStudio() {
   const [summary, setSummary] = useState("");
   const [linkedLabItemId, setLinkedLabItemId] = useState("");
   const [version, setVersion] = useState("");
-  const [schemaVersion, setSchemaVersion] = useState("1.0");
-  const [sourceFormat, setSourceFormat] = useState<ContentSourceFormat>("BIS_PACKAGE_JSON");
   const [releaseNotes, setReleaseNotes] = useState("");
+  const [pasteOpen, setPasteOpen] = useState("");
+  const [pasteValues, setPasteValues] = useState<Record<string, string>>({});
   const [uatDrafts, setUatDrafts] = useState<Record<string, { checklist: ContentUatChecklist; notes: string }>>({});
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
   const [client] = useState(createClient);
@@ -202,10 +193,12 @@ export function ContentStudio() {
     setError("");
     try {
       const response = await fetch("/api/content-studio", { cache: "no-store" });
-      const payload = await response.json();
+      const payload = await response.json() as StudioSnapshot & { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "Content Studio could not open.");
       setData(payload);
-      setSelectedItemId((current) => current || payload.items?.[0]?.id || "");
+      const first = BIS_MODULES.find((module) => payload.items.some((item) => item.code === module.code))
+        ?? payload.items[0];
+      setSelectedCode((current) => current || first?.code || "");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Content Studio could not open.");
     } finally {
@@ -214,38 +207,12 @@ export function ContentStudio() {
   }
 
   useEffect(() => {
-    const controller = new AbortController();
-    void (async () => {
-      try {
-        const response = await fetch("/api/content-studio", {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error ?? "Content Studio could not open.");
-        if (controller.signal.aborted) return;
-        setData(payload);
-        setSelectedItemId(payload.items?.[0]?.id || "");
-      } catch (cause) {
-        if (!controller.signal.aborted) {
-          setError(cause instanceof Error ? cause.message : "Content Studio could not open.");
-        }
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    })();
-    return () => controller.abort();
+    void load();
   }, []);
 
   useEffect(() => {
     const refreshAfterPreview = () => {
-      if (document.visibilityState !== "visible" || saving) return;
-      void fetch("/api/content-studio", { cache: "no-store" })
-        .then(async (response) => {
-          const payload = await response.json();
-          if (response.ok) setData(payload);
-        })
-        .catch(() => {});
+      if (document.visibilityState === "visible" && !saving) void load();
     };
     window.addEventListener("focus", refreshAfterPreview);
     return () => window.removeEventListener("focus", refreshAfterPreview);
@@ -261,13 +228,13 @@ export function ContentStudio() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error ?? "The content change could not be saved.");
+      const result = await response.json() as StudioSnapshot & { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "That change could not be completed.");
       setData(result);
       if (success) setMessage(success);
-      return result as StudioSnapshot;
+      return result;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The content change could not be saved.");
+      setError(cause instanceof Error ? cause.message : "That change could not be completed.");
       return null;
     } finally {
       setSaving(false);
@@ -282,7 +249,20 @@ export function ContentStudio() {
     () => activeItems.filter((item) => item.kind === "LAB"),
     [activeItems],
   );
-  const selected = activeItems.find((item) => item.id === selectedItemId) ?? activeItems[0] ?? null;
+  const catalogueCodes = useMemo(() => {
+    const known = BIS_MODULES.map((module) => module.code).filter((code) => activeItems.some((item) => item.code === code));
+    const extra = activeItems.map((item) => item.code).filter((code) => !known.includes(code));
+    return [...known, ...new Set(extra)];
+  }, [activeItems]);
+  const selected =
+    activeItems.find((item) => item.code === selectedCode && item.kind === selectedKind)
+    ?? activeItems.find((item) => item.code === selectedCode)
+    ?? activeItems[0]
+    ?? null;
+
+  useEffect(() => {
+    if (selected && selected.kind !== selectedKind) setSelectedKind(selected.kind);
+  }, [selected, selectedKind]);
 
   async function createItem() {
     const result = await act({
@@ -293,10 +273,10 @@ export function ContentStudio() {
       title,
       summary,
       linkedLabItemId: kind === "LEARNING_MODULE" ? linkedLabItemId || undefined : undefined,
-    }, `${kind === "LAB" ? "Lab" : "Learning module"} added to the library.`);
+    }, "Added to Content Studio.");
     if (!result) return;
-    const created = result.items.find((item) => item.kind === kind && item.code === code.trim().toUpperCase());
-    if (created) setSelectedItemId(created.id);
+    setSelectedCode(code.trim().toUpperCase());
+    setSelectedKind(kind);
     setCode("");
     setSlug("");
     setTitle("");
@@ -311,13 +291,12 @@ export function ContentStudio() {
       action: "createVersion",
       itemId: selected.id,
       version,
-      schemaVersion,
-      sourceFormat,
+      schemaVersion: selected.kind === "LAB" ? "universal-lab-v1" : "2.0",
+      sourceFormat: "BIS_PACKAGE_JSON",
       releaseNotes,
-    }, "Draft version created. Upload its source when ready.");
+    }, "Version created. Add whichever content is ready.");
     if (!result) return;
     setVersion("");
-    setSchemaVersion("1.0");
     setReleaseNotes("");
   }
 
@@ -328,20 +307,20 @@ export function ContentStudio() {
   ) {
     const detected = sourceFormatFor(file.name, file.type);
     if (!detected) {
-      setError("Choose a BIS package JSON, DOCX, PDF, HTML, Markdown or ZIP source.");
+      setError("Use a Word document, PDF, pasted text, HTML, Markdown, BIS JSON or ZIP file.");
       return;
     }
     if (file.size > 26_214_400) {
-      setError("Use a source file up to 25 MB.");
+      setError("Use a file smaller than 25 MB.");
       return;
     }
     if (contentVersion.status !== "DRAFT") {
-      setError("Reopen this version before replacing its source.");
+      setError("Choose Edit source before replacing a file in this version.");
       return;
     }
 
-    const uploadKey = `${contentVersion.id}:${sourceKey}`;
-    setUploadingVersionId(uploadKey);
+    const key = `${contentVersion.id}:${sourceKey}`;
+    setUploadingKey(key);
     setError("");
     setMessage("");
     try {
@@ -355,7 +334,7 @@ export function ContentStudio() {
         cacheControl: "0",
         upsert: true,
       });
-      if (upload.error) throw new Error(upload.error.message || "The source upload failed.");
+      if (upload.error) throw new Error(upload.error.message || "The file could not be uploaded.");
 
       const attached = await act({
         action: "attachSource",
@@ -372,18 +351,32 @@ export function ContentStudio() {
         await client.storage.from(CONTENT_STUDIO_BUCKET).remove([storagePath]);
         return;
       }
-      setMessage(
-        sourceKey === "lab"
-          ? "Lab source uploaded privately."
-          : `${sourceKey.replace("_", " ")} edition uploaded privately.`,
-      );
+      setMessage(sourceKey === "lab" ? "Lab document added." : `${sourceKey.replace("_", " ")} edition added.`);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The source upload failed.");
+      setError(cause instanceof Error ? cause.message : "The file could not be uploaded.");
     } finally {
-      setUploadingVersionId("");
-      const input = fileInputs.current[uploadKey];
+      setUploadingKey("");
+      const input = fileInputs.current[key];
       if (input) input.value = "";
     }
+  }
+
+  function usePastedText(entry: ContentVersion, sourceKey: "school" | "emerging_adult" | "workplace" | "lab") {
+    const key = `${entry.id}:${sourceKey}`;
+    const text = pasteValues[key]?.trim();
+    if (!text) {
+      setError("Paste the content first.");
+      return;
+    }
+    const file = new File(
+      [text],
+      `${selected?.code.toLowerCase() ?? "bis"}-${sourceKey}-pasted.md`,
+      { type: "text/markdown" },
+    );
+    void uploadSource(entry, sourceKey, file).then(() => {
+      setPasteOpen("");
+      setPasteValues((current) => ({ ...current, [key]: "" }));
+    });
   }
 
   function uatDraft(entry: ContentVersion) {
@@ -412,7 +405,7 @@ export function ContentStudio() {
     }));
   }
 
-  async function saveUat(entry: ContentVersion, success = "Activation UAT review saved.") {
+  async function saveFinalCheck(entry: ContentVersion, success = "Review saved.") {
     const draft = uatDraft(entry);
     return act({
       action: "saveUat",
@@ -422,12 +415,12 @@ export function ContentStudio() {
     }, success);
   }
 
-  async function signOffUat(entry: ContentVersion) {
-    const saved = await saveUat(entry, "UAT checklist saved.");
+  async function signOff(entry: ContentVersion) {
+    const saved = await saveFinalCheck(entry);
     if (!saved) return;
     const signed = await act(
       { action: "signOffUat", versionId: entry.id },
-      "Activation UAT passed. This exact compiled runtime can now be activated after approval.",
+      "Final check complete. This version can now be approved for publishing.",
     );
     if (signed) {
       setUatDrafts((drafts) => {
@@ -447,7 +440,7 @@ export function ContentStudio() {
       <main className="content-studio-gate">
         <LockKeyhole />
         <h1>Content Studio unavailable</h1>
-        <p>{error || "This workspace requires Super User access."}</p>
+        <p>{error || "This workspace is available to BIS administrators."}</p>
         <Button asChild variant="outline"><Link href="/workspace?view=admin">Back to administration</Link></Button>
       </main>
     );
@@ -458,19 +451,19 @@ export function ContentStudio() {
       <header className="content-studio-header">
         <Link href="/workspace?view=admin" className="content-studio-brand">
           <span><BisMark /></span>
-          <div><strong>BIS Content Studio</strong><small>Super User workspace</small></div>
+          <div><strong>BIS Content Studio</strong><small>Publishing workspace</small></div>
         </Link>
         <div className="content-studio-header-actions">
           <Button asChild variant="outline"><Link href="/workspace?view=admin"><ArrowLeft /> Administration</Link></Button>
-          <Button onClick={() => setCreateOpen((value) => !value)}><Plus /> Add content</Button>
+          <Button variant="outline" onClick={() => setCreateOpen((value) => !value)}><Plus /> Add something new</Button>
         </div>
       </header>
 
       <section className="content-studio-hero">
         <div>
-          <p className="eyebrow">Content architecture</p>
-          <h1>One place to load the next BIS module or Lab.</h1>
-          <p>Sources enter privately as drafts, pass validation, receive approval, and only then become candidates for runtime activation. Existing learner experiences remain untouched until that final controlled step.</p>
+          <p className="eyebrow">Content Studio</p>
+          <h1>Choose a BIS title and add the content that is ready.</h1>
+          <p>You do not need all three learning editions at once. Upload School, Emerging Adult or Workplace whenever each one is ready. Learners only see an edition after you preview, approve and publish it.</p>
         </div>
         <ShieldCheck />
       </section>
@@ -478,63 +471,76 @@ export function ContentStudio() {
       {error ? <div className="content-studio-alert bad"><CircleAlert /><span>{error}</span><button onClick={() => setError("")}>Dismiss</button></div> : null}
       {message ? <div className="content-studio-alert good"><Check /><span>{message}</span><button onClick={() => setMessage("")}>Dismiss</button></div> : null}
 
-      <section className="content-studio-metrics" aria-label="Content library summary">
-        <article><BookOpen /><span>Learning modules</span><strong>{data.metrics.learningModules}</strong></article>
+      <section className="content-studio-metrics" aria-label="Content summary">
+        <article><BookOpen /><span>Learning titles</span><strong>{data.metrics.learningModules}</strong></article>
         <article><FlaskConical /><span>Labs</span><strong>{data.metrics.labs}</strong></article>
-        <article><FileText /><span>Draft versions</span><strong>{data.metrics.drafts}</strong></article>
-        <article><PackageCheck /><span>Ready for activation</span><strong>{data.metrics.ready}</strong></article>
-        <article><ShieldCheck /><span>Live versions</span><strong>{data.metrics.live}</strong></article>
+        <article><FileText /><span>In progress</span><strong>{data.metrics.drafts}</strong></article>
+        <article><PackageCheck /><span>Ready to publish</span><strong>{data.metrics.ready}</strong></article>
+        <article><ShieldCheck /><span>Published versions</span><strong>{data.metrics.live}</strong></article>
       </section>
 
       {createOpen ? (
         <section className="content-studio-card content-create">
           <div className="content-studio-section-title">
-            <div><p className="eyebrow">New content</p><h2>Create a library entry</h2><p>Create the identity first. Versions and source files come next.</p></div>
-            {kind === "LAB" ? <FlaskConical /> : <BookOpen />}
+            <div><p className="eyebrow">Future addition</p><h2>Add a new BIS title</h2><p>The 34 BIS titles are already loaded. Use this only when the series grows beyond the current catalogue.</p></div>
           </div>
           <div className="content-create-grid">
-            <label>Content type<Select value={kind} onValueChange={(value) => setKind(value as ContentKind)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="LEARNING_MODULE">Learning module</SelectItem><SelectItem value="LAB">Lab</SelectItem></SelectContent></Select></label>
-            <label>Code<Input value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="FOC" maxLength={12} /></label>
-            <label>Slug<Input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="focus" /></label>
+            <label>What are you adding?<Select value={kind} onValueChange={(value) => setKind(value as ContentKind)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="LEARNING_MODULE">Learning module</SelectItem><SelectItem value="LAB">Lab</SelectItem></SelectContent></Select></label>
+            <label>Short code<Input value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="FOC" maxLength={12} /></label>
+            <label>URL name<Input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="focus" /></label>
             <label className="wide">Title<Input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={kind === "LAB" ? "Focus Lab™" : "Focus Learning Module"} /></label>
-            <label className="wide">Summary<Textarea value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="What does this content help the learner investigate?" /></label>
-            {kind === "LEARNING_MODULE" && labItems.length ? (
+            <label className="wide">Short description<Textarea value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="What will the learner investigate?" /></label>
+            {kind === "LEARNING_MODULE" ? (
               <label className="wide">Linked Lab<Select value={linkedLabItemId || "NONE"} onValueChange={(value) => setLinkedLabItemId(value === "NONE" ? "" : value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="NONE">No linked Lab yet</SelectItem>{labItems.map((item) => <SelectItem value={item.id} key={item.id}>{item.code} · {item.title}</SelectItem>)}</SelectContent></Select></label>
             ) : null}
           </div>
           <div className="content-studio-actions">
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button disabled={saving || !code || !slug || !title} onClick={() => void createItem()}>{saving ? <LoaderCircle className="spin" /> : <Plus />} Create entry</Button>
+            <Button disabled={saving || !code || !slug || !title} onClick={() => void createItem()}><Plus /> Add title</Button>
           </div>
         </section>
       ) : null}
 
-      <section className="content-studio-workspace">
-        <aside className="content-library">
-          <div className="content-library-heading">
-            <div><p className="eyebrow">Library</p><h2>Content</h2></div>
-            <Button variant="ghost" size="icon" aria-label="Reload content" disabled={loading || saving} onClick={() => void load()}><RefreshCw /></Button>
-          </div>
-          <div className="content-library-groups">
-            {(["LEARNING_MODULE", "LAB"] as ContentKind[]).map((group) => (
-              <section key={group}>
-                <h3>{group === "LAB" ? "Labs" : "Learning modules"}</h3>
-                {activeItems.filter((item) => item.kind === group).map((item) => {
-                  const live = item.versions.find((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE");
-                  const drafts = item.versions.filter((entry) => ["DRAFT", "VALIDATED", "APPROVED"].includes(entry.status)).length;
-                  return (
-                    <button type="button" key={item.id} className={selected?.id === item.id ? "active" : ""} onClick={() => setSelectedItemId(item.id)}>
-                      <span className="content-library-icon">{item.kind === "LAB" ? <FlaskConical /> : <BookOpen />}</span>
-                      <span className="content-library-copy"><strong>{item.title}</strong><small>{item.code} · {live ? `v${live.version} live` : "not live"}{drafts ? ` · ${drafts} draft${drafts === 1 ? "" : "s"}` : ""}</small></span>
-                      <ChevronRight />
-                    </button>
-                  );
-                })}
-              </section>
-            ))}
-          </div>
-        </aside>
+      <section className="content-picker content-studio-card">
+        <div>
+          <p className="eyebrow">Choose content</p>
+          <h2>What are you updating?</h2>
+        </div>
+        <label>
+          BIS title
+          <Select value={selectedCode} onValueChange={setSelectedCode}>
+            <SelectTrigger><SelectValue placeholder="Choose a BIS title" /></SelectTrigger>
+            <SelectContent>
+              {catalogueCodes.map((itemCode) => {
+                const catalogue = BIS_MODULES.find((module) => module.code === itemCode);
+                const title = catalogue?.title ?? activeItems.find((item) => item.code === itemCode)?.title ?? itemCode;
+                return <SelectItem value={itemCode} key={itemCode}>{itemCode} · {title}</SelectItem>;
+              })}
+            </SelectContent>
+          </Select>
+        </label>
+        <div className="content-kind-tabs" role="tablist" aria-label="Content type">
+          {(["LEARNING_MODULE", "LAB"] as ContentKind[]).map((itemKind) => {
+            const available = activeItems.some((item) => item.code === selectedCode && item.kind === itemKind);
+            return (
+              <button
+                type="button"
+                role="tab"
+                key={itemKind}
+                disabled={!available}
+                aria-selected={selectedKind === itemKind}
+                className={selectedKind === itemKind ? "active" : ""}
+                onClick={() => setSelectedKind(itemKind)}
+              >
+                {itemKind === "LAB" ? <FlaskConical /> : <BookOpen />}
+                {itemKind === "LAB" ? "Lab" : "Learning module"}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
+      <section className="content-studio-workspace content-studio-workspace-simple">
         <section className="content-detail">
           {selected ? (
             <>
@@ -542,63 +548,63 @@ export function ContentStudio() {
                 <div>
                   <p className="eyebrow">{selected.kind === "LAB" ? "Lab" : "Learning module"} · {selected.code}</p>
                   <h2>{selected.title}</h2>
-                  <p>{selected.summary || "No summary yet."}</p>
-                  {selected.linkedLabItemId ? <span className="content-link-note">Linked to {labItems.find((item) => item.id === selected.linkedLabItemId)?.title ?? "Lab"}</span> : null}
+                  <p>{selected.summary || "Ready for its next content version."}</p>
+                  {selected.kind === "LEARNING_MODULE" && selected.linkedLabItemId ? (
+                    <span className="content-link-note">Linked Lab: {labItems.find((item) => item.id === selected.linkedLabItemId)?.title ?? "Linked"}</span>
+                  ) : null}
                 </div>
                 <span className="content-detail-mark">{selected.kind === "LAB" ? <FlaskConical /> : <BookOpen />}</span>
               </header>
 
               <section className="content-studio-card version-create">
                 <div className="content-studio-section-title">
-                  <div><p className="eyebrow">New version</p><h3>Create a controlled draft</h3><p>{selected.kind === "LEARNING_MODULE" ? "Every learning-module version is one release with three editions: School, Emerging Adult and Workplace. All three must compile before activation." : "The draft stays private until its Universal Lab package compiles, validates and is deliberately activated."}</p></div>
-                  <FileArchive />
+                  <div>
+                    <p className="eyebrow">New version</p>
+                    <h3>Start an update</h3>
+                    <p>{selected.kind === "LEARNING_MODULE"
+                      ? "Create the version once, then add whichever editions are ready. The other editions can be added later."
+                      : "Create the version, then upload the Lab as a Word document, PDF, pasted text or BIS package."}</p>
+                  </div>
                 </div>
-                <div className="version-create-grid">
+                <div className="version-create-grid version-create-grid-simple">
                   <label>Version<Input value={version} onChange={(event) => setVersion(event.target.value)} placeholder="1.0" /></label>
-                  <label>Schema<Select value={schemaVersion} onValueChange={setSchemaVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="1.0">1.0</SelectItem><SelectItem value="2.0">2.0</SelectItem><SelectItem value="universal-lab-v1">Universal Lab v1</SelectItem></SelectContent></Select></label>
-                  <label>Source type<Select value={sourceFormat} onValueChange={(value) => setSourceFormat(value as ContentSourceFormat)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="BIS_PACKAGE_JSON">BIS package JSON</SelectItem><SelectItem value="DOCX">Word document</SelectItem><SelectItem value="PDF">PDF</SelectItem><SelectItem value="HTML">HTML</SelectItem><SelectItem value="MARKDOWN">Markdown</SelectItem><SelectItem value="ZIP">ZIP package</SelectItem></SelectContent></Select></label>
-                  <label className="wide">Release notes<Textarea value={releaseNotes} onChange={(event) => setReleaseNotes(event.target.value)} placeholder="What changed in this version?" /></label>
+                  <label className="wide">What changed? <span>(optional)</span><Textarea value={releaseNotes} onChange={(event) => setReleaseNotes(event.target.value)} placeholder="A short note for your own records." /></label>
                 </div>
-                <Button disabled={saving || !version} onClick={() => void createVersion()}>{saving ? <LoaderCircle className="spin" /> : <Plus />} Create draft</Button>
+                <Button disabled={saving || !version} onClick={() => void createVersion()}>{saving ? <LoaderCircle className="spin" /> : <Plus />} Create version</Button>
               </section>
 
               <section className="content-versions">
                 <div className="content-versions-heading">
                   <div><p className="eyebrow">Versions</p><h3>{selected.versions.length ? "Version history" : "No versions yet"}</h3></div>
+                  <Button variant="ghost" size="sm" disabled={loading || saving} onClick={() => void load()}><RefreshCw /> Refresh</Button>
                 </div>
+
                 {selected.versions.map((entry) => {
-                  const checks = entry.validationReport?.checks ?? [];
+                  const state = versionState(entry);
                   const canEdit = entry.status === "DRAFT";
                   const sourceSlots = selected.kind === "LEARNING_MODULE"
-                    ? [
-                        { key: "school" as const, label: "School edition" },
-                        { key: "emerging_adult" as const, label: "Emerging Adult edition" },
-                        { key: "workplace" as const, label: "Workplace edition" },
-                      ]
-                    : [{ key: "lab" as const, label: "Universal Lab source" }];
-                  const allSourcesReady = sourceSlots.every((slot) =>
-                    entry.sourceFiles.some((source) => source.sourceKey === slot.key),
-                  );
-                  const busy = saving || uploadingVersionId.startsWith(`${entry.id}:`);
-                  const active = selected.activeActivation?.versionId === entry.id;
-                  const previewKeys = requiredPreviewKeys(selected.kind);
+                    ? editionSlots
+                    : [{ key: "lab" as const, label: "Lab", note: "Interactive investigation" }];
+                  const hasAnySource = sourceSlots.some((slot) => entry.sourceFiles.some((source) => source.sourceKey === slot.key));
+                  const busy = saving || uploadingKey.startsWith(`${entry.id}:`);
+                  const artifactKeys = entry.artifacts.map((artifact) => artifact.artifactKey);
+                  const previewKeys = requiredPreviewKeys(selected.kind, artifactKeys);
                   const previewed = new Set(entry.uat?.previewedArtifacts ?? []);
-                  const allPreviewed = previewKeys.every((key) => previewed.has(key));
+                  const allPreviewed = previewKeys.length > 0 && previewKeys.every((key) => previewed.has(key));
                   const review = uatDraft(entry);
                   const allChecks = CONTENT_UAT_CHECKS.every((check) => review.checklist[check.id] === true);
-                  const uatPassed = entry.uat?.status === "PASSED";
+                  const finalCheckPassed = entry.uat?.status === "PASSED";
+
                   return (
                     <article className="content-version-card" key={entry.id}>
                       <header>
                         <div>
                           <span className="content-version-number">v{entry.version}</span>
-                          <strong>{selected.kind === "LEARNING_MODULE" ? "Three-edition learning release" : "Universal Lab release"}</strong>
+                          <strong>{selected.kind === "LEARNING_MODULE" ? "Learning update" : "Lab update"}</strong>
                           <small>Created {formatDate(entry.createdAt)}</small>
                         </div>
                         <div className="content-status-row">
-                          <span data-tone={statusTone(entry.status)}>{entry.status}</span>
-                          <span data-tone={statusTone(entry.compilerStatus)}>{entry.compilerStatus}</span>
-                          <span data-tone={statusTone(entry.runtimeStatus)}>{entry.runtimeStatus}</span>
+                          <span data-tone={state.tone}>{state.label}</span>
                         </div>
                       </header>
 
@@ -606,8 +612,8 @@ export function ContentStudio() {
                         <div className="content-edition-note">
                           <BookOpen />
                           <div>
-                            <strong>Three editions travel together.</strong>
-                            <p>School, Emerging Adult and Workplace are compiled and activated as one module version. BIS will not publish a partial edition set.</p>
+                            <strong>Each edition can move at its own pace.</strong>
+                            <p>School, Emerging Adult and Workplace are separate publishing slots. An edition that has not been published simply remains unavailable for that learner group.</p>
                           </div>
                         </div>
                       ) : null}
@@ -615,19 +621,28 @@ export function ContentStudio() {
                       <div className="content-source-stack">
                         {sourceSlots.map((slot) => {
                           const source = entry.sourceFiles.find((candidate) => candidate.sourceKey === slot.key);
+                          const artifactKey = slot.key === "lab" ? "lab:universal" : `learning:${slot.key}`;
+                          const prepared = entry.artifacts.some((artifact) => artifact.artifactKey === artifactKey);
+                          const liveEdition = slot.key !== "lab"
+                            ? selected.activeEditions.some((activation) => activation.deliveryEdition === slot.key && activation.versionId === entry.id)
+                            : selected.activeActivation?.versionId === entry.id && entry.runtimeStatus === "LIVE";
                           const inputKey = `${entry.id}:${slot.key}`;
                           return (
-                            <div className="content-source-slot" key={slot.key}>
-                              <div>
+                            <section className="content-source-slot content-source-slot-rich" key={slot.key}>
+                              <div className="content-source-slot-main">
                                 <FileCheck2 />
                                 <span className="content-source-slot-copy">
                                   <strong>{slot.label}</strong>
-                                  <small>{source ? source.fileName : "No source uploaded"}</small>
-                                  {source ? <small>{formatBytes(source.sourceBytes)}{source.sourceHash ? ` · SHA-256 ${source.sourceHash.slice(0, 12)}…` : ""}</small> : null}
+                                  <small>{slot.note}</small>
+                                  <small>{source ? `${source.fileName}${formatBytes(source.sourceBytes) ? ` · ${formatBytes(source.sourceBytes)}` : ""}` : "Nothing uploaded yet"}</small>
+                                </span>
+                                <span className={liveEdition ? "edition-state live" : prepared ? "edition-state ready" : "edition-state"}>
+                                  {liveEdition ? "Published" : prepared ? "Ready to preview" : source ? "Uploaded" : "Coming soon"}
                                 </span>
                               </div>
+
                               {canEdit ? (
-                                <>
+                                <div className="content-source-actions">
                                   <input
                                     ref={(node) => { fileInputs.current[inputKey] = node; }}
                                     type="file"
@@ -639,26 +654,39 @@ export function ContentStudio() {
                                     }}
                                   />
                                   <Button variant="outline" disabled={busy} onClick={() => fileInputs.current[inputKey]?.click()}>
-                                    {uploadingVersionId === inputKey ? <LoaderCircle className="spin" /> : <Upload />}
-                                    {source ? "Replace" : "Upload"}
+                                    {uploadingKey === inputKey ? <LoaderCircle className="spin" /> : <Upload />}
+                                    {source ? "Replace file" : "Upload file"}
                                   </Button>
-                                </>
+                                  <Button variant="ghost" disabled={busy} onClick={() => setPasteOpen(pasteOpen === inputKey ? "" : inputKey)}>
+                                    Paste text
+                                  </Button>
+                                </div>
                               ) : null}
-                            </div>
+
+                              {canEdit && pasteOpen === inputKey ? (
+                                <div className="content-paste-box">
+                                  <Textarea
+                                    value={pasteValues[inputKey] ?? ""}
+                                    onChange={(event) => setPasteValues((current) => ({ ...current, [inputKey]: event.target.value }))}
+                                    placeholder={slot.key === "lab"
+                                      ? "Paste the Lab text here. Keep headings such as Investigation 1 through Investigation 9."
+                                      : "Paste the authored learning material here. Headings and questions will be preserved."}
+                                  />
+                                  <div>
+                                    <Button variant="outline" onClick={() => setPasteOpen("")}>Cancel</Button>
+                                    <Button disabled={!pasteValues[inputKey]?.trim()} onClick={() => usePastedText(entry, slot.key)}>Use this text</Button>
+                                  </div>
+                                </div>
+                              ) : null}
+                            </section>
                           );
                         })}
                       </div>
 
                       {entry.compilerReport?.summary ? (
-                        <div className="content-validation-summary">
-                          <strong>{entry.compilerReport.summary}</strong>
-                          {entry.compilerVersion ? <small>Compiler: {entry.compilerVersion}</small> : null}
-                          {entry.artifacts.length ? <small>{entry.artifacts.length} runtime artifact{entry.artifacts.length === 1 ? "" : "s"} ready.</small> : null}
-                        </div>
-                      ) : entry.validationReport?.summary ? (
-                        <div className="content-validation-summary">
-                          <strong>{entry.validationReport.summary}</strong>
-                          {checks.length ? <div className="content-check-list">{checks.map((check) => <div key={check.id} data-status={check.status}><span>{check.status === "PASS" ? <Check /> : <CircleAlert />}</span><div><strong>{check.label}</strong><small>{check.detail}</small></div></div>)}</div> : null}
+                        <div className={entry.compilerStatus === "FAILED" ? "content-validation-summary bad" : "content-validation-summary"}>
+                          <strong>{entry.compilerStatus === "FAILED" ? "This version needs attention." : entry.compilerReport.summary}</strong>
+                          {entry.compilerStatus === "FAILED" ? <small>{entry.compilerReport.summary}</small> : null}
                         </div>
                       ) : null}
 
@@ -666,48 +694,37 @@ export function ContentStudio() {
                         <section className="content-uat-card">
                           <header>
                             <div>
-                              <p className="eyebrow">Activation UAT</p>
-                              <h4>Preview the exact learner runtime before release.</h4>
-                              <p>The sign-off is bound to this compiled artifact set. Recompiling resets the review.</p>
+                              <p className="eyebrow">Final check</p>
+                              <h4>See it exactly as the learner will.</h4>
+                              <p>Preview only the editions included in this version. Nothing entered in preview mode is saved to learner records.</p>
                             </div>
-                            <span data-tone={statusTone(entry.uat?.status ?? "IN_REVIEW")}>
-                              {entry.uat?.status === "PASSED" ? <><Check /> Passed</> : <><ClipboardCheck /> In review</>}
+                            <span data-tone={finalCheckPassed ? "good" : "neutral"}>
+                              {finalCheckPassed ? <><Check /> Complete</> : <><ClipboardCheck /> To do</>}
                             </span>
                           </header>
 
                           <div className="content-uat-previews">
                             {selected.kind === "LEARNING_MODULE" ? (
-                              [
-                                { key: "learning:school", edition: "school", label: "School" },
-                                { key: "learning:emerging_adult", edition: "emerging_adult", label: "Emerging Adult" },
-                                { key: "learning:workplace", edition: "workplace", label: "Workplace" },
-                              ].map((preview) => (
-                                <div key={preview.key} className={previewed.has(preview.key) ? "reviewed" : ""}>
-                                  <span>{previewed.has(preview.key) ? <Check /> : <Eye />}</span>
-                                  <div><strong>{preview.label}</strong><small>{previewed.has(preview.key) ? "Preview recorded" : "Needs preview"}</small></div>
-                                  <Button asChild size="sm" variant="outline">
-                                    <Link
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LEARNING_MODULE&code=${encodeURIComponent(selected.code)}&edition=${preview.edition}`}
-                                    >
-                                      Preview
-                                    </Link>
-                                  </Button>
-                                </div>
-                              ))
+                              editionSlots.filter((slot) => artifactKeys.includes(`learning:${slot.key}`)).map((slot) => {
+                                const key = `learning:${slot.key}`;
+                                return (
+                                  <div key={key} className={previewed.has(key) ? "reviewed" : ""}>
+                                    <span>{previewed.has(key) ? <Check /> : <Eye />}</span>
+                                    <div><strong>{slot.label}</strong><small>{previewed.has(key) ? "Preview opened" : "Open and check"}</small></div>
+                                    <Button asChild size="sm" variant="outline">
+                                      <Link target="_blank" rel="noreferrer" href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LEARNING_MODULE&code=${encodeURIComponent(selected.code)}&edition=${slot.key}`}>
+                                        Preview
+                                      </Link>
+                                    </Button>
+                                  </div>
+                                );
+                              })
                             ) : (
                               <div className={previewed.has("lab:universal") ? "reviewed" : ""}>
                                 <span>{previewed.has("lab:universal") ? <Check /> : <Eye />}</span>
-                                <div><strong>Universal Lab runtime</strong><small>{previewed.has("lab:universal") ? "Preview recorded" : "Needs preview"}</small></div>
+                                <div><strong>Lab experience</strong><small>{previewed.has("lab:universal") ? "Preview opened" : "Open and check"}</small></div>
                                 <Button asChild size="sm" variant="outline">
-                                  <Link
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LAB&code=${encodeURIComponent(selected.code)}`}
-                                  >
-                                    Preview
-                                  </Link>
+                                  <Link target="_blank" rel="noreferrer" href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LAB&code=${encodeURIComponent(selected.code)}`}>Preview</Link>
                                 </Button>
                               </div>
                             )}
@@ -718,7 +735,7 @@ export function ContentStudio() {
                               <label key={check.id}>
                                 <Checkbox
                                   checked={review.checklist[check.id] === true}
-                                  disabled={uatPassed}
+                                  disabled={finalCheckPassed}
                                   onCheckedChange={(value) => updateUatCheck(entry, check.id, value === true)}
                                 />
                                 <span><strong>{check.label}</strong><small>{check.detail}</small></span>
@@ -727,83 +744,72 @@ export function ContentStudio() {
                           </div>
 
                           <label className="content-uat-notes">
-                            UAT notes
+                            Notes <span>(optional)</span>
                             <Textarea
                               value={review.notes}
-                              disabled={uatPassed}
+                              disabled={finalCheckPassed}
                               maxLength={2000}
                               onChange={(event) => updateUatNotes(entry, event.target.value)}
-                              placeholder="Record anything another reviewer or future you should know before activation."
+                              placeholder="Anything you want to remember before publishing?"
                             />
                           </label>
 
                           <footer>
                             <span className={allPreviewed ? "ready" : ""}>
                               {allPreviewed ? <Check /> : <Eye />}
-                              {allPreviewed
-                                ? selected.kind === "LEARNING_MODULE" ? "All three editions previewed" : "Lab runtime previewed"
-                                : selected.kind === "LEARNING_MODULE" ? "Preview all three editions" : "Preview the Lab runtime"}
+                              {allPreviewed ? "All included content has been previewed" : "Open every included preview first"}
                             </span>
-                            {uatPassed ? (
-                              <p className="content-uat-signed">
-                                <ShieldCheck /> Signed off {formatDate(entry.uat?.reviewedAt)}
-                              </p>
+                            {finalCheckPassed ? (
+                              <p className="content-uat-signed"><ShieldCheck /> Final check completed {formatDate(entry.uat?.reviewedAt)}</p>
                             ) : (
                               <div>
-                                <Button variant="outline" disabled={busy} onClick={() => void saveUat(entry)}>
-                                  Save review
-                                </Button>
-                                <Button disabled={busy || !allPreviewed || !allChecks} onClick={() => void signOffUat(entry)}>
-                                  <ShieldCheck /> Sign off UAT
-                                </Button>
+                                <Button variant="outline" disabled={busy} onClick={() => void saveFinalCheck(entry)}>Save check</Button>
+                                <Button disabled={busy || !allPreviewed || !allChecks} onClick={() => void signOff(entry)}><ShieldCheck /> Mark ready</Button>
                               </div>
                             )}
                           </footer>
                         </section>
                       ) : null}
 
-                      {entry.releaseNotes ? <p className="content-release-notes"><strong>Release notes:</strong> {entry.releaseNotes}</p> : null}
+                      {entry.releaseNotes ? <p className="content-release-notes"><strong>Note:</strong> {entry.releaseNotes}</p> : null}
 
                       <footer>
                         {entry.status === "DRAFT" ? (
-                          <Button
-                            disabled={busy || !allSourcesReady}
-                            onClick={() => void act(
-                              { action: "compileVersion", versionId: entry.id },
-                              selected.kind === "LEARNING_MODULE"
-                                ? "All three editions compiled and validated."
-                                : "Lab compiled and validated.",
-                            )}
-                          >
-                            <PackageCheck /> Compile &amp; validate
+                          <Button disabled={busy || !hasAnySource} onClick={() => void act(
+                            { action: "compileVersion", versionId: entry.id },
+                            selected.kind === "LEARNING_MODULE"
+                              ? "Your uploaded edition is ready to preview."
+                              : "Your Lab is ready to preview.",
+                          )}>
+                            <PackageCheck /> Prepare preview
                           </Button>
                         ) : null}
-                        {entry.status === "VALIDATED" ? <Button disabled={busy || entry.compilerStatus !== "COMPILED"} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Version approved for activation.")}><ShieldCheck /> Approve</Button> : null}
-                        {entry.status === "APPROVED" && uatPassed ? <Button disabled={busy || entry.compilerStatus !== "COMPILED"} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, "Version activated. Learners now receive this runtime version.")}><PackageCheck /> Activate</Button> : null}
-                        {entry.status === "APPROVED" && !uatPassed ? <span className="activation-note"><LockKeyhole /> Activation locked until UAT sign-off.</span> : null}
-                        {["VALIDATED", "APPROVED"].includes(entry.status) ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "reopenVersion", versionId: entry.id }, "Version reopened as a draft.")}>Reopen draft</Button> : null}
-                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> {active ? "Active learner runtime." : "Live version."}</span> : null}
-                        {active && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open live route <ChevronRight /></Link></Button> : null}
-                        {active && selected.activeActivation?.runtimeMode === "DYNAMIC" && selected.versions.some((candidate) => candidate.id !== entry.id && candidate.status === "PUBLISHED" && ["READY", "LIVE"].includes(candidate.runtimeStatus)) ? <Button variant="outline" disabled={busy} onClick={() => void act({ action: "rollbackActivation", itemId: selected.id }, "Previous runtime version restored.")}><RefreshCw /> Roll back</Button> : null}
+                        {entry.status === "VALIDATED" && finalCheckPassed ? (
+                          <Button disabled={busy} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Approved. You can publish when ready.")}>
+                            <ShieldCheck /> Approve for publishing
+                          </Button>
+                        ) : null}
+                        {entry.status === "VALIDATED" && !finalCheckPassed ? <span className="activation-note"><Eye /> Preview and complete the final check first.</span> : null}
+                        {entry.status === "APPROVED" && finalCheckPassed ? (
+                          <Button disabled={busy} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, selected.kind === "LEARNING_MODULE" ? "Published the editions included in this version." : "Lab published.")}>
+                            <PackageCheck /> Publish
+                          </Button>
+                        ) : null}
+                        {["VALIDATED", "APPROVED"].includes(entry.status) ? (
+                          <Button variant="outline" disabled={busy} onClick={() => void act({ action: "reopenVersion", versionId: entry.id }, "Version reopened. You can replace or add source content.")}>
+                            Edit source
+                          </Button>
+                        ) : null}
+                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Published</span> : null}
+                        {entry.status === "PUBLISHED" && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open learner view <ChevronRight /></Link></Button> : null}
                       </footer>
                     </article>
                   );
                 })}
               </section>
-
-              {!selected.versions.some((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") ? (
-                <section className="content-studio-card content-architecture-note">
-                  <LockKeyhole />
-                  <div><strong>No learner-facing activation yet.</strong><p>Use the controlled path: upload → compile → approve → activate. Learning modules cannot activate until School, Emerging Adult and Workplace have all compiled successfully.</p></div>
-                </section>
-              ) : null}
-
-              {selected.versions.every((entry) => !(entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE")) ? (
-                <Button variant="ghost" className="archive-control" disabled={saving} onClick={() => void act({ action: "archiveItem", itemId: selected.id }, "Content entry archived.")}><Archive /> Archive entry</Button>
-              ) : null}
             </>
           ) : (
-            <div className="content-empty"><PackageCheck /><h2>Create the first content entry.</h2><p>Learning modules and Labs will appear here.</p></div>
+            <div className="content-empty"><PackageCheck /><h2>Choose a BIS title.</h2><p>Select a title above to add or update its learning material and Lab.</p></div>
           )}
         </section>
       </section>
