@@ -66,17 +66,15 @@ test("Supabase production migration creates protected staff boundaries without d
   assert.doesNotMatch(migration, /\bdrop\s+(?:table|column|index|schema)\b/i);
 });
 
-test("initial admin bootstrap is decided outside RLS-filtered application queries", async () => {
-  const [access, migration] = await Promise.all([
+test("initial admin bootstrap is retired after administrators exist", async () => {
+  const [access, hardening] = await Promise.all([
     readFile(new URL("lib/bis-access.ts", root), "utf8"),
-    readFile(new URL("supabase/migrations/20260915143000_bis_secure_initial_admin_bootstrap.sql", root), "utf8"),
+    readFile(new URL("supabase/migrations/20260925234000_customer_language_security_hardening.sql", root), "utf8"),
   ]);
 
-  assert.match(access, /rpc\("bootstrap_initial_admin"\)/);
-  assert.doesNotMatch(access, /select\(\{ id: roleAssignments\.id \}\)/);
-  assert.match(migration, /security definer/i);
-  assert.match(migration, /private\.has_active_admin\(\)/);
-  assert.match(migration, /order by l\.created_at asc, l\.user_id asc/i);
-  assert.match(migration, /grant execute on function public\.bootstrap_initial_admin\(\) to authenticated/i);
-  assert.doesNotMatch(migration, /grant execute on function public\.bootstrap_initial_admin\(\) to anon/i);
+  assert.doesNotMatch(access, /rpc\("bootstrap_initial_admin"\)/);
+  assert.match(hardening, /revoke execute on function public\.bootstrap_initial_admin\(\) from public, anon, authenticated/i);
+  assert.match(hardening, /programme_decisions_insert/);
+  assert.match(hardening, /select auth\.uid\(\)/i);
+  assert.match(hardening, /idx_programme_decisions_comparison_cohort/);
 });
