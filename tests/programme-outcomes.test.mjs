@@ -262,13 +262,13 @@ test("organisation learning adds programme-design questions without exposing lea
   assert.match(route, /organisationLearning:/);
   assert.match(view, /What the programme can learn/);
   assert.match(view, /What should the organisation learn from this programme\?/);
-  assert.match(view, /Programme responsiveness/);
+  assert.match(view, /Support follow-up/);
   assert.match(view, /Adaptation/);
-  assert.match(view, /Decision confidence/);
-  assert.match(view, /Organisational learning/);
+  assert.match(view, /How confident can we be\?/);
+  assert.match(view, /For the next programme/);
   assert.match(view, /Observe/);
-  assert.match(view, /Change deliberately/);
-  assert.match(view, /Compare the next cycle/);
+  assert.match(view, /Try one clear change/);
+  assert.match(view, /Check the next group/);
 
   assert.match(migration, /private\.can_view_sponsor_cohort/);
   assert.match(migration, /supportResponse/);
@@ -282,9 +282,9 @@ test("organisation learning adds programme-design questions without exposing lea
 
 test("programme-design insight treats missing response and adaptation records as unknown, not failure", async () => {
   const view = await source("app/programme-outcomes-view.tsx");
-  assert.match(view, /Missing response records do not prove support did not happen/);
-  assert.match(view, /BIS leaves this question open rather than treating missing calibration evidence as failure/);
-  assert.match(view, /not claims about why an outcome occurred/);
+  assert.match(view, /If a response is not recorded in BIS, that does not mean support did not happen/);
+  assert.match(view, /BIS leaves the question open instead of treating missing information as failure/);
+  assert.match(view, /not proof of why a result happened/);
 });
 
 test("organisation learning preserves causal restraint and baseline comparison language", async () => {
@@ -292,8 +292,8 @@ test("organisation learning preserves causal restraint and baseline comparison l
     source("app/programme-outcomes-view.tsx"),
     source("supabase/migrations/20260925205000_programme_design_organisational_learning.sql"),
   ]);
-  assert.match(view, /baseline for the next programme cycle/);
-  assert.match(view, /Comparisons remain descriptive unless the evaluation design supports stronger causal claims/);
+  assert.match(view, /starting point for the next programme/);
+  assert.match(view, /A comparison can show whether the pattern changed, but it does not prove what caused the change/);
   assert.match(migration, /descriptiveNotCausal/);
   assert.match(migration, /They do not prove why an outcome occurred or that BIS caused it/);
 });
@@ -302,10 +302,10 @@ test("organisation learning preserves causal restraint and baseline comparison l
 test("programme PDF carries the organisational learning layer", async () => {
   const pdf = await source("lib/programme-report-pdf.ts");
   assert.match(pdf, /What the programme can learn/);
-  assert.match(pdf, /What should the organisation learn from this programme\?/);
-  assert.match(pdf, /Programme responsiveness/);
-  assert.match(pdf, /Organisational learning loop/);
-  assert.match(pdf, /Missing response records do not prove support did not happen/);
+  assert.match(pdf, /What should the team learn from this programme\?/);
+  assert.match(pdf, /Support follow-up/);
+  assert.match(pdf, /Learning for the next programme/);
+  assert.match(pdf, /If a response is not recorded in BIS, that does not mean support did not happen/);
 });
 
 
@@ -339,7 +339,7 @@ test("programme decision register connects evidence to a next-cycle organisation
 
   assert.match(pdf, /Programme decisions/);
   assert.match(pdf, /Interpretation boundary/);
-  assert.match(pdf, /does not convert a programme decision into proof of causality/);
+  assert.match(pdf, /does not prove that the programme change caused the result/);
 });
 
 test("programme owner is writable while sponsor viewer remains read only", async () => {
