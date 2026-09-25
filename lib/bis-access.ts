@@ -84,12 +84,12 @@ export function hasRole(roles: string[], role: StaffRole) {
 
 export function requireRole(roles: string[], role: StaffRole) {
   if (!hasRole(roles, role)) {
-    throw new AccessError("You do not have access to this restricted operation.");
+    throw new AccessError("You do not have access to that action.");
   }
 }
 
 export function requireAnyRole(roles: string[], allowed: StaffRole[]) {
   if (!allowed.some((role) => hasRole(roles, role))) {
-    throw new AccessError("You do not have access to the operations workspace.");
+    throw new AccessError("You do not have access to this programme workspace.");
   }
 }
