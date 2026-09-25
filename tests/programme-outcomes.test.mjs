@@ -296,3 +296,13 @@ test("organisation learning preserves causal restraint and baseline comparison l
   assert.match(migration, /descriptiveNotCausal/);
   assert.match(migration, /They do not prove why an outcome occurred or that BIS caused it/);
 });
+
+
+test("programme PDF carries the organisational learning layer", async () => {
+  const pdf = await source("lib/programme-report-pdf.ts");
+  assert.match(pdf, /Programme-design insight/);
+  assert.match(pdf, /What should the organisation learn from this programme\?/);
+  assert.match(pdf, /Programme responsiveness/);
+  assert.match(pdf, /Organisational learning loop/);
+  assert.match(pdf, /Missing response records do not prove support did not happen/);
+});
