@@ -3,6 +3,7 @@ import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   contentActivationUat,
+  contentEditionActivations,
   contentLibraryItems,
   contentLibraryVersions,
   contentReleases,
@@ -108,12 +109,13 @@ async function resetUat(versionId: string, actorId: string) {
 
 async function snapshot() {
   const db = getDb();
-  const [items, versions, sourceFiles, artifacts, activations, uatRows] = await Promise.all([
+  const [items, versions, sourceFiles, artifacts, activations, editionActivations, uatRows] = await Promise.all([
     db.select().from(contentLibraryItems).orderBy(asc(contentLibraryItems.kind), asc(contentLibraryItems.title)),
     db.select().from(contentLibraryVersions).orderBy(desc(contentLibraryVersions.createdAt)),
     db.select().from(contentSourceFiles).orderBy(desc(contentSourceFiles.createdAt)),
     db.select().from(contentRuntimeArtifacts).orderBy(desc(contentRuntimeArtifacts.createdAt)),
     db.select().from(contentRuntimeActivations).orderBy(desc(contentRuntimeActivations.activatedAt)),
+    db.select().from(contentEditionActivations).orderBy(desc(contentEditionActivations.activatedAt)),
     db.select().from(contentActivationUat).orderBy(desc(contentActivationUat.updatedAt)),
   ]);
   const mappedVersions = versions.map((row) => ({
@@ -136,6 +138,14 @@ async function snapshot() {
   const mappedItems = items.map((item) => ({
     ...item,
     activeActivation: activations.find((activation) => activation.itemId === item.id && activation.status === "ACTIVE") ?? null,
+    activeEditions: editionActivations
+      .filter((activation) => activation.itemId === item.id && activation.status === "ACTIVE")
+      .map((activation) => ({
+        id: activation.id,
+        deliveryEdition: activation.deliveryEdition,
+        versionId: activation.versionId,
+        activatedAt: activation.activatedAt,
+      })),
     versions: mappedVersions.filter((version) => version.itemId === item.id),
   }));
   return {
@@ -327,16 +337,20 @@ async function postHandler(request: Request) {
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
       if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
       const sources = await db.select().from(contentSourceFiles).where(eq(contentSourceFiles.versionId, versionId));
-      const expectedKeys = item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : ["lab"];
-      const missing = expectedKeys.filter((key) => !sources.some((source) => source.sourceKey === key));
-      if (missing.length) throw new Error(item.kind === "LEARNING_MODULE"
-        ? `Every learning module has three editions. Upload: ${missing.join(", ")}.`
-        : "Upload the Lab source before compiling.");
+      if (item.kind === "LEARNING_MODULE" && !sources.some((source) => LEARNING_EDITION_KEYS.includes(source.sourceKey as DeliveryEdition))) {
+        throw new Error("Upload at least one learning edition before preparing a preview.");
+      }
+      if (item.kind === "LAB" && !sources.some((source) => source.sourceKey === "lab")) {
+        throw new Error("Upload the Lab document before preparing a preview.");
+      }
 
       const compiled = [];
       try {
         if (item.kind === "LEARNING_MODULE") {
-          for (const edition of LEARNING_EDITION_KEYS) {
+          const editionsToCompile = LEARNING_EDITION_KEYS.filter((edition) =>
+            sources.some((entry) => entry.sourceKey === edition),
+          );
+          for (const edition of editionsToCompile) {
             const source = sources.find((entry) => entry.sourceKey === edition)!;
             const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(source.storagePath);
             if (download.error || !download.data) throw new Error(`${edition}: source file could not be opened.`);
@@ -400,11 +414,13 @@ async function postHandler(request: Request) {
         const now = new Date().toISOString();
         const report = {
           summary: item.kind === "LEARNING_MODULE"
-            ? "Compiled all three delivery editions into runtime programmes."
-            : "Compiled the Universal Lab package.",
+            ? `Prepared ${compiled.length} learning edition${compiled.length === 1 ? "" : "s"} for preview.`
+            : "Prepared the Lab for preview.",
           compilerVersion: CONTENT_COMPILER_VERSION,
           artifactKeys: compiled.map((artifact) => artifact.artifactKey),
-          requiredEditions: item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : [],
+          requiredEditions: item.kind === "LEARNING_MODULE"
+            ? compiled.map((artifact) => artifact.deliveryEdition).filter(Boolean)
+            : [],
         };
         await db.update(contentLibraryVersions).set({
           compilerStatus: "COMPILED",
@@ -416,6 +432,11 @@ async function postHandler(request: Request) {
           runtimeStatus: "READY",
           validationReport: JSON.stringify({ summary: report.summary, activationReady: true }),
           manifest: JSON.stringify(report),
+          deliveryEditions: JSON.stringify(
+            item.kind === "LEARNING_MODULE"
+              ? compiled.map((artifact) => artifact.deliveryEdition).filter(Boolean)
+              : [],
+          ),
           status: "VALIDATED",
           validatedAt: now,
           updatedAt: now,
