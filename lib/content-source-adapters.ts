@@ -558,6 +558,7 @@ function docxTable(block: string): SourceBlock | null {
     heading: false,
     html: "<table><tbody>" + htmlRows.join("") + "</tbody></table>",
     tableRows,
+    kind: "table",
   };
 }
 
@@ -584,8 +585,10 @@ function htmlBlocks(html: string) {
     const tag = match[1].toLowerCase();
     const text = stripTags(match[0]);
     if (!text) continue;
-    const heading = tag.startsWith("h") || Boolean(canonicalPageKey(text) && text.length < 80);
-    blocks.push({ text, heading, html: match[0] });
+    const heading = tag.startsWith("h")
+      || Boolean(strictProgrammePageKey(text))
+      || /^(📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌)\s*\S/u.test(text);
+    blocks.push({ text, heading, html: match[0], kind: tag === "table" ? "table" : "paragraph" });
   }
   return blocks;
 }
@@ -627,15 +630,24 @@ function markdownBlocks(markdown: string) {
     }
 
     const structural =
-      /^investigation\s*[1-9]\b/i.test(trimmed)
+      Boolean(strictProgrammePageKey(trimmed))
+      || /^investigation\s*[1-9]\b/i.test(trimmed)
       || /^(phase\s+[ab]|mission\s*:|you will produce\s*:|time\s*:|difficulty\s*:)/i.test(trimmed)
-      || /^(bei-\d+|step\s+\d+|✍️|☐|⭐|🌱|⏸|🔎|🤔|📖|🧠|🤝)/u.test(trimmed)
+      || /^(bei-\d+|step\s+\d+|✍️|☐|⭐|🌱|⏸|🔎|🤔|📖|🧠|🤝|💭|✅|🏠|📂|⚡|🔬|🎯|🧪|📊|📌)/u.test(trimmed)
+      || /^(answers?|suggested answers?)\s*:?$/i.test(trimmed)
       || /\?["”]?\s*$/.test(trimmed)
+      || handbookFieldCue(trimmed)
       || looksLikeBlank(trimmed);
 
     if (structural) {
       flush();
-      pushText(trimmed, /^investigation\s*[1-9]\b/i.test(trimmed) || /^phase\s+[ab]\b/i.test(trimmed));
+      pushText(
+        trimmed,
+        Boolean(strictProgrammePageKey(trimmed))
+          || /^investigation\s*[1-9]\b/i.test(trimmed)
+          || /^phase\s+[ab]\b/i.test(trimmed)
+          || /^(📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌)/u.test(trimmed),
+      );
       continue;
     }
     paragraph.push(trimmed.replace(/^[-*+]\s+/, ""));
@@ -696,10 +708,12 @@ function pdfBlocks(bytes: Uint8Array) {
 
   const lines = text.split(/\n+/).map((line) => line.replace(/\s+/g, " ").trim()).filter(Boolean);
   return lines.map((line): SourceBlock => {
-    const heading = Boolean(canonicalPageKey(line) && line.length < 100);
+    const heading = Boolean(strictProgrammePageKey(line))
+      || /^(📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌)\s*\S/u.test(line);
     return {
       text: line,
       heading,
+      kind: "paragraph",
       html: heading ? "<h2>" + escapeHtml(line) + "</h2>" : "<p>" + escapeHtml(line) + "</p>",
     };
   });
