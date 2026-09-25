@@ -414,14 +414,19 @@ export function ProgrammePlayer({
       if (!documentRoot) return;
       enhanceHandbookDocument(documentRoot, moduleCode, page.id);
       documentRoot
-        .querySelectorAll<HTMLTextAreaElement>("textarea[data-field-id]")
+        .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
         .forEach((field) => {
           const id = field.dataset.fieldId;
           if (!id) return;
-          field.value = drafts[id] ?? snapshot?.workbookResponses?.[id]?.value ?? "";
+          const savedValue = drafts[id] ?? snapshot?.workbookResponses?.[id]?.value ?? "";
+          if (field instanceof HTMLInputElement && field.type === "checkbox") {
+            field.checked = savedValue === "true" || savedValue === field.value;
+          } else {
+            field.value = savedValue;
+          }
           if (field.dataset.purpose === "FORMAL_LAB_REFERENCE") {
             field.disabled = true;
-            field.placeholder = "Captured in the live Habit Lab";
+            if ("placeholder" in field) field.placeholder = "Captured in the live Lab";
           }
         });
     });
@@ -435,21 +440,24 @@ export function ProgrammePlayer({
   }, [saveDirtyResponses, saveState]);
 
   function onDocumentInput(event: FormEvent<HTMLElement>) {
-    const target = event.target as HTMLTextAreaElement;
+    const target = event.target;
     if (
-      !(target instanceof HTMLTextAreaElement) ||
+      !(target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement || target instanceof HTMLSelectElement) ||
       !target.dataset.fieldId ||
       target.dataset.purpose === "FORMAL_LAB_REFERENCE"
     ) {
       return;
     }
     if (!page || !target.dataset.sourceKey) return;
+    const value = target instanceof HTMLInputElement && target.type === "checkbox"
+      ? target.checked ? (target.value || "true") : ""
+      : target.value;
     if (previewMode) {
-      setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: target.value }));
+      setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: value }));
       return;
     }
-    queue.current.edit({ semanticFieldId: target.dataset.fieldId, semanticStepId: page.id, sourceFieldKey: target.dataset.sourceKey, value: target.value });
-    setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: target.value }));
+    queue.current.edit({ semanticFieldId: target.dataset.fieldId, semanticStepId: page.id, sourceFieldKey: target.dataset.sourceKey, value });
+    setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: value }));
     setSaveState("dirty");
   }
 
@@ -688,7 +696,7 @@ export function ProgrammePlayer({
             </div>
 
             <fieldset className="workbook-fields" disabled={completing}>
-            <article ref={documentRef} className="prototype-document" onInput={onDocumentInput}>
+            <article ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
                   <div dangerouslySetInnerHTML={{ __html: dayThree.intro }} />

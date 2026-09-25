@@ -86,15 +86,30 @@ test("Universal V1 Labs stay in the canonical nine-investigation presentation", 
 });
 
 test("Word PDF HTML Markdown and ZIP learning sources can be manufactured into Programme Player content", async () => {
-  const adapters = await source("lib/content-source-adapters.ts");
+  const [adapters, compiler, player] = await Promise.all([
+    source("lib/content-source-adapters.ts"),
+    source("lib/content-compiler.ts"),
+    source("app/learning/programme-player.tsx"),
+  ]);
   for (const format of ["DOCX", "PDF", "HTML", "MARKDOWN", "ZIP"]) {
     assert.ok(adapters.includes('sourceFormat === "' + format + '"'));
   }
   assert.match(adapters, /balancedProgrammePages/);
+  assert.match(adapters, /strictProgrammePageKey/);
+  assert.match(adapters, /INVESTIGATION\\s\+\)\?CERTIFICATE|INVESTIGATION/);
+  assert.match(adapters, /DAY\\s\+\(10\|\[1-9\]\).*OF\\s\+10/);
+  assert.match(adapters, /programmeExperimentPosition/);
+  assert.match(adapters, /handbookQuestionPrompts/);
+  assert.match(adapters, /handbookChoice/);
+  assert.match(adapters, /pseudoTableBlock/);
+  assert.match(adapters, /answerColumn/);
   assert.match(adapters, /word\/document\.xml/);
   assert.match(adapters, /PDF source contains no extractable text/);
   assert.match(adapters, /HTML source contains executable content/);
   assert.match(adapters, /inflateRawSync/);
+  assert.match(compiler, /ensureWorkbookBindings/);
+  assert.match(compiler, /stableWorkbookToken/);
+  assert.match(player, /HTMLInputElement \| HTMLSelectElement/);
 });
 
 test("structured Lab documents can be manufactured into nine-investigation runtime data", async () => {
