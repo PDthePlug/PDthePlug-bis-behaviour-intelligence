@@ -212,7 +212,7 @@ async function compiledRiskProgramme() {
 test("Risk-style Word source resolves to the canonical BIS 13-position handbook", async () => {
   const programme = await compiledRiskProgramme();
 
-  assert.equal(programme.labCode, "RSK");
+  assert.equal(programme.identity.code, "RSK");
   assert.equal(programme.edition, "school");
   assert.equal(programme.identity.subtitle, "The Risk Investigation Handbook");
   assert.deepEqual(
@@ -283,7 +283,7 @@ test("compiled handbook inputs remain inside the existing workbook persistence c
   ]);
 
   assert.match(compiler, /ensureWorkbookBindings/);
-  assert.match(compiler, /<(textarea\|input\|select)/);
+  assert.ok(compiler.includes("textarea|input|select"));
   assert.match(compiler, /stableWorkbookToken/);
   assert.match(player, /HTMLTextAreaElement \| HTMLInputElement \| HTMLSelectElement/);
   assert.match(player, /onChange=\{onDocumentInput\}/);
