@@ -137,6 +137,60 @@ type SourceBlock = {
   heading: boolean;
 };
 
+const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
+
+function balancedProgrammePages(blocks: SourceBlock[], sourceLabel: string) {
+  const usable = blocks.filter((block) => block.html.trim());
+  if (usable.length < 26) {
+    throw new Error(sourceLabel + ": I could read the document, but it is too short to build the full BIS learning journey.");
+  }
+
+  const candidates = usable
+    .map((block, index) => ({ block, index }))
+    .filter(({ block, index }) =>
+      index > 0 &&
+      block.heading &&
+      block.text.length >= 3 &&
+      block.text.length <= 120 &&
+      !sectionNoise.test(block.text),
+    )
+    .map(({ index }) => index);
+
+  const totalWeight = usable.reduce((sum, block) => sum + Math.max(1, block.text.length), 0);
+  const cumulative: number[] = [];
+  let running = 0;
+  for (const block of usable) {
+    running += Math.max(1, block.text.length);
+    cumulative.push(running);
+  }
+
+  const boundaries = [0];
+  for (let page = 1; page < PAGE_KEYS.length; page += 1) {
+    const target = (totalWeight * page) / PAGE_KEYS.length;
+    let targetIndex = cumulative.findIndex((weight) => weight >= target);
+    if (targetIndex < 0) targetIndex = usable.length - 1;
+    const minIndex = boundaries[boundaries.length - 1] + 1;
+    const maxIndex = usable.length - (PAGE_KEYS.length - page);
+    const nearby = candidates
+      .filter((index) => index >= minIndex && index <= maxIndex)
+      .sort((a, b) => Math.abs(a - targetIndex) - Math.abs(b - targetIndex))[0];
+    boundaries.push(Math.max(minIndex, Math.min(maxIndex, nearby ?? targetIndex)));
+  }
+
+  return PAGE_KEYS.map((key, index) => {
+    const start = boundaries[index];
+    const end = boundaries[index + 1] ?? usable.length;
+    const body = usable.slice(start, end);
+    const html = body.map((block) => block.html).join("\n").trim();
+    const authoredLabel = body.find((block) => block.heading && !sectionNoise.test(block.text))?.text;
+    return {
+      key,
+      label: authoredLabel || key,
+      html,
+    };
+  });
+}
+
 function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   const boundaries: Array<{ key: PageKey; index: number }> = [];
   for (let index = 0; index < blocks.length; index += 1) {
@@ -149,7 +203,7 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   const found = new Map(boundaries.map((boundary) => [boundary.key, boundary.index]));
   const missing = PAGE_KEYS.filter((key) => !found.has(key));
   if (missing.length) {
-    throw new Error(sourceLabel + ": could not find all 13 BIS programme headings. Missing: " + missing.join(", ") + ".");
+    return balancedProgrammePages(blocks, sourceLabel);
   }
 
   const ordered = PAGE_KEYS.map((key) => ({ key, index: found.get(key)! }));
