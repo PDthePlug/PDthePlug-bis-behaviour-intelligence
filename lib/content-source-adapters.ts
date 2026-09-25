@@ -460,12 +460,179 @@ export async function adaptLearningSource(
   throw new Error(edition + ": " + sourceFormat + " has no approved learning adapter.");
 }
 
-export function adaptLabSource(bytes: Uint8Array, sourceFormat: ContentSourceFormat) {
+function labInvestigationNumber(value: string) {
+  const cleaned = value.replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+  const match = cleaned.match(/^investigation\s*([1-9])(?:\s*of\s*9)?\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+function labInvestigationTitle(value: string, number: number) {
+  return value
+    .replace(/[–—]/g, "-")
+    .replace(new RegExp("^investigation\\s*" + number + "(?:\\s*of\\s*9)?\\s*(?:[-:·|]\\s*)?", "i"), "")
+    .trim();
+}
+
+function questionTexts(value: string) {
+  const text = value.replace(/\s+/g, " ").trim();
+  if (!text) return [] as string[];
+  const numbered = [...text.matchAll(/(?:^|\s)(?:[1-9]|1\d)[.)]\s*([^?]{5,500}\?)/g)]
+    .map((match) => match[1].trim())
+    .filter(Boolean);
+  if (numbered.length) return numbered;
+  if (text.endsWith("?") && text.length >= 8 && text.length <= 600) return [text.replace(/^\d+[.)]\s*/, "")];
+  return [] as string[];
+}
+
+function valueAfterLabel(blocks: SourceBlock[], label: RegExp) {
+  for (const block of blocks) {
+    const match = block.text.match(label);
+    if (match?.[1]?.trim()) return match[1].trim();
+  }
+  return "";
+}
+
+function labPackageFromBlocks(
+  blocks: SourceBlock[],
+  code: string,
+  version: string,
+  metadata: AdaptMetadata,
+) {
+  const boundaries: Array<{ number: number; index: number; title: string }> = [];
+  for (let index = 0; index < blocks.length; index += 1) {
+    const number = labInvestigationNumber(blocks[index].text);
+    if (!number) continue;
+    if (boundaries.some((boundary) => boundary.number === number)) continue;
+    boundaries.push({
+      number,
+      index,
+      title: labInvestigationTitle(blocks[index].text, number),
+    });
+  }
+  boundaries.sort((a, b) => a.number - b.number);
+
+  const expected = Array.from({ length: 9 }, (_, index) => index + 1);
+  const found = boundaries.map((boundary) => boundary.number);
+  const missing = expected.filter((number) => !found.includes(number));
+  if (missing.length) {
+    throw new Error(
+      "I could read this Lab document, but I could not find all nine investigation sections. " +
+      "Please use headings such as “Investigation 1” through “Investigation 9”. Missing: " +
+      missing.join(", ") + ".",
+    );
+  }
+
+  const investigations = boundaries.map((boundary, boundaryIndex) => {
+    const end = boundaries[boundaryIndex + 1]?.index ?? blocks.length;
+    const body = blocks.slice(boundary.index + 1, end);
+    const mission = valueAfterLabel(body, /^mission\s*[:\-]\s*(.+)$/i)
+      || body.find((block) => block.text && !block.heading)?.text
+      || "Investigate what the evidence shows.";
+    const time = valueAfterLabel(body, /^(?:time|duration)\s*[:\-]\s*(.+)$/i) || "10 minutes";
+    const difficulty = valueAfterLabel(body, /^difficulty\s*[:\-]\s*(.+)$/i) || "Observe";
+
+    const promptRows: Array<{ blockIndex: number; text: string }> = [];
+    body.forEach((block, blockIndex) => {
+      for (const question of questionTexts(block.text)) {
+        promptRows.push({ blockIndex, text: question });
+      }
+    });
+
+    if (!promptRows.length) {
+      throw new Error(
+        "Investigation " + boundary.number +
+        ": I found the section, but I could not identify a learner question. Add at least one question ending in “?”.",
+      );
+    }
+
+    const promptBlockIndexes = new Set(promptRows.map((row) => row.blockIndex));
+    const introHtml = body
+      .filter((_, blockIndex) => !promptBlockIndexes.has(blockIndex))
+      .map((block) => block.html)
+      .join("\n")
+      .trim();
+
+    const producesIndex = body.findIndex((block) => /^you will produce\s*:?$/i.test(block.text));
+    const produces = producesIndex >= 0
+      ? body.slice(producesIndex + 1, producesIndex + 5)
+          .filter((block) => block.text && !block.heading)
+          .map((block) => block.text)
+      : [];
+
+    return {
+      number: boundary.number,
+      title: boundary.title || "Investigation " + boundary.number,
+      mission: mission.replace(/^mission\s*[:\-]\s*/i, ""),
+      phase: boundary.number === 7
+        ? "Experiment"
+        : boundary.number === 8
+          ? "Review"
+          : boundary.number === 9
+            ? "Synthesis"
+            : "Investigation",
+      time,
+      difficulty,
+      produces,
+      introHtml: introHtml || undefined,
+      prompts: promptRows.map((row, index) => ({
+        id: code + ".INV" + boundary.number + ".Q" + String(index + 1).padStart(2, "0"),
+        label: "Question " + (index + 1),
+        prompt: row.text,
+        type: "TEXT",
+        placeholder: "Write what you noticed…",
+        sensitivity: "P2",
+        required: true,
+      })),
+    };
+  });
+
+  return new TextEncoder().encode(JSON.stringify({
+    kind: "LAB",
+    schemaVersion: "universal-lab-v1",
+    runtimeProfile: "UNIVERSAL_V1",
+    identity: {
+      code,
+      version,
+      title: metadata.title,
+      shortTitle: metadata.title.replace(/\s*Learning Module$/i, ""),
+      accent: "#2f8276",
+      focus: "A private behavioural investigation.",
+    },
+    investigations,
+  }));
+}
+
+export async function adaptLabSource(
+  bytes: Uint8Array,
+  sourceFormat: ContentSourceFormat,
+  code: string,
+  version: string,
+  metadata: AdaptMetadata,
+) {
   if (sourceFormat === "BIS_PACKAGE_JSON") return bytes;
   if (sourceFormat === "ZIP") {
-    const entry = zipEntries(bytes).find((candidate) => candidate.name.toLowerCase().endsWith(".json"));
-    if (!entry) throw new Error("Lab ZIP package must contain a Universal Lab JSON package.");
-    return extractZipEntry(bytes, entry);
+    const entries = zipEntries(bytes);
+    const jsonEntry = entries.find((candidate) => candidate.name.toLowerCase().endsWith(".json"));
+    if (jsonEntry) return extractZipEntry(bytes, jsonEntry);
+    const docxEntry = entries.find((candidate) => candidate.name.toLowerCase().endsWith(".docx"));
+    if (docxEntry) {
+      return adaptLabSource(extractZipEntry(bytes, docxEntry), "DOCX", code, version, metadata);
+    }
+    throw new Error("The ZIP does not contain a Lab JSON package or Word document.");
   }
-  throw new Error(sourceFormat + " Lab sources are retained safely, but Universal Lab activation requires BIS JSON or a ZIP containing it.");
+
+  if (sourceFormat === "DOCX") {
+    return labPackageFromBlocks(docxBlocks(bytes), code, version, metadata);
+  }
+  if (sourceFormat === "PDF") {
+    return labPackageFromBlocks(pdfBlocks(bytes), code, version, metadata);
+  }
+  if (sourceFormat === "HTML") {
+    return labPackageFromBlocks(htmlBlocks(new TextDecoder().decode(bytes)), code, version, metadata);
+  }
+  if (sourceFormat === "MARKDOWN") {
+    return labPackageFromBlocks(markdownBlocks(new TextDecoder().decode(bytes)), code, version, metadata);
+  }
+
+  throw new Error("I can store this Lab source, but I cannot read this file type yet.");
 }
