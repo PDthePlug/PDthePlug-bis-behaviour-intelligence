@@ -600,10 +600,11 @@ async function postHandler(request: Request) {
       }
       const previewed = parseJson(uat.previewedArtifacts, []) as string[];
       const checklist = normalizeUatChecklist(parseJson(uat.checklist, {}));
-      if (!previewCoverageComplete(item.kind as ContentKind, previewed)) {
+      const artifactKeys = artifacts.map((artifact) => artifact.artifactKey);
+      if (!previewCoverageComplete(item.kind as ContentKind, previewed, artifactKeys)) {
         throw new Error(item.kind === "LEARNING_MODULE"
-          ? "Preview School, Emerging Adult and Workplace editions before UAT sign-off."
-          : "Preview the Universal Lab runtime before UAT sign-off.");
+          ? "Preview every learning edition you prepared before signing off."
+          : "Preview the Lab before signing off.");
       }
       if (!checklistComplete(checklist)) throw new Error("Complete every activation UAT check before sign-off.");
       const now = new Date().toISOString();
@@ -638,15 +639,18 @@ async function postHandler(request: Request) {
         !uat ||
         uat.status !== "PASSED" ||
         uat.artifactFingerprint !== fingerprint ||
-        !previewCoverageComplete(item.kind as ContentKind, uatPreviewed) ||
+        !previewCoverageComplete(
+          item.kind as ContentKind,
+          uatPreviewed,
+          artifacts.map((artifact) => artifact.artifactKey),
+        ) ||
         !checklistComplete(uatChecklist)
       ) {
-        throw new Error("Activation UAT must be completed and signed off against the current compiled runtime.");
+        throw new Error("Finish the preview checklist and sign off this exact version before publishing.");
       }
       if (item.kind === "LEARNING_MODULE") {
         const editions = artifacts.map((artifact) => artifact.deliveryEdition).filter(Boolean);
-        const missing = LEARNING_EDITION_KEYS.filter((edition) => !editions.includes(edition));
-        if (missing.length) throw new Error(`Activation blocked: missing compiled editions ${missing.join(", ")}.`);
+        if (!editions.length) throw new Error("Prepare at least one learning edition before publishing.");
       } else if (!artifacts.some((artifact) => artifact.artifactKey === "lab:universal")) {
         throw new Error("Activation blocked: the Universal Lab runtime artifact is missing.");
       }
