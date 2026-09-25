@@ -55,15 +55,8 @@ export async function identityFrom(): Promise<Identity | null> {
   };
 }
 
-async function bootstrapInitialAdmin() {
-  const supabase = requestSupabaseClient();
-  const { error } = await supabase.rpc("bootstrap_initial_admin");
-  if (error) throw new Error(error.message);
-}
-
-export async function getRoles(identity: Identity, bootstrap = true) {
+export async function getRoles(identity: Identity) {
   const db = getDb();
-  if (bootstrap) await bootstrapInitialAdmin();
 
   const assignments = await db
     .select({ role: roleAssignments.role })
