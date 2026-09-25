@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import {
   ChevronDown,
+  ClipboardCheck,
   Compass,
   Download,
   Eye,
@@ -11,6 +12,7 @@ import {
   Layers3,
   Lightbulb,
   LockKeyhole,
+  Plus,
   MessageCircleQuestion,
   Repeat2,
   ShieldCheck,
@@ -140,6 +142,28 @@ export type SponsorOutcome = {
       note: string;
     };
   };
+  decisionRegister?: {
+    canManage: boolean;
+    decisions: Array<{
+      id: string;
+      cohortId: string;
+      sourceSignal: string;
+      sourceTitle: string;
+      sourceEvidence: string;
+      decisionText: string;
+      expectedOutcome: string;
+      ownerLabel: string | null;
+      reviewOn: string | null;
+      status: "OPEN" | "REVIEWED" | "CLOSED";
+      reviewOutcome: "IMPROVED" | "MIXED" | "UNCHANGED" | "WORSE" | "NOT_ENOUGH_EVIDENCE" | null;
+      reviewNote: string | null;
+      comparisonCohortId: string | null;
+      createdByEmail: string;
+      createdAt: string;
+      updatedAt: string;
+      reviewedAt: string | null;
+    }>;
+  };
   deepAnalysis: null | {
     cohortId: string;
     suppressed: boolean;
@@ -220,6 +244,33 @@ function ratio(part: number, whole: number) {
 
 function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   const metrics = outcome.metrics;
+
+  function useInsightForDecision(insight: { kicker: string; title: string; body: string }) {
+    setDecisionSignal(programmeDecisionSignal(insight.kicker));
+    setDecisionTitle(insight.title);
+    setDecisionEvidence(insight.body);
+    document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function saveDecision() {
+    const saved = await act({
+      action: "createProgrammeDecision",
+      cohortId: outcome.cohort.id,
+      sourceSignal: decisionSignal,
+      sourceTitle: decisionTitle,
+      sourceEvidence: decisionEvidence,
+      decisionText,
+      expectedOutcome,
+      ownerLabel: decisionOwner || undefined,
+      reviewOn: decisionReviewOn || undefined,
+    });
+    if (saved) {
+      setDecisionText("");
+      setExpectedOutcome("");
+      setDecisionOwner("");
+      setDecisionReviewOn("");
+    }
+  }
   const landscape = outcome.deepAnalysis?.experimentLandscape;
   if (!metrics) return [];
 
@@ -549,6 +600,95 @@ function organisationActions(outcome: SponsorOutcome) {
   }).slice(0, 6);
 }
 
+type StaffAction = (payload: Record<string, unknown>) => Promise<boolean>;
+
+function programmeDecisionSignal(kicker: string) {
+  switch (kicker) {
+    case "Programme transition": return "PROGRAMME_TRANSITION";
+    case "Programme responsiveness": return "SUPPORT_RESPONSE";
+    case "Adaptation": return "ADAPTATION";
+    case "Decision confidence": return "EVIDENCE_STRENGTH";
+    case "Organisational learning": return "LEARNING_JOURNEY";
+    default: return "OTHER";
+  }
+}
+
+function decisionOutcomeLabel(value: string | null) {
+  if (!value) return "Not reviewed";
+  return value.toLowerCase().replaceAll("_", " ");
+}
+
+function DecisionReview({
+  decision,
+  outcome,
+  cohorts,
+  saving,
+  act,
+}: {
+  decision: NonNullable<SponsorOutcome["decisionRegister"]>["decisions"][number];
+  outcome: SponsorOutcome;
+  cohorts: SponsorOutcome[];
+  saving: boolean;
+  act: StaffAction;
+}) {
+  const [reviewOutcome, setReviewOutcome] = useState("NOT_ENOUGH_EVIDENCE");
+  const [reviewNote, setReviewNote] = useState("");
+  const [comparisonCohortId, setComparisonCohortId] = useState("");
+
+  if (decision.status !== "OPEN") {
+    return (
+      <div className="decision-review-result">
+        <span>{decisionOutcomeLabel(decision.reviewOutcome)}</span>
+        {decision.reviewNote ? <p>{decision.reviewNote}</p> : null}
+        {decision.comparisonCohortId ? (
+          <small>Compared with {cohorts.find((item) => item.cohort.id === decision.comparisonCohortId)?.cohort.name ?? "another programme group"}.</small>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className="decision-review-form">
+      <label>
+        What did the next evidence show?
+        <select value={reviewOutcome} onChange={(event) => setReviewOutcome(event.target.value)}>
+          <option value="IMPROVED">Improved</option>
+          <option value="MIXED">Mixed</option>
+          <option value="UNCHANGED">Unchanged</option>
+          <option value="WORSE">Worse</option>
+          <option value="NOT_ENOUGH_EVIDENCE">Not enough evidence</option>
+        </select>
+      </label>
+      <label>
+        Comparison group
+        <select value={comparisonCohortId} onChange={(event) => setComparisonCohortId(event.target.value)}>
+          <option value="">No comparison group yet</option>
+          {cohorts
+            .filter((item) => item.cohort.id !== outcome.cohort.id && item.cohort.labCode === outcome.cohort.labCode)
+            .map((item) => <option key={item.cohort.id} value={item.cohort.id}>{item.cohort.name}</option>)}
+        </select>
+      </label>
+      <label className="decision-review-note">
+        What did the organisation learn?
+        <textarea value={reviewNote} onChange={(event) => setReviewNote(event.target.value)} maxLength={1200} placeholder="Record what the next evidence supports, what remains uncertain, and whether the programme change should continue." />
+      </label>
+      <button
+        type="button"
+        disabled={saving || reviewNote.trim().length < 3}
+        onClick={() => void act({
+          action: "reviewProgrammeDecision",
+          decisionId: decision.id,
+          reviewOutcome,
+          reviewNote,
+          comparisonCohortId: comparisonCohortId || undefined,
+        })}
+      >
+        <ClipboardCheck aria-hidden="true" /> Record review
+      </button>
+    </div>
+  );
+}
+
 function Metric({
   label,
   value,
@@ -567,8 +707,23 @@ function Metric({
   );
 }
 
-export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
+export function ProgrammeOutcomesView({
+  data,
+  saving = false,
+  act = async () => false,
+}: {
+  data: SponsorSnapshot;
+  saving?: boolean;
+  act?: StaffAction;
+}) {
   const [selectedId, setSelectedId] = useState(data.cohorts[0]?.cohort.id ?? "");
+  const [decisionSignal, setDecisionSignal] = useState("PROGRAMME_TRANSITION");
+  const [decisionTitle, setDecisionTitle] = useState("");
+  const [decisionEvidence, setDecisionEvidence] = useState("");
+  const [decisionText, setDecisionText] = useState("");
+  const [expectedOutcome, setExpectedOutcome] = useState("");
+  const [decisionOwner, setDecisionOwner] = useState("");
+  const [decisionReviewOn, setDecisionReviewOn] = useState("");
   const outcome = useMemo(
     () => data.cohorts.find((item) => item.cohort.id === selectedId) ?? data.cohorts[0] ?? null,
     [data.cohorts, selectedId],
@@ -839,6 +994,11 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                     <span>{insight.kicker}</span>
                     <h3>{insight.title}</h3>
                     <p>{insight.body}</p>
+                    {outcome.decisionRegister?.canManage ? (
+                      <button type="button" className="insight-to-decision" onClick={() => useInsightForDecision(insight)}>
+                        Use in decision
+                      </button>
+                    ) : null}
                   </article>
                 ))}
               </div>
@@ -860,6 +1020,127 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
                   <p>Run the next comparable cohort and ask whether the group pattern changed after the programme decision.</p>
                 </div>
               </div>
+            </section>
+          ) : null}
+
+          {outcome.decisionRegister ? (
+            <section id="programme-decision-register" className="programme-decision-register">
+              <div className="outcomes-section-heading">
+                <div>
+                  <p className="eyebrow">Decision register</p>
+                  <h2>What did the organisation decide to change?</h2>
+                </div>
+                <ClipboardCheck />
+              </div>
+              <p className="decision-register-intro">
+                A result becomes organisational learning only when the programme records what it will change, what it expects to observe next, and later checks that expectation against new evidence.
+              </p>
+
+              {outcome.decisionRegister.decisions.length ? (
+                <div className="decision-list">
+                  {outcome.decisionRegister.decisions.map((decision) => (
+                    <article className="decision-card" key={decision.id}>
+                      <div className="decision-card-head">
+                        <div>
+                          <span>{decision.sourceSignal.toLowerCase().replaceAll("_", " ")}</span>
+                          <h3>{decision.sourceTitle}</h3>
+                        </div>
+                        <strong className={"decision-status " + decision.status.toLowerCase()}>{decision.status.toLowerCase()}</strong>
+                      </div>
+                      <div className="decision-evidence">
+                        <strong>Evidence considered</strong>
+                        <p>{decision.sourceEvidence}</p>
+                      </div>
+                      <div className="decision-change-grid">
+                        <div><span>Programme decision</span><p>{decision.decisionText}</p></div>
+                        <div><span>Expected next outcome</span><p>{decision.expectedOutcome}</p></div>
+                      </div>
+                      <div className="decision-meta">
+                        {decision.ownerLabel ? <span>Owner · {decision.ownerLabel}</span> : null}
+                        {decision.reviewOn ? <span>Review · {decision.reviewOn}</span> : null}
+                        <span>Recorded · {new Date(decision.createdAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      </div>
+                      {outcome.decisionRegister.canManage ? (
+                        <DecisionReview decision={decision} outcome={outcome} cohorts={data.cohorts} saving={saving} act={act} />
+                      ) : decision.status !== "OPEN" ? (
+                        <div className="decision-review-result">
+                          <span>{decisionOutcomeLabel(decision.reviewOutcome)}</span>
+                          {decision.reviewNote ? <p>{decision.reviewNote}</p> : null}
+                        </div>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="decision-empty">
+                  <strong>No programme decision has been recorded yet.</strong>
+                  <p>The evidence above remains an insight until the organisation chooses what, if anything, it will change.</p>
+                </div>
+              )}
+
+              {outcome.decisionRegister.canManage ? (
+                <div className="decision-create">
+                  <div>
+                    <p className="eyebrow">Record a programme decision</p>
+                    <h3>Turn one insight into a testable next-cycle change.</h3>
+                  </div>
+                  <div className="decision-form-grid">
+                    <label>
+                      Evidence area
+                      <select value={decisionSignal} onChange={(event) => setDecisionSignal(event.target.value)}>
+                        <option value="PROGRAMME_TRANSITION">Programme transition</option>
+                        <option value="SUPPORT_RESPONSE">Programme responsiveness</option>
+                        <option value="ADAPTATION">Adaptation</option>
+                        <option value="EVIDENCE_STRENGTH">Evidence strength</option>
+                        <option value="LEARNING_JOURNEY">Learning journey</option>
+                        <option value="DELIVERY_CONDITION">Delivery condition</option>
+                        <option value="OTHER">Other aggregate evidence</option>
+                      </select>
+                    </label>
+                    <label>
+                      Evidence title
+                      <input value={decisionTitle} onChange={(event) => setDecisionTitle(event.target.value)} maxLength={240} placeholder="What pattern are we responding to?" />
+                    </label>
+                    <label className="decision-form-wide">
+                      Evidence considered
+                      <textarea value={decisionEvidence} onChange={(event) => setDecisionEvidence(event.target.value)} maxLength={1200} placeholder="Use the aggregate programme evidence that led to this decision." />
+                    </label>
+                    <label className="decision-form-wide">
+                      What will the programme change?
+                      <textarea value={decisionText} onChange={(event) => setDecisionText(event.target.value)} maxLength={1200} placeholder="Describe one deliberate change to programme design, facilitation, timing or support." />
+                    </label>
+                    <label className="decision-form-wide">
+                      What do we expect to observe next?
+                      <textarea value={expectedOutcome} onChange={(event) => setExpectedOutcome(event.target.value)} maxLength={1200} placeholder="State the next-cycle outcome that would make this decision worth continuing." />
+                    </label>
+                    <label>
+                      Decision owner
+                      <input value={decisionOwner} onChange={(event) => setDecisionOwner(event.target.value)} maxLength={160} placeholder="Team or role" />
+                    </label>
+                    <label>
+                      Review date
+                      <input type="date" value={decisionReviewOn} onChange={(event) => setDecisionReviewOn(event.target.value)} />
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    className="decision-save"
+                    disabled={
+                      saving ||
+                      decisionTitle.trim().length < 3 ||
+                      decisionEvidence.trim().length < 3 ||
+                      decisionText.trim().length < 3 ||
+                      expectedOutcome.trim().length < 3
+                    }
+                    onClick={() => void saveDecision()}
+                  >
+                    <Plus aria-hidden="true" /> Record decision
+                  </button>
+                  <small>Only aggregate programme evidence belongs here. Do not paste learner responses, names, reflections, support messages or experiment notes.</small>
+                </div>
+              ) : (
+                <p className="decision-viewer-note">This account can view the organisation’s decision trail. A programme owner records or reviews decisions.</p>
+              )}
             </section>
           ) : null}
 
