@@ -260,7 +260,7 @@ test("organisation learning adds programme-design questions without exposing lea
 
   assert.match(route, /sponsor_cohort_organisational_learning/);
   assert.match(route, /organisationLearning:/);
-  assert.match(view, /Programme-design insight/);
+  assert.match(view, /What the programme can learn/);
   assert.match(view, /What should the organisation learn from this programme\?/);
   assert.match(view, /Programme responsiveness/);
   assert.match(view, /Adaptation/);
@@ -301,7 +301,7 @@ test("organisation learning preserves causal restraint and baseline comparison l
 
 test("programme PDF carries the organisational learning layer", async () => {
   const pdf = await source("lib/programme-report-pdf.ts");
-  assert.match(pdf, /Programme-design insight/);
+  assert.match(pdf, /What the programme can learn/);
   assert.match(pdf, /What should the organisation learn from this programme\?/);
   assert.match(pdf, /Programme responsiveness/);
   assert.match(pdf, /Organisational learning loop/);
@@ -317,7 +317,7 @@ test("programme decision register connects evidence to a next-cycle organisation
     source("lib/programme-report-pdf.ts"),
   ]);
 
-  assert.match(view, /Decision register/);
+  assert.match(view, /Programme decisions/);
   assert.match(view, /What did the organisation decide to change\?/);
   assert.match(view, /What will the programme change\?/);
   assert.match(view, /What do we expect to observe next\?/);
@@ -337,7 +337,7 @@ test("programme decision register connects evidence to a next-cycle organisation
   assert.doesNotMatch(migration, /grant delete/i);
   assert.match(migration, /PROGRAMME_OWNER/);
 
-  assert.match(pdf, /Decision register/);
+  assert.match(pdf, /Programme decisions/);
   assert.match(pdf, /Interpretation boundary/);
   assert.match(pdf, /does not convert a programme decision into proof of causality/);
 });
@@ -352,8 +352,8 @@ test("programme owner is writable while sponsor viewer remains read only", async
 
   assert.match(access, /"PROGRAMME_OWNER"/);
   assert.match(shell, /roles\.includes\("PROGRAMME_OWNER"\)/);
-  assert.match(operations, /Organisation reporting · view only/);
-  assert.match(operations, /Programme owner · decisions/);
+  assert.match(operations, /Programme results · view only/);
+  assert.match(operations, /Programme lead · decisions/);
   assert.match(route, /canManageProgrammeCohort/);
   assert.match(route, /role === "SPONSOR_VIEWER" \|\| role === "PROGRAMME_OWNER"/);
 });
