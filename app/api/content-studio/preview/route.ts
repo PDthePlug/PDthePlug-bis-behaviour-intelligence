@@ -1,4 +1,4 @@
-import { and, eq } from "../../../../db/query";
+import { eq } from "../../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../../db";
 import {
   auditEvents,
