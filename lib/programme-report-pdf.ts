@@ -1215,8 +1215,8 @@ function drawExperimentLandscape(canvas: ReportCanvas, outcome: Outcome) {
     );
   } else {
     canvas.callout(
-      "No reportable experiment themes yet",
-      "Broad experiment contexts will appear when enough learners share a reportable category.",
+      "No shared areas are large enough to show safely yet",
+      "Broad areas will appear when enough learners share them to protect individual privacy.",
       "teal"
     );
   }
