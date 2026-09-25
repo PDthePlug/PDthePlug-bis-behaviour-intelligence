@@ -50,7 +50,7 @@ test("preview workspace supports desktop and mobile review", async () => {
   assert.match(workspace, /Desktop/);
   assert.match(workspace, /Mobile/);
   assert.match(workspace, /<iframe/);
-  assert.match(workspace, /Nothing here changes learner evidence or progress/);
+  assert.match(workspace, /Nothing you type here is saved to a learner record/);
 });
 
 test("preview mode never writes learner workbook or Lab evidence", async () => {
@@ -59,9 +59,9 @@ test("preview mode never writes learner workbook or Lab evidence", async () => {
     source("app/labs/[code]/universal-runtime-lab.tsx"),
   ]);
   assert.match(player, /previewMode/);
-  assert.match(player, /test responses stay in this browser only/);
+  assert.match(player, /test answers stay in this browser only/);
   assert.match(lab, /previewMode && snapshot/);
-  assert.match(lab, /test responses are not stored/);
+  assert.match(lab, /test answers are not saved/);
 });
 
 test("publish control appears only after the final check has passed", async () => {
