@@ -625,6 +625,11 @@ export function ContentStudio() {
                           const prepared = entry.artifacts.some((artifact) => artifact.artifactKey === artifactKey);
                           const liveEdition = slot.key !== "lab"
                             ? selected.activeEditions.some((activation) => activation.deliveryEdition === slot.key && activation.versionId === entry.id)
+                              || (
+                                selected.activeActivation?.runtimeMode === "STATIC"
+                                && selected.activeActivation.versionId === entry.id
+                                && entry.runtimeStatus === "LIVE"
+                              )
                             : selected.activeActivation?.versionId === entry.id && entry.runtimeStatus === "LIVE";
                           const inputKey = `${entry.id}:${slot.key}`;
                           return (
