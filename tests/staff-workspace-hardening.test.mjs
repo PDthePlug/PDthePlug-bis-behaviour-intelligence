@@ -118,7 +118,7 @@ test("learner-only profiles do not advertise staff access", async () => {
   const profile = await source("app/profile/profile-dashboard.tsx");
   assert.match(profile, /"SPONSOR_VIEWER"/);
   assert.match(profile, /\{staff \? \(/);
-  assert.match(profile, /Open staff dashboard/);
+  assert.match(profile, /Open programme workspace/);
   assert.match(profile, /\) : null\}/);
   assert.doesNotMatch(profile, /cannot be self-registered/i);
   assert.doesNotMatch(profile, /Facilitator and Audit access/i);
