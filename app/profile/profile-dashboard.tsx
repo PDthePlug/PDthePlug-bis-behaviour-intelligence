@@ -33,7 +33,7 @@ const editionLabels: Record<string, string> = {
 
 function hasStaffRole(roles: string[]) {
   return roles.some((role) =>
-    ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER"].includes(role),
+    ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER", "PROGRAMME_OWNER"].includes(role),
   );
 }
 
