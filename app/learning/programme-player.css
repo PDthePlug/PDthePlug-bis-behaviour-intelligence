@@ -99,3 +99,20 @@
   .prototype-document input.response,
   .prototype-document select.response{min-height:50px}
 }
+
+.prototype-document .handbook-table{
+  display:block;
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.prototype-document .handbook-response-table{min-width:620px}
+.prototype-document .handbook-response-table td{min-width:220px}
+.prototype-document .handbook-response-table td:first-child{min-width:190px;font-weight:750}
+.prototype-document .handbook-response-table textarea.response{
+  min-height:72px;
+  margin:0;
+}
+@media(max-width:700px){
+  .prototype-document .handbook-response-table{min-width:560px}
+}
