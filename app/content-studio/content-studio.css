@@ -351,3 +351,26 @@
 @media(max-width:430px){
   .content-source-actions,.content-paste-box>div{grid-template-columns:1fr;display:grid!important}
 }
+
+/* Content source entry must remain full-width on phones. */
+.content-source-slot>.content-paste-box{
+  display:grid!important;
+  width:100%;
+  min-width:0;
+  align-items:stretch!important;
+}
+.content-source-slot>.content-paste-box>textarea{
+  width:100%;
+  min-width:0;
+  min-height:260px;
+  resize:vertical;
+  font:500 14px/1.55 var(--font-sans);
+}
+.content-source-slot>.content-paste-box>div{
+  width:100%;
+  justify-content:flex-end;
+}
+@media(max-width:760px){
+  .content-source-slot>.content-paste-box{padding:12px 0 0}
+  .content-source-slot>.content-paste-box>textarea{min-height:320px}
+}
