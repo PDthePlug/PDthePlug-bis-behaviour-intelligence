@@ -102,7 +102,19 @@ alter table public.programme_decisions enable row level security;
 
 revoke all on table public.programme_decisions from anon;
 revoke all on table public.programme_decisions from authenticated;
-grant select, insert, update on table public.programme_decisions to authenticated;
+grant select, insert on table public.programme_decisions to authenticated;
+grant update (
+  decision_text,
+  expected_outcome,
+  owner_label,
+  review_on,
+  status,
+  review_outcome,
+  review_note,
+  comparison_cohort_id,
+  updated_at,
+  reviewed_at
+) on table public.programme_decisions to authenticated;
 
 drop policy if exists programme_decisions_select on public.programme_decisions;
 create policy programme_decisions_select
@@ -128,10 +140,7 @@ on public.programme_decisions
 for update
 to authenticated
 using (private.can_manage_programme_decisions(cohort_id))
-with check (
-  private.can_manage_programme_decisions(cohort_id)
-  and created_by = created_by
-);
+with check (private.can_manage_programme_decisions(cohort_id));
 
 comment on table public.programme_decisions is
   'Organisation-level programme decisions linked only to aggregate BIS evidence and next-cycle review.';
