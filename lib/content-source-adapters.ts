@@ -294,32 +294,50 @@ function markdownBlocks(markdown: string) {
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
   let paragraph: string[] = [];
 
+  const pushText = (text: string, heading = false) => {
+    const cleaned = text.trim().replace(/^[-*+]\s+/, "");
+    if (!cleaned) return;
+    blocks.push({
+      text: cleaned,
+      heading,
+      html: heading ? "<h3>" + escapeHtml(cleaned) + "</h3>" : "<p>" + escapeHtml(cleaned) + "</p>",
+    });
+  };
   const flush = () => {
     const text = paragraph.join(" ").trim();
     paragraph = [];
     if (!text) return;
     const heading = Boolean(canonicalPageKey(text) && text.length < 80);
-    blocks.push({
-      text,
-      heading,
-      html: heading ? "<h2>" + escapeHtml(text) + "</h2>" : "<p>" + escapeHtml(text) + "</p>",
-    });
+    pushText(text, heading);
   };
 
   for (const line of lines) {
-    const heading = line.match(/^\s{0,3}#{1,4}\s+(.+?)\s*#*\s*$/);
-    if (heading) {
+    const explicitHeading = line.match(/^\s{0,3}#{1,4}\s+(.+?)\s*#*\s*$/);
+    if (explicitHeading) {
       flush();
-      const text = heading[1].trim();
-      const level = Math.min(4, Math.max(2, (line.match(/^#+/)?.[0].length ?? 1) + 1));
-      blocks.push({ text, heading: true, html: "<h" + level + ">" + escapeHtml(text) + "</h" + level + ">" });
+      pushText(explicitHeading[1], true);
       continue;
     }
-    if (!line.trim()) {
+
+    const trimmed = line.trim();
+    if (!trimmed) {
       flush();
       continue;
     }
-    paragraph.push(line.trim().replace(/^[-*+]\s+/, ""));
+
+    const structural =
+      /^investigation\s*[1-9]\b/i.test(trimmed)
+      || /^(phase\s+[ab]|mission\s*:|you will produce\s*:|time\s*:|difficulty\s*:)/i.test(trimmed)
+      || /^(bei-\d+|step\s+\d+|✍️|☐|⭐|🌱|⏸|🔎|🤔|📖|🧠|🤝)/u.test(trimmed)
+      || /\?["”]?\s*$/.test(trimmed)
+      || looksLikeBlank(trimmed);
+
+    if (structural) {
+      flush();
+      pushText(trimmed, /^investigation\s*[1-9]\b/i.test(trimmed) || /^phase\s+[ab]\b/i.test(trimmed));
+      continue;
+    }
+    paragraph.push(trimmed.replace(/^[-*+]\s+/, ""));
   }
   flush();
   return blocks;
