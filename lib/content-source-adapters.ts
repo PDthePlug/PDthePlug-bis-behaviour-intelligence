@@ -148,6 +148,7 @@ type SourceBlock = {
   html: string;
   heading: boolean;
   tableRows?: string[][];
+  answerColumn?: number;
   lines?: string[];
   kind?: "paragraph" | "table";
 };
@@ -475,6 +476,182 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   });
 }
 
+function tableHtml(rows: string[][]) {
+  if (!rows.length) return "";
+  const header = rows[0];
+  return (
+    '<table class="handbook-table"><thead><tr>' +
+    header.map((cell) => '<th scope="col">' + escapeHtml(cell) + "</th>").join("") +
+    "</tr></thead><tbody>" +
+    rows.slice(1).map((row) =>
+      "<tr>" + row.map((cell, index) =>
+        '<td data-label="' + escapeHtml(header[index] ?? "") + '">' + escapeHtml(cell) + "</td>",
+      ).join("") + "</tr>",
+    ).join("") +
+    "</tbody></table>"
+  );
+}
+
+function splitRowsByKeys(lines: string[], headers: string[], keys: string[]) {
+  const rows: string[][] = [headers];
+  for (const line of lines.slice(1)) {
+    const key = keys.find((candidate) => line === candidate || line.startsWith(candidate + " "));
+    if (!key) return null;
+    rows.push([key, line.slice(key.length).trim()]);
+  }
+  return rows;
+}
+
+function pseudoTableBlock(lines: string[]): SourceBlock | null {
+  if (lines.length < 2) return null;
+  const head = lines[0];
+
+  if (head === "Icon Meaning") {
+    const rows = [["Icon", "Meaning"], ...lines.slice(1).map((line) => {
+      const match = line.match(/^(\S+)\s+(.+)$/u);
+      return match ? [match[1], match[2]] : [line, ""];
+    })];
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (head === "Icon Level Meaning") {
+    const rows = [["Icon", "Level", "Meaning"], ...lines.slice(1).map((line) => {
+      const match = line.match(/^(\S+)\s+(\S+)\s+(.+)$/u);
+      return match ? [match[1], match[2], match[3]] : [line, "", ""];
+    })];
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (["Element My Answer", "Element What Happened", "Element What Was Recorded"].includes(head)) {
+    const headers = head === "Element My Answer"
+      ? ["Element", "My Answer"]
+      : head === "Element What Was Recorded"
+        ? ["Element", "What Was Recorded"]
+        : ["Element", "What Happened"];
+    const rows = [headers, ...lines.slice(1).map((line) => [line, ""])];
+    return {
+      text: lines.join(" "),
+      heading: false,
+      lines,
+      kind: "table",
+      tableRows: rows,
+      answerColumn: 1,
+      html: tableHtml(rows),
+    };
+  }
+
+  if (head === "Day Current version backed up?") {
+    const rows = [["Day", "Current version backed up?"], ...lines.slice(1).map((line) => {
+      const match = line.match(/^(\S+)\s+(.+)$/);
+      return match ? [match[1], match[2]] : [line, ""];
+    })];
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (head === "Observation Interpretation") {
+    const rows = [["Observation", "Interpretation"], ...lines.slice(1).map((line) => {
+      const match = line.match(/^(".*?")\s+(".*")$/);
+      return match ? [match[1], match[2]] : [line, ""];
+    })];
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (head === "Instead of saying Say") {
+    const rows = [["Instead of saying", "Say"], ...lines.slice(1).map((line) => {
+      const match = line.match(/^(".*?")\s+(".*")$/);
+      return match ? [match[1], match[2]] : [line, ""];
+    })];
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  const keyed: Record<string, { headers: string[]; keys: string[] }> = {
+    "Kind of Evidence Example": {
+      headers: ["Kind of Evidence", "Example"],
+      keys: ["Written observation", "Witness account", "Recorded data", "Approved artefact", "Approved record"],
+    },
+    "Concept What It Means": {
+      headers: ["Concept", "What It Means"],
+      keys: ["Full Risk Check", "Minimum Risk Check", "Full Pause", "Minimum Pause"],
+    },
+    "State Meaning": {
+      headers: ["State", "Meaning"],
+      keys: ["SUFFICIENT FOR LAB", "SINGLE-SOURCE", "TRIANGULATED", "REPEATED", "LIMITED", "NONE", "SINGLE OBSERVATION"],
+    },
+    "If you find Consider": {
+      headers: ["If you find", "Consider"],
+      keys: [
+        "The target context is too rare",
+        "The target context is too common",
+        "You keep forgetting to check",
+        "The check feels too long",
+        "The Protective Action is not implemented",
+        "The target condition does not appear often",
+        "The target condition appears too often",
+        "You forget to pause",
+        "The Spending Pause feels too long",
+        "You missed a day",
+        "The pause feels too long",
+        "The pause does not change what you notice",
+      ],
+    },
+    "Daily Evidence Card Example": {
+      headers: ["Element", "Example"],
+      keys: [
+        "Time / context",
+        "Risk context",
+        "Intended Protection Position",
+        "Actual Protection Position at start",
+        "Protective Action",
+        "Observed Protection State after opportunity",
+        "Observed Protection State",
+        "Action Relationship",
+        "Protective Action Implemented?",
+        "Protection Coverage Relationship",
+        "Protection Criterion Outcome",
+        "Trade-off / constraint",
+      ],
+    },
+  };
+  const keyedSpec = keyed[head];
+  if (keyedSpec) {
+    const rows = splitRowsByKeys(lines, keyedSpec.headers, keyedSpec.keys);
+    if (rows) return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (head === "What one experiment gives What it does not give") {
+    const endings = ["Permanent change", "Automatic new behaviour", "A final answer", "Certainty"];
+    const rows = [["What one experiment gives", "What it does not give"]];
+    for (let index = 1; index < lines.length; index += 1) {
+      const ending = endings[index - 1];
+      if (!ending || !lines[index].endsWith(ending)) return null;
+      rows.push([lines[index].slice(0, -ending.length).trim(), ending]);
+    }
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (head === "Kind of Pattern Observable Criterion I Could Investigate") {
+    const rows = [["Kind of Pattern", "Observable Criterion I Could Investigate"]];
+    for (const line of lines.slice(1)) {
+      const match = line.match(/^(.*?)\s+(".*")$/);
+      if (!match) return null;
+      rows.push([match[1].trim(), match[2].trim()]);
+    }
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (head === "Barrier What It Feels Like What to Do") {
+    const rows = [["Barrier", "What It Feels Like", "What to Do"]];
+    for (const line of lines.slice(1)) {
+      const match = line.match(/^(.*?)\s+(".*?")\s+(.+)$/);
+      if (!match) return null;
+      rows.push([match[1].trim(), match[2].trim(), match[3].trim()]);
+    }
+    return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  return null;
+}
+
 function docxParagraph(block: string): SourceBlock | null {
   const tokens = [...block.matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>|<w:br\b[^>]*\/?\s*>|<w:tab\b[^>]*\/?\s*>/g)];
   let raw = "";
@@ -500,6 +677,9 @@ function docxParagraph(block: string): SourceBlock | null {
     && !/[.!?]$/.test(text)
     && !/^[┌│└]/u.test(text);
   const heading = /heading|title/i.test(style) || Boolean(pageBoundary) || iconHeading || upperHeading;
+
+  const inferredTable = pseudoTableBlock(lines);
+  if (inferredTable) return inferredTable;
 
   if (lines.some((line) => /[┌┐└┘│─]/u.test(line))) {
     const cleaned = lines
