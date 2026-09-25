@@ -656,6 +656,34 @@ export const pilotCohorts = sqliteTable(
   ],
 );
 
+export const programmeDecisions = sqliteTable(
+  "programme_decisions",
+  {
+    id: text("id").primaryKey(),
+    cohortId: text("cohort_id").notNull(),
+    sourceSignal: text("source_signal").notNull(),
+    sourceTitle: text("source_title").notNull(),
+    sourceEvidence: text("source_evidence").notNull(),
+    decisionText: text("decision_text").notNull(),
+    expectedOutcome: text("expected_outcome").notNull(),
+    ownerLabel: text("owner_label"),
+    reviewOn: text("review_on"),
+    status: text("status").notNull().default("OPEN"),
+    reviewOutcome: text("review_outcome"),
+    reviewNote: text("review_note"),
+    comparisonCohortId: text("comparison_cohort_id"),
+    createdBy: text("created_by").notNull(),
+    createdByEmail: text("created_by_email").notNull(),
+    createdAt: timestamp(),
+    updatedAt: timestamp(),
+    reviewedAt: text("reviewed_at"),
+  },
+  (table) => [
+    index("idx_programme_decisions_cohort_status").on(table.cohortId, table.status, table.createdAt),
+    index("idx_programme_decisions_review_on").on(table.reviewOn),
+  ],
+);
+
 export const cohortMembers = sqliteTable(
   "cohort_members",
   {
