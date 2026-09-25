@@ -154,6 +154,215 @@ type SourceBlock = {
 
 const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
 
+function sourceToken(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36).toLowerCase();
+}
+
+function handbookQuestionPrompts(value: string) {
+  const rendered = value.replace(/\r\n?/g, "\n").trim();
+  if (!rendered) return [] as string[];
+  const numbered = [...rendered.matchAll(/(?:^|\n|\s)(?:[1-9]|1\d)[.)]\s*([^?]{4,700}\?)/g)]
+    .map((match) => match[1].replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  if (numbered.length > 1) return numbered;
+
+  const plain = rendered.replace(/\s+/g, " ").trim();
+  const lastQuestion = plain.lastIndexOf("?");
+  if (lastQuestion >= 0 && lastQuestion >= plain.length - 3 && plain.length <= 900) {
+    return [plain.slice(0, lastQuestion + 1).replace(/^\d+[.)]\s*/, "").trim()];
+  }
+  return [];
+}
+
+function handbookOption(value: string) {
+  const match = value.replace(/\s+/g, " ").trim().match(/^☐\s*(.+)$/u);
+  return match?.[1]?.trim() || "";
+}
+
+function handbookFieldCue(value: string) {
+  const text = value.replace(/\s+/g, " ").trim();
+  if (!text) return false;
+  if (/^(answers?|question|equation|frame|session|time|mode|difficulty|today you will|you will need|experiment position)\s*:?$/i.test(text)) return false;
+  if (/^📌\s*carry forward/i.test(text) || /^📖|^💭|^✍️|^✅|^🏠|^📂|^🔎|^⚡|^🔬|^🎯|^🧪|^📊|^🤝/u.test(text)) return false;
+  if (/_{3,}/.test(text) || /\.{5,}/.test(text)) return true;
+  if (/^(confidence|my rating|shift|observation days completed|missing \/ unrecorded days|eligible target opportunities observed|checks initiated|risk check initiation rate|full checks completed|full risk check completion rate|minimum checks completed|opportunity coverage|completed risk checks|usable events for prediction testing|protection criterion occurred in these events|observed protection criterion rate|predicted protection criterion rate|difference|protection criterion prediction accuracy)\s*:/i.test(text)) return true;
+  if (/^(the protection pattern i want to investigate|why i chose this one|my intended protection position|my recurring protective opportunity|my protective action|my observable protection criterion|i will count the protection criterion as occurred when|my working risk equation|my target condition|my check-in person|my restart plan|my revision signal|what i noticed|what i collected|who i asked|what they said|where i will keep my tracker|what i can now do|who i showed|the most important thing learned)\s*:/i.test(text)) return true;
+  if (/^(risk context|intended protection position|actual protection position at start|protection gap|action relationship|protective action implemented\?|protection coverage relationship|protective action tested|family of protection|observable protection criterion|what actually happened so far|trade-off observed\?|constraint observed\?|what surprised you)\s*:\s*_{2,}/i.test(text)) return true;
+  return false;
+}
+
+function handbookShortControl(sourceKey: string, label: string) {
+  const lower = label.toLowerCase();
+  const attrs = [
+    'class="response workbook-short-response"',
+    'data-source-key="' + escapeHtml(sourceKey) + '"',
+    'data-purpose="LEARNING_RESPONSE"',
+    'data-privacy-class="P3"',
+    'aria-label="' + escapeHtml(label || "Your answer") + '"',
+  ];
+  if (/date\s*:/.test(lower)) {
+    return "<input type=\"date\" " + attrs.join(" ") + " />";
+  }
+  const range = label.match(/\/\s*(10|7|100)\b/);
+  if (range || /(?:rate|accuracy|difference)\s*:/i.test(label)) {
+    const max = range ? Number(range[1]) : 100;
+    const min = max === 10 ? 1 : 0;
+    return "<input type=\"number\" min=\"" + min + "\" max=\"" + max + "\" " + attrs.join(" ") + " />";
+  }
+  return "<input type=\"text\" " + attrs.join(" ") + " />";
+}
+
+function handbookTextarea(sourceKey: string, prompt: string) {
+  return (
+    '<textarea class="response compiled-workbook-response" rows="4" maxlength="20000"' +
+    ' data-source-key="' + escapeHtml(sourceKey) + '"' +
+    ' data-purpose="LEARNING_RESPONSE" data-privacy-class="P3"' +
+    ' aria-label="' + escapeHtml("Your answer: " + prompt) + '"' +
+    ' placeholder="Write your answer…"></textarea>'
+  );
+}
+
+function handbookChoice(sourceKey: string, prompt: string, options: string[]) {
+  return (
+    '<select class="response workbook-choice-response"' +
+    ' data-source-key="' + escapeHtml(sourceKey) + '"' +
+    ' data-purpose="LEARNING_RESPONSE" data-privacy-class="P3"' +
+    ' aria-label="' + escapeHtml("Your answer: " + prompt) + '">' +
+    '<option value="">Choose…</option>' +
+    options.map((option) => '<option value="' + escapeHtml(option) + '">' + escapeHtml(option) + "</option>").join("") +
+    "</select>"
+  );
+}
+
+function handbookBlockHtml(block: SourceBlock) {
+  return block.html.trim();
+}
+
+function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
+  const html: string[] = [];
+  let inAnswers = false;
+  let fieldIndex = 0;
+  const nextSourceKey = (prompt: string) => {
+    fieldIndex += 1;
+    return key.replace(/\s+/g, "").toLowerCase() + "-" + sourceToken(prompt + "|" + fieldIndex);
+  };
+
+  for (let index = 0; index < blocks.length; index += 1) {
+    const block = blocks[index];
+    const text = block.text.replace(/\s+/g, " ").trim();
+    if (!text) continue;
+
+    if (/^(answers?|suggested answers?)\s*:?$/i.test(text)) {
+      inAnswers = true;
+      html.push(handbookBlockHtml(block));
+      continue;
+    }
+    if (inAnswers && (block.heading || strictProgrammePageKey(text) || /^📌\s*carry forward|^⚡|^📂|^🏠|^✅/u.test(text))) {
+      inAnswers = false;
+    }
+
+    if (!inAnswers) {
+      const questions = handbookQuestionPrompts(block.lines?.join("\n") || block.text);
+      if (questions.length) {
+        const optionRows: string[] = [];
+        let cursor = index + 1;
+        while (cursor < blocks.length) {
+          const option = handbookOption(blocks[cursor].text);
+          if (!option) break;
+          optionRows.push(option);
+          cursor += 1;
+        }
+
+        html.push(handbookBlockHtml(block));
+        if (questions.length === 1 && optionRows.length) {
+          html.push(handbookChoice(nextSourceKey(questions[0]), questions[0], optionRows));
+          index = cursor - 1;
+          continue;
+        }
+
+        for (const question of questions) {
+          const sourceKey = nextSourceKey(question);
+          if (questions.length > 1) {
+            html.push('<label class="compiled-workbook-question"><span>' + escapeHtml(question) + "</span>" + handbookTextarea(sourceKey, question) + "</label>");
+          } else {
+            html.push(handbookTextarea(sourceKey, question));
+          }
+        }
+        continue;
+      }
+
+      if (handbookFieldCue(text)) {
+        html.push(handbookBlockHtml(block));
+        const label = text.replace(/_{3,}.*$/, "").replace(/\s+/g, " ").trim();
+        const sourceKey = nextSourceKey(label || text);
+        const short = /_{3,}|\/\s*(?:7|10|100)\b|%\s*$|^(?:date|signed|effective from day|confidence|my rating|shift)\s*:/i.test(text);
+        html.push(short ? handbookShortControl(sourceKey, label || text) : handbookTextarea(sourceKey, label || text));
+        continue;
+      }
+    }
+
+    html.push(handbookBlockHtml(block));
+  }
+  return html.join("\n").trim();
+}
+
+function programmeLabel(key: PageKey, body: SourceBlock[]) {
+  if (key === "Welcome") return "Welcome";
+  const boundary = body.findIndex((block) => strictProgrammePageKey(block.text) === key);
+  const candidates = body.slice(Math.max(0, boundary + 1), Math.max(0, boundary + 8));
+  const label = candidates.find((block) => {
+    const text = block.text.replace(/\s+/g, " ").trim();
+    return text.length >= 3
+      && text.length <= 120
+      && !strictProgrammePageKey(text)
+      && !/^[┌│└]/u.test(text)
+      && !/^(session|time|mode|difficulty|today you will|you will need|experiment position)\s*:/i.test(text);
+  })?.text.replace(/\s+/g, " ").trim();
+  if (label) return label;
+  if (key === "Certificate") {
+    return body.find((block) => /\bcertificate\b/i.test(block.text))?.text.replace(/\s+/g, " ").trim() || key;
+  }
+  return key;
+}
+
+function programmeExperimentPosition(body: SourceBlock[]) {
+  const joined = body
+    .flatMap((block) => block.lines?.length ? block.lines : [block.text])
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  for (let index = 0; index < joined.length; index += 1) {
+    const inline = joined[index].match(/^EXPERIMENT POSITION\s*:\s*(.+)$/i);
+    if (inline?.[1]) return inline[1].trim();
+    if (/^EXPERIMENT POSITION\s*:?$/i.test(joined[index])) {
+      return joined[index + 1]?.trim() || null;
+    }
+  }
+  return null;
+}
+
+type ManufacturedProgrammePage = {
+  key: PageKey;
+  label: string;
+  html: string;
+  experimentPosition?: string | null;
+};
+
+function programmePage(key: PageKey, body: SourceBlock[]): ManufacturedProgrammePage {
+  const html = renderHandbookPage(body, key);
+  if (!html) throw new Error(key + " contains no authored content.");
+  return {
+    key,
+    label: programmeLabel(key, body),
+    html,
+    experimentPosition: programmeExperimentPosition(body),
+  };
+}
+
 function balancedProgrammePages(blocks: SourceBlock[], sourceLabel: string) {
   const usable = blocks.filter((block) => block.html.trim());
   if (usable.length < 26) {
@@ -195,18 +404,34 @@ function balancedProgrammePages(blocks: SourceBlock[], sourceLabel: string) {
   return PAGE_KEYS.map((key, index) => {
     const start = boundaries[index];
     const end = boundaries[index + 1] ?? usable.length;
-    const body = usable.slice(start, end);
-    const html = body.map((block) => block.html).join("\n").trim();
-    const authoredLabel = body.find((block) => block.heading && !sectionNoise.test(block.text))?.text;
-    return {
-      key,
-      label: authoredLabel || key,
-      html,
-    };
+    return programmePage(key, usable.slice(start, end));
   });
 }
 
 function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
+  const strictBoundaries: Array<{ key: PageKey; index: number }> = [];
+  for (let index = 0; index < blocks.length; index += 1) {
+    const key = strictProgrammePageKey(blocks[index].text);
+    if (key && !strictBoundaries.some((boundary) => boundary.key === key)) {
+      strictBoundaries.push({ key, index });
+    }
+  }
+
+  const strictFound = new Map(strictBoundaries.map((boundary) => [boundary.key, boundary.index]));
+  if (PAGE_KEYS.every((key) => strictFound.has(key))) {
+    const ordered = PAGE_KEYS.map((key) => ({ key, index: strictFound.get(key)! }));
+    for (let index = 1; index < ordered.length; index += 1) {
+      if (ordered[index].index <= ordered[index - 1].index) {
+        throw new Error(sourceLabel + ": programme headings are out of canonical order near " + ordered[index].key + ".");
+      }
+    }
+    return ordered.map((boundary, index) => {
+      const start = index === 0 ? 0 : boundary.index;
+      const end = ordered[index + 1]?.index ?? blocks.length;
+      return programmePage(boundary.key, blocks.slice(start, end));
+    });
+  }
+
   const boundaries: Array<{ key: PageKey; index: number }> = [];
   for (let index = 0; index < blocks.length; index += 1) {
     const block = blocks[index];
@@ -229,15 +454,9 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   }
 
   return ordered.map((boundary, index) => {
+    const start = index === 0 ? 0 : boundary.index;
     const end = ordered[index + 1]?.index ?? blocks.length;
-    const body = blocks.slice(boundary.index, end);
-    const html = body.map((block) => block.html).join("\n").trim();
-    if (!html) throw new Error(sourceLabel + ": " + boundary.key + " contains no authored content.");
-    return {
-      key: boundary.key,
-      label: boundary.key,
-      html,
-    };
+    return programmePage(boundary.key, blocks.slice(start, end));
   });
 }
 
