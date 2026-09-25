@@ -173,10 +173,17 @@ function handbookQuestionPrompts(value: string) {
 
   const plain = rendered.replace(/\s+/g, " ").trim();
   const lastQuestion = plain.lastIndexOf("?");
-  if (lastQuestion >= 0 && lastQuestion >= plain.length - 3 && plain.length <= 900) {
-    return [plain.slice(0, lastQuestion + 1).replace(/^\d+[.)]\s*/, "").trim()];
+  if (lastQuestion < 0 || lastQuestion < plain.length - 3 || plain.length > 900) return [];
+
+  const before = plain.slice(0, lastQuestion + 1).replace(/^\d+[.)]\s*/, "").trim();
+  const openingQuote = before.lastIndexOf('"');
+  const openingSmartQuote = before.lastIndexOf("“");
+  const quoteIndex = Math.max(openingQuote, openingSmartQuote);
+  if (quoteIndex >= 0 && quoteIndex < before.length - 1) {
+    const prefix = before.slice(0, quoteIndex).trim();
+    if (prefix || quoteIndex === 0) return [];
   }
-  return [];
+  return [before];
 }
 
 function handbookOption(value: string) {
@@ -285,12 +292,16 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
           continue;
         }
 
-        for (const question of questions) {
-          const sourceKey = nextSourceKey(question);
-          if (questions.length > 1) {
-            html.push('<label class="compiled-workbook-question"><span>' + escapeHtml(question) + "</span>" + handbookTextarea(sourceKey, question) + "</label>");
-          } else {
-            html.push(handbookTextarea(sourceKey, question));
+        const nextText = blocks[index + 1]?.text.replace(/\s+/g, " ").trim() || "";
+        const hasAuthoredFieldImmediatelyAfter = questions.length === 1 && handbookFieldCue(nextText);
+        if (!hasAuthoredFieldImmediatelyAfter) {
+          for (const question of questions) {
+            const sourceKey = nextSourceKey(question);
+            if (questions.length > 1) {
+              html.push('<label class="compiled-workbook-question"><span>' + escapeHtml(question) + "</span>" + handbookTextarea(sourceKey, question) + "</label>");
+            } else {
+              html.push(handbookTextarea(sourceKey, question));
+            }
           }
         }
         continue;
@@ -313,6 +324,11 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
 
 function programmeLabel(key: PageKey, body: SourceBlock[]) {
   if (key === "Welcome") return "Welcome";
+  if (key === "Certificate") {
+    return body.find((block) => strictProgrammePageKey(block.text) === "Certificate")?.text.replace(/\s+/g, " ").trim()
+      || body.find((block) => /\bcertificate\b/i.test(block.text))?.text.replace(/\s+/g, " ").trim()
+      || key;
+  }
   const boundary = body.findIndex((block) => strictProgrammePageKey(block.text) === key);
   const candidates = body.slice(Math.max(0, boundary + 1), Math.max(0, boundary + 8));
   const label = candidates.find((block) => {
