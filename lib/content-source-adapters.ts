@@ -734,6 +734,17 @@ function pdfBlocks(bytes: Uint8Array) {
   });
 }
 
+function programmeSourceSubtitle(blocks: SourceBlock[], metadata: AdaptMetadata, edition: DeliveryEdition) {
+  const welcomeIndex = blocks.findIndex((block) => strictProgrammePageKey(block.text) === "Welcome");
+  const preface = blocks.slice(0, welcomeIndex >= 0 ? welcomeIndex : Math.min(blocks.length, 16));
+  const authored = preface.find((block) =>
+    /\bhandbook\b/i.test(block.text)
+    && !/^volume\b/i.test(block.text)
+    && block.text.length <= 120,
+  )?.text.replace(/\s+/g, " ").trim();
+  return authored || metadata.title + " · " + edition.replace("_", " ");
+}
+
 function encodedPackage(
   code: string,
   version: string,
@@ -741,6 +752,7 @@ function encodedPackage(
   metadata: AdaptMetadata,
   pages: Array<{ key: PageKey; label: string; html: string; experimentPosition?: string | null }>,
   authority: string,
+  subtitle?: string,
 ) {
   return new TextEncoder().encode(JSON.stringify({
     kind: "LEARNING_MODULE",
@@ -749,7 +761,7 @@ function encodedPackage(
       code,
       version,
       title: metadata.title,
-      subtitle: metadata.title + " · " + edition.replace("_", " "),
+      subtitle: subtitle || metadata.title + " · " + edition.replace("_", " "),
       slug: metadata.slug,
       handbookId: metadata.slug + "-volume-1",
     },
@@ -780,21 +792,55 @@ export async function adaptLearningSource(
   if (sourceFormat === "BIS_PACKAGE_JSON") return bytes;
 
   if (sourceFormat === "DOCX") {
-    return encodedPackage(code, version, edition, metadata, pagesFromBlocks(docxBlocks(bytes), edition + " DOCX"), edition + " DOCX");
+    const blocks = docxBlocks(bytes);
+    return encodedPackage(
+      code,
+      version,
+      edition,
+      metadata,
+      pagesFromBlocks(blocks, edition + " DOCX"),
+      edition + " DOCX",
+      programmeSourceSubtitle(blocks, metadata, edition),
+    );
   }
 
   if (sourceFormat === "HTML") {
-    const html = new TextDecoder().decode(bytes);
-    return encodedPackage(code, version, edition, metadata, pagesFromBlocks(htmlBlocks(html), edition + " HTML"), edition + " HTML");
+    const blocks = htmlBlocks(new TextDecoder().decode(bytes));
+    return encodedPackage(
+      code,
+      version,
+      edition,
+      metadata,
+      pagesFromBlocks(blocks, edition + " HTML"),
+      edition + " HTML",
+      programmeSourceSubtitle(blocks, metadata, edition),
+    );
   }
 
   if (sourceFormat === "MARKDOWN") {
-    const markdown = new TextDecoder().decode(bytes);
-    return encodedPackage(code, version, edition, metadata, pagesFromBlocks(markdownBlocks(markdown), edition + " Markdown"), edition + " Markdown");
+    const blocks = markdownBlocks(new TextDecoder().decode(bytes));
+    return encodedPackage(
+      code,
+      version,
+      edition,
+      metadata,
+      pagesFromBlocks(blocks, edition + " Markdown"),
+      edition + " Markdown",
+      programmeSourceSubtitle(blocks, metadata, edition),
+    );
   }
 
   if (sourceFormat === "PDF") {
-    return encodedPackage(code, version, edition, metadata, pagesFromBlocks(pdfBlocks(bytes), edition + " PDF"), edition + " PDF");
+    const blocks = pdfBlocks(bytes);
+    return encodedPackage(
+      code,
+      version,
+      edition,
+      metadata,
+      pagesFromBlocks(blocks, edition + " PDF"),
+      edition + " PDF",
+      programmeSourceSubtitle(blocks, metadata, edition),
+    );
   }
 
   if (sourceFormat === "ZIP") {
