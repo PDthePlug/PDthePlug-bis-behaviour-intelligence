@@ -968,11 +968,6 @@ function labPackageFromBlocks(
     const time = valueAfterLabel(authoredBody, /^(?:time|duration)\s*[:\-]\s*(.+)$/i) || "10 minutes";
     const difficulty = valueAfterLabel(authoredBody, /^difficulty\s*[:\-]\s*(.+)$/i) || "Observe";
     const producesIndex = authoredBody.findIndex((block) => /^you will produce\s*:?$/i.test(block.text));
-    const produces = producesIndex >= 0
-      ? authoredBody.slice(producesIndex + 1)
-          .takeWhile?.(() => false) ?? []
-      : [];
-
     const produced: string[] = [];
     if (producesIndex >= 0) {
       for (let cursor = producesIndex + 1; cursor < authoredBody.length; cursor += 1) {
