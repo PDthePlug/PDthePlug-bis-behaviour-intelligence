@@ -97,9 +97,9 @@ test("the complete 34-title BIS catalogue is available for filling from Content 
   const migration = await source("supabase/migrations/20260925093000_content_studio_founder_flow.sql");
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
   assert.equal(catalogue.modules.length, 34);
-  for (const module of catalogue.modules) {
-    assert.ok(migration.includes("content:module:" + module.code));
-    assert.ok(migration.includes("content:lab:" + module.code));
+  for (const entry of catalogue.modules) {
+    assert.ok(migration.includes("content:module:" + entry.code));
+    assert.ok(migration.includes("content:lab:" + entry.code));
   }
 });
 
