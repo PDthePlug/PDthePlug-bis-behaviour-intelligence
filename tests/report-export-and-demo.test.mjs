@@ -68,8 +68,8 @@ test("organisation report summaries adapt to the evidence rather than forcing po
   assert.match(view, /Participation falls sharply across the learning journey/);
   assert.match(view, /Participation is thinning as the programme progresses/);
   assert.match(view, /Participation remains strong across the learning journey/);
-  assert.match(view, /The evidence base is mixed/);
-  assert.match(view, /More real-world evidence is still needed/);
+  assert.match(view, /Some people have enough observations; others still need more/);
+  assert.match(view, /More real-world observations are still needed/);
   assert.match(view, /Some learners moved into action/);
 });
 
@@ -91,6 +91,6 @@ test("PDF engine includes reusable professional report primitives", async () => 
   assert.match(pdf, /Times-Bold/);
   assert.match(pdf, /BEHAVIOUR INTELLIGENCE SERIES/);
   assert.match(pdf, /GROUP-LEVEL REPORT/);
-  assert.match(pdf, /What the programme evidence is showing/);
+  assert.match(pdf, /What the programme results are showing/);
   assert.match(pdf, /What may be worth exploring next/);
 });
