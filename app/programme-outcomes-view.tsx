@@ -245,32 +245,6 @@ function ratio(part: number, whole: number) {
 function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
   const metrics = outcome.metrics;
 
-  function prefillDecisionFromInsight(insight: { kicker: string; title: string; body: string }) {
-    setDecisionSignal(programmeDecisionSignal(insight.kicker));
-    setDecisionTitle(insight.title);
-    setDecisionEvidence(insight.body);
-    document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  async function saveDecision() {
-    const saved = await act({
-      action: "createProgrammeDecision",
-      cohortId: outcome.cohort.id,
-      sourceSignal: decisionSignal,
-      sourceTitle: decisionTitle,
-      sourceEvidence: decisionEvidence,
-      decisionText,
-      expectedOutcome,
-      ownerLabel: decisionOwner || undefined,
-      reviewOn: decisionReviewOn || undefined,
-    });
-    if (saved) {
-      setDecisionText("");
-      setExpectedOutcome("");
-      setDecisionOwner("");
-      setDecisionReviewOn("");
-    }
-  }
   const landscape = outcome.deepAnalysis?.experimentLandscape;
   if (!metrics) return [];
 
@@ -741,6 +715,34 @@ export function ProgrammeOutcomesView({
   }
 
   const metrics = outcome.metrics;
+  const decisionRegister = outcome.decisionRegister;
+
+  function prefillDecisionFromInsight(insight: { kicker: string; title: string; body: string }) {
+    setDecisionSignal(programmeDecisionSignal(insight.kicker));
+    setDecisionTitle(insight.title);
+    setDecisionEvidence(insight.body);
+    document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function saveDecision() {
+    const saved = await act({
+      action: "createProgrammeDecision",
+      cohortId: outcome.cohort.id,
+      sourceSignal: decisionSignal,
+      sourceTitle: decisionTitle,
+      sourceEvidence: decisionEvidence,
+      decisionText,
+      expectedOutcome,
+      ownerLabel: decisionOwner || undefined,
+      reviewOn: decisionReviewOn || undefined,
+    });
+    if (saved) {
+      setDecisionText("");
+      setExpectedOutcome("");
+      setDecisionOwner("");
+      setDecisionReviewOn("");
+    }
+  }
 
   return (
     <div className="programme-outcomes">
@@ -994,7 +996,7 @@ export function ProgrammeOutcomesView({
                     <span>{insight.kicker}</span>
                     <h3>{insight.title}</h3>
                     <p>{insight.body}</p>
-                    {outcome.decisionRegister?.canManage ? (
+                    {decisionRegister?.canManage ? (
                       <button type="button" className="insight-to-decision" onClick={() => prefillDecisionFromInsight(insight)}>
                         Use in decision
                       </button>
@@ -1023,7 +1025,7 @@ export function ProgrammeOutcomesView({
             </section>
           ) : null}
 
-          {outcome.decisionRegister ? (
+          {decisionRegister ? (
             <section id="programme-decision-register" className="programme-decision-register">
               <div className="outcomes-section-heading">
                 <div>
@@ -1036,9 +1038,9 @@ export function ProgrammeOutcomesView({
                 A result becomes organisational learning only when the programme records what it will change, what it expects to observe next, and later checks that expectation against new evidence.
               </p>
 
-              {outcome.decisionRegister.decisions.length ? (
+              {decisionRegister.decisions.length ? (
                 <div className="decision-list">
-                  {outcome.decisionRegister.decisions.map((decision) => (
+                  {decisionRegister.decisions.map((decision) => (
                     <article className="decision-card" key={decision.id}>
                       <div className="decision-card-head">
                         <div>
@@ -1060,7 +1062,7 @@ export function ProgrammeOutcomesView({
                         {decision.reviewOn ? <span>Review · {decision.reviewOn}</span> : null}
                         <span>Recorded · {new Date(decision.createdAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" })}</span>
                       </div>
-                      {outcome.decisionRegister.canManage ? (
+                      {decisionRegister.canManage ? (
                         <DecisionReview decision={decision} outcome={outcome} cohorts={data.cohorts} saving={saving} act={act} />
                       ) : decision.status !== "OPEN" ? (
                         <div className="decision-review-result">
@@ -1078,7 +1080,7 @@ export function ProgrammeOutcomesView({
                 </div>
               )}
 
-              {outcome.decisionRegister.canManage ? (
+              {decisionRegister.canManage ? (
                 <div className="decision-create">
                   <div>
                     <p className="eyebrow">Record a programme decision</p>
