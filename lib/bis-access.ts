@@ -55,15 +55,8 @@ export async function identityFrom(): Promise<Identity | null> {
   };
 }
 
-async function bootstrapInitialAdmin() {
-  const supabase = requestSupabaseClient();
-  const { error } = await supabase.rpc("bootstrap_initial_admin");
-  if (error) throw new Error(error.message);
-}
-
-export async function getRoles(identity: Identity, bootstrap = true) {
+export async function getRoles(identity: Identity) {
   const db = getDb();
-  if (bootstrap) await bootstrapInitialAdmin();
 
   const assignments = await db
     .select({ role: roleAssignments.role })
@@ -91,12 +84,12 @@ export function hasRole(roles: string[], role: StaffRole) {
 
 export function requireRole(roles: string[], role: StaffRole) {
   if (!hasRole(roles, role)) {
-    throw new AccessError("You do not have access to this restricted operation.");
+    throw new AccessError("You do not have access to that action.");
   }
 }
 
 export function requireAnyRole(roles: string[], allowed: StaffRole[]) {
   if (!allowed.some((role) => hasRole(roles, role))) {
-    throw new AccessError("You do not have access to the operations workspace.");
+    throw new AccessError("You do not have access to this programme workspace.");
   }
 }

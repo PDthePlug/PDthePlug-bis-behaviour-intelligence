@@ -14,7 +14,7 @@ test("learner shell uses concise task and account language", () => {
     "Your next step",
     "Browse handbooks",
     "Browse investigations",
-    "Seven days of real-world observation",
+    "Your seven-day real-world test",
     "Account and sign out",
   ]) {
     assert.ok(shell.includes(phrase), `${phrase} should be present`);

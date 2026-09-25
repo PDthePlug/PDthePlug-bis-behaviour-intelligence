@@ -84,7 +84,7 @@ export function ProfileDashboard({
       <section className="profile-hero">
         <p className="eyebrow">Profile</p>
         <h1>{displayName}</h1>
-        <p>Your BIS identity, learning setup and account controls.</p>
+        <p>Your BIS profile, learning access and account settings.</p>
       </section>
 
       <section className="profile-grid">
@@ -92,7 +92,7 @@ export function ProfileDashboard({
           <div className="profile-card-icon"><UserRound aria-hidden="true" /></div>
           <div>
             <p className="profile-label">Account</p>
-            <h2>Your BIS identity</h2>
+            <h2>Your account</h2>
           </div>
           <dl>
             <div><dt>Name</dt><dd>{displayName}</dd></div>
@@ -110,18 +110,18 @@ export function ProfileDashboard({
             <div><dt>Edition</dt><dd>{edition}</dd></div>
             <div><dt>Mode</dt><dd>{learningMode}</dd></div>
           </dl>
-          <Link className="profile-secondary" href="/habit">Open learner experience</Link>
+          <Link className="profile-secondary" href="/habit">Open my learning</Link>
         </article>
 
         {staff ? (
           <article className="profile-card profile-access-card">
             <div className="profile-card-icon"><ShieldCheck aria-hidden="true" /></div>
             <div>
-              <p className="profile-label">Staff</p>
+              <p className="profile-label">Programme team</p>
               <h2>Programme workspace</h2>
             </div>
             <Link className="profile-secondary" href="/workspace">
-              <Building2 aria-hidden="true" /> Open staff dashboard
+              <Building2 aria-hidden="true" /> Open programme workspace
             </Link>
           </article>
         ) : null}

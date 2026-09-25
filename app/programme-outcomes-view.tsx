@@ -362,11 +362,11 @@ function outcomeInsights(outcome: SponsorOutcome) {
     insights.push({
       title:
         evidenceShare >= 70
-          ? "The evidence base is strong for most experiment starters"
+          ? "Most people who started now have enough observations"
           : evidenceShare >= 40
-            ? "The evidence base is mixed"
-            : "More real-world evidence is still needed",
-      body: String(enough) + " of " + String(starters) + " experiment starters have enough real-world opportunities for a stronger behavioural reading. " + String(metrics.evidence.notEnoughYet) + " still need more evidence.",
+            ? "Some people have enough observations; others still need more"
+            : "More real-world observations are still needed",
+      body: String(enough) + " of " + String(starters) + " people who started have enough real-world situations for a more reliable group picture. " + String(metrics.evidence.notEnoughYet) + " still need more observations.",
     });
   }
   if (metrics.prediction.averagePredictionGap !== null) {
@@ -383,14 +383,14 @@ function outcomeInsights(outcome: SponsorOutcome) {
   if (metrics.support.participantsRequestingHelp > 0) {
     insights.push({
       title: "Human support is part of the programme",
-      body: String(metrics.support.participantsRequestingHelp) + " learners requested help (" + String(metrics.support.supportRequestRate ?? 0) + "% of the group). This is a delivery signal, not a failure score.",
+      body: String(metrics.support.participantsRequestingHelp) + " learners requested help (" + String(metrics.support.supportRequestRate ?? 0) + "% of the group). This may show where the programme needs more support; it is not a failure score.",
     });
   }
   const themes = outcome.deepAnalysis?.experimentLandscape?.themes ?? [];
   if (themes.length > 0) {
     insights.push({
       title: "Behaviour is being tested in recognisable life contexts",
-      body: "The most common reportable areas are " + themes.slice(0, 3).map((theme) => theme.label + " (" + String(theme.participants) + ")").join(", ") + ". Learners can appear in more than one area.",
+      body: "The most common areas large enough to show safely are " + themes.slice(0, 3).map((theme) => theme.label + " (" + String(theme.participants) + ")").join(", ") + ". Learners can appear in more than one area.",
     });
   }
   return insights.slice(0, 5);
@@ -484,31 +484,31 @@ function programmeDesignInsights(outcome: SponsorOutcome) {
   const cards: Array<{ kicker: string; title: string; body: string }> = [];
   if (largestGap && largestGap.loss > 0) {
     cards.push({
-      kicker: "Programme transition",
-      title: `The biggest visible transition loss is before learners ${largestGap.to.label}.`,
+      kicker: "Where participation drops",
+      title: `The biggest visible drop happens before learners ${largestGap.to.label}.`,
       body: `${largestGap.from.value} learners ${largestGap.from.label}; ${largestGap.to.value} ${largestGap.to.label}. That is a ${largestGap.loss}-person drop worth investigating before changing programme content.`,
     });
   } else {
     cards.push({
-      kicker: "Programme transition",
-      title: "No major transition loss stands out yet.",
-      body: "The current journey does not show a clear drop between the main observable stages. Keep collecting evidence before redesigning the programme around a presumed bottleneck.",
+      kicker: "Where participation drops",
+      title: "No major drop stands out yet.",
+      body: "The current journey does not show one clear drop point. Keep collecting results before changing the programme around an assumed problem.",
     });
   }
 
   const support = learning.supportResponse;
   cards.push({
-    kicker: "Programme responsiveness",
+    kicker: "Support follow-up",
     title:
       support.requests === 0
-        ? "No learner-initiated support demand is recorded."
+        ? "No support requests are recorded yet."
         : support.acknowledged === 0
           ? "Learners asked for help, but a response is not yet recorded in BIS."
-          : "Support demand and programme response can now be reviewed together.",
+          : "Support requests and recorded follow-up can now be viewed together.",
     body:
       support.requests === 0
-        ? "There is no learner-requested support signal to interpret for this group yet."
-        : `${support.requests} support request${support.requests === 1 ? "" : "s"} are recorded; ${support.acknowledged} acknowledgement${support.acknowledged === 1 ? "" : "s"} and ${support.resolved} resolution${support.resolved === 1 ? "" : "s"} are recorded. Missing response records do not prove support did not happen—they show what BIS can and cannot verify.`,
+        ? "There are no learner support requests to review for this group yet."
+        : `${support.requests} support request${support.requests === 1 ? "" : "s"} are recorded; ${support.acknowledged} acknowledgement${support.acknowledged === 1 ? "" : "s"} and ${support.resolved} resolution${support.resolved === 1 ? "" : "s"} are recorded. If a response is not recorded in BIS, that does not mean support did not happen; it only means BIS cannot confirm it.`,
   });
 
   const adaptation = learning.adaptation;
@@ -516,35 +516,35 @@ function programmeDesignInsights(outcome: SponsorOutcome) {
     kicker: "Adaptation",
     title:
       adaptation.checkpointParticipants === 0
-        ? "Adaptation evidence is not available yet."
+        ? "We do not yet have enough check-in information to see how learners adjusted."
         : adaptation.adjustedParticipants > 0
-          ? "Some learners changed the method after reviewing evidence."
+          ? "Some learners changed their approach after reviewing what happened."
           : "Learners who reached the checkpoint kept their original plan.",
     body:
       adaptation.checkpointParticipants === 0
-        ? "No reportable Day 3 checkpoint decisions have been recorded for this group yet. BIS leaves this question open rather than treating missing calibration evidence as failure."
-        : `${adaptation.checkpointParticipants} learner${adaptation.checkpointParticipants === 1 ? "" : "s"} reached the calibration checkpoint; ${adaptation.adjustedParticipants} adjusted the experiment and ${adaptation.keptPlanParticipants} kept the plan.`,
+        ? "No Day 3 adjustment decisions have been recorded for this group yet. BIS leaves the question open instead of treating missing information as failure."
+        : `${adaptation.checkpointParticipants} learner${adaptation.checkpointParticipants === 1 ? "" : "s"} reached the Day 3 check-in; ${adaptation.adjustedParticipants} adjusted the experiment and ${adaptation.keptPlanParticipants} kept the plan.`,
   });
 
   const repeat = transition.repeatSituationParticipants;
   const sufficient = metrics?.evidence.sufficient ?? 0;
   cards.push({
-    kicker: "Decision confidence",
+    kicker: "How confident can we be?",
     title:
       repeat >= Math.ceil(transition.startedExperiment * 0.6) && sufficient >= Math.ceil(transition.startedExperiment * 0.6)
-        ? "The programme has a useful repeat-evidence base."
-        : "Programme decisions should remain cautious while repeat evidence builds.",
-    body: `${repeat} of ${transition.startedExperiment} experiment starters encountered at least two comparable situations, and ${sufficient} have enough evidence for a stronger behavioural reading.`,
+        ? "The programme now has a useful base of repeated real-world observations."
+        : "Programme decisions should stay cautious while repeated observations build.",
+    body: `${repeat} of ${transition.startedExperiment} experiment starters encountered at least two comparable situations, and ${sufficient} have enough observations for a more reliable group picture.`,
   });
 
   cards.push({
-    kicker: "Organisational learning",
+    kicker: "For the next programme",
     title: learning.comparison.baselineOnly
-      ? "This cohort establishes the baseline for the next programme cycle."
-      : "There is now another comparable cohort available for programme learning.",
+      ? "This group gives you a starting point for the next programme."
+      : "There is now another similar group available for comparison.",
     body: learning.comparison.baselineOnly
-      ? "BIS should preserve these findings as the first programme-design baseline. When the next comparable cohort runs, the organisation can test whether a deliberate programme change coincided with a different group pattern."
-      : `${learning.comparison.comparableCohorts} other active comparable cohort${learning.comparison.comparableCohorts === 1 ? "" : "s"} can support a next-cycle comparison. Comparisons remain descriptive unless the evaluation design supports stronger causal claims.`,
+      ? "Keep these findings as the starting point. When the next similar group completes the programme, check whether the pattern changed after the team made a deliberate programme change."
+      : `${learning.comparison.comparableCohorts} other active similar group${learning.comparison.comparableCohorts === 1 ? "" : "s"} can support a comparison. A comparison can show whether the pattern changed, but it does not prove what caused the change.`,
   });
 
   return cards;
@@ -578,11 +578,11 @@ type StaffAction = (payload: Record<string, unknown>) => Promise<boolean>;
 
 function programmeDecisionSignal(kicker: string) {
   switch (kicker) {
-    case "Programme transition": return "PROGRAMME_TRANSITION";
-    case "Programme responsiveness": return "SUPPORT_RESPONSE";
+    case "Where participation drops": return "PROGRAMME_TRANSITION";
+    case "Support follow-up": return "SUPPORT_RESPONSE";
     case "Adaptation": return "ADAPTATION";
-    case "Decision confidence": return "EVIDENCE_STRENGTH";
-    case "Organisational learning": return "LEARNING_JOURNEY";
+    case "How confident can we be?": return "EVIDENCE_STRENGTH";
+    case "For the next programme": return "LEARNING_JOURNEY";
     default: return "OTHER";
   }
 }
@@ -777,7 +777,7 @@ export function ProgrammeOutcomesView({
         <Metric label="Learners" value={outcome.participantCount} />
         <Metric
           label="Completion"
-          value={metrics ? percent(metrics.completionContext.completionRate) : "Suppressed"}
+          value={metrics ? percent(metrics.completionContext.completionRate) : "Hidden for privacy"}
           detail="Across this programme"
         />
       </section>
@@ -861,7 +861,7 @@ export function ProgrammeOutcomesView({
                       ))}
                     </div>
                   ) : (
-                    <p className="outcome-muted">No recurring challenge has reached the reporting threshold yet.</p>
+                    <p className="outcome-muted">No recurring challenge is large enough to show safely yet.</p>
                   )}
                 </section>
 
@@ -898,8 +898,8 @@ export function ProgrammeOutcomesView({
               <div className="outcome-card-title"><Compass /><span>Action</span></div>
               <h2>Are people moving from preparation into action?</h2>
               <div className="outcome-metric-row">
-                <Metric label="Reached experiment stage" value={metrics.action.reachedExperimentStage} />
-                <Metric label="Started experiment" value={metrics.action.startedExperiment} />
+                <Metric label="Reached real-world test" value={metrics.action.reachedExperimentStage} />
+                <Metric label="Started real-world test" value={metrics.action.startedExperiment} />
                 <Metric label="Ready, not started" value={metrics.action.readyButNotStarted} />
               </div>
               <p>
@@ -938,9 +938,9 @@ export function ProgrammeOutcomesView({
               <div className="outcome-card-title"><Eye /><span>What we can say</span></div>
               <h2>How much can we responsibly say?</h2>
               <div className="outcome-metric-row">
-                <Metric label="Enough evidence" value={metrics.evidence.sufficient} />
-                <Metric label="Still building" value={metrics.evidence.limited} />
-                <Metric label="Nothing yet" value={metrics.evidence.none} />
+                <Metric label="Enough observations" value={metrics.evidence.sufficient} />
+                <Metric label="More observations needed" value={metrics.evidence.limited} />
+                <Metric label="No observations yet" value={metrics.evidence.none} />
               </div>
               <p>
                 For {metrics.evidence.notEnoughYet} learner{metrics.evidence.notEnoughYet === 1 ? "" : "s"}, there is not enough evidence yet to say anything useful. BIS leaves that result open rather than forcing a conclusion.
@@ -980,14 +980,14 @@ export function ProgrammeOutcomesView({
             <section className="outcomes-organisational-learning">
               <div className="outcomes-section-heading">
                 <div>
-                  <p className="eyebrow">Programme-design insight</p>
+                  <p className="eyebrow">What the programme can learn</p>
                   <h2>What should the organisation learn from this programme?</h2>
                 </div>
                 <Compass />
               </div>
 
               <p className="organisational-learning-intro">
-                BIS separates what happened from what the organisation may want to change next. These are evidence-led review questions, not claims about why an outcome occurred.
+                BIS shows what happened and where the team may want to improve the programme next. These are review questions, not proof of why a result happened.
               </p>
 
               <div className="organisational-learning-grid">
@@ -1009,17 +1009,17 @@ export function ProgrammeOutcomesView({
                 <div>
                   <span>01</span>
                   <strong>Observe</strong>
-                  <p>Use the current cohort evidence to identify a transition, support or adaptation question worth investigating.</p>
+                  <p>Use the group results to choose one participation, support or adjustment question worth looking into.</p>
                 </div>
                 <div>
                   <span>02</span>
-                  <strong>Change deliberately</strong>
-                  <p>Adjust one part of programme design, facilitation or timing instead of reacting to a single learner or anecdote.</p>
+                  <strong>Try one clear change</strong>
+                  <p>Change one part of the programme, facilitation or timing instead of reacting to one person or one story.</p>
                 </div>
                 <div>
                   <span>03</span>
-                  <strong>Compare the next cycle</strong>
-                  <p>Run the next comparable cohort and ask whether the group pattern changed after the programme decision.</p>
+                  <strong>Check the next group</strong>
+                  <p>When the next similar group completes the programme, check whether the pattern changed after the programme decision.</p>
                 </div>
               </div>
             </section>
@@ -1029,13 +1029,13 @@ export function ProgrammeOutcomesView({
             <section id="programme-decision-register" className="programme-decision-register">
               <div className="outcomes-section-heading">
                 <div>
-                  <p className="eyebrow">Decision register</p>
+                  <p className="eyebrow">Programme decisions</p>
                   <h2>What did the organisation decide to change?</h2>
                 </div>
                 <ClipboardCheck />
               </div>
               <p className="decision-register-intro">
-                A result becomes organisational learning only when the programme records what it will change, what it expects to observe next, and later checks that expectation against new evidence.
+                A result becomes useful when the team records what it will change, what it hopes to see next, and later checks what happened.
               </p>
 
               {decisionRegister.decisions.length ? (
@@ -1050,12 +1050,12 @@ export function ProgrammeOutcomesView({
                         <strong className={"decision-status " + decision.status.toLowerCase()}>{decision.status.toLowerCase()}</strong>
                       </div>
                       <div className="decision-evidence">
-                        <strong>Evidence considered</strong>
+                        <strong>What we saw</strong>
                         <p>{decision.sourceEvidence}</p>
                       </div>
                       <div className="decision-change-grid">
                         <div><span>Programme decision</span><p>{decision.decisionText}</p></div>
-                        <div><span>Expected next outcome</span><p>{decision.expectedOutcome}</p></div>
+                        <div><span>What we expect next</span><p>{decision.expectedOutcome}</p></div>
                       </div>
                       <div className="decision-meta">
                         {decision.ownerLabel ? <span>Owner · {decision.ownerLabel}</span> : null}
@@ -1083,29 +1083,29 @@ export function ProgrammeOutcomesView({
               {decisionRegister.canManage ? (
                 <div className="decision-create">
                   <div>
-                    <p className="eyebrow">Record a programme decision</p>
-                    <h3>Turn one insight into a testable next-cycle change.</h3>
+                    <p className="eyebrow">Record a decision</p>
+                    <h3>Choose one change to try in the next programme.</h3>
                   </div>
                   <div className="decision-form-grid">
                     <label>
-                      Evidence area
+                      What this responds to
                       <select value={decisionSignal} onChange={(event) => setDecisionSignal(event.target.value)}>
-                        <option value="PROGRAMME_TRANSITION">Programme transition</option>
-                        <option value="SUPPORT_RESPONSE">Programme responsiveness</option>
+                        <option value="PROGRAMME_TRANSITION">Where participation drops</option>
+                        <option value="SUPPORT_RESPONSE">Support follow-up</option>
                         <option value="ADAPTATION">Adaptation</option>
-                        <option value="EVIDENCE_STRENGTH">Evidence strength</option>
+                        <option value="EVIDENCE_STRENGTH">How much information we have</option>
                         <option value="LEARNING_JOURNEY">Learning journey</option>
-                        <option value="DELIVERY_CONDITION">Delivery condition</option>
-                        <option value="OTHER">Other aggregate evidence</option>
+                        <option value="DELIVERY_CONDITION">Programme conditions</option>
+                        <option value="OTHER">Other group result</option>
                       </select>
                     </label>
                     <label>
-                      Evidence title
+                      Result or pattern
                       <input value={decisionTitle} onChange={(event) => setDecisionTitle(event.target.value)} maxLength={240} placeholder="What pattern are we responding to?" />
                     </label>
                     <label className="decision-form-wide">
-                      Evidence considered
-                      <textarea value={decisionEvidence} onChange={(event) => setDecisionEvidence(event.target.value)} maxLength={1200} placeholder="Use the aggregate programme evidence that led to this decision." />
+                      What we saw
+                      <textarea value={decisionEvidence} onChange={(event) => setDecisionEvidence(event.target.value)} maxLength={1200} placeholder="Summarise the group result that led to this decision. Do not include private learner responses." />
                     </label>
                     <label className="decision-form-wide">
                       What will the programme change?
@@ -1113,10 +1113,10 @@ export function ProgrammeOutcomesView({
                     </label>
                     <label className="decision-form-wide">
                       What do we expect to observe next?
-                      <textarea value={expectedOutcome} onChange={(event) => setExpectedOutcome(event.target.value)} maxLength={1200} placeholder="State the next-cycle outcome that would make this decision worth continuing." />
+                      <textarea value={expectedOutcome} onChange={(event) => setExpectedOutcome(event.target.value)} maxLength={1200} placeholder="What would you hope to see improve or change next time?" />
                     </label>
                     <label>
-                      Decision owner
+                      Who will own this?
                       <input value={decisionOwner} onChange={(event) => setDecisionOwner(event.target.value)} maxLength={160} placeholder="Team or role" />
                     </label>
                     <label>
@@ -1138,10 +1138,10 @@ export function ProgrammeOutcomesView({
                   >
                     <Plus aria-hidden="true" /> Record decision
                   </button>
-                  <small>Only aggregate programme evidence belongs here. Do not paste learner responses, names, reflections, support messages or experiment notes.</small>
+                  <small>Use group-level results only. Do not paste learner names, private responses, reflections, support messages or experiment notes.</small>
                 </div>
               ) : (
-                <p className="decision-viewer-note">This account can view the organisation’s decision trail. A programme owner records or reviews decisions.</p>
+                <p className="decision-viewer-note">This account can view programme decisions. A programme lead can add or review them.</p>
               )}
             </section>
           ) : null}

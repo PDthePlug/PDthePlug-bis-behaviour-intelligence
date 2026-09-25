@@ -75,7 +75,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
       {
         id: "experiment" as const,
         label: "Experiment",
-        detail: "Seven days of real-world observation",
+        detail: "Your seven-day real-world test",
         href: experimentHref,
         icon: CalendarDays,
       },

@@ -590,7 +590,7 @@ export function ProgrammePlayer({
               <article className="prototype-card prototype-journey-card">
                 <p className="prototype-eyebrow">Continue your programme</p>
                 <h2>{page.label}</h2>
-                <p>{page.experimentPosition || "Your authored handbook is ready at your current position."}</p>
+                <p>{page.experimentPosition || "Your handbook is ready where you left off."}</p>
                 <button type="button" className="prototype-btn primary" onClick={() => openLearn("reader")}>
                   Continue learning <ArrowRight />
                 </button>
@@ -611,7 +611,7 @@ export function ProgrammePlayer({
               {moduleCode === "HAB" && runtime.experiment ? (
                 <article className="prototype-card prototype-action-card">
                   <CalendarDays />
-                  <p className="prototype-eyebrow">Field experiment</p>
+                  <p className="prototype-eyebrow">Real-world test</p>
                   <h3>{runtime.events.length}/7 observation days recorded.</h3>
                   <p>No opportunity is valid evidence. The experiment has its own clock.</p>
                   <Link
@@ -705,8 +705,7 @@ export function ProgrammePlayer({
                       <p>DAY 3 · LIVE INVESTIGATION</p>
                       <h2>Continue into Habit Lab Phase A.</h2>
                       <span>
-                        The handbook remains here as your learning reference. Formal hypothesis,
-                        experiment contract and evidence are captured once in the executable Lab.
+                        The handbook stays here as your learning reference. You’ll set your plan, start the seven-day test and record your observations once inside Habit Lab.
                       </span>
                     </div>
                     <Link href="/habit-lab?returnTo=%2Fhabit%3Fsection%3Dlearn">
@@ -715,10 +714,9 @@ export function ProgrammePlayer({
                     </Link>
                   </section>
                   <details className="prototype-reference">
-                    <summary>Open the full authored Day 3 investigation reference</summary>
+                    <summary>Open the full Day 3 reference</summary>
                     <p>
-                      Formal Lab response boxes are read-only here because those responses belong to
-                      the live Habit Lab record.
+                      You’ll answer these inside Habit Lab, so they are not repeated here.
                     </p>
                     <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
                   </details>
@@ -747,7 +745,7 @@ export function ProgrammePlayer({
                 <div>{BIS_MODULES.filter((item) => item.learningStatus === "live" && item.code !== moduleCode).map((item) => <Link key={item.code} href={item.learningHref!}>{item.title}<ArrowRight /></Link>)}</div>
               </section>
             ) : null}
-            {moduleCode !== "HAB" && page.key === "Day 3" ? <p className="handbook-learning-note">These are private handbook reflections. Formal Lab investigations and their evidence records remain separate. {moduleCode === "DEC" || moduleCode === "MON" ? <Link href={moduleCode === "DEC" ? "/decision" : "/money"}>Open the live {programme.title}</Link> : null}</p> : null}
+            {moduleCode !== "HAB" && page.key === "Day 3" ? <p className="handbook-learning-note">These are private handbook reflections. Your Lab answers and real-world observations stay in the Lab, not in this handbook. {moduleCode === "DEC" || moduleCode === "MON" ? <Link href={moduleCode === "DEC" ? "/decision" : "/money"}>Open the live {programme.title}</Link> : null}</p> : null}
             {error ? (
               <p className="prototype-error" role="alert">
                 {error}
@@ -823,12 +821,12 @@ export function ProgrammePlayer({
           </Link>
           <Link href="/habit-lab/experiment?returnTo=%2Fhabit">
             <CalendarDays />
-            <span><strong>Experiment</strong><small>Seven-day field evidence</small></span>
+            <span><strong>Experiment</strong><small>Seven-day real-world test</small></span>
           </Link>
           {hasStaffAccess ? (
             <Link href="/workspace">
               <BriefcaseBusiness />
-              <span><strong>Staff workspace</strong><small>Role-restricted operational view</small></span>
+              <span><strong>Staff workspace</strong><small>Tools for your programme role</small></span>
             </Link>
           ) : null}
         </div>

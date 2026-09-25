@@ -47,7 +47,7 @@ test("enforces a seven-day calendar-gated experiment for both new Labs", async (
   assert.match(route, /Future experiment days stay locked/);
   assert.match(route, /calendarDay\(experiment\.startDate[\s\S]*< 7/);
   assert.match(route, /eventRows\.length < 7/);
-  assert.match(experience, /No opportunity/);
+  assert.match(experience, /No matching situation/);
   assert.match(experience, /Not experienced yet/);
   assert.match(experience, /privacy-obscured/);
   assert.match(experience, /Privacy screen active/);
@@ -121,7 +121,7 @@ test("keeps canonical prompts while retaining explicit pass and seven-day safegu
   assert.match(source, /Did spending opportunities matching your target condition appear on most days\?/);
   assert.match(source, /If you are under 18, a parent or guardian should also consent where required|Skip any question you don't feel ready to answer/);
   assert.match(experience, /Pass this question/);
-  assert.match(experience, /Experiment Version Tracking/);
+  assert.match(experience, /Changes to your plan/);
   assert.match(experience, /Future days stay locked until they have been experienced/);
   assert.match(route, /responseStatus === "PASS"/);
   assert.match(route, /plannedEnd\.setUTCDate\(plannedEnd\.getUTCDate\(\) \+ 6\)/);

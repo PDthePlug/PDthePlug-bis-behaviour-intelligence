@@ -9,7 +9,7 @@ test("learner profile does not advertise staff access unless a staff role exists
   const profile = await source("app/profile/profile-dashboard.tsx");
   assert.match(profile, /const staff = hasStaffRole\(roles\)/);
   assert.match(profile, /\{staff \? \(/);
-  assert.match(profile, /Open staff dashboard/);
+  assert.match(profile, /Open programme workspace/);
   assert.match(profile, /"SPONSOR_VIEWER"/);
   assert.match(profile, /"PROGRAMME_OWNER"/);
   assert.doesNotMatch(profile, /Facilitator and Audit access is assigned/);
@@ -52,7 +52,7 @@ test("programme PDF renderer is a structured institutional report and excludes p
   assert.match(pdf, /Learning journey/);
   assert.match(pdf, /Behaviour in practice/);
   assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
-  assert.match(pdf, /Evidence strength/);
+  assert.match(pdf, /How much information we have/);
   assert.match(pdf, /Human support/);
   assert.match(pdf, /Experiment landscape/);
   assert.match(pdf, /Action plan/);
