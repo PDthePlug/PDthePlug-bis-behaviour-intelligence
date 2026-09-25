@@ -548,6 +548,8 @@ function formLabel(value: string) {
 function looksLikeAnswerMarker(value: string) {
   const text = value.trim();
   if (!text) return false;
+  if (/^["“]I,\s*_{3}/i.test(text)) return false;
+  if (/^✍️\s*Complete this sentence\s*:?$/iu.test(text)) return false;
   if (/^✍️/u.test(text) || looksLikeBlank(text) || /☐/.test(text)) return true;
   if (/^(signed|date|from me, in grade)\s*:/i.test(text)) return true;
   if (/^(bei-\d+[^:]*:).*(?:___|\/\s*\d+)/i.test(text)) return true;
@@ -846,6 +848,19 @@ function labBodyToRuntime(
       continue;
     }
 
+    if (/^dear future me\b/i.test(cleanAuthoredText(text))) {
+      flushHtml();
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: "Letter to My Future Self",
+        prompt: "Write your letter to Future Me.",
+        type: "TEXT",
+        placeholder: "Dear Future Me…",
+        sensitivity: "P3",
+        required: true,
+      });
+      continue;
+    }
+
     const inlineOptions = checkboxOptions(text);
     const inlineQuestion = promptQuestions(text);
     if (inlineOptions.length && inlineQuestion.length) {
@@ -881,7 +896,13 @@ function labBodyToRuntime(
       cursor += 1;
     }
     const promptLead = questions[0]
-      || (markers.length && text.length <= 700 ? cleanAuthoredText(text) : "");
+      || (
+        markers.length
+        && text.length <= 700
+        && !/^continue your (?:journey|investigation)/i.test(cleanAuthoredText(text))
+        ? cleanAuthoredText(text)
+        : ""
+      );
     if (promptLead && markers.length) {
       flushHtml();
       if (markers.length === 1) {
