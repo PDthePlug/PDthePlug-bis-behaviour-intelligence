@@ -813,6 +813,7 @@ function isStandaloneField(value: string) {
   const text = cleanAuthoredText(value);
   if (!text) return false;
   if (/^["“]I,\s*_{3}/i.test(value.trim())) return false;
+  if (/^✍️\s*Complete this sentence\s*:?$/iu.test(value.trim())) return false;
   if (/^✍️/u.test(value.trim())) return true;
   if (looksLikeBlank(text)) return true;
   if (/^(one risk i will address|my protection action|my witness|what i will do if|my failure signal|my biggest risk|my current protection|my priority risk|the cost|the gap|avoided risk|most expensive risk|reducible risk|unprotected risks|my equation|signed|date|from me, in grade)\b/i.test(text)) return true;
@@ -861,6 +862,52 @@ function labBodyToRuntime(
       continue;
     }
 
+    if (/days completed\s*:.*risk actions taken\s*:/i.test(text)) {
+      flushHtml();
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: "Days Completed",
+        prompt: "How many of the seven days did you complete?",
+        type: "INTEGER",
+        min: 0,
+        max: 7,
+        sensitivity: "P2",
+        required: true,
+        group: "BEI-06",
+      });
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: "Risk Actions Taken",
+        prompt: "On how many of the seven days did you take a risk action?",
+        type: "INTEGER",
+        min: 0,
+        max: 7,
+        sensitivity: "P2",
+        required: true,
+        group: "BEI-06",
+      });
+      continue;
+    }
+
+    if (isStandaloneField(text)) {
+      flushHtml();
+      const spec = promptSpecFromMarker(text, formLabel(text));
+      const previousHeading = [...body.slice(Math.max(0, index - 4), index)]
+        .reverse()
+        .find((candidate) => candidate.heading)?.text;
+      const ownLabel = formLabel(text);
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: ownLabel || previousHeading || "Your answer",
+        prompt: ownLabel || previousHeading || "Write your answer",
+        type: spec.type,
+        options: spec.options,
+        min: spec.min,
+        max: spec.max,
+        placeholder: spec.placeholder,
+        sensitivity: /future self|identity|health|relationship/i.test((previousHeading ?? "") + " " + text) ? "P3" : "P2",
+        required: !/^(date|signed|from me, in grade)\b/i.test(ownLabel),
+      });
+      continue;
+    }
+
     const inlineOptions = checkboxOptions(text);
     const inlineQuestion = promptQuestions(text);
     if (inlineOptions.length && inlineQuestion.length) {
@@ -900,6 +947,7 @@ function labBodyToRuntime(
         markers.length
         && text.length <= 700
         && !/^continue your (?:journey|investigation)/i.test(cleanAuthoredText(text))
+        && !/^I,\s*_{3}.*commit to/i.test(cleanAuthoredText(text))
         ? cleanAuthoredText(text)
         : ""
       );
@@ -938,29 +986,6 @@ function labBodyToRuntime(
         }
       }
       index = cursor - 1;
-      continue;
-    }
-
-    if (isStandaloneField(text)) {
-      flushHtml();
-      const spec = promptSpecFromMarker(text, formLabel(text));
-      const previousHeading = [...body.slice(Math.max(0, index - 4), index)]
-        .reverse()
-        .find((candidate) => candidate.heading)?.text;
-      const ownLabel = formLabel(text);
-      addPrompt(prompts, renderBlocks, code, investigation, {
-        label: ownLabel || previousHeading || "Your answer",
-        prompt: /^dear future me/i.test(cleanAuthoredText(text))
-          ? "Letter to My Future Self"
-          : ownLabel || previousHeading || "Write your answer",
-        type: spec.type,
-        options: spec.options,
-        min: spec.min,
-        max: spec.max,
-        placeholder: spec.placeholder,
-        sensitivity: /future self|identity|health|relationship/i.test((previousHeading ?? "") + " " + text) ? "P3" : "P2",
-        required: !/^(date|signed|from me, in grade)\b/i.test(ownLabel),
-      });
       continue;
     }
 
