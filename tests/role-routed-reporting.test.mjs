@@ -34,7 +34,7 @@ test("staff workspace defaults directly to a permitted perspective", async () =>
 test("programme PDF export requires organisation reporting or system administration", async () => {
   const route = await source("app/api/staff/route.ts");
   assert.match(route, /url\.searchParams\.get\("report"\) === "pdf"/);
-  assert.match(route, /!hasRole\(roles, "SPONSOR_VIEWER"\) && !hasRole\(roles, "SYSTEM_ADMIN"\)/);
+  assert.match(route, /!hasRole\(roles, "SPONSOR_VIEWER"\) && !hasRole\(roles, "PROGRAMME_OWNER"\) && !hasRole\(roles, "SYSTEM_ADMIN"\)/);
   assert.match(route, /sponsorSnapshot\(identity, roles\)/);
   assert.match(route, /snapshot\.cohorts\.find\(\(item\) => item\.cohort\?\.id === cohortId\)/);
   assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
