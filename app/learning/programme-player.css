@@ -39,3 +39,63 @@
   .prototype-document textarea.generated-question-response{min-height:104px}
   .checkpoint-answer-panel>summary{min-height:58px;font-size:13px}
 }
+
+
+/* Compiled handbook document grammar. Word/PDF/pasted sources use the same
+   learner controls and editorial surfaces as authored BIS handbooks. */
+.prototype-player input,.prototype-player select{font:inherit;color:inherit}
+.prototype-document .authored-lines{
+  white-space:normal;
+  color:#3f4b45;
+  margin:12px 0;
+  line-height:1.68;
+}
+.prototype-document .handbook-callout{
+  padding:17px 18px;
+  border:1px solid #dfdbd2;
+  border-radius:16px;
+  background:#f7f5ef;
+  color:#33423b;
+}
+.prototype-document .compiled-workbook-question{
+  display:grid;
+  gap:8px;
+  margin:13px 0 20px;
+}
+.prototype-document .compiled-workbook-question>span{
+  font-size:13px;
+  font-weight:800;
+  line-height:1.5;
+  color:#37443e;
+}
+.prototype-document input.response,
+.prototype-document select.response{
+  width:100%;
+  min-height:48px;
+  border:1px solid #d8d4cb;
+  border-radius:13px;
+  padding:0 13px;
+  margin:8px 0 17px;
+  background:#fff;
+  outline:none;
+}
+.prototype-document select.response{padding-right:36px}
+.prototype-document input.response:focus,
+.prototype-document select.response:focus{
+  border-color:var(--p-accent);
+  box-shadow:0 0 0 3px rgba(23,63,53,.09);
+}
+.prototype-document input.response:disabled,
+.prototype-document select.response:disabled{
+  background:#f1efe9;
+  color:#8a8e8b;
+  cursor:not-allowed;
+}
+.prototype-document h1.handbook-day-title{
+  margin-top:16px;
+}
+@media(max-width:700px){
+  .prototype-document .handbook-callout{padding:15px 14px}
+  .prototype-document input.response,
+  .prototype-document select.response{min-height:50px}
+}
