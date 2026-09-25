@@ -6,7 +6,7 @@ import "./preview.css";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Activation UAT Preview",
+  title: "Content Preview",
   robots: { index: false, follow: false },
 };
 
