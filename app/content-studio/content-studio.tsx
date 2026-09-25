@@ -646,7 +646,7 @@ export function ContentStudio() {
                                   <input
                                     ref={(node) => { fileInputs.current[inputKey] = node; }}
                                     type="file"
-                                    accept=".json,.docx,.pdf,.html,.htm,.md,.zip,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/html,text/markdown,application/zip"
+                                    accept=".json,.docx,.pdf,.html,.htm,.md,.txt,.zip,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/html,text/markdown,text/plain,application/zip"
                                     hidden
                                     onChange={(event) => {
                                       const file = event.target.files?.[0];
