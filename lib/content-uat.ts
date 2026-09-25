@@ -4,33 +4,33 @@ import { sha256Hex } from "./content-studio";
 export const CONTENT_UAT_CHECKS = [
   {
     id: "authored_content",
-    label: "Authored content is correct",
-    detail: "Wording, page order, headings, media and examples match the approved source.",
+    label: "The content looks right",
+    detail: "Check the wording, order, headings, examples and any media against your source.",
   },
   {
     id: "navigation",
-    label: "Navigation behaves correctly",
-    detail: "Back, next, programme-map or investigation navigation stays inside the intended experience.",
+    label: "Moving through it feels right",
+    detail: "Check Back, Next, the programme map and investigation navigation.",
   },
   {
     id: "inputs_privacy",
-    label: "Inputs and privacy language are correct",
-    detail: "Learner response fields, pass controls and privacy wording appear in the right places.",
+    label: "Questions and privacy wording are right",
+    detail: "Check that every question has the right answer space and privacy wording.",
   },
   {
     id: "responsive",
-    label: "Desktop and mobile layouts are usable",
-    detail: "The experience remains readable and consistent at desktop and mobile widths.",
+    label: "It works on phone and desktop",
+    detail: "Check that nothing is cramped, cut off or confusing on either view.",
   },
   {
     id: "handoff_completion",
-    label: "Handoffs and completion states are correct",
-    detail: "Module-to-Lab handoffs, return paths and completion states behave as intended.",
+    label: "The journey connects properly",
+    detail: "Check links between learning, the Lab, completion and return paths.",
   },
   {
     id: "learner_language",
-    label: "Learner-facing language is clear",
-    detail: "No implementation jargon, internal terminology or technical error language appears in the learner experience.",
+    label: "The language is clear",
+    detail: "Check that a learner can understand every instruction without technical or internal wording.",
   },
 ] as const;
 
