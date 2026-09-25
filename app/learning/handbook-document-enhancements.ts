@@ -67,11 +67,11 @@ function collapseSuggestedAnswers(root: HTMLElement) {
 }
 
 function hasExistingAnswerSpace(element: HTMLElement) {
-  if (element.querySelector("textarea[data-field-id]")) return true;
+  if (element.querySelector("[data-field-id]")) return true;
   let cursor = element.nextElementSibling;
   let inspected = 0;
   while (cursor && inspected < 5) {
-    if (cursor.matches("textarea[data-field-id]") || cursor.querySelector("textarea[data-field-id]")) {
+    if (cursor.matches("[data-field-id]") || cursor.querySelector("[data-field-id]")) {
       return true;
     }
     if (cursor.matches("h1,h2,h3,hr") || questionPrompts(cursor as HTMLElement).length) break;
