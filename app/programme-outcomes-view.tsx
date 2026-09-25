@@ -104,7 +104,7 @@ export type SponsorOutcome = {
       privacyNote: string;
     };
   };
-  organisationLearning: null | {
+  organisationLearning?: null | {
     cohortId: string;
     suppressed: boolean;
     participantCount: number;
