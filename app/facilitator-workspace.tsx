@@ -98,7 +98,7 @@ function evidencePosition(learner: ProgressRow) {
   const threshold = experiment.minimumEvidenceThreshold ?? 3;
   if (opportunities >= threshold) return "Enough evidence for review";
   if (opportunities > 0) return "Evidence building";
-  if ((experiment.recordedDays ?? 0) > 0) return "Observing · no eligible situation yet";
+  if ((experiment.recordedDays ?? 0) > 0) return "Observing · no matching situation yet";
   return "First observation pending";
 }
 
@@ -337,7 +337,7 @@ export function FacilitatorWorkspace({
                 <div className="section-title"><div><p className="eyebrow">Where support may help</p><h2>Next useful facilitator moves</h2></div><Activity /></div>
                 <div className="participant-focus-list">
                   {supportFocus(selected).map((item, index) => <div key={item}><strong>{String(index + 1).padStart(2,"0")}</strong><p>{item}</p></div>)}
-                  {supportFocus(selected).length === 0 ? <p className="ops-helper">No structural support prompt is currently indicated.</p> : null}
+                  {supportFocus(selected).length === 0 ? <p className="ops-helper">No learner currently needs a check-in based on the progress shown here.</p> : null}
                 </div>
               </div>
             </section>
@@ -369,7 +369,7 @@ export function FacilitatorWorkspace({
       {section === "support" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
-            <div><p className="eyebrow">Support</p><h2>{attention.length ? String(attention.length) + " learner" + (attention.length === 1 ? "" : "s") + " may need a check-in" : "No structural support flags"}</h2><p>These are prompts for human follow-up, not automated judgments.</p></div>
+            <div><p className="eyebrow">Support</p><h2>{attention.length ? String(attention.length) + " learner" + (attention.length === 1 ? "" : "s") + " may need a check-in" : "No learners currently flagged for a check-in"}</h2><p>These are prompts for human follow-up, not automated judgments.</p></div>
             <Badge variant="outline">{cohort.name}</Badge>
           </section>
           <div className="support-attention-grid">
@@ -407,7 +407,7 @@ export function FacilitatorWorkspace({
               {data.referrals.filter((item) => item.cohortId === cohort.id).map((item) => <div key={item.id}><span><strong>{participants.find((learner) => learner.userId === item.learnerUserId)?.displayName ?? "Learner"}</strong><small>{label(item.category)} · {formatDate(item.openedAt)}</small></span><Badge variant="outline">{label(item.status)}</Badge></div>)}
             </div>
           </section>
-          <div className="ops-boundary compact"><ShieldAlert /><div><strong>Case management stays restricted</strong><p>Facilitators can refer a concern. Safeguarding officers manage the case.</p></div></div>
+          <div className="ops-boundary compact"><ShieldAlert /><div><strong>Safeguarding cases stay private</strong><p>Facilitators can raise a concern. Only the safeguarding team can manage the case.</p></div></div>
         </div>
       ) : null}
 
