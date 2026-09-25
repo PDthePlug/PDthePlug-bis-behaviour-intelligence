@@ -203,8 +203,8 @@ function handbookFieldCue(value: string) {
   return false;
 }
 
-function handbookShortControl(sourceKey: string, label: string) {
-  const lower = label.toLowerCase();
+function handbookShortControl(sourceKey: string, label: string, raw = label) {
+  const lower = (label + " " + raw).toLowerCase();
   const attrs = [
     'class="response workbook-short-response"',
     'data-source-key="' + escapeHtml(sourceKey) + '"',
@@ -212,12 +212,12 @@ function handbookShortControl(sourceKey: string, label: string) {
     'data-privacy-class="P3"',
     'aria-label="' + escapeHtml(label || "Your answer") + '"',
   ];
-  if (/date\s*:/.test(lower)) {
+  if (/\bdate\s*:/.test(lower)) {
     return "<input type=\"date\" " + attrs.join(" ") + " />";
   }
-  const range = label.match(/\/\s*(10|7|100)\b/);
-  if (range || /(?:rate|accuracy|difference)\s*:/i.test(label)) {
-    const max = range ? Number(range[1]) : 100;
+  const range = raw.match(/\/\s*(10|7|100)\b/);
+  if (range || /\bconfidence\b|\bmy rating\b/i.test(label) || /(?:rate|accuracy|difference|shift)\s*:/i.test(label) || /%\s*$/.test(raw)) {
+    const max = range ? Number(range[1]) : /\bconfidence\b|\bmy rating\b/i.test(label) ? 10 : 100;
     const min = max === 10 ? 1 : 0;
     return "<input type=\"number\" min=\"" + min + "\" max=\"" + max + "\" " + attrs.join(" ") + " />";
   }
@@ -253,10 +253,12 @@ function handbookBlockHtml(block: SourceBlock) {
 function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
   const html: string[] = [];
   let inAnswers = false;
-  let fieldIndex = 0;
+  const occurrences = new Map<string, number>();
   const nextSourceKey = (prompt: string) => {
-    fieldIndex += 1;
-    return key.replace(/\s+/g, "").toLowerCase() + "-" + sourceToken(prompt + "|" + fieldIndex);
+    const normalized = prompt.replace(/\s+/g, " ").trim();
+    const occurrence = (occurrences.get(normalized) ?? 0) + 1;
+    occurrences.set(normalized, occurrence);
+    return key.replace(/\s+/g, "").toLowerCase() + "-" + sourceToken(normalized) + "-" + occurrence;
   };
 
   for (let index = 0; index < blocks.length; index += 1) {
@@ -309,10 +311,12 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
 
       if (handbookFieldCue(text)) {
         html.push(handbookBlockHtml(block));
-        const label = text.replace(/_{3,}.*$/, "").replace(/\s+/g, " ").trim();
-        const sourceKey = nextSourceKey(label || text);
+        const stripped = text.replace(/_{3,}.*$/, "").replace(/\s+/g, " ").trim();
+        const previousQuestion = handbookQuestionPrompts(blocks[index - 1]?.lines?.join("\n") || blocks[index - 1]?.text || "")[0] || "";
+        const label = stripped || previousQuestion || text;
+        const sourceKey = nextSourceKey(label);
         const short = /_{3,}|\/\s*(?:7|10|100)\b|%\s*$|^(?:date|signed|effective from day|confidence|my rating|shift)\s*:/i.test(text);
-        html.push(short ? handbookShortControl(sourceKey, label || text) : handbookTextarea(sourceKey, label || text));
+        html.push(short ? handbookShortControl(sourceKey, label, text) : handbookTextarea(sourceKey, label));
         continue;
       }
     }
