@@ -223,9 +223,9 @@ async function postHandler(request: Request) {
       const sourceFormat = String(body.sourceFormat ?? "BIS_PACKAGE_JSON") as ContentSourceFormat;
       const releaseNotes = String(body.releaseNotes ?? "").trim();
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("Choose an active content item.");
+      if (!item || item.status !== "ACTIVE") throw new Error("Choose a BIS title.");
       if (!validVersion(version)) throw new Error("Use a short version such as 1.0, 2.1 or 4.5.3.");
-      if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Choose a supported source format.");
+      if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Use a Word document, PDF, pasted text, HTML, Markdown, BIS JSON or ZIP file.");
       if (releaseNotes.length > 1200) throw new Error("Keep release notes under 1,200 characters.");
       const id = `${itemId}:${version}`;
       await db.insert(contentLibraryVersions).values({
@@ -259,7 +259,7 @@ async function postHandler(request: Request) {
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version || version.status !== "DRAFT") throw new Error("Choose an editable draft version.");
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item) throw new Error("The parent content item was not found.");
+      if (!item) throw new Error("That BIS title could not be found.");
       const expectedKeys = item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : ["lab"];
       if (!expectedKeys.includes(sourceKey as DeliveryEdition | "lab")) throw new Error("Choose the correct source slot for this content.");
       if (item.kind === "LEARNING_MODULE" && deliveryEdition !== sourceKey) throw new Error("The learning source must match its delivery edition.");
@@ -267,7 +267,7 @@ async function postHandler(request: Request) {
       if (!sourceFileName || sourceFileName.length > 180) throw new Error("The source file name is not valid.");
       if (!sourceStoragePath.startsWith(`sources/${versionId}/${sourceKey}/`)) throw new Error("The source upload path does not match this draft slot.");
       if (!Number.isFinite(sourceBytes) || sourceBytes < 1 || sourceBytes > 26_214_400) throw new Error("Use a source file up to 25 MB.");
-      if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Choose a supported source format.");
+      if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Use a Word document, PDF, pasted text, HTML, Markdown, BIS JSON or ZIP file.");
 
       const list = await requestSupabaseClient().storage
         .from(CONTENT_STUDIO_BUCKET)
@@ -335,7 +335,7 @@ async function postHandler(request: Request) {
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version || version.status !== "DRAFT") throw new Error("Choose an editable draft version.");
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title is not available.");
       const sources = await db.select().from(contentSourceFiles).where(eq(contentSourceFiles.versionId, versionId));
       if (item.kind === "LEARNING_MODULE" && !sources.some((source) => LEARNING_EDITION_KEYS.includes(source.sourceKey as DeliveryEdition))) {
         throw new Error("Upload at least one learning edition before preparing a preview.");
@@ -471,14 +471,14 @@ async function postHandler(request: Request) {
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version) throw new Error("That draft version was not found.");
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item) throw new Error("The parent content item was not found.");
-      if (!version.sourceStoragePath) throw new Error("Upload a source file before validation.");
+      if (!item) throw new Error("That BIS title could not be found.");
+      if (!version.sourceStoragePath) throw new Error("Upload some content first.");
       const sourceFormat = version.sourceFormat as ContentSourceFormat;
-      if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("The source format is not supported.");
+      if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("That file type is not supported yet.");
       const download = await requestSupabaseClient().storage
         .from("bis-content-studio")
         .download(version.sourceStoragePath);
-      if (download.error || !download.data) throw new Error("The source file could not be opened for validation.");
+      if (download.error || !download.data) throw new Error("I couldn't open the uploaded file. Please upload it again.");
       const bytes = new Uint8Array(await download.data.arrayBuffer());
       const sourceHash = await sha256Hex(bytes);
       const result = validateContentSource(item.kind as ContentKind, item.code, version.version, sourceFormat, bytes);
@@ -506,7 +506,11 @@ async function postHandler(request: Request) {
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version) throw new Error("That draft version was not found.");
       if (version.validationStatus !== "VALID" || version.status !== "VALIDATED" || version.compilerStatus !== "COMPILED") {
-        throw new Error("Compile and validate this version successfully before approval.");
+        throw new Error("Prepare this version successfully before approval.");
+      }
+      const [review] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
+      if (!review || review.status !== "PASSED") {
+        throw new Error("Complete the final preview check before approving this version.");
       }
       const now = new Date().toISOString();
       await db.update(contentLibraryVersions).set({
@@ -548,14 +552,14 @@ async function postHandler(request: Request) {
     if (action === "saveUat") {
       const versionId = String(body.versionId ?? "");
       const notes = String(body.notes ?? "").trim();
-      if (notes.length > 2000) throw new Error("Keep UAT notes under 2,000 characters.");
+      if (notes.length > 2000) throw new Error("Keep your review notes under 2,000 characters.");
       const checklist = normalizeUatChecklist(body.checklist);
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
-        throw new Error("Compile this version before recording activation UAT.");
+        throw new Error("Prepare this version before starting the final check.");
       }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title is not available.");
       const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
       const fingerprint = await artifactFingerprint(artifacts);
       const [existing] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
@@ -593,16 +597,16 @@ async function postHandler(request: Request) {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
-        throw new Error("Compile this version before UAT sign-off.");
+        throw new Error("Prepare this version before completing the final check.");
       }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title is not available.");
       const [uat] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
-      if (!uat) throw new Error("Preview the compiled runtime and complete the UAT checklist first.");
+      if (!uat) throw new Error("Open the preview and complete the final check first.");
       const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
       const fingerprint = await artifactFingerprint(artifacts);
       if (uat.artifactFingerprint !== fingerprint) {
-        throw new Error("The compiled artifacts changed after UAT started. Preview the current build again.");
+        throw new Error("This version changed after your review started. Open the latest preview again.");
       }
       const previewed = parseJson(uat.previewedArtifacts, []) as string[];
       const checklist = normalizeUatChecklist(parseJson(uat.checklist, {}));
@@ -612,7 +616,7 @@ async function postHandler(request: Request) {
           ? "Preview every learning edition you prepared before signing off."
           : "Preview the Lab before signing off.");
       }
-      if (!checklistComplete(checklist)) throw new Error("Complete every activation UAT check before sign-off.");
+      if (!checklistComplete(checklist)) throw new Error("Complete every item in the final check before marking it ready.");
       const now = new Date().toISOString();
       await db.update(contentActivationUat).set({
         status: "PASSED",
@@ -632,10 +636,10 @@ async function postHandler(request: Request) {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version || version.status !== "APPROVED" || version.compilerStatus !== "COMPILED" || version.runtimeStatus !== "READY") {
-        throw new Error("Compile, validate and approve this version before activation.");
+        throw new Error("Prepare, review and approve this version before publishing.");
       }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("The content item is not active.");
+      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title is not available.");
       const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
       const [uat] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
       const fingerprint = await artifactFingerprint(artifacts);
@@ -658,7 +662,7 @@ async function postHandler(request: Request) {
         const editions = artifacts.map((artifact) => artifact.deliveryEdition).filter(Boolean);
         if (!editions.length) throw new Error("Prepare at least one learning edition before publishing.");
       } else if (!artifacts.some((artifact) => artifact.artifactKey === "lab:universal")) {
-        throw new Error("Activation blocked: the Universal Lab runtime artifact is missing.");
+        throw new Error("The prepared Lab preview is missing. Prepare this version again.");
       }
 
       const now = new Date().toISOString();
@@ -772,7 +776,7 @@ async function postHandler(request: Request) {
     if (action === "rollbackActivation") {
       const itemId = String(body.itemId ?? "");
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
-      if (!item) throw new Error("That content item was not found.");
+      if (!item) throw new Error("That BIS title could not be found.");
       const activationRows = await db.select().from(contentRuntimeActivations).where(eq(contentRuntimeActivations.itemId, itemId)).orderBy(desc(contentRuntimeActivations.activatedAt));
       const current = activationRows.find((activation) => activation.status === "ACTIVE");
       const previous = activationRows.find((activation) => activation.status === "SUPERSEDED");
@@ -812,10 +816,10 @@ async function postHandler(request: Request) {
     if (action === "archiveItem") {
       const itemId = String(body.itemId ?? "");
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
-      if (!item) throw new Error("That content item was not found.");
+      if (!item) throw new Error("That BIS title could not be found.");
       const live = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.itemId, itemId));
       if (live.some((version) => version.status === "PUBLISHED" && version.runtimeStatus === "LIVE")) {
-        throw new Error("A live content item must be retired from the runtime before it can be archived.");
+        throw new Error("A published BIS title cannot be archived while it is live.");
       }
       await db.update(contentLibraryItems).set({ status: "ARCHIVED", updatedAt: new Date().toISOString() }).where(eq(contentLibraryItems.id, itemId));
       await audit(identity.id, "CONTENT_ITEM_ARCHIVED", "CONTENT_LIBRARY_ITEM", itemId);
