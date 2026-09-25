@@ -880,9 +880,7 @@ function labBodyToRuntime(
       cursor += 1;
     }
     const promptLead = questions[0]
-      || (/[:：]\s*$/.test(text) || /^(one sentence|complete this sentence|my biggest risk affects)/i.test(text)
-        ? cleanAuthoredText(text)
-        : "");
+      || (markers.length && text.length <= 700 ? cleanAuthoredText(text) : "");
     if (promptLead && markers.length) {
       flushHtml();
       if (markers.length === 1) {
