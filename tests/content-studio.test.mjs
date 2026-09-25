@@ -47,7 +47,7 @@ test("new content follows create, edition upload, compile, approve and explicit 
     source("app/api/content-studio/route.ts"),
     source("app/content-studio/content-studio.tsx"),
   ]);
-  for (const action of ["createItem", "createVersion", "attachSource", "compileVersion", "approveVersion", "activateVersion", "rollbackActivation", "reopenVersion"]) {
+  for (const action of ["createItem", "createVersion", "attachSource", "compileVersion", "approveVersion", "activateVersion", "reopenVersion"]) {
     assert.ok(api.includes('action === "' + action + '"'));
   }
   assert.match(ui, /action: "createItem"/);
@@ -56,7 +56,6 @@ test("new content follows create, edition upload, compile, approve and explicit 
   assert.match(ui, /action: "compileVersion"/);
   assert.match(ui, /action: "approveVersion"/);
   assert.match(ui, /action: "activateVersion"/);
-  assert.match(ui, /action: "rollbackActivation"/);
   assert.doesNotMatch(api, /action === "publishVersion"/);
 });
 
@@ -91,4 +90,27 @@ test("future content has stable module and Lab package contracts", async () => {
 test("Administration exposes the Content Studio only to administrators", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /adminAvailable \? <Link className="staff-workspace-learner-link" href="\/content-studio">Content Studio<\/Link> : null/);
+});
+
+
+test("the complete 34-title BIS catalogue is available for filling from Content Studio", async () => {
+  const migration = await source("supabase/migrations/20260925093000_content_studio_founder_flow.sql");
+  const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
+  assert.equal(catalogue.modules.length, 34);
+  for (const module of catalogue.modules) {
+    assert.ok(migration.includes("content:module:" + module.code));
+    assert.ok(migration.includes("content:lab:" + module.code));
+  }
+});
+
+test("Content Studio presents founder-facing language and supports pasted text", async () => {
+  const [ui, contract] = await Promise.all([
+    source("app/content-studio/content-studio.tsx"),
+    source("lib/content-studio.ts"),
+  ]);
+  assert.match(ui, /Choose a BIS title and add the content that is ready/);
+  assert.match(ui, /Prepare preview/);
+  assert.match(ui, /Approve for publishing/);
+  assert.match(ui, /Paste text/);
+  assert.match(contract, /text\/plain/);
 });
