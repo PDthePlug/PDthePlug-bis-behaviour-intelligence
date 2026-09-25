@@ -724,7 +724,7 @@ function encodedPackage(
   version: string,
   edition: DeliveryEdition,
   metadata: AdaptMetadata,
-  pages: Array<{ key: PageKey; label: string; html: string }>,
+  pages: Array<{ key: PageKey; label: string; html: string; experimentPosition?: string | null }>,
   authority: string,
 ) {
   return new TextEncoder().encode(JSON.stringify({
