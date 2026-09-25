@@ -11,6 +11,7 @@ test("learner profile does not advertise staff access unless a staff role exists
   assert.match(profile, /\{staff \? \(/);
   assert.match(profile, /Open staff dashboard/);
   assert.match(profile, /"SPONSOR_VIEWER"/);
+  assert.match(profile, /"PROGRAMME_OWNER"/);
   assert.doesNotMatch(profile, /Facilitator and Audit access is assigned/);
   assert.doesNotMatch(profile, /cannot be self-registered from a learner account/);
 });
@@ -18,13 +19,14 @@ test("learner profile does not advertise staff access unless a staff role exists
 test("root role routing treats organisation reporting as staff access", async () => {
   const router = await source("app/role-router.tsx");
   assert.match(router, /"SPONSOR_VIEWER"/);
+  assert.match(router, /"PROGRAMME_OWNER"/);
   assert.match(router, /router\.replace\(staff \? "\/workspace" : "\/habit"\)/);
 });
 
 test("staff workspace defaults directly to a permitted perspective", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /if \(canFacilitate\(roles\)\) return "facilitator"/);
-  assert.match(shell, /if \(roles\.includes\("SPONSOR_VIEWER"\)\) return "outcomes"/);
+  assert.match(shell, /if \(roles\.includes\("SPONSOR_VIEWER"\) \|\| roles\.includes\("PROGRAMME_OWNER"\)\) return "outcomes"/);
   assert.match(shell, /return "admin"/);
   assert.match(shell, /defaultPerspective\(session\.roles\)/);
   assert.match(shell, /requestedPerspective/);
