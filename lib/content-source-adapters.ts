@@ -125,9 +125,21 @@ function canonicalPageKey(value: string): PageKey | null {
 
   if (/^welcome\b/.test(cleaned)) return "Welcome";
   if (/^weekend\b/.test(cleaned)) return "Weekend";
-  if (/^(certificate|completion certificate)\b/.test(cleaned)) return "Certificate";
+  if (/\b(?:investigation|completion)?\s*certificate\b/.test(cleaned)) return "Certificate";
   const day = cleaned.match(/^day\s*(10|[1-9])\b/);
   if (day) return ("Day " + day[1]) as PageKey;
+  return null;
+}
+
+function strictProgrammePageKey(value: string): PageKey | null {
+  const cleaned = value.replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+  if (/^WELCOME$/i.test(cleaned)) return "Welcome";
+  if (/^WEEKEND$/i.test(cleaned)) return "Weekend";
+  const day = cleaned.match(/^DAY\s+(10|[1-9])(?:\s+OF\s+10)?$/i);
+  if (day) return ("Day " + day[1]) as PageKey;
+  if (/^(?:[A-Z][A-Z0-9 &®™'()/-]+\s+)?(?:INVESTIGATION\s+)?CERTIFICATE$/u.test(cleaned.toUpperCase())) {
+    return "Certificate";
+  }
   return null;
 }
 
@@ -136,6 +148,8 @@ type SourceBlock = {
   html: string;
   heading: boolean;
   tableRows?: string[][];
+  lines?: string[];
+  kind?: "paragraph" | "table";
 };
 
 const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
