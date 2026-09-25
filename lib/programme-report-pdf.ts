@@ -73,6 +73,35 @@ type Outcome = {
       };
     };
   };
+  organisationLearning?: null | {
+    suppressed: boolean;
+    transition: null | {
+      participants: number;
+      activeInLearning: number;
+      reachedExperimentStage: number;
+      startedExperiment: number;
+      repeatSituationParticipants: number;
+      completed: number;
+    };
+    supportResponse: null | {
+      requests: number;
+      acknowledged: number;
+      resolved: number;
+      acknowledgementRate: number | null;
+      resolutionRate: number | null;
+    };
+    adaptation: null | {
+      checkpointParticipants: number;
+      adjustedParticipants: number;
+      keptPlanParticipants: number;
+      checkpointCoverageRate: number | null;
+      adjustmentRate: number | null;
+    };
+    comparison: null | {
+      comparableCohorts: number;
+      baselineOnly: boolean;
+    };
+  };
   deepAnalysis?: null | {
     suppressed: boolean;
     experimentLandscape: null | {
@@ -1205,6 +1234,83 @@ function drawExperimentLandscape(canvas: ReportCanvas, outcome: Outcome) {
   );
 }
 
+function drawOrganisationalLearning(canvas: ReportCanvas, outcome: Outcome) {
+  const learning = outcome.organisationLearning;
+  if (!learning || learning.suppressed || !learning.transition || !learning.supportResponse || !learning.adaptation || !learning.comparison) return;
+
+  canvas.page(C.paper);
+  canvas.section(
+    "Programme-design insight",
+    "What should the organisation learn from this programme?",
+    "These signals connect participant behaviour with programme-delivery questions. They are descriptive review prompts, not causal claims."
+  );
+
+  const transition = learning.transition;
+  canvas.metricCards([
+    { label: "Participants", value: String(transition.participants), tone: "dark" },
+    { label: "Started real-world test", value: String(transition.startedExperiment), tone: "teal" },
+    { label: "Repeat situations", value: String(transition.repeatSituationParticipants), tone: "plain" },
+    { label: "Completed", value: String(transition.completed), tone: "warm" },
+  ]);
+
+  const support = learning.supportResponse;
+  const adaptation = learning.adaptation;
+  canvas.twoColumnCards([
+    {
+      kicker: "Programme transition",
+      title: "Where does movement into action thin?",
+      body:
+        String(transition.reachedExperimentStage) +
+        " reached the real-world test, " +
+        String(transition.startedExperiment) +
+        " started, and " +
+        String(transition.repeatSituationParticipants) +
+        " encountered at least two comparable situations.",
+    },
+    {
+      kicker: "Programme responsiveness",
+      title: support.requests === 0 ? "No support demand is recorded" : "What happened after learners asked for help?",
+      body:
+        support.requests === 0
+          ? "No learner-initiated support request is recorded for this group."
+          : String(support.requests) +
+            " support requests are recorded; " +
+            String(support.acknowledged) +
+            " acknowledgements and " +
+            String(support.resolved) +
+            " resolutions are recorded. Missing response records do not prove support did not happen.",
+    },
+    {
+      kicker: "Adaptation",
+      title: adaptation.checkpointParticipants === 0 ? "Adaptation evidence is still open" : "Did learners adjust after reviewing evidence?",
+      body:
+        adaptation.checkpointParticipants === 0
+          ? "No reportable Day 3 checkpoint decisions are available yet. BIS does not turn missing calibration evidence into a failure score."
+          : String(adaptation.checkpointParticipants) +
+            " learners reached the calibration checkpoint; " +
+            String(adaptation.adjustedParticipants) +
+            " adjusted the method and " +
+            String(adaptation.keptPlanParticipants) +
+            " kept the original plan.",
+    },
+    {
+      kicker: "Next cycle",
+      title: learning.comparison.baselineOnly ? "Use this cohort as the baseline" : "A next-cycle comparison is possible",
+      body:
+        learning.comparison.baselineOnly
+          ? "Preserve this cohort as the programme-design baseline. The next comparable cohort can test whether a deliberate delivery change coincides with a different group pattern."
+          : String(learning.comparison.comparableCohorts) +
+            " other comparable cohort(s) are available. Compare cautiously unless the evaluation design supports stronger causal inference.",
+    },
+  ]);
+
+  canvas.callout(
+    "Organisational learning loop",
+    "Observe the group evidence. Change one part of programme design deliberately. Compare the next comparable cohort. Keep the conclusion proportional to the evidence.",
+    "dark"
+  );
+}
+
 function drawActionPlan(canvas: ReportCanvas, outcome: Outcome) {
   canvas.page(C.paper);
   canvas.section(
@@ -1310,6 +1416,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
   drawLearningJourney(canvas, outcome);
   drawBehaviourEvidence(canvas, outcome);
   drawExperimentLandscape(canvas, outcome);
+  drawOrganisationalLearning(canvas, outcome);
   drawActionPlan(canvas, outcome);
 
   return canvas.finish();

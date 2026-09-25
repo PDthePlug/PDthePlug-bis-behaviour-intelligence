@@ -248,3 +248,61 @@ test("privacy explanation is optional instead of occupying the report", async ()
   assert.match(view, /Privacy and reporting boundaries/);
   assert.doesNotMatch(view, /className="outcomes-privacy"/);
 });
+
+
+test("organisation learning adds programme-design questions without exposing learner content", async () => {
+  const [route, view, migration] = await Promise.all([
+    source("app/api/staff/route.ts"),
+    source("app/programme-outcomes-view.tsx"),
+    source("supabase/migrations/20260925205000_programme_design_organisational_learning.sql"),
+  ]);
+
+  assert.match(route, /sponsor_cohort_organisational_learning/);
+  assert.match(route, /organisationLearning:/);
+  assert.match(view, /Programme-design insight/);
+  assert.match(view, /What should the organisation learn from this programme\?/);
+  assert.match(view, /Programme responsiveness/);
+  assert.match(view, /Adaptation/);
+  assert.match(view, /Decision confidence/);
+  assert.match(view, /Organisational learning/);
+  assert.match(view, /Observe/);
+  assert.match(view, /Change deliberately/);
+  assert.match(view, /Compare the next cycle/);
+
+  assert.match(migration, /private\.can_view_sponsor_cohort/);
+  assert.match(migration, /supportResponse/);
+  assert.match(migration, /checkpointParticipants/);
+  assert.match(migration, /repeatSituationParticipants/);
+  assert.match(migration, /comparableCohorts/);
+  assert.doesNotMatch(migration, /s\.summary/);
+  assert.doesNotMatch(migration, /adjustment_summary/);
+  assert.doesNotMatch(migration, /experiment_events\.notes/);
+});
+
+test("programme-design insight treats missing response and adaptation records as unknown, not failure", async () => {
+  const view = await source("app/programme-outcomes-view.tsx");
+  assert.match(view, /Missing response records do not prove support did not happen/);
+  assert.match(view, /BIS leaves this question open rather than treating missing calibration evidence as failure/);
+  assert.match(view, /not claims about why an outcome occurred/);
+});
+
+test("organisation learning preserves causal restraint and baseline comparison language", async () => {
+  const [view, migration] = await Promise.all([
+    source("app/programme-outcomes-view.tsx"),
+    source("supabase/migrations/20260925205000_programme_design_organisational_learning.sql"),
+  ]);
+  assert.match(view, /baseline for the next programme cycle/);
+  assert.match(view, /Comparisons remain descriptive unless the evaluation design supports stronger causal claims/);
+  assert.match(migration, /descriptiveNotCausal/);
+  assert.match(migration, /They do not prove why an outcome occurred or that BIS caused it/);
+});
+
+
+test("programme PDF carries the organisational learning layer", async () => {
+  const pdf = await source("lib/programme-report-pdf.ts");
+  assert.match(pdf, /Programme-design insight/);
+  assert.match(pdf, /What should the organisation learn from this programme\?/);
+  assert.match(pdf, /Programme responsiveness/);
+  assert.match(pdf, /Organisational learning loop/);
+  assert.match(pdf, /Missing response records do not prove support did not happen/);
+});
