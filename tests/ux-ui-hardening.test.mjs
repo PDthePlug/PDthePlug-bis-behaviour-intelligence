@@ -64,3 +64,40 @@ test("staff views and facilitator tasks participate in browser history", async (
   assert.match(facilitator, /params\.set\("learner", patch\.learner\)/);
   assert.match(facilitator, /navigateWorkspace\(\{ section: "participants", learner: learner\.userId \}\)/);
 });
+
+
+test("customer-facing language stays plain across learner, facilitator and organisation surfaces", async () => {
+  const [signIn, profile, player, facilitator, operations, outcomes, pdf] = await Promise.all([
+    source("app/sign-in/sign-in-form.tsx"),
+    source("app/profile/profile-dashboard.tsx"),
+    source("app/learning/programme-player.tsx"),
+    source("app/facilitator-workspace.tsx"),
+    source("app/operations-view.tsx"),
+    source("app/programme-outcomes-view.tsx"),
+    source("lib/programme-report-pdf.ts"),
+  ]);
+
+  assert.match(signIn, /BIS will open the right version of your learning programme/);
+  assert.match(profile, /Open programme workspace/);
+  assert.match(player, /Seven-day real-world test/);
+  assert.match(facilitator, /No learner currently needs a check-in/);
+  assert.match(operations, /Programme results · view only/);
+  assert.match(outcomes, /What the programme can learn/);
+  assert.match(outcomes, /Programme decisions/);
+  assert.match(pdf, /How much information we have/);
+
+  const visibleSources = [signIn, profile, player, facilitator, operations, outcomes, pdf].join("\n");
+  for (const phrase of [
+    "authored handbook edition",
+    "Role-restricted operational view",
+    "Seven-day field evidence",
+    "Opening restricted operations",
+    "Programme-design insight",
+    "Decision register",
+    "Evidence strength",
+    "calibration checkpoint",
+    "No structural support flags",
+  ]) {
+    assert.doesNotMatch(visibleSources, new RegExp(phrase));
+  }
+});
