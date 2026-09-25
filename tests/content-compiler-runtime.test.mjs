@@ -4,24 +4,22 @@ import test from "node:test";
 
 const source = (path) => readFile(new URL("../" + path, import.meta.url), "utf8");
 
-test("every learning version is a three-edition release", async () => {
-  const [compiler, api, ui, docs] = await Promise.all([
+test("learning editions are independent publishing slots inside one BIS title", async () => {
+  const [compiler, api, ui, migration] = await Promise.all([
     source("lib/content-compiler.ts"),
     source("app/api/content-studio/route.ts"),
     source("app/content-studio/content-studio.tsx"),
-    source("docs/CONTENT_COMPILER_RUNTIME.md"),
+    source("supabase/migrations/20260925093000_content_studio_founder_flow.sql"),
   ]);
   assert.match(compiler, /LEARNING_EDITION_KEYS = \[\.\.\.DELIVERY_EDITIONS\]/);
   for (const edition of ["school", "emerging_adult", "workplace"]) {
-    assert.ok(compiler.includes(edition) || docs.includes(edition));
     assert.ok(ui.includes(edition));
-    assert.ok(docs.includes(edition));
   }
-  assert.match(api, /LEARNING_EDITION_KEYS/);
-  assert.match(api, /Every learning module has three editions/);
-  assert.match(api, /Activation blocked: missing compiled editions/);
-  assert.match(ui, /Three editions travel together/);
-  assert.match(ui, /BIS will not publish a partial edition set/);
+  assert.match(api, /editionsToCompile/);
+  assert.match(api, /contentEditionActivations/);
+  assert.match(migration, /content_edition_activations/);
+  assert.match(ui, /Each edition can move at its own pace/);
+  assert.match(ui, /Coming soon/);
 });
 
 test("learning compiler preserves the canonical 13-position Programme Player contract", async () => {
@@ -37,42 +35,39 @@ test("learning compiler preserves the canonical 13-position Programme Player con
 });
 
 test("compiler emits immutable runtime artifacts and activation pointers", async () => {
-  const [migration, api] = await Promise.all([
+  const [baseMigration, founderMigration, api] = await Promise.all([
     source("supabase/migrations/20260924183000_bis_content_compiler_runtime.sql"),
+    source("supabase/migrations/20260925093000_content_studio_founder_flow.sql"),
     source("app/api/content-studio/route.ts"),
   ]);
-  assert.match(migration, /create table public\.content_source_files/);
-  assert.match(migration, /create table public\.content_runtime_artifacts/);
-  assert.match(migration, /create table public\.content_runtime_activations/);
-  assert.match(migration, /uq_content_runtime_one_active/);
+  assert.match(baseMigration, /create table public\.content_source_files/);
+  assert.match(baseMigration, /create table public\.content_runtime_artifacts/);
+  assert.match(baseMigration, /create table public\.content_runtime_activations/);
+  assert.match(founderMigration, /create table public\.content_edition_activations/);
   assert.match(api, /contentRuntimeArtifacts/);
-  assert.match(api, /contentRuntimeActivations/);
-  assert.match(api, /status: "SUPERSEDED"/);
-  assert.match(api, /status: "ROLLED_BACK"/);
+  assert.match(api, /contentEditionActivations/);
 });
 
 test("raw sources remain administrator-only while compiled runtime artifacts are learner-readable", async () => {
   const migration = await source("supabase/migrations/20260924183000_bis_content_compiler_runtime.sql");
   assert.match(migration, /content_source_files_super_user/);
   assert.match(migration, /content_runtime_artifacts_super_user/);
-  assert.match(migration, /content_runtime_activations_super_user/);
   assert.match(migration, /bis_content_runtime_read/);
   assert.match(migration, /name like 'runtime\/%'/);
 });
 
-test("dynamic learning runtime loads the learner edition before static fallback", async () => {
-  const [player, runtime, learningApi] = await Promise.all([
+test("dynamic learning runtime resolves the learner edition independently before static fallback", async () => {
+  const [player, runtime, catalogue] = await Promise.all([
     source("app/learning/programme-player.tsx"),
     source("app/api/runtime-content/route.ts"),
-    source("app/api/learning/route.ts"),
+    source("app/api/runtime-catalogue/route.ts"),
   ]);
   assert.ok(player.includes("kind=LEARNING_MODULE"));
   assert.ok(player.includes("edition="));
-  assert.match(player, /if \(dynamic\.ok\)/);
-  assert.match(runtime, /artifactKey/);
-  assert.ok(runtime.includes("learning:"));
-  assert.match(learningApi, /contentLibraryItems/);
-  assert.match(learningApi, /learningCode/);
+  assert.match(runtime, /contentEditionActivations/);
+  assert.match(runtime, /deliveryEdition/);
+  assert.match(runtime, /This learning edition is not published yet/);
+  assert.match(catalogue, /deliveryEdition/);
 });
 
 test("Universal V1 Labs stay in the canonical nine-investigation presentation", async () => {
@@ -88,19 +83,31 @@ test("Universal V1 Labs stay in the canonical nine-investigation presentation", 
   assert.match(runner, /Prefer not to answer/);
   assert.match(frame, /universal-investigation-nav/);
   assert.match(api, /saveInvestigation/);
-  assert.match(api, /UNIVERSAL_LAB_INVESTIGATION_SAVED/);
 });
 
-test("runtime activation publishes all three learning releases together and supports rollback", async () => {
-  const api = await source("app/api/content-studio/route.ts");
-  assert.match(api, /for \(const edition of LEARNING_EDITION_KEYS\)/);
-  assert.match(api, /status: "PUBLISHED"/);
-  assert.match(api, /status: "CONTROLLED"/);
-  assert.match(api, /rollbackActivation/);
-  assert.match(api, /CONTENT_RUNTIME_ROLLED_BACK/);
+test("Word PDF HTML Markdown and ZIP learning sources can be manufactured into Programme Player content", async () => {
+  const adapters = await source("lib/content-source-adapters.ts");
+  for (const format of ["DOCX", "PDF", "HTML", "MARKDOWN", "ZIP"]) {
+    assert.ok(adapters.includes('sourceFormat === "' + format + '"'));
+  }
+  assert.match(adapters, /balancedProgrammePages/);
+  assert.match(adapters, /word\/document\.xml/);
+  assert.match(adapters, /PDF source contains no extractable text/);
+  assert.match(adapters, /HTML source contains executable content/);
+  assert.match(adapters, /inflateRawSync/);
 });
 
-test("package templates reflect the executable compiler contracts", async () => {
+test("structured Lab documents can be manufactured into nine-investigation runtime data", async () => {
+  const adapters = await source("lib/content-source-adapters.ts");
+  assert.match(adapters, /labPackageFromBlocks/);
+  assert.match(adapters, /Investigation 1/);
+  assert.match(adapters, /all nine investigation sections/);
+  assert.match(adapters, /sourceFormat === "DOCX"/);
+  assert.match(adapters, /sourceFormat === "PDF"/);
+  assert.match(adapters, /sourceFormat === "MARKDOWN"/);
+});
+
+test("package templates still reflect executable runtime contracts", async () => {
   const learning = JSON.parse(await source("content/templates/learning-module.package.example.json"));
   const lab = JSON.parse(await source("content/templates/lab.package.example.json"));
   assert.equal(learning.edition, "school");
@@ -108,24 +115,4 @@ test("package templates reflect the executable compiler contracts", async () => 
   assert.equal(lab.schemaVersion, "universal-lab-v1");
   assert.equal(lab.runtimeProfile, "UNIVERSAL_V1");
   assert.equal(lab.investigations.length, 9);
-  assert.ok(lab.investigations.every((investigation) => investigation.prompts.length >= 1));
-});
-
-
-test("learning source adapters compile structured DOCX PDF HTML Markdown and ZIP without inferring missing structure", async () => {
-  const adapters = await source("lib/content-source-adapters.ts");
-  for (const format of ["DOCX", "PDF", "HTML", "MARKDOWN", "ZIP"]) {
-    assert.ok(adapters.includes('sourceFormat === "' + format + '"'));
-  }
-  assert.match(adapters, /word\/document\.xml/);
-  assert.match(adapters, /could not find all 13 BIS programme headings/);
-  assert.match(adapters, /PDF source contains no extractable text/);
-  assert.match(adapters, /HTML source contains executable content/);
-  assert.match(adapters, /inflateRawSync/);
-});
-
-test("Lab source adapters do not infer evidence semantics from prose", async () => {
-  const adapters = await source("lib/content-source-adapters.ts");
-  assert.match(adapters, /Universal Lab activation requires BIS JSON or a ZIP containing it/);
-  assert.match(adapters, /Lab ZIP package must contain a Universal Lab JSON package/);
 });

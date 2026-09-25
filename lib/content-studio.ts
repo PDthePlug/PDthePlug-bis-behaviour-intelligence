@@ -31,7 +31,7 @@ export function sourceFormatFor(fileName: string, mimeType = ""): ContentSourceF
   if (lower.endsWith(".docx") || mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") return "DOCX";
   if (lower.endsWith(".pdf") || mimeType === "application/pdf") return "PDF";
   if (lower.endsWith(".html") || lower.endsWith(".htm") || mimeType === "text/html") return "HTML";
-  if (lower.endsWith(".md") || mimeType === "text/markdown") return "MARKDOWN";
+  if (lower.endsWith(".md") || lower.endsWith(".txt") || mimeType === "text/markdown" || mimeType === "text/plain") return "MARKDOWN";
   if (lower.endsWith(".zip") || mimeType === "application/zip") return "ZIP";
   return null;
 }

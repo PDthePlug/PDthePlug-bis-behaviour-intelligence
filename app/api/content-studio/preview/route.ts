@@ -1,4 +1,4 @@
-import { and, eq } from "../../../../db/query";
+import { eq } from "../../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../../db";
 import {
   auditEvents,
@@ -54,12 +54,15 @@ async function handler(request: Request) {
       return Response.json({ error: "The content item is not active." }, { status: 404 });
     }
 
-    const expected = requiredPreviewKeys(item.kind as ContentKind);
+    const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
+    const expected = requiredPreviewKeys(
+      item.kind as ContentKind,
+      artifacts.map((candidate) => candidate.artifactKey),
+    );
     if (!expected.includes(artifactKey)) {
-      return Response.json({ error: "That artifact is not part of this content UAT." }, { status: 400 });
+      return Response.json({ error: "That edition is not ready to preview yet." }, { status: 400 });
     }
 
-    const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
     const artifact = artifacts.find((candidate) => candidate.artifactKey === artifactKey);
     if (!artifact) {
       return Response.json({ error: "The compiled preview artifact is missing." }, { status: 409 });

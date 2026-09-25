@@ -150,7 +150,7 @@ function UniversalInvestigationForm({
         </section>
       ) : (
         <div className="step-footer">
-          <span><ShieldCheck /> {previewMode ? "Activation UAT preview · test responses are not stored." : "Saved as private, traceable evidence."}</span>
+          <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Saved as private, traceable evidence."}</span>
           {step === 9 ? (
             <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });

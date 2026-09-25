@@ -161,6 +161,25 @@ export const contentRuntimeArtifacts = sqliteTable(
   ],
 );
 
+export const contentEditionActivations = sqliteTable(
+  "content_edition_activations",
+  {
+    id: text("id").primaryKey(),
+    itemId: text("item_id").notNull(),
+    deliveryEdition: text("delivery_edition").notNull(),
+    versionId: text("version_id").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    activatedBy: text("activated_by").notNull(),
+    activatedAt: timestamp(),
+    deactivatedAt: text("deactivated_at"),
+    supersedesActivationId: text("supersedes_activation_id"),
+  },
+  (table) => [
+    index("idx_content_edition_activation_version").on(table.versionId, table.status),
+  ],
+);
+
+
 export const contentRuntimeActivations = sqliteTable(
   "content_runtime_activations",
   {

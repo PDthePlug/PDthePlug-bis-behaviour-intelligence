@@ -40,8 +40,8 @@ export function ContentPreviewWorkspace({
         <div className="uat-preview-title">
           <span>{kind === "LAB" ? <FlaskConical /> : <BookOpen />}</span>
           <div>
-            <p>Activation UAT</p>
-            <strong>{code} · compiled runtime preview</strong>
+            <p>Final publishing check</p>
+            <strong>{code} · learner preview</strong>
           </div>
         </div>
 
@@ -65,14 +65,14 @@ export function ContentPreviewWorkspace({
           <button type="button" className={viewport === "mobile" ? "active" : ""} onClick={() => setViewport("mobile")}><Smartphone /> Mobile</button>
         </div>
 
-        <Button asChild variant="outline"><Link href="/content-studio">Return to UAT checklist</Link></Button>
+        <Button asChild variant="outline"><Link href="/content-studio">Back to Content Studio</Link></Button>
       </header>
 
       <section className="uat-preview-notice">
         <ShieldCheck />
         <div>
-          <strong>Safe preview. Nothing here changes learner evidence or progress.</strong>
-          <p>Opening each runtime records that exact compiled artifact as reviewed. Test navigation, inputs, responsive behaviour and learner-facing language before signing off in Content Studio.</p>
+          <strong>Preview safely. Nothing you type here is saved to a learner record.</strong>
+          <p>Check the content, questions, navigation and phone/desktop layout. When you are happy, return to Content Studio and complete the final check.</p>
         </div>
       </section>
 
