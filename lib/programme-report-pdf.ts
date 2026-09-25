@@ -732,9 +732,9 @@ function drawCover(canvas: ReportCanvas, outcome: Outcome, generatedAt: Date) {
           tone: "teal" as const,
         },
         {
-          label: "Enough evidence",
+          label: "Enough observations",
           value: String(metrics.evidence.sufficient),
-          detail: String(metrics.evidence.notEnoughYet) + " still building",
+          detail: String(metrics.evidence.notEnoughYet) + " need more observations",
           tone: "warm" as const,
         },
         {
@@ -794,23 +794,23 @@ function drawExecutiveSummary(canvas: ReportCanvas, outcome: Outcome) {
   canvas.page(C.paper);
   canvas.section(
     "Executive summary",
-    "What the programme evidence is showing",
-    "A decision-ready view of participation, behavioural testing, evidence strength and the areas most worth attention."
+    "What the programme results are showing",
+    "A clear view of participation, real-world testing, how much information we have, and where the programme may need attention."
   );
 
   const metrics = outcome.metrics!;
   canvas.metricCards(
     [
       {
-        label: "Experiment uptake",
+        label: "Real-world test started",
         value: percent(metrics.action.experimentAttemptRate),
         detail: String(metrics.action.startedExperiment) + " started",
         tone: "dark",
       },
       {
-        label: "Evidence ready",
+        label: "Enough observations",
         value: String(metrics.evidence.sufficient),
-        detail: String(metrics.evidence.notEnoughYet) + " still building",
+        detail: String(metrics.evidence.notEnoughYet) + " need more observations",
         tone: "teal",
       },
       {
@@ -864,7 +864,7 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
   canvas.section(
     "Learning journey",
     "How participation and learning responses developed",
-    "The programme produces evidence before and beyond the formal experiment. This section shows progression, recurring challenges and before-and-after group shifts."
+    "This section shows how people moved through the programme, which challenges appeared most often, and where group measures changed from before to after."
   );
 
   canvas.metricCards(
@@ -1068,7 +1068,7 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
         tone: "teal",
       },
       {
-        label: "Evidence ready",
+        label: "Enough observations",
         value: String(metrics.evidence.sufficient),
         detail: "learners",
         tone: "warm",
@@ -1150,11 +1150,11 @@ function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
   canvas.rule(10);
   canvas.stackedBar(
     [
-      { label: "Enough evidence", value: metrics.evidence.sufficient, color: C.teal },
-      { label: "Still building", value: metrics.evidence.limited, color: C.gold },
+      { label: "Enough observations", value: metrics.evidence.sufficient, color: C.teal },
+      { label: "More observations needed", value: metrics.evidence.limited, color: C.gold },
       { label: "No opportunity yet", value: metrics.evidence.none, color: C.terracotta },
     ],
-    "Evidence strength",
+    "How much information we have",
     String(metrics.experiment.observationsRecorded) +
       " observation records across " +
       String(metrics.experiment.eligibleOpportunities) +
@@ -1257,9 +1257,9 @@ function drawOrganisationalLearning(canvas: ReportCanvas, outcome: Outcome) {
 
   canvas.page(C.paper);
   canvas.section(
-    "Programme-design insight",
-    "What should the organisation learn from this programme?",
-    "These signals connect participant behaviour with programme-delivery questions. They are descriptive review prompts, not causal claims."
+    "What the programme can learn",
+    "What should the team learn from this programme?",
+    "These results highlight questions the team may want to explore next. They show patterns, not proof of why a result happened."
   );
 
   const transition = learning.transition;
@@ -1274,8 +1274,8 @@ function drawOrganisationalLearning(canvas: ReportCanvas, outcome: Outcome) {
   const adaptation = learning.adaptation;
   canvas.twoColumnCards([
     {
-      kicker: "Programme transition",
-      title: "Where does movement into action thin?",
+      kicker: "Where participation drops",
+      title: "Where are people dropping off before action?",
       body:
         String(transition.reachedExperimentStage) +
         " reached the real-world test, " +
@@ -1285,45 +1285,45 @@ function drawOrganisationalLearning(canvas: ReportCanvas, outcome: Outcome) {
         " encountered at least two comparable situations.",
     },
     {
-      kicker: "Programme responsiveness",
-      title: support.requests === 0 ? "No support demand is recorded" : "What happened after learners asked for help?",
+      kicker: "Support follow-up",
+      title: support.requests === 0 ? "No support requests are recorded" : "What happened after learners asked for help?",
       body:
         support.requests === 0
-          ? "No learner-initiated support request is recorded for this group."
+          ? "There are no learner support requests to review for this group."
           : String(support.requests) +
             " support requests are recorded; " +
             String(support.acknowledged) +
             " acknowledgements and " +
             String(support.resolved) +
-            " resolutions are recorded. Missing response records do not prove support did not happen.",
+            " resolutions are recorded. If a response is not recorded in BIS, that does not mean support did not happen.",
     },
     {
       kicker: "Adaptation",
-      title: adaptation.checkpointParticipants === 0 ? "Adaptation evidence is still open" : "Did learners adjust after reviewing evidence?",
+      title: adaptation.checkpointParticipants === 0 ? "We do not yet know how learners adjusted" : "Did learners change their approach after seeing what happened?",
       body:
         adaptation.checkpointParticipants === 0
-          ? "No reportable Day 3 checkpoint decisions are available yet. BIS does not turn missing calibration evidence into a failure score."
+          ? "No Day 3 adjustment decisions are available yet. BIS leaves this question open instead of treating missing information as failure."
           : String(adaptation.checkpointParticipants) +
-            " learners reached the calibration checkpoint; " +
+            " learners reached the Day 3 check-in; " +
             String(adaptation.adjustedParticipants) +
             " adjusted the method and " +
             String(adaptation.keptPlanParticipants) +
             " kept the original plan.",
     },
     {
-      kicker: "Next cycle",
-      title: learning.comparison.baselineOnly ? "Use this cohort as the baseline" : "A next-cycle comparison is possible",
+      kicker: "Next programme",
+      title: learning.comparison.baselineOnly ? "Use this group as the starting point" : "A comparison with another similar group is possible",
       body:
         learning.comparison.baselineOnly
-          ? "Preserve this cohort as the programme-design baseline. The next comparable cohort can test whether a deliberate delivery change coincides with a different group pattern."
+          ? "Keep this group as the starting point. When the next similar group completes the programme, check whether the pattern changed after the team made a deliberate programme change."
           : String(learning.comparison.comparableCohorts) +
-            " other comparable cohort(s) are available. Compare cautiously unless the evaluation design supports stronger causal inference.",
+            " other similar group(s) are available. A comparison can show whether the pattern changed, but it does not prove what caused the change.",
     },
   ]);
 
   canvas.callout(
-    "Organisational learning loop",
-    "Observe the group evidence. Change one part of programme design deliberately. Compare the next comparable cohort. Keep the conclusion proportional to the evidence.",
+    "Learning for the next programme",
+    "Look at the group results. Try one clear programme change. Check the next similar group. Keep conclusions in line with the amount of information available.",
     "dark"
   );
 }
@@ -1332,15 +1332,15 @@ function drawProgrammeDecisionRegister(canvas: ReportCanvas, outcome: Outcome) {
   const decisions = outcome.decisionRegister?.decisions ?? [];
   canvas.page(C.paper);
   canvas.section(
-    "Decision register",
+    "Programme decisions",
     "What did the organisation decide to change?",
-    "This section records the organisation's own response to aggregate programme evidence, the expected next outcome and any later review."
+    "This section records what the team decided to change, what it hoped to see next, and what happened when the decision was reviewed."
   );
 
   if (!decisions.length) {
     canvas.callout(
-      "No programme decision recorded yet",
-      "The current findings remain programme insights until the organisation records what, if anything, it will change and what it expects to observe next.",
+      "No programme decision has been recorded yet",
+      "The current findings remain useful observations until the team records what, if anything, it will change and what it hopes to see next.",
       "warm"
     );
     return;
@@ -1363,7 +1363,7 @@ function drawProgrammeDecisionRegister(canvas: ReportCanvas, outcome: Outcome) {
       lineHeight: 18,
       gapAfter: 8,
     });
-    canvas.callout("Evidence considered", decision.sourceEvidence, "teal");
+    canvas.callout("What we saw", decision.sourceEvidence, "teal");
     canvas.twoColumnCards([
       {
         kicker: "Programme decision",
@@ -1371,7 +1371,7 @@ function drawProgrammeDecisionRegister(canvas: ReportCanvas, outcome: Outcome) {
         body: decision.decisionText,
       },
       {
-        kicker: "Expected next outcome",
+        kicker: "What we expect next",
         title: decision.reviewOn ? "Review on " + decision.reviewOn : "Review date not set",
         body: decision.expectedOutcome,
       },
@@ -1388,7 +1388,7 @@ function drawProgrammeDecisionRegister(canvas: ReportCanvas, outcome: Outcome) {
 
   canvas.callout(
     "Interpretation boundary",
-    "The decision register records organisational choices and review findings. It does not convert a programme decision into proof of causality.",
+    "This records the team’s choices and later review. It does not prove that the programme change caused the result.",
     "dark"
   );
 }
@@ -1440,17 +1440,17 @@ function drawActionPlan(canvas: ReportCanvas, outcome: Outcome) {
     {
       kicker: "Evidence",
       title: "What this report uses",
-      body: "Programme-day activity, fixed learning check-ins, before-and-after measures, real-world experiment events, calculated BIS measures and group-level support indicators.",
+      body: "Programme activity, learning check-ins, before-and-after measures, real-world observations, BIS calculations and group-level support information.",
     },
     {
       kicker: "Interpretation",
       title: "What this report does not claim",
-      body: "The report does not diagnose learners, rank people, prove causality or treat one successful attempt as behavioural change.",
+      body: "The report does not diagnose or rank learners, prove what caused a result, or treat one successful attempt as lasting change.",
     },
     {
       kicker: "Privacy",
       title: "What remains private",
-      body: "Individual reflections, private experiment wording, support-message wording and other sensitive learner content are excluded from organisation reporting.",
+      body: "Individual reflections, private test wording, support messages and other sensitive learner content stay private.",
     },
     {
       kicker: "Small groups",
@@ -1458,7 +1458,7 @@ function drawActionPlan(canvas: ReportCanvas, outcome: Outcome) {
       body:
         "Groups below " +
         String(outcome.minimumReportableCohortSize) +
-        " are suppressed and small theme cells may be hidden when a group pattern could point back to an individual.",
+        " are not shown in detail, and very small patterns may be hidden when they could point back to one person.",
     },
   ]);
 
