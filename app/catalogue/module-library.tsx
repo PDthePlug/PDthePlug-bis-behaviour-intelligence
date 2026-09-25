@@ -27,7 +27,7 @@ type RuntimeCatalogueItem = {
   kind: "LEARNING_MODULE" | "LAB";
   code: string;
   routePath: string | null;
-  runtimeMode: "STATIC" | "DYNAMIC";
+  runtimeMode: "STATIC" | "DYNAMIC" | null;
   version: string;
   live: boolean;
 };
