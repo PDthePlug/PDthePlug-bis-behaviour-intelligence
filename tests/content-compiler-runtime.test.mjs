@@ -98,13 +98,31 @@ test("Word PDF HTML Markdown and ZIP learning sources can be manufactured into P
 });
 
 test("structured Lab documents can be manufactured into nine-investigation runtime data", async () => {
-  const adapters = await source("lib/content-source-adapters.ts");
+  const [adapters, compiler, runner, studioCss] = await Promise.all([
+    source("lib/content-source-adapters.ts"),
+    source("lib/content-compiler.ts"),
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("app/content-studio/content-studio.css"),
+  ]);
   assert.match(adapters, /labPackageFromBlocks/);
-  assert.match(adapters, /Investigation 1/);
   assert.match(adapters, /all nine investigation sections/);
   assert.match(adapters, /sourceFormat === "DOCX"/);
   assert.match(adapters, /sourceFormat === "PDF"/);
   assert.match(adapters, /sourceFormat === "MARKDOWN"/);
+  assert.match(adapters, /tableRows/);
+  assert.match(adapters, /facilitatorIndex/);
+  assert.match(adapters, /certificateIndex/);
+  assert.match(adapters, /investigation\\s\*\[1-9\]\\s\*of\\s\*9/);
+  assert.match(adapters, /lastIndexOf\("\?"\)/);
+  assert.match(adapters, /Risk baseline/);
+  assert.match(adapters, /Probability \(1–5\)/);
+  assert.match(adapters, /Day " \+ day/);
+  assert.match(compiler, /MULTI_SELECT/);
+  assert.match(compiler, /UniversalLabRenderBlock/);
+  assert.match(runner, /universal-multi-select/);
+  assert.match(runner, /investigation\.blocks/);
+  assert.match(studioCss, /content-source-slot>\.content-paste-box/);
+  assert.match(studioCss, /width:100%/);
 });
 
 test("package templates still reflect executable runtime contracts", async () => {

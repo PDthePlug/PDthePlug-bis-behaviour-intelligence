@@ -135,6 +135,7 @@ type SourceBlock = {
   text: string;
   html: string;
   heading: boolean;
+  tableRows?: string[][];
 };
 
 const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
@@ -237,15 +238,26 @@ function docxParagraph(block: string): SourceBlock | null {
 }
 
 function docxTable(block: string): SourceBlock | null {
-  const rows = [...block.matchAll(/<w:tr\b[\s\S]*?<\/w:tr>/g)].map((row) => {
-    const cells = [...row[0].matchAll(/<w:tc\b[\s\S]*?<\/w:tc>/g)].map((cell) => {
-      const text = [...cell[0].matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g)].map((match) => decodeXml(match[1])).join("").trim();
-      return "<td>" + escapeHtml(text) + "</td>";
-    }).join("");
-    return cells ? "<tr>" + cells + "</tr>" : "";
-  }).filter(Boolean);
-  if (!rows.length) return null;
-  return { text: "", heading: false, html: "<table><tbody>" + rows.join("") + "</tbody></table>" };
+  const tableRows = [...block.matchAll(/<w:tr\b[\s\S]*?<\/w:tr>/g)].map((row) =>
+    [...row[0].matchAll(/<w:tc\b[\s\S]*?<\/w:tc>/g)].map((cell) =>
+      [...cell[0].matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g)]
+        .map((match) => decodeXml(match[1]))
+        .join("")
+        .replace(/\s+/g, " ")
+        .trim(),
+    ),
+  ).filter((row) => row.some(Boolean));
+  if (!tableRows.length) return null;
+  const htmlRows = tableRows.map((row, index) => {
+    const tag = index === 0 ? "th" : "td";
+    return "<tr>" + row.map((cell) => "<" + tag + ">" + escapeHtml(cell) + "</" + tag + ">").join("") + "</tr>";
+  });
+  return {
+    text: tableRows.map((row) => row.join(" | ")).join(" \n "),
+    heading: false,
+    html: "<table><tbody>" + htmlRows.join("") + "</tbody></table>",
+    tableRows,
+  };
 }
 
 function docxBlocks(bytes: Uint8Array) {
@@ -282,32 +294,50 @@ function markdownBlocks(markdown: string) {
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
   let paragraph: string[] = [];
 
+  const pushText = (text: string, heading = false) => {
+    const cleaned = text.trim().replace(/^[-*+]\s+/, "");
+    if (!cleaned) return;
+    blocks.push({
+      text: cleaned,
+      heading,
+      html: heading ? "<h3>" + escapeHtml(cleaned) + "</h3>" : "<p>" + escapeHtml(cleaned) + "</p>",
+    });
+  };
   const flush = () => {
     const text = paragraph.join(" ").trim();
     paragraph = [];
     if (!text) return;
     const heading = Boolean(canonicalPageKey(text) && text.length < 80);
-    blocks.push({
-      text,
-      heading,
-      html: heading ? "<h2>" + escapeHtml(text) + "</h2>" : "<p>" + escapeHtml(text) + "</p>",
-    });
+    pushText(text, heading);
   };
 
   for (const line of lines) {
-    const heading = line.match(/^\s{0,3}#{1,4}\s+(.+?)\s*#*\s*$/);
-    if (heading) {
+    const explicitHeading = line.match(/^\s{0,3}#{1,4}\s+(.+?)\s*#*\s*$/);
+    if (explicitHeading) {
       flush();
-      const text = heading[1].trim();
-      const level = Math.min(4, Math.max(2, (line.match(/^#+/)?.[0].length ?? 1) + 1));
-      blocks.push({ text, heading: true, html: "<h" + level + ">" + escapeHtml(text) + "</h" + level + ">" });
+      pushText(explicitHeading[1], true);
       continue;
     }
-    if (!line.trim()) {
+
+    const trimmed = line.trim();
+    if (!trimmed) {
       flush();
       continue;
     }
-    paragraph.push(line.trim().replace(/^[-*+]\s+/, ""));
+
+    const structural =
+      /^investigation\s*[1-9]\b/i.test(trimmed)
+      || /^(phase\s+[ab]|mission\s*:|you will produce\s*:|time\s*:|difficulty\s*:)/i.test(trimmed)
+      || /^(bei-\d+|step\s+\d+|✍️|☐|⭐|🌱|⏸|🔎|🤔|📖|🧠|🤝)/u.test(trimmed)
+      || /\?["”]?\s*$/.test(trimmed)
+      || looksLikeBlank(trimmed);
+
+    if (structural) {
+      flush();
+      pushText(trimmed, /^investigation\s*[1-9]\b/i.test(trimmed) || /^phase\s+[ab]\b/i.test(trimmed));
+      continue;
+    }
+    paragraph.push(trimmed.replace(/^[-*+]\s+/, ""));
   }
   flush();
   return blocks;
@@ -462,6 +492,7 @@ export async function adaptLearningSource(
 
 function labInvestigationNumber(value: string) {
   const cleaned = value.replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+  if (/^investigation\s*[1-9]\s*of\s*9\s*$/i.test(cleaned)) return null;
   const match = cleaned.match(/^investigation\s*([1-9])(?:\s*of\s*9)?\b/i);
   return match ? Number(match[1]) : null;
 }
@@ -470,18 +501,288 @@ function labInvestigationTitle(value: string, number: number) {
   return value
     .replace(/[–—]/g, "-")
     .replace(new RegExp("^investigation\\s*" + number + "(?:\\s*of\\s*9)?\\s*(?:[-:·|]\\s*)?", "i"), "")
+    .replace(/\s*\([^)]*\)\s*[|·]\s*[^\s]+$/u, "")
     .trim();
 }
 
-function questionTexts(value: string) {
-  const text = value.replace(/\s+/g, " ").trim();
+function cleanAuthoredText(value: string) {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/^[“"]|[”"]$/g, "")
+    .trim();
+}
+
+function stableLabToken(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36).toUpperCase();
+}
+
+function labPromptId(code: string, investigation: number, seed: string, occurrence = 1) {
+  return code + ".I" + investigation + "." + stableLabToken(seed) + (occurrence > 1 ? "." + occurrence : "");
+}
+
+function checkboxOptions(value: string) {
+  return [...value.matchAll(/☐\s*([^☐]+)/g)]
+    .map((match) => cleanAuthoredText(match[1] ?? ""))
+    .map((item) => item.replace(/^[-–—:|]+\s*/, "").trim())
+    .filter(Boolean);
+}
+
+function looksLikeBlank(value: string) {
+  return /_{3,}|\.{5,}|_{2,}\s*\/\s*\d+/u.test(value);
+}
+
+function formLabel(value: string) {
+  return cleanAuthoredText(value)
+    .replace(/^✍️\s*/u, "")
+    .replace(/\s*_{3,}.*$/u, "")
+    .replace(/\s*☐.*$/u, "")
+    .replace(/\s*:\s*$/u, "")
+    .trim();
+}
+
+function looksLikeAnswerMarker(value: string) {
+  const text = value.trim();
+  if (!text) return false;
+  if (/^["“]I,\s*_{3}/i.test(text)) return false;
+  if (/^✍️\s*Complete this sentence\s*:?$/iu.test(text)) return false;
+  if (/^✍️/u.test(text) || looksLikeBlank(text) || /☐/.test(text)) return true;
+  if (/^(signed|date|from me, in grade)\s*:/i.test(text)) return true;
+  if (/^(bei-\d+[^:]*:).*(?:___|\/\s*\d+)/i.test(text)) return true;
+  return false;
+}
+
+function promptQuestions(value: string) {
+  const text = cleanAuthoredText(value);
   if (!text) return [] as string[];
-  const numbered = [...text.matchAll(/(?:^|\s)(?:[1-9]|1\d)[.)]\s*([^?]{5,500}\?)/g)]
-    .map((match) => match[1].trim())
+  const numbered = [...text.matchAll(/(?:^|\s)(?:[1-9]|1\d)[.)]\s*([^?]{5,700}\?)/g)]
+    .map((match) => cleanAuthoredText(match[1] ?? ""))
     .filter(Boolean);
   if (numbered.length) return numbered;
-  if (text.endsWith("?") && text.length >= 8 && text.length <= 600) return [text.replace(/^\d+[.)]\s*/, "")];
+  const questionMark = text.lastIndexOf("?");
+  if (questionMark >= 0 && text.length <= 900) {
+    return [text.slice(0, questionMark + 1).replace(/^\d+[.)]\s*/, "").trim()];
+  }
   return [] as string[];
+}
+
+type ImportedPromptSpec = {
+  label: string;
+  type: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL" | "MULTI_SELECT" | "DATE";
+  options?: string[];
+  placeholder?: string;
+  min?: number;
+  max?: number;
+};
+
+function promptSpecFromMarker(marker: string, question: string): ImportedPromptSpec {
+  const options = checkboxOptions(marker);
+  const label = formLabel(marker) || formLabel(question) || "Your answer";
+  if (options.length) {
+    const yesNo = options.length === 2
+      && options.map((item) => item.toLowerCase()).sort().join("|") === "no|yes";
+    const multi = /tick all|all that apply|affects|select all/i.test(question + " " + marker);
+    return {
+      label,
+      type: yesNo ? "BOOLEAN" as const : multi ? "MULTI_SELECT" as const : "CATEGORICAL" as const,
+      options: yesNo ? undefined : options,
+      placeholder: undefined,
+    };
+  }
+  const range = marker.match(/\/\s*(10|7|5)\b/);
+  if (range) {
+    return {
+      label,
+      type: "INTEGER" as const,
+      options: undefined,
+      placeholder: undefined,
+      min: range[1] === "10" ? 1 : 0,
+      max: Number(range[1]),
+    };
+  }
+  if (/^date\s*:/i.test(marker)) {
+    return { label: label || "Date", type: "DATE" as const, options: undefined, placeholder: undefined };
+  }
+  return {
+    label,
+    type: "TEXT" as const,
+    options: undefined,
+    placeholder: /equation/i.test(label) ? "Write your working equation…" : "Write your answer…",
+  };
+}
+
+type ImportedPrompt = {
+  id: string;
+  label: string;
+  prompt: string;
+  type: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL" | "MULTI_SELECT" | "DATE";
+  placeholder?: string;
+  sensitivity: "P2" | "P3";
+  required: boolean;
+  options?: string[];
+  min?: number;
+  max?: number;
+  group?: string;
+};
+
+type ImportedRenderBlock =
+  | { type: "HTML"; html: string }
+  | { type: "PROMPT"; promptId: string };
+
+function addPrompt(
+  prompts: ImportedPrompt[],
+  renderBlocks: ImportedRenderBlock[],
+  code: string,
+  investigation: number,
+  prompt: Omit<ImportedPrompt, "id">,
+) {
+  const seed = prompt.prompt + "|" + prompt.label + "|" + (prompt.group ?? "");
+  const sameSeed = prompts.filter((item) => item.id.startsWith(code + ".I" + investigation + "." + stableLabToken(seed))).length;
+  const id = labPromptId(code, investigation, seed, sameSeed + 1);
+  prompts.push({ id, ...prompt });
+  renderBlocks.push({ type: "PROMPT", promptId: id });
+  return id;
+}
+
+function promptsFromTable(
+  block: SourceBlock,
+  code: string,
+  investigation: number,
+  prompts: ImportedPrompt[],
+  renderBlocks: ImportedRenderBlock[],
+) {
+  const rows = block.tableRows;
+  if (!rows || rows.length < 2) return false;
+  const headers = rows[0].map((cell) => cleanAuthoredText(cell).replace(/\*\*/g, ""));
+  const joined = headers.join(" | ").toLowerCase();
+
+  if (joined.includes("behaviour") && headers.some((header) => /^never$/i.test(header))) {
+    const options = headers.slice(1).filter(Boolean);
+    for (const row of rows.slice(1)) {
+      const behaviour = cleanAuthoredText(row[0] ?? "");
+      if (!behaviour) continue;
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: behaviour,
+        prompt: behaviour,
+        type: "CATEGORICAL",
+        options,
+        sensitivity: "P2",
+        required: true,
+        group: "Risk baseline",
+      });
+    }
+    return true;
+  }
+
+  if (joined.includes("day") && joined.includes("action") && joined.includes("notes")) {
+    for (const row of rows.slice(1)) {
+      const day = cleanAuthoredText(row[0] ?? "");
+      if (!day) continue;
+      const group = "Day " + day;
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group + " date",
+        prompt: "Date",
+        type: "DATE",
+        sensitivity: "P2",
+        required: false,
+        group,
+      });
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group + " action",
+        prompt: headers[2] || "Action I took",
+        type: "TEXT",
+        placeholder: "What action did you take or notice?",
+        sensitivity: "P2",
+        required: true,
+        group,
+      });
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group + " action check",
+        prompt: headers[3] || "Did I take action?",
+        type: "BOOLEAN",
+        sensitivity: "P2",
+        required: true,
+        group,
+      });
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group + " notes",
+        prompt: headers[4] || "Notes",
+        type: "TEXT",
+        sensitivity: "P2",
+        required: false,
+        group,
+      });
+    }
+    return true;
+  }
+
+  if (joined.includes("risk") && joined.includes("probability") && joined.includes("magnitude")) {
+    for (const row of rows.slice(1)) {
+      const index = cleanAuthoredText(row[0] ?? "") || String(rows.indexOf(row));
+      const group = "Risk " + index.replace(/[.\s]+$/g, "");
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group,
+        prompt: "Name the risk",
+        type: "TEXT",
+        sensitivity: "P2",
+        required: true,
+        group,
+      });
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group + " probability",
+        prompt: "Probability (1–5)",
+        type: "INTEGER",
+        min: 1,
+        max: 5,
+        sensitivity: "P2",
+        required: true,
+        group,
+      });
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group + " magnitude",
+        prompt: "Magnitude (1–5)",
+        type: "INTEGER",
+        min: 1,
+        max: 5,
+        sensitivity: "P2",
+        required: true,
+        group,
+      });
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: group + " score",
+        prompt: "Risk Score (Probability × Magnitude)",
+        type: "INTEGER",
+        min: 1,
+        max: 25,
+        sensitivity: "P2",
+        required: true,
+        group,
+      });
+    }
+    return true;
+  }
+
+  if (joined.includes("element") && joined.includes("your answer")) {
+    for (const row of rows.slice(1)) {
+      const label = cleanAuthoredText(row[0] ?? "");
+      if (!label) continue;
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label,
+        prompt: label,
+        type: "TEXT",
+        sensitivity: "P2",
+        required: false,
+        group: "Behaviour Profile Summary",
+      });
+    }
+    return true;
+  }
+
+  return false;
 }
 
 function valueAfterLabel(blocks: SourceBlock[], label: RegExp) {
@@ -492,21 +793,205 @@ function valueAfterLabel(blocks: SourceBlock[], label: RegExp) {
   return "";
 }
 
+function isLabMetadataLine(value: string) {
+  const text = value.replace(/\s+/g, " ").trim();
+  return (
+    /^■+□*\s*\d\/9$/u.test(text)
+    || /^mission\s*:/i.test(text)
+    || /^you will produce\s*:?\s*$/i.test(text)
+    || /^time\s*:/i.test(text)
+    || /^difficulty\s*:/i.test(text)
+    || /^phase [ab]\s*:/i.test(text)
+  );
+}
+
+function isProduceLine(value: string) {
+  return /^[●•-]?\s*☐\s*/u.test(value.trim());
+}
+
+function isStandaloneField(value: string) {
+  const text = cleanAuthoredText(value);
+  if (!text) return false;
+  if (/^["“]I,\s*_{3}/i.test(value.trim())) return false;
+  if (/^✍️/u.test(value.trim())) return true;
+  if (looksLikeBlank(text)) return true;
+  if (/^(one risk i will address|my protection action|my witness|what i will do if|my failure signal|my biggest risk|my current protection|my priority risk|the cost|the gap|avoided risk|most expensive risk|reducible risk|unprotected risks|my equation|signed|date|from me, in grade)\b/i.test(text)) return true;
+  if (/^dear future me\b/i.test(text)) return true;
+  return false;
+}
+
+function labBodyToRuntime(
+  body: SourceBlock[],
+  code: string,
+  investigation: number,
+) {
+  const prompts: ImportedPrompt[] = [];
+  const renderBlocks: ImportedRenderBlock[] = [];
+  let html: string[] = [];
+
+  const flushHtml = () => {
+    const content = html.join("\n").trim();
+    html = [];
+    if (content) renderBlocks.push({ type: "HTML", html: content });
+  };
+
+  for (let index = 0; index < body.length; index += 1) {
+    const block = body[index];
+    const text = block.text.replace(/\s+/g, " ").trim();
+    if (!text || isLabMetadataLine(text) || isProduceLine(text)) continue;
+
+    if (block.tableRows) {
+      flushHtml();
+      if (!promptsFromTable(block, code, investigation, prompts, renderBlocks)) {
+        renderBlocks.push({ type: "HTML", html: block.html });
+      }
+      continue;
+    }
+
+    if (/^dear future me\b/i.test(cleanAuthoredText(text))) {
+      flushHtml();
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: "Letter to My Future Self",
+        prompt: "Write your letter to Future Me.",
+        type: "TEXT",
+        placeholder: "Dear Future Me…",
+        sensitivity: "P3",
+        required: true,
+      });
+      continue;
+    }
+
+    const inlineOptions = checkboxOptions(text);
+    const inlineQuestion = promptQuestions(text);
+    if (inlineOptions.length && inlineQuestion.length) {
+      flushHtml();
+      const question = inlineQuestion[0];
+      const spec = promptSpecFromMarker(text, question);
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: spec.label || question,
+        prompt: question,
+        type: spec.type,
+        options: spec.options,
+        min: spec.min,
+        max: spec.max,
+        placeholder: spec.placeholder,
+        sensitivity: /future self|identity|health|relationship/i.test(question) ? "P3" : "P2",
+        required: true,
+      });
+      continue;
+    }
+
+    const questions = promptQuestions(text);
+    const markers: SourceBlock[] = [];
+    let cursor = index + 1;
+    while (cursor < body.length && markers.length < 8) {
+      const candidate = body[cursor];
+      const candidateText = candidate.text.replace(/\s+/g, " ").trim();
+      if (!candidateText) {
+        cursor += 1;
+        continue;
+      }
+      if (candidate.tableRows || candidate.heading || !looksLikeAnswerMarker(candidateText)) break;
+      markers.push(candidate);
+      cursor += 1;
+    }
+    const promptLead = questions[0]
+      || (
+        markers.length
+        && text.length <= 700
+        && !/^continue your (?:journey|investigation)/i.test(cleanAuthoredText(text))
+        ? cleanAuthoredText(text)
+        : ""
+      );
+    if (promptLead && markers.length) {
+      flushHtml();
+      if (markers.length === 1) {
+        const marker = markers[0].text;
+        const spec = promptSpecFromMarker(marker, promptLead);
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: spec.label || promptLead,
+          prompt: promptLead,
+          type: spec.type,
+          options: spec.options,
+          min: spec.min,
+          max: spec.max,
+          placeholder: spec.placeholder,
+          sensitivity: /future self|identity|health|relationship/i.test(promptLead) ? "P3" : "P2",
+          required: true,
+        });
+      } else {
+        for (const marker of markers) {
+          const spec = promptSpecFromMarker(marker.text, promptLead);
+          addPrompt(prompts, renderBlocks, code, investigation, {
+            label: spec.label || promptLead,
+            prompt: spec.label && spec.label !== "Your answer"
+              ? promptLead + " — " + spec.label
+              : promptLead,
+            type: spec.type,
+            options: spec.options,
+            min: spec.min,
+            max: spec.max,
+            placeholder: spec.placeholder,
+            sensitivity: "P2",
+            required: true,
+          });
+        }
+      }
+      index = cursor - 1;
+      continue;
+    }
+
+    if (isStandaloneField(text)) {
+      flushHtml();
+      const spec = promptSpecFromMarker(text, formLabel(text));
+      const previousHeading = [...body.slice(Math.max(0, index - 4), index)]
+        .reverse()
+        .find((candidate) => candidate.heading)?.text;
+      const ownLabel = formLabel(text);
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: ownLabel || previousHeading || "Your answer",
+        prompt: /^dear future me/i.test(cleanAuthoredText(text))
+          ? "Letter to My Future Self"
+          : ownLabel || previousHeading || "Write your answer",
+        type: spec.type,
+        options: spec.options,
+        min: spec.min,
+        max: spec.max,
+        placeholder: spec.placeholder,
+        sensitivity: /future self|identity|health|relationship/i.test((previousHeading ?? "") + " " + text) ? "P3" : "P2",
+        required: !/^(date|signed|from me, in grade)\b/i.test(ownLabel),
+      });
+      continue;
+    }
+
+    html.push(block.html);
+  }
+  flushHtml();
+
+  return { prompts, renderBlocks };
+}
+
 function labPackageFromBlocks(
   blocks: SourceBlock[],
   code: string,
   version: string,
   metadata: AdaptMetadata,
 ) {
+  const facilitatorIndex = blocks.findIndex((block) => /\bfacilitator guide\b/i.test(block.text));
+  const certificateIndex = blocks.findIndex((block) => /\b(?:transformation|completion) certificate\b/i.test(block.text));
+  const learnerEndCandidates = [facilitatorIndex, certificateIndex].filter((index) => index > 0);
+  const learnerEnd = learnerEndCandidates.length ? Math.min(...learnerEndCandidates) : blocks.length;
+  const learnerBlocks = blocks.slice(0, learnerEnd);
+
   const boundaries: Array<{ number: number; index: number; title: string }> = [];
-  for (let index = 0; index < blocks.length; index += 1) {
-    const number = labInvestigationNumber(blocks[index].text);
+  for (let index = 0; index < learnerBlocks.length; index += 1) {
+    const number = labInvestigationNumber(learnerBlocks[index].text);
     if (!number) continue;
     if (boundaries.some((boundary) => boundary.number === number)) continue;
     boundaries.push({
       number,
       index,
-      title: labInvestigationTitle(blocks[index].text, number),
+      title: labInvestigationTitle(learnerBlocks[index].text, number),
     });
   }
   boundaries.sort((a, b) => a.number - b.number);
@@ -516,48 +1001,45 @@ function labPackageFromBlocks(
   const missing = expected.filter((number) => !found.includes(number));
   if (missing.length) {
     throw new Error(
-      "I could read this Lab document, but I could not find all nine investigation sections. " +
-      "Please use headings such as “Investigation 1” through “Investigation 9”. Missing: " +
+      "I could read the Lab, but I could not find all nine investigation sections. " +
+      "Keep the learner headings “Investigation 1” through “Investigation 9”. Missing: " +
       missing.join(", ") + ".",
     );
   }
 
+  const baselineStart = learnerBlocks.findIndex((block) => /\bbaseline\b.*\bpre\b/i.test(block.text));
   const investigations = boundaries.map((boundary, boundaryIndex) => {
-    const end = boundaries[boundaryIndex + 1]?.index ?? blocks.length;
-    const body = blocks.slice(boundary.index + 1, end);
-    const mission = valueAfterLabel(body, /^mission\s*[:\-]\s*(.+)$/i)
-      || body.find((block) => block.text && !block.heading)?.text
+    const end = boundaries[boundaryIndex + 1]?.index ?? learnerBlocks.length;
+    const authoredBody = learnerBlocks.slice(boundary.index + 1, end);
+    const body = boundary.number === 1 && baselineStart >= 0 && baselineStart < boundary.index
+      ? [...learnerBlocks.slice(baselineStart, boundary.index), ...authoredBody]
+      : authoredBody;
+
+    const mission = valueAfterLabel(authoredBody, /^mission\s*[:\-]\s*(.+)$/i)
+      || authoredBody.find((block) => block.text && !block.heading)?.text
       || "Investigate what the evidence shows.";
-    const time = valueAfterLabel(body, /^(?:time|duration)\s*[:\-]\s*(.+)$/i) || "10 minutes";
-    const difficulty = valueAfterLabel(body, /^difficulty\s*[:\-]\s*(.+)$/i) || "Observe";
-
-    const promptRows: Array<{ blockIndex: number; text: string }> = [];
-    body.forEach((block, blockIndex) => {
-      for (const question of questionTexts(block.text)) {
-        promptRows.push({ blockIndex, text: question });
+    const time = valueAfterLabel(authoredBody, /^(?:time|duration)\s*[:\-]\s*(.+)$/i) || "10 minutes";
+    const difficulty = valueAfterLabel(authoredBody, /^difficulty\s*[:\-]\s*(.+)$/i) || "Observe";
+    const producesIndex = authoredBody.findIndex((block) => /^you will produce\s*:?$/i.test(block.text));
+    const produced: string[] = [];
+    if (producesIndex >= 0) {
+      for (let cursor = producesIndex + 1; cursor < authoredBody.length; cursor += 1) {
+        const text = authoredBody[cursor].text.trim();
+        if (!text) continue;
+        if (/^(?:time|difficulty|mission)\s*:/i.test(text) || authoredBody[cursor].heading) break;
+        if (isProduceLine(text)) produced.push(text.replace(/^[●•-]?\s*☐\s*/u, "").trim());
+        else if (produced.length) break;
       }
-    });
-
-    if (!promptRows.length) {
-      throw new Error(
-        "Investigation " + boundary.number +
-        ": I found the section, but I could not identify a learner question. Add at least one question ending in “?”.",
-      );
     }
 
-    const promptBlockIndexes = new Set(promptRows.map((row) => row.blockIndex));
-    const introHtml = body
-      .filter((_, blockIndex) => !promptBlockIndexes.has(blockIndex))
-      .map((block) => block.html)
-      .join("\n")
-      .trim();
-
-    const producesIndex = body.findIndex((block) => /^you will produce\s*:?$/i.test(block.text));
-    const produces = producesIndex >= 0
-      ? body.slice(producesIndex + 1, producesIndex + 5)
-          .filter((block) => block.text && !block.heading)
-          .map((block) => block.text)
-      : [];
+    const runtime = labBodyToRuntime(body, code, boundary.number);
+    if (!runtime.prompts.length) {
+      throw new Error(
+        "Investigation " + boundary.number +
+        ": I found the learner section, but I could not find an answer field. " +
+        "Keep the learner question together with its checkbox, writing line, table or answer label.",
+      );
+    }
 
     return {
       number: boundary.number,
@@ -572,17 +1054,9 @@ function labPackageFromBlocks(
             : "Investigation",
       time,
       difficulty,
-      produces,
-      introHtml: introHtml || undefined,
-      prompts: promptRows.map((row, index) => ({
-        id: code + ".INV" + boundary.number + ".Q" + String(index + 1).padStart(2, "0"),
-        label: "Question " + (index + 1),
-        prompt: row.text,
-        type: "TEXT",
-        placeholder: "Write what you noticed…",
-        sensitivity: "P2",
-        required: true,
-      })),
+      produces: produced,
+      blocks: runtime.renderBlocks,
+      prompts: runtime.prompts,
     };
   });
 

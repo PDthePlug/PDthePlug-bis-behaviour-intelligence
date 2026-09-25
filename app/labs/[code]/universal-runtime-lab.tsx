@@ -30,6 +30,15 @@ function valueOf(snapshot: Snapshot, id: string) {
   return String(value);
 }
 
+function multiValues(value: string) {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.map(String) : [];
+  } catch {
+    return value ? value.split("|").map((item) => item.trim()).filter(Boolean) : [];
+  }
+}
+
 function UniversalPrompt({
   prompt,
   value,
@@ -43,18 +52,27 @@ function UniversalPrompt({
   onValue: (value: string) => void;
   onPass: (value: boolean) => void;
 }) {
+  const selected = prompt.type === "MULTI_SELECT" ? new Set(multiValues(value)) : new Set<string>();
   return (
-    <section className={`prompt-section ${passed ? "passed" : ""}`}>
-      <div className="prompt-number">{prompt.id.split(".").slice(-1)[0]}</div>
+    <section className={`prompt-section ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
+      <div className="prompt-number">{prompt.group ? prompt.group : prompt.id.split(".").slice(-1)[0]}</div>
       <div className="prompt-body">
         <h2>{prompt.label}</h2>
-        <p>{prompt.prompt}</p>
+        {prompt.prompt !== prompt.label ? <p>{prompt.prompt}</p> : null}
         {passed ? (
           <p className="passed-note">You chose not to answer this question. You can add an answer before saving if you change your mind.</p>
         ) : (
           <div className="prompt-controls">
             {prompt.type === "INTEGER" ? (
-              <Input type="number" value={value} onChange={(event) => onValue(event.target.value)} />
+              <Input
+                type="number"
+                min={prompt.min}
+                max={prompt.max}
+                value={value}
+                onChange={(event) => onValue(event.target.value)}
+              />
+            ) : prompt.type === "DATE" ? (
+              <Input type="date" value={value} onChange={(event) => onValue(event.target.value)} />
             ) : prompt.type === "BOOLEAN" ? (
               <Select value={value} onValueChange={onValue}>
                 <SelectTrigger><SelectValue placeholder="Choose" /></SelectTrigger>
@@ -65,6 +83,22 @@ function UniversalPrompt({
                 <SelectTrigger><SelectValue placeholder="Choose" /></SelectTrigger>
                 <SelectContent>{(prompt.options ?? []).map((option) => <SelectItem value={option} key={option}>{option}</SelectItem>)}</SelectContent>
               </Select>
+            ) : prompt.type === "MULTI_SELECT" ? (
+              <div className="universal-multi-select">
+                {(prompt.options ?? []).map((option) => (
+                  <label key={option}>
+                    <Checkbox
+                      checked={selected.has(option)}
+                      onCheckedChange={(checked) => {
+                        const next = new Set(selected);
+                        if (checked === true) next.add(option); else next.delete(option);
+                        onValue(JSON.stringify([...next]));
+                      }}
+                    />
+                    <span>{option}</span>
+                  </label>
+                ))}
+              </div>
             ) : (
               <Textarea rows={4} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write what you noticed…"} />
             )}
@@ -105,7 +139,11 @@ function UniversalInvestigationForm({
     new Set(investigation.prompts.filter((prompt) => snapshot.responses[prompt.id]?.status === "PASS").map((prompt) => prompt.id)),
   );
   const ready = useMemo(
-    () => investigation.prompts.every((prompt) => !prompt.required || Boolean(values[prompt.id]?.trim()) || passed.has(prompt.id)),
+    () => investigation.prompts.every((prompt) => {
+      if (!prompt.required || passed.has(prompt.id)) return true;
+      const value = values[prompt.id] ?? "";
+      return prompt.type === "MULTI_SELECT" ? multiValues(value).length > 0 : Boolean(value.trim());
+    }),
     [investigation.prompts, passed, values],
   );
 
@@ -115,30 +153,51 @@ function UniversalInvestigationForm({
     responseStatus: passed.has(prompt.id) ? "PASS" : "ANSWERED",
   }));
 
+  const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
+  const blockPromptIds = new Set(
+    (investigation.blocks ?? [])
+      .filter((block) => block.type === "PROMPT")
+      .map((block) => block.type === "PROMPT" ? block.promptId : ""),
+  );
+  const renderPrompt = (prompt: UniversalLabPrompt) => (
+    <UniversalPrompt
+      key={prompt.id}
+      prompt={prompt}
+      value={values[prompt.id] ?? ""}
+      passed={passed.has(prompt.id)}
+      onValue={(value) => {
+        setValues((current) => ({ ...current, [prompt.id]: value }));
+        setPassed((current) => {
+          const next = new Set(current);
+          next.delete(prompt.id);
+          return next;
+        });
+      }}
+      onPass={(value) => setPassed((current) => {
+        const next = new Set(current);
+        if (value) next.add(prompt.id); else next.delete(prompt.id);
+        return next;
+      })}
+    />
+  );
+
   return (
     <div className="investigation-stack universal-package-lab">
-      {investigation.introHtml ? <article className="story-card" dangerouslySetInnerHTML={{ __html: investigation.introHtml }} /> : null}
-      {investigation.prompts.map((prompt) => (
-        <UniversalPrompt
-          key={prompt.id}
-          prompt={prompt}
-          value={values[prompt.id] ?? ""}
-          passed={passed.has(prompt.id)}
-          onValue={(value) => {
-            setValues((current) => ({ ...current, [prompt.id]: value }));
-            setPassed((current) => {
-              const next = new Set(current);
-              next.delete(prompt.id);
-              return next;
-            });
-          }}
-          onPass={(value) => setPassed((current) => {
-            const next = new Set(current);
-            if (value) next.add(prompt.id); else next.delete(prompt.id);
-            return next;
-          })}
-        />
-      ))}
+      {investigation.blocks?.length ? investigation.blocks.map((block, index) => {
+        if (block.type === "HTML") {
+          return <article key={`content-${index}`} className="story-card imported-lab-content" dangerouslySetInnerHTML={{ __html: block.html }} />;
+        }
+        const prompt = promptById.get(block.promptId);
+        return prompt ? renderPrompt(prompt) : null;
+      }) : (
+        <>
+          {investigation.introHtml ? <article className="story-card" dangerouslySetInnerHTML={{ __html: investigation.introHtml }} /> : null}
+          {investigation.prompts.map(renderPrompt)}
+        </>
+      )}
+      {investigation.blocks?.length
+        ? investigation.prompts.filter((prompt) => !blockPromptIds.has(prompt.id)).map(renderPrompt)
+        : null}
       {error ? <p className="field-error">{error}</p> : null}
       {snapshot.enrolment?.status === "COMPLETED" && step === 9 ? (
         <section className="corelab-certificate">

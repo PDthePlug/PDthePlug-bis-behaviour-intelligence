@@ -51,12 +51,19 @@ export type UniversalLabPrompt = {
   id: string;
   label: string;
   prompt: string;
-  type?: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL";
+  type?: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL" | "MULTI_SELECT" | "DATE";
   placeholder?: string;
   sensitivity?: "P1" | "P2" | "P3";
   required?: boolean;
   options?: string[];
+  min?: number;
+  max?: number;
+  group?: string;
 };
+
+export type UniversalLabRenderBlock =
+  | { type: "HTML"; html: string }
+  | { type: "PROMPT"; promptId: string };
 
 export type UniversalLabInvestigation = {
   number: number;
@@ -67,6 +74,7 @@ export type UniversalLabInvestigation = {
   difficulty: string;
   produces: string[];
   introHtml?: string;
+  blocks?: UniversalLabRenderBlock[];
   prompts: UniversalLabPrompt[];
 };
 
@@ -287,12 +295,17 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
   }
   if (!label || !question) throw new Error(`Investigation ${investigation}: every prompt needs a label and question.`);
   const type = text(value.type) || "TEXT";
-  if (!["TEXT","INTEGER","BOOLEAN","CATEGORICAL"].includes(type)) {
+  if (!["TEXT","INTEGER","BOOLEAN","CATEGORICAL","MULTI_SELECT","DATE"].includes(type)) {
     throw new Error(`Investigation ${investigation}: unsupported prompt type ${type}.`);
   }
   const options = Array.isArray(value.options) ? value.options.map(String).map((item) => item.trim()).filter(Boolean) : undefined;
-  if (type === "CATEGORICAL" && (!options || !options.length)) {
-    throw new Error(`Investigation ${investigation}: categorical prompts need options.`);
+  if (["CATEGORICAL","MULTI_SELECT"].includes(type) && (!options || !options.length)) {
+    throw new Error(`Investigation ${investigation}: ${type === "MULTI_SELECT" ? "multi-select" : "categorical"} prompts need options.`);
+  }
+  const min = typeof value.min === "number" && Number.isFinite(value.min) ? value.min : undefined;
+  const max = typeof value.max === "number" && Number.isFinite(value.max) ? value.max : undefined;
+  if (min !== undefined && max !== undefined && min > max) {
+    throw new Error(`Investigation ${investigation}: prompt ${id} has an invalid numeric range.`);
   }
   return {
     id,
@@ -303,6 +316,9 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
     sensitivity: (["P1","P2","P3"].includes(text(value.sensitivity)) ? text(value.sensitivity) : "P2") as UniversalLabPrompt["sensitivity"],
     required: value.required !== false,
     options,
+    min,
+    max,
+    group: text(value.group) || undefined,
   };
 }
 
@@ -341,6 +357,24 @@ export async function compileUniversalLab(
       if (seen.has(prompt.id)) throw new Error(`Duplicate Lab prompt ID: ${prompt.id}.`);
       seen.add(prompt.id);
     }
+    const promptIds = new Set(prompts.map((prompt) => prompt.id));
+    const rawBlocks = Array.isArray(item.blocks) ? item.blocks : [];
+    const blocks = rawBlocks.map((rawBlock, blockIndex) => {
+      const block = object(rawBlock);
+      if (!block) throw new Error(`Investigation ${index + 1}: content block ${blockIndex + 1} is invalid.`);
+      const type = text(block.type);
+      if (type === "HTML") {
+        const html = text(block.html);
+        if (!html || unsafeHtml.test(html)) throw new Error(`Investigation ${index + 1}: unsafe or empty content block.`);
+        return { type: "HTML" as const, html };
+      }
+      if (type === "PROMPT") {
+        const promptId = text(block.promptId);
+        if (!promptIds.has(promptId)) throw new Error(`Investigation ${index + 1}: content block points to an unknown prompt ${promptId || "missing"}.`);
+        return { type: "PROMPT" as const, promptId };
+      }
+      throw new Error(`Investigation ${index + 1}: unsupported content block type ${type || "missing"}.`);
+    });
     return {
       number: index + 1,
       title: text(item.title),
@@ -350,6 +384,7 @@ export async function compileUniversalLab(
       difficulty: text(item.difficulty) || "Observe",
       produces: Array.isArray(item.produces) ? item.produces.map(String).map((value) => value.trim()).filter(Boolean) : [],
       introHtml: introHtml || undefined,
+      blocks: blocks.length ? blocks : undefined,
       prompts,
     };
   });
