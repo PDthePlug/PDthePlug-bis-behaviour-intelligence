@@ -549,7 +549,16 @@ function promptQuestions(value: string) {
   return [] as string[];
 }
 
-function promptSpecFromMarker(marker: string, question: string) {
+type ImportedPromptSpec = {
+  label: string;
+  type: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL" | "MULTI_SELECT" | "DATE";
+  options?: string[];
+  placeholder?: string;
+  min?: number;
+  max?: number;
+};
+
+function promptSpecFromMarker(marker: string, question: string): ImportedPromptSpec {
   const options = checkboxOptions(marker);
   const label = formLabel(marker) || formLabel(question) || "Your answer";
   if (options.length) {
@@ -782,6 +791,7 @@ function isProduceLine(value: string) {
 function isStandaloneField(value: string) {
   const text = cleanAuthoredText(value);
   if (!text) return false;
+  if (/^["“]I,\s*_{3}/i.test(value.trim())) return false;
   if (/^✍️/u.test(value.trim())) return true;
   if (looksLikeBlank(text)) return true;
   if (/^(one risk i will address|my protection action|my witness|what i will do if|my failure signal|my biggest risk|my current protection|my priority risk|the cost|the gap|avoided risk|most expensive risk|reducible risk|unprotected risks|my equation|signed|date|from me, in grade)\b/i.test(text)) return true;
@@ -838,57 +848,59 @@ function labBodyToRuntime(
     }
 
     const questions = promptQuestions(text);
-    if (questions.length) {
-      const markers: SourceBlock[] = [];
-      let cursor = index + 1;
-      while (cursor < body.length && markers.length < 8) {
-        const candidate = body[cursor];
-        const candidateText = candidate.text.replace(/\s+/g, " ").trim();
-        if (!candidateText) {
-          cursor += 1;
-          continue;
-        }
-        if (candidate.tableRows || candidate.heading || !looksLikeAnswerMarker(candidateText)) break;
-        markers.push(candidate);
+    const markers: SourceBlock[] = [];
+    let cursor = index + 1;
+    while (cursor < body.length && markers.length < 8) {
+      const candidate = body[cursor];
+      const candidateText = candidate.text.replace(/\s+/g, " ").trim();
+      if (!candidateText) {
         cursor += 1;
+        continue;
       }
-      if (markers.length) {
-        flushHtml();
-        if (markers.length === 1) {
-          const marker = markers[0].text;
-          const spec = promptSpecFromMarker(marker, questions[0]);
+      if (candidate.tableRows || candidate.heading || !looksLikeAnswerMarker(candidateText)) break;
+      markers.push(candidate);
+      cursor += 1;
+    }
+    const promptLead = questions[0]
+      || (/[:：]\s*$/.test(text) || /^(one sentence|complete this sentence|my biggest risk affects)/i.test(text)
+        ? cleanAuthoredText(text)
+        : "");
+    if (promptLead && markers.length) {
+      flushHtml();
+      if (markers.length === 1) {
+        const marker = markers[0].text;
+        const spec = promptSpecFromMarker(marker, promptLead);
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: spec.label || promptLead,
+          prompt: promptLead,
+          type: spec.type,
+          options: spec.options,
+          min: spec.min,
+          max: spec.max,
+          placeholder: spec.placeholder,
+          sensitivity: /future self|identity|health|relationship/i.test(promptLead) ? "P3" : "P2",
+          required: true,
+        });
+      } else {
+        for (const marker of markers) {
+          const spec = promptSpecFromMarker(marker.text, promptLead);
           addPrompt(prompts, renderBlocks, code, investigation, {
-            label: spec.label || questions[0],
-            prompt: questions[0],
+            label: spec.label || promptLead,
+            prompt: spec.label && spec.label !== "Your answer"
+              ? promptLead + " — " + spec.label
+              : promptLead,
             type: spec.type,
             options: spec.options,
             min: spec.min,
             max: spec.max,
             placeholder: spec.placeholder,
-            sensitivity: /future self|identity|health|relationship/i.test(questions[0]) ? "P3" : "P2",
+            sensitivity: "P2",
             required: true,
           });
-        } else {
-          for (const marker of markers) {
-            const spec = promptSpecFromMarker(marker.text, questions[0]);
-            addPrompt(prompts, renderBlocks, code, investigation, {
-              label: spec.label || questions[0],
-              prompt: spec.label && spec.label !== "Your answer"
-                ? questions[0] + " — " + spec.label
-                : questions[0],
-              type: spec.type,
-              options: spec.options,
-              min: spec.min,
-              max: spec.max,
-              placeholder: spec.placeholder,
-              sensitivity: "P2",
-              required: true,
-            });
-          }
         }
-        index = cursor - 1;
-        continue;
       }
+      index = cursor - 1;
+      continue;
     }
 
     if (isStandaloneField(text)) {
@@ -928,7 +940,10 @@ function labPackageFromBlocks(
   metadata: AdaptMetadata,
 ) {
   const facilitatorIndex = blocks.findIndex((block) => /\bfacilitator guide\b/i.test(block.text));
-  const learnerBlocks = facilitatorIndex > 0 ? blocks.slice(0, facilitatorIndex) : blocks;
+  const certificateIndex = blocks.findIndex((block) => /\b(?:transformation|completion) certificate\b/i.test(block.text));
+  const learnerEndCandidates = [facilitatorIndex, certificateIndex].filter((index) => index > 0);
+  const learnerEnd = learnerEndCandidates.length ? Math.min(...learnerEndCandidates) : blocks.length;
+  const learnerBlocks = blocks.slice(0, learnerEnd);
 
   const boundaries: Array<{ number: number; index: number; title: string }> = [];
   for (let index = 0; index < learnerBlocks.length; index += 1) {
