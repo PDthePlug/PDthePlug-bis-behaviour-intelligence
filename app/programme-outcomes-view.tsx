@@ -104,6 +104,42 @@ export type SponsorOutcome = {
       privacyNote: string;
     };
   };
+  organisationLearning: null | {
+    cohortId: string;
+    suppressed: boolean;
+    participantCount: number;
+    minimumReportableCohortSize: number;
+    transition: null | {
+      participants: number;
+      activeInLearning: number;
+      reachedExperimentStage: number;
+      startedExperiment: number;
+      repeatSituationParticipants: number;
+      completed: number;
+    };
+    supportResponse: null | {
+      requests: number;
+      acknowledged: number;
+      resolved: number;
+      acknowledgementRate: number | null;
+      resolutionRate: number | null;
+    };
+    adaptation: null | {
+      checkpointParticipants: number;
+      adjustedParticipants: number;
+      keptPlanParticipants: number;
+      checkpointCoverageRate: number | null;
+      adjustmentRate: number | null;
+    };
+    comparison: null | {
+      comparableCohorts: number;
+      baselineOnly: boolean;
+    };
+    interpretationBoundary?: {
+      descriptiveNotCausal: boolean;
+      note: string;
+    };
+  };
   deepAnalysis: null | {
     cohortId: string;
     suppressed: boolean;
@@ -396,6 +432,97 @@ function themeRecommendation(area: string) {
     default:
       return "Explore the conditions around this pattern and test a practical support response.";
   }
+}
+
+function programmeDesignInsights(outcome: SponsorOutcome) {
+  const learning = outcome.organisationLearning;
+  const metrics = outcome.metrics;
+  if (!learning || learning.suppressed || !learning.transition || !learning.supportResponse || !learning.adaptation || !learning.comparison) {
+    return [] as Array<{ kicker: string; title: string; body: string }>;
+  }
+
+  const transition = learning.transition;
+  const stages = [
+    { label: "entered the programme", value: transition.participants },
+    { label: "became active in the learning journey", value: transition.activeInLearning },
+    { label: "reached the real-world test", value: transition.reachedExperimentStage },
+    { label: "started the real-world test", value: transition.startedExperiment },
+    { label: "encountered a repeat situation", value: transition.repeatSituationParticipants },
+  ];
+  const gaps = stages.slice(1).map((stage, index) => ({
+    from: stages[index],
+    to: stage,
+    loss: Math.max(0, stages[index].value - stage.value),
+  }));
+  const largestGap = gaps.sort((a, b) => b.loss - a.loss)[0];
+
+  const cards: Array<{ kicker: string; title: string; body: string }> = [];
+  if (largestGap && largestGap.loss > 0) {
+    cards.push({
+      kicker: "Programme transition",
+      title: `The biggest visible transition loss is before learners ${largestGap.to.label}.`,
+      body: `${largestGap.from.value} learners ${largestGap.from.label}; ${largestGap.to.value} ${largestGap.to.label}. That is a ${largestGap.loss}-person drop worth investigating before changing programme content.`,
+    });
+  } else {
+    cards.push({
+      kicker: "Programme transition",
+      title: "No major transition loss stands out yet.",
+      body: "The current journey does not show a clear drop between the main observable stages. Keep collecting evidence before redesigning the programme around a presumed bottleneck.",
+    });
+  }
+
+  const support = learning.supportResponse;
+  cards.push({
+    kicker: "Programme responsiveness",
+    title:
+      support.requests === 0
+        ? "No learner-initiated support demand is recorded."
+        : support.acknowledged === 0
+          ? "Learners asked for help, but a response is not yet recorded in BIS."
+          : "Support demand and programme response can now be reviewed together.",
+    body:
+      support.requests === 0
+        ? "There is no learner-requested support signal to interpret for this group yet."
+        : `${support.requests} support request${support.requests === 1 ? "" : "s"} are recorded; ${support.acknowledged} acknowledgement${support.acknowledged === 1 ? "" : "s"} and ${support.resolved} resolution${support.resolved === 1 ? "" : "s"} are recorded. Missing response records do not prove support did not happen—they show what BIS can and cannot verify.`,
+  });
+
+  const adaptation = learning.adaptation;
+  cards.push({
+    kicker: "Adaptation",
+    title:
+      adaptation.checkpointParticipants === 0
+        ? "Adaptation evidence is not available yet."
+        : adaptation.adjustedParticipants > 0
+          ? "Some learners changed the method after reviewing evidence."
+          : "Learners who reached the checkpoint kept their original plan.",
+    body:
+      adaptation.checkpointParticipants === 0
+        ? "No reportable Day 3 checkpoint decisions have been recorded for this group yet. BIS leaves this question open rather than treating missing calibration evidence as failure."
+        : `${adaptation.checkpointParticipants} learner${adaptation.checkpointParticipants === 1 ? "" : "s"} reached the calibration checkpoint; ${adaptation.adjustedParticipants} adjusted the experiment and ${adaptation.keptPlanParticipants} kept the plan.`,
+  });
+
+  const repeat = transition.repeatSituationParticipants;
+  const sufficient = metrics?.evidence.sufficient ?? 0;
+  cards.push({
+    kicker: "Decision confidence",
+    title:
+      repeat >= Math.ceil(transition.startedExperiment * 0.6) && sufficient >= Math.ceil(transition.startedExperiment * 0.6)
+        ? "The programme has a useful repeat-evidence base."
+        : "Programme decisions should remain cautious while repeat evidence builds.",
+    body: `${repeat} of ${transition.startedExperiment} experiment starters encountered at least two comparable situations, and ${sufficient} have enough evidence for a stronger behavioural reading.`,
+  });
+
+  cards.push({
+    kicker: "Organisational learning",
+    title: learning.comparison.baselineOnly
+      ? "This cohort establishes the baseline for the next programme cycle."
+      : "There is now another comparable cohort available for programme learning.",
+    body: learning.comparison.baselineOnly
+      ? "BIS should preserve these findings as the first programme-design baseline. When the next comparable cohort runs, the organisation can test whether a deliberate programme change coincided with a different group pattern."
+      : `${learning.comparison.comparableCohorts} other active comparable cohort${learning.comparison.comparableCohorts === 1 ? "" : "s"} can support a next-cycle comparison. Comparisons remain descriptive unless the evaluation design supports stronger causal claims.`,
+  });
+
+  return cards;
 }
 
 function organisationActions(outcome: SponsorOutcome) {
@@ -691,6 +818,50 @@ export function ProgrammeOutcomesView({ data }: { data: SponsorSnapshot }) {
           </section>
 
 
+
+          {outcome.organisationLearning && !outcome.organisationLearning.suppressed ? (
+            <section className="outcomes-organisational-learning">
+              <div className="outcomes-section-heading">
+                <div>
+                  <p className="eyebrow">Programme-design insight</p>
+                  <h2>What should the organisation learn from this programme?</h2>
+                </div>
+                <Compass />
+              </div>
+
+              <p className="organisational-learning-intro">
+                BIS separates what happened from what the organisation may want to change next. These are evidence-led review questions, not claims about why an outcome occurred.
+              </p>
+
+              <div className="organisational-learning-grid">
+                {programmeDesignInsights(outcome).map((insight) => (
+                  <article key={insight.kicker + insight.title}>
+                    <span>{insight.kicker}</span>
+                    <h3>{insight.title}</h3>
+                    <p>{insight.body}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="organisational-learning-loop">
+                <div>
+                  <span>01</span>
+                  <strong>Observe</strong>
+                  <p>Use the current cohort evidence to identify a transition, support or adaptation question worth investigating.</p>
+                </div>
+                <div>
+                  <span>02</span>
+                  <strong>Change deliberately</strong>
+                  <p>Adjust one part of programme design, facilitation or timing instead of reacting to a single learner or anecdote.</p>
+                </div>
+                <div>
+                  <span>03</span>
+                  <strong>Compare the next cycle</strong>
+                  <p>Run the next comparable cohort and ask whether the group pattern changed after the programme decision.</p>
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           <section className="outcomes-actions">
             <div className="outcomes-section-heading">
