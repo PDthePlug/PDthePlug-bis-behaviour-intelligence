@@ -28,7 +28,7 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(pdf, /GROUP SHIFTS/);
   assert.match(pdf, /Behaviour in practice/);
   assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
-  assert.match(pdf, /Evidence strength/);
+  assert.match(pdf, /How much information we have/);
   assert.match(pdf, /Experiment landscape/);
   assert.match(pdf, /Action plan/);
   assert.match(pdf, /REPORTING NOTES/);
