@@ -176,13 +176,8 @@ function handbookQuestionPrompts(value: string) {
   if (lastQuestion < 0 || lastQuestion < plain.length - 3 || plain.length > 900) return [];
 
   const before = plain.slice(0, lastQuestion + 1).replace(/^\d+[.)]\s*/, "").trim();
-  const openingQuote = before.lastIndexOf('"');
-  const openingSmartQuote = before.lastIndexOf("“");
-  const quoteIndex = Math.max(openingQuote, openingSmartQuote);
-  if (quoteIndex >= 0 && quoteIndex < before.length - 1) {
-    const prefix = before.slice(0, quoteIndex).trim();
-    if (prefix || quoteIndex === 0) return [];
-  }
+  if (/^["“].*\?$/.test(before)) return [];
+  if (/\b(?:asks?|says?|said|writes?|thinks?|thought|remembers?|types?)\s*:\s*["“].*\?$/i.test(before)) return [];
   return [before];
 }
 
