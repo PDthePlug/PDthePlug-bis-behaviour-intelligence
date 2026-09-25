@@ -149,27 +149,45 @@ function programmeDay(key: string) {
 function defaultPhase(key: string) {
   if (key === "Welcome") return "ORIENTATION";
   if (key === "Day 3") return "LAB";
-  if (key === "Weekend") return "EXPERIMENT";
+  if (key === "Day 4" || key === "Day 5") return "LEARN_EXPERIMENT";
+  if (key === "Weekend" || key === "Day 6" || key === "Day 7") return "EXPERIMENT";
+  if (key === "Day 8") return "REVIEW";
+  if (key === "Day 9") return "TRANSFER";
+  if (key === "Day 10") return "INTEGRATE";
   if (key === "Certificate") return "CERTIFICATE";
   return "LEARN";
 }
 
-function ensureTextareaBindings(html: string, code: string, edition: DeliveryEdition, pageKey: string) {
+function stableWorkbookToken(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36).toUpperCase();
+}
+
+function ensureWorkbookBindings(html: string, code: string, edition: DeliveryEdition, pageKey: string) {
   let counter = 0;
-  return html.replace(/<textarea\b([^>]*)>/gi, (match, attributes: string) => {
+  return html.replace(/<(textarea|input|select)\b([^>]*)>/gi, (match, tagName: string, attributes: string) => {
     counter += 1;
-    if (unsafeHtml.test(match)) throw new Error(`${pageKey}: unsafe textarea markup.`);
+    if (unsafeHtml.test(match)) throw new Error(`${pageKey}: unsafe workbook control markup.`);
     const hasId = /\bdata-field-id\s*=/.test(attributes);
-    const hasSource = /\bdata-source-key\s*=/.test(attributes);
+    const sourceMatch = attributes.match(/\bdata-source-key\s*=\s*["']([^"']+)["']/i);
+    const hasSource = Boolean(sourceMatch);
     const hasPurpose = /\bdata-purpose\s*=/.test(attributes);
     const hasPrivacy = /\bdata-privacy-class\s*=/.test(attributes);
+    const sourceKey = sourceMatch?.[1] || `${pageKey.replace(/\s+/g, "").toLowerCase()}-${counter}`;
     let next = attributes;
-    if (!hasId) next += ` data-field-id="${code}.WB.${edition.toUpperCase()}.${pageKey.replace(/\s+/g, "").toUpperCase()}.F${String(counter).padStart(3, "0")}"`;
-    if (!hasSource) next += ` data-source-key="${pageKey.replace(/\s+/g, "").toLowerCase()}-${counter}"`;
+    if (!hasId) {
+      const token = stableWorkbookToken(`${pageKey}|${sourceKey}`);
+      next += ` data-field-id="${code}.WB.${edition.toUpperCase()}.${pageKey.replace(/\s+/g, "").toUpperCase()}.AUTO.${token}"`;
+    }
+    if (!hasSource) next += ` data-source-key="${sourceKey}"`;
     if (!hasPurpose) next += ' data-purpose="LEARNING_RESPONSE"';
     if (!hasPrivacy) next += ' data-privacy-class="P3"';
-    if (!/\bmaxlength\s*=/.test(attributes)) next += ' maxlength="20000"';
-    return `<textarea${next}>`;
+    if (tagName.toLowerCase() === "textarea" && !/\bmaxlength\s*=/.test(attributes)) next += ' maxlength="20000"';
+    return `<${tagName}${next}>`;
   });
 }
 
@@ -217,7 +235,7 @@ export async function compileLearningEdition(
     if (key !== expectedKey) {
       throw new Error(`${edition}: programme position ${index + 1} must be "${expectedKey}", received "${key || "missing"}".`);
     }
-    const html = ensureTextareaBindings(text(page.html), expectedCode, edition, key);
+    const html = ensureWorkbookBindings(text(page.html), expectedCode, edition, key);
     validatePageHtml(html, key);
     const id = programmeStep(expectedCode, key);
     const authoredId = text(page.id);
