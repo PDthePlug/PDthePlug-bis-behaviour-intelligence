@@ -207,7 +207,8 @@ export function ContentStudio() {
   }
 
   useEffect(() => {
-    void load();
+    const frame = requestAnimationFrame(() => { void load(); });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
@@ -260,9 +261,14 @@ export function ContentStudio() {
     ?? activeItems[0]
     ?? null;
 
-  useEffect(() => {
-    if (selected && selected.kind !== selectedKind) setSelectedKind(selected.kind);
-  }, [selected, selectedKind]);
+  function chooseCode(nextCode: string) {
+    setSelectedCode(nextCode);
+    const sameKind = activeItems.some((item) => item.code === nextCode && item.kind === selectedKind);
+    if (!sameKind) {
+      const available = activeItems.find((item) => item.code === nextCode);
+      if (available) setSelectedKind(available.kind);
+    }
+  }
 
   async function createItem() {
     const result = await act({
@@ -361,7 +367,7 @@ export function ContentStudio() {
     }
   }
 
-  function usePastedText(entry: ContentVersion, sourceKey: "school" | "emerging_adult" | "workplace" | "lab") {
+  function applyPastedText(entry: ContentVersion, sourceKey: "school" | "emerging_adult" | "workplace" | "lab") {
     const key = `${entry.id}:${sourceKey}`;
     const text = pasteValues[key]?.trim();
     if (!text) {
@@ -508,7 +514,7 @@ export function ContentStudio() {
         </div>
         <label>
           BIS title
-          <Select value={selectedCode} onValueChange={setSelectedCode}>
+          <Select value={selectedCode} onValueChange={chooseCode}>
             <SelectTrigger><SelectValue placeholder="Choose a BIS title" /></SelectTrigger>
             <SelectContent>
               {catalogueCodes.map((itemCode) => {
@@ -679,7 +685,7 @@ export function ContentStudio() {
                                   />
                                   <div>
                                     <Button variant="outline" onClick={() => setPasteOpen("")}>Cancel</Button>
-                                    <Button disabled={!pasteValues[inputKey]?.trim()} onClick={() => usePastedText(entry, slot.key)}>Use this text</Button>
+                                    <Button disabled={!pasteValues[inputKey]?.trim()} onClick={() => applyPastedText(entry, slot.key)}>Use this text</Button>
                                   </div>
                                 </div>
                               ) : null}
