@@ -178,7 +178,7 @@ function handbookQuestionPrompts(value: string) {
 
   const before = plain.slice(0, lastQuestion + 1).replace(/^\d+[.)]\s*/, "").trim();
   if (/^["“].*\?$/.test(before)) return [];
-  if (/\b(?:asks?|ask|says?|said|writes?|thinks?|thought|remembers?|types?)\b[^?]*["“][^?]*\?$/i.test(before)) return [];
+  if (/\b(?:asks?|ask|says?|said|writes?|thinks?|thought|remembers?|types?)\b.*["“].*\?$/i.test(before)) return [];
   return [before];
 }
 
