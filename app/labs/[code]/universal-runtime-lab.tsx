@@ -139,7 +139,11 @@ function UniversalInvestigationForm({
     new Set(investigation.prompts.filter((prompt) => snapshot.responses[prompt.id]?.status === "PASS").map((prompt) => prompt.id)),
   );
   const ready = useMemo(
-    () => investigation.prompts.every((prompt) => !prompt.required || Boolean(values[prompt.id]?.trim()) || passed.has(prompt.id)),
+    () => investigation.prompts.every((prompt) => {
+      if (!prompt.required || passed.has(prompt.id)) return true;
+      const value = values[prompt.id] ?? "";
+      return prompt.type === "MULTI_SELECT" ? multiValues(value).length > 0 : Boolean(value.trim());
+    }),
     [investigation.prompts, passed, values],
   );
 
