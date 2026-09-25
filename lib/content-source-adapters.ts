@@ -178,7 +178,7 @@ function handbookQuestionPrompts(value: string) {
 
   const before = plain.slice(0, lastQuestion + 1).replace(/^\d+[.)]\s*/, "").trim();
   if (/^["“].*\?$/.test(before)) return [];
-  if (/\b(?:asks?|says?|said|writes?|thinks?|thought|remembers?|types?)\s*:\s*["“].*\?$/i.test(before)) return [];
+  if (/\b(?:asks?|ask|says?|said|writes?|thinks?|thought|remembers?|types?)\b[^?]*["“][^?]*\?$/i.test(before)) return [];
   return [before];
 }
 
@@ -191,6 +191,7 @@ function handbookFieldCue(value: string) {
   const text = value.replace(/\s+/g, " ").trim();
   if (!text) return false;
   if (/^(answers?|question|equation|frame|session|time|mode|difficulty|today you will|you will need|experiment position)\s*:?$/i.test(text)) return false;
+  if (/^["“]I,\s*_{3}.*commit to/i.test(text)) return false;
   if (/^📌\s*carry forward/i.test(text) || /^📖|^💭|^✍️|^✅|^🏠|^📂|^🔎|^⚡|^🔬|^🎯|^🧪|^📊|^🤝/u.test(text)) return false;
   if (/_{3,}/.test(text) || /\.{5,}/.test(text)) return true;
   if (/^(confidence|my rating|shift|observation days completed|missing \/ unrecorded days|eligible target opportunities observed|checks initiated|risk check initiation rate|full checks completed|full risk check completion rate|minimum checks completed|opportunity coverage|completed risk checks|usable events for prediction testing|protection criterion occurred in these events|observed protection criterion rate|predicted protection criterion rate|difference|protection criterion prediction accuracy)\s*:/i.test(text)) return true;
@@ -305,7 +306,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         continue;
       }
 
-      const questions = handbookQuestionPrompts(block.lines?.join("\n") || block.text);
+      const questions = block.heading ? [] : handbookQuestionPrompts(block.lines?.join("\n") || block.text);
       if (questions.length) {
         const optionRows: string[] = [];
         let cursor = index + 1;
