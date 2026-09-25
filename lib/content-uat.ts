@@ -37,10 +37,12 @@ export const CONTENT_UAT_CHECKS = [
 export type ContentUatCheckId = (typeof CONTENT_UAT_CHECKS)[number]["id"];
 export type ContentUatChecklist = Partial<Record<ContentUatCheckId, boolean>>;
 
-export function requiredPreviewKeys(kind: ContentKind) {
-  return kind === "LEARNING_MODULE"
-    ? ["learning:school", "learning:emerging_adult", "learning:workplace"]
-    : ["lab:universal"];
+export function requiredPreviewKeys(kind: ContentKind, availableArtifactKeys?: string[]) {
+  if (kind === "LAB") return ["lab:universal"];
+  const learningKeys = ["learning:school", "learning:emerging_adult", "learning:workplace"];
+  if (!availableArtifactKeys) return learningKeys;
+  const available = new Set(availableArtifactKeys);
+  return learningKeys.filter((key) => available.has(key));
 }
 
 export function normalizeUatChecklist(value: unknown): ContentUatChecklist {
@@ -56,9 +58,14 @@ export function checklistComplete(value: ContentUatChecklist) {
   return CONTENT_UAT_CHECKS.every((check) => value[check.id] === true);
 }
 
-export function previewCoverageComplete(kind: ContentKind, previewed: string[]) {
+export function previewCoverageComplete(
+  kind: ContentKind,
+  previewed: string[],
+  availableArtifactKeys?: string[],
+) {
   const seen = new Set(previewed);
-  return requiredPreviewKeys(kind).every((key) => seen.has(key));
+  const required = requiredPreviewKeys(kind, availableArtifactKeys);
+  return required.length > 0 && required.every((key) => seen.has(key));
 }
 
 export async function artifactFingerprint(
