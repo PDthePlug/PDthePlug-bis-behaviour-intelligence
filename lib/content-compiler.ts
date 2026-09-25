@@ -178,7 +178,7 @@ function ensureWorkbookBindings(html: string, code: string, edition: DeliveryEdi
     const hasPurpose = /\bdata-purpose\s*=/.test(attributes);
     const hasPrivacy = /\bdata-privacy-class\s*=/.test(attributes);
     const sourceKey = sourceMatch?.[1] || `${pageKey.replace(/\s+/g, "").toLowerCase()}-${counter}`;
-    let next = attributes;
+    let next = tagName.toLowerCase() === "input" ? attributes.replace(/\/\s*$/, "") : attributes;
     if (!hasId) {
       const token = stableWorkbookToken(`${pageKey}|${sourceKey}`);
       next += ` data-field-id="${code}.WB.${edition.toUpperCase()}.${pageKey.replace(/\s+/g, "").toUpperCase()}.AUTO.${token}"`;
