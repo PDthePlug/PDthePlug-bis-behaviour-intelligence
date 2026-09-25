@@ -655,31 +655,40 @@ async function postHandler(request: Request) {
         throw new Error("Activation blocked: the Universal Lab runtime artifact is missing.");
       }
 
-      const activeRows = await db.select().from(contentRuntimeActivations).where(and(
-        eq(contentRuntimeActivations.itemId, item.id),
-        eq(contentRuntimeActivations.status, "ACTIVE"),
-      ));
-      const previous = activeRows[0] ?? null;
       const now = new Date().toISOString();
-      if (previous) {
-        await db.update(contentRuntimeActivations).set({ status: "SUPERSEDED", deactivatedAt: now }).where(eq(contentRuntimeActivations.id, previous.id));
-        await db.update(contentLibraryVersions).set({ runtimeStatus: "READY", updatedAt: now }).where(eq(contentLibraryVersions.id, previous.versionId));
-      }
-
-      const activationId = crypto.randomUUID();
-      await db.insert(contentRuntimeActivations).values({
-        id: activationId,
-        itemId: item.id,
-        versionId,
-        runtimeMode: "DYNAMIC",
-        status: "ACTIVE",
-        activatedBy: identity.id,
-        supersedesActivationId: previous?.id ?? null,
-      });
+      const supersededVersions: string[] = [];
+      const publishedEditions: DeliveryEdition[] = [];
 
       if (item.kind === "LEARNING_MODULE") {
-        for (const edition of LEARNING_EDITION_KEYS) {
-          const artifact = artifacts.find((entry) => entry.deliveryEdition === edition)!;
+        const learningArtifacts = artifacts.filter(
+          (artifact) => artifact.deliveryEdition && LEARNING_EDITION_KEYS.includes(artifact.deliveryEdition as DeliveryEdition),
+        );
+        for (const artifact of learningArtifacts) {
+          const edition = artifact.deliveryEdition as DeliveryEdition;
+          const [previousEdition] = await db.select().from(contentEditionActivations).where(and(
+            eq(contentEditionActivations.itemId, item.id),
+            eq(contentEditionActivations.deliveryEdition, edition),
+            eq(contentEditionActivations.status, "ACTIVE"),
+          )).limit(1);
+
+          if (previousEdition) {
+            await db.update(contentEditionActivations).set({
+              status: "SUPERSEDED",
+              deactivatedAt: now,
+            }).where(eq(contentEditionActivations.id, previousEdition.id));
+            supersededVersions.push(previousEdition.versionId);
+          }
+
+          await db.insert(contentEditionActivations).values({
+            id: crypto.randomUUID(),
+            itemId: item.id,
+            deliveryEdition: edition,
+            versionId,
+            status: "ACTIVE",
+            activatedBy: identity.id,
+            supersedesActivationId: previousEdition?.id ?? null,
+          });
+
           const existingPublished = await db.select().from(contentReleases).where(and(
             eq(contentReleases.labCode, item.code),
             eq(contentReleases.deliveryEdition, edition),
@@ -688,6 +697,7 @@ async function postHandler(request: Request) {
           for (const release of existingPublished) {
             await db.update(contentReleases).set({ status: "CONTROLLED" }).where(eq(contentReleases.id, release.id));
           }
+
           const releaseId = `${item.code}:${edition}:${version.version}:${artifact.artifactHash.slice(0, 8)}`;
           await db.insert(contentReleases).values({
             id: releaseId,
@@ -704,7 +714,31 @@ async function postHandler(request: Request) {
             target: [contentReleases.labCode, contentReleases.deliveryEdition, contentReleases.contentVersion, contentReleases.releaseHash],
             set: { status: "PUBLISHED", releasedAt: now },
           });
+          publishedEditions.push(edition);
         }
+      } else {
+        const activeRows = await db.select().from(contentRuntimeActivations).where(and(
+          eq(contentRuntimeActivations.itemId, item.id),
+          eq(contentRuntimeActivations.status, "ACTIVE"),
+        ));
+        const previous = activeRows[0] ?? null;
+        if (previous) {
+          await db.update(contentRuntimeActivations).set({
+            status: "SUPERSEDED",
+            deactivatedAt: now,
+          }).where(eq(contentRuntimeActivations.id, previous.id));
+          supersededVersions.push(previous.versionId);
+        }
+
+        await db.insert(contentRuntimeActivations).values({
+          id: crypto.randomUUID(),
+          itemId: item.id,
+          versionId,
+          runtimeMode: "DYNAMIC",
+          status: "ACTIVE",
+          activatedBy: identity.id,
+          supersedesActivationId: previous?.id ?? null,
+        });
       }
 
       const routePath = item.kind === "LEARNING_MODULE" ? `/handbooks/${item.code.toLowerCase()}` : `/labs/${item.code.toLowerCase()}`;
@@ -719,8 +753,8 @@ async function postHandler(request: Request) {
         itemId: item.id,
         kind: item.kind,
         routePath,
-        editions: item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : [],
-        supersedes: previous?.versionId ?? null,
+        editions: item.kind === "LEARNING_MODULE" ? publishedEditions : [],
+        supersedes: supersededVersions,
         uatId: uat.id,
         uatReviewedBy: uat.reviewedBy,
         uatReviewedAt: uat.reviewedAt,
