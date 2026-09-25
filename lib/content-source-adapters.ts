@@ -135,6 +135,7 @@ type SourceBlock = {
   text: string;
   html: string;
   heading: boolean;
+  tableRows?: string[][];
 };
 
 const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
@@ -237,15 +238,26 @@ function docxParagraph(block: string): SourceBlock | null {
 }
 
 function docxTable(block: string): SourceBlock | null {
-  const rows = [...block.matchAll(/<w:tr\b[\s\S]*?<\/w:tr>/g)].map((row) => {
-    const cells = [...row[0].matchAll(/<w:tc\b[\s\S]*?<\/w:tc>/g)].map((cell) => {
-      const text = [...cell[0].matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g)].map((match) => decodeXml(match[1])).join("").trim();
-      return "<td>" + escapeHtml(text) + "</td>";
-    }).join("");
-    return cells ? "<tr>" + cells + "</tr>" : "";
-  }).filter(Boolean);
-  if (!rows.length) return null;
-  return { text: "", heading: false, html: "<table><tbody>" + rows.join("") + "</tbody></table>" };
+  const tableRows = [...block.matchAll(/<w:tr\b[\s\S]*?<\/w:tr>/g)].map((row) =>
+    [...row[0].matchAll(/<w:tc\b[\s\S]*?<\/w:tc>/g)].map((cell) =>
+      [...cell[0].matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g)]
+        .map((match) => decodeXml(match[1]))
+        .join("")
+        .replace(/\s+/g, " ")
+        .trim(),
+    ),
+  ).filter((row) => row.some(Boolean));
+  if (!tableRows.length) return null;
+  const htmlRows = tableRows.map((row, index) => {
+    const tag = index === 0 ? "th" : "td";
+    return "<tr>" + row.map((cell) => "<" + tag + ">" + escapeHtml(cell) + "</" + tag + ">").join("") + "</tr>";
+  });
+  return {
+    text: tableRows.map((row) => row.join(" | ")).join(" \n "),
+    heading: false,
+    html: "<table><tbody>" + htmlRows.join("") + "</tbody></table>",
+    tableRows,
+  };
 }
 
 function docxBlocks(bytes: Uint8Array) {
