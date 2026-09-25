@@ -272,6 +272,29 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
     }
 
     if (!inAnswers) {
+      if (block.tableRows?.length && block.answerColumn !== undefined) {
+        const header = block.tableRows[0];
+        const rows = block.tableRows.slice(1);
+        html.push(
+          '<table class="handbook-table handbook-response-table"><thead><tr>' +
+          header.map((cell) => '<th scope="col">' + escapeHtml(cell) + "</th>").join("") +
+          "</tr></thead><tbody>" +
+          rows.map((row) => {
+            const rowLabel = row[0] || "Workbook response";
+            return "<tr>" + row.map((cell, cellIndex) => {
+              const label = header[cellIndex] ?? "";
+              if (cellIndex === block.answerColumn) {
+                const prompt = rowLabel + " — " + label;
+                return '<td data-label="' + escapeHtml(label) + '">' + handbookTextarea(nextSourceKey(prompt), prompt) + "</td>";
+              }
+              return '<td data-label="' + escapeHtml(label) + '">' + escapeHtml(cell) + "</td>";
+            }).join("") + "</tr>";
+          }).join("") +
+          "</tbody></table>",
+        );
+        continue;
+      }
+
       const questions = handbookQuestionPrompts(block.lines?.join("\n") || block.text);
       if (questions.length) {
         const optionRows: string[] = [];
