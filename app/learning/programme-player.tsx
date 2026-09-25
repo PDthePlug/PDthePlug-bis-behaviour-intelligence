@@ -549,7 +549,7 @@ export function ProgrammePlayer({
         </button>
         <div className="prototype-top-context">
           {previewMode ? (
-            <strong>Activation UAT preview · no learner data is saved</strong>
+            <strong>Preview mode · nothing here is saved to learner records</strong>
           ) : runtime.experiment?.status === "ACTIVE" && experimentDay ? (
             <strong>Experiment Day {experimentDay} of 7</strong>
           ) : null}
@@ -678,7 +678,7 @@ export function ProgrammePlayer({
 
             <div className="prototype-save-state" aria-live="polite">
               {previewMode
-                ? "Activation UAT preview · test responses stay in this browser only"
+                ? "Preview mode · test answers stay in this browser only"
                 : saveState === "saving"
                   ? "Saving workbook responses…"
                   : saveState === "dirty"
