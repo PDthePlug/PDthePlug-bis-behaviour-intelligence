@@ -492,6 +492,7 @@ export async function adaptLearningSource(
 
 function labInvestigationNumber(value: string) {
   const cleaned = value.replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+  if (/^investigation\s*[1-9]\s*of\s*9\s*$/i.test(cleaned)) return null;
   const match = cleaned.match(/^investigation\s*([1-9])(?:\s*of\s*9)?\b/i);
   return match ? Number(match[1]) : null;
 }
