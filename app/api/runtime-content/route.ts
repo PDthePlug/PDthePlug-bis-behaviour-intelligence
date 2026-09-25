@@ -1,6 +1,7 @@
 import { and, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
+  contentEditionActivations,
   contentLibraryItems,
   contentLibraryVersions,
   contentRuntimeActivations,
@@ -37,16 +38,40 @@ async function loadHandler(request: Request) {
   )).limit(1);
   if (!item) return Response.json({ error: "This BIS content is not active." }, { status: 404 });
 
-  const [activation] = await db.select().from(contentRuntimeActivations).where(and(
-    eq(contentRuntimeActivations.itemId, item.id),
-    eq(contentRuntimeActivations.status, "ACTIVE"),
-  )).limit(1);
-  if (!activation || activation.runtimeMode !== "DYNAMIC") {
-    return Response.json({ error: "This content uses the built-in runtime." }, { status: 404 });
+  let activeVersionId = "";
+  let activatedAt: string | null = null;
+
+  if (kind === "LEARNING_MODULE") {
+    const [editionActivation] = await db.select().from(contentEditionActivations).where(and(
+      eq(contentEditionActivations.itemId, item.id),
+      eq(contentEditionActivations.deliveryEdition, edition!),
+      eq(contentEditionActivations.status, "ACTIVE"),
+    )).limit(1);
+    if (editionActivation) {
+      activeVersionId = editionActivation.versionId;
+      activatedAt = editionActivation.activatedAt;
+    }
   }
-  const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, activation.versionId)).limit(1);
+
+  if (!activeVersionId) {
+    const [activation] = await db.select().from(contentRuntimeActivations).where(and(
+      eq(contentRuntimeActivations.itemId, item.id),
+      eq(contentRuntimeActivations.status, "ACTIVE"),
+    )).limit(1);
+    if (!activation || activation.runtimeMode !== "DYNAMIC") {
+      return Response.json({
+        error: kind === "LEARNING_MODULE"
+          ? "This learning edition is not published yet."
+          : "This content uses the built-in runtime.",
+      }, { status: 404 });
+    }
+    activeVersionId = activation.versionId;
+    activatedAt = activation.activatedAt;
+  }
+
+  const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, activeVersionId)).limit(1);
   if (!version || version.runtimeStatus !== "LIVE") {
-    return Response.json({ error: "The active runtime version is unavailable." }, { status: 409 });
+    return Response.json({ error: "The published content is temporarily unavailable." }, { status: 409 });
   }
 
   const artifactKey = kind === "LEARNING_MODULE" ? `learning:${edition}` : "lab:universal";
@@ -74,7 +99,7 @@ async function loadHandler(request: Request) {
       id: version.id,
       version: version.version,
       compilerVersion: version.compilerVersion,
-      activatedAt: activation.activatedAt,
+      activatedAt,
     },
     artifact: {
       key: artifact.artifactKey,
