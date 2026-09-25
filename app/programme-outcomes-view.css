@@ -618,3 +618,94 @@
   .outcomes-action-grid{grid-template-columns:1fr}
   .outcomes-learning-journey,.outcomes-actions{padding:20px 18px}
 }
+
+
+/* Programme-design insight / organisational learning */
+.outcomes-organisational-learning{
+  padding:26px;
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:linear-gradient(180deg,#f5f8f6 0%,#fff 72%);
+}
+.organisational-learning-intro{
+  max-width:820px;
+  margin:-4px 0 18px;
+  color:var(--muted-foreground);
+  font-size:13px;
+  line-height:1.65;
+}
+.organisational-learning-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.organisational-learning-grid article{
+  min-height:190px;
+  display:grid;
+  align-content:start;
+  gap:9px;
+  padding:20px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--paper);
+}
+.organisational-learning-grid article>span{
+  color:var(--teal);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.065em;
+}
+.organisational-learning-grid h3{
+  margin:0;
+  font:600 22px/1.08 var(--font-serif);
+  letter-spacing:-.02em;
+}
+.organisational-learning-grid p{
+  margin:0;
+  color:var(--muted-foreground);
+  font-size:12.5px;
+  line-height:1.65;
+}
+.organisational-learning-loop{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--border);
+}
+.organisational-learning-loop>div{
+  min-height:150px;
+  display:grid;
+  align-content:start;
+  gap:7px;
+  padding:17px;
+  border-radius:14px;
+  background:#f8f7f3;
+}
+.organisational-learning-loop span{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:var(--ink);
+  color:white;
+  font-size:10px;
+  font-weight:900;
+}
+.organisational-learning-loop strong{font-size:14px}
+.organisational-learning-loop p{
+  margin:0;
+  color:var(--muted-foreground);
+  font-size:12px;
+  line-height:1.6;
+}
+@media(max-width:820px){
+  .organisational-learning-grid{grid-template-columns:1fr}
+  .organisational-learning-loop{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .outcomes-organisational-learning{padding:20px 18px}
+}
