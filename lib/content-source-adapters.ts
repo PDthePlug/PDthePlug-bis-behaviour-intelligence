@@ -246,7 +246,7 @@ function handbookBlockHtml(block: SourceBlock) {
   return block.html.trim();
 }
 
-function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
+function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: string) {
   const html: string[] = [];
   let inAnswers = false;
   const occurrences = new Map<string, number>();
@@ -261,6 +261,16 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey) {
     const block = blocks[index];
     const text = block.text.replace(/\s+/g, " ").trim();
     if (!text) continue;
+
+    if (
+      key !== "Welcome"
+      && text === pageLabel
+      && strictProgrammePageKey(text) !== key
+      && !block.heading
+    ) {
+      html.push('<h1 class="handbook-day-title">' + escapeHtml(text) + "</h1>");
+      continue;
+    }
 
     if (/^(answers?|suggested answers?)\s*:?$/i.test(text)) {
       inAnswers = true;
@@ -392,11 +402,12 @@ type ManufacturedProgrammePage = {
 };
 
 function programmePage(key: PageKey, body: SourceBlock[]): ManufacturedProgrammePage {
-  const html = renderHandbookPage(body, key);
+  const label = programmeLabel(key, body);
+  const html = renderHandbookPage(body, key, label);
   if (!html) throw new Error(key + " contains no authored content.");
   return {
     key,
-    label: programmeLabel(key, body),
+    label,
     html,
     experimentPosition: programmeExperimentPosition(body),
   };
