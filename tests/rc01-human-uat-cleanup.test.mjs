@@ -26,7 +26,7 @@ test("staff access remains assigned and invisible to learner-only profiles", asy
   assert.match(staff, /href="\/profile"/);
   assert.match(profile, /const staff = hasStaffRole\(roles\)/);
   assert.match(profile, /\{staff \? \(/);
-  assert.match(profile, /Open staff dashboard/);
+  assert.match(profile, /Open programme workspace/);
   assert.doesNotMatch(staff, /register as facilitator/i);
   assert.doesNotMatch(profile, /register as facilitator/i);
 });
