@@ -187,6 +187,17 @@ function handbookOption(value: string) {
   return match?.[1]?.trim() || "";
 }
 
+function inlineCheckboxGroup(value: string) {
+  const text = value.replace(/\s+/g, " ").trim();
+  const first = text.indexOf("☐");
+  if (first < 0) return null;
+  const prompt = text.slice(0, first).replace(/\s*:\s*$/, "").trim();
+  const options = [...text.matchAll(/☐\s*([^☐]+)/gu)]
+    .map((match) => match[1].trim())
+    .filter(Boolean);
+  return prompt && options.length >= 2 ? { prompt, options } : null;
+}
+
 function handbookFieldCue(value: string) {
   const text = value.replace(/\s+/g, " ").trim();
   if (!text) return false;
@@ -194,6 +205,7 @@ function handbookFieldCue(value: string) {
   if (/^["“]I,\s*_{3}.*commit to/i.test(text)) return false;
   if (/^📌\s*carry forward/i.test(text) || /^📖|^💭|^✍️|^✅|^🏠|^📂|^🔎|^⚡|^🔬|^🎯|^🧪|^📊|^🤝/u.test(text)) return false;
   if (/_{3,}/.test(text) || /\.{5,}/.test(text)) return true;
+  if (/^(?:my|what i|what they|who i|where i|how i|why i|one thing|the .* i|original|revised|effective from|signed|date|from me)\b.*:\s*$/i.test(text)) return true;
   if (/^(confidence|my rating|shift|observation days completed|missing \/ unrecorded days|eligible target opportunities observed|checks initiated|risk check initiation rate|full checks completed|full risk check completion rate|minimum checks completed|opportunity coverage|completed risk checks|usable events for prediction testing|protection criterion occurred in these events|observed protection criterion rate|predicted protection criterion rate|difference|protection criterion prediction accuracy)\s*:/i.test(text)) return true;
   if (/^(the protection pattern i want to investigate|why i chose this one|my intended protection position|my recurring protective opportunity|my protective action|my observable protection criterion|i will count the protection criterion as occurred when|my working risk equation|my target condition|my check-in person|my restart plan|my revision signal|what i noticed|what i collected|who i asked|what they said|where i will keep my tracker|what i can now do|who i showed|the most important thing learned)\s*:/i.test(text)) return true;
   if (/^(risk context|intended protection position|actual protection position at start|protection gap|action relationship|protective action implemented\?|protection coverage relationship|protective action tested|family of protection|observable protection criterion|what actually happened so far|trade-off observed\?|constraint observed\?|what surprised you)\s*:\s*_{2,}/i.test(text)) return true;
@@ -283,6 +295,13 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     }
 
     if (!inAnswers) {
+      const inlineChoices = (!block.lines || block.lines.length <= 1) ? inlineCheckboxGroup(text) : null;
+      if (inlineChoices) {
+        html.push("<p>" + escapeHtml(inlineChoices.prompt) + "</p>");
+        html.push(handbookChoice(nextSourceKey(inlineChoices.prompt), inlineChoices.prompt, inlineChoices.options));
+        continue;
+      }
+
       if (block.tableRows?.length && block.answerColumn !== undefined) {
         const header = block.tableRows[0];
         const rows = block.tableRows.slice(1);
@@ -494,6 +513,13 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   const found = new Map(boundaries.map((boundary) => [boundary.key, boundary.index]));
   const missing = PAGE_KEYS.filter((key) => !found.has(key));
   if (missing.length) {
+    if (boundaries.length >= 5) {
+      throw new Error(
+        sourceLabel + ": I found the BIS programme structure, but some programme positions are missing. " +
+        "Keep the authored headings Welcome, Day 1–10, Weekend and Certificate. Missing: " +
+        missing.join(", ") + ".",
+      );
+    }
     return balancedProgrammePages(blocks, sourceLabel);
   }
 
@@ -879,6 +905,14 @@ function markdownBlocks(markdown: string) {
           || /^(📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌)/u.test(trimmed),
       );
       continue;
+    }
+
+    if (
+      paragraph.length
+      && /[.!?:"”)]\s*$/.test(paragraph[paragraph.length - 1])
+      && /^[A-Z0-9"“'(]/.test(trimmed)
+    ) {
+      flush();
     }
     paragraph.push(trimmed.replace(/^[-*+]\s+/, ""));
   }
