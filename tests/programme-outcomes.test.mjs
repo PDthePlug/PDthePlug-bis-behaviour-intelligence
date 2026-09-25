@@ -12,8 +12,9 @@ test("sponsor access is a first-class cohort-scoped staff role", async () => {
   ]);
 
   assert.match(access, /"SPONSOR_VIEWER"/);
-  assert.match(route, /role === "SPONSOR_VIEWER"/);
-  assert.match(route, /scopeType = sponsorRole \? "COHORT" : "GLOBAL"/);
+  assert.match(access, /"PROGRAMME_OWNER"/);
+  assert.match(route, /role === "SPONSOR_VIEWER" \|\| role === "PROGRAMME_OWNER"/);
+  assert.match(route, /scopeType = organisationRole \? "COHORT" : "GLOBAL"/);
   assert.match(route, /Choose an active programme group for organisation reporting/);
   assert.match(route, /SPONSOR_VIEWER/);
 });
@@ -305,4 +306,63 @@ test("programme PDF carries the organisational learning layer", async () => {
   assert.match(pdf, /Programme responsiveness/);
   assert.match(pdf, /Organisational learning loop/);
   assert.match(pdf, /Missing response records do not prove support did not happen/);
+});
+
+
+test("programme decision register connects evidence to a next-cycle organisational decision", async () => {
+  const [view, route, migration, pdf] = await Promise.all([
+    source("app/programme-outcomes-view.tsx"),
+    source("app/api/staff/route.ts"),
+    source("supabase/migrations/20260925224500_programme_decision_register.sql"),
+    source("lib/programme-report-pdf.ts"),
+  ]);
+
+  assert.match(view, /Decision register/);
+  assert.match(view, /What did the organisation decide to change\?/);
+  assert.match(view, /What will the programme change\?/);
+  assert.match(view, /What do we expect to observe next\?/);
+  assert.match(view, /Use in decision/);
+  assert.match(view, /reviewProgrammeDecision/);
+
+  assert.match(route, /createProgrammeDecision/);
+  assert.match(route, /reviewProgrammeDecision/);
+  assert.match(route, /PROGRAMME_OWNER/);
+  assert.match(route, /PROGRAMME_DECISION_CREATED/);
+  assert.match(route, /PROGRAMME_DECISION_REVIEWED/);
+
+  assert.match(migration, /enable row level security/);
+  assert.match(migration, /programme_decisions_select/);
+  assert.match(migration, /programme_decisions_insert/);
+  assert.match(migration, /programme_decisions_update/);
+  assert.doesNotMatch(migration, /grant delete/i);
+  assert.match(migration, /PROGRAMME_OWNER/);
+
+  assert.match(pdf, /Decision register/);
+  assert.match(pdf, /Interpretation boundary/);
+  assert.match(pdf, /does not convert a programme decision into proof of causality/);
+});
+
+test("programme owner is writable while sponsor viewer remains read only", async () => {
+  const [access, shell, operations, route] = await Promise.all([
+    source("lib/bis-access.ts"),
+    source("app/workspace/staff-workspace-shell.tsx"),
+    source("app/operations-view.tsx"),
+    source("app/api/staff/route.ts"),
+  ]);
+
+  assert.match(access, /"PROGRAMME_OWNER"/);
+  assert.match(shell, /roles\.includes\("PROGRAMME_OWNER"\)/);
+  assert.match(operations, /Organisation reporting · view only/);
+  assert.match(operations, /Programme owner · decisions/);
+  assert.match(route, /canManageProgrammeCohort/);
+  assert.match(route, /role === "SPONSOR_VIEWER" \|\| role === "PROGRAMME_OWNER"/);
+});
+
+test("decision register never stores learner-level evidence fields", async () => {
+  const migration = await source("supabase/migrations/20260925224500_programme_decision_register.sql");
+  assert.doesNotMatch(migration, /learner_user_id/);
+  assert.doesNotMatch(migration, /learner_email/);
+  assert.doesNotMatch(migration, /reflection/);
+  assert.doesNotMatch(migration, /experiment_notes/);
+  assert.doesNotMatch(migration, /support_message/);
 });

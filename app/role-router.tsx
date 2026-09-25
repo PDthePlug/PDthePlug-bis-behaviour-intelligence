@@ -10,7 +10,7 @@ type AccessSnapshot = {
   error?: string;
 };
 
-const STAFF_ROLES = new Set(["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER"]);
+const STAFF_ROLES = new Set(["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER", "PROGRAMME_OWNER"]);
 
 export function RoleRouter() {
   const router = useRouter();

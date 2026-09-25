@@ -28,7 +28,7 @@ test("staff entry resolves roles automatically without a second open-workspace g
 test("workspace navigation exists only for roles that can use each surface", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
   assert.match(shell, /roles\.includes\("FACILITATOR"\)/);
-  assert.match(shell, /roles\.includes\("SPONSOR_VIEWER"\) \|\| roles\.includes\("SYSTEM_ADMIN"\)/);
+  assert.match(shell, /roles\.includes\("SPONSOR_VIEWER"\) \|\| roles\.includes\("PROGRAMME_OWNER"\) \|\| roles\.includes\("SYSTEM_ADMIN"\)/);
   assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
   assert.match(shell, /facilitatorAvailable \? \(/);
   assert.match(shell, /outcomesAvailable \? \(/);
@@ -136,4 +136,12 @@ test("participant insight labels stay behavioural rather than personality based"
     assert.match(facilitator, new RegExp(strength));
   }
   assert.match(facilitator, /observable programme behaviour, not personality or ability/);
+});
+
+
+test("programme owner opens Programme results without gaining administration", async () => {
+  const shell = await source("app/workspace/staff-workspace-shell.tsx");
+  assert.match(shell, /roles\.includes\("PROGRAMME_OWNER"\)/);
+  assert.match(shell, /return "outcomes"/);
+  assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
 });

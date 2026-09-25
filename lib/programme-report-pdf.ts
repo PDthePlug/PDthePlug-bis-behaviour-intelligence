@@ -102,6 +102,23 @@ type Outcome = {
       baselineOnly: boolean;
     };
   };
+  decisionRegister?: {
+    canManage: boolean;
+    decisions: Array<{
+      sourceSignal: string;
+      sourceTitle: string;
+      sourceEvidence: string;
+      decisionText: string;
+      expectedOutcome: string;
+      ownerLabel: string | null;
+      reviewOn: string | null;
+      status: string;
+      reviewOutcome: string | null;
+      reviewNote: string | null;
+      createdAt: string;
+      reviewedAt: string | null;
+    }>;
+  };
   deepAnalysis?: null | {
     suppressed: boolean;
     experimentLandscape: null | {
@@ -1311,6 +1328,71 @@ function drawOrganisationalLearning(canvas: ReportCanvas, outcome: Outcome) {
   );
 }
 
+function drawProgrammeDecisionRegister(canvas: ReportCanvas, outcome: Outcome) {
+  const decisions = outcome.decisionRegister?.decisions ?? [];
+  canvas.page(C.paper);
+  canvas.section(
+    "Decision register",
+    "What did the organisation decide to change?",
+    "This section records the organisation's own response to aggregate programme evidence, the expected next outcome and any later review."
+  );
+
+  if (!decisions.length) {
+    canvas.callout(
+      "No programme decision recorded yet",
+      "The current findings remain programme insights until the organisation records what, if anything, it will change and what it expects to observe next.",
+      "warm"
+    );
+    return;
+  }
+
+  for (const decision of decisions.slice(0, 8)) {
+    canvas.ensure(160);
+    canvas.text(decision.sourceSignal.replaceAll("_", " "), {
+      size: 8,
+      bold: true,
+      color: C.teal,
+      uppercase: true,
+      gapAfter: 4,
+    });
+    canvas.text(decision.sourceTitle, {
+      size: 15,
+      bold: true,
+      serif: true,
+      color: C.ink,
+      lineHeight: 18,
+      gapAfter: 8,
+    });
+    canvas.callout("Evidence considered", decision.sourceEvidence, "teal");
+    canvas.twoColumnCards([
+      {
+        kicker: "Programme decision",
+        title: decision.ownerLabel ? "Owned by " + decision.ownerLabel : "Recorded programme change",
+        body: decision.decisionText,
+      },
+      {
+        kicker: "Expected next outcome",
+        title: decision.reviewOn ? "Review on " + decision.reviewOn : "Review date not set",
+        body: decision.expectedOutcome,
+      },
+    ]);
+    if (decision.status !== "OPEN") {
+      canvas.callout(
+        "Review - " + (decision.reviewOutcome ?? "recorded").replaceAll("_", " ").toLowerCase(),
+        decision.reviewNote ?? "A review outcome has been recorded without an additional note.",
+        "dark"
+      );
+    }
+    canvas.rule(10);
+  }
+
+  canvas.callout(
+    "Interpretation boundary",
+    "The decision register records organisational choices and review findings. It does not convert a programme decision into proof of causality.",
+    "dark"
+  );
+}
+
 function drawActionPlan(canvas: ReportCanvas, outcome: Outcome) {
   canvas.page(C.paper);
   canvas.section(
@@ -1417,6 +1499,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
   drawBehaviourEvidence(canvas, outcome);
   drawExperimentLandscape(canvas, outcome);
   drawOrganisationalLearning(canvas, outcome);
+  drawProgrammeDecisionRegister(canvas, outcome);
   drawActionPlan(canvas, outcome);
 
   return canvas.finish();

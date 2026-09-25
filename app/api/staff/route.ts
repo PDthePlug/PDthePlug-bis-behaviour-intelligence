@@ -10,6 +10,7 @@ import {
   learners,
   pilotCohorts,
   pilotEvents,
+  programmeDecisions,
   roleAssignments,
   safeguardingCases,
   staffExperimentEventProgress,
@@ -327,6 +328,25 @@ async function facilitatorSnapshot(identity: Identity) {
   };
 }
 
+async function canManageProgrammeCohort(identity: Identity, roles: string[], cohortId: string) {
+  if (hasRole(roles, "SYSTEM_ADMIN")) return true;
+  const [assignment] = await getDb()
+    .select({ id: roleAssignments.id })
+    .from(roleAssignments)
+    .where(and(
+      eq(roleAssignments.role, "PROGRAMME_OWNER"),
+      eq(roleAssignments.scopeType, "COHORT"),
+      eq(roleAssignments.scopeId, cohortId),
+      eq(roleAssignments.status, "ACTIVE"),
+      or(
+        eq(roleAssignments.principalEmail, identity.email),
+        eq(roleAssignments.userId, identity.id),
+      ),
+    ))
+    .limit(1);
+  return Boolean(assignment);
+}
+
 async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const db = getDb();
   let cohortIds: string[] = [];
@@ -343,7 +363,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       .select({ scopeId: roleAssignments.scopeId })
       .from(roleAssignments)
       .where(and(
-        eq(roleAssignments.role, "SPONSOR_VIEWER"),
+        inArray(roleAssignments.role, ["SPONSOR_VIEWER", "PROGRAMME_OWNER"]),
         eq(roleAssignments.scopeType, "COHORT"),
         eq(roleAssignments.status, "ACTIVE"),
         or(
@@ -357,11 +377,16 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_organisational_learning", { target_cohort_id: cohortId }),
+      db
+        .select()
+        .from(programmeDecisions)
+        .where(eq(programmeDecisions.cohortId, cohortId))
+        .orderBy(desc(programmeDecisions.createdAt)),
     ]);
     if (outcomeResult.error) throw new Error(outcomeResult.error.message);
     if (deeperResult.error) throw new Error(deeperResult.error.message);
@@ -373,6 +398,10 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
         deepAnalysis: deeperResult.data ?? null,
         learningSummary: learningResult.data ?? null,
         organisationLearning: organisationLearningResult.data ?? null,
+        decisionRegister: {
+          canManage: await canManageProgrammeCohort(identity, roles, cohortId),
+          decisions,
+        },
       });
     }
   }
@@ -421,14 +450,14 @@ async function safeguardingSnapshot() {
 }
 
 async function staffSnapshot(identity: Identity, roles: string[]) {
-  const sponsorAvailable = hasRole(roles, "SPONSOR_VIEWER") || hasRole(roles, "SYSTEM_ADMIN");
+  const sponsorAvailable = hasRole(roles, "SPONSOR_VIEWER") || hasRole(roles, "PROGRAMME_OWNER") || hasRole(roles, "SYSTEM_ADMIN");
   return {
     identity,
     roles,
     privacyBoundary: {
       facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
-      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness"],
+      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness", "organisation-authored programme decisions and review outcomes"],
       sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },
@@ -448,7 +477,7 @@ async function getHandler(request: Request) {
 
     const url = new URL(request.url);
     if (url.searchParams.get("report") === "pdf") {
-      if (!hasRole(roles, "SPONSOR_VIEWER") && !hasRole(roles, "SYSTEM_ADMIN")) {
+      if (!hasRole(roles, "SPONSOR_VIEWER") && !hasRole(roles, "PROGRAMME_OWNER") && !hasRole(roles, "SYSTEM_ADMIN")) {
         throw new AccessError("Organisation report access is required.", 403);
       }
 
@@ -501,10 +530,10 @@ async function postHandler(request: Request) {
       if (!EMAIL_PATTERN.test(principalEmail)) throw new Error("Enter a valid staff email address.");
       if (!STAFF_ROLES.includes(role)) throw new Error("Choose a supported staff role.");
 
-      const sponsorRole = role === "SPONSOR_VIEWER";
-      const scopeType = sponsorRole ? "COHORT" : "GLOBAL";
-      const scopeId = sponsorRole ? String(body.cohortId ?? "") : "GLOBAL";
-      if (sponsorRole) {
+      const organisationRole = role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
+      const scopeType = organisationRole ? "COHORT" : "GLOBAL";
+      const scopeId = organisationRole ? String(body.cohortId ?? "") : "GLOBAL";
+      if (organisationRole) {
         const [cohort] = await db
           .select({ id: pilotCohorts.id })
           .from(pilotCohorts)
@@ -696,6 +725,120 @@ async function postHandler(request: Request) {
       });
       await staffAudit(identity, "SAFEGUARDING_CASE_OPENED", "SAFEGUARDING_CASE", id, { cohortId, learnerUserId, category });
       return Response.json(await staffSnapshot(identity, roles), { status: 201 });
+    }
+
+    if (action === "createProgrammeDecision") {
+      const cohortId = String(body.cohortId ?? "").trim();
+      if (!(await canManageProgrammeCohort(identity, roles, cohortId))) {
+        throw new AccessError("Programme owner access is required to record an organisational decision.", 403);
+      }
+
+      const allowedSignals = [
+        "PROGRAMME_TRANSITION",
+        "SUPPORT_RESPONSE",
+        "ADAPTATION",
+        "EVIDENCE_STRENGTH",
+        "LEARNING_JOURNEY",
+        "DELIVERY_CONDITION",
+        "OTHER",
+      ];
+      const sourceSignal = String(body.sourceSignal ?? "");
+      const sourceTitle = String(body.sourceTitle ?? "").trim();
+      const sourceEvidence = String(body.sourceEvidence ?? "").trim();
+      const decisionText = String(body.decisionText ?? "").trim();
+      const expectedOutcome = String(body.expectedOutcome ?? "").trim();
+      const ownerLabel = String(body.ownerLabel ?? "").trim();
+      const reviewOn = String(body.reviewOn ?? "").trim();
+
+      if (!allowedSignals.includes(sourceSignal)) throw new Error("Choose the programme signal this decision responds to.");
+      if (sourceTitle.length < 3 || sourceTitle.length > 240) throw new Error("Use a concise evidence title.");
+      if (sourceEvidence.length < 3 || sourceEvidence.length > 1200) throw new Error("Use an evidence summary of up to 1,200 characters.");
+      if (decisionText.length < 3 || decisionText.length > 1200) throw new Error("Record the programme change in up to 1,200 characters.");
+      if (expectedOutcome.length < 3 || expectedOutcome.length > 1200) throw new Error("Record what you expect to observe next.");
+      if (ownerLabel && (ownerLabel.length < 2 || ownerLabel.length > 160)) throw new Error("Use a concise decision owner.");
+      if (reviewOn && !/^\d{4}-\d{2}-\d{2}$/.test(reviewOn)) throw new Error("Choose a valid review date.");
+
+      const [cohort] = await db
+        .select({ id: pilotCohorts.id })
+        .from(pilotCohorts)
+        .where(and(eq(pilotCohorts.id, cohortId), eq(pilotCohorts.status, "ACTIVE")))
+        .limit(1);
+      if (!cohort) throw new Error("Choose an active programme group.");
+
+      const id = crypto.randomUUID();
+      await db.insert(programmeDecisions).values({
+        id,
+        cohortId,
+        sourceSignal,
+        sourceTitle,
+        sourceEvidence,
+        decisionText,
+        expectedOutcome,
+        ownerLabel: ownerLabel || null,
+        reviewOn: reviewOn || null,
+        createdBy: identity.id,
+        createdByEmail: identity.email,
+      });
+      await staffAudit(identity, "PROGRAMME_DECISION_CREATED", "PROGRAMME_DECISION", id, {
+        cohortId,
+        sourceSignal,
+      });
+      return Response.json(await staffSnapshot(identity, roles), { status: 201 });
+    }
+
+    if (action === "reviewProgrammeDecision") {
+      const decisionId = String(body.decisionId ?? "").trim();
+      const reviewOutcome = String(body.reviewOutcome ?? "").trim();
+      const reviewNote = String(body.reviewNote ?? "").trim();
+      const comparisonCohortId = String(body.comparisonCohortId ?? "").trim();
+      const allowedOutcomes = ["IMPROVED", "MIXED", "UNCHANGED", "WORSE", "NOT_ENOUGH_EVIDENCE"];
+
+      const [decision] = await db
+        .select()
+        .from(programmeDecisions)
+        .where(eq(programmeDecisions.id, decisionId))
+        .limit(1);
+      if (!decision) throw new Error("Choose a programme decision to review.");
+      if (!(await canManageProgrammeCohort(identity, roles, decision.cohortId))) {
+        throw new AccessError("Programme owner access is required to review this decision.", 403);
+      }
+      if (!allowedOutcomes.includes(reviewOutcome)) throw new Error("Choose a review outcome.");
+      if (reviewNote.length < 3 || reviewNote.length > 1200) throw new Error("Record the review finding in up to 1,200 characters.");
+
+      if (comparisonCohortId) {
+        const [comparison] = await db
+          .select({ id: pilotCohorts.id, labCode: pilotCohorts.labCode })
+          .from(pilotCohorts)
+          .where(and(eq(pilotCohorts.id, comparisonCohortId), eq(pilotCohorts.status, "ACTIVE")))
+          .limit(1);
+        const [sourceCohort] = await db
+          .select({ labCode: pilotCohorts.labCode })
+          .from(pilotCohorts)
+          .where(eq(pilotCohorts.id, decision.cohortId))
+          .limit(1);
+        if (!comparison || !sourceCohort || comparison.labCode !== sourceCohort.labCode) {
+          throw new Error("Choose an active comparison group using the same Lab.");
+        }
+      }
+
+      const now = new Date().toISOString();
+      await db
+        .update(programmeDecisions)
+        .set({
+          status: "REVIEWED",
+          reviewOutcome,
+          reviewNote,
+          comparisonCohortId: comparisonCohortId || null,
+          reviewedAt: now,
+          updatedAt: now,
+        })
+        .where(eq(programmeDecisions.id, decisionId));
+      await staffAudit(identity, "PROGRAMME_DECISION_REVIEWED", "PROGRAMME_DECISION", decisionId, {
+        cohortId: decision.cohortId,
+        reviewOutcome,
+        comparisonCohortId: comparisonCohortId || null,
+      });
+      return Response.json(await staffSnapshot(identity, roles));
     }
 
     if (action === "acknowledgeSafeguardingCase") {

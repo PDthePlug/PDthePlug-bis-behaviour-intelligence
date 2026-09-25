@@ -26,7 +26,7 @@ function canFacilitate(roles: string[]) {
 }
 
 function canViewOutcomes(roles: string[]) {
-  return roles.includes("SPONSOR_VIEWER") || roles.includes("SYSTEM_ADMIN");
+  return roles.includes("SPONSOR_VIEWER") || roles.includes("PROGRAMME_OWNER") || roles.includes("SYSTEM_ADMIN");
 }
 
 function canAdminister(roles: string[]) {
@@ -35,7 +35,7 @@ function canAdminister(roles: string[]) {
 
 function defaultPerspective(roles: string[]): Perspective {
   if (canFacilitate(roles)) return "facilitator";
-  if (roles.includes("SPONSOR_VIEWER")) return "outcomes";
+  if (roles.includes("SPONSOR_VIEWER") || roles.includes("PROGRAMME_OWNER")) return "outcomes";
   return "admin";
 }
 
