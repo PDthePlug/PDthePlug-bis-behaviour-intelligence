@@ -461,13 +461,81 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
 }
 
 function docxParagraph(block: string): SourceBlock | null {
-  const texts = [...block.matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g)].map((match) => decodeXml(match[1]));
-  const text = texts.join("").replace(/\s+/g, " ").trim();
+  const tokens = [...block.matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>|<w:br\b[^>]*\/?\s*>|<w:tab\b[^>]*\/?\s*>/g)];
+  let raw = "";
+  for (const token of tokens) {
+    if (token[1] !== undefined) raw += decodeXml(token[1]);
+    else if (/^<w:br/i.test(token[0])) raw += "\n";
+    else raw += " ";
+  }
+  const lines = raw
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .filter(Boolean);
+  const text = lines.join(" ").replace(/\s+/g, " ").trim();
   if (!text) return null;
+
   const style = block.match(/<w:pStyle\b[^>]*w:val="([^"]+)"/)?.[1] ?? "";
-  const heading = /heading|title/i.test(style) || Boolean(canonicalPageKey(text) && text.length < 80);
-  const tag = /heading1|title/i.test(style) ? "h2" : /heading2/i.test(style) ? "h3" : /heading3/i.test(style) ? "h4" : "p";
-  return { text, heading, html: "<" + tag + ">" + escapeHtml(text) + "</" + tag + ">" };
+  const pageBoundary = strictProgrammePageKey(text);
+  const iconHeading = /^(📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌)\s*\S/u.test(text);
+  const upperHeading = text.length <= 110
+    && /[A-Z]/.test(text)
+    && text === text.toUpperCase()
+    && !/[.!?]$/.test(text)
+    && !/^[┌│└]/u.test(text);
+  const heading = /heading|title/i.test(style) || Boolean(pageBoundary) || iconHeading || upperHeading;
+
+  if (lines.some((line) => /[┌┐└┘│─]/u.test(line))) {
+    const cleaned = lines
+      .map((line) => line.replace(/[┌┐└┘│─]+/gu, " ").replace(/\s+/g, " ").trim())
+      .filter(Boolean);
+    return {
+      text,
+      heading: false,
+      lines: cleaned,
+      kind: "paragraph",
+      html: '<div class="authored-lines handbook-callout">' + cleaned.map(escapeHtml).join("<br/>") + "</div>",
+    };
+  }
+
+  if (lines.length >= 2 && lines.every((line) => /^(?:·|•|[-–—]\s)\s*/u.test(line))) {
+    const items = lines
+      .map((line) => line.replace(/^(?:·|•|[-–—]\s)\s*/u, "").trim())
+      .filter(Boolean);
+    return {
+      text,
+      heading: false,
+      lines,
+      kind: "paragraph",
+      html: "<ul>" + items.map((item) => "<li>" + escapeHtml(item) + "</li>").join("") + "</ul>",
+    };
+  }
+
+  if (lines.length > 1) {
+    return {
+      text,
+      heading,
+      lines,
+      kind: "paragraph",
+      html: (heading ? "<h3>" : '<div class="authored-lines">') +
+        lines.map(escapeHtml).join("<br/>") +
+        (heading ? "</h3>" : "</div>"),
+    };
+  }
+
+  const tag = pageBoundary
+    ? "h1"
+    : /heading1|title/i.test(style)
+      ? "h2"
+      : /heading2/i.test(style)
+        ? "h3"
+        : /heading3/i.test(style)
+          ? "h4"
+          : heading
+            ? "h2"
+            : "p";
+  return { text, heading, lines, kind: "paragraph", html: "<" + tag + ">" + escapeHtml(text) + "</" + tag + ">" };
 }
 
 function docxTable(block: string): SourceBlock | null {
