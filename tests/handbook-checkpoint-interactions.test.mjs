@@ -8,7 +8,7 @@ test("handbook reader enhances authored pages before restoring saved responses",
   const player = await source("app/learning/programme-player.tsx");
   assert.match(player, /enhanceHandbookDocument/);
   assert.match(player, /enhanceHandbookDocument\(documentRoot, moduleCode, page\.id\)/);
-  assert.match(player, /querySelectorAll<HTMLTextAreaElement>\("textarea\[data-field-id\]"\)/);
+  assert.match(player, /querySelectorAll<HTMLTextAreaElement \| HTMLInputElement \| HTMLSelectElement>\("\[data-field-id\]"\)/);
 });
 
 test("every uncovered question can receive a stable private workbook response", async () => {
