@@ -209,6 +209,7 @@ function handbookFieldCue(value: string) {
   if (/^(confidence|my rating|shift|observation days completed|missing \/ unrecorded days|eligible target opportunities observed|checks initiated|risk check initiation rate|full checks completed|full risk check completion rate|minimum checks completed|opportunity coverage|completed risk checks|usable events for prediction testing|protection criterion occurred in these events|observed protection criterion rate|predicted protection criterion rate|difference|protection criterion prediction accuracy)\s*:/i.test(text)) return true;
   if (/^(the protection pattern i want to investigate|why i chose this one|my intended protection position|my recurring protective opportunity|my protective action|my observable protection criterion|i will count the protection criterion as occurred when|my working risk equation|my target condition|my check-in person|my restart plan|my revision signal|what i noticed|what i collected|who i asked|what they said|where i will keep my tracker|what i can now do|who i showed|the most important thing learned)\s*:/i.test(text)) return true;
   if (/^(risk context|intended protection position|actual protection position at start|protection gap|action relationship|protective action implemented\?|protection coverage relationship|protective action tested|family of protection|observable protection criterion|what actually happened so far|trade-off observed\?|constraint observed\?|what surprised you)\s*:\s*_{2,}/i.test(text)) return true;
+  if (/^(what|my|who|where|observation|interpretation|original|revised|effective|risk context|intended|actual|protection|action|family|observable|trade-off|constraint|from me|signed|date|facilitator|workbook id)\b[^?]{0,220}:\s*$/i.test(text)) return true;
   return false;
 }
 
@@ -253,6 +254,71 @@ function handbookChoice(sourceKey: string, prompt: string, options: string[]) {
     options.map((option) => '<option value="' + escapeHtml(option) + '">' + escapeHtml(option) + "</option>").join("") +
     "</select>"
   );
+}
+
+
+type PseudoHandbookTable = {
+  headers: string[];
+  rows: string[][];
+};
+
+function answerColumn(headers: string[]) {
+  const writable = /^(my answer|your answer|what happened|what was recorded|your cue|your response|response|notes?)$/i;
+  const index = headers.findIndex((header) => writable.test(header.replace(/\s+/g, " ").trim()));
+  return index >= 0 ? index : null;
+}
+
+function pseudoTableBlock(block: SourceBlock): PseudoHandbookTable | null {
+  const lines = (block.lines ?? []).map((line) => line.replace(/\s+/g, " ").trim()).filter(Boolean);
+  if (lines.length < 3) return null;
+
+  const headerPairs: Array<[RegExp, string[]]> = [
+    [/^Element\s+My Answer$/i, ["Element", "My Answer"]],
+    [/^Element\s+What Happened$/i, ["Element", "What Happened"]],
+    [/^Element\s+What Was Recorded$/i, ["Element", "What Was Recorded"]],
+    [/^Cue Type\s+Your Cue$/i, ["Cue Type", "Your Cue"]],
+    [/^Item\s+Your Answer$/i, ["Item", "Your Answer"]],
+    [/^Question\s+Your Answer$/i, ["Question", "Your Answer"]],
+  ];
+  const matched = headerPairs.find(([pattern]) => pattern.test(lines[0]));
+  if (!matched) return null;
+  const headers = matched[1];
+  const rows = lines.slice(1).map((line) => [line, ""]);
+  return rows.length ? { headers, rows } : null;
+}
+
+function renderedAnswerTable(
+  table: PseudoHandbookTable,
+  nextSourceKey: (prompt: string) => string,
+) {
+  const writable = answerColumn(table.headers);
+  const header = "<thead><tr>" + table.headers.map((value) => '<th scope="col">' + escapeHtml(value) + "</th>").join("") + "</tr></thead>";
+  const rows = table.rows.map((row) => {
+    const label = row[0] || "Your answer";
+    const cells = table.headers.map((headerLabel, column) => {
+      const value = row[column] ?? "";
+      if (column === writable && !value) {
+        return '<td data-label="' + escapeHtml(headerLabel) + '">' +
+          handbookTextarea(nextSourceKey(label + "|" + headerLabel), label) +
+          "</td>";
+      }
+      return '<td data-label="' + escapeHtml(headerLabel) + '">' + escapeHtml(value) + "</td>";
+    }).join("");
+    return "<tr>" + cells + "</tr>";
+  }).join("");
+  return '<table class="handbook-table workbook-answer-table">' + header + "<tbody>" + rows + "</tbody></table>";
+}
+
+function renderedDocxTable(
+  block: SourceBlock,
+  nextSourceKey: (prompt: string) => string,
+) {
+  const rows = block.tableRows;
+  if (!rows?.length) return handbookBlockHtml(block);
+  const headers = rows[0].map((value) => value.replace(/\s+/g, " ").trim());
+  const writable = answerColumn(headers);
+  if (writable === null) return handbookBlockHtml(block);
+  return renderedAnswerTable({ headers, rows: rows.slice(1) }, nextSourceKey);
 }
 
 function handbookBlockHtml(block: SourceBlock) {
