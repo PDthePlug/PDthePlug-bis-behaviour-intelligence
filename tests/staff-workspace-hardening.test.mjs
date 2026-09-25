@@ -137,3 +137,11 @@ test("participant insight labels stay behavioural rather than personality based"
   }
   assert.match(facilitator, /observable programme behaviour, not personality or ability/);
 });
+
+
+test("programme owner opens Programme results without gaining administration", async () => {
+  const shell = await source("app/workspace/staff-workspace-shell.tsx");
+  assert.match(shell, /roles\.includes\("PROGRAMME_OWNER"\)/);
+  assert.match(shell, /return "outcomes"/);
+  assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
+});
