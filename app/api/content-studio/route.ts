@@ -374,7 +374,13 @@ async function postHandler(request: Request) {
           const bytes = new Uint8Array(await download.data.arrayBuffer());
           const sourceHash = await sha256Hex(bytes);
           await db.update(contentSourceFiles).set({ sourceHash, sourceBytes: bytes.byteLength, updatedAt: new Date().toISOString() }).where(eq(contentSourceFiles.id, source.id));
-          const adapted = adaptLabSource(bytes, source.sourceFormat as ContentSourceFormat);
+          const adapted = await adaptLabSource(
+            bytes,
+            source.sourceFormat as ContentSourceFormat,
+            item.code,
+            version.version,
+            { title: item.title, slug: item.slug },
+          );
           compiled.push(await compileUniversalLab(adapted, item.code, version.version));
         }
 
