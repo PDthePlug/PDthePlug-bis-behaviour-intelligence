@@ -52,7 +52,7 @@ test("programme PDF renderer is a structured institutional report and excludes p
   assert.match(pdf, /Learning journey/);
   assert.match(pdf, /Behaviour in practice/);
   assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
-  assert.match(pdf, /Evidence strength/);
+  assert.match(pdf, /How much information we have/);
   assert.match(pdf, /Human support/);
   assert.match(pdf, /Experiment landscape/);
   assert.match(pdf, /Action plan/);
