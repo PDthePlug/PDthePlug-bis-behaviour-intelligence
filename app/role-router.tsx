@@ -44,7 +44,7 @@ export function RoleRouter() {
     return (
       <main className="learning-state">
         <ShieldCheck />
-        <h1>We couldn't open your BIS workspace.</h1>
+        <h1>We couldn&apos;t open your BIS workspace.</h1>
         <p>{error}</p>
         <button type="button" onClick={() => window.location.reload()}>Try again</button>
       </main>
