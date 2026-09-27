@@ -109,7 +109,7 @@ test("access failures stay customer-safe and never expose backend error text", a
     source("app/workspace/staff-workspace-shell.tsx"),
   ]);
 
-  assert.match(router, /We couldn't open your BIS workspace/);
+  assert.match(router, /We couldn&apos;t open your BIS workspace/);
   assert.match(router, /Getting your learning and programme access ready/);
   assert.doesNotMatch(router, /snapshot\.error \|\|/);
   assert.doesNotMatch(router, /resolve your dashboard/);
