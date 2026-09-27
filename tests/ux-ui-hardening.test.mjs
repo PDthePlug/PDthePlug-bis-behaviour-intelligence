@@ -101,3 +101,20 @@ test("customer-facing language stays plain across learner, facilitator and organ
     assert.doesNotMatch(visibleSources, new RegExp(phrase));
   }
 });
+
+
+test("access failures stay customer-safe and never expose backend error text", async () => {
+  const [router, shell] = await Promise.all([
+    source("app/role-router.tsx"),
+    source("app/workspace/staff-workspace-shell.tsx"),
+  ]);
+
+  assert.match(router, /We couldn&apos;t open your BIS workspace/);
+  assert.match(router, /Getting your learning and programme access ready/);
+  assert.doesNotMatch(router, /snapshot\.error \|\|/);
+  assert.doesNotMatch(router, /resolve your dashboard/);
+
+  assert.match(shell, /We couldn't open the programme workspace/);
+  assert.match(shell, /does not have access to the programme workspace/);
+  assert.doesNotMatch(shell, /payload\.error \|\|/);
+});
