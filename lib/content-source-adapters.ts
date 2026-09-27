@@ -149,6 +149,11 @@ type SourceBlock = {
   heading: boolean;
   tableRows?: string[][];
   answerColumn?: number;
+  responseColumns?: Array<{
+    index: number;
+    type: "TEXT" | "CATEGORICAL";
+    options?: string[];
+  }>;
   lines?: string[];
   kind?: "paragraph" | "table";
 };
@@ -205,7 +210,7 @@ function handbookFieldCue(value: string) {
   if (/^["“]I,\s*_{3}.*commit to/i.test(text)) return false;
   if (/^📌\s*carry forward/i.test(text) || /^📖|^💭|^✍️|^✅|^🏠|^📂|^🔎|^⚡|^🔬|^🎯|^🧪|^📊|^🤝/u.test(text)) return false;
   if (/_{3,}/.test(text) || /\.{5,}/.test(text)) return true;
-  if (/^(?:my|what i|what they|who i|where i|how i|why i|one thing|the .* i|original|revised|effective from|signed|date|from me)\b.*:\s*$/i.test(text)) return true;
+  if (/^(?:my|what i|what they|what the|who i|where i|how i|why i|one thing|the .* i|original|revised|effective from|signed|date|from me|observation|interpretation|risk context|intended protection position|actual protection position|protection gap|protective action|observed protection state|action relationship|protection coverage relationship|trade-off \/ constraint)\b.*:\s*$/i.test(text)) return true;
   if (/^(confidence|my rating|shift|observation days completed|missing \/ unrecorded days|eligible target opportunities observed|checks initiated|risk check initiation rate|full checks completed|full risk check completion rate|minimum checks completed|opportunity coverage|completed risk checks|usable events for prediction testing|protection criterion occurred in these events|observed protection criterion rate|predicted protection criterion rate|difference|protection criterion prediction accuracy)\s*:/i.test(text)) return true;
   if (/^(the protection pattern i want to investigate|why i chose this one|my intended protection position|my recurring protective opportunity|my protective action|my observable protection criterion|i will count the protection criterion as occurred when|my working risk equation|my target condition|my check-in person|my restart plan|my revision signal|what i noticed|what i collected|who i asked|what they said|where i will keep my tracker|what i can now do|who i showed|the most important thing learned)\s*:/i.test(text)) return true;
   if (/^(risk context|intended protection position|actual protection position at start|protection gap|action relationship|protective action implemented\?|protection coverage relationship|protective action tested|family of protection|observable protection criterion|what actually happened so far|trade-off observed\?|constraint observed\?|what surprised you)\s*:\s*_{2,}/i.test(text)) return true;
@@ -255,6 +260,22 @@ function handbookChoice(sourceKey: string, prompt: string, options: string[]) {
   );
 }
 
+function multiLineCheckboxGroup(block: SourceBlock) {
+  const lines = block.lines ?? [];
+  if (lines.length < 2) return null;
+  const options = lines.map(handbookOption);
+  if (options.some((option) => !option)) return null;
+  return options;
+}
+
+function namedInlineChoice(value: string) {
+  const text = value.replace(/\s+/g, " ").trim();
+  if (/^Family:\s*Prevent\s+Limit\s+Recover\s+☐\s+☐\s+☐$/i.test(text)) {
+    return { prompt: "Family of Protection", options: ["Prevent", "Limit", "Recover"] };
+  }
+  return null;
+}
+
 function handbookBlockHtml(block: SourceBlock) {
   return block.html.trim();
 }
@@ -295,10 +316,49 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     }
 
     if (!inAnswers) {
-      const inlineChoices = (!block.lines || block.lines.length <= 1) ? inlineCheckboxGroup(text) : null;
+      const blockChoices = multiLineCheckboxGroup(block);
+      if (blockChoices) {
+        const previous = blocks[index - 1]?.text.replace(/\s+/g, " ").trim() || "";
+        const prompt = /journey continues/i.test(previous) ? "Choose your next Lab" : previous || "Choose one";
+        html.push("<p>" + escapeHtml(prompt) + "</p>");
+        html.push(handbookChoice(nextSourceKey(prompt), prompt, blockChoices));
+        continue;
+      }
+
+      const inlineChoices = (!block.lines || block.lines.length <= 1)
+        ? inlineCheckboxGroup(text) ?? namedInlineChoice(text)
+        : null;
       if (inlineChoices) {
-        html.push("<p>" + escapeHtml(inlineChoices.prompt) + "</p>");
-        html.push(handbookChoice(nextSourceKey(inlineChoices.prompt), inlineChoices.prompt, inlineChoices.options));
+        const prompt = /^family$/i.test(inlineChoices.prompt) ? "Family of Protection" : inlineChoices.prompt;
+        html.push("<p>" + escapeHtml(prompt) + "</p>");
+        html.push(handbookChoice(nextSourceKey(prompt), prompt, inlineChoices.options));
+        continue;
+      }
+
+      if (block.tableRows?.length && block.responseColumns?.length) {
+        const header = block.tableRows[0];
+        const rows = block.tableRows.slice(1);
+        html.push(
+          '<table class="handbook-table handbook-response-table"><thead><tr>' +
+          header.map((cell) => '<th scope="col">' + escapeHtml(cell) + "</th>").join("") +
+          "</tr></thead><tbody>" +
+          rows.map((row) => {
+            const rowLabel = row[0] || "Workbook response";
+            return "<tr>" + row.map((cell, cellIndex) => {
+              const label = header[cellIndex] ?? "";
+              const spec = block.responseColumns?.find((candidate) => candidate.index === cellIndex);
+              if (spec) {
+                const prompt = rowLabel + " — " + label;
+                const control = spec.type === "CATEGORICAL"
+                  ? handbookChoice(nextSourceKey(prompt), prompt, spec.options ?? [])
+                  : handbookTextarea(nextSourceKey(prompt), prompt);
+                return '<td data-label="' + escapeHtml(label) + '">' + control + "</td>";
+              }
+              return '<td data-label="' + escapeHtml(label) + '">' + escapeHtml(cell) + "</td>";
+            }).join("") + "</tr>";
+          }).join("") +
+          "</tbody></table>",
+        );
         continue;
       }
 
@@ -705,6 +765,45 @@ function pseudoTableBlock(lines: string[]): SourceBlock | null {
       rows.push([match[1].trim(), match[2].trim(), match[3].trim()]);
     }
     return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows: rows, html: tableHtml(rows) };
+  }
+
+  if (head.startsWith("Day Observation Target opportunity? Check completed? Full or Minimum?")) {
+    const headers = [
+      "Day",
+      "Observation",
+      "Target opportunity?",
+      "Check completed?",
+      "Full or Minimum?",
+      "Protective Action Implemented?",
+      "Action relationship",
+      "Protection coverage relationship",
+      "Trade-off / Constraint",
+      "Outcome",
+    ];
+    const rows = [
+      headers,
+      ...Array.from({ length: 7 }, (_, index) => [String(index + 1), "", "", "", "", "", "", "", "", ""]),
+    ];
+    const responseColumns: SourceBlock["responseColumns"] = [
+      { index: 1, type: "CATEGORICAL", options: ["Recorded", "Missing / Not Recorded"] },
+      { index: 2, type: "CATEGORICAL", options: ["Yes", "No", "Unknown"] },
+      { index: 3, type: "CATEGORICAL", options: ["Yes", "No", "N/A"] },
+      { index: 4, type: "CATEGORICAL", options: ["Full", "Minimum", "N/A"] },
+      { index: 5, type: "CATEGORICAL", options: ["Implemented", "Not Implemented", "Unknown", "N/A"] },
+      { index: 6, type: "CATEGORICAL", options: ["Same", "Partial", "Different", "None", "Unclear", "N/A"] },
+      { index: 7, type: "CATEGORICAL", options: ["Matched", "Incomplete", "Additional", "Unclear", "N/A"] },
+      { index: 8, type: "CATEGORICAL", options: ["Trade-off", "Constraint", "Both", "Neither observed", "Unclear", "N/A"] },
+      { index: 9, type: "CATEGORICAL", options: ["Occurred", "Did Not Occur", "Unclear", "N/A"] },
+    ];
+    return {
+      text: lines.join(" "),
+      heading: false,
+      lines,
+      kind: "table",
+      tableRows: rows,
+      responseColumns,
+      html: tableHtml(rows),
+    };
   }
 
   return null;
