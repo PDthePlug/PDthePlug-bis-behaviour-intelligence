@@ -329,8 +329,9 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         ? inlineCheckboxGroup(text) ?? namedInlineChoice(text)
         : null;
       if (inlineChoices) {
-        html.push("<p>" + escapeHtml(inlineChoices.prompt) + "</p>");
-        html.push(handbookChoice(nextSourceKey(inlineChoices.prompt), inlineChoices.prompt, inlineChoices.options));
+        const prompt = /^family$/i.test(inlineChoices.prompt) ? "Family of Protection" : inlineChoices.prompt;
+        html.push("<p>" + escapeHtml(prompt) + "</p>");
+        html.push(handbookChoice(nextSourceKey(prompt), prompt, inlineChoices.options));
         continue;
       }
 
