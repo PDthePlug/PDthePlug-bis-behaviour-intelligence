@@ -60,8 +60,8 @@ export function StaffWorkspaceShell() {
         if (!response.ok) {
           throw new Error(
             response.status === 403
-              ? "This account does not have a BIS staff role."
-              : payload.error || "The staff workspace could not be opened.",
+              ? "This account does not have access to the programme workspace."
+              : "We couldn't open the programme workspace. Please try again.",
           );
         }
         if (controller.signal.aborted) return;
@@ -69,7 +69,7 @@ export function StaffWorkspaceShell() {
         setSession({ identity: payload.identity, roles });
       } catch (cause) {
         if (!controller.signal.aborted) {
-          setError(cause instanceof Error ? cause.message : "The staff workspace could not be opened.");
+          setError(cause instanceof Error ? cause.message : "We couldn't open the programme workspace. Please try again.");
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
