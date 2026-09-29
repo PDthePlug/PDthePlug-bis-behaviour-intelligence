@@ -470,8 +470,12 @@ export function ProgrammePlayer({
       const minimumFromEvents = pauseTypesKnown
         ? completedEvents.filter((event) => event.details?.pauseType === "Minimum").length
         : null;
-      const full = metricNumber(source, "DEC.FULL_PAUSE_COUNT") ?? fullFromEvents;
-      const minimum = metricNumber(source, "DEC.MINIMUM_PAUSE_COUNT") ?? minimumFromEvents;
+      const full = pauseTypesKnown
+        ? metricNumber(source, "DEC.FULL_PAUSE_COUNT") ?? fullFromEvents
+        : null;
+      const minimum = pauseTypesKnown
+        ? metricNumber(source, "DEC.MINIMUM_PAUSE_COUNT") ?? minimumFromEvents
+        : null;
 
       add(["Decision Pauses Completed", "Decision process checks completed", "Pauses completed"], completed);
       add(["Full Decision Pauses completed"], full ?? "Not separately recorded");
@@ -489,9 +493,13 @@ export function ProgrammePlayer({
       );
       add(
         ["Option Expansion Count", "Full Decision Pauses where an additional option appeared"],
-        metricNumber(source, "DEC.OPTION_EXPANSION_COUNT"),
+        pauseTypesKnown ? metricNumber(source, "DEC.OPTION_EXPANSION_COUNT") : "Not separately recorded",
       );
-      add(["Option Expansion Rate"], metricNumber(source, "DEC.OPTION_EXPANSION_RATE"), "%");
+      if (pauseTypesKnown) {
+        add(["Option Expansion Rate"], metricNumber(source, "DEC.OPTION_EXPANSION_RATE"), "%");
+      } else {
+        add(["Option Expansion Rate"], "Not separately recorded");
+      }
       add(
         ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
         responseNumber(source, "DEC.EQUATION.CONFIDENCE_PRE"),
