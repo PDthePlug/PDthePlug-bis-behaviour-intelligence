@@ -64,3 +64,28 @@ test("response hydration is separate from page enhancement so workbook updates c
   assert.ok(matches.length >= 2);
   assert.match(player, /\[drafts, learnMode, page\?\.id, section, snapshot\?\.workbookResponses\]/);
 });
+
+
+test("reader repairs checkpoint controls if a later React render replaces enhanced handbook HTML", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+  assert.match(player, /const restoreHandbookInteractions = useCallback/);
+  assert.match(player, /new MutationObserver/);
+  assert.match(player, /observer\.observe\(documentRoot, \{ childList: true, subtree: true \}\)/);
+  assert.match(player, /queueMicrotask\(\(\) => \{/);
+  assert.match(player, /restoreHandbookInteractions\(\)/);
+});
+
+test("complete and continue settles save state before entering the next handbook page", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+  const completeStart = player.indexOf("async function completePage()");
+  const completeEnd = player.indexOf("if (error && !programme)");
+  const complete = player.slice(completeStart, completeEnd);
+
+  assert.match(complete, /let nextPageIndex: number \| null = null/);
+  assert.match(complete, /setSaving\(false\);\s*setCompleting\(false\);/);
+  assert.match(complete, /window\.setTimeout\(\(\) => goToProgrammePage\(nextPageIndex!\), 0\)/);
+  assert.ok(
+    complete.indexOf("setCompleting(false)") < complete.lastIndexOf("goToProgrammePage(nextPageIndex!)"),
+    "page navigation must happen after completion state settles",
+  );
+});
