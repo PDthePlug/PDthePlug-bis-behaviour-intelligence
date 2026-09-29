@@ -520,6 +520,124 @@ function convertSimplePaperBlanks(root: HTMLElement, labCode: LabCode, pageId: s
   });
 }
 
+function nearbyWorksheetContext(element: HTMLElement) {
+  let cursor = element.previousElementSibling as HTMLElement | null;
+  let inspected = 0;
+  while (cursor && inspected < 6) {
+    if (cursor.matches("h1,h2,h3,h4,hr")) break;
+    const text = normalise(cursor.textContent ?? "").replace(/_+/g, "").trim();
+    if (
+      text.length > 2 &&
+      text.length <= 180 &&
+      (text.endsWith(":") ||
+        /\b(options?|choices?|reasons?|examples?|evidence|goals?|what matters|information|consequences?|trade-offs?)\b/i.test(text))
+    ) {
+      return text.replace(/:\s*$/, "");
+    }
+    cursor = cursor.previousElementSibling as HTMLElement | null;
+    inspected += 1;
+  }
+  return "";
+}
+
+function convertNumberedPaperBlanks(root: HTMLElement, labCode: LabCode, pageId: string) {
+  root.querySelectorAll<HTMLElement>("p").forEach((element) => {
+    if (element.dataset.digitalNumberedField === "true" || element.querySelector("[data-field-id]")) return;
+    const text = normalise(element.textContent ?? "");
+    const match = text.match(/^(\d+)[.)]\s*(?:_{3,})?$/);
+    if (!match) return;
+    const context = nearbyWorksheetContext(element);
+    if (!context) return;
+
+    const number = match[1];
+    const labelText = `${context} — ${number}`;
+    element.textContent = "";
+    element.classList.add("handbook-inline-field", "handbook-numbered-field");
+    element.dataset.digitalNumberedField = "true";
+
+    const label = document.createElement("span");
+    label.textContent = `${number}.`;
+    const input = createInlineResponse(labCode, pageId, labelText, "text");
+    input.placeholder = "Write your answer…";
+    element.append(label, input);
+  });
+}
+
+function createWorksheetSelect(labCode: LabCode, pageId: string, labelText: string) {
+  const token = hashPrompt(`${pageId}|paper-select|${labelText}`);
+  const select = document.createElement("select");
+  select.className = "handbook-inline-response handbook-priority-select";
+  select.dataset.fieldId = `${labCode}.WB.AUTO.SELECT.${token}`;
+  select.dataset.sourceKey = `paper-select-${token.toLowerCase()}`;
+  select.dataset.purpose = "LEARNING_RESPONSE";
+  select.dataset.privacyClass = "P3";
+  select.setAttribute("aria-label", labelText);
+
+  const empty = document.createElement("option");
+  empty.value = "";
+  empty.textContent = "Choose";
+  select.append(empty);
+  for (const option of ["High", "Medium", "Low"]) {
+    const item = document.createElement("option");
+    item.value = option;
+    item.textContent = option;
+    select.append(item);
+  }
+  return select;
+}
+
+function convertPriorityWorksheetRows(root: HTMLElement, labCode: LabCode, pageId: string) {
+  let rowNumber = 0;
+  root.querySelectorAll<HTMLElement>("p").forEach((element) => {
+    if (element.dataset.digitalPriorityRow === "true" || element.querySelector("[data-field-id]")) return;
+    const text = normalise(element.textContent ?? "");
+    if (!/_ {0,1}/.test(text) && !text.includes("_")) return;
+    if (!/High\s*\/\s*Medium\s*\/\s*Low/i.test(text)) return;
+    if (!/_ {0,1}|_{3,}/.test(text)) return;
+
+    rowNumber += 1;
+    const context = nearbyWorksheetContext(element) || "What matters";
+    element.textContent = "";
+    element.classList.add("handbook-priority-row");
+    element.dataset.digitalPriorityRow = "true";
+
+    const matter = document.createElement("label");
+    matter.className = "handbook-priority-field";
+    const matterLabel = document.createElement("span");
+    matterLabel.textContent = "What matters";
+    const matterInput = createInlineResponse(
+      labCode,
+      pageId,
+      `${context} row ${rowNumber} — what matters`,
+      "text",
+    );
+    matter.append(matterLabel, matterInput);
+
+    const importance = document.createElement("label");
+    importance.className = "handbook-priority-field";
+    const importanceLabel = document.createElement("span");
+    importanceLabel.textContent = "Importance";
+    importance.append(
+      importanceLabel,
+      createWorksheetSelect(labCode, pageId, `${context} row ${rowNumber} — importance`),
+    );
+
+    const option = document.createElement("label");
+    option.className = "handbook-priority-field";
+    const optionLabel = document.createElement("span");
+    optionLabel.textContent = "Which option serves it?";
+    const optionInput = createInlineResponse(
+      labCode,
+      pageId,
+      `${context} row ${rowNumber} — option`,
+      "text",
+    );
+    option.append(optionLabel, optionInput);
+
+    element.append(matter, importance, option);
+  });
+}
+
 function hideEditorialProductionMetadata(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>("p,div").forEach((element) => {
     if (element.children.length > 0 && !element.matches("p")) return;
@@ -556,6 +674,8 @@ export function enhanceHandbookDocument(
   applyKnownTableValues(root, context);
   replacePaperIdentityFields(root, context);
   convertSimplePaperBlanks(root, labCode, pageId);
+  convertNumberedPaperBlanks(root, labCode, pageId);
+  convertPriorityWorksheetRows(root, labCode, pageId);
   hideEditorialProductionMetadata(root);
   softenLearnerTechnicalLabels(root);
   collapseSuggestedAnswers(root);
