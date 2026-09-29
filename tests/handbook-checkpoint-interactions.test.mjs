@@ -46,23 +46,27 @@ test("formal Lab references remain read-only and do not get duplicate workbook b
 test("checkpoint enhancement reruns deterministically when the reader advances pages", async () => {
   const player = await source("app/learning/programme-player.tsx");
   assert.match(player, /useLayoutEffect/);
+  assert.match(player, /const restoreHandbookInteractions = useCallback/);
   assert.match(player, /enhanceHandbookDocument\(documentRoot, moduleCode, page\.id\)/);
-  assert.match(player, /\[learnMode, moduleCode, page\?\.id, section\]/);
   assert.match(player, /<article key=\{page\.id\} ref=\{documentRef\}/);
 
   const enhancementBlock = player.slice(
-    player.indexOf("enhanceHandbookDocument(documentRoot, moduleCode, page.id)"),
+    player.indexOf("const restoreHandbookInteractions = useCallback"),
     player.indexOf("useEffect(() => {\n    if (saveState")
   );
   assert.doesNotMatch(enhancementBlock, /requestAnimationFrame/);
   assert.doesNotMatch(enhancementBlock, /cancelAnimationFrame/);
 });
 
-test("response hydration is separate from page enhancement so workbook updates cannot cancel checkpoint setup", async () => {
+test("saved and draft responses are restored whenever checkpoint controls are rebuilt", async () => {
   const player = await source("app/learning/programme-player.tsx");
-  const matches = player.match(/useLayoutEffect\(\(\) => \{/g) ?? [];
-  assert.ok(matches.length >= 2);
-  assert.match(player, /\[drafts, learnMode, page\?\.id, section, snapshot\?\.workbookResponses\]/);
+  const repairStart = player.indexOf("const restoreHandbookInteractions = useCallback");
+  const repairEnd = player.indexOf("useLayoutEffect(() =>", repairStart);
+  const repair = player.slice(repairStart, repairEnd);
+
+  assert.match(repair, /drafts\[id\] \?\? snapshot\?\.workbookResponses\?\.\[id\]\?\.value \?\? ""/);
+  assert.match(repair, /field\.value = savedValue/);
+  assert.match(player, /\[drafts, learnMode, moduleCode, page, section, snapshot\?\.workbookResponses\]/);
 });
 
 
