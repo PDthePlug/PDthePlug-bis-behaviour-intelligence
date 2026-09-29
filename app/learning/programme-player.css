@@ -332,3 +332,31 @@
     grid-template-columns:30px minmax(0,1fr);
   }
 }
+
+.prototype-sequence-notice{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  margin:0 0 14px;
+  padding:14px 16px;
+  border:1px solid #ddd7ca;
+  border-radius:14px;
+  background:#f6f3eb;
+  color:#44504a;
+}
+.prototype-sequence-notice>svg{
+  width:18px;
+  flex:none;
+  color:var(--p-accent);
+  margin-top:1px;
+}
+.prototype-sequence-notice strong{
+  display:block;
+  color:#24312c;
+  font-size:12px;
+}
+.prototype-sequence-notice p{
+  margin:4px 0 0;
+  font-size:11px;
+  line-height:1.5;
+}
