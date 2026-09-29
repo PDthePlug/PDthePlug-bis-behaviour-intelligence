@@ -9,6 +9,8 @@ export type HandbookKnownValue = {
 export type HandbookEnhancementContext = {
   knownValues?: HandbookKnownValue[];
   learnerName?: string;
+  labAvailable?: boolean;
+  referenceOnly?: boolean;
 };
 
 const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
@@ -726,6 +728,55 @@ function convertPriorityWorksheetRows(root: HTMLElement, labCode: LabCode, pageI
   });
 }
 
+function hardenReferenceOnlyLabContent(root: HTMLElement, context: HandbookEnhancementContext) {
+  if (!context.referenceOnly || context.labAvailable !== false) return;
+
+  root.querySelectorAll<HTMLElement>("h1,h2,h3,h4,p").forEach((element) => {
+    const text = normalise(element.textContent ?? "");
+    if (!text) return;
+
+    if (/^you have completed .+ lab\.?$/i.test(text)) {
+      element.textContent = "This section follows the Lab once it is available and completed.";
+      element.classList.add("handbook-reference-copy");
+      return;
+    }
+    if (/^you ran a 7-day experiment\.?$/i.test(text)) {
+      element.textContent = "This review section is used after the seven-day Lab experiment.";
+      element.classList.add("handbook-reference-copy");
+      return;
+    }
+    if (/^you collected evidence\.?$/i.test(text)) {
+      element.textContent = "The live Lab will provide the evidence used in this review.";
+      element.classList.add("handbook-reference-copy");
+      return;
+    }
+    if (/^(?:📖\s*)?the experiment is over$/i.test(text)) {
+      element.textContent = "📖 After the Lab — Evidence Review";
+      element.classList.add("handbook-reference-copy");
+    }
+  });
+
+  root.querySelectorAll<HTMLElement>("p,li").forEach((element) => {
+    if (
+      element.classList.contains("handbook-system-value") ||
+      element.querySelector("[data-field-id]")
+    ) return;
+
+    const text = normalise(element.textContent ?? "");
+    const match = text.match(/^(.{2,170}?):\s*_{3,}(?:\s*(?:%|\/\s*\d+))?/);
+    if (!match) return;
+
+    const label = normalise(match[1] ?? "");
+    if (!/(?:days?|opportunit|rate|accuracy|checks?|pauses?|outcomes?|prediction|completed|observed|missing|score|count)/i.test(label)) return;
+
+    renderKnownValue(element, {
+      labels: [label],
+      value: "Available when the live Lab is connected",
+      source: "Reference only",
+    });
+  });
+}
+
 function hideEditorialProductionMetadata(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>("p,div").forEach((element) => {
     if (element.children.length > 0 && !element.matches("p")) return;
@@ -765,6 +816,7 @@ export function enhanceHandbookDocument(
   convertSimplePaperBlanks(root, labCode, pageId);
   convertNumberedPaperBlanks(root, labCode, pageId);
   convertPriorityWorksheetRows(root, labCode, pageId);
+  hardenReferenceOnlyLabContent(root, context);
   hideEditorialProductionMetadata(root);
   softenLearnerTechnicalLabels(root);
   collapseSuggestedAnswers(root);
