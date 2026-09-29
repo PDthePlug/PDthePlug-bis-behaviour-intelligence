@@ -408,53 +408,88 @@ export function ProgrammePlayer({
     selected >= dayThreeIndex;
   const knownValues = useMemo<HandbookKnownValue[]>(() => {
     const source = activeModuleRuntime;
-    if (!source?.experiment) return [];
+    if (!source) return [];
 
     const values: HandbookKnownValue[] = [];
     const add = (labels: string[], value: number | string | null, suffix = "", note = "From your Lab") => {
       if (value === null || value === undefined || value === "") return;
-      values.push({ labels, value: `${value}${suffix}`, source: note });
+      values.push({
+        labels,
+        value: typeof value === "number" ? `${value}${suffix}` : String(value),
+        source: note,
+      });
     };
 
-    const observedDays = new Set(source.events.map((event) => event.dayNumber)).size;
-    const missingDays = Math.max(0, 7 - observedDays);
-    const eligible = metricNumber(source, `${moduleCode}.EXPERIMENT.OPPORTUNITY_COUNT`)
-      ?? source.events.filter((event) => event.eligibleOpportunity).length;
-    const completed = moduleCode === "HAB"
-      ? metricNumber(source, "HAB.EXPERIMENT.REPLACEMENT_COUNT")
-      : metricNumber(source, `${moduleCode}.EXPERIMENT.PAUSE_COUNT`);
-    const adherence = metricNumber(source, `${moduleCode}.BEI06`);
-    const accuracy = metricNumber(source, `${moduleCode}.BEI03`);
-    const predicted = Number(source.experiment.predictedValue);
+    const hasExperiment = Boolean(source.experiment);
+    const pending = "Available after your Lab record is complete";
+    const notRecorded = "Not recorded in your Lab yet";
+    const observedDays = hasExperiment ? new Set(source.events.map((event) => event.dayNumber)).size : null;
+    const missingDays = observedDays === null ? null : Math.max(0, 7 - observedDays);
+    const eligible = hasExperiment
+      ? metricNumber(source, `${moduleCode}.EXPERIMENT.OPPORTUNITY_COUNT`)
+        ?? source.events.filter((event) => event.eligibleOpportunity).length
+      : null;
+    const completedFromEvents = hasExperiment
+      ? source.events.filter((event) => event.eligibleOpportunity && event.alternativeUsed === true).length
+      : null;
+    const completed = hasExperiment
+      ? moduleCode === "HAB"
+        ? metricNumber(source, "HAB.EXPERIMENT.REPLACEMENT_COUNT") ?? completedFromEvents
+        : metricNumber(source, `${moduleCode}.EXPERIMENT.PAUSE_COUNT`) ?? completedFromEvents
+      : null;
+    const measuredAdherence = metricNumber(source, `${moduleCode}.BEI06`);
+    const adherence = measuredAdherence
+      ?? (eligible !== null && eligible > 0 && completed !== null
+        ? Math.round((completed / eligible) * 100)
+        : null);
+    const measuredAccuracy = metricNumber(source, `${moduleCode}.BEI03`);
+    const predicted = source.experiment ? Number(source.experiment.predictedValue) : Number.NaN;
     const predictedValue = Number.isFinite(predicted) ? predicted : null;
+    const accuracy = measuredAccuracy
+      ?? (adherence !== null && predictedValue !== null
+        ? Math.max(0, 100 - Math.abs(predictedValue - adherence))
+        : null);
+    const labDataNote =
+      observedDays !== null && observedDays < 7
+        ? "Current Lab record — updates as you record each day"
+        : "From your Lab";
+    const systemFigure = (value: number | null) => {
+      if (value !== null) return value;
+      if (hasExperiment && observedDays === 7 && eligible === 0) return "N/A — no eligible opportunities";
+      return pending;
+    };
 
-    add(["Observation days completed"], observedDays, " / 7");
-    add(["Missing / unrecorded days", "Missing days"], missingDays, " / 7");
+    add(["Observation days completed"], observedDays ?? pending, " / 7", labDataNote);
+    add(["Missing / unrecorded days", "Missing days"], missingDays ?? pending, " / 7", labDataNote);
     if (moduleCode === "HAB") {
-      add(["Eligible opportunities observed", "Eligible target opportunities observed"], eligible, " / 7");
+      add(["Eligible opportunities observed", "Eligible target opportunities observed"], eligible ?? pending, " / 7", labDataNote);
     } else {
       add(
         ["Eligible opportunities observed", "Eligible spending moments observed", "Eligible decision opportunities observed"],
-        eligible,
+        eligible ?? pending,
+        "",
+        labDataNote,
       );
     }
 
     if (moduleCode === "HAB") {
       add(
         ["Completed replacements", "Replacement routine completed", "Successful replacements"],
-        completed,
+        completed ?? pending,
+        "",
+        labDataNote,
       );
-      add(["Adherence Rate", "Habit Adherence Rate", "Actual Adherence Rate"], adherence, "%");
-      add(["Prediction Accuracy", "Habit Prediction Accuracy"], accuracy, " / 100");
-      add(["Predicted Adherence Rate", "Predicted Replacement Rate"], predictedValue, "%");
+      add(["Adherence Rate", "Habit Adherence Rate", "Actual Adherence Rate"], systemFigure(adherence), "%", labDataNote);
+      add(["Prediction Accuracy", "Habit Prediction Accuracy"], systemFigure(accuracy), " / 100", labDataNote);
+      add(["Predicted Adherence Rate", "Predicted Replacement Rate"], predictedValue ?? notRecorded, "%", labDataNote);
       add(
         ["Your control rating before the experiment was", "Control rating before the experiment"],
-        responseNumber(source, "HAB.CONTROL.PRE"),
+        responseNumber(source, "HAB.CONTROL.PRE") ?? notRecorded,
         " /10",
       );
       add(
         ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
-        responseNumber(source, "HAB.EQUATION.CONFIDENCE_PRE"),
+        responseNumber(source, "HAB.EQUATION.CONFIDENCE_PRE") ?? notRecorded,
         " /10",
       );
     }
@@ -477,19 +512,21 @@ export function ProgrammePlayer({
         ? metricNumber(source, "DEC.MINIMUM_PAUSE_COUNT") ?? minimumFromEvents
         : null;
 
-      add(["Decision Pauses Completed", "Decision process checks completed", "Pauses completed"], completed);
+      add(["Decision Pauses Completed", "Decision process checks completed", "Pauses completed"], completed ?? pending, "", labDataNote);
       add(["Full Decision Pauses completed"], full ?? "Not separately recorded");
       add(["Secondary evidence — Minimum Version uses", "Minimum Version uses"], minimum ?? "Not separately recorded");
       add(
         ["Decision Process Adherence Rate", "Pause Initiation Rate", "Adherence Rate", "Actual pause rate"],
-        adherence,
+        systemFigure(adherence),
         "%",
+        labDataNote,
       );
-      add(["Decision Process Prediction Accuracy", "Prediction Accuracy"], accuracy, " / 100");
+      add(["Decision Process Prediction Accuracy", "Prediction Accuracy"], systemFigure(accuracy), " / 100", labDataNote);
       add(
         ["Predicted Decision Pause Rate", "Predicted Outcome Rate", "Predicted pause rate"],
-        predictedValue,
+        predictedValue ?? notRecorded,
         "%",
+        labDataNote,
       );
       add(
         ["Option Expansion Count", "Full Decision Pauses where an additional option appeared"],
@@ -502,12 +539,12 @@ export function ProgrammePlayer({
       }
       add(
         ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
-        responseNumber(source, "DEC.EQUATION.CONFIDENCE_PRE"),
+        responseNumber(source, "DEC.EQUATION.CONFIDENCE_PRE") ?? notRecorded,
         " /10",
       );
       add(
         ["Your deliberateness rating before the experiment was", "Decision deliberateness before the experiment"],
-        responseNumber(source, "DEC.DELIBERATENESS.PRE"),
+        responseNumber(source, "DEC.DELIBERATENESS.PRE") ?? notRecorded,
         " /10",
       );
     }
@@ -516,12 +553,12 @@ export function ProgrammePlayer({
       const full = metricNumber(source, "MON.FULL_PAUSE_COUNT");
       const minimum = metricNumber(source, "MON.MINIMUM_PAUSE_COUNT");
       const fullRate = eligible > 0 && full !== null ? Math.round((full / eligible) * 100) : null;
-      add(["Pauses initiated (Minimum or Full)"], completed);
-      add(["Pause Initiation Rate", "Actual Pause Initiation Rate"], adherence, "%");
+      add(["Pauses initiated (Minimum or Full)"], completed ?? pending, "", labDataNote);
+      add(["Pause Initiation Rate", "Actual Pause Initiation Rate"], systemFigure(adherence), "%", labDataNote);
       add(["Full Pauses completed"], full);
       add(["Minimum Pauses completed"], minimum);
       add(["Full Pause Completion Rate"], fullRate, "%");
-      add(["Spending Pause Prediction Accuracy", "Prediction Accuracy"], accuracy, " / 100");
+      add(["Spending Pause Prediction Accuracy", "Prediction Accuracy"], systemFigure(accuracy), " / 100", labDataNote);
       add(
         ["Predicted Pause Rate", "Predicted Outcome Rate", "Predicted Pause Initiation Rate"],
         predictedValue,
@@ -529,12 +566,12 @@ export function ProgrammePlayer({
       );
       add(
         ["Your awareness rating before the experiment was", "Money awareness before the experiment"],
-        responseNumber(source, "MON.AWARENESS.PRE"),
+        responseNumber(source, "MON.AWARENESS.PRE") ?? notRecorded,
         " /10",
       );
       add(
         ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
-        responseNumber(source, "MON.EQUATION.CONFIDENCE_PRE"),
+        responseNumber(source, "MON.EQUATION.CONFIDENCE_PRE") ?? notRecorded,
         " /10",
       );
     }
