@@ -540,8 +540,9 @@ function createInlineResponse(
   pageId: string,
   labelText: string,
   inputType: "text" | "number" | "date",
+  identitySeed = labelText,
 ) {
-  const token = hashPrompt(`${pageId}|paper-blank|${labelText}`);
+  const token = hashPrompt(`${pageId}|paper-blank|${identitySeed}`);
   const input = document.createElement("input");
   input.className = "handbook-inline-response";
   input.type = inputType;
@@ -555,6 +556,7 @@ function createInlineResponse(
 }
 
 function convertSimplePaperBlanks(root: HTMLElement, labCode: LabCode, pageId: string) {
+  const occurrences = new Map<string, number>();
   root.querySelectorAll<HTMLElement>("p,li").forEach((element) => {
     if (
       element.dataset.digitalMeta === "true" ||
@@ -588,7 +590,15 @@ function convertSimplePaperBlanks(root: HTMLElement, labCode: LabCode, pageId: s
       : Boolean(suffix) || /(?:count|days|opportunities|rate|score|number|rating|percentage|percent)/i.test(labelText)
         ? "number"
         : "text";
-    const input = createInlineResponse(labCode, pageId, labelText, inputType);
+    const occurrence = (occurrences.get(labelText) ?? 0) + 1;
+    occurrences.set(labelText, occurrence);
+    const input = createInlineResponse(
+      labCode,
+      pageId,
+      labelText,
+      inputType,
+      `${labelText}|${occurrence}`,
+    );
     element.append(label, input);
     if (suffix) {
       const suffixNode = document.createElement("small");
