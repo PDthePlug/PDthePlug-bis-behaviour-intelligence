@@ -20,7 +20,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { BIS_MODULES } from "../../lib/bis-catalogue";
+import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
 import { enhanceHandbookDocument } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
@@ -103,6 +103,49 @@ const currentExperimentDay = (experiment: Runtime["experiment"]) => {
     ),
   );
 };
+
+function labHrefWithReturn(href: string, returnTo: string) {
+  const separator = href.includes("?") ? "&" : "?";
+  return `${href}${separator}returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+function ProgrammeLabHandoff({
+  title,
+  href,
+  isHabit,
+  habitPhaseAComplete,
+}: {
+  title: string;
+  href: string | null;
+  isHabit: boolean;
+  habitPhaseAComplete: boolean;
+}) {
+  return (
+    <section className={`prototype-lab-handoff ${href ? "live" : "planned"}`}>
+      <div>
+        <p>DAY 3 · LAB HANDOVER</p>
+        <h2>{href ? `Continue into ${title}.` : `${title} is the next step.`}</h2>
+        <span>
+          {href
+            ? isHabit
+              ? "The handbook stays here as your learning reference. You’ll set your plan, start the seven-day test and record your observations once inside Habit Lab."
+              : "Day 3 is where the learning moves into the practical Lab. Begin the Lab here, then return to this learning module to continue the programme."
+            : "Day 3 is still the Lab handover point in this programme. The live Lab is being prepared, so continue with the Day 3 learning material for now."}
+        </span>
+      </div>
+      {href ? (
+        <Link href={href}>
+          {isHabit
+            ? habitPhaseAComplete ? "Return to Habit Lab" : "Open Habit Lab Phase A"
+            : `Open ${title}`}
+          <ArrowRight />
+        </Link>
+      ) : (
+        <span className="prototype-lab-status">Lab coming soon</span>
+      )}
+    </section>
+  );
+}
 
 function splitDayThree(page: ProgrammePage) {
   if (!page.labHandoff) return null;
@@ -570,7 +613,16 @@ export function ProgrammePlayer({
     );
   }
 
-  const dayThree = moduleCode === "HAB" && page.key === "Day 3" ? splitDayThree(page) : null;
+  const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
+  const isLabHandoffDay =
+    page.programmeDay === BIS_MODULE_TEMPLATE.handoffProgrammeDay || page.key === "Day 3";
+  const dayThree = isLabHandoffDay ? splitDayThree(page) : null;
+  const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
+  const learningReturnTo = `${pathname}?section=learn&page=${selected + 1}`;
+  const moduleLabHref = moduleLabIsLive && moduleDefinition?.labHref
+    ? labHrefWithReturn(moduleDefinition.labHref, learningReturnTo)
+    : null;
+  const moduleLabTitle = moduleDefinition?.title ?? `${programme.title} Lab`;
 
   return (
     <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition}>
@@ -625,15 +677,28 @@ export function ProgrammePlayer({
                 </button>
               </article>
 
-              {moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete ? (
+              {isLabHandoffDay ? (
                 <article className="prototype-card prototype-action-card">
                   <FlaskConical />
-                  <p className="prototype-eyebrow">Day 3 · Habit Lab</p>
-                  <h3>Your live investigation is ready.</h3>
-                  <p>Complete Phase A here; the handbook remains your learning reference.</p>
-                  <Link className="prototype-btn primary" href="/habit-lab?returnTo=%2Fhabit%3Fsection%3Dlearn">
-                    Open Habit Lab <ArrowRight />
-                  </Link>
+                  <p className="prototype-eyebrow">Day 3 · Lab handover</p>
+                  <h3>
+                    {moduleLabHref
+                      ? `${moduleLabTitle} is ready.`
+                      : `${moduleLabTitle} is the next step.`}
+                  </h3>
+                  <p>
+                    {moduleLabHref
+                      ? "Move from the handbook into the practical Lab, then return here to continue your programme."
+                      : "This is still the programme’s Lab handover point. The live Lab is being prepared, so continue with today’s learning for now."}
+                  </p>
+                  {moduleLabHref ? (
+                    <Link className="prototype-btn primary" href={moduleLabHref}>
+                      {moduleCode === "HAB" && phaseAComplete ? "Return to Habit Lab" : `Open ${moduleLabTitle}`}
+                      <ArrowRight />
+                    </Link>
+                  ) : (
+                    <span className="prototype-btn soft prototype-btn-disabled">Lab coming soon</span>
+                  )}
                 </article>
               ) : null}
 
@@ -729,29 +794,22 @@ export function ProgrammePlayer({
               {dayThree ? (
                 <>
                   <div dangerouslySetInnerHTML={{ __html: dayThree.intro }} />
-                  <section className="prototype-lab-handoff">
-                    <div>
-                      <p>DAY 3 · LIVE INVESTIGATION</p>
-                      <h2>Continue into Habit Lab Phase A.</h2>
-                      <span>
-                        The handbook stays here as your learning reference. You’ll set your plan, start the seven-day test and record your observations once inside Habit Lab.
-                      </span>
-                    </div>
-                    <Link href="/habit-lab?returnTo=%2Fhabit%3Fsection%3Dlearn">
-                      {phaseAComplete ? "Return to Habit Lab" : "Open Habit Lab Phase A"}
-                      <ArrowRight />
-                    </Link>
-                  </section>
+                  <ProgrammeLabHandoff
+                    title={moduleLabTitle}
+                    href={moduleLabHref}
+                    isHabit={moduleCode === "HAB"}
+                    habitPhaseAComplete={phaseAComplete}
+                  />
                   <details className="prototype-reference">
                     <summary>Open the full Day 3 reference</summary>
                     <p>
-                      You’ll answer these inside Habit Lab, so they are not repeated here.
+                      {moduleLabHref
+                        ? `Use this as your learning reference while you work through ${moduleLabTitle}.`
+                        : "Use this as your Day 3 learning reference while the live Lab is being prepared."}
                     </p>
                     <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
                   </details>
-                  {phaseAComplete ? (
-                    <div dangerouslySetInnerHTML={{ __html: dayThree.tail }} />
-                  ) : (
+                  {moduleCode === "HAB" && !phaseAComplete ? (
                     <section className="prototype-after-lab">
                       <LockKeyhole />
                       <div>
@@ -759,7 +817,19 @@ export function ProgrammePlayer({
                         <p>Your seven-day experiment begins when the live investigation is complete.</p>
                       </div>
                     </section>
+                  ) : (
+                    <div dangerouslySetInnerHTML={{ __html: dayThree.tail }} />
                   )}
+                </>
+              ) : isLabHandoffDay ? (
+                <>
+                  <ProgrammeLabHandoff
+                    title={moduleLabTitle}
+                    href={moduleLabHref}
+                    isHabit={moduleCode === "HAB"}
+                    habitPhaseAComplete={phaseAComplete}
+                  />
+                  <div dangerouslySetInnerHTML={{ __html: page.html }} />
                 </>
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: page.html }} />
@@ -774,7 +844,6 @@ export function ProgrammePlayer({
                 <div>{BIS_MODULES.filter((item) => item.learningStatus === "live" && item.code !== moduleCode).map((item) => <Link key={item.code} href={item.learningHref!}>{item.title}<ArrowRight /></Link>)}</div>
               </section>
             ) : null}
-            {moduleCode !== "HAB" && page.key === "Day 3" ? <p className="handbook-learning-note">These are private handbook reflections. Your Lab answers and real-world observations stay in the Lab, not in this handbook. {moduleCode === "DEC" || moduleCode === "MON" ? <Link href={moduleCode === "DEC" ? "/decision" : "/money"}>Open the live {programme.title}</Link> : null}</p> : null}
             {error ? (
               <p className="prototype-error" role="alert">
                 {error}
@@ -844,14 +913,24 @@ export function ProgrammePlayer({
             <BookOpen />
             <span><strong>Learn</strong><small>Browse handbooks</small></span>
           </button>
-          <Link href="/labs">
+          <Link href={moduleLabHref ?? "/labs"}>
             <FlaskConical />
-            <span><strong>Lab</strong><small>Browse investigations</small></span>
+            <span>
+              <strong>Lab</strong>
+              <small>{moduleLabHref ? moduleLabTitle : "Browse investigations"}</small>
+            </span>
           </Link>
-          <Link href="/habit-lab/experiment?returnTo=%2Fhabit">
-            <CalendarDays />
-            <span><strong>Experiment</strong><small>Seven-day real-world test</small></span>
-          </Link>
+          {moduleCode === "HAB" ? (
+            <Link href={labHrefWithReturn("/habit-lab/experiment", learningReturnTo)}>
+              <CalendarDays />
+              <span><strong>Experiment</strong><small>Seven-day real-world test</small></span>
+            </Link>
+          ) : moduleLabHref ? (
+            <Link href={moduleLabHref}>
+              <CalendarDays />
+              <span><strong>Practice</strong><small>Continue the live Lab</small></span>
+            </Link>
+          ) : null}
           {hasStaffAccess ? (
             <Link href="/workspace">
               <BriefcaseBusiness />
