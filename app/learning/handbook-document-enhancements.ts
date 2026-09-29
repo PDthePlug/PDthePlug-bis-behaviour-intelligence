@@ -813,10 +813,10 @@ export function enhanceHandbookDocument(
   applyKnownValues(root, context);
   applyKnownTableValues(root, context);
   replacePaperIdentityFields(root, context, labCode, pageId);
+  hardenReferenceOnlyLabContent(root, context);
   convertSimplePaperBlanks(root, labCode, pageId);
   convertNumberedPaperBlanks(root, labCode, pageId);
   convertPriorityWorksheetRows(root, labCode, pageId);
-  hardenReferenceOnlyLabContent(root, context);
   hideEditorialProductionMetadata(root);
   softenLearnerTechnicalLabels(root);
   collapseSuggestedAnswers(root);
