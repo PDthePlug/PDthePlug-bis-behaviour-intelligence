@@ -2,6 +2,7 @@ import { and, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
+  consentRecords,
   contentLibraryItems,
   contentLibraryVersions,
   contentRuntimeActivations,
@@ -138,6 +139,9 @@ async function postHandler(request: Request) {
     const db = getDb();
     const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
     if (!profile) throw new Error("Complete learner setup before opening this Lab.");
+
+    const [consent] = await db.select().from(consentRecords).where(eq(consentRecords.userId, identity.id)).orderBy(desc(consentRecords.createdAt)).limit(1);
+    if (consent?.status !== "GRANTED") throw new Error("This investigation is paused because product consent is not active.");
 
     if (action === "openLab") {
       if (body.consent !== true) throw new Error("Acknowledge the private evidence notice before opening the Lab.");

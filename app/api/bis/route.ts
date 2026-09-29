@@ -27,9 +27,13 @@ import {
   fieldRegistry,
   LAB_VERSION,
   POLICY_VERSION,
+  responseScale,
 } from "../../../lib/habit-lab";
 import { initialDeliveryEdition } from "../../../lib/learning-foundation";
 import { computeHabitMetrics } from "../../../lib/bis-metrics.mjs";
+
+import { getExperimentTiming } from "../../../lib/experiment-timing.mjs";
+import { todayInZone, isIsoDate, ratingShift } from "../../../lib/evidence-validation.mjs";
 
 import type { Identity } from "../../../lib/bis-access";
 
@@ -333,11 +337,22 @@ async function saveResponse(
 
   const db = getDb();
   const now = new Date().toISOString();
-  const investigation = payload.investigation ?? (definition ? definition.investigation : 0);
+  const investigation = definition ? definition.investigation : 0;
   const promptId = definition ? definition.promptId : `HAB.BASE.${payload.semanticFieldId.split(".").at(-1)}`;
   const sensitivity = definition ? definition.sensitivity : "P2";
   const valueType = definition ? definition.type : "CATEGORICAL";
   const responseStatus = payload.responseStatus === "PASS" ? "PASS" : "ANSWERED";
+  if (responseStatus === "ANSWERED") {
+    if (valueType === "TEXT" && typeof payload.value !== "string") throw new Error("Provide a text response or choose to pass this question.");
+    if (baselineField && !responseScale.includes(String(payload.value))) throw new Error("Choose a valid frequency response.");
+    if (valueType === "BOOLEAN" && typeof payload.value !== "boolean") throw new Error("Choose a valid yes or no response.");
+    if (valueType === "INTEGER") {
+      const value = payload.value;
+      const certainty = payload.semanticFieldId.endsWith(".CERTAINTY");
+      const frequency = payload.semanticFieldId === "HAB.FREQUENCY.YESTERDAY";
+      if (typeof value !== "number" || !Number.isInteger(value) || (frequency ? value < 0 : (ratingShift(value, value) === null || (certainty && value > 5)))) throw new Error("Choose a valid rating.");
+    }
+  }
   const enrolment = await currentHabitEnrollment(identity.id);
   if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
   const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
@@ -640,7 +655,16 @@ async function postHandler(request: Request) {
           occurredAt: typeof value.occurredAt === "string" ? value.occurredAt : undefined,
         });
       }
-      if (items.some((item) => item && typeof item === "object" && Number((item as Record<string, unknown>).investigation ?? 0) === 9)) {
+      const finalFields = Object.entries(fieldRegistry).filter(([, field]) => field.investigation === 9).map(([id]) => id);
+      const touchesFinal = items.some((item) => item && typeof item === "object" && finalFields.includes(String((item as Record<string, unknown>).semanticFieldId)));
+      if (touchesFinal) {
+        const latest = await snapshot(identity);
+        const complete = finalFields.every((id) => {
+          const answer = latest.responses[id];
+          return answer && (answer.status === "PASS" || (answer.status === "ANSWERED" && typeof answer.value === "string" && answer.value.trim()));
+        });
+        const closed = latest.experiment && ["COMPLETED", "COMPLETED_INSUFFICIENT"].includes(latest.experiment.status);
+        if (!complete || !closed) return Response.json(latest);
         const enrolment = await currentHabitEnrollment(identity.id);
         if (enrolment && enrolment.status !== "COMPLETED") {
           const now = new Date().toISOString();
@@ -656,7 +680,7 @@ async function postHandler(request: Request) {
       const statement = String(body.statement ?? "").trim();
       const falsification = String(body.falsificationStatement ?? "").trim();
       const confidence = Number(body.learnerConfidence ?? 0);
-      if (!statement || !falsification || confidence < 1 || confidence > 10) {
+      if (!statement || !falsification || !Number.isInteger(confidence) || confidence < 1 || confidence > 10) {
         throw new Error("Your working equation, challenge test and confidence rating are all needed.");
       }
       const authoredReflections = [
@@ -701,12 +725,12 @@ async function postHandler(request: Request) {
       const prediction = Number(body.predictedValue ?? -1);
       const required = ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "restartPlan", "minimumVersion", "failureSignal", "insight"];
       for (const key of required) if (!String(body[key] ?? "").trim()) throw new Error("Complete every experiment field before starting.");
-      if (prediction < 0 || prediction > 100) throw new Error("Prediction must be between 0% and 100%.");
+      if (!Number.isFinite(prediction) || prediction < 0 || prediction > 100) throw new Error("Prediction must be between 0% and 100%.");
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
       const startDate = String(body.startDate ?? now.slice(0, 10));
       const plannedEndDate = String(body.plannedEndDate ?? startDate);
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(plannedEndDate)) {
+      if (!isIsoDate(startDate) || !isIsoDate(plannedEndDate)) {
         throw new Error("Choose valid start and end dates.");
       }
       const plannedDays = Math.floor((new Date(`${plannedEndDate}T00:00:00.000Z`).getTime() - new Date(`${startDate}T00:00:00.000Z`).getTime()) / 86_400_000) + 1;
@@ -776,7 +800,7 @@ async function postHandler(request: Request) {
     if (action === "saveEvent") {
       const experimentId = String(body.experimentId ?? "");
       const dayNumber = Number(body.dayNumber ?? 0);
-      if (!experimentId || dayNumber < 1 || dayNumber > 21) throw new Error("Choose a valid experiment day.");
+      if (!experimentId || !Number.isInteger(dayNumber) || dayNumber < 1 || dayNumber > 21) throw new Error("Choose a valid experiment day.");
       const [experiment] = await db
         .select()
         .from(experiments)
@@ -788,6 +812,8 @@ async function postHandler(request: Request) {
       const end = new Date(`${experiment.plannedEndDate}T00:00:00.000Z`);
       const plannedDays = Math.floor((end.getTime() - start.getTime()) / 86_400_000) + 1;
       if (dayNumber > plannedDays) throw new Error("That day is outside the current experiment window.");
+      const timing = getExperimentTiming(experiment, [], todayInZone());
+      if (dayNumber > timing.availableDay) throw new Error("That experiment day has not started yet.");
       const cueOccurred = body.targetConditionOccurred === true;
       const existing = await db
         .select()
@@ -946,6 +972,9 @@ async function postHandler(request: Request) {
         .select()
         .from(experimentEvents)
         .where(and(eq(experimentEvents.experimentId, experimentId), eq(experimentEvents.userId, identity.id)));
+      if (!getExperimentTiming(experiment, eventRows, todayInZone()).canClose) {
+        throw new Error("Record the final experiment day or wait for the planned window to end before reviewing it.");
+      }
       const metrics = computeHabitMetrics(eventRows, experiment.predictedValue);
       const now = new Date().toISOString();
 

@@ -188,26 +188,38 @@ class InsertQuery implements PromiseLike<void> {
     }
 
     for (const row of rows) {
-      let lookup = this.client.from(this.table.__meta.name).select("*").limit(1);
-      for (const column of this.conflict.columns) {
-        lookup = lookup.eq(column.name, row[column.name] as Primitive);
-      }
-      const existing = await lookup;
+      const match = (query: any) => {
+        for (const column of this.conflict!.columns) {
+          const value = row[column.name];
+          query = value === null ? query.is(column.name, null) : query.eq(column.name, value as Primitive);
+        }
+        return query;
+      };
+      const find = () => match(this.client.from(this.table.__meta.name).select("*").limit(1));
+      const update = async () => {
+        if (this.conflict!.ignoreDuplicates) return;
+        const result = await match(this.client.from(this.table.__meta.name).update(toDatabaseRow(this.table, this.conflict!.set ?? {})));
+        if (result.error) throw new Error(result.error.message);
+      };
+      const existing = await find();
       if (existing.error) throw new Error(existing.error.message);
       if (existing.data?.length) {
-        if (this.conflict.ignoreDuplicates) continue;
-        let update = this.client
-          .from(this.table.__meta.name)
-          .update(toDatabaseRow(this.table, this.conflict.set ?? {}));
-        for (const column of this.conflict.columns) {
-          update = update.eq(column.name, row[column.name] as Primitive);
-        }
-        const result = await update;
-        if (result.error) throw new Error(result.error.message);
+        await update();
         continue;
       }
       const inserted = await this.client.from(this.table.__meta.name).insert(row);
-      if (inserted.error) throw new Error(inserted.error.message);
+      if (!inserted.error) continue;
+      // A concurrent request may have inserted the same natural key after our
+      // lookup. Re-read that exact key; unrelated unique violations still fail.
+      if (inserted.error.code === "23505") {
+        const concurrent = await find();
+        if (concurrent.error) throw new Error(concurrent.error.message);
+        if (concurrent.data?.length) {
+          await update();
+          continue;
+        }
+      }
+      throw new Error(inserted.error.message);
     }
   }
 }
