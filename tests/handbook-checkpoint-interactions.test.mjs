@@ -93,3 +93,36 @@ test("complete and continue settles save state before entering the next handbook
     "page navigation must happen after completion state settles",
   );
 });
+
+
+test("digital hardening removes orphan controls and upgrades paper-era interactions", async () => {
+  const enhancement = await source("app/learning/handbook-document-enhancements.ts");
+  const css = await source("app/learning/programme-player.css");
+
+  assert.match(enhancement, /cleanOrphanedResponseControls/);
+  assert.match(enhancement, /previous instanceof HTMLTextAreaElement/);
+  assert.match(enhancement, /upgradePrintableCheckboxes/);
+  assert.match(enhancement, /input\.type = exclusiveGroup \? "radio" : "checkbox"/);
+  assert.match(enhancement, /convertSimplePaperBlanks/);
+  assert.match(enhancement, /inputType: "text" \| "number" \| "date"/);
+  assert.match(enhancement, /enhanceTables/);
+  assert.match(enhancement, /handbook-data-table/);
+  assert.match(enhancement, /hideEditorialProductionMetadata/);
+
+  assert.match(css, /\.handbook-check-row/);
+  assert.match(css, /\.handbook-system-value/);
+  assert.match(css, /\.handbook-inline-field/);
+  assert.match(css, /td\[data-label\]::before/);
+});
+
+test("system-known values are module-scoped and do not reuse Habit evidence in other Labs", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+
+  assert.match(player, /\["DEC", "MON"\]\.includes\(moduleCode\)/);
+  assert.match(player, /\/api\/labs\?lab=/);
+  assert.match(player, /moduleLive = moduleCode === "HAB" \? live : moduleRuntimeResult/);
+  assert.match(player, /const activeModuleRuntime = moduleCode === "HAB" \? runtime : moduleRuntime/);
+  assert.match(player, /EXPERIMENT\.OPPORTUNITY_COUNT/);
+  assert.match(player, /Observation days completed/);
+  assert.match(player, /From your Lab/);
+});
