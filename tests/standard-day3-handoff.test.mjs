@@ -63,3 +63,15 @@ test("learner menu never routes another module into the Habit experiment by acci
     /<Link href="\/habit-lab\/experiment\?returnTo=%2Fhabit">/,
   );
 });
+
+test("post-Lab programme completion stays locked until Phase A really exists", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+
+  assert.match(player, /const labSequenceLocked =/);
+  assert.match(player, /selected >= dayThreeIndex/);
+  assert.match(player, /activeModuleRuntime\?\.enrolment\?\.phaseACompletedAt/);
+  assert.match(player, /Reference view/);
+  assert.match(player, /programme progress resumes after the Lab/);
+  assert.match(player, /disabled=\{saving \|\| completing \|\| labSequenceLocked\}/);
+  assert.match(player, /Lab coming soon/);
+});
