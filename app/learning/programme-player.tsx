@@ -496,7 +496,7 @@ export function ProgrammePlayer({
 
     if (moduleCode === "DEC") {
       const completedEvents = source.events.filter((event) => event.alternativeUsed === true);
-      const pauseTypesKnown = completedEvents.every(
+      const pauseTypesKnown = hasExperiment && completedEvents.every(
         (event) => event.details?.pauseType === "Full" || event.details?.pauseType === "Minimum",
       );
       const fullFromEvents = pauseTypesKnown
@@ -528,15 +528,34 @@ export function ProgrammePlayer({
         "%",
         labDataNote,
       );
+      const expandedFullPauses = pauseTypesKnown
+        ? completedEvents.filter(
+            (event) => event.details?.pauseType === "Full" && event.details?.extraOption === true,
+          ).length
+        : null;
+      const expansionCount = pauseTypesKnown
+        ? metricNumber(source, "DEC.OPTION_EXPANSION_COUNT") ?? expandedFullPauses
+        : null;
+      const expansionRate = pauseTypesKnown && full !== null && full > 0 && expansionCount !== null
+        ? metricNumber(source, "DEC.OPTION_EXPANSION_RATE")
+          ?? Math.round((expansionCount / full) * 100)
+        : null;
       add(
         ["Option Expansion Count", "Full Decision Pauses where an additional option appeared"],
-        pauseTypesKnown ? metricNumber(source, "DEC.OPTION_EXPANSION_COUNT") : "Not separately recorded",
+        pauseTypesKnown ? expansionCount ?? 0 : hasExperiment ? "Not separately recorded" : pending,
+        "",
+        labDataNote,
       );
-      if (pauseTypesKnown) {
-        add(["Option Expansion Rate"], metricNumber(source, "DEC.OPTION_EXPANSION_RATE"), "%");
-      } else {
-        add(["Option Expansion Rate"], "Not separately recorded");
-      }
+      add(
+        ["Option Expansion Rate"],
+        pauseTypesKnown
+          ? full !== null && full > 0
+            ? expansionRate ?? pending
+            : "N/A — no Full Pauses recorded"
+          : hasExperiment ? "Not separately recorded" : pending,
+        "%",
+        labDataNote,
+      );
       add(
         ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
         responseNumber(source, "DEC.EQUATION.CONFIDENCE_PRE") ?? notRecorded,
@@ -550,19 +569,45 @@ export function ProgrammePlayer({
     }
 
     if (moduleCode === "MON") {
-      const full = metricNumber(source, "MON.FULL_PAUSE_COUNT");
-      const minimum = metricNumber(source, "MON.MINIMUM_PAUSE_COUNT");
-      const fullRate = eligible > 0 && full !== null ? Math.round((full / eligible) * 100) : null;
+      const completedEvents = source.events.filter((event) => event.alternativeUsed === true);
+      const pauseTypesKnown = hasExperiment && completedEvents.every(
+        (event) => event.details?.pauseType === "Full" || event.details?.pauseType === "Minimum",
+      );
+      const fullFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Full").length
+        : null;
+      const minimumFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Minimum").length
+        : null;
+      const full = pauseTypesKnown
+        ? metricNumber(source, "MON.FULL_PAUSE_COUNT") ?? fullFromEvents
+        : null;
+      const minimum = pauseTypesKnown
+        ? metricNumber(source, "MON.MINIMUM_PAUSE_COUNT") ?? minimumFromEvents
+        : null;
+      const fullRate = eligible !== null && eligible > 0 && full !== null
+        ? Math.round((full / eligible) * 100)
+        : null;
       add(["Pauses initiated (Minimum or Full)"], completed ?? pending, "", labDataNote);
       add(["Pause Initiation Rate", "Actual Pause Initiation Rate"], systemFigure(adherence), "%", labDataNote);
-      add(["Full Pauses completed"], full);
-      add(["Minimum Pauses completed"], minimum);
-      add(["Full Pause Completion Rate"], fullRate, "%");
+      add(["Full Pauses completed"], pauseTypesKnown ? full ?? 0 : hasExperiment ? "Not separately recorded" : pending, "", labDataNote);
+      add(["Minimum Pauses completed"], pauseTypesKnown ? minimum ?? 0 : hasExperiment ? "Not separately recorded" : pending, "", labDataNote);
+      add(
+        ["Full Pause Completion Rate"],
+        pauseTypesKnown
+          ? eligible !== null && eligible > 0
+            ? fullRate ?? pending
+            : "N/A — no eligible opportunities"
+          : hasExperiment ? "Not separately recorded" : pending,
+        "%",
+        labDataNote,
+      );
       add(["Spending Pause Prediction Accuracy", "Prediction Accuracy"], systemFigure(accuracy), " / 100", labDataNote);
       add(
         ["Predicted Pause Rate", "Predicted Outcome Rate", "Predicted Pause Initiation Rate"],
-        predictedValue,
+        predictedValue ?? notRecorded,
         "%",
+        labDataNote,
       );
       add(
         ["Your awareness rating before the experiment was", "Money awareness before the experiment"],
