@@ -381,6 +381,8 @@ export function ProgrammePlayer({
 
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
+  const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
+  const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const completed = useMemo(
     () =>
       new Set(
@@ -724,6 +726,12 @@ export function ProgrammePlayer({
     enhanceHandbookDocument(documentRoot, moduleCode, page.id, {
       knownValues,
       learnerName: snapshot?.profile.displayName,
+      labAvailable: moduleLabIsLive,
+      referenceOnly:
+        !previewMode &&
+        !moduleLabIsLive &&
+        dayThreeIndex >= 0 &&
+        selected > dayThreeIndex,
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
@@ -746,7 +754,11 @@ export function ProgrammePlayer({
     knownValues,
     learnMode,
     moduleCode,
+    moduleLabIsLive,
     page,
+    previewMode,
+    selected,
+    dayThreeIndex,
     section,
     snapshot?.profile.displayName,
     snapshot?.workbookResponses,
@@ -895,11 +907,9 @@ export function ProgrammePlayer({
     );
   }
 
-  const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const isLabHandoffDay =
     page.programmeDay === BIS_MODULE_TEMPLATE.handoffProgrammeDay || page.key === "Day 3";
   const dayThree = isLabHandoffDay ? splitDayThree(page) : null;
-  const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const learningReturnTo = `${pathname}?section=learn&page=${selected + 1}`;
   const moduleLabHref = moduleLabIsLive && moduleDefinition?.labHref
     ? labHrefWithReturn(moduleDefinition.labHref, learningReturnTo)
