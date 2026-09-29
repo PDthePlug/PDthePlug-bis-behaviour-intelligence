@@ -103,7 +103,8 @@ test("digital hardening removes orphan controls and upgrades paper-era interacti
 
   assert.match(enhancement, /cleanOrphanedResponseControls/);
   assert.match(enhancement, /removeUnboundGenericResponses/);
-  assert.match(enhancement, /previous instanceof HTMLTextAreaElement/);
+  assert.match(enhancement, /const run = \[field\]/);
+  assert.match(enhancement, /promptsBeforeResponseRun/);
   assert.match(enhancement, /upgradePrintableCheckboxes/);
   assert.match(enhancement, /input\.type = exclusiveGroup \? "radio" : "checkbox"/);
   assert.match(enhancement, /convertSimplePaperBlanks/);
