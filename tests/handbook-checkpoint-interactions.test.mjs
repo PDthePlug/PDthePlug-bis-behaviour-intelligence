@@ -68,7 +68,7 @@ test("saved and draft responses are restored whenever checkpoint controls are re
   assert.match(repair, /field\.value = savedValue/);
   assert.match(player, /snapshot\?\.workbookResponses/);
   assert.match(player, /knownValues/);
-  assert.match(player, /programme\?\.handbookId/);
+  assert.match(player, /snapshot\?\.profile\.displayName/);
 });
 
 
@@ -143,4 +143,15 @@ test("duplicate cleanup preserves one field per explicit multi-question prompt",
   assert.match(enhancement, /const keepCount = Math\.min\(run\.length, Math\.max\(1, prompts\.length\)\)/);
   assert.match(enhancement, /const prompt = prompts\[index\]/);
   assert.match(enhancement, /item\.setAttribute\("aria-label", prompt\)/);
+});
+
+
+test("future-self and certificate paper fields are digitised without inventing learner identifiers", async () => {
+  const enhancement = await source("app/learning/handbook-document-enhancements.ts");
+
+  assert.match(enhancement, /Grade for future-self letter/);
+  assert.match(enhancement, /From: \$\{context\.learnerName\}/);
+  assert.match(enhancement, /Workbook record: linked to your BIS learning profile/);
+  assert.match(enhancement, /Facilitator confirmation: added by your programme facilitator/);
+  assert.doesNotMatch(enhancement, /Workbook ID: \$\{context\.workbookId\}/);
 });
