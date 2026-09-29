@@ -212,6 +212,12 @@ function cleanOrphanedResponseControls(root: HTMLElement) {
 }
 
 function nearestPrompt(field: HTMLElement) {
+  const parent = field.parentElement;
+  if (parent && parent !== field.closest(".prototype-document")) {
+    const parentText = normalise(parent.textContent ?? "").replace(/_+/g, "").trim();
+    if (parentText && parentText.length <= 320) return parentText;
+  }
+
   let cursor = field.previousElementSibling;
   let inspected = 0;
   while (cursor && inspected < 3) {
@@ -235,6 +241,16 @@ function labelAuthoredResponses(root: HTMLElement) {
     if (field instanceof HTMLTextAreaElement && !field.placeholder) {
       field.placeholder = prompt.endsWith("?") ? "Write your answer…" : "Write your response…";
     }
+  });
+}
+
+function removeUnboundGenericResponses(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>("[data-field-id]").forEach((field) => {
+    if (!isGenericResponse(field)) return;
+    if (field.closest("td,th")) return;
+    if (field.dataset.purpose === "FORMAL_LAB_REFERENCE") return;
+    if (nearestPrompt(field)) return;
+    field.remove();
   });
 }
 
@@ -668,6 +684,7 @@ export function enhanceHandbookDocument(
 ) {
   cleanOrphanedResponseControls(root);
   labelAuthoredResponses(root);
+  removeUnboundGenericResponses(root);
   upgradePrintableCheckboxes(root, pageId);
   enhanceTables(root);
   applyKnownValues(root, context);
