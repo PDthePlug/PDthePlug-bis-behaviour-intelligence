@@ -72,6 +72,7 @@ test("post-Lab programme completion stays locked until Phase A really exists", a
   assert.match(player, /activeModuleRuntime\?\.enrolment\?\.phaseACompletedAt/);
   assert.match(player, /Reference view/);
   assert.match(player, /programme progress resumes after the Lab/);
-  assert.match(player, /disabled=\{saving \|\| completing \|\| labSequenceLocked\}/);\n  assert.match(player, /disabled=\{completing \|\| \(labSequenceLocked && selected > dayThreeIndex\)\}/);
+  assert.match(player, /disabled=\{saving \|\| completing \|\| labSequenceLocked\}/);
+  assert.match(player, /disabled=\{completing \|\| \(labSequenceLocked && selected > dayThreeIndex\)\}/);
   assert.match(player, /Lab coming soon/);
 });
