@@ -95,6 +95,11 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const requestedReturnTo = searchParams.get("returnTo");
+  const returnTo =
+    requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
+      ? requestedReturnTo
+      : "/labs";
 
   // The selected Lab code is fixed for the lifetime of this route.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,7 +157,7 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
   if (loading) return <main className="corelab-loading"><Brand /><div /><div /></main>;
   if (!state) return <main className="corelab-empty"><Brand /><div className="surface-card"><LockKeyhole /><h1>This Lab could not open.</h1><p>{error}</p><Button onClick={() => void load()}>Try again</Button></div></main>;
   if (!state.profile || state.consent?.status !== "GRANTED") return <Prerequisite definition={definition} />;
-  if (!state.enrolment) return <LabWelcome definition={definition} saving={saving} error={error} onOpen={act} />;
+  if (!state.enrolment) return <LabWelcome definition={definition} saving={saving} error={error} onOpen={act} returnTo={returnTo} />;
 
   const baselineComplete = Boolean(state.responses[definition.preMetric.id]) && definition.baselineItems.every(([id]) => Boolean(state.responses[id]));
   if (!baselineComplete) return <><div className={privateVisible ? "" : "privacy-obscured"} aria-hidden={!privateVisible}><Baseline definition={definition} state={state} saving={saving} error={error} act={act} /></div>{!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}</>;
@@ -191,7 +196,7 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
         {activeStep === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(7, true)} />}
         {activeStep === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(8, true)} />}
         {activeStep === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={() => goToStep(9, true)} />}
-        {activeStep === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} />}
+        {activeStep === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} returnTo={returnTo} />}
       </LabInvestigationFrame>
     </div>
     {!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}
@@ -202,10 +207,22 @@ function Prerequisite({ definition }: { definition: CoreLabDefinition }) {
   return <main className="corelab-empty"><Brand /><div className="surface-card"><ShieldCheck /><p className="eyebrow">One private profile</p><h1>Set up BIS before opening {definition.shortTitle}.</h1><p>Your age band, mode and product consent are created once and then shared safely across your Labs. Lab evidence stays separate.</p><Link className="corelab-primary-link" href="/">Complete BIS setup <ArrowRight /></Link></div></main>;
 }
 
-function LabWelcome({ definition, saving, error, onOpen }: { definition: CoreLabDefinition; saving: boolean; error: string; onOpen: (payload: Record<string, unknown>) => Promise<Snapshot> }) {
+function LabWelcome({
+  definition,
+  saving,
+  error,
+  onOpen,
+  returnTo,
+}: {
+  definition: CoreLabDefinition;
+  saving: boolean;
+  error: string;
+  onOpen: (payload: Record<string, unknown>) => Promise<Snapshot>;
+  returnTo: string;
+}) {
   const [consent, setConsent] = useState(false);
   return <main className="corelab-welcome fidelity-welcome" style={{ "--lab-accent": definition.accent } as React.CSSProperties}>
-    <header><Brand /><Link href="/">Back to Labs</Link></header>
+    <header><Brand /><Link href={returnTo}>{returnTo === "/labs" ? "Back to Labs" : "Back to learning"}</Link></header>
     <section className="fidelity-hero">
       <div><Badge variant="outline">Production Master · Version {definition.version}</Badge><p className="eyebrow">Applied Commerce® · Behaviour Intelligence Series™ · Volume 1</p><h1>{definition.title}</h1><p>{definition.focus}</p><dl><div><dt>Classification</dt><dd>{definition.classification}</dd></div><div><dt>Status</dt><dd>{definition.status}</dd></div><div><dt>Workbook ID</dt><dd>{definition.workbookId}</dd></div><div><dt>Duration</dt><dd>Phase A: 90 minutes · Phase B: 7 days</dd></div><div><dt>Target audience</dt><dd>Ages 14–25 · No prior knowledge required</dd></div><div><dt>Price point</dt><dd>R350 per learner · R10,500 per 30-learner workshop</dd></div></dl></div>
       <div className="surface-card corelab-start-card"><FlaskConical /><h2>Begin with a private baseline.</h2><p>This creates a separate {definition.shortTitle} enrolment with its own responses, equation, experiment and profile. Evidence from your other Labs remains unchanged.</p><label className="consent-row"><Checkbox checked={consent} onCheckedChange={(checked) => setConsent(checked === true)} /><span>I understand how my private {definition.shortTitle} responses, daily observations and calculated BEIs will be stored. I may skip a question I am not ready to answer and may pause product consent from Settings.</span></label>{error && <p className="field-error">{error}</p>}<Button size="lg" disabled={saving || !consent} onClick={() => void onOpen({ action: "openLab", consent: true })}>{saving ? "Opening…" : <>Open {definition.shortTitle} <ArrowRight /></>}</Button></div>
@@ -415,7 +432,13 @@ function ReviewStep({ definition, state, saving, act, next }: StepProps & { defi
   return <div className="investigation-stack"><div className="review-grid"><section className={`surface-card corelab-shift ${postPassed ? "passed" : ""}`}><p className="eyebrow">{definition.postMetric.label}</p><h2>{definition.postMetric.prompt}</h2><p>1 = {definition.preMetric.low}. 10 = {definition.preMetric.high}.</p>{!postPassed && <><strong>{post}<span>/10</span></strong><Slider value={[post]} min={1} max={10} step={1} onValueChange={([value]) => setPost(value)} /><p>{definition.code === "DEC" ? "Decision Deliberateness" : "Money Awareness"} Shift: <b>{post - pre > 0 ? "+" : ""}{post - pre} points</b></p><p>Formula: BEI-07 − BEI-01. Positive = more {definition.code === "DEC" ? "deliberate" : "aware"}; negative = less; zero = no change.</p></>}<PassControl passed={postPassed} onChange={setPostPassed} /></section><section className={`surface-card corelab-shift ${confidencePassed ? "passed" : ""}`}><p className="eyebrow">BEI-08 · {definition.code === "DEC" ? "Decision" : "Money"} Equation Confidence (Post)</p><h2>How confident are you now that your equation explains the {definition.code === "DEC" ? "decision" : "spending"} pattern you investigated?</h2>{!confidencePassed && <><strong>{confidence}<span>/10</span></strong><Slider value={[confidence]} min={1} max={10} step={1} onValueChange={([value]) => setConfidence(value)} /><p>Equation Confidence Shift: <b>{confidence - confPre > 0 ? "+" : ""}{confidence - confPre} points</b></p><p>Formula: BEI-08 − BEI-04.</p></>}<PassControl passed={confidencePassed} onChange={setConfidencePassed} /></section></div>{fields.map((field) => <Prompt key={field.id} field={field} value={values[field.id]} onChange={(value) => { setValues({ ...values, [field.id]: value }); setPassed((current) => { const nextSet = new Set(current); nextSet.delete(field.id); return nextSet; }); }} passed={passed.has(field.id)} onPass={(nextPassed) => setPassed((current) => { const nextSet = new Set(current); if (nextPassed) nextSet.add(field.id); else nextSet.delete(field.id); return nextSet; })} />)}<SaveFooter saving={saving} disabled={!ready} onSave={async () => { await act({ action: "saveResponses", items: [{ semanticFieldId: definition.postMetric.id, value: post, responseStatus: postPassed ? "PASS" : "ANSWERED" }, { semanticFieldId: definition.confidencePost, value: confidence, responseStatus: confidencePassed ? "PASS" : "ANSWERED" }, ...fields.map((field) => ({ semanticFieldId: field.id, value: values[field.id], responseStatus: passed.has(field.id) ? "PASS" : "ANSWERED" }))] }); next(); }} /></div>;
 }
 
-function CanonicalFinalStep({ definition, state, saving, act }: Omit<StepProps, "next"> & { definition: CoreLabDefinition }) {
+function CanonicalFinalStep({
+  definition,
+  state,
+  saving,
+  act,
+  returnTo,
+}: Omit<StepProps, "next"> & { definition: CoreLabDefinition; returnTo: string }) {
   const fields = definition.sections[9];
   const [values, setValues] = useState<Record<string, string>>(() => Object.fromEntries(fields.map((field) => [field.id, valueOf(state, field.id)])));
   const [passed, setPassed] = useState(() => new Set(fields.filter((field) => state.responses[field.id]?.status === "PASS").map((field) => field.id)));
@@ -473,7 +496,7 @@ function CanonicalFinalStep({ definition, state, saving, act }: Omit<StepProps, 
     ["Spending Pause Outcome Profile", `Bought ${String(state.measurements["MON.OUTCOME_BOUGHT"]?.value ?? 0)} · Changed ${String(state.measurements["MON.OUTCOME_CHANGED"]?.value ?? 0)} · Delayed ${String(state.measurements["MON.OUTCOME_DELAYED"]?.value ?? 0)} · Did not purchase ${String(state.measurements["MON.OUTCOME_NOT_PURCHASED"]?.value ?? 0)} · No useful alternative ${String(state.measurements["MON.OUTCOME_NO_ALTERNATIVE"]?.value ?? 0)}`],
     ["Next Spending Pattern to Investigate", displayOf(state, "MON.NEXT_PATTERN.TEXT")],
   ];
-  return <div className="investigation-stack"><section className="surface-card corelab-profile"><div className="section-title"><div><p className="eyebrow">BEI-10 · Behaviour Profile Summary</p><h2>Your results in one view.</h2></div><Badge variant="outline">{definition.shortTitle}</Badge></div><dl>{profileRows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>{fields.map((field) => <Prompt key={field.id} field={field} value={values[field.id]} onChange={(value) => { setValues({ ...values, [field.id]: value }); setPassed((current) => { const nextSet = new Set(current); nextSet.delete(field.id); return nextSet; }); }} passed={passed.has(field.id)} onPass={(nextPassed) => setPassed((current) => { const nextSet = new Set(current); if (nextPassed) nextSet.add(field.id); else nextSet.delete(field.id); return nextSet; })} />)}{completed ? <section className="corelab-certificate"><Check /><p className="eyebrow">{definition.code === "DEC" ? "Decision" : "Spending"} Investigation Complete</p><h2>{definition.certificate.title}</h2><p>This certifies that</p><h3>{state.profile?.displayName || "Learner"}</h3><p>{definition.certificate.completion}</p><div><strong>What was discovered:</strong><ul>{definition.certificate.discoveries.map((item) => <li key={item}>{item}</li>)}</ul></div><p><strong>The most important thing learned:</strong> {displayOf(state, `${prefix}.CERTIFICATE.INSIGHT`)}</p><p>This is not a certificate of perfection. It confirms that you completed and reviewed the investigation.</p><p>Facilitator: ____________________ · Date: {new Date().toLocaleDateString("en-ZA")} · Workbook ID: {definition.workbookId}</p><p>Applied Commerce® · Behaviour Comes Before Results</p><Link href="/">Continue with another available Behaviour Intelligence Lab™ <ArrowRight /></Link></section> : <SaveFooter saving={saving} disabled={!ready} label="Complete investigation" onSave={async () => { await act({ action: "saveResponses", items: fields.map((field) => ({ semanticFieldId: field.id, value: values[field.id], responseStatus: passed.has(field.id) ? "PASS" : "ANSWERED" })) }); await act({ action: "completeLab" }); }} />}</div>;
+  return <div className="investigation-stack"><section className="surface-card corelab-profile"><div className="section-title"><div><p className="eyebrow">BEI-10 · Behaviour Profile Summary</p><h2>Your results in one view.</h2></div><Badge variant="outline">{definition.shortTitle}</Badge></div><dl>{profileRows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>{fields.map((field) => <Prompt key={field.id} field={field} value={values[field.id]} onChange={(value) => { setValues({ ...values, [field.id]: value }); setPassed((current) => { const nextSet = new Set(current); nextSet.delete(field.id); return nextSet; }); }} passed={passed.has(field.id)} onPass={(nextPassed) => setPassed((current) => { const nextSet = new Set(current); if (nextPassed) nextSet.add(field.id); else nextSet.delete(field.id); return nextSet; })} />)}{completed ? <section className="corelab-certificate"><Check /><p className="eyebrow">{definition.code === "DEC" ? "Decision" : "Spending"} Investigation Complete</p><h2>{definition.certificate.title}</h2><p>This certifies that</p><h3>{state.profile?.displayName || "Learner"}</h3><p>{definition.certificate.completion}</p><div><strong>What was discovered:</strong><ul>{definition.certificate.discoveries.map((item) => <li key={item}>{item}</li>)}</ul></div><p><strong>The most important thing learned:</strong> {displayOf(state, `${prefix}.CERTIFICATE.INSIGHT`)}</p><p>This is not a certificate of perfection. It confirms that you completed and reviewed the investigation.</p><p>Facilitator: ____________________ · Date: {new Date().toLocaleDateString("en-ZA")} · Workbook ID: {definition.workbookId}</p><p>Applied Commerce® · Behaviour Comes Before Results</p><Link href={returnTo}>{returnTo === "/labs" ? "Continue with another available Behaviour Intelligence Lab™" : "Return to your learning module"} <ArrowRight /></Link></section> : <SaveFooter saving={saving} disabled={!ready} label="Complete investigation" onSave={async () => { await act({ action: "saveResponses", items: fields.map((field) => ({ semanticFieldId: field.id, value: values[field.id], responseStatus: passed.has(field.id) ? "PASS" : "ANSWERED" })) }); await act({ action: "completeLab" }); }} />}</div>;
 }
 
 /* Legacy generic renderer retained only to protect rollback compatibility. */
