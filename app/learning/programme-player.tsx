@@ -407,17 +407,12 @@ export function ProgrammePlayer({
     return () => window.removeEventListener("beforeunload", guard);
   }, []);
 
-  useLayoutEffect(() => {
+  const restoreHandbookInteractions = useCallback(() => {
     if (!page || section !== "learn" || learnMode !== "reader") return;
     const documentRoot = documentRef.current;
     if (!documentRoot) return;
-    enhanceHandbookDocument(documentRoot, moduleCode, page.id);
-  }, [learnMode, moduleCode, page?.id, section]);
 
-  useLayoutEffect(() => {
-    if (!page || section !== "learn" || learnMode !== "reader") return;
-    const documentRoot = documentRef.current;
-    if (!documentRoot) return;
+    enhanceHandbookDocument(documentRoot, moduleCode, page.id);
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
       .forEach((field) => {
@@ -434,7 +429,31 @@ export function ProgrammePlayer({
           if ("placeholder" in field) field.placeholder = "Captured in the live Lab";
         }
       });
-  }, [drafts, learnMode, page?.id, section, snapshot?.workbookResponses]);
+  }, [drafts, learnMode, moduleCode, page, section, snapshot?.workbookResponses]);
+
+  useLayoutEffect(() => {
+    restoreHandbookInteractions();
+  }, [restoreHandbookInteractions]);
+
+  useEffect(() => {
+    if (!page || section !== "learn" || learnMode !== "reader") return;
+    const documentRoot = documentRef.current;
+    if (!documentRoot || typeof MutationObserver === "undefined") return;
+
+    let repairQueued = false;
+    const observer = new MutationObserver((mutations) => {
+      const contentChanged = mutations.some((mutation) => mutation.type === "childList");
+      if (!contentChanged || repairQueued) return;
+      repairQueued = true;
+      queueMicrotask(() => {
+        repairQueued = false;
+        restoreHandbookInteractions();
+      });
+    });
+
+    observer.observe(documentRoot, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [learnMode, page?.id, restoreHandbookInteractions, section]);
 
   useEffect(() => {
     if (saveState !== "dirty") return;
@@ -492,10 +511,13 @@ export function ProgrammePlayer({
       setError("Complete Habit Lab Phase A before marking Programme Day 3 complete.");
       return;
     }
+
     setCompleting(true);
     if (!(await saveDirtyResponses())) { setCompleting(false); return; }
     setSaving(true);
     setError("");
+
+    let nextPageIndex: number | null = null;
     try {
       const response = await fetch("/api/learning", {
         method: "POST",
@@ -514,13 +536,17 @@ export function ProgrammePlayer({
       }
       mergeSnapshot(data);
       if (programme && selected < programme.treatment.pages.length - 1) {
-        goToProgrammePage(selected + 1);
+        nextPageIndex = selected + 1;
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Programme progress could not be saved.");
     } finally {
       setSaving(false);
       setCompleting(false);
+    }
+
+    if (nextPageIndex !== null) {
+      window.setTimeout(() => goToProgrammePage(nextPageIndex!), 0);
     }
   }
 
