@@ -430,15 +430,14 @@ export function ProgrammePlayer({
 
     add(["Observation days completed"], observedDays, " / 7");
     add(["Missing / unrecorded days", "Missing days"], missingDays, " / 7");
-    add(
-      [
-        "Eligible target opportunities observed",
-        "Eligible opportunities observed",
-        "Eligible spending moments observed",
-        "Eligible decision opportunities observed",
-      ],
-      eligible,
-    );
+    if (moduleCode === "HAB") {
+      add(["Eligible opportunities observed", "Eligible target opportunities observed"], eligible, " / 7");
+    } else {
+      add(
+        ["Eligible opportunities observed", "Eligible spending moments observed", "Eligible decision opportunities observed"],
+        eligible,
+      );
+    }
 
     if (moduleCode === "HAB") {
       add(
@@ -461,10 +460,22 @@ export function ProgrammePlayer({
     }
 
     if (moduleCode === "DEC") {
-      add(
-        ["Decision Pauses Completed", "Decision process checks completed", "Pauses completed", "Full Decision Pauses completed"],
-        completed,
+      const completedEvents = source.events.filter((event) => event.alternativeUsed === true);
+      const pauseTypesKnown = completedEvents.every(
+        (event) => event.details?.pauseType === "Full" || event.details?.pauseType === "Minimum",
       );
+      const fullFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Full").length
+        : null;
+      const minimumFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Minimum").length
+        : null;
+      const full = metricNumber(source, "DEC.FULL_PAUSE_COUNT") ?? fullFromEvents;
+      const minimum = metricNumber(source, "DEC.MINIMUM_PAUSE_COUNT") ?? minimumFromEvents;
+
+      add(["Decision Pauses Completed", "Decision process checks completed", "Pauses completed"], completed);
+      add(["Full Decision Pauses completed"], full ?? "Not separately recorded");
+      add(["Secondary evidence — Minimum Version uses", "Minimum Version uses"], minimum ?? "Not separately recorded");
       add(
         ["Decision Process Adherence Rate", "Pause Initiation Rate", "Adherence Rate", "Actual pause rate"],
         adherence,
