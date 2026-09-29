@@ -4,7 +4,7 @@ import { BisMark } from "@/components/brand/bis-mark";
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -407,31 +407,34 @@ export function ProgrammePlayer({
     return () => window.removeEventListener("beforeunload", guard);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!page || section !== "learn" || learnMode !== "reader") return;
-    const frame = requestAnimationFrame(() => {
-      const documentRoot = documentRef.current;
-      if (!documentRoot) return;
-      enhanceHandbookDocument(documentRoot, moduleCode, page.id);
-      documentRoot
-        .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
-        .forEach((field) => {
-          const id = field.dataset.fieldId;
-          if (!id) return;
-          const savedValue = drafts[id] ?? snapshot?.workbookResponses?.[id]?.value ?? "";
-          if (field instanceof HTMLInputElement && field.type === "checkbox") {
-            field.checked = savedValue === "true" || savedValue === field.value;
-          } else {
-            field.value = savedValue;
-          }
-          if (field.dataset.purpose === "FORMAL_LAB_REFERENCE") {
-            field.disabled = true;
-            if ("placeholder" in field) field.placeholder = "Captured in the live Lab";
-          }
-        });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [drafts, learnMode, moduleCode, page, section, snapshot?.workbookResponses]);
+    const documentRoot = documentRef.current;
+    if (!documentRoot) return;
+    enhanceHandbookDocument(documentRoot, moduleCode, page.id);
+  }, [learnMode, moduleCode, page?.id, section]);
+
+  useLayoutEffect(() => {
+    if (!page || section !== "learn" || learnMode !== "reader") return;
+    const documentRoot = documentRef.current;
+    if (!documentRoot) return;
+    documentRoot
+      .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
+      .forEach((field) => {
+        const id = field.dataset.fieldId;
+        if (!id) return;
+        const savedValue = drafts[id] ?? snapshot?.workbookResponses?.[id]?.value ?? "";
+        if (field instanceof HTMLInputElement && field.type === "checkbox") {
+          field.checked = savedValue === "true" || savedValue === field.value;
+        } else {
+          field.value = savedValue;
+        }
+        if (field.dataset.purpose === "FORMAL_LAB_REFERENCE") {
+          field.disabled = true;
+          if ("placeholder" in field) field.placeholder = "Captured in the live Lab";
+        }
+      });
+  }, [drafts, learnMode, page?.id, section, snapshot?.workbookResponses]);
 
   useEffect(() => {
     if (saveState !== "dirty") return;
@@ -696,7 +699,7 @@ export function ProgrammePlayer({
             </div>
 
             <fieldset className="workbook-fields" disabled={completing}>
-            <article ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
+            <article key={page.id} ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
                   <div dangerouslySetInnerHTML={{ __html: dayThree.intro }} />
