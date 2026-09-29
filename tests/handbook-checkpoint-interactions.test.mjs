@@ -162,7 +162,7 @@ test("system-owned workbook figures never degrade into learner calculation boxes
   assert.match(player, /const pending = "Available after your Lab record is complete"/);
   assert.match(player, /const notRecorded = "Not recorded in your Lab yet"/);
   assert.match(player, /Current Lab record — updates as you record each day/);
-  assert.match(player, /N\\/A — no eligible opportunities/);
+  assert.ok(player.includes("N/A — no eligible opportunities"));
   assert.match(player, /Not separately recorded/);
   assert.match(player, /typeof value === "number"/);
 });
