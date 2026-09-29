@@ -166,3 +166,12 @@ test("system-owned workbook figures never degrade into learner calculation boxes
   assert.match(player, /Not separately recorded/);
   assert.match(player, /typeof value === "number"/);
 });
+
+test("generated paper fields stay unique when the same label appears twice on one page", async () => {
+  const enhancement = await source("app/learning/handbook-document-enhancements.ts");
+
+  assert.match(enhancement, /identitySeed = labelText/);
+  assert.match(enhancement, /const occurrences = new Map<string, number>\(\)/);
+  assert.match(enhancement, /occurrences\.set\(labelText, occurrence\)/);
+  assert.match(enhancement, /`\$\{labelText\}\|\$\{occurrence\}`/);
+});
