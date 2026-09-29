@@ -9,7 +9,6 @@ export type HandbookKnownValue = {
 export type HandbookEnhancementContext = {
   knownValues?: HandbookKnownValue[];
   learnerName?: string;
-  workbookId?: string;
 };
 
 const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
