@@ -73,8 +73,9 @@ type Runtime = {
     startDate: string;
     plannedEndDate: string;
   };
-  events: Array<{ dayNumber: number; eligibleOpportunity: boolean; alternativeUsed: boolean | null }>;
+  events: Array<{ dayNumber: number; eligibleOpportunity: boolean; alternativeUsed: boolean | null; details?: Record<string, unknown> | null }>;
   measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
+  responses?: Record<string, { value: unknown; status: string; responseId?: string; recordedAt?: string }>;
 };
 
 const emptyRuntime = (): Runtime => ({
@@ -90,6 +91,13 @@ function metricNumber(runtime: Runtime | null, code: string) {
   const measurement = runtime?.measurements?.[code];
   if (!measurement || measurement.status === "NA") return null;
   const value = Number(measurement.value);
+  return Number.isFinite(value) ? value : null;
+}
+
+function responseNumber(runtime: Runtime | null, fieldId: string) {
+  const response = runtime?.responses?.[fieldId];
+  if (!response || response.status === "PASS") return null;
+  const value = Number(response.value);
   return Number.isFinite(value) ? value : null;
 }
 
@@ -437,34 +445,79 @@ export function ProgrammePlayer({
         ["Completed replacements", "Replacement routine completed", "Successful replacements"],
         completed,
       );
-      add(["Adherence Rate", "Habit Adherence Rate"], adherence, "%");
+      add(["Adherence Rate", "Habit Adherence Rate", "Actual Adherence Rate"], adherence, "%");
       add(["Prediction Accuracy", "Habit Prediction Accuracy"], accuracy, " / 100");
       add(["Predicted Adherence Rate", "Predicted Replacement Rate"], predictedValue, "%");
+      add(
+        ["Your control rating before the experiment was", "Control rating before the experiment"],
+        responseNumber(source, "HAB.CONTROL.PRE"),
+        " /10",
+      );
+      add(
+        ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
+        responseNumber(source, "HAB.EQUATION.CONFIDENCE_PRE"),
+        " /10",
+      );
     }
 
     if (moduleCode === "DEC") {
       add(
-        ["Decision Pauses Completed", "Decision process checks completed", "Pauses completed"],
+        ["Decision Pauses Completed", "Decision process checks completed", "Pauses completed", "Full Decision Pauses completed"],
         completed,
       );
-      add(["Decision Process Adherence Rate", "Pause Initiation Rate"], adherence, "%");
+      add(
+        ["Decision Process Adherence Rate", "Pause Initiation Rate", "Adherence Rate", "Actual pause rate"],
+        adherence,
+        "%",
+      );
       add(["Decision Process Prediction Accuracy", "Prediction Accuracy"], accuracy, " / 100");
-      add(["Predicted Decision Pause Rate", "Predicted Outcome Rate"], predictedValue, "%");
-      add(["Option Expansion Count"], metricNumber(source, "DEC.OPTION_EXPANSION_COUNT"));
+      add(
+        ["Predicted Decision Pause Rate", "Predicted Outcome Rate", "Predicted pause rate"],
+        predictedValue,
+        "%",
+      );
+      add(
+        ["Option Expansion Count", "Full Decision Pauses where an additional option appeared"],
+        metricNumber(source, "DEC.OPTION_EXPANSION_COUNT"),
+      );
       add(["Option Expansion Rate"], metricNumber(source, "DEC.OPTION_EXPANSION_RATE"), "%");
+      add(
+        ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
+        responseNumber(source, "DEC.EQUATION.CONFIDENCE_PRE"),
+        " /10",
+      );
+      add(
+        ["Your deliberateness rating before the experiment was", "Decision deliberateness before the experiment"],
+        responseNumber(source, "DEC.DELIBERATENESS.PRE"),
+        " /10",
+      );
     }
 
     if (moduleCode === "MON") {
       const full = metricNumber(source, "MON.FULL_PAUSE_COUNT");
       const minimum = metricNumber(source, "MON.MINIMUM_PAUSE_COUNT");
       const fullRate = eligible > 0 && full !== null ? Math.round((full / eligible) * 100) : null;
-      add(["Pauses initiated (Minimum or Full)", "Attention Checks completed (Minimum or Full)"], completed);
-      add(["Pause Initiation Rate"], adherence, "%");
+      add(["Pauses initiated (Minimum or Full)"], completed);
+      add(["Pause Initiation Rate", "Actual Pause Initiation Rate"], adherence, "%");
       add(["Full Pauses completed"], full);
       add(["Minimum Pauses completed"], minimum);
       add(["Full Pause Completion Rate"], fullRate, "%");
       add(["Spending Pause Prediction Accuracy", "Prediction Accuracy"], accuracy, " / 100");
-      add(["Predicted Pause Rate", "Predicted Outcome Rate"], predictedValue, "%");
+      add(
+        ["Predicted Pause Rate", "Predicted Outcome Rate", "Predicted Pause Initiation Rate"],
+        predictedValue,
+        "%",
+      );
+      add(
+        ["Your awareness rating before the experiment was", "Money awareness before the experiment"],
+        responseNumber(source, "MON.AWARENESS.PRE"),
+        " /10",
+      );
+      add(
+        ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
+        responseNumber(source, "MON.EQUATION.CONFIDENCE_PRE"),
+        " /10",
+      );
     }
 
     return values;
