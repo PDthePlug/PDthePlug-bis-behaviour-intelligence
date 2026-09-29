@@ -216,3 +216,26 @@ a.bis-module-card:hover{
 @media(prefers-reduced-motion:reduce){
   .bis-module-card{transition:none}
 }
+
+.bis-module-card-foot>div{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.bis-module-card-foot small{
+  color:#8a918d;
+  font-size:9px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.bis-module-card-foot small.connected{
+  color:#557168;
+}
+@media(max-width:420px){
+  .bis-module-card-foot>div{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:5px;
+  }
+}
