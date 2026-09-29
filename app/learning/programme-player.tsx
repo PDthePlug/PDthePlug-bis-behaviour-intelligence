@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
-import { enhanceHandbookDocument } from "./handbook-document-enhancements";
+import { enhanceHandbookDocument, type HandbookKnownValue } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
 
 type Edition = HabitProgramme["edition"];
@@ -76,6 +76,31 @@ type Runtime = {
   events: Array<{ dayNumber: number; eligibleOpportunity: boolean; alternativeUsed: boolean | null }>;
   measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
 };
+
+const emptyRuntime = (): Runtime => ({
+  roles: [],
+  enrolment: null,
+  hypothesis: null,
+  experiment: null,
+  events: [],
+  measurements: {},
+});
+
+function metricNumber(runtime: Runtime | null, code: string) {
+  const measurement = runtime?.measurements?.[code];
+  if (!measurement || measurement.status === "NA") return null;
+  const value = Number(measurement.value);
+  return Number.isFinite(value) ? value : null;
+}
+
+function localDateLabel() {
+  return new Intl.DateTimeFormat("en-ZA", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
+}
+
 
 
 
@@ -204,6 +229,7 @@ export function ProgrammePlayer({
 }) {
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const [moduleRuntime, setModuleRuntime] = useState<Runtime | null>(null);
   const [programme, setProgramme] = useState<HabitProgramme | null>(null);
   const [selected, setSelected] = useState(0);
   const [section, setSection] = useState<AppSection>(initialSection);
@@ -236,6 +262,7 @@ export function ProgrammePlayer({
       try {
         let learning: LearningSnapshot;
         let live: Runtime;
+        let moduleLive: Runtime | null = null;
         let loaded: HabitProgramme;
 
         if (previewVersionId && previewEdition) {
@@ -277,25 +304,38 @@ export function ProgrammePlayer({
             events: [],
             measurements: {},
           };
+          moduleLive = moduleCode === "HAB" ? live : null;
         } else {
-          const [learningResponse, runtimeResponse] = await Promise.all([
+          const moduleRuntimePromise = ["DEC", "MON"].includes(moduleCode)
+            ? fetch(`/api/labs?lab=${encodeURIComponent(moduleCode)}`, {
+                cache: "no-store",
+                signal: controller.signal,
+              })
+                .then(async (response) => response.ok ? await response.json() as Runtime : null)
+                .catch(() => null)
+            : Promise.resolve<Runtime | null>(null);
+
+          const [learningResponse, runtimeResponse, moduleRuntimeResult] = await Promise.all([
             fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
             fetch("/api/bis", { cache: "no-store", signal: controller.signal }),
+            moduleRuntimePromise,
           ]);
           learning = (await learningResponse.json()) as LearningSnapshot & { error?: string };
-          live = (await runtimeResponse.json()) as Runtime & { error?: string };
           if (!learningResponse.ok) {
             throw new Error((learning as LearningSnapshot & { error?: string }).error || "Your learning record could not be loaded.");
           }
-          if (!runtimeResponse.ok) {
-            throw new Error((live as Runtime & { error?: string }).error || "Your Habit Lab record could not be loaded.");
-          }
+
+          live = runtimeResponse.ok
+            ? await runtimeResponse.json() as Runtime
+            : emptyRuntime();
+          moduleLive = moduleCode === "HAB" ? live : moduleRuntimeResult;
           loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode);
         }
 
         if (controller.signal.aborted) return;
         setSnapshot(learning);
         setRuntime(live);
+        setModuleRuntime(moduleLive);
         setProgramme(loaded);
         setDrafts(
           Object.fromEntries(
@@ -355,8 +395,81 @@ export function ProgrammePlayer({
       ),
     [snapshot, release, moduleCode],
   );
-  const experimentDay = currentExperimentDay(runtime?.experiment ?? null);
+  const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
+  const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
   const phaseAComplete = previewMode || Boolean(runtime?.enrolment?.phaseACompletedAt || runtime?.experiment);
+  const knownValues = useMemo<HandbookKnownValue[]>(() => {
+    const source = activeModuleRuntime;
+    if (!source?.experiment) return [];
+
+    const values: HandbookKnownValue[] = [];
+    const add = (labels: string[], value: number | string | null, suffix = "", note = "From your Lab") => {
+      if (value === null || value === undefined || value === "") return;
+      values.push({ labels, value: `${value}${suffix}`, source: note });
+    };
+
+    const observedDays = new Set(source.events.map((event) => event.dayNumber)).size;
+    const missingDays = Math.max(0, 7 - observedDays);
+    const eligible = metricNumber(source, `${moduleCode}.EXPERIMENT.OPPORTUNITY_COUNT`)
+      ?? source.events.filter((event) => event.eligibleOpportunity).length;
+    const completed = moduleCode === "HAB"
+      ? metricNumber(source, "HAB.EXPERIMENT.REPLACEMENT_COUNT")
+      : metricNumber(source, `${moduleCode}.EXPERIMENT.PAUSE_COUNT`);
+    const adherence = metricNumber(source, `${moduleCode}.BEI06`);
+    const accuracy = metricNumber(source, `${moduleCode}.BEI03`);
+    const predicted = Number(source.experiment.predictedValue);
+    const predictedValue = Number.isFinite(predicted) ? predicted : null;
+
+    add(["Observation days completed"], observedDays, " / 7");
+    add(["Missing / unrecorded days", "Missing days"], missingDays, " / 7");
+    add(
+      [
+        "Eligible target opportunities observed",
+        "Eligible opportunities observed",
+        "Eligible spending moments observed",
+        "Eligible decision opportunities observed",
+      ],
+      eligible,
+    );
+
+    if (moduleCode === "HAB") {
+      add(
+        ["Completed replacements", "Replacement routine completed", "Successful replacements"],
+        completed,
+      );
+      add(["Adherence Rate", "Habit Adherence Rate"], adherence, "%");
+      add(["Prediction Accuracy", "Habit Prediction Accuracy"], accuracy, " / 100");
+      add(["Predicted Adherence Rate", "Predicted Replacement Rate"], predictedValue, "%");
+    }
+
+    if (moduleCode === "DEC") {
+      add(
+        ["Decision Pauses Completed", "Decision process checks completed", "Pauses completed"],
+        completed,
+      );
+      add(["Decision Process Adherence Rate", "Pause Initiation Rate"], adherence, "%");
+      add(["Decision Process Prediction Accuracy", "Prediction Accuracy"], accuracy, " / 100");
+      add(["Predicted Decision Pause Rate", "Predicted Outcome Rate"], predictedValue, "%");
+      add(["Option Expansion Count"], metricNumber(source, "DEC.OPTION_EXPANSION_COUNT"));
+      add(["Option Expansion Rate"], metricNumber(source, "DEC.OPTION_EXPANSION_RATE"), "%");
+    }
+
+    if (moduleCode === "MON") {
+      const full = metricNumber(source, "MON.FULL_PAUSE_COUNT");
+      const minimum = metricNumber(source, "MON.MINIMUM_PAUSE_COUNT");
+      const fullRate = eligible > 0 && full !== null ? Math.round((full / eligible) * 100) : null;
+      add(["Pauses initiated (Minimum or Full)", "Attention Checks completed (Minimum or Full)"], completed);
+      add(["Pause Initiation Rate"], adherence, "%");
+      add(["Full Pauses completed"], full);
+      add(["Minimum Pauses completed"], minimum);
+      add(["Full Pause Completion Rate"], fullRate, "%");
+      add(["Spending Pause Prediction Accuracy", "Prediction Accuracy"], accuracy, " / 100");
+      add(["Predicted Pause Rate", "Predicted Outcome Rate"], predictedValue, "%");
+    }
+
+    return values;
+  }, [activeModuleRuntime, moduleCode]);
+  const handbookDateLabel = localDateLabel();
   const progressPercent = programme
     ? Math.round(
         (programme.treatment.pages.filter((item) => completed.has(item.id)).length /
@@ -455,7 +568,12 @@ export function ProgrammePlayer({
     const documentRoot = documentRef.current;
     if (!documentRoot) return;
 
-    enhanceHandbookDocument(documentRoot, moduleCode, page.id);
+    enhanceHandbookDocument(documentRoot, moduleCode, page.id, {
+      knownValues,
+      learnerName: snapshot?.profile.displayName,
+      dateLabel: handbookDateLabel,
+      workbookId: programme?.handbookId,
+    });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
       .forEach((field) => {
@@ -472,7 +590,18 @@ export function ProgrammePlayer({
           if ("placeholder" in field) field.placeholder = "Captured in the live Lab";
         }
       });
-  }, [drafts, learnMode, moduleCode, page, section, snapshot?.workbookResponses]);
+  }, [
+    drafts,
+    handbookDateLabel,
+    knownValues,
+    learnMode,
+    moduleCode,
+    page,
+    programme?.handbookId,
+    section,
+    snapshot?.profile.displayName,
+    snapshot?.workbookResponses,
+  ]);
 
   useLayoutEffect(() => {
     restoreHandbookInteractions();
