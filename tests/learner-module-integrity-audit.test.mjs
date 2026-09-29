@@ -133,19 +133,41 @@ test("representative problem areas from learner QA remain inside the audited cor
 });
 
 
-test("audit Day 8 system-owned blanks in live-Lab handbooks", async () => {
-  const rows = [];
-  for (const item of manifest.handbooks.filter((entry) => ["HAB","DEC","MON"].includes(entry.code))) {
-    const programme = await decode(item.asset);
-    const page = programme.treatment.pages.find((entry) => entry.key === "Day 8");
-    const text = strip(page?.html ?? "");
-    const labels = text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => /_{3,}/.test(line))
-      .filter((line) => /(?:days?|opportunit|rate|accuracy|count|completed|pauses?|replacements?|outcome|prediction|minimum|full)/i.test(line));
-    rows.push({ code: item.code, edition: item.edition, labels });
+test("Day 8 system-owned figures have explicit live-Lab auto-fill contracts", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+  const required = [
+    "Eligible opportunities observed",
+    "Adherence Rate",
+    "Prediction Accuracy",
+    "Your control rating before the experiment was",
+    "Full Decision Pauses completed",
+    "Secondary evidence — Minimum Version uses",
+    "Predicted pause rate",
+    "Actual pause rate",
+    "Full Decision Pauses where an additional option appeared",
+    "Option Expansion Rate",
+    "Your deliberateness rating before the experiment was",
+    "Observation days completed",
+    "Missing / unrecorded days",
+    "Pauses initiated (Minimum or Full)",
+    "Pause Initiation Rate",
+    "Full Pauses completed",
+    "Full Pause Completion Rate",
+    "Minimum Pauses completed",
+    "Predicted Pause Initiation Rate",
+    "Actual Pause Initiation Rate",
+    "Your awareness rating before the experiment was",
+    "Your confidence rating before the experiment was",
+  ];
+
+  for (const label of required) {
+    assert.ok(player.includes(label), `Missing Day 8 auto-fill contract: ${label}`);
   }
-  console.log("BIS_DAY8_SYSTEM_BLANKS=" + JSON.stringify(rows));
-  assert.equal(rows.length, 9);
+
+  assert.match(player, /responseNumber\(source, "HAB\.CONTROL\.PRE"\)/);
+  assert.match(player, /responseNumber\(source, "DEC\.DELIBERATENESS\.PRE"\)/);
+  assert.match(player, /responseNumber\(source, "DEC\.EQUATION\.CONFIDENCE_PRE"\)/);
+  assert.match(player, /responseNumber\(source, "MON\.AWARENESS\.PRE"\)/);
+  assert.match(player, /responseNumber\(source, "MON\.EQUATION\.CONFIDENCE_PRE"\)/);
+  assert.match(player, /Not separately recorded/);
 });
