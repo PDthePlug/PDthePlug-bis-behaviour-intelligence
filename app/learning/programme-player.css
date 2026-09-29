@@ -280,3 +280,15 @@
     height:44px;
   }
 }
+
+.handbook-table-system-value strong{
+  display:block;
+  color:var(--p-accent);
+  font-size:14px;
+}
+.handbook-table-system-value small{
+  display:block;
+  margin-top:3px;
+  color:#7a817d;
+  font-size:9px;
+}
