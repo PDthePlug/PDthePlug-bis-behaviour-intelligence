@@ -93,14 +93,6 @@ function metricNumber(runtime: Runtime | null, code: string) {
   return Number.isFinite(value) ? value : null;
 }
 
-function localDateLabel() {
-  return new Intl.DateTimeFormat("en-ZA", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date());
-}
-
 
 
 
@@ -469,7 +461,6 @@ export function ProgrammePlayer({
 
     return values;
   }, [activeModuleRuntime, moduleCode]);
-  const handbookDateLabel = localDateLabel();
   const progressPercent = programme
     ? Math.round(
         (programme.treatment.pages.filter((item) => completed.has(item.id)).length /
@@ -571,7 +562,6 @@ export function ProgrammePlayer({
     enhanceHandbookDocument(documentRoot, moduleCode, page.id, {
       knownValues,
       learnerName: snapshot?.profile.displayName,
-      dateLabel: handbookDateLabel,
       workbookId: programme?.handbookId,
     });
     documentRoot
@@ -592,7 +582,6 @@ export function ProgrammePlayer({
       });
   }, [
     drafts,
-    handbookDateLabel,
     knownValues,
     learnMode,
     moduleCode,
