@@ -102,10 +102,14 @@ test("digital hardening removes orphan controls and upgrades paper-era interacti
   const css = await source("app/learning/programme-player.css");
 
   assert.match(enhancement, /cleanOrphanedResponseControls/);
+  assert.match(enhancement, /removeUnboundGenericResponses/);
   assert.match(enhancement, /previous instanceof HTMLTextAreaElement/);
   assert.match(enhancement, /upgradePrintableCheckboxes/);
   assert.match(enhancement, /input\.type = exclusiveGroup \? "radio" : "checkbox"/);
   assert.match(enhancement, /convertSimplePaperBlanks/);
+  assert.match(enhancement, /convertNumberedPaperBlanks/);
+  assert.match(enhancement, /convertPriorityWorksheetRows/);
+  assert.match(enhancement, /applyKnownTableValues/);
   assert.match(enhancement, /inputType: "text" \| "number" \| "date"/);
   assert.match(enhancement, /enhanceTables/);
   assert.match(enhancement, /handbook-data-table/);
