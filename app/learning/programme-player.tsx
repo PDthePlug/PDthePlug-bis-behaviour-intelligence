@@ -931,7 +931,7 @@ export function ProgrammePlayer({
         <div className="prototype-top-context">
           {previewMode ? (
             <strong>Preview mode · nothing here is saved to learner records</strong>
-          ) : runtime.experiment?.status === "ACTIVE" && experimentDay ? (
+          ) : activeModuleRuntime?.experiment?.status === "ACTIVE" && experimentDay ? (
             <strong>Experiment Day {experimentDay} of 7</strong>
           ) : null}
         </div>
@@ -994,17 +994,21 @@ export function ProgrammePlayer({
                 </article>
               ) : null}
 
-              {moduleCode === "HAB" && runtime.experiment ? (
+              {activeModuleRuntime?.experiment && moduleLabIsLive ? (
                 <article className="prototype-card prototype-action-card">
                   <CalendarDays />
                   <p className="prototype-eyebrow">Real-world test</p>
-                  <h3>{runtime.events.length}/7 observation days recorded.</h3>
-                  <p>No opportunity is valid evidence. The experiment has its own clock.</p>
+                  <h3>{activeModuleRuntime.events.length}/7 observation days recorded.</h3>
+                  <p>No matching situation is valid evidence. The experiment has its own clock.</p>
                   <Link
                     className="prototype-btn soft"
-                    href="/habit-lab/experiment?returnTo=%2Fhabit"
+                    href={
+                      moduleCode === "HAB"
+                        ? labHrefWithReturn("/habit-lab/experiment", learningReturnTo)
+                        : moduleLabHref ?? "/labs"
+                    }
                   >
-                    Open experiment <ArrowRight />
+                    {moduleCode === "HAB" ? "Open experiment" : "Open live Lab"} <ArrowRight />
                   </Link>
                 </article>
               ) : null}
