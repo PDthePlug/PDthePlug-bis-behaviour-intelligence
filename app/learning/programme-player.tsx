@@ -933,7 +933,7 @@ export function ProgrammePlayer({
               </section>
             ) : null}
 
-            <fieldset className="workbook-fields" disabled={completing}>
+            <fieldset className="workbook-fields" disabled={completing || (labSequenceLocked && selected > dayThreeIndex)}>
             <article key={page.id} ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
