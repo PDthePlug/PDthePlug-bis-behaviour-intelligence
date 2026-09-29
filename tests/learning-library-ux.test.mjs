@@ -61,3 +61,14 @@ test("delivery edition stays in the data model and Profile but not repeated lear
   assert.match(profile, /Workplace Edition/);
 });
 
+
+test("learning library distinguishes handbook availability from Lab readiness", async () => {
+  const library = await source("app/catalogue/module-library.tsx");
+  const css = await source("app/catalogue/catalogue.css");
+
+  assert.match(library, /Lab connected/);
+  assert.match(library, /Lab coming soon/);
+  assert.match(library, /entry\.kind === "LAB"/);
+  assert.match(library, /item\.labStatus === "live"/);
+  assert.match(css, /bis-module-card-foot small\.connected/);
+});

@@ -105,6 +105,15 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
           const open = dynamic ? Boolean(runtime?.routePath) : isModuleOpen(item, mode);
           const href = dynamic ? runtime?.routePath ?? null : moduleHref(item, mode);
           const displayStatus = dynamic ? "live" : status;
+          const liveLabRuntime = runtimeItems.find((entry) =>
+            entry.code === item.code &&
+            entry.kind === "LAB" &&
+            entry.live &&
+            Boolean(entry.routePath),
+          );
+          const labConnected =
+            Boolean(liveLabRuntime) ||
+            (item.labStatus === "live" && Boolean(item.labHref));
           const Icon = mode === "learning" ? BookOpen : FlaskConical;
 
           const body = (
@@ -118,7 +127,14 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
                 <h3>{item.title}</h3>
               </div>
               <div className="bis-module-card-foot">
-                <span className={open ? "open" : ""}>{statusLabel(mode, displayStatus)}</span>
+                <div>
+                  <span className={open ? "open" : ""}>{statusLabel(mode, displayStatus)}</span>
+                  {mode === "learning" && open ? (
+                    <small className={labConnected ? "connected" : ""}>
+                      {labConnected ? "Lab connected" : "Lab coming soon"}
+                    </small>
+                  ) : null}
+                </div>
                 {open ? <ArrowRight aria-hidden="true" /> : null}
               </div>
             </>

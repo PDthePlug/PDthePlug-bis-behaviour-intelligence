@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
-import { enhanceHandbookDocument } from "./handbook-document-enhancements";
+import { enhanceHandbookDocument, type HandbookKnownValue } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
 
 type Edition = HabitProgramme["edition"];
@@ -73,9 +73,34 @@ type Runtime = {
     startDate: string;
     plannedEndDate: string;
   };
-  events: Array<{ dayNumber: number; eligibleOpportunity: boolean; alternativeUsed: boolean | null }>;
+  events: Array<{ dayNumber: number; eligibleOpportunity: boolean; alternativeUsed: boolean | null; details?: Record<string, unknown> | null }>;
   measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
+  responses?: Record<string, { value: unknown; status: string; responseId?: string; recordedAt?: string }>;
 };
+
+const emptyRuntime = (): Runtime => ({
+  roles: [],
+  enrolment: null,
+  hypothesis: null,
+  experiment: null,
+  events: [],
+  measurements: {},
+});
+
+function metricNumber(runtime: Runtime | null, code: string) {
+  const measurement = runtime?.measurements?.[code];
+  if (!measurement || measurement.status === "NA") return null;
+  const value = Number(measurement.value);
+  return Number.isFinite(value) ? value : null;
+}
+
+function responseNumber(runtime: Runtime | null, fieldId: string) {
+  const response = runtime?.responses?.[fieldId];
+  if (!response || response.status === "PASS") return null;
+  const value = Number(response.value);
+  return Number.isFinite(value) ? value : null;
+}
+
 
 
 
@@ -204,6 +229,7 @@ export function ProgrammePlayer({
 }) {
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const [moduleRuntime, setModuleRuntime] = useState<Runtime | null>(null);
   const [programme, setProgramme] = useState<HabitProgramme | null>(null);
   const [selected, setSelected] = useState(0);
   const [section, setSection] = useState<AppSection>(initialSection);
@@ -236,6 +262,7 @@ export function ProgrammePlayer({
       try {
         let learning: LearningSnapshot;
         let live: Runtime;
+        let moduleLive: Runtime | null = null;
         let loaded: HabitProgramme;
 
         if (previewVersionId && previewEdition) {
@@ -277,25 +304,38 @@ export function ProgrammePlayer({
             events: [],
             measurements: {},
           };
+          moduleLive = moduleCode === "HAB" ? live : null;
         } else {
-          const [learningResponse, runtimeResponse] = await Promise.all([
+          const moduleRuntimePromise = ["DEC", "MON"].includes(moduleCode)
+            ? fetch(`/api/labs?lab=${encodeURIComponent(moduleCode)}`, {
+                cache: "no-store",
+                signal: controller.signal,
+              })
+                .then(async (response) => response.ok ? await response.json() as Runtime : null)
+                .catch(() => null)
+            : Promise.resolve<Runtime | null>(null);
+
+          const [learningResponse, runtimeResponse, moduleRuntimeResult] = await Promise.all([
             fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
             fetch("/api/bis", { cache: "no-store", signal: controller.signal }),
+            moduleRuntimePromise,
           ]);
           learning = (await learningResponse.json()) as LearningSnapshot & { error?: string };
-          live = (await runtimeResponse.json()) as Runtime & { error?: string };
           if (!learningResponse.ok) {
             throw new Error((learning as LearningSnapshot & { error?: string }).error || "Your learning record could not be loaded.");
           }
-          if (!runtimeResponse.ok) {
-            throw new Error((live as Runtime & { error?: string }).error || "Your Habit Lab record could not be loaded.");
-          }
+
+          live = runtimeResponse.ok
+            ? await runtimeResponse.json() as Runtime
+            : emptyRuntime();
+          moduleLive = moduleCode === "HAB" ? live : moduleRuntimeResult;
           loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode);
         }
 
         if (controller.signal.aborted) return;
         setSnapshot(learning);
         setRuntime(live);
+        setModuleRuntime(moduleLive);
         setProgramme(loaded);
         setDrafts(
           Object.fromEntries(
@@ -341,6 +381,8 @@ export function ProgrammePlayer({
 
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
+  const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
+  const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const completed = useMemo(
     () =>
       new Set(
@@ -355,8 +397,234 @@ export function ProgrammePlayer({
       ),
     [snapshot, release, moduleCode],
   );
-  const experimentDay = currentExperimentDay(runtime?.experiment ?? null);
-  const phaseAComplete = previewMode || Boolean(runtime?.enrolment?.phaseACompletedAt || runtime?.experiment);
+  const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
+  const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
+  const labPhaseAComplete =
+    previewMode ||
+    Boolean(activeModuleRuntime?.enrolment?.phaseACompletedAt || activeModuleRuntime?.experiment);
+  const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
+  const labSequenceLocked =
+    !previewMode &&
+    !labPhaseAComplete &&
+    dayThreeIndex >= 0 &&
+    selected >= dayThreeIndex;
+  const knownValues = useMemo<HandbookKnownValue[]>(() => {
+    const source = activeModuleRuntime;
+    if (!source) return [];
+
+    const values: HandbookKnownValue[] = [];
+    const add = (labels: string[], value: number | string | null, suffix = "", note = "From your Lab") => {
+      if (value === null || value === undefined || value === "") return;
+      values.push({
+        labels,
+        value: typeof value === "number" ? `${value}${suffix}` : String(value),
+        source: note,
+      });
+    };
+
+    const hasExperiment = Boolean(source.experiment);
+    const pending = "Available after your Lab record is complete";
+    const notRecorded = "Not recorded in your Lab yet";
+    const observedDays = hasExperiment ? new Set(source.events.map((event) => event.dayNumber)).size : null;
+    const missingDays = observedDays === null ? null : Math.max(0, 7 - observedDays);
+    const eligible = hasExperiment
+      ? metricNumber(source, `${moduleCode}.EXPERIMENT.OPPORTUNITY_COUNT`)
+        ?? source.events.filter((event) => event.eligibleOpportunity).length
+      : null;
+    const completedFromEvents = hasExperiment
+      ? source.events.filter((event) => event.eligibleOpportunity && event.alternativeUsed === true).length
+      : null;
+    const completed = hasExperiment
+      ? moduleCode === "HAB"
+        ? metricNumber(source, "HAB.EXPERIMENT.REPLACEMENT_COUNT") ?? completedFromEvents
+        : metricNumber(source, `${moduleCode}.EXPERIMENT.PAUSE_COUNT`) ?? completedFromEvents
+      : null;
+    const measuredAdherence = metricNumber(source, `${moduleCode}.BEI06`);
+    const adherence = measuredAdherence
+      ?? (eligible !== null && eligible > 0 && completed !== null
+        ? Math.round((completed / eligible) * 100)
+        : null);
+    const measuredAccuracy = metricNumber(source, `${moduleCode}.BEI03`);
+    const predicted = source.experiment ? Number(source.experiment.predictedValue) : Number.NaN;
+    const predictedValue = Number.isFinite(predicted) ? predicted : null;
+    const accuracy = measuredAccuracy
+      ?? (adherence !== null && predictedValue !== null
+        ? Math.max(0, 100 - Math.abs(predictedValue - adherence))
+        : null);
+    const labDataNote =
+      observedDays !== null && observedDays < 7
+        ? "Current Lab record — updates as you record each day"
+        : "From your Lab";
+    const systemFigure = (value: number | null) => {
+      if (value !== null) return value;
+      if (hasExperiment && observedDays === 7 && eligible === 0) return "N/A — no eligible opportunities";
+      return pending;
+    };
+
+    add(["Observation days completed"], observedDays ?? pending, " / 7", labDataNote);
+    add(["Missing / unrecorded days", "Missing days"], missingDays ?? pending, " / 7", labDataNote);
+    if (moduleCode === "HAB") {
+      add(["Eligible opportunities observed", "Eligible target opportunities observed"], eligible ?? pending, " / 7", labDataNote);
+    } else {
+      add(
+        ["Eligible opportunities observed", "Eligible spending moments observed", "Eligible decision opportunities observed"],
+        eligible ?? pending,
+        "",
+        labDataNote,
+      );
+    }
+
+    if (moduleCode === "HAB") {
+      add(
+        ["Completed replacements", "Replacement routine completed", "Successful replacements"],
+        completed ?? pending,
+        "",
+        labDataNote,
+      );
+      add(["Adherence Rate", "Habit Adherence Rate", "Actual Adherence Rate"], systemFigure(adherence), "%", labDataNote);
+      add(["Prediction Accuracy", "Habit Prediction Accuracy"], systemFigure(accuracy), " / 100", labDataNote);
+      add(["Predicted Adherence Rate", "Predicted Replacement Rate"], predictedValue ?? notRecorded, "%", labDataNote);
+      add(
+        ["Your control rating before the experiment was", "Control rating before the experiment"],
+        responseNumber(source, "HAB.CONTROL.PRE") ?? notRecorded,
+        " /10",
+      );
+      add(
+        ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
+        responseNumber(source, "HAB.EQUATION.CONFIDENCE_PRE") ?? notRecorded,
+        " /10",
+      );
+    }
+
+    if (moduleCode === "DEC") {
+      const completedEvents = source.events.filter((event) => event.alternativeUsed === true);
+      const pauseTypesKnown = hasExperiment && completedEvents.every(
+        (event) => event.details?.pauseType === "Full" || event.details?.pauseType === "Minimum",
+      );
+      const fullFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Full").length
+        : null;
+      const minimumFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Minimum").length
+        : null;
+      const full = pauseTypesKnown
+        ? metricNumber(source, "DEC.FULL_PAUSE_COUNT") ?? fullFromEvents
+        : null;
+      const minimum = pauseTypesKnown
+        ? metricNumber(source, "DEC.MINIMUM_PAUSE_COUNT") ?? minimumFromEvents
+        : null;
+
+      add(["Decision Pauses Completed", "Decision process checks completed", "Pauses completed"], completed ?? pending, "", labDataNote);
+      add(["Full Decision Pauses completed"], full ?? "Not separately recorded");
+      add(["Secondary evidence — Minimum Version uses", "Minimum Version uses"], minimum ?? "Not separately recorded");
+      add(
+        ["Decision Process Adherence Rate", "Pause Initiation Rate", "Adherence Rate", "Actual pause rate"],
+        systemFigure(adherence),
+        "%",
+        labDataNote,
+      );
+      add(["Decision Process Prediction Accuracy", "Prediction Accuracy"], systemFigure(accuracy), " / 100", labDataNote);
+      add(
+        ["Predicted Decision Pause Rate", "Predicted Outcome Rate", "Predicted pause rate"],
+        predictedValue ?? notRecorded,
+        "%",
+        labDataNote,
+      );
+      const expandedFullPauses = pauseTypesKnown
+        ? completedEvents.filter(
+            (event) => event.details?.pauseType === "Full" && event.details?.extraOption === true,
+          ).length
+        : null;
+      const expansionCount = pauseTypesKnown
+        ? metricNumber(source, "DEC.OPTION_EXPANSION_COUNT") ?? expandedFullPauses
+        : null;
+      const expansionRate = pauseTypesKnown && full !== null && full > 0 && expansionCount !== null
+        ? metricNumber(source, "DEC.OPTION_EXPANSION_RATE")
+          ?? Math.round((expansionCount / full) * 100)
+        : null;
+      add(
+        ["Option Expansion Count", "Full Decision Pauses where an additional option appeared"],
+        pauseTypesKnown ? expansionCount ?? 0 : hasExperiment ? "Not separately recorded" : pending,
+        "",
+        labDataNote,
+      );
+      add(
+        ["Option Expansion Rate"],
+        pauseTypesKnown
+          ? full !== null && full > 0
+            ? expansionRate ?? pending
+            : "N/A — no Full Pauses recorded"
+          : hasExperiment ? "Not separately recorded" : pending,
+        "%",
+        labDataNote,
+      );
+      add(
+        ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
+        responseNumber(source, "DEC.EQUATION.CONFIDENCE_PRE") ?? notRecorded,
+        " /10",
+      );
+      add(
+        ["Your deliberateness rating before the experiment was", "Decision deliberateness before the experiment"],
+        responseNumber(source, "DEC.DELIBERATENESS.PRE") ?? notRecorded,
+        " /10",
+      );
+    }
+
+    if (moduleCode === "MON") {
+      const completedEvents = source.events.filter((event) => event.alternativeUsed === true);
+      const pauseTypesKnown = hasExperiment && completedEvents.every(
+        (event) => event.details?.pauseType === "Full" || event.details?.pauseType === "Minimum",
+      );
+      const fullFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Full").length
+        : null;
+      const minimumFromEvents = pauseTypesKnown
+        ? completedEvents.filter((event) => event.details?.pauseType === "Minimum").length
+        : null;
+      const full = pauseTypesKnown
+        ? metricNumber(source, "MON.FULL_PAUSE_COUNT") ?? fullFromEvents
+        : null;
+      const minimum = pauseTypesKnown
+        ? metricNumber(source, "MON.MINIMUM_PAUSE_COUNT") ?? minimumFromEvents
+        : null;
+      const fullRate = eligible !== null && eligible > 0 && full !== null
+        ? Math.round((full / eligible) * 100)
+        : null;
+      add(["Pauses initiated (Minimum or Full)"], completed ?? pending, "", labDataNote);
+      add(["Pause Initiation Rate", "Actual Pause Initiation Rate"], systemFigure(adherence), "%", labDataNote);
+      add(["Full Pauses completed"], pauseTypesKnown ? full ?? 0 : hasExperiment ? "Not separately recorded" : pending, "", labDataNote);
+      add(["Minimum Pauses completed"], pauseTypesKnown ? minimum ?? 0 : hasExperiment ? "Not separately recorded" : pending, "", labDataNote);
+      add(
+        ["Full Pause Completion Rate"],
+        pauseTypesKnown
+          ? eligible !== null && eligible > 0
+            ? fullRate ?? pending
+            : "N/A — no eligible opportunities"
+          : hasExperiment ? "Not separately recorded" : pending,
+        "%",
+        labDataNote,
+      );
+      add(["Spending Pause Prediction Accuracy", "Prediction Accuracy"], systemFigure(accuracy), " / 100", labDataNote);
+      add(
+        ["Predicted Pause Rate", "Predicted Outcome Rate", "Predicted Pause Initiation Rate"],
+        predictedValue ?? notRecorded,
+        "%",
+        labDataNote,
+      );
+      add(
+        ["Your awareness rating before the experiment was", "Money awareness before the experiment"],
+        responseNumber(source, "MON.AWARENESS.PRE") ?? notRecorded,
+        " /10",
+      );
+      add(
+        ["Your confidence rating before the experiment was", "Equation confidence before the experiment"],
+        responseNumber(source, "MON.EQUATION.CONFIDENCE_PRE") ?? notRecorded,
+        " /10",
+      );
+    }
+
+    return values;
+  }, [activeModuleRuntime, moduleCode]);
   const progressPercent = programme
     ? Math.round(
         (programme.treatment.pages.filter((item) => completed.has(item.id)).length /
@@ -455,7 +723,16 @@ export function ProgrammePlayer({
     const documentRoot = documentRef.current;
     if (!documentRoot) return;
 
-    enhanceHandbookDocument(documentRoot, moduleCode, page.id);
+    enhanceHandbookDocument(documentRoot, moduleCode, page.id, {
+      knownValues,
+      learnerName: snapshot?.profile.displayName,
+      labAvailable: moduleLabIsLive,
+      referenceOnly:
+        !previewMode &&
+        !moduleLabIsLive &&
+        dayThreeIndex >= 0 &&
+        selected > dayThreeIndex,
+    });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
       .forEach((field) => {
@@ -472,7 +749,20 @@ export function ProgrammePlayer({
           if ("placeholder" in field) field.placeholder = "Captured in the live Lab";
         }
       });
-  }, [drafts, learnMode, moduleCode, page, section, snapshot?.workbookResponses]);
+  }, [
+    drafts,
+    knownValues,
+    learnMode,
+    moduleCode,
+    moduleLabIsLive,
+    page,
+    previewMode,
+    selected,
+    dayThreeIndex,
+    section,
+    snapshot?.profile.displayName,
+    snapshot?.workbookResponses,
+  ]);
 
   useLayoutEffect(() => {
     restoreHandbookInteractions();
@@ -496,7 +786,7 @@ export function ProgrammePlayer({
 
     observer.observe(documentRoot, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [learnMode, page?.id, restoreHandbookInteractions, section]);
+  }, [learnMode, page, restoreHandbookInteractions, section]);
 
   useEffect(() => {
     if (saveState !== "dirty") return;
@@ -550,8 +840,12 @@ export function ProgrammePlayer({
       return;
     }
     if (!release) return;
-    if (moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete) {
-      setError("Complete Habit Lab Phase A before marking Programme Day 3 complete.");
+    if (labSequenceLocked) {
+      setError(
+        moduleLabIsLive
+          ? `Complete ${moduleLabTitle} Phase A before continuing the programme.`
+          : `${moduleLabTitle} is the next programme step. The live Lab is still being prepared.`,
+      );
       return;
     }
 
@@ -613,11 +907,9 @@ export function ProgrammePlayer({
     );
   }
 
-  const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const isLabHandoffDay =
     page.programmeDay === BIS_MODULE_TEMPLATE.handoffProgrammeDay || page.key === "Day 3";
   const dayThree = isLabHandoffDay ? splitDayThree(page) : null;
-  const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const learningReturnTo = `${pathname}?section=learn&page=${selected + 1}`;
   const moduleLabHref = moduleLabIsLive && moduleDefinition?.labHref
     ? labHrefWithReturn(moduleDefinition.labHref, learningReturnTo)
@@ -639,7 +931,7 @@ export function ProgrammePlayer({
         <div className="prototype-top-context">
           {previewMode ? (
             <strong>Preview mode · nothing here is saved to learner records</strong>
-          ) : runtime.experiment?.status === "ACTIVE" && experimentDay ? (
+          ) : activeModuleRuntime?.experiment?.status === "ACTIVE" && experimentDay ? (
             <strong>Experiment Day {experimentDay} of 7</strong>
           ) : null}
         </div>
@@ -693,7 +985,7 @@ export function ProgrammePlayer({
                   </p>
                   {moduleLabHref ? (
                     <Link className="prototype-btn primary" href={moduleLabHref}>
-                      {moduleCode === "HAB" && phaseAComplete ? "Return to Habit Lab" : `Open ${moduleLabTitle}`}
+                      {moduleCode === "HAB" && labPhaseAComplete ? "Return to Habit Lab" : `Open ${moduleLabTitle}`}
                       <ArrowRight />
                     </Link>
                   ) : (
@@ -702,17 +994,21 @@ export function ProgrammePlayer({
                 </article>
               ) : null}
 
-              {moduleCode === "HAB" && runtime.experiment ? (
+              {activeModuleRuntime?.experiment && moduleLabIsLive ? (
                 <article className="prototype-card prototype-action-card">
                   <CalendarDays />
                   <p className="prototype-eyebrow">Real-world test</p>
-                  <h3>{runtime.events.length}/7 observation days recorded.</h3>
-                  <p>No opportunity is valid evidence. The experiment has its own clock.</p>
+                  <h3>{activeModuleRuntime.events.length}/7 observation days recorded.</h3>
+                  <p>No matching situation is valid evidence. The experiment has its own clock.</p>
                   <Link
                     className="prototype-btn soft"
-                    href="/habit-lab/experiment?returnTo=%2Fhabit"
+                    href={
+                      moduleCode === "HAB"
+                        ? labHrefWithReturn("/habit-lab/experiment", learningReturnTo)
+                        : moduleLabHref ?? "/labs"
+                    }
                   >
-                    Open experiment <ArrowRight />
+                    {moduleCode === "HAB" ? "Open experiment" : "Open live Lab"} <ArrowRight />
                   </Link>
                 </article>
               ) : null}
@@ -789,7 +1085,21 @@ export function ProgrammePlayer({
               {!previewMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
 
-            <fieldset className="workbook-fields" disabled={completing}>
+            {labSequenceLocked && selected > dayThreeIndex ? (
+              <section className="prototype-sequence-notice" role="note">
+                <LockKeyhole />
+                <div>
+                  <strong>Reference view</strong>
+                  <p>
+                    {moduleLabIsLive
+                      ? `This page belongs after ${moduleLabTitle} Phase A. You can read it now, but programme progress resumes after the Lab.`
+                      : `This page belongs after ${moduleLabTitle}. The live Lab is still being prepared, so this page is shown for reference only.`}
+                  </p>
+                </div>
+              </section>
+            ) : null}
+
+            <fieldset className="workbook-fields" disabled={completing || (labSequenceLocked && selected > dayThreeIndex)}>
             <article key={page.id} ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
@@ -798,7 +1108,7 @@ export function ProgrammePlayer({
                     title={moduleLabTitle}
                     href={moduleLabHref}
                     isHabit={moduleCode === "HAB"}
-                    habitPhaseAComplete={phaseAComplete}
+                    habitPhaseAComplete={labPhaseAComplete}
                   />
                   <details className="prototype-reference">
                     <summary>Open the full Day 3 reference</summary>
@@ -809,12 +1119,20 @@ export function ProgrammePlayer({
                     </p>
                     <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
                   </details>
-                  {moduleCode === "HAB" && !phaseAComplete ? (
+                  {!labPhaseAComplete ? (
                     <section className="prototype-after-lab">
                       <LockKeyhole />
                       <div>
-                        <strong>Finish Phase A to continue Day 3.</strong>
-                        <p>Your seven-day experiment begins when the live investigation is complete.</p>
+                        <strong>
+                          {moduleLabIsLive
+                            ? `Finish ${moduleLabTitle} Phase A to continue.`
+                            : `${moduleLabTitle} is required before the programme continues.`}
+                        </strong>
+                        <p>
+                          {moduleLabIsLive
+                            ? "Your seven-day investigation begins when the live Lab phase is complete."
+                            : "The live Lab is being prepared. The remaining programme pages stay available as reference only for now."}
+                        </p>
                       </div>
                     </section>
                   ) : (
@@ -827,7 +1145,7 @@ export function ProgrammePlayer({
                     title={moduleLabTitle}
                     href={moduleLabHref}
                     isHabit={moduleCode === "HAB"}
-                    habitPhaseAComplete={phaseAComplete}
+                    habitPhaseAComplete={labPhaseAComplete}
                   />
                   <div dangerouslySetInnerHTML={{ __html: page.html }} />
                 </>
@@ -862,12 +1180,12 @@ export function ProgrammePlayer({
                 type="button"
                 className="primary"
                 onClick={() => void completePage()}
-                disabled={saving || completing || (!previewMode && moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete)}
+                disabled={saving || completing || labSequenceLocked}
               >
                 {previewMode
                   ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
-                  : moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete
-                    ? "Complete Phase A first"
+                  : labSequenceLocked
+                    ? moduleLabIsLive ? "Complete the Lab first" : "Lab coming soon"
                     : completed.has(page.id)
                       ? "Reviewed"
                       : "Complete & continue"}

@@ -126,3 +126,22 @@ test("keeps canonical prompts while retaining explicit pass and seven-day safegu
   assert.match(route, /responseStatus === "PASS"/);
   assert.match(route, /plannedEnd\.setUTCDate\(plannedEnd\.getUTCDate\(\) \+ 6\)/);
 });
+
+
+test("Decision Lab records Full versus Minimum pauses without rewriting older evidence", async () => {
+  const [experience, route] = await Promise.all([
+    readFile(new URL("app/core-lab-experience.tsx", root), "utf8"),
+    readFile(new URL("app/api/labs/route.ts", root), "utf8"),
+  ]);
+
+  assert.match(experience, /Full or Minimum Decision Pause\?/);
+  assert.match(experience, /pauseType: definition\.code === "DEC" \|\| definition\.code === "MON" \? pauseType : undefined/);
+  assert.match(experience, /definition\.code === "DEC" && pauseCompleted && pauseType === "Full"/);
+
+  assert.match(route, /pauseTypeCoverageComplete/);
+  assert.match(route, /DEC|lab\.prefix/);
+  assert.match(route, /FULL_PAUSE_COUNT/);
+  assert.match(route, /MINIMUM_PAUSE_COUNT/);
+  assert.match(route, /pauseTypeCoverageComplete \? "VALUE" : "NA"/);
+  assert.match(route, /extraOptions \/ fullPauses/);
+});
