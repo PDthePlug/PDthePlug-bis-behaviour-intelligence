@@ -118,6 +118,9 @@ test("diagnose representative learner-facing problem areas", async () => {
     "Step 11",
     "Observation days completed",
     "A REMINDER ON CONFIDENTIALITY AND PRIVACY",
+    "Take It Into Real Life",
+    "Who I asked:",
+    "What they said:",
     "Facilitator:",
   ];
   const findings = [];
