@@ -11,6 +11,15 @@ import { identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { CONTENT_STUDIO_BUCKET } from "../../../lib/content-studio";
 import { isDeliveryEdition } from "../../../lib/learning-foundation";
+import { gunzipSync } from "node:zlib";
+
+const STATIC_LEARNING_SLUGS: Record<string, string> = {
+  HAB: "habit",
+  DEC: "decision",
+  MON: "money",
+  IDN: "identity",
+  ATT: "attention",
+};
 
 async function loadHandler(request: Request) {
   const identity = await identityFrom();
@@ -40,6 +49,7 @@ async function loadHandler(request: Request) {
 
   let activeVersionId = "";
   let activatedAt: string | null = null;
+  let runtimeMode: "STATIC" | "DYNAMIC" | null = null;
 
   if (kind === "LEARNING_MODULE") {
     const [editionActivation] = await db.select().from(contentEditionActivations).where(and(
@@ -58,12 +68,16 @@ async function loadHandler(request: Request) {
       eq(contentRuntimeActivations.itemId, item.id),
       eq(contentRuntimeActivations.status, "ACTIVE"),
     )).limit(1);
-    if (!activation || activation.runtimeMode !== "DYNAMIC") {
+    if (!activation) {
       return Response.json({
         error: kind === "LEARNING_MODULE"
           ? "This learning edition is not published yet."
-          : "This content uses the built-in runtime.",
+          : "This content is not published yet.",
       }, { status: 404 });
+    }
+    runtimeMode = activation.runtimeMode;
+    if (kind === "LAB" && runtimeMode !== "DYNAMIC") {
+      return Response.json({ error: "This content uses the built-in runtime." }, { status: 404 });
     }
     activeVersionId = activation.versionId;
     activatedAt = activation.activatedAt;
@@ -72,6 +86,48 @@ async function loadHandler(request: Request) {
   const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, activeVersionId)).limit(1);
   if (!version || version.runtimeStatus !== "LIVE") {
     return Response.json({ error: "The published content is temporarily unavailable." }, { status: 409 });
+  }
+
+  if (kind === "LEARNING_MODULE" && runtimeMode === "STATIC") {
+    const slug = STATIC_LEARNING_SLUGS[code];
+    if (!slug) {
+      return Response.json({ error: "This learning programme is not available yet." }, { status: 404 });
+    }
+    try {
+      const assetResponse = await fetch(
+        new URL(`/handbooks/v1/${slug}-${edition}.json.gz.b64`, request.url),
+        { cache: "no-store" },
+      );
+      if (!assetResponse.ok) {
+        return Response.json({ error: "The published programme could not be loaded." }, { status: 502 });
+      }
+      const encoded = (await assetResponse.text()).trim();
+      const payload = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8")) as unknown;
+      return Response.json({
+        item: {
+          id: item.id,
+          kind: item.kind,
+          code: item.code,
+          slug: item.slug,
+          title: item.title,
+          routePath: item.routePath,
+        },
+        version: {
+          id: version.id,
+          version: version.version,
+          compilerVersion: version.compilerVersion,
+          activatedAt,
+        },
+        artifact: {
+          key: `learning:${edition}`,
+          hash: null,
+          edition,
+        },
+        payload,
+      }, { headers: { "cache-control": "private, no-store" } });
+    } catch {
+      return Response.json({ error: "The published programme could not be opened." }, { status: 500 });
+    }
   }
 
   const artifactKey = kind === "LEARNING_MODULE" ? `learning:${edition}` : "lab:universal";
