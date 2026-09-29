@@ -622,7 +622,7 @@ export function ProgrammePlayer({
 
     observer.observe(documentRoot, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [learnMode, page?.id, restoreHandbookInteractions, section]);
+  }, [learnMode, page, restoreHandbookInteractions, section]);
 
   useEffect(() => {
     if (saveState !== "dirty") return;
