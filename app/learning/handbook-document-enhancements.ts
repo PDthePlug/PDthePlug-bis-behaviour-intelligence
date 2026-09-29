@@ -382,6 +382,40 @@ function applyKnownValues(root: HTMLElement, context: HandbookEnhancementContext
   });
 }
 
+function applyKnownTableValues(root: HTMLElement, context: HandbookEnhancementContext) {
+  if (!context.knownValues?.length) return;
+  root.querySelectorAll<HTMLTableRowElement>("table tr").forEach((row) => {
+    const cells = [...row.querySelectorAll<HTMLElement>("th,td")];
+    if (cells.length < 2) return;
+    const labelCell = cells[0];
+    const valueCell = cells[cells.length - 1];
+    if (valueCell.querySelector("[data-field-id]") || valueCell.dataset.systemValue === "true") return;
+
+    const labelText = normalise(labelCell.textContent ?? "");
+    const currentValue = normalise(valueCell.textContent ?? "");
+    const known = findKnownValue(labelText, context);
+    if (!known) return;
+
+    const replaceable =
+      !currentValue ||
+      /^[_\s/%0-9.–—-]+$/.test(currentValue) ||
+      /^(?:n\/a|not recorded)$/i.test(currentValue);
+    if (!replaceable) return;
+
+    valueCell.textContent = "";
+    valueCell.dataset.systemValue = "true";
+    valueCell.classList.add("handbook-table-system-value");
+    const strong = document.createElement("strong");
+    strong.textContent = known.value;
+    valueCell.append(strong);
+    if (known.source) {
+      const source = document.createElement("small");
+      source.textContent = known.source;
+      valueCell.append(source);
+    }
+  });
+}
+
 function replacePaperIdentityFields(root: HTMLElement, context: HandbookEnhancementContext) {
   root.querySelectorAll<HTMLElement>("p").forEach((element) => {
     const text = normalise(element.textContent ?? "");
@@ -519,6 +553,7 @@ export function enhanceHandbookDocument(
   upgradePrintableCheckboxes(root, pageId);
   enhanceTables(root);
   applyKnownValues(root, context);
+  applyKnownTableValues(root, context);
   replacePaperIdentityFields(root, context);
   convertSimplePaperBlanks(root, labCode, pageId);
   hideEditorialProductionMetadata(root);
