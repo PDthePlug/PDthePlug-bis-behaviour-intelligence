@@ -195,19 +195,55 @@ function isGenericResponse(field: HTMLElement) {
   return !aria || genericResponseLabel.test(aria);
 }
 
+function promptsBeforeResponseRun(field: HTMLTextAreaElement) {
+  const previous = field.previousElementSibling as HTMLElement | null;
+  if (!previous) return [] as string[];
+  if (previous.matches("ol,ul")) {
+    return [...previous.querySelectorAll<HTMLElement>(":scope > li")]
+      .flatMap((item) => questionPrompts(item));
+  }
+  return questionPrompts(previous);
+}
+
 function cleanOrphanedResponseControls(root: HTMLElement) {
   const fields = [...root.querySelectorAll<HTMLTextAreaElement>("textarea.response[data-field-id]")];
+  const handled = new Set<HTMLTextAreaElement>();
+
   for (const field of fields) {
-    if (!field.isConnected || field.closest("td,th")) continue;
-    const previous = field.previousElementSibling;
     if (
-      previous instanceof HTMLTextAreaElement &&
-      previous.matches("textarea.response[data-field-id]") &&
-      isGenericResponse(previous) &&
-      isGenericResponse(field)
+      handled.has(field) ||
+      !field.isConnected ||
+      field.closest("td,th") ||
+      !isGenericResponse(field)
+    ) continue;
+
+    const run = [field];
+    let cursor = field.nextElementSibling;
+    while (
+      cursor instanceof HTMLTextAreaElement &&
+      cursor.matches("textarea.response[data-field-id]") &&
+      isGenericResponse(cursor)
     ) {
-      field.remove();
+      run.push(cursor);
+      cursor = cursor.nextElementSibling;
     }
+    if (run.length < 2) continue;
+
+    const prompts = promptsBeforeResponseRun(field);
+    const keepCount = Math.min(run.length, Math.max(1, prompts.length));
+
+    run.forEach((item, index) => {
+      handled.add(item);
+      if (index >= keepCount) {
+        item.remove();
+        return;
+      }
+      const prompt = prompts[index];
+      if (prompt) {
+        item.setAttribute("aria-label", prompt);
+        item.placeholder = prompt.endsWith("?") ? "Write your answer…" : "Write your response…";
+      }
+    });
   }
 }
 
