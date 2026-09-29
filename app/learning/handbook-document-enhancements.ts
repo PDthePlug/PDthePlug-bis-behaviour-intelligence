@@ -468,20 +468,47 @@ function applyKnownTableValues(root: HTMLElement, context: HandbookEnhancementCo
   });
 }
 
-function replacePaperIdentityFields(root: HTMLElement, context: HandbookEnhancementContext) {
+function replacePaperIdentityFields(
+  root: HTMLElement,
+  context: HandbookEnhancementContext,
+  labCode: LabCode,
+  pageId: string,
+) {
   root.querySelectorAll<HTMLElement>("p").forEach((element) => {
     const text = normalise(element.textContent ?? "");
     if (!text || element.dataset.digitalMeta === "true") return;
 
+    if (/^from me,\s*in grade\s*_+/i.test(text) && context.learnerName) {
+      element.textContent = "";
+      element.classList.add("handbook-inline-field", "handbook-letter-signoff");
+      element.dataset.digitalMeta = "true";
+
+      const from = document.createElement("span");
+      from.textContent = `From: ${context.learnerName}`;
+      const gradeLabel = document.createElement("label");
+      gradeLabel.className = "handbook-priority-field";
+      const label = document.createElement("span");
+      label.textContent = "Grade";
+      const grade = createInlineResponse(labCode, pageId, "Grade for future-self letter", "text");
+      grade.inputMode = "numeric";
+      grade.placeholder = "Your grade";
+      gradeLabel.append(label, grade);
+      element.append(from, gradeLabel);
+      return;
+    }
+
     if (/^from me,/i.test(text) && context.learnerName) {
-      element.textContent = `From: ${context.learnerName}`;
+      const remainder = text.replace(/^from me,?\s*/i, "").trim();
+      element.textContent = remainder
+        ? `From: ${context.learnerName} · ${remainder}`
+        : `From: ${context.learnerName}`;
       element.classList.add("handbook-digital-meta");
       element.dataset.digitalMeta = "true";
       return;
     }
 
-    if (/^workbook id:\s*_+/i.test(text) && context.workbookId) {
-      element.textContent = `Workbook ID: ${context.workbookId}`;
+    if (/^workbook id:\s*_+/i.test(text)) {
+      element.textContent = "Workbook record: linked to your BIS learning profile.";
       element.classList.add("handbook-digital-meta");
       element.dataset.digitalMeta = "true";
       return;
@@ -725,7 +752,7 @@ export function enhanceHandbookDocument(
   enhanceTables(root);
   applyKnownValues(root, context);
   applyKnownTableValues(root, context);
-  replacePaperIdentityFields(root, context);
+  replacePaperIdentityFields(root, context, labCode, pageId);
   convertSimplePaperBlanks(root, labCode, pageId);
   convertNumberedPaperBlanks(root, labCode, pageId);
   convertPriorityWorksheetRows(root, labCode, pageId);
