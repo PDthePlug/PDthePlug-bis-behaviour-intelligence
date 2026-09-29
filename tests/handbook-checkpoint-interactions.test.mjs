@@ -7,22 +7,22 @@ const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8"
 test("handbook reader enhances authored pages before restoring saved responses", async () => {
   const player = await source("app/learning/programme-player.tsx");
   assert.match(player, /enhanceHandbookDocument/);
-  assert.match(player, /enhanceHandbookDocument\(documentRoot, moduleCode, page\.id\)/);
+  assert.match(player, /enhanceHandbookDocument\(documentRoot, moduleCode, page\.id, \{/);
   assert.match(player, /querySelectorAll<HTMLTextAreaElement \| HTMLInputElement \| HTMLSelectElement>\("\[data-field-id\]"\)/);
 });
 
-test("every uncovered question can receive a stable private workbook response", async () => {
+test("checkpoint questions receive stable responses without scanning every question on the page", async () => {
   const enhancement = await source("app/learning/handbook-document-enhancements.ts");
-  assert.match(enhancement, /plain\.endsWith\("\?"\)/);
-  assert.match(enhancement, /matchAll\(\/\(\?:\^\|\\n\).*\\\?/);
+  assert.match(enhancement, /function checkpointQuestionElements/);
+  assert.match(enhancement, /filter\(isCheckpointHeading\)/);
+  assert.match(enhancement, /addMissingCheckpointResponses/);
   assert.match(enhancement, /\.WB\.AUTO\./);
-  assert.match(enhancement, /data\.purpose = "LEARNING_RESPONSE"|dataset\.purpose = "LEARNING_RESPONSE"/);
+  assert.match(enhancement, /dataset\.purpose = "LEARNING_RESPONSE"/);
   assert.match(enhancement, /dataset\.privacyClass = "P3"/);
   assert.match(enhancement, /placeholder = "Write your answer…"/);
   assert.match(enhancement, /hasExistingAnswerSpace/);
-  assert.match(enhancement, /p,li,h2,h3,h4/);
+  assert.doesNotMatch(enhancement, /querySelectorAll<HTMLElement>\("p,li,h2,h3,h4,\.authored-lines,\.handbook-callout"\)/);
 });
-
 test("suggested checkpoint answers are collapsed by default and excluded from response generation", async () => {
   const enhancement = await source("app/learning/handbook-document-enhancements.ts");
   const css = await source("app/learning/programme-player.css");
@@ -47,7 +47,7 @@ test("checkpoint enhancement reruns deterministically when the reader advances p
   const player = await source("app/learning/programme-player.tsx");
   assert.match(player, /useLayoutEffect/);
   assert.match(player, /const restoreHandbookInteractions = useCallback/);
-  assert.match(player, /enhanceHandbookDocument\(documentRoot, moduleCode, page\.id\)/);
+  assert.match(player, /enhanceHandbookDocument\(documentRoot, moduleCode, page\.id, \{/);
   assert.match(player, /<article key=\{page\.id\} ref=\{documentRef\}/);
 
   const enhancementBlock = player.slice(
@@ -66,7 +66,9 @@ test("saved and draft responses are restored whenever checkpoint controls are re
 
   assert.match(repair, /drafts\[id\] \?\? snapshot\?\.workbookResponses\?\.\[id\]\?\.value \?\? ""/);
   assert.match(repair, /field\.value = savedValue/);
-  assert.match(player, /\[drafts, learnMode, moduleCode, page, section, snapshot\?\.workbookResponses\]/);
+  assert.match(player, /snapshot\?\.workbookResponses/);
+  assert.match(player, /knownValues/);
+  assert.match(player, /programme\?\.handbookId/);
 });
 
 
