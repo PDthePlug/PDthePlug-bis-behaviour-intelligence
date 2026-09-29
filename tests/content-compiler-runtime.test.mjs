@@ -70,6 +70,15 @@ test("dynamic learning runtime resolves the learner edition independently before
   assert.match(catalogue, /deliveryEdition/);
 });
 
+test("static learning handbooks are decoded server-side for browser compatibility", async () => {
+  const runtime = await source("app/api/runtime-content/route.ts");
+  assert.match(runtime, /gunzipSync/);
+  assert.match(runtime, /STATIC_LEARNING_SLUGS/);
+  assert.match(runtime, /runtimeMode === "STATIC"/);
+  assert.match(runtime, /handbooks\/v1/);
+  assert.match(runtime, /published programme could not be opened/);
+});
+
 test("Universal V1 Labs stay in the canonical nine-investigation presentation", async () => {
   const [compiler, runner, frame, api] = await Promise.all([
     source("lib/content-compiler.ts"),
