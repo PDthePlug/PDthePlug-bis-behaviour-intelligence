@@ -41,3 +41,26 @@ test("formal Lab references remain read-only and do not get duplicate workbook b
   assert.match(enhancement, /closest\("\.prototype-reference"\)/);
   assert.match(player, /data\.purpose === "FORMAL_LAB_REFERENCE"|dataset\.purpose === "FORMAL_LAB_REFERENCE"/);
 });
+
+
+test("checkpoint enhancement reruns deterministically when the reader advances pages", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+  assert.match(player, /useLayoutEffect/);
+  assert.match(player, /enhanceHandbookDocument\(documentRoot, moduleCode, page\.id\)/);
+  assert.match(player, /\[learnMode, moduleCode, page\?\.id, section\]/);
+  assert.match(player, /<article key=\{page\.id\} ref=\{documentRef\}/);
+
+  const enhancementBlock = player.slice(
+    player.indexOf("enhanceHandbookDocument(documentRoot, moduleCode, page.id)"),
+    player.indexOf("useEffect(() => {\n    if (saveState")
+  );
+  assert.doesNotMatch(enhancementBlock, /requestAnimationFrame/);
+  assert.doesNotMatch(enhancementBlock, /cancelAnimationFrame/);
+});
+
+test("response hydration is separate from page enhancement so workbook updates cannot cancel checkpoint setup", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+  const matches = player.match(/useLayoutEffect\(\(\) => \{/g) ?? [];
+  assert.ok(matches.length >= 2);
+  assert.match(player, /\[drafts, learnMode, page\?\.id, section, snapshot\?\.workbookResponses\]/);
+});
