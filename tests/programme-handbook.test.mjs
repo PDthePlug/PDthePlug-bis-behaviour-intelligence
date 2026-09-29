@@ -102,8 +102,8 @@ test("programme handoff opens focused Habit routes and preserves programme conti
     readFile(new URL("../app/habit-lab/focused-learner-menu.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/programmes/[asset]/route.ts", import.meta.url), "utf8"),
   ]);
-  assert.match(playerSource, /\/habit-lab\?returnTo=%2Fhabit/);
-  assert.match(playerSource, /\/habit-lab\/experiment\?returnTo=%2Fhabit/);
+  assert.match(playerSource, /labHrefWithReturn\(moduleDefinition\.labHref, learningReturnTo\)/);
+  assert.match(playerSource, /labHrefWithReturn\("\/habit-lab\/experiment", learningReturnTo\)/);
   assert.match(rootSource, /view === "lab"[\s\S]*redirect\("\/habit-lab"\)/);
   assert.match(rootSource, /view === "experiment"[\s\S]*redirect\("\/habit-lab\/experiment"\)/);
   assert.match(bridgeSource, /lab: "My Lab"/);
