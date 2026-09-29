@@ -132,3 +132,14 @@ test("system-known values are module-scoped and do not reuse Habit evidence in o
   assert.match(player, /Observation days completed/);
   assert.match(player, /From your Lab/);
 });
+
+
+test("duplicate cleanup preserves one field per explicit multi-question prompt", async () => {
+  const enhancement = await source("app/learning/handbook-document-enhancements.ts");
+
+  assert.match(enhancement, /function promptsBeforeResponseRun/);
+  assert.match(enhancement, /flatMap\(\(item\) => questionPrompts\(item\)\)/);
+  assert.match(enhancement, /const keepCount = Math\.min\(run\.length, Math\.max\(1, prompts\.length\)\)/);
+  assert.match(enhancement, /const prompt = prompts\[index\]/);
+  assert.match(enhancement, /item\.setAttribute\("aria-label", prompt\)/);
+});
