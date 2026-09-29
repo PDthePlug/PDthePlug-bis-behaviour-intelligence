@@ -155,3 +155,14 @@ test("future-self and certificate paper fields are digitised without inventing l
   assert.match(enhancement, /Facilitator confirmation: added by your programme facilitator/);
   assert.doesNotMatch(enhancement, /Workbook ID: \$\{context\.workbookId\}/);
 });
+
+test("system-owned workbook figures never degrade into learner calculation boxes", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+
+  assert.match(player, /const pending = "Available after your Lab record is complete"/);
+  assert.match(player, /const notRecorded = "Not recorded in your Lab yet"/);
+  assert.match(player, /Current Lab record — updates as you record each day/);
+  assert.match(player, /N\\/A — no eligible opportunities/);
+  assert.match(player, /Not separately recorded/);
+  assert.match(player, /typeof value === "number"/);
+});
