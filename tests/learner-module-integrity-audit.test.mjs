@@ -105,3 +105,41 @@ test("diagnose all live handbook packages for digital-form integrity", async () 
 
   assert.equal(manifest.handbooks.length, 15);
 });
+
+
+test("diagnose representative learner-facing problem areas", async () => {
+  const terms = [
+    "Dear Future Me",
+    "Eligible target opportunities observed",
+    "Options I See",
+    "State / Pressure",
+    "What Matters (now)",
+    "Was there anything that surprised you?",
+    "Step 11",
+    "Observation days completed",
+    "A REMINDER ON CONFIDENTIALITY AND PRIVACY",
+    "Facilitator:",
+  ];
+  const findings = [];
+  for (const item of manifest.handbooks) {
+    const programme = await decode(item.asset);
+    for (const page of programme.treatment.pages) {
+      const text = strip(page.html);
+      for (const term of terms) {
+        const index = text.toLowerCase().indexOf(term.toLowerCase());
+        if (index < 0) continue;
+        const htmlIndex = page.html.toLowerCase().indexOf(term.toLowerCase());
+        findings.push({
+          code: item.code,
+          edition: item.edition,
+          page: page.key,
+          term,
+          text: text.slice(Math.max(0, index - 350), index + 900),
+          html: htmlIndex >= 0 ? page.html.slice(Math.max(0, htmlIndex - 900), htmlIndex + 1800) : "",
+        });
+      }
+    }
+  }
+  console.log("BIS_REPRESENTATIVE_FORM_CONTEXT=" + JSON.stringify(findings));
+  assert.ok(findings.length > 0);
+});
