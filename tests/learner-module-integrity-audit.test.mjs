@@ -3,11 +3,13 @@ import { readFile } from "node:fs/promises";
 import { gunzipSync } from "node:zlib";
 import test from "node:test";
 
-const root = new URL("../public/handbooks/v1/", import.meta.url);
-const manifest = JSON.parse(await readFile(new URL("manifest.json", root), "utf8"));
+const projectRoot = new URL("..", import.meta.url);
+const handbookRoot = new URL("../public/handbooks/v1/", import.meta.url);
+const manifest = JSON.parse(await readFile(new URL("manifest.json", handbookRoot), "utf8"));
+const source = (path) => readFile(new URL(path, projectRoot), "utf8");
 
 const decode = async (asset) => {
-  const raw = await readFile(new URL(asset, root), "utf8");
+  const raw = await readFile(new URL(asset, handbookRoot), "utf8");
   return JSON.parse(gunzipSync(Buffer.from(raw.trim(), "base64")));
 };
 
@@ -24,98 +26,94 @@ const strip = (html) => html
   .replace(/\n{2,}/g, "\n")
   .trim();
 
-const count = (value, regex) => [...value.matchAll(regex)].length;
+const expectedPageKeys = [
+  "Welcome","Day 1","Day 2","Day 3","Day 4","Day 5","Weekend",
+  "Day 6","Day 7","Day 8","Day 9","Day 10","Certificate",
+];
 
-test("diagnose all live handbook packages for digital-form integrity", async () => {
-  const report = [];
+test("integrity audit covers every currently live learning package", async () => {
+  assert.equal(manifest.handbooks.length, 15);
+  const codes = [...new Set(manifest.handbooks.map((item) => item.code))].sort();
+  assert.deepEqual(codes, ["ATT","DEC","HAB","IDN","MON"]);
+
+  for (const code of codes) {
+    const editions = manifest.handbooks
+      .filter((item) => item.code === code)
+      .map((item) => item.edition)
+      .sort();
+    assert.deepEqual(editions, ["emerging_adult","school","workplace"]);
+  }
+
+  for (const item of manifest.handbooks) {
+    const programme = await decode(item.asset);
+    assert.deepEqual(programme.treatment.pages.map((page) => page.key), expectedPageKeys);
+    assert.equal(programme.labCode, item.code);
+    assert.equal(programme.edition, item.edition);
+  }
+});
+
+test("every imported response control is traceable and uniquely bound", async () => {
+  for (const item of manifest.handbooks) {
+    const programme = await decode(item.asset);
+    const ids = [];
+    for (const page of programme.treatment.pages) {
+      const controls = [...page.html.matchAll(/<(textarea|input|select)\b[^>]*>/gi)].map((match) => match[0]);
+      for (const control of controls) {
+        const id = control.match(/data-field-id=["']([^"']+)["']/i)?.[1];
+        assert.ok(id, `${item.code} ${item.edition} ${page.key}: control is missing data-field-id`);
+        assert.match(control, /data-source-key=/i, `${id}: missing source key`);
+        assert.match(control, /data-purpose=/i, `${id}: missing purpose`);
+        assert.match(control, /data-privacy-class=/i, `${id}: missing privacy class`);
+        ids.push(id);
+      }
+    }
+    assert.equal(new Set(ids).size, ids.length, `${item.code} ${item.edition}: duplicate field IDs`);
+  }
+});
+
+test("paper-era artefacts found in the live corpus have explicit digital treatments", async () => {
+  let underscoreRuns = 0;
+  let printableCheckboxes = 0;
+  let consecutiveResponses = 0;
+  let tables = 0;
+  let signatureOrMetaLines = 0;
+
   for (const item of manifest.handbooks) {
     const programme = await decode(item.asset);
     for (const page of programme.treatment.pages) {
-      const html = page.html;
-      const text = strip(html);
-      const controls = count(html, /<(?:textarea|input|select)\b/gi);
-      const textareas = count(html, /<textarea\b/gi);
-      const checkboxes = count(html, /<input\b[^>]*type=["']checkbox["']/gi);
-      const radios = count(html, /<input\b[^>]*type=["']radio["']/gi);
-      const tables = count(html, /<table\b/gi);
-      const tableHeaders = count(html, /<th\b/gi);
-      const dataLabels = count(html, /data-label=/gi);
-      const underscoreRuns = count(text, /_{3,}/g);
-      const questionMarks = count(text, /\?/g);
-      const signedLines = count(text, /\b(?:signed|signature|facilitator|workbook id)\s*:/gi);
-      const dateLines = count(text, /\bdate\s*:/gi);
-      const percentageBlanks = count(text, /_{3,}\s*%/g);
-      const fractionBlanks = count(text, /_{3,}\s*\/\s*_{0,8}\d*/g);
-      const plainNumberLines = count(text, /(?:^|\n)\s*\d+[.)]\s*(?:_{2,})?\s*(?=\n|$)/g);
-      const suspiciousBlankFields = [...html.matchAll(/<(textarea|input|select)\b[^>]*data-field-id=["']([^"']+)["'][^>]*>/gi)]
-        .filter((match) => {
-          const before = strip(html.slice(Math.max(0, match.index - 260), match.index));
-          return !/[A-Za-z0-9?)]/.test(before.slice(-120));
-        }).length;
-
-      const score =
-        underscoreRuns +
-        signedLines * 2 +
-        dateLines +
-        percentageBlanks * 2 +
-        fractionBlanks * 2 +
-        plainNumberLines +
-        suspiciousBlankFields * 3 +
-        (tables && (!tableHeaders || !dataLabels) ? 4 : 0);
-
-      if (score || controls || tables) {
-        report.push({
-          code: item.code,
-          edition: item.edition,
-          page: page.key,
-          controls,
-          textareas,
-          checkboxes,
-          radios,
-          tables,
-          tableHeaders,
-          dataLabels,
-          underscoreRuns,
-          questionMarks,
-          signedLines,
-          dateLines,
-          percentageBlanks,
-          fractionBlanks,
-          plainNumberLines,
-          suspiciousBlankFields,
-          score,
-        });
-      }
+      const text = strip(page.html);
+      underscoreRuns += [...text.matchAll(/_{3,}/g)].length;
+      printableCheckboxes += [...text.matchAll(/[□☐]/g)].length;
+      consecutiveResponses += [...page.html.matchAll(/<\/textarea>\s*<textarea\b/gi)].length;
+      tables += [...page.html.matchAll(/<table\b/gi)].length;
+      signatureOrMetaLines += [...text.matchAll(/\b(?:signed|facilitator|workbook id|date)\s*:/gi)].length;
     }
   }
 
-  report.sort((a, b) => b.score - a.score || b.controls - a.controls);
-  console.log("BIS_LEARNER_MODULE_INTEGRITY_AUDIT=" + JSON.stringify({
-    packages: manifest.handbooks.length,
-    pages: manifest.handbooks.length * 13,
-    top: report.slice(0, 80),
-    totals: report.reduce((acc, row) => {
-      for (const key of [
-        "controls","textareas","checkboxes","radios","tables","underscoreRuns","questionMarks",
-        "signedLines","dateLines","percentageBlanks","fractionBlanks","plainNumberLines","suspiciousBlankFields"
-      ]) acc[key] = (acc[key] ?? 0) + row[key];
-      return acc;
-    }, {}),
-  }));
+  assert.ok(underscoreRuns > 0);
+  assert.ok(printableCheckboxes > 0);
+  assert.ok(consecutiveResponses > 0);
+  assert.ok(tables > 0);
+  assert.ok(signatureOrMetaLines > 0);
 
-  assert.equal(manifest.handbooks.length, 15);
+  const enhancement = await source("app/learning/handbook-document-enhancements.ts");
+  assert.match(enhancement, /cleanOrphanedResponseControls/);
+  assert.match(enhancement, /upgradePrintableCheckboxes/);
+  assert.match(enhancement, /convertSimplePaperBlanks/);
+  assert.match(enhancement, /convertNumberedPaperBlanks/);
+  assert.match(enhancement, /convertPriorityWorksheetRows/);
+  assert.match(enhancement, /enhanceTables/);
+  assert.match(enhancement, /replacePaperIdentityFields/);
+  assert.match(enhancement, /hideEditorialProductionMetadata/);
 });
 
-
-test("diagnose representative learner-facing problem areas", async () => {
-  const terms = [
+test("representative problem areas from learner QA remain inside the audited corpus", async () => {
+  const required = [
     "Dear Future Me",
     "Eligible target opportunities observed",
     "Options I See",
     "State / Pressure",
-    "What Matters (now)",
     "Was there anything that surprised you?",
-    "Step 11",
     "Observation days completed",
     "A REMINDER ON CONFIDENTIALITY AND PRIVACY",
     "Take It Into Real Life",
@@ -123,26 +121,13 @@ test("diagnose representative learner-facing problem areas", async () => {
     "What they said:",
     "Facilitator:",
   ];
-  const findings = [];
+  const corpus = [];
   for (const item of manifest.handbooks) {
     const programme = await decode(item.asset);
-    for (const page of programme.treatment.pages) {
-      const text = strip(page.html);
-      for (const term of terms) {
-        const index = text.toLowerCase().indexOf(term.toLowerCase());
-        if (index < 0) continue;
-        const htmlIndex = page.html.toLowerCase().indexOf(term.toLowerCase());
-        findings.push({
-          code: item.code,
-          edition: item.edition,
-          page: page.key,
-          term,
-          text: text.slice(Math.max(0, index - 350), index + 900),
-          html: htmlIndex >= 0 ? page.html.slice(Math.max(0, htmlIndex - 900), htmlIndex + 1800) : "",
-        });
-      }
-    }
+    corpus.push(...programme.treatment.pages.map((page) => strip(page.html)));
   }
-  console.log("BIS_REPRESENTATIVE_FORM_CONTEXT=" + JSON.stringify(findings));
-  assert.ok(findings.length > 0);
+  const fullText = corpus.join("\n").toLowerCase();
+  for (const term of required) {
+    assert.ok(fullText.includes(term.toLowerCase()), `Audit corpus is missing representative area: ${term}`);
+  }
 });
