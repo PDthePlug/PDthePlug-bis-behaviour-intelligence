@@ -131,3 +131,21 @@ test("representative problem areas from learner QA remain inside the audited cor
     assert.ok(fullText.includes(term.toLowerCase()), `Audit corpus is missing representative area: ${term}`);
   }
 });
+
+
+test("audit Day 8 system-owned blanks in live-Lab handbooks", async () => {
+  const rows = [];
+  for (const item of manifest.handbooks.filter((entry) => ["HAB","DEC","MON"].includes(entry.code))) {
+    const programme = await decode(item.asset);
+    const page = programme.treatment.pages.find((entry) => entry.key === "Day 8");
+    const text = strip(page?.html ?? "");
+    const labels = text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => /_{3,}/.test(line))
+      .filter((line) => /(?:days?|opportunit|rate|accuracy|count|completed|pauses?|replacements?|outcome|prediction|minimum|full)/i.test(line));
+    rows.push({ code: item.code, edition: item.edition, labels });
+  }
+  console.log("BIS_DAY8_SYSTEM_BLANKS=" + JSON.stringify(rows));
+  assert.equal(rows.length, 9);
+});
