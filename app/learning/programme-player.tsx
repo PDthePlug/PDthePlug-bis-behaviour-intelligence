@@ -642,7 +642,6 @@ export function ProgrammePlayer({
     enhanceHandbookDocument(documentRoot, moduleCode, page.id, {
       knownValues,
       learnerName: snapshot?.profile.displayName,
-      workbookId: programme?.handbookId,
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
@@ -666,7 +665,6 @@ export function ProgrammePlayer({
     learnMode,
     moduleCode,
     page,
-    programme?.handbookId,
     section,
     snapshot?.profile.displayName,
     snapshot?.workbookResponses,
