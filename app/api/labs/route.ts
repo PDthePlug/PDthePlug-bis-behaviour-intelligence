@@ -188,9 +188,16 @@ async function calculate(identity: Identity, lab: CoreLabDefinition, experimentI
   const accuracy = adherence === null ? null : Math.max(0, 100 - Math.abs(predicted - adherence));
   const strength = eligible.length === 0 ? "NONE" : eligible.length < 3 ? "LIMITED" : "SUFFICIENT_FOR_LAB";
   const parsedDetails = rows.map((row) => ({ row, details: decode(row.notes) as Record<string, unknown> | null }));
-  const extraOptions = lab.code === "DEC" ? parsedDetails.filter(({ row, details }) => row.alternativeUsed === true && details?.extraOption === true).length : 0;
-  const fullPauses = lab.code === "MON" ? parsedDetails.filter(({ row, details }) => row.alternativeUsed === true && details?.pauseType === "Full").length : 0;
-  const minimumPauses = lab.code === "MON" ? parsedDetails.filter(({ row, details }) => row.alternativeUsed === true && details?.pauseType === "Minimum").length : 0;
+  const completedDetails = parsedDetails.filter(({ row }) => row.alternativeUsed === true);
+  const typedPauses = completedDetails.filter(({ details }) =>
+    details?.pauseType === "Full" || details?.pauseType === "Minimum"
+  );
+  const pauseTypeCoverageComplete = typedPauses.length === completed.length;
+  const fullPauses = typedPauses.filter(({ details }) => details?.pauseType === "Full").length;
+  const minimumPauses = typedPauses.filter(({ details }) => details?.pauseType === "Minimum").length;
+  const extraOptions = lab.code === "DEC"
+    ? completedDetails.filter(({ details }) => details?.pauseType === "Full" && details?.extraOption === true).length
+    : 0;
   const metrics: Array<readonly [string, number | null, "VALUE" | "NA"]> = [
     [`${lab.prefix}.EXPERIMENT.OPPORTUNITY_COUNT`, eligible.length, "VALUE"],
     [`${lab.prefix}.EXPERIMENT.PAUSE_COUNT`, completed.length, "VALUE"],
@@ -198,8 +205,26 @@ async function calculate(identity: Identity, lab: CoreLabDefinition, experimentI
     [`${lab.prefix}.BEI03`, accuracy, accuracy === null ? "NA" : "VALUE"],
   ];
   if (lab.code === "DEC") {
-    metrics.push([`${lab.prefix}.OPTION_EXPANSION_COUNT`, extraOptions, "VALUE"]);
-    metrics.push([`${lab.prefix}.OPTION_EXPANSION_RATE`, completed.length === 0 ? null : Math.round((extraOptions / completed.length) * 100), completed.length === 0 ? "NA" : "VALUE"]);
+    metrics.push([
+      `${lab.prefix}.FULL_PAUSE_COUNT`,
+      pauseTypeCoverageComplete ? fullPauses : null,
+      pauseTypeCoverageComplete ? "VALUE" : "NA",
+    ]);
+    metrics.push([
+      `${lab.prefix}.MINIMUM_PAUSE_COUNT`,
+      pauseTypeCoverageComplete ? minimumPauses : null,
+      pauseTypeCoverageComplete ? "VALUE" : "NA",
+    ]);
+    metrics.push([
+      `${lab.prefix}.OPTION_EXPANSION_COUNT`,
+      pauseTypeCoverageComplete ? extraOptions : null,
+      pauseTypeCoverageComplete ? "VALUE" : "NA",
+    ]);
+    metrics.push([
+      `${lab.prefix}.OPTION_EXPANSION_RATE`,
+      pauseTypeCoverageComplete && fullPauses > 0 ? Math.round((extraOptions / fullPauses) * 100) : null,
+      pauseTypeCoverageComplete && fullPauses > 0 ? "VALUE" : "NA",
+    ]);
   } else {
     metrics.push([`${lab.prefix}.FULL_PAUSE_COUNT`, fullPauses, "VALUE"]);
     metrics.push([`${lab.prefix}.MINIMUM_PAUSE_COUNT`, minimumPauses, "VALUE"]);
