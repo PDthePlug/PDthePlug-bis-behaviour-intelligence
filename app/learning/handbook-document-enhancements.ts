@@ -9,7 +9,6 @@ export type HandbookKnownValue = {
 export type HandbookEnhancementContext = {
   knownValues?: HandbookKnownValue[];
   learnerName?: string;
-  dateLabel?: string;
   workbookId?: string;
 };
 
@@ -395,13 +394,6 @@ function replacePaperIdentityFields(root: HTMLElement, context: HandbookEnhancem
       return;
     }
 
-    if (/^date:\s*_+/i.test(text) && context.dateLabel) {
-      element.textContent = `Date: ${context.dateLabel}`;
-      element.classList.add("handbook-digital-meta");
-      element.dataset.digitalMeta = "true";
-      return;
-    }
-
     if (/^workbook id:\s*_+/i.test(text) && context.workbookId) {
       element.textContent = `Workbook ID: ${context.workbookId}`;
       element.classList.add("handbook-digital-meta");
@@ -431,17 +423,22 @@ function replacePaperIdentityFields(root: HTMLElement, context: HandbookEnhancem
   });
 }
 
-function createInlineResponse(labCode: LabCode, pageId: string, labelText: string, numeric: boolean) {
+function createInlineResponse(
+  labCode: LabCode,
+  pageId: string,
+  labelText: string,
+  inputType: "text" | "number" | "date",
+) {
   const token = hashPrompt(`${pageId}|paper-blank|${labelText}`);
   const input = document.createElement("input");
   input.className = "handbook-inline-response";
-  input.type = numeric ? "number" : "text";
+  input.type = inputType;
   input.dataset.fieldId = `${labCode}.WB.AUTO.BLANK.${token}`;
   input.dataset.sourceKey = `paper-blank-${token.toLowerCase()}`;
   input.dataset.purpose = "LEARNING_RESPONSE";
   input.dataset.privacyClass = "P3";
   input.setAttribute("aria-label", labelText);
-  if (numeric) input.inputMode = "numeric";
+  if (inputType === "number") input.inputMode = "numeric";
   return input;
 }
 
@@ -459,7 +456,7 @@ function convertSimplePaperBlanks(root: HTMLElement, labCode: LabCode, pageId: s
     if (!match) return;
 
     const labelText = normalise(match[1] ?? "");
-    if (/^(facilitator|date|workbook id|signed)$/i.test(labelText)) return;
+    if (/^(facilitator|workbook id|signed)$/i.test(labelText)) return;
 
     const next = element.nextElementSibling as HTMLElement | null;
     if (next?.matches("[data-field-id]")) {
@@ -474,8 +471,12 @@ function convertSimplePaperBlanks(root: HTMLElement, labCode: LabCode, pageId: s
     const label = document.createElement("span");
     label.textContent = labelText;
     const suffix = normalise(match[2] ?? "");
-    const numeric = Boolean(suffix) || /(?:count|days|opportunities|rate|score|number|rating|percentage|percent)/i.test(labelText);
-    const input = createInlineResponse(labCode, pageId, labelText, numeric);
+    const inputType = /^date$/i.test(labelText)
+      ? "date"
+      : Boolean(suffix) || /(?:count|days|opportunities|rate|score|number|rating|percentage|percent)/i.test(labelText)
+        ? "number"
+        : "text";
+    const input = createInlineResponse(labCode, pageId, labelText, inputType);
     element.append(label, input);
     if (suffix) {
       const suffixNode = document.createElement("small");
