@@ -55,7 +55,7 @@ type Runtime = {
   enrolment: null | {
     currentInvestigation: number;
     status: string;
-    phaseACompletedAt?: string | null;
+    labPhaseACompletedAt?: string | null;
     experimentStartedAt?: string | null;
   };
   hypothesis: null | {
@@ -389,7 +389,15 @@ export function ProgrammePlayer({
   );
   const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
   const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
-  const phaseAComplete = previewMode || Boolean(runtime?.enrolment?.phaseACompletedAt || runtime?.experiment);
+  const labPhaseAComplete =
+    previewMode ||
+    Boolean(activeModuleRuntime?.enrolment?.labPhaseACompletedAt || activeModuleRuntime?.experiment);
+  const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
+  const labSequenceLocked =
+    !previewMode &&
+    !labPhaseAComplete &&
+    dayThreeIndex >= 0 &&
+    selected >= dayThreeIndex;
   const knownValues = useMemo<HandbookKnownValue[]>(() => {
     const source = activeModuleRuntime;
     if (!source?.experiment) return [];
@@ -668,8 +676,12 @@ export function ProgrammePlayer({
       return;
     }
     if (!release) return;
-    if (moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete) {
-      setError("Complete Habit Lab Phase A before marking Programme Day 3 complete.");
+    if (labSequenceLocked) {
+      setError(
+        moduleLabIsLive
+          ? `Complete ${moduleLabTitle} Phase A before continuing the programme.`
+          : `${moduleLabTitle} is the next programme step. The live Lab is still being prepared.`,
+      );
       return;
     }
 
@@ -811,7 +823,7 @@ export function ProgrammePlayer({
                   </p>
                   {moduleLabHref ? (
                     <Link className="prototype-btn primary" href={moduleLabHref}>
-                      {moduleCode === "HAB" && phaseAComplete ? "Return to Habit Lab" : `Open ${moduleLabTitle}`}
+                      {moduleCode === "HAB" && labPhaseAComplete ? "Return to Habit Lab" : `Open ${moduleLabTitle}`}
                       <ArrowRight />
                     </Link>
                   ) : (
@@ -907,6 +919,20 @@ export function ProgrammePlayer({
               {!previewMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
 
+            {labSequenceLocked && selected > dayThreeIndex ? (
+              <section className="prototype-sequence-notice" role="note">
+                <LockKeyhole />
+                <div>
+                  <strong>Reference view</strong>
+                  <p>
+                    {moduleLabIsLive
+                      ? `This page belongs after ${moduleLabTitle} Phase A. You can read it now, but programme progress resumes after the Lab.`
+                      : `This page belongs after ${moduleLabTitle}. The live Lab is still being prepared, so this page is shown for reference only.`}
+                  </p>
+                </div>
+              </section>
+            ) : null}
+
             <fieldset className="workbook-fields" disabled={completing}>
             <article key={page.id} ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
@@ -916,7 +942,7 @@ export function ProgrammePlayer({
                     title={moduleLabTitle}
                     href={moduleLabHref}
                     isHabit={moduleCode === "HAB"}
-                    habitPhaseAComplete={phaseAComplete}
+                    habitPhaseAComplete={labPhaseAComplete}
                   />
                   <details className="prototype-reference">
                     <summary>Open the full Day 3 reference</summary>
@@ -927,12 +953,20 @@ export function ProgrammePlayer({
                     </p>
                     <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
                   </details>
-                  {moduleCode === "HAB" && !phaseAComplete ? (
+                  {!labPhaseAComplete ? (
                     <section className="prototype-after-lab">
                       <LockKeyhole />
                       <div>
-                        <strong>Finish Phase A to continue Day 3.</strong>
-                        <p>Your seven-day experiment begins when the live investigation is complete.</p>
+                        <strong>
+                          {moduleLabIsLive
+                            ? `Finish ${moduleLabTitle} Phase A to continue.`
+                            : `${moduleLabTitle} is required before the programme continues.`}
+                        </strong>
+                        <p>
+                          {moduleLabIsLive
+                            ? "Your seven-day investigation begins when the live Lab phase is complete."
+                            : "The live Lab is being prepared. The remaining programme pages stay available as reference only for now."}
+                        </p>
                       </div>
                     </section>
                   ) : (
@@ -945,7 +979,7 @@ export function ProgrammePlayer({
                     title={moduleLabTitle}
                     href={moduleLabHref}
                     isHabit={moduleCode === "HAB"}
-                    habitPhaseAComplete={phaseAComplete}
+                    habitPhaseAComplete={labPhaseAComplete}
                   />
                   <div dangerouslySetInnerHTML={{ __html: page.html }} />
                 </>
@@ -980,12 +1014,12 @@ export function ProgrammePlayer({
                 type="button"
                 className="primary"
                 onClick={() => void completePage()}
-                disabled={saving || completing || (!previewMode && moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete)}
+                disabled={saving || completing || labSequenceLocked}
               >
                 {previewMode
                   ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
-                  : moduleCode === "HAB" && page.key === "Day 3" && !phaseAComplete
-                    ? "Complete Phase A first"
+                  : labSequenceLocked
+                    ? moduleLabIsLive ? "Complete the Lab first" : "Lab coming soon"
                     : completed.has(page.id)
                       ? "Reviewed"
                       : "Complete & continue"}
