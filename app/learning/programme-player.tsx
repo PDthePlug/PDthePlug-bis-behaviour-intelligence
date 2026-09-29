@@ -55,7 +55,7 @@ type Runtime = {
   enrolment: null | {
     currentInvestigation: number;
     status: string;
-    labPhaseACompletedAt?: string | null;
+    phaseACompletedAt?: string | null;
     experimentStartedAt?: string | null;
   };
   hypothesis: null | {
@@ -391,7 +391,7 @@ export function ProgrammePlayer({
   const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
   const labPhaseAComplete =
     previewMode ||
-    Boolean(activeModuleRuntime?.enrolment?.labPhaseACompletedAt || activeModuleRuntime?.experiment);
+    Boolean(activeModuleRuntime?.enrolment?.phaseACompletedAt || activeModuleRuntime?.experiment);
   const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
   const labSequenceLocked =
     !previewMode &&
