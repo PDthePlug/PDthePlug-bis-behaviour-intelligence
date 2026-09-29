@@ -175,3 +175,18 @@ test("generated paper fields stay unique when the same label appears twice on on
   assert.match(enhancement, /occurrences\.set\(labelText, occurrence\)/);
   assert.match(enhancement, /`\$\{labelText\}\|\$\{occurrence\}`/);
 });
+
+test("planned Labs keep post-Day-3 handbook pages as honest reference material", async () => {
+  const [enhancement, player] = await Promise.all([
+    source("app/learning/handbook-document-enhancements.ts"),
+    source("app/learning/programme-player.tsx"),
+  ]);
+
+  assert.match(enhancement, /hardenReferenceOnlyLabContent/);
+  assert.match(enhancement, /This section follows the Lab once it is available and completed/);
+  assert.match(enhancement, /This review section is used after the seven-day Lab experiment/);
+  assert.match(enhancement, /Available when the live Lab is connected/);
+  assert.match(enhancement, /source: "Reference only"/);
+  assert.match(player, /labAvailable: moduleLabIsLive/);
+  assert.match(player, /!moduleLabIsLive/);
+});
