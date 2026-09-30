@@ -67,7 +67,8 @@ test("learning library distinguishes handbook availability from Lab readiness", 
   const css = await source("app/catalogue/catalogue.css");
 
   assert.match(library, /Lab connected/);
-  assert.match(library, /Lab coming soon/);
+  assert.match(library, /Lab access pending/);
+  assert.match(library, /Digital access pending/);
   assert.match(library, /entry\.kind === "LAB"/);
   assert.match(library, /item\.labStatus === "live"/);
   assert.match(css, /bis-module-card-foot small\.connected/);
