@@ -110,6 +110,7 @@ test("handbooks interleave 2–4 purpose-labelled formative checks before the en
   const enhancement = await source("app/learning/handbook-document-enhancements.ts");
 
   assert.match(enhancement, /context\.formativeCheckTarget \?\? 3/);
+  assert.match(enhancement, /context\.enableFormativeLearningChecks/);
   assert.match(enhancement, /Math\.max\(2, Math\.min\(4,/);
   assert.match(enhancement, /endCheckpointQuestions = new Set\(checkpointQuestionElements\(root\)\)/);
   for (const kind of ["RECALL", "UNDERSTAND", "DISTINGUISH", "PREDICT", "APPLY", "CHALLENGE", "CONFIDENCE"]) {
@@ -131,6 +132,7 @@ test("formative support signals are explicit and remain separate from BEI scorin
   }
   assert.match(enhancement, /FORMATIVE_SIGNAL/);
   assert.match(enhancement, /WB\.CHECK/);
+  assert.match(player, /programme\?\.edition === "school"/);
   assert.match(player, /purpose: target\.dataset\.purpose/);
   assert.match(player, /checkId: target\.dataset\.checkId/);
   assert.match(player, /checkKind: target\.dataset\.checkKind/);
