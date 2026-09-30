@@ -46,7 +46,7 @@ const SCHOOL_RULES: Rule[] = [
   [/\bprediction reflection\b/gi, "reflection on your prediction"],
   [/\bSynthesis\b/g, "Put it together"],
   [/\bsynthesis\b/g, "putting it together"],
-  [/\bFalsification Test\b/gi, "What would show this explanation is wrong? (falsification test)"],
+  [/\bFalsification Test\b/gi, "What would show this explanation is wrong?"],
   [/\bfalsification statement\b/gi, "what would show this explanation is wrong"],
   [/\bfalsification\b/gi, "testing what could show the explanation is wrong"],
   [/\bprovisional explanation\b/gi, "working explanation that may change"],
