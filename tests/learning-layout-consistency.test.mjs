@@ -28,7 +28,8 @@ test("all Day 3 Lab handovers use one light editorial component", async () => {
   assert.match(handoffCss, /\.prototype-lab-handoff\.live\{background:#f7f6f1/);
   assert.match(handoffCss, /\.prototype-lab-handoff-action\{[^}]*background:var\(--p-accent\)/);
   assert.doesNotMatch(handoffCss, /\.prototype-lab-handoff\{[^}]*background:var\(--p-accent\)/);
-  assert.doesNotMatch(handoffCss, /\.prototype-lab-handoff\.planned\{[^}]*background:/);
+  assert.match(handoffCss, /\.prototype-lab-handoff\.planned\{background:#f6f3eb/);
+  assert.doesNotMatch(handoffCss, /\.prototype-lab-handoff\.planned\{[^}]*background:var\(--p-accent\)/);
 });
 
 test("Decision handbook source typography is normalised without changing authored content", async () => {
