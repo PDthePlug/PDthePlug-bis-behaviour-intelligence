@@ -152,10 +152,11 @@ test("formative response metadata survives the atomic workbook save queue", asyn
 });
 
 test("facilitator and sponsor analytics only expose aggregate learning-check signals", async () => {
-  const [staff, facilitator, sponsor] = await Promise.all([
+  const [staff, facilitator, sponsor, report] = await Promise.all([
     source("app/api/staff/route.ts"),
     source("app/facilitator-workspace.tsx"),
     source("app/programme-outcomes-view.tsx"),
+    source("lib/programme-report-pdf.ts"),
   ]);
 
   assert.match(staff, /facilitator_cohort_learning_checks/);
@@ -165,4 +166,6 @@ test("facilitator and sponsor analytics only expose aggregate learning-check sig
   assert.match(facilitator, /not marks and do not change BEI results/);
   assert.match(sponsor, /anonymous, learner-reported understanding signals/);
   assert.match(sponsor, /not marks and do not change BEI results/);
+  assert.match(report, /In-session learning checks/);
+  assert.match(report, /not marks, BEI evidence or proof of mastery/);
 });
