@@ -109,6 +109,7 @@ async function snapshot(userId: string, code: string) {
     definition: runtime.definition,
     version: runtime.version.version,
     identity: { id: userId, displayName: profile.displayName },
+    deliveryEdition: profile.deliveryEdition,
     enrolment: enrolment ? {
       id: enrolment.id,
       status: enrolment.status,

@@ -1,6 +1,7 @@
 "use client";
 
 import { BisMark } from "@/components/brand/bis-mark";
+import { SchoolLanguageScope } from "@/components/learning/school-language-scope";
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -771,6 +772,7 @@ export function ProgrammePlayer({
         !moduleLabIsLive &&
         dayThreeIndex >= 0 &&
         selected > dayThreeIndex,
+      edition: programme?.edition ?? snapshot?.profile.deliveryEdition,
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
@@ -795,10 +797,12 @@ export function ProgrammePlayer({
     moduleCode,
     moduleLabIsLive,
     page,
+    programme?.edition,
     previewMode,
     selected,
     dayThreeIndex,
     section,
+    snapshot?.profile.deliveryEdition,
     snapshot?.profile.displayName,
     snapshot?.workbookResponses,
   ]);
@@ -956,6 +960,7 @@ export function ProgrammePlayer({
   const moduleLabTitle = moduleDefinition?.title ?? `${programme.title} Lab`;
 
   return (
+    <SchoolLanguageScope enabled={snapshot.profile.deliveryEdition === "school"}>
     <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition}>
       <header className="prototype-topbar">
         <button
@@ -1308,6 +1313,7 @@ export function ProgrammePlayer({
         <Menu /> <span>Menu</span>
       </button>
     </div>
+    </SchoolLanguageScope>
   );
 }
 
