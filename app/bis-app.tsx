@@ -337,7 +337,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
   const displayName = state.profile.displayName.split(" ")[0] || "Investigator";
 
   return (
-    <SchoolLanguageScope enabled={schoolEdition}><>
+    <SchoolLanguageScope enabled={schoolEdition && systemMode === "learner"}><>
     <div className={`min-h-screen bg-background text-foreground ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}>
       <header className="mobile-header">
         <button className="icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu /></button>
