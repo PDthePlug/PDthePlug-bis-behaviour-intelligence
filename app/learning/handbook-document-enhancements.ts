@@ -139,9 +139,11 @@ function createResponse(
 }
 
 function interleavedQuestionCandidates(root: HTMLElement) {
+  const endCheckpointQuestions = new Set(checkpointQuestionElements(root));
   return [...root.querySelectorAll<HTMLElement>("p,li,.authored-lines,.handbook-callout")]
     .filter((element) => questionPrompts(element).length > 0)
     .filter((element) =>
+      !endCheckpointQuestions.has(element) &&
       !element.closest(".checkpoint-answer-panel") &&
       !element.closest(".prototype-reference") &&
       !element.closest(".prototype-lab-handoff") &&
