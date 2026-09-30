@@ -1013,6 +1013,7 @@ export function ProgrammePlayer({
                 <p className="prototype-eyebrow">Continue your programme</p>
                 <h2>{page.label}</h2>
                 <p>{page.experimentPosition || "Your handbook is ready where you left off."}</p>
+                {sessionDesign ? <small>{sessionDesign.minutes}-minute learning session · learn, check, apply and reflect</small> : null}
                 <button type="button" className="prototype-btn primary" onClick={() => openLearn("reader")}>
                   Continue learning <ArrowRight />
                 </button>
