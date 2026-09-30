@@ -70,7 +70,7 @@ test("the ten programme days use a deliberate learning arc rather than equal cha
   const compiled = ts.transpileModule(designSource, {
     compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
   }).outputText;
-  const module = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
+  const sessionModule = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
 
   const expectedPurpose = [
     "Create relevance and introduce the problem",
@@ -87,7 +87,7 @@ test("the ten programme days use a deliberate learning arc rather than equal cha
   const expectedChecks = [3, 3, 2, 4, 3, 2, 2, 4, 2, 2];
 
   for (let day = 1; day <= 10; day += 1) {
-    const session = module.sessionDesignForPage({
+    const session = sessionModule.sessionDesignForPage({
       programmeDay: day,
       html: "<p>" + "learning ".repeat(day === 4 ? 2100 : 800) + "</p>",
     });
@@ -100,10 +100,10 @@ test("the ten programme days use a deliberate learning arc rather than equal cha
     assert.ok(session.readingTreatment.length > 40);
   }
 
-  assert.equal(module.sessionDesignForPage({ programmeDay: 6, html: "<p>short</p>" }).learningLoad.reading, "low");
-  assert.equal(module.sessionDesignForPage({ programmeDay: 7, html: "<p>short</p>" }).learningLoad.application, "high");
-  assert.equal(module.sessionDesignForPage({ programmeDay: 9, html: "<p>short</p>" }).density, "application");
-  assert.equal(module.sessionDesignForPage({ programmeDay: 10, html: "<p>short</p>" }).learningLoad.evidence, "high");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 6, html: "<p>short</p>" }).learningLoad.reading, "low");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 7, html: "<p>short</p>" }).learningLoad.application, "high");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 9, html: "<p>short</p>" }).density, "application");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 10, html: "<p>short</p>" }).learningLoad.evidence, "high");
 });
 
 test("handbooks interleave 2–4 purpose-labelled formative checks before the end checkpoint", async () => {
