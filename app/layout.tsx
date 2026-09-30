@@ -6,6 +6,7 @@ import { PwaProvider } from "@/components/pwa/pwa-provider";
 import "./learning/programme-player.css";
 import "./habit-lab/focused-runtime.css";
 import "./responsive-readiness.css";
+import "./learning/handbook-presentation.css";
 
 const metadataBase = new URL(BIS_PRODUCTION_ORIGIN);
 
