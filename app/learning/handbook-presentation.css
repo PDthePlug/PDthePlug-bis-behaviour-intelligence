@@ -135,3 +135,4 @@
 .prototype-player .prototype-document .handbook-check-row {display: block; padding-left: 30px; position: relative;}
 .prototype-player .prototype-document .handbook-check-row > input {position: absolute; left: 0; top: 8px;}
 .prototype-player .prototype-document .day-kicker {font-size: 12px; font-weight: 750; letter-spacing: .08em; line-height: 1.5; color: var(--handbook-muted); margin-bottom: 12px;}
+.prototype-player .prototype-document .handbook-equation {padding: 18px; background: #f2f5f1; border: 1px solid var(--handbook-rule); border-radius: 10px; font-weight: 650; overflow-wrap: anywhere;}

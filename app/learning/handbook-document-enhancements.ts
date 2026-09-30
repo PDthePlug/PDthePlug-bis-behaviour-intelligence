@@ -393,6 +393,19 @@ function upgradePrintableCheckboxes(root: HTMLElement, pageId: string) {
 
 function enhanceTables(root: HTMLElement) {
   root.querySelectorAll<HTMLTableElement>("table").forEach((table) => {
+    const cells = Array.from(table.rows[0]?.cells ?? []);
+    if (table.rows.length === 1 && cells.length === 3 &&
+        normalise(cells[0].textContent ?? "") === "Prediction Accuracy = 100 −" &&
+        normalise(cells[1].textContent ?? "") === "Predicted % − Actual %" &&
+        !normalise(cells[2].textContent ?? "") && !table.querySelector("input,textarea,select")) {
+      // The source importer interpreted the absolute-value bars as column
+      // delimiters. Restore the equation used by the existing metrics engine.
+      const equation = document.createElement("p");
+      equation.className = "handbook-equation";
+      equation.textContent = "Prediction Accuracy = 100 − |Predicted % − Actual %|";
+      table.replaceWith(equation);
+      return;
+    }
     // Promote only a header row verified by the next row's authored labels.
     // Never infer a header from the first row of an equation or data-only table.
     const first = table.rows[0];
