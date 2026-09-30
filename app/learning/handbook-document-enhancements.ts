@@ -14,6 +14,8 @@ export type HandbookEnhancementContext = {
   labAvailable?: boolean;
   referenceOnly?: boolean;
   edition?: LearnerEdition;
+  programmeDay?: number | null;
+  formativeCheckTarget?: number;
 };
 
 const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
@@ -124,6 +126,7 @@ function createResponse(
   occurrence: number,
   purpose = "LEARNING_RESPONSE",
   identitySeed = prompt,
+  metadata: { checkId?: string; checkKind?: string } = {},
 ) {
   const token = hashPrompt(`${pageId}|${identitySeed}|${occurrence}`);
   const field = document.createElement("textarea");
@@ -132,6 +135,8 @@ function createResponse(
   field.dataset.sourceKey = `auto-question-${token.toLowerCase()}-${occurrence}`;
   field.dataset.purpose = purpose;
   field.dataset.privacyClass = "P3";
+  if (metadata.checkId) field.dataset.checkId = metadata.checkId;
+  if (metadata.checkKind) field.dataset.checkKind = metadata.checkKind;
   field.maxLength = 20000;
   field.rows = 3;
   field.placeholder = "Write your answer…";
@@ -164,60 +169,162 @@ function distributedConceptChecks(candidates: HTMLElement[], target = 3) {
   return [...selected];
 }
 
-function addInterleavedConceptChecks(root: HTMLElement, labCode: LabCode, pageId: string) {
+type FormativeCheckKind =
+  | "RECALL"
+  | "UNDERSTAND"
+  | "DISTINGUISH"
+  | "PREDICT"
+  | "APPLY"
+  | "CHALLENGE"
+  | "CONFIDENCE";
+
+function formativeCheckKind(prompt: string, order: number, programmeDay?: number | null): FormativeCheckKind {
+  if (/\b(confiden(?:ce|t)|how sure|how certain)\b/i.test(prompt)) return "CONFIDENCE";
+  if (/\b(evidence|challenge|disprove|less convincing|against this|what would change)\b/i.test(prompt)) return "CHALLENGE";
+  if (/\b(predict|what do you think|what happens next|what will|likely happen)\b/i.test(prompt)) return "PREDICT";
+  if (/\b(distinguish|difference|compare|which .* (?:and|from) which)\b/i.test(prompt)) return "DISTINGUISH";
+  if (/\b(your|you|apply|in your own|for you)\b/i.test(prompt)) return "APPLY";
+  if ((programmeDay ?? 1) > 1 && order === 0) return "RECALL";
+  return "UNDERSTAND";
+}
+
+function formativeCheckLabel(kind: FormativeCheckKind) {
+  return ({
+    RECALL: "Recall",
+    UNDERSTAND: "Understand",
+    DISTINGUISH: "Distinguish",
+    PREDICT: "Predict",
+    APPLY: "Apply",
+    CHALLENGE: "Challenge",
+    CONFIDENCE: "Confidence",
+  } as const)[kind];
+}
+
+function createFormativeSignal(
+  labCode: LabCode,
+  pageId: string,
+  checkId: string,
+  checkKind: FormativeCheckKind,
+) {
+  const fieldId = `${labCode}.WB.CHECK.${checkId}.SIGNAL`;
+  const group = document.createElement("fieldset");
+  group.className = "handbook-formative-signal";
+  group.dataset.formativeSignalFor = checkId;
+
+  const legend = document.createElement("legend");
+  legend.textContent = "Before you continue, how sure are you?";
+  group.append(legend);
+
+  const options = document.createElement("div");
+  options.className = "handbook-formative-signal-options";
+  const choices = [
+    ["UNDERSTOOD", "I can explain this"],
+    ["UNSURE", "I’m unsure"],
+    ["NEEDS_EXAMPLE", "I need another example"],
+  ] as const;
+
+  for (const [value, labelText] of choices) {
+    const label = document.createElement("label");
+    label.className = "handbook-formative-signal-option";
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = fieldId;
+    input.value = value;
+    input.dataset.fieldId = fieldId;
+    input.dataset.sourceKey = `formative-signal-${checkId.toLowerCase()}`;
+    input.dataset.purpose = "FORMATIVE_SIGNAL";
+    input.dataset.privacyClass = "P2";
+    input.dataset.checkId = checkId;
+    input.dataset.checkKind = checkKind;
+    input.setAttribute("aria-label", labelText);
+    const span = document.createElement("span");
+    span.textContent = labelText;
+    label.append(input, span);
+    options.append(label);
+  }
+
+  group.append(options);
+  return group;
+}
+
+function addInterleavedConceptChecks(
+  root: HTMLElement,
+  labCode: LabCode,
+  pageId: string,
+  context: HandbookEnhancementContext,
+) {
   const candidates = interleavedQuestionCandidates(root);
-  const selected = distributedConceptChecks(candidates, 3);
+  const target = Math.max(2, Math.min(4, context.formativeCheckTarget ?? 3));
+  const selected = distributedConceptChecks(candidates, target);
   const occurrences = new Map<string, number>();
 
-  selected.forEach((element) => {
+  selected.forEach((element, order) => {
+    const prompts = questionPrompts(element);
+    if (!prompts.length) return;
+    const primaryPrompt = prompts[0];
+    const checkKind = formativeCheckKind(primaryPrompt, order, context.programmeDay);
+    const checkId = hashPrompt(`formative|${pageId}|${primaryPrompt}|${order + 1}`);
+
     if (element.dataset.conceptCheck !== "true") {
       element.dataset.conceptCheck = "true";
+      element.dataset.checkId = checkId;
+      element.dataset.checkKind = checkKind;
       element.classList.add("handbook-concept-check-question");
 
       const label = document.createElement("div");
       label.className = "handbook-concept-check-label";
       const title = document.createElement("strong");
-      title.textContent = "Quick check";
+      title.textContent = formativeCheckLabel(checkKind);
       const note = document.createElement("span");
-      note.textContent = "Pause here before you continue. This is for understanding, not a score.";
+      note.textContent = "Pause here before you continue. This is for learning, not a mark or BEI score.";
       label.append(title, note);
 
       if (element.tagName === "LI") element.prepend(label);
       else element.insertAdjacentElement("beforebegin", label);
     }
 
-    if (hasExistingAnswerSpace(element)) return;
-    const prompts = questionPrompts(element);
-    if (!prompts.length) return;
+    if (!hasExistingAnswerSpace(element)) {
+      const responseGroup = document.createElement("div");
+      responseGroup.className = "generated-question-responses handbook-concept-check-responses";
 
-    const responseGroup = document.createElement("div");
-    responseGroup.className = "generated-question-responses handbook-concept-check-responses";
-
-    for (const prompt of prompts) {
-      const seen = (occurrences.get(prompt) ?? 0) + 1;
-      occurrences.set(prompt, seen);
-      const wrapper = document.createElement("label");
-      wrapper.className = "generated-question-response-row";
-      if (prompts.length > 1) {
-        const promptLabel = document.createElement("span");
-        promptLabel.textContent = prompt;
-        wrapper.append(promptLabel);
+      for (const prompt of prompts) {
+        const seen = (occurrences.get(prompt) ?? 0) + 1;
+        occurrences.set(prompt, seen);
+        const wrapper = document.createElement("label");
+        wrapper.className = "generated-question-response-row";
+        if (prompts.length > 1) {
+          const promptLabel = document.createElement("span");
+          promptLabel.textContent = prompt;
+          wrapper.append(promptLabel);
+        }
+        wrapper.append(
+          createResponse(
+            labCode,
+            pageId,
+            prompt,
+            seen,
+            "FORMATIVE_CHECK",
+            `formative|${prompt}`,
+            { checkId, checkKind },
+          ),
+        );
+        responseGroup.append(wrapper);
       }
-      wrapper.append(
-        createResponse(
-          labCode,
-          pageId,
-          prompt,
-          seen,
-          "FORMATIVE_CHECK",
-          `formative|${prompt}`,
-        ),
-      );
-      responseGroup.append(wrapper);
+
+      if (element.tagName === "LI") element.append(responseGroup);
+      else element.insertAdjacentElement("afterend", responseGroup);
     }
 
-    if (element.tagName === "LI") element.append(responseGroup);
-    else element.insertAdjacentElement("afterend", responseGroup);
+    if (!root.querySelector(`[data-formative-signal-for="${checkId}"]`)) {
+      const signal = createFormativeSignal(labCode, pageId, checkId, checkKind);
+      if (element.tagName === "LI") element.append(signal);
+      else {
+        const responseGroup = element.nextElementSibling?.classList.contains("handbook-concept-check-responses")
+          ? element.nextElementSibling
+          : element;
+        responseGroup.insertAdjacentElement("afterend", signal);
+      }
+    }
   });
 }
 
@@ -962,6 +1069,6 @@ export function enhanceHandbookDocument(
   softenLearnerTechnicalLabels(root);
   applyEditionLearnerLanguage(root, context);
   collapseSuggestedAnswers(root);
-  if (!context.referenceOnly) addInterleavedConceptChecks(root, labCode, pageId);
+  if (!context.referenceOnly) addInterleavedConceptChecks(root, labCode, pageId, context);
   addMissingCheckpointResponses(root, labCode, pageId);
 }
