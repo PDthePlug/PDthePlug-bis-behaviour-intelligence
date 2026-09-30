@@ -343,10 +343,18 @@ function upgradePrintableCheckboxes(root: HTMLElement, pageId: string) {
 
     block.textContent = "";
     block.dataset.digitalChecklist = "true";
+    let previousChoice: HTMLLabelElement | null = null;
     lines.forEach((line) => {
       if (printableBox.test(line)) {
-        block.append(createUiChoice(pageId, line.replace(printableBox, "").trim()));
+        previousChoice = createUiChoice(pageId, line.replace(printableBox, "").trim());
+        block.append(previousChoice);
+      } else if (previousChoice && /^[a-z]/.test(line)) {
+        // Source line wrapping is not a new learning objective. Keep its
+        // continuation inside the same label without changing the choice key.
+        previousChoice.append(document.createTextNode(` ${line}`));
+        previousChoice.querySelector("input")?.setAttribute("aria-label", normalise(previousChoice.textContent ?? ""));
       } else {
+        previousChoice = null;
         const row = document.createElement("div");
         row.className = "handbook-check-context";
         row.textContent = line;
@@ -385,6 +393,23 @@ function upgradePrintableCheckboxes(root: HTMLElement, pageId: string) {
 
 function enhanceTables(root: HTMLElement) {
   root.querySelectorAll<HTMLTableElement>("table").forEach((table) => {
+    // Promote only a header row verified by the next row's authored labels.
+    // Never infer a header from the first row of an equation or data-only table.
+    const first = table.rows[0];
+    const second = table.rows[1];
+    if (!table.tHead && first && second && first.cells.length === second.cells.length &&
+        Array.from(first.cells).every((cell, index) => cell.colSpan === 1 &&
+          normalise(cell.textContent ?? "") === normalise(second.cells[index].dataset.label ?? "") &&
+          Boolean(second.cells[index].dataset.label))) {
+      Array.from(first.cells).forEach((cell) => {
+        if (cell.tagName === "TH") return;
+        const header = document.createElement("th");
+        Array.from(cell.attributes).forEach((attribute) => header.setAttribute(attribute.name, attribute.value));
+        header.append(...Array.from(cell.childNodes));
+        cell.replaceWith(header);
+      });
+      table.createTHead().append(first);
+    }
     const hasLabels = Boolean(table.querySelector("td[data-label],th[data-label]"));
     table.classList.toggle("handbook-data-table", hasLabels);
     table.classList.toggle("handbook-scroll-table", !hasLabels);
@@ -806,6 +831,25 @@ function hideEditorialProductionMetadata(root: HTMLElement) {
   });
 }
 
+function standardisePageHeading(root: HTMLElement) {
+  const first = root.firstElementChild;
+  if (!first) return;
+  if (first.tagName === "H1" && /^(DAY \d+ OF 10|WEEKEND)$/i.test(normalise(first.textContent ?? "")) && first.nextElementSibling?.tagName === "H2") {
+    const kicker = document.createElement("div");
+    kicker.className = "day-kicker";
+    kicker.append(...Array.from(first.childNodes));
+    first.replaceWith(kicker);
+  }
+  const kicker = root.querySelector(":scope > .day-kicker");
+  const title = kicker?.nextElementSibling;
+  if (title && (title.tagName === "H2" || title.tagName === "P") && !title.querySelector("input,textarea,select")) {
+    const heading = document.createElement("h1");
+    heading.className = "page-title";
+    heading.append(...Array.from(title.childNodes));
+    title.replaceWith(heading);
+  }
+}
+
 function softenLearnerTechnicalLabels(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>("p,h2,h3,h4").forEach((element) => {
     const text = normalise(element.textContent ?? "");
@@ -819,6 +863,7 @@ export function enhanceHandbookDocument(
   pageId: string,
   context: HandbookEnhancementContext = {},
 ) {
+  standardisePageHeading(root);
   cleanOrphanedResponseControls(root);
   labelAuthoredResponses(root);
   removeUnboundGenericResponses(root);
