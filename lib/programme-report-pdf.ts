@@ -73,6 +73,24 @@ type Outcome = {
       };
     };
   };
+  learningChecks?: null | {
+    suppressed: boolean;
+    signalsRecorded: number | null;
+    understoodRate: number | null;
+    supportSignalRate: number | null;
+    byDay: Array<{
+      semanticStepId: string;
+      signalsRecorded: number;
+      understoodRate: number | null;
+      supportSignalRate: number | null;
+    }>;
+    interpretationBoundary?: {
+      learnerReportedNotScored?: boolean;
+      excludedFromBEI?: boolean;
+      descriptiveNotCausal?: boolean;
+      note?: string;
+    };
+  };
   organisationLearning?: null | {
     suppressed: boolean;
     transition: null | {
@@ -1037,6 +1055,75 @@ function drawLearningJourney(canvas: ReportCanvas, outcome: Outcome) {
   }
 }
 
+function drawLearningChecks(canvas: ReportCanvas, outcome: Outcome) {
+  const checks = outcome.learningChecks;
+  if (!checks || checks.suppressed) return;
+
+  canvas.page(C.paper);
+  canvas.section(
+    "In-session learning checks",
+    "Where learners felt clear and where they wanted more support",
+    "These are anonymous, learner-reported understanding signals captured during the guided sessions. They help teams see where another example, explanation or practice opportunity may be useful."
+  );
+
+  canvas.metricCards(
+    [
+      {
+        label: "Check signals",
+        value: String(checks.signalsRecorded ?? 0),
+        detail: "recorded",
+        tone: "plain",
+      },
+      {
+        label: "Can explain",
+        value: percent(checks.understoodRate),
+        detail: "self-reported",
+        tone: "teal",
+      },
+      {
+        label: "Want more support",
+        value: percent(checks.supportSignalRate),
+        detail: "unsure / need example",
+        tone: "warm",
+      },
+    ],
+    3
+  );
+
+  if (checks.byDay.length) {
+    canvas.text("DAY-BY-DAY LEARNING SIGNAL", {
+      size: 8.5,
+      bold: true,
+      color: C.teal,
+      gapAfter: 9,
+    });
+    canvas.horizontalBars(
+      checks.byDay.map((day) => {
+        const token = day.semanticStepId.split(".").at(-1) ?? day.semanticStepId;
+        const dayLabel = token.startsWith("DAY") ? "Day " + token.slice(3) : token;
+        return {
+          label: dayLabel,
+          value: day.understoodRate ?? 0,
+          detail:
+            String(day.signalsRecorded) +
+            " signals  |  " +
+            percent(day.supportSignalRate) +
+            " want more support",
+        };
+      }),
+      100,
+      { suffix: "%", color: C.teal, maxItems: 10 }
+    );
+  }
+
+  canvas.callout(
+    "How to read this section",
+    checks.interpretationBoundary?.note ??
+      "These signals are not marks, BEI evidence or proof of mastery. Use them to decide where the programme may need clearer explanation, modelling or practice.",
+    "teal"
+  );
+}
+
 function drawBehaviourEvidence(canvas: ReportCanvas, outcome: Outcome) {
   const metrics = outcome.metrics!;
   canvas.page(C.paper);
@@ -1496,6 +1583,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
 
   drawExecutiveSummary(canvas, outcome);
   drawLearningJourney(canvas, outcome);
+  drawLearningChecks(canvas, outcome);
   drawBehaviourEvidence(canvas, outcome);
   drawExperimentLandscape(canvas, outcome);
   drawOrganisationalLearning(canvas, outcome);
