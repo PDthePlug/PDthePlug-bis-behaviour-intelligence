@@ -158,6 +158,7 @@ async function progressRows(userIds: string[], labCode?: string) {
       userId: learners.userId,
       email: learners.email,
       displayName: learners.displayName,
+      deliveryEdition: learners.deliveryEdition,
       mode: learners.mode,
       status: learners.status,
     })
@@ -296,7 +297,20 @@ async function facilitatorSnapshot(identity: Identity) {
     .select()
     .from(cohortMembers)
     .where(and(inArray(cohortMembers.cohortId, cohortIds), eq(cohortMembers.status, "ACTIVE")));
-  const progress = await progressRows([...new Set(members.map((member) => member.learnerUserId))], "HAB");
+  const progressByCohort = await Promise.all(
+    cohorts.map(async (cohort) => {
+      const cohortUserIds = members
+        .filter((member) => member.cohortId === cohort.id)
+        .map((member) => member.learnerUserId);
+      const rows = await progressRows([...new Set(cohortUserIds)], cohort.labCode);
+      return rows.map((row) => ({
+        ...row,
+        cohortId: cohort.id,
+        labCode: cohort.labCode,
+      }));
+    }),
+  );
+  const progress = progressByCohort.flat();
   const notes = await db
     .select()
     .from(facilitatorNotes)

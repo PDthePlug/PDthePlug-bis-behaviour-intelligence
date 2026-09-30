@@ -64,7 +64,7 @@
       "title": "Identity Lab™",
       "learningStatus": "live",
       "learningHref": "/handbooks/idn",
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -76,7 +76,7 @@
       "title": "Attention Lab™",
       "learningStatus": "live",
       "learningHref": "/handbooks/att",
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -88,7 +88,7 @@
       "title": "Time Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -100,7 +100,7 @@
       "title": "Risk Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -112,7 +112,7 @@
       "title": "Trust Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -124,7 +124,7 @@
       "title": "Influence Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -136,7 +136,7 @@
       "title": "Leadership Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -148,7 +148,7 @@
       "title": "Purpose Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -160,7 +160,7 @@
       "title": "Resilience Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -172,7 +172,7 @@
       "title": "Career Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -184,7 +184,7 @@
       "title": "Launch Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -196,7 +196,7 @@
       "title": "Failure Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -208,7 +208,7 @@
       "title": "Growth Mindset Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -220,7 +220,7 @@
       "title": "Grit Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -232,7 +232,7 @@
       "title": "Entrepreneurship Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -244,7 +244,7 @@
       "title": "Negotiation Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -256,7 +256,7 @@
       "title": "Team Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -268,7 +268,7 @@
       "title": "Ethics Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -280,7 +280,7 @@
       "title": "Future Self Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -292,7 +292,7 @@
       "title": "Opportunity Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -304,7 +304,7 @@
       "title": "Communication Lab™",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -316,7 +316,7 @@
       "title": "Systems Thinking™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -328,7 +328,7 @@
       "title": "Long-Term Thinking™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -340,7 +340,7 @@
       "title": "Economics for Humans™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -352,7 +352,7 @@
       "title": "Customer Thinking™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -364,7 +364,7 @@
       "title": "Innovation Thinking™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -376,7 +376,7 @@
       "title": "Asset Thinking™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -388,7 +388,7 @@
       "title": "Financial Philosophy™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -400,7 +400,7 @@
       "title": "Personal Effectiveness™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -412,7 +412,7 @@
       "title": "Transferable Skills™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     },
     {
@@ -424,7 +424,7 @@
       "title": "Meta-Learning™ Lab",
       "learningStatus": "catalogued",
       "learningHref": null,
-      "labStatus": "planned",
+      "labStatus": "source_ready",
       "labHref": null
     }
   ],

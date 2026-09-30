@@ -19,7 +19,7 @@ function statusLabel(
   status: "live" | "source_ready" | "catalogued" | "planned",
 ) {
   if (status === "live") return "Open";
-  if (mode === "learning" && status === "source_ready") return "Coming next";
+  if (status === "source_ready") return mode === "lab" ? "Digital access pending" : "Source ready";
   return "Coming soon";
 }
 
@@ -131,7 +131,7 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
                   <span className={open ? "open" : ""}>{statusLabel(mode, displayStatus)}</span>
                   {mode === "learning" && open ? (
                     <small className={labConnected ? "connected" : ""}>
-                      {labConnected ? "Lab connected" : "Lab coming soon"}
+                      {labConnected ? "Lab connected" : "Lab access pending"}
                     </small>
                   ) : null}
                 </div>

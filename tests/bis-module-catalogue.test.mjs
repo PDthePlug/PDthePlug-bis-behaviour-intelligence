@@ -58,6 +58,16 @@ test("current 34-module scope preserves the sourced volume sequence", async () =
   );
 });
 
+test("all non-live Labs are registered as source-ready rather than planned", async () => {
+  const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
+  assert.equal(catalogue.modules.filter((item) => item.labStatus === "live").length, 3);
+  assert.equal(catalogue.modules.filter((item) => item.labStatus === "source_ready").length, 31);
+  assert.equal(catalogue.modules.filter((item) => item.labStatus === "planned").length, 0);
+  for (const item of catalogue.modules.filter((item) => item.labStatus === "source_ready")) {
+    assert.equal(item.labHref, null, `${item.code} must not claim a digital route before runtime activation`);
+  }
+});
+
 test("a live catalogue surface always has a real route", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
   for (const item of catalogue.modules) {

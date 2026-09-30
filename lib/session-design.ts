@@ -455,19 +455,17 @@ function observedDensity(programmeDay: number, wordCount: number): SessionDensit
   return "balanced";
 }
 
-export function sessionDesignForPage(
-  page: ProgrammePage,
+export function sessionDesignForDay(
+  programmeDay: number,
   edition: DeliveryEdition = "school",
+  wordCount = 1000,
 ): SessionDesign | null {
-  if (!page.programmeDay) return null;
-
-  const blueprint = DAY_BLUEPRINTS[page.programmeDay];
+  const blueprint = DAY_BLUEPRINTS[programmeDay];
   if (!blueprint) return null;
 
   const frame = EDITION_SESSION_FRAMES[edition] ?? EDITION_SESSION_FRAMES.school;
-  const override = frame.dayOverrides[page.programmeDay] ?? {};
-  const wordCount = pageWordCount(page);
-  const density = observedDensity(page.programmeDay, wordCount);
+  const override = frame.dayOverrides[programmeDay] ?? {};
+  const density = observedDensity(programmeDay, wordCount);
 
   return {
     ...blueprint,
@@ -478,4 +476,12 @@ export function sessionDesignForPage(
     density,
     wordCount,
   };
+}
+
+export function sessionDesignForPage(
+  page: ProgrammePage,
+  edition: DeliveryEdition = "school",
+): SessionDesign | null {
+  if (!page.programmeDay) return null;
+  return sessionDesignForDay(page.programmeDay, edition, pageWordCount(page));
 }

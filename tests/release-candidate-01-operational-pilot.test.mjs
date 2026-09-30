@@ -25,11 +25,13 @@ test("RC01 uses a typed structural staff progress mapping with Lab code", async 
   assert.doesNotMatch(mapping, /targetPattern|targetCondition|alternativeBehaviour|expectedReward|notes/);
 });
 
-test("facilitator progress is scoped to the Habit cohort rather than the learner's latest unrelated Lab", async () => {
+test("facilitator progress is scoped to each cohort's Lab rather than a learner's unrelated Lab", async () => {
   const route = await source("app/api/staff/route.ts");
   assert.match(route, /async function progressRows\(userIds: string\[], labCode\?: string\)/);
   assert.match(route, /eq\(labEnrollments\.labCode, labCode\)/);
   assert.match(route, /eq\(staffExperimentProgress\.labCode, labCode\)/);
-  assert.match(route, /progressRows\(\[\.\.\.new Set\(members\.map\(\(member\) => member\.learnerUserId\)\)\], "HAB"\)/);
+  assert.match(route, /cohorts\.map\(async \(cohort\)/);
+  assert.match(route, /progressRows\(\[\.\.\.new Set\(cohortUserIds\)\], cohort\.labCode\)/);
+  assert.doesNotMatch(route, /progressRows\([^\n]*"HAB"\)/);
   assert.doesNotMatch(route, /from\(experiments\)/);
 });

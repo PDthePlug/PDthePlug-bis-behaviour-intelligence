@@ -53,16 +53,25 @@ test("all live programme days retain sufficient authored substance", async () =>
   }
 });
 
-test("BIS learning sessions are 45 minutes and Lab Phase A remains a separate 90-minute experience", async () => {
-  const [design, player] = await Promise.all([
+test("45-minute orchestration belongs to the facilitator experience, not the learner reader", async () => {
+  const [design, player, facilitator, guide] = await Promise.all([
     source("lib/session-design.ts"),
     source("app/learning/programme-player.tsx"),
+    source("app/facilitator-workspace.tsx"),
+    source("lib/facilitator-session.ts"),
   ]);
 
   assert.match(design, /BIS_LEARNING_SESSION_MINUTES = 45/);
   assert.match(design, /BIS_LAB_PHASE_A_MINUTES = 90/);
-  assert.match(player, /Today’s learning session/);
-  assert.match(player, /live Lab Phase A is separate from this learning session/);
+  assert.match(design, /sessionDesignForDay/);
+  assert.doesNotMatch(player, /prototype-session-plan/);
+  assert.doesNotMatch(player, /Today’s learning session/);
+  assert.match(player, /enableFormativeLearningChecks: Boolean\(sessionDesign\)/);
+  assert.match(facilitator, /Facilitation experience/);
+  assert.match(facilitator, /45-minute facilitation rhythm/);
+  assert.match(facilitator, /Day 3 has two separate experiences/);
+  assert.match(guide, /Create the conditions for discovery/);
+  assert.match(guide, /Use silence deliberately/);
 });
 
 test("the ten programme days use a deliberate learning arc rather than equal chapter density", async () => {
