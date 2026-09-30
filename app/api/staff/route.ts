@@ -431,7 +431,8 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       { id: "support", label: "Support", status: "LIVE", description: "Learner-initiated requests for human help, aggregated only." },
       { id: "voice", label: "Voice / silence", status: "FUTURE_SIGNAL", description: "Activates when the relevant Identity or Communication evidence field is live." },
       { id: "mistakes", label: "Response to mistakes", status: "FUTURE_SIGNAL", description: "Activates with Failure Lab evidence." },
-      { id: "feedback", label: "Learning checks", status: "LIVE", description: "Aggregate learner-reported understanding signals from in-session formative checks; separate from BEI evidence and marks." },
+      { id: "feedback", label: "Ungraded feedback", status: "FUTURE_SIGNAL", description: "Activates when the relevant feedback evidence protocol is live." },
+      { id: "learning-checks", label: "Learning checks", status: "LIVE", description: "Aggregate learner-reported understanding signals from in-session formative checks; separate from BEI evidence and marks." },
     ],
     privacy: {
       aggregationOnly: true,
