@@ -340,7 +340,7 @@
 }
 
 
-/* BIS School Edition learning-session architecture */
+/* BIS edition-aware learning-session architecture */
 .prototype-session-outcomes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
 .prototype-session-outcomes>div{display:grid;gap:5px;padding:12px 13px;border-radius:13px;background:#f5f4ef;border:1px solid #ece8df}
 .prototype-session-outcomes span{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#737b77}
