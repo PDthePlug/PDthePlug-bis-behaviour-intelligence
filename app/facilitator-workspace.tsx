@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Activity, Check, ClipboardCheck, ShieldAlert, Users } from "lucide-react";
+import { Activity, BookOpen, Check, ClipboardCheck, Clock3, MessageSquareText, ShieldAlert, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,11 +13,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { facilitatorSessionForDay } from "@/lib/facilitator-session";
+import { BIS_MODULES } from "@/lib/bis-catalogue";
+import type { DeliveryEdition } from "@/lib/learning-foundation";
+import type { HabitProgramme } from "@/lib/programme-handbook";
 
 type ProgressRow = {
   userId: string;
+  cohortId?: string;
+  labCode?: string;
   email: string;
   displayName: string;
+  deliveryEdition: DeliveryEdition;
   mode: string;
   status: string;
   enrolment: null | {
@@ -83,7 +90,7 @@ type FacilitatorData = {
   referrals: Array<{ id: string; learnerUserId: string; cohortId: string | null; category: string; status: string; severity: string; openedAt: string }>;
 };
 
-type FacilitatorSection = "cohort" | "participants" | "support" | "review";
+type FacilitatorSection = "cohort" | "session" | "participants" | "support" | "review";
 
 function label(value: string) {
   return value.toLowerCase().replaceAll("_", " ");
