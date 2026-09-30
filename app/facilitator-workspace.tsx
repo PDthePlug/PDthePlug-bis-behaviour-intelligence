@@ -227,7 +227,7 @@ export function FacilitatorWorkspace({
   const moduleDefinition = BIS_MODULES.find((item) => item.code === cohortLabCode);
   const participantEditions = [...new Set(participants.map((item) => item.deliveryEdition).filter(Boolean))];
   const cohortEdition: DeliveryEdition =
-    participantEditions.length === 1 ? participantEditions[0] : "school";
+    participantEditions.length === 1 ? participantEditions[0]! : "school";
   const requestedDay = Number(searchParams.get("day"));
   const latestCheckDay = [...(cohort?.learningChecks?.byDay ?? [])]
     .map((item) => Number(item.semanticStepId.match(/DAY(\d+)/)?.[1] ?? 0))
