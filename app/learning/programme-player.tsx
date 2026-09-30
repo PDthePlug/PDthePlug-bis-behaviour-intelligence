@@ -25,6 +25,10 @@ import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
 import { enhanceHandbookDocument, type HandbookKnownValue } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
+import {
+  BIS_LAB_PHASE_A_MINUTES,
+  sessionDesignForPage,
+} from "../../lib/session-design";
 
 type Edition = HabitProgramme["edition"];
 type AppSection = "today" | "learn";
@@ -958,6 +962,7 @@ export function ProgrammePlayer({
     ? labHrefWithReturn(moduleDefinition.labHref, learningReturnTo)
     : null;
   const moduleLabTitle = moduleDefinition?.title ?? `${programme.title} Lab`;
+  const sessionDesign = sessionDesignForPage(page);
 
   return (
     <EditionLanguageScope edition={snapshot.profile.deliveryEdition}>
@@ -1008,6 +1013,7 @@ export function ProgrammePlayer({
                 <p className="prototype-eyebrow">Continue your programme</p>
                 <h2>{page.label}</h2>
                 <p>{page.experimentPosition || "Your handbook is ready where you left off."}</p>
+                {sessionDesign ? <small>{sessionDesign.minutes}-minute learning session · learn, check, apply and reflect</small> : null}
                 <button type="button" className="prototype-btn primary" onClick={() => openLearn("reader")}>
                   Continue learning <ArrowRight />
                 </button>
@@ -1090,6 +1096,32 @@ export function ProgrammePlayer({
                 <i style={{ width: `${progressPercent}%` }} />
               </div>
             </div>
+
+            {sessionDesign ? (
+              <section className={`prototype-session-plan ${sessionDesign.density}`} aria-label="Today's session plan">
+                <div className="prototype-session-plan-head">
+                  <div>
+                    <p className="prototype-eyebrow">Today’s learning session</p>
+                    <h2>{sessionDesign.minutes} minutes</h2>
+                  </div>
+                  <span>{sessionDesign.density === "dense" ? "Core 45" : sessionDesign.density === "application" ? "Application-led" : "Balanced"}</span>
+                </div>
+                <p>{sessionDesign.description}</p>
+                <div className="prototype-session-beats">
+                  {sessionDesign.beats.map((beat) => (
+                    <div key={beat.label}>
+                      <strong>{beat.minutes} min</strong>
+                      <span>{beat.label}</span>
+                    </div>
+                  ))}
+                </div>
+                {isLabHandoffDay && moduleLabIsLive ? (
+                  <small>
+                    The live Lab Phase A is separate from this learning session and remains a {BIS_LAB_PHASE_A_MINUTES}-minute facilitated experience.
+                  </small>
+                ) : null}
+              </section>
+            ) : null}
 
             <details className="prototype-programme-map" open={mapOpen} onToggle={(event) => setMapOpen(event.currentTarget.open)}>
               <summary>
