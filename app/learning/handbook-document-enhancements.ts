@@ -1041,6 +1041,49 @@ function applyEditionLearnerLanguage(root: HTMLElement, context: HandbookEnhance
   });
 }
 
+function normaliseDecisionHandbookLayout(root: HTMLElement, labCode: LabCode) {
+  if (labCode !== "DEC") return;
+
+  root.dataset.handbookLayout = "decision-normalised";
+
+  const typographyProperties = [
+    "font-size",
+    "line-height",
+    "font-family",
+    "letter-spacing",
+  ];
+  const rhythmProperties = [
+    "margin-top",
+    "margin-bottom",
+  ];
+
+  root.querySelectorAll<HTMLElement>("*").forEach((element) => {
+    for (const property of typographyProperties) {
+      element.style.removeProperty(property);
+    }
+
+    if (element.matches("p,h1,h2,h3,h4,li")) {
+      for (const property of rhythmProperties) {
+        element.style.removeProperty(property);
+      }
+    }
+
+    if (element.tagName === "FONT") {
+      element.removeAttribute("size");
+      element.removeAttribute("face");
+    }
+
+    const text = normalise(element.textContent ?? "");
+    if (!text || element.children.length > 0) return;
+
+    if (/^(SESSION|TIME|MODE|DIFFICULTY):/i.test(text)) {
+      element.classList.add("decision-handbook-meta-line");
+    } else if (/^(DAY\s+\d+\s+OF\s+10|TODAY YOU WILL):?$/i.test(text)) {
+      element.classList.add("decision-handbook-meta-heading");
+    }
+  });
+}
+
 function softenLearnerTechnicalLabels(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>("p,h2,h3,h4").forEach((element) => {
     const text = normalise(element.textContent ?? "");
@@ -1067,6 +1110,7 @@ export function enhanceHandbookDocument(
   convertNumberedPaperBlanks(root, labCode, pageId);
   convertPriorityWorksheetRows(root, labCode, pageId);
   hideEditorialProductionMetadata(root);
+  normaliseDecisionHandbookLayout(root, labCode);
   softenLearnerTechnicalLabels(root);
   applyEditionLearnerLanguage(root, context);
   collapseSuggestedAnswers(root);
