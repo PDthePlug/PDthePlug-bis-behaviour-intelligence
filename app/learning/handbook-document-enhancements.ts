@@ -123,8 +123,9 @@ function createResponse(
   prompt: string,
   occurrence: number,
   purpose = "LEARNING_RESPONSE",
+  identitySeed = prompt,
 ) {
-  const token = hashPrompt(`${pageId}|${prompt}|${occurrence}`);
+  const token = hashPrompt(`${pageId}|${identitySeed}|${occurrence}`);
   const field = document.createElement("textarea");
   field.className = "response generated-question-response";
   field.dataset.fieldId = `${labCode}.WB.AUTO.${token}.${occurrence}`;
@@ -202,7 +203,16 @@ function addInterleavedConceptChecks(root: HTMLElement, labCode: LabCode, pageId
         promptLabel.textContent = prompt;
         wrapper.append(promptLabel);
       }
-      wrapper.append(createResponse(labCode, pageId, prompt, seen, "FORMATIVE_CHECK"));
+      wrapper.append(
+        createResponse(
+          labCode,
+          pageId,
+          prompt,
+          seen,
+          "FORMATIVE_CHECK",
+          `formative|${prompt}`,
+        ),
+      );
       responseGroup.append(wrapper);
     }
 
