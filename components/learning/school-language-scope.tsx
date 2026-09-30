@@ -56,5 +56,5 @@ export function SchoolLanguageScope({ enabled, children }: { enabled: boolean; c
     return () => observer.disconnect();
   }, [enabled]);
 
-  return <div ref={ref} data-school-language={enabled ? "plain" : "standard"}>{children}</div>;
+  return <div ref={ref} style={{ display: "contents" }} data-school-language={enabled ? "plain" : "standard"}>{children}</div>;
 }
