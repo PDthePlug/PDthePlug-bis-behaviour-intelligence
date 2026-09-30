@@ -3,6 +3,10 @@ export type WorkbookEdit = {
   semanticStepId: string;
   sourceFieldKey: string;
   value: string;
+  purpose?: string;
+  checkId?: string;
+  checkKind?: string;
+  privacyClass?: string;
 };
 
 /** One writer per workbook. Acknowledgements only clear the exact revision sent. */
@@ -23,8 +27,25 @@ export class WorkbookSaveQueue {
       try {
         while (this.pending.size) {
           const batch = [...this.pending.values()].slice(0, 60);
-          await write(batch.map(({ semanticFieldId, semanticStepId, sourceFieldKey, value }) =>
-            ({ semanticFieldId, semanticStepId, sourceFieldKey, value })));
+          await write(batch.map(({
+            semanticFieldId,
+            semanticStepId,
+            sourceFieldKey,
+            value,
+            purpose,
+            checkId,
+            checkKind,
+            privacyClass,
+          }) => ({
+            semanticFieldId,
+            semanticStepId,
+            sourceFieldKey,
+            value,
+            purpose,
+            checkId,
+            checkKind,
+            privacyClass,
+          })));
           for (const item of batch) {
             if (this.pending.get(item.semanticFieldId)?.revision === item.revision) {
               this.pending.delete(item.semanticFieldId);
