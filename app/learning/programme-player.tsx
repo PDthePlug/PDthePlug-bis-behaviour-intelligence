@@ -426,8 +426,8 @@ export function ProgrammePlayer({
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
   const sessionDesign = useMemo(
-    () => page && programme?.edition ? sessionDesignForPage(page, programme.edition) : null,
-    [page, programme?.edition],
+    () => page && programme ? sessionDesignForPage(page, programme.edition) : null,
+    [page, programme],
   );
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
@@ -818,7 +818,7 @@ export function ProgrammePlayer({
     snapshot?.profile.deliveryEdition,
     snapshot?.profile.displayName,
     snapshot?.workbookResponses,
-    sessionDesign?.checkTarget,
+    sessionDesign,
   ]);
 
   useLayoutEffect(() => {
