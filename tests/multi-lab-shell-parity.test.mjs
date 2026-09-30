@@ -80,10 +80,12 @@ test("future Lab presentation is registered through a manifest rather than route
 });
 
 
-test("Core Lab navigation uses URL history while respecting unlocked progress", () => {
+test("Core Lab navigation uses the returned server snapshot as progression authority", () => {
   assert.match(coreEngine, /useSearchParams/);
+  assert.match(coreEngine, /serverUnlockedInvestigation/);
+  assert.match(coreEngine, /saved\.enrolment\?\.currentInvestigation/);
   assert.match(coreEngine, /params\.set\("step", String\(target\)\)/);
   assert.match(coreEngine, /router\.push\(/);
-  assert.match(coreEngine, /const maxAllowed = allowAdvance \? Math\.min\(9, maxStep \+ 1\) : maxStep/);
-  assert.match(coreEngine, /next=\{\(\) => goToStep\(2, true\)\}/);
+  assert.match(coreEngine, /next=\{\(saved\) => goToSavedStep\(saved, 2\)\}/);
+  assert.doesNotMatch(coreEngine, /allowAdvance/);
 });

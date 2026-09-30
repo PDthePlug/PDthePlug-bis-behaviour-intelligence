@@ -149,13 +149,13 @@ function ProgrammeLabHandoff({
     <section className={`prototype-lab-handoff ${href ? "live" : "planned"}`}>
       <div>
         <p>DAY 3 · LAB HANDOVER</p>
-        <h2>{href ? `Continue into ${title}.` : `${title} is the next step.`}</h2>
+        <h2>{href ? `Continue into ${title}.` : `${title} connects here.`}</h2>
         <span>
           {href
             ? isHabit
               ? "The handbook stays here as your learning reference. You’ll set your plan, start the seven-day test and record your observations once inside Habit Lab."
-              : "Day 3 is where the learning moves into the practical Lab. Begin the Lab here, then return to this learning module to continue the programme."
-            : "Day 3 is still the Lab handover point in this programme. The live Lab is being prepared, so continue with the Day 3 learning material for now."}
+              : "You have reached the practical part of Day 3. Open the Lab here, then return to this learning module when the Lab phase is complete."
+            : "This is where today’s learning will connect to the practical Lab. For now, continue with the Day 3 material below."}
         </span>
       </div>
       {href ? (
@@ -166,23 +166,55 @@ function ProgrammeLabHandoff({
           <ArrowRight />
         </Link>
       ) : (
-        <span className="prototype-lab-status">Lab coming soon</span>
+        <span className="prototype-lab-status">Planned Lab</span>
       )}
     </section>
   );
 }
 
+function legacyDayThreeBoundary(html: string) {
+  if (!html.trim()) return -1;
+  const minimum = Math.floor(html.length * 0.18);
+  const maximum = Math.floor(html.length * 0.7);
+
+  const responseEnds = [...html.matchAll(/<\/textarea>/gi)]
+    .map((match) => (match.index ?? -1) + match[0].length)
+    .filter((index) => index >= minimum && index <= maximum);
+  if (responseEnds.length) return responseEnds[0];
+
+  const structural = [...html.matchAll(/<(?:hr|h2|h3|h4)\b[^>]*>/gi)]
+    .map((match) => match.index ?? -1)
+    .find((index) => index >= Math.floor(html.length * 0.28) && index <= maximum);
+  if (structural !== undefined) return structural;
+
+  const paragraphEnd = html.indexOf("</p>", Math.floor(html.length * 0.32));
+  return paragraphEnd >= 0 ? paragraphEnd + 4 : -1;
+}
+
 function splitDayThree(page: ProgrammePage) {
-  if (!page.labHandoff) return null;
-  const start = page.html.indexOf(page.labHandoff.startMarker);
-  const end = page.html.indexOf(page.labHandoff.endMarker, Math.max(0, start));
-  return start < 0 || end < 0
-    ? null
-    : {
+  if (page.labHandoff?.startMarker && page.labHandoff?.endMarker) {
+    const start = page.html.indexOf(page.labHandoff.startMarker);
+    const end = page.html.indexOf(page.labHandoff.endMarker, Math.max(0, start));
+    if (start >= 0 && end >= 0) {
+      return {
         intro: page.html.slice(0, start),
         reference: page.html.slice(start, end),
         tail: page.html.slice(end),
+        authored: true,
       };
+    }
+  }
+
+  // Legacy packages pre-date authored Day 3 anchors. Keep their handover inside
+  // the learning flow rather than throwing a generic Lab card above the page.
+  const boundary = legacyDayThreeBoundary(page.html);
+  if (boundary < 0) return null;
+  return {
+    intro: page.html.slice(0, boundary),
+    reference: page.html.slice(boundary),
+    tail: "",
+    authored: false,
+  };
 }
 
 async function loadProgramme(edition: Edition, code: string): Promise<HabitProgramme> {
@@ -1118,11 +1150,11 @@ export function ProgrammePlayer({
                     habitPhaseAComplete={labPhaseAComplete}
                   />
                   <details className="prototype-reference">
-                    <summary>Open the full Day 3 reference</summary>
+                    <summary>{moduleLabHref ? "Open the full Day 3 reference" : "Continue with the Day 3 learning"}</summary>
                     <p>
                       {moduleLabHref
                         ? `Use this as your learning reference while you work through ${moduleLabTitle}.`
-                        : "Use this as your Day 3 learning reference while the live Lab is being prepared."}
+                        : "The practical Lab will connect at this point when it is available. Continue with today’s learning material here."}
                     </p>
                     <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
                   </details>
@@ -1133,12 +1165,12 @@ export function ProgrammePlayer({
                         <strong>
                           {moduleLabIsLive
                             ? `Finish ${moduleLabTitle} Phase A to continue.`
-                            : `${moduleLabTitle} is required before the programme continues.`}
+                            : "The practical Lab completes this Day 3 sequence."}
                         </strong>
                         <p>
                           {moduleLabIsLive
                             ? "Your seven-day investigation begins when the live Lab phase is complete."
-                            : "The live Lab is being prepared. The remaining programme pages stay available as reference only for now."}
+                            : "Until that Lab is available, later programme pages remain available as reference rather than completed programme progress."}
                         </p>
                       </div>
                     </section>
@@ -1192,7 +1224,7 @@ export function ProgrammePlayer({
                 {previewMode
                   ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
                   : labSequenceLocked
-                    ? moduleLabIsLive ? "Complete the Lab first" : "Lab coming soon"
+                    ? moduleLabIsLive ? "Complete the Lab first" : "Continue when the Lab is available"
                     : completed.has(page.id)
                       ? "Reviewed"
                       : "Complete & continue"}

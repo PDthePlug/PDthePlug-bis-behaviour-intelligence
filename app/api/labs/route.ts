@@ -20,6 +20,10 @@ import {
 } from "../../../db/schema";
 import { identityFrom } from "../../../lib/bis-access";
 import { getCoreLab, labFieldRegistry, type CoreLabDefinition } from "../../../lib/core-labs";
+import {
+  actionOwnsInvestigationUnlock,
+  investigationUnlockedAfterSave,
+} from "../../../lib/lab-lifecycle-contract";
 import { POLICY_VERSION } from "../../../lib/habit-lab";
 
 import type { Identity } from "../../../lib/bis-access";
@@ -174,10 +178,6 @@ async function saveResponse(identity: Identity, lab: CoreLabDefinition, item: Re
     sensitivity: field.sensitivity ?? "P2",
     occurredAt: typeof item.occurredAt === "string" ? item.occurredAt : now,
   });
-  await db.update(labEnrollments).set({
-    currentInvestigation: Math.max(Number(enrolment.currentInvestigation), field.investigation),
-    updatedAt: now,
-  }).where(eq(labEnrollments.id, enrolment.id));
   await audit(identity, previous ? "RESPONSE_CORRECTED" : "RESPONSE_CREATED", "RESPONSE", id, { labCode: lab.code, labVersion: lab.version, semanticFieldId: fieldId });
 }
 
@@ -387,11 +387,44 @@ async function postHandler(request: Request) {
     if (action === "saveResponses") {
       const items = Array.isArray(body.items) ? body.items : [];
       if (!items.length || items.length > 30) throw new Error("Provide between 1 and 30 evidence responses.");
-      for (const item of items) {
+
+      // Validate the whole investigation before writing any response. Progress is
+      // unlocked only after every response in this save has succeeded.
+      const registry = labFieldRegistry(lab);
+      const prepared = items.map((item) => {
         if (!item || typeof item !== "object") throw new Error("One evidence response is invalid.");
-        await saveResponse(identity, lab, item as Record<string, unknown>);
+        const row = item as Record<string, unknown>;
+        const semanticFieldId = String(row.semanticFieldId ?? "");
+        const field = registry.get(semanticFieldId);
+        if (!field) throw new Error(`That evidence field is not registered for ${lab.shortTitle} ${lab.version}.`);
+        return { row, field };
+      });
+      const investigations = new Set(prepared.map(({ field }) => field.investigation));
+      if (investigations.size !== 1) throw new Error("Save one investigation at a time.");
+      const investigation = prepared[0]?.field.investigation ?? 0;
+      const serverCurrent = Math.max(1, Number(enrolment.currentInvestigation ?? 1));
+      if (investigation > 0 && investigation > serverCurrent) {
+        throw new Error("Complete the current investigation before moving ahead.");
       }
-      const savedIds = new Set(items.filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object")).map((item) => String(item.semanticFieldId ?? "")));
+
+      for (const { row } of prepared) await saveResponse(identity, lab, row);
+
+      if (investigation > 0 && actionOwnsInvestigationUnlock(action, investigation)) {
+        const unlocked = investigationUnlockedAfterSave(investigation);
+        const now = new Date().toISOString();
+        await db.update(labEnrollments).set({
+          currentInvestigation: Math.max(serverCurrent, unlocked),
+          updatedAt: now,
+        }).where(eq(labEnrollments.id, enrolment.id));
+        await audit(identity, "LAB_INVESTIGATION_UNLOCKED", "LAB_ENROLLMENT", enrolment.id, {
+          labCode: lab.code,
+          labVersion: lab.version,
+          completedInvestigation: investigation,
+          unlockedInvestigation: unlocked,
+        });
+      }
+
+      const savedIds = new Set(prepared.map(({ row }) => String(row.semanticFieldId ?? "")));
       if ([lab.postMetric.id, lab.preMetric.id, lab.confidencePost, lab.confidencePre].some((id) => savedIds.has(id))) {
         const rows = await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labCode, lab.code), eq(responses.labVersion, lab.version))).orderBy(desc(responses.recordedAt));
         const latestValue = (fieldId: string) => {
@@ -428,6 +461,18 @@ async function postHandler(request: Request) {
       await saveResponse(identity, lab, { semanticFieldId: `${lab.prefix}.EQUATION.TEXT`, value: statement, responseStatus: passCore ? "PASS" : "ANSWERED" });
       await saveResponse(identity, lab, { semanticFieldId: `${lab.prefix}.FALSIFICATION.TEXT`, value: falsification, responseStatus: passCore ? "PASS" : "ANSWERED" });
       await saveResponse(identity, lab, { semanticFieldId: lab.confidencePre, value: confidence, responseStatus: passCore ? "PASS" : "ANSWERED" });
+      const unlocked = investigationUnlockedAfterSave(5);
+      const now = new Date().toISOString();
+      await db.update(labEnrollments).set({
+        currentInvestigation: Math.max(Math.max(1, Number(enrolment.currentInvestigation ?? 1)), unlocked),
+        updatedAt: now,
+      }).where(eq(labEnrollments.id, enrolment.id));
+      await audit(identity, "LAB_INVESTIGATION_UNLOCKED", "LAB_ENROLLMENT", enrolment.id, {
+        labCode: lab.code,
+        labVersion: lab.version,
+        completedInvestigation: 5,
+        unlockedInvestigation: unlocked,
+      });
       await audit(identity, previous ? "HYPOTHESIS_REVISED" : "HYPOTHESIS_CREATED", "HYPOTHESIS", id, { labCode: lab.code, labVersion: lab.version });
       return Response.json(await snapshot(identity, lab), { status: 201 });
     }

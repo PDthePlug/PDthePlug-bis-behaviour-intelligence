@@ -17,6 +17,7 @@ import { identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { CONTENT_STUDIO_BUCKET } from "../../../lib/content-studio";
 import type { UniversalLabPackage, UniversalLabPrompt } from "../../../lib/content-compiler";
+import { investigationUnlockedAfterSave } from "../../../lib/lab-lifecycle-contract";
 
 function decode(value: string | null) {
   if (value === null) return "";
@@ -234,7 +235,7 @@ async function postHandler(request: Request) {
       }
 
       await db.update(labEnrollments).set({
-        currentInvestigation: Math.max(enrolment.currentInvestigation, Math.min(9, investigation + 1)),
+        currentInvestigation: Math.max(enrolment.currentInvestigation, investigationUnlockedAfterSave(investigation)),
         updatedAt: now,
       }).where(eq(labEnrollments.id, enrolment.id));
       await audit(identity.id, "UNIVERSAL_LAB_INVESTIGATION_SAVED", "LAB_ENROLLMENT", enrolment.id, { labCode: code, investigation });

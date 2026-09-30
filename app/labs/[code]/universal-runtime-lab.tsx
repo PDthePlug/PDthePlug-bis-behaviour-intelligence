@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { UniversalLabPackage, UniversalLabPrompt } from "@/lib/content-compiler";
+import { serverUnlockedInvestigation } from "@/lib/lab-lifecycle-contract";
 
 type Snapshot = {
   definition: UniversalLabPackage;
@@ -129,7 +130,7 @@ function UniversalInvestigationForm({
   saving: boolean;
   error: string;
   act: (payload: Record<string, unknown>) => Promise<Snapshot | null>;
-  onAdvance: (step: number) => void;
+  onAdvance: (saved: Snapshot, step: number) => void;
   previewMode?: boolean;
 }) {
   const [values, setValues] = useState<Record<string, string>>(() =>
@@ -220,7 +221,7 @@ function UniversalInvestigationForm({
           ) : (
             <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
-              if (saved) onAdvance(Math.min(9, step + 1));
+              if (saved) onAdvance(saved, Math.min(9, step + 1));
             })()}>
               {saving ? "Saving…" : <>Save and continue <ArrowRight /></>}
             </Button>
@@ -426,10 +427,17 @@ export function UniversalRuntimeLab({
         error={error}
         act={act}
         previewMode={previewMode}
-        onAdvance={(next) => {
-          setStep(next);
+        onAdvance={(saved, requested) => {
+          const target = previewMode
+            ? requested
+            : serverUnlockedInvestigation(saved.enrolment?.currentInvestigation, requested);
+          if (target < requested) {
+            setError("Your evidence was saved, but the next investigation is still locked. Please try again.");
+            return;
+          }
+          setStep(target);
           const params = new URLSearchParams(searchParams.toString());
-          params.set("step", String(next));
+          params.set("step", String(target));
           router.push(`${pathname}?${params.toString()}`, { scroll: false });
           window.scrollTo({ top: 0, behavior: "smooth" });
         }}
