@@ -355,6 +355,13 @@ export function ProgrammePlayer({
           : -1;
         const index = requestedIndex >= 0 ? requestedIndex : progressIndex;
         if (index >= 0) setSelected(index);
+        // Give the initial/resumed page a stable history entry before Next pushes
+        // another page, so browser Back can restore the actual starting point.
+        if (requestedIndex < 0) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("page", String(Math.max(0, index) + 1));
+          window.history.replaceState(window.history.state, "", url);
+        }
       } catch (cause) {
         if (!controller.signal.aborted) {
           setError(
@@ -1226,7 +1233,7 @@ export function ProgrammePlayer({
           <button
             type="button"
             className={section === "learn" ? "active" : ""}
-            onClick={() => { void saveDirtyResponses().then((saved) => { if (saved) window.location.assign("/learn"); }); }}
+            onClick={() => { void saveDirtyResponses().then((saved) => { if (saved) router.push("/learn"); }); }}
           >
             <BookOpen />
             <span><strong>Learn</strong><small>Browse handbooks</small></span>
@@ -1271,5 +1278,4 @@ export function ProgrammePlayer({
     </div>
   );
 }
-
 

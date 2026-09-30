@@ -24,6 +24,8 @@ import { POLICY_VERSION } from "../../../lib/habit-lab";
 
 import type { Identity } from "../../../lib/bis-access";
 
+import { ratingShift, isIsoDate } from "../../../lib/evidence-validation.mjs";
+
 const DAY_MS = 86_400_000;
 
 function encode(value: unknown) {
@@ -390,22 +392,23 @@ async function postHandler(request: Request) {
         await saveResponse(identity, lab, item as Record<string, unknown>);
       }
       const savedIds = new Set(items.filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object")).map((item) => String(item.semanticFieldId ?? "")));
-      if (savedIds.has(lab.postMetric.id) || savedIds.has(lab.confidencePost)) {
+      if ([lab.postMetric.id, lab.preMetric.id, lab.confidencePost, lab.confidencePre].some((id) => savedIds.has(id))) {
         const rows = await db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labCode, lab.code), eq(responses.labVersion, lab.version))).orderBy(desc(responses.recordedAt));
         const latestValue = (fieldId: string) => {
           const row = rows.find((item) => item.semanticFieldId === fieldId && item.responseStatus === "ANSWERED");
-          return Number(decode(row?.value ?? null));
+          return decode(row?.value ?? null);
         };
         const [experiment] = await db.select().from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, lab.code), eq(experiments.labVersion, lab.version))).orderBy(desc(experiments.createdAt)).limit(1);
         const derived = [
-          [`${lab.prefix}.${lab.code === "DEC" ? "DELIBERATENESS" : "AWARENESS"}_SHIFT`, latestValue(lab.postMetric.id) - latestValue(lab.preMetric.id)],
-          [`${lab.prefix}.EQUATION_CONFIDENCE_SHIFT`, latestValue(lab.confidencePost) - latestValue(lab.confidencePre)],
+          [`${lab.prefix}.${lab.code === "DEC" ? "DELIBERATENESS" : "AWARENESS"}_SHIFT`, ratingShift(latestValue(lab.preMetric.id), latestValue(lab.postMetric.id))],
+          [`${lab.prefix}.EQUATION_CONFIDENCE_SHIFT`, ratingShift(latestValue(lab.confidencePre), latestValue(lab.confidencePost))],
         ] as const;
         for (const [code, value] of derived) {
-          if (!Number.isFinite(value)) continue;
-          await db.insert(measurementValues).values({ id: crypto.randomUUID(), userId: identity.id, experimentId: experiment?.id ?? null, code, value: encode(value), status: "VALUE", evidenceStrength: "SUFFICIENT_FOR_LAB" }).onConflictDoUpdate({
+          const status = value === null ? "NA" : "VALUE";
+          const evidenceStrength = value === null ? "INSUFFICIENT" : "SUFFICIENT_FOR_LAB";
+          await db.insert(measurementValues).values({ id: crypto.randomUUID(), userId: identity.id, experimentId: experiment?.id ?? null, code, value: encode(value), status, evidenceStrength }).onConflictDoUpdate({
             target: [measurementValues.userId, measurementValues.experimentId, measurementValues.code],
-            set: { value: encode(value), status: "VALUE", evidenceStrength: "SUFFICIENT_FOR_LAB", calculatedAt: new Date().toISOString() },
+            set: { value: encode(value), status, evidenceStrength, calculatedAt: new Date().toISOString() },
           });
         }
       }
@@ -417,7 +420,7 @@ async function postHandler(request: Request) {
       const falsification = String(body.falsificationStatement ?? "").trim();
       const confidence = Number(body.learnerConfidence ?? 0);
       const passCore = body.passCore === true;
-      if (!passCore && (!statement || !falsification || confidence < 1 || confidence > 10)) throw new Error("Complete the working equation, falsification test and confidence rating—or choose to pass these questions.");
+      if (!passCore && (!statement || !falsification || !Number.isInteger(confidence) || confidence < 1 || confidence > 10)) throw new Error("Complete the working equation, falsification test and confidence rating—or choose to pass these questions.");
       const [previous] = await db.select().from(hypotheses).where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, lab.code), eq(hypotheses.labVersion, lab.version), eq(hypotheses.status, "ACTIVE"))).orderBy(desc(hypotheses.createdAt)).limit(1);
       const id = crypto.randomUUID();
       if (previous) await db.update(hypotheses).set({ status: "SUPERSEDED", supersededBy: id }).where(eq(hypotheses.id, previous.id));
@@ -433,9 +436,9 @@ async function postHandler(request: Request) {
       const required = ["targetPattern", "targetCondition", "pause", "minimumPause", "restartPlan", "failureSignal"];
       for (const key of required) if (!String(body[key] ?? "").trim()) throw new Error("Complete every experiment contract field before starting.");
       const predicted = Number(body.predictedValue ?? -1);
-      if (predicted < 0 || predicted > 100) throw new Error("Prediction must be between 0% and 100%.");
+      if (!Number.isFinite(predicted) || predicted < 0 || predicted > 100) throw new Error("Prediction must be between 0% and 100%.");
       const startDate = String(body.startDate ?? todayInZone());
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) throw new Error("Choose a valid start date.");
+      if (!isIsoDate(startDate)) throw new Error("Choose a valid start date.");
       const plannedEnd = new Date(`${startDate}T00:00:00.000Z`);
       plannedEnd.setUTCDate(plannedEnd.getUTCDate() + 6);
       const plannedEndDate = plannedEnd.toISOString().slice(0, 10);

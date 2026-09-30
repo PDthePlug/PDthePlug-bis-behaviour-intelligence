@@ -6,6 +6,7 @@ type RuntimeTable = {
   readonly __meta: {
     readonly name: string;
     readonly columns: Record<string, Column>;
+    readonly columnOptions?: Record<string, { primaryKey: boolean }>;
   };
 };
 
@@ -120,17 +121,25 @@ class SelectQuery implements PromiseLike<any[]> {
 
   private async execute() {
     const select = selectionString(this.selection);
-    let query = this.client.from(this.table.__meta.name).select(select);
-    query = applyCondition(query, this.condition);
-    for (const order of this.orders) {
-      query = query.order(order.column.name, { ascending: order.ascending });
+    const primaryKey = Object.entries(this.table.__meta.columnOptions ?? {}).find(([, options]) => options.primaryKey)?.[0];
+    const stableColumn = primaryKey ? this.table.__meta.columns[primaryKey] : this.table.__meta.columns.id;
+    const orders = [...this.orders];
+    if (stableColumn && !orders.some((order) => order.column.name === stableColumn.name)) orders.push({ column: stableColumn, ascending: true });
+    const rows: any[] = [];
+    const pageSize = 500;
+    for (let offset = 0; this.rowLimit === undefined || offset < this.rowLimit;) {
+      const size = Math.min(pageSize, this.rowLimit === undefined ? pageSize : this.rowLimit - offset);
+      let query = this.client.from(this.table.__meta.name).select(select);
+      query = applyCondition(query, this.condition);
+      for (const order of orders) query = query.order(order.column.name, { ascending: order.ascending });
+      const { data, error } = await query.range(offset, offset + size - 1);
+      if (error) throw new Error(error.message);
+      const page = data ?? [];
+      rows.push(...page.map((row) => fromDatabaseRow(this.table, row as unknown as Record<string, unknown>, this.selection)));
+      if (page.length < size) break;
+      offset += page.length;
     }
-    if (this.rowLimit !== undefined) query = query.limit(this.rowLimit);
-    const { data, error } = await query;
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((row) =>
-      fromDatabaseRow(this.table, row as unknown as Record<string, unknown>, this.selection),
-    );
+    return rows;
   }
 }
 
@@ -188,26 +197,38 @@ class InsertQuery implements PromiseLike<void> {
     }
 
     for (const row of rows) {
-      let lookup = this.client.from(this.table.__meta.name).select("*").limit(1);
-      for (const column of this.conflict.columns) {
-        lookup = lookup.eq(column.name, row[column.name] as Primitive);
-      }
-      const existing = await lookup;
+      const match = (query: any) => {
+        for (const column of this.conflict!.columns) {
+          const value = row[column.name];
+          query = value === null ? query.is(column.name, null) : query.eq(column.name, value as Primitive);
+        }
+        return query;
+      };
+      const find = () => match(this.client.from(this.table.__meta.name).select("*").limit(1));
+      const update = async () => {
+        if (this.conflict!.ignoreDuplicates) return;
+        const result = await match(this.client.from(this.table.__meta.name).update(toDatabaseRow(this.table, this.conflict!.set ?? {})));
+        if (result.error) throw new Error(result.error.message);
+      };
+      const existing = await find();
       if (existing.error) throw new Error(existing.error.message);
       if (existing.data?.length) {
-        if (this.conflict.ignoreDuplicates) continue;
-        let update = this.client
-          .from(this.table.__meta.name)
-          .update(toDatabaseRow(this.table, this.conflict.set ?? {}));
-        for (const column of this.conflict.columns) {
-          update = update.eq(column.name, row[column.name] as Primitive);
-        }
-        const result = await update;
-        if (result.error) throw new Error(result.error.message);
+        await update();
         continue;
       }
       const inserted = await this.client.from(this.table.__meta.name).insert(row);
-      if (inserted.error) throw new Error(inserted.error.message);
+      if (!inserted.error) continue;
+      // A concurrent request may have inserted the same natural key after our
+      // lookup. Re-read that exact key; unrelated unique violations still fail.
+      if (inserted.error.code === "23505") {
+        const concurrent = await find();
+        if (concurrent.error) throw new Error(concurrent.error.message);
+        if (concurrent.data?.length) {
+          await update();
+          continue;
+        }
+      }
+      throw new Error(inserted.error.message);
     }
   }
 }
