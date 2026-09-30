@@ -771,6 +771,7 @@ export function ProgrammePlayer({
         !moduleLabIsLive &&
         dayThreeIndex >= 0 &&
         selected > dayThreeIndex,
+      edition: programme?.edition ?? snapshot?.profile.deliveryEdition,
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
@@ -795,10 +796,12 @@ export function ProgrammePlayer({
     moduleCode,
     moduleLabIsLive,
     page,
+    programme?.edition,
     previewMode,
     selected,
     dayThreeIndex,
     section,
+    snapshot?.profile.deliveryEdition,
     snapshot?.profile.displayName,
     snapshot?.workbookResponses,
   ]);
