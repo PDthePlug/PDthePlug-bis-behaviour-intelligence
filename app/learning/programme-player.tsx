@@ -142,15 +142,18 @@ function labHrefWithReturn(href: string, returnTo: string) {
 function ProgrammeLabHandoff({
   title,
   href,
+  status,
   isHabit,
   habitPhaseAComplete,
 }: {
   title: string;
   href: string | null;
+  status: "live" | "source_ready" | "catalogued" | "planned";
   isHabit: boolean;
   habitPhaseAComplete: boolean;
 }) {
   const live = Boolean(href);
+  const sourceReady = !live && status === "source_ready";
   const actionLabel = isHabit
     ? habitPhaseAComplete ? "Return to Habit Lab" : "Open Habit Lab Phase A"
     : `Open ${title}`;
@@ -160,7 +163,7 @@ function ProgrammeLabHandoff({
       <div className="prototype-lab-handoff-copy">
         <div className="prototype-lab-handoff-meta">
           <span>DAY 3 · LAB HANDOVER</span>
-          <em>{live ? "Lab ready" : "Planned integration"}</em>
+          <em>{live ? "Lab ready" : sourceReady ? "Lab source ready" : "Lab access pending"}</em>
         </div>
         <h2>{live ? `Continue into ${title}.` : `${title} connects here.`}</h2>
         <p className="prototype-lab-handoff-description">
@@ -168,7 +171,9 @@ function ProgrammeLabHandoff({
             ? isHabit
               ? "The handbook stays here as your learning reference. Complete Phase A in Habit Lab, begin the seven-day test, then return here as the investigation continues."
               : "You have reached the practical part of Day 3. Complete Phase A in the Lab, then return to this learning module for the next programme step."
-            : "This is where today’s learning will connect to the practical Lab. For now, continue with the Day 3 material below."}
+            : sourceReady
+              ? "This Lab is already part of the BIS programme. Its digital access will appear here when it is enabled for this programme."
+              : "This is where today’s learning connects to the practical Lab."}
         </p>
         <div className="prototype-lab-handoff-phase" aria-label="Lab phase details">
           <strong>Phase A</strong>
@@ -181,7 +186,7 @@ function ProgrammeLabHandoff({
           <ArrowRight />
         </Link>
       ) : (
-        <span className="prototype-lab-status">Planned Lab</span>
+        <span className="prototype-lab-status">Lab access not yet enabled</span>
       )}
     </section>
   );
@@ -206,15 +211,28 @@ function legacyDayThreeBoundary(html: string) {
   return paragraphEnd >= 0 ? paragraphEnd + 4 : -1;
 }
 
+function stripLegacyDayThreePlatformPreamble(html: string) {
+  const platformIndex = html.search(/EXISTING\s+BIS\s+LAB\s+PLATFORM/i);
+  if (platformIndex < 0) return html;
+
+  const dayLabelIndex = html.toUpperCase().indexOf("DAY 3 OF 10", platformIndex);
+  if (dayLabelIndex < 0) return html;
+
+  const dayStart = html.lastIndexOf("<", dayLabelIndex);
+  return html.slice(dayStart >= 0 ? dayStart : dayLabelIndex);
+}
+
 function splitDayThree(page: ProgrammePage) {
+  const html = stripLegacyDayThreePlatformPreamble(page.html);
+
   if (page.labHandoff?.startMarker && page.labHandoff?.endMarker) {
-    const start = page.html.indexOf(page.labHandoff.startMarker);
-    const end = page.html.indexOf(page.labHandoff.endMarker, Math.max(0, start));
+    const start = html.indexOf(page.labHandoff.startMarker);
+    const end = html.indexOf(page.labHandoff.endMarker, Math.max(0, start));
     if (start >= 0 && end >= 0) {
       return {
-        intro: page.html.slice(0, start),
-        reference: page.html.slice(start, end),
-        tail: page.html.slice(end),
+        intro: html.slice(0, start),
+        reference: html.slice(start, end),
+        tail: html.slice(end),
         authored: true,
       };
     }
@@ -222,11 +240,11 @@ function splitDayThree(page: ProgrammePage) {
 
   // Legacy packages pre-date authored Day 3 anchors. Keep their handover inside
   // the learning flow rather than throwing a generic Lab card above the page.
-  const boundary = legacyDayThreeBoundary(page.html);
+  const boundary = legacyDayThreeBoundary(html);
   if (boundary < 0) return null;
   return {
-    intro: page.html.slice(0, boundary),
-    reference: page.html.slice(boundary),
+    intro: html.slice(0, boundary),
+    reference: html.slice(boundary),
     tail: "",
     authored: false,
   };
@@ -1125,54 +1143,6 @@ export function ProgrammePlayer({
               </div>
             </div>
 
-            {sessionDesign ? (
-              <section className={`prototype-session-plan ${sessionDesign.density}`} aria-label="Today's session plan">
-                <div className="prototype-session-plan-head">
-                  <div>
-                    <p className="prototype-eyebrow">{sessionDesign.editionLabel} · Today’s learning session</p>
-                    <h2>{sessionDesign.minutes} minutes</h2>
-                  </div>
-                  <span>{sessionDesign.density === "dense" ? "Core 45" : sessionDesign.density === "application" ? "Application-led" : "Balanced"}</span>
-                </div>
-                <p>{sessionDesign.description}</p>
-                <div className="prototype-session-outcomes">
-                  <div>
-                    <span>Today’s focus</span>
-                    <strong>{sessionDesign.dayPurpose}</strong>
-                  </div>
-                  <div>
-                    <span>By the end</span>
-                    <strong>{sessionDesign.learnerOutcome}</strong>
-                  </div>
-                  <div>
-                    <span>Apply it in</span>
-                    <strong>{sessionDesign.applicationFrame}</strong>
-                  </div>
-                </div>
-                <div className="prototype-session-beats">
-                  {sessionDesign.beats.map((beat) => (
-                    <div key={beat.label}>
-                      <strong>{beat.minutes} min</strong>
-                      <span>{beat.label}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="prototype-session-guidance">
-                  <span>{sessionDesign.checkTarget} learning checks</span>
-                  <span>{sessionDesign.facilitatorMoments} facilitator moment{sessionDesign.facilitatorMoments === 1 ? "" : "s"}</span>
-                </div>
-                <details className="prototype-session-reading-note">
-                  <summary>How today is designed</summary>
-                  <p>{sessionDesign.readingTreatment}</p>
-                </details>
-                {isLabHandoffDay && moduleLabIsLive ? (
-                  <small>
-                    The live Lab Phase A is separate from this learning session and remains a {BIS_LAB_PHASE_A_MINUTES}-minute facilitated experience.
-                  </small>
-                ) : null}
-              </section>
-            ) : null}
-
             <details className="prototype-programme-map" open={mapOpen} onToggle={(event) => setMapOpen(event.currentTarget.open)}>
               <summary>
                 <span>
@@ -1233,6 +1203,7 @@ export function ProgrammePlayer({
                   <ProgrammeLabHandoff
                     title={moduleLabTitle}
                     href={moduleLabHref}
+                    status={moduleDefinition?.labStatus ?? "catalogued"}
                     isHabit={moduleCode === "HAB"}
                     habitPhaseAComplete={labPhaseAComplete}
                   />
@@ -1311,7 +1282,7 @@ export function ProgrammePlayer({
                 {previewMode
                   ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
                   : labSequenceLocked
-                    ? moduleLabIsLive ? "Complete the Lab first" : "Continue when the Lab is available"
+                    ? moduleLabIsLive ? "Complete the Lab first" : "Continue after the Lab"
                     : completed.has(page.id)
                       ? "Reviewed"
                       : "Complete & continue"}
