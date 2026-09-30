@@ -1,7 +1,8 @@
+import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
 import { sha256Hex } from "./content-studio";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-1";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-2";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -235,7 +236,7 @@ export async function compileLearningEdition(
     if (key !== expectedKey) {
       throw new Error(`${edition}: programme position ${index + 1} must be "${expectedKey}", received "${key || "missing"}".`);
     }
-    const html = ensureWorkbookBindings(text(page.html), expectedCode, edition, key);
+    const html = sanitizeContentHtml(ensureWorkbookBindings(text(page.html), expectedCode, edition, key));
     validatePageHtml(html, key);
     const id = programmeStep(expectedCode, key);
     const authoredId = text(page.id);
@@ -367,7 +368,7 @@ export async function compileUniversalLab(
   const investigations = rawInvestigations.map((raw, index) => {
     const item = object(raw);
     if (!item || Number(item.number) !== index + 1) throw new Error(`Investigation ${index + 1} is out of sequence.`);
-    const introHtml = text(item.introHtml);
+    const introHtml = sanitizeContentHtml(text(item.introHtml));
     if (introHtml && unsafeHtml.test(introHtml)) throw new Error(`Investigation ${index + 1}: executable HTML is not allowed.`);
     const prompts = (Array.isArray(item.prompts) ? item.prompts : []).map((prompt) => validatePrompt(prompt, expectedCode, index + 1));
     if (!prompts.length) throw new Error(`Investigation ${index + 1}: add at least one learner prompt.`);
@@ -382,7 +383,7 @@ export async function compileUniversalLab(
       if (!block) throw new Error(`Investigation ${index + 1}: content block ${blockIndex + 1} is invalid.`);
       const type = text(block.type);
       if (type === "HTML") {
-        const html = text(block.html);
+        const html = sanitizeContentHtml(text(block.html));
         if (!html || unsafeHtml.test(html)) throw new Error(`Investigation ${index + 1}: unsafe or empty content block.`);
         return { type: "HTML" as const, html };
       }

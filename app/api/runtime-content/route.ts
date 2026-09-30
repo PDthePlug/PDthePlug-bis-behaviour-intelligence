@@ -1,3 +1,4 @@
+import { sanitizeRuntimePackage } from "../../../lib/content-html.mjs";
 import { and, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
@@ -141,7 +142,7 @@ async function loadHandler(request: Request) {
   if (download.error || !download.data) {
     return Response.json({ error: "The runtime artifact could not be loaded." }, { status: 500 });
   }
-  const payload = JSON.parse(await download.data.text()) as unknown;
+  const payload = sanitizeRuntimePackage(JSON.parse(await download.data.text()));
   return Response.json({
     item: {
       id: item.id,

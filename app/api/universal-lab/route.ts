@@ -1,3 +1,5 @@
+import { validPromptResponse } from "../../../lib/evidence-validation.mjs";
+import { sanitizeRuntimePackage } from "../../../lib/content-html.mjs";
 import { and, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
@@ -59,7 +61,7 @@ async function activeLab(code: string) {
   if (!artifact) throw new Error("The compiled Lab package is missing.");
   const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(artifact.storagePath);
   if (download.error || !download.data) throw new Error("The Lab package could not be loaded.");
-  const definition = JSON.parse(await download.data.text()) as UniversalLabPackage;
+  const definition = sanitizeRuntimePackage(JSON.parse(await download.data.text())) as UniversalLabPackage;
   if (definition.kind !== "LAB" || definition.runtimeProfile !== "UNIVERSAL_V1" || definition.identity.code !== code) {
     throw new Error("The active Lab package does not match this route.");
   }
@@ -174,10 +176,20 @@ async function postHandler(request: Request) {
     if (action === "saveInvestigation") {
       const investigation = Number(body.investigation);
       if (!Number.isInteger(investigation) || investigation < 1 || investigation > 9) throw new Error("Choose a valid investigation.");
+      if (investigation > enrolment.currentInvestigation) throw new Error("Complete the current investigation before moving ahead.");
       const items = Array.isArray(body.items) ? body.items : [];
       if (!items.length || items.length > 60) throw new Error("Save between 1 and 60 responses.");
       const registry = promptRegistry(runtime.definition);
       const allowed = new Map([...registry].filter(([, prompt]) => prompt.investigation === investigation));
+      const ids = new Set<string>();
+      for (const raw of items) {
+        const item = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
+        const id = String(item.semanticFieldId ?? "");
+        const prompt = allowed.get(id);
+        if (!prompt || ids.has(id) || !validPromptResponse(prompt, item.value, String(item.responseStatus ?? "ANSWERED"))) throw new Error("Check the responses in this investigation before saving.");
+        ids.add(id);
+      }
+      if ([...allowed.values()].some((prompt) => prompt.required !== false && !ids.has(prompt.id))) throw new Error("Answer or pass each required question before continuing.");
       const now = new Date().toISOString();
 
       for (const raw of items) {
@@ -234,7 +246,11 @@ async function postHandler(request: Request) {
       const required = runtime.definition.investigations.flatMap((investigation) =>
         investigation.prompts.filter((prompt) => prompt.required !== false).map((prompt) => prompt.id),
       );
-      const missing = required.filter((id) => !current.responses[id]);
+      const registry = promptRegistry(runtime.definition);
+      const missing = required.filter((id) => {
+        const response = current.responses[id];
+        return !response || !validPromptResponse(registry.get(id)!, response.value, response.status);
+      });
       if (missing.length) throw new Error(`Complete the remaining required questions before finishing this Lab (${missing.length} remaining).`);
       const now = new Date().toISOString();
       await db.update(labEnrollments).set({

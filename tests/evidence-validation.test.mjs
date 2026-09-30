@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isIsoDate, ratingShift, todayInZone } from "../lib/evidence-validation.mjs";
+import { isIsoDate, ratingShift, todayInZone, validPromptResponse } from "../lib/evidence-validation.mjs";
 import { getExperimentTiming } from "../lib/experiment-timing.mjs";
 
 test("rating shifts require two actual bounded observations", () => {
@@ -26,4 +26,18 @@ test("South African midnight unlocks only the local calendar day", () => {
   assert.equal(getExperimentTiming(experiment, [], before).availableDay, 0);
   assert.equal(getExperimentTiming(experiment, [], after).availableDay, 1);
   assert.equal(getExperimentTiming(experiment, [{ dayNumber: 7 }], after).canClose, false);
+});
+
+test("dynamic responses respect typed controls, required fields and the right to pass", () => {
+  const rating = { type: "INTEGER", min: 1, max: 5 };
+  assert.equal(validPromptResponse(rating, "3"), true);
+  for (const value of ["", "6", "NaN", "1.5", "1e2", 3]) assert.equal(validPromptResponse(rating, value), false);
+  assert.equal(validPromptResponse(rating, "", "PASS"), true);
+  assert.equal(validPromptResponse({ type: "TEXT", required: false }, ""), true);
+  assert.equal(validPromptResponse({ type: "BOOLEAN" }, "No"), true);
+  assert.equal(validPromptResponse({ type: "BOOLEAN" }, "maybe"), false);
+  assert.equal(validPromptResponse({ type: "DATE" }, "2026-02-31"), false);
+  const multi = { type: "MULTI_SELECT", options: ["A", "B"] };
+  assert.equal(validPromptResponse(multi, '["A","B"]'), true);
+  for (const value of ['[]', '["C"]', '["A","A"]', '{}']) assert.equal(validPromptResponse(multi, value), false);
 });
