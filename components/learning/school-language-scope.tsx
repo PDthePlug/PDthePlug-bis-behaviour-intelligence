@@ -3,7 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { schoolLearnerText } from "@/lib/school-language";
 
-const SKIP = new Set(["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA", "OPTION"]);
+const SKIP = new Set(["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA"]);
 
 function simplifyElement(root: HTMLElement) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
