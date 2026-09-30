@@ -331,7 +331,7 @@ export function FacilitatorWorkspace({
       <div className="facilitator-view-head">
         <div>
           <p className="eyebrow">Facilitator</p>
-          <h1>{section === "cohort" ? "Group" : section === "participants" ? "Learners" : section === "support" ? "Support" : "Review"}</h1>
+          <h1>{section === "cohort" ? "Group" : section === "session" ? "Session" : section === "participants" ? "Learners" : section === "support" ? "Support" : "Review"}</h1>
         </div>
         {data.cohorts.length > 1 ? (
           <label className="facilitator-cohort-picker">
@@ -346,6 +346,7 @@ export function FacilitatorWorkspace({
 
       <nav className="facilitator-subnav" aria-label="Facilitator workspace">
         <button type="button" className={section === "cohort" ? "active" : ""} onClick={() => navigateWorkspace({ section: "cohort", learner: null })}>Group</button>
+        <button type="button" className={section === "session" ? "active" : ""} onClick={() => navigateWorkspace({ section: "session", learner: null })}>Session</button>
         <button type="button" className={section === "participants" ? "active" : ""} onClick={() => navigateWorkspace({ section: "participants", learner: null })}>Learners</button>
         <button type="button" className={section === "support" ? "active" : ""} onClick={() => navigateWorkspace({ section: "support", learner: null })}>Support</button>
         <button type="button" className={section === "review" ? "active" : ""} onClick={() => navigateWorkspace({ section: "review", learner: null })}>Review</button>
@@ -354,7 +355,7 @@ export function FacilitatorWorkspace({
       {section === "cohort" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
-            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>Habit Lab {cohort.labVersion} · {participants.length} learners</p></div>
+            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>{moduleDefinition?.title ?? cohort.labCode} · {cohort.labVersion} · {participants.length} learners</p></div>
             <Badge variant="outline">{label(cohort.status)}</Badge>
           </section>
           <section className="ops-metrics">
@@ -427,6 +428,135 @@ export function FacilitatorWorkspace({
                 <div key={learner.userId}><span><strong>{learner.displayName}</strong><small>{position(learner)}</small></span><span>{formatDate(learner.lastActivityAt)}</span></div>
               ))}
             </div>
+          </section>
+        </div>
+      ) : null}
+
+      {section === "session" && facilitatorSession ? (
+        <div className="ops-stack facilitator-session-view">
+          <section className="ops-cohort-banner facilitator-session-banner">
+            <div>
+              <p className="eyebrow">Facilitation experience</p>
+              <h2>{moduleDefinition?.title ?? cohort.labCode} · Day {sessionDay}</h2>
+              <p>{facilitatorSession.editionLabel} · {facilitatorSession.minutes}-minute guided learning session</p>
+            </div>
+            <Badge variant="outline">{cohort.name}</Badge>
+          </section>
+
+          <nav className="facilitator-session-days" aria-label="Programme day">
+            {Array.from({ length: 10 }, (_, index) => index + 1).map((day) => (
+              <button
+                type="button"
+                key={day}
+                className={day === sessionDay ? "active" : ""}
+                onClick={() => navigateWorkspace({ section: "session", day })}
+              >
+                <span>Day</span>
+                <strong>{day}</strong>
+              </button>
+            ))}
+          </nav>
+
+          <section className="facilitator-session-grid">
+            <div className="surface-card facilitator-run-sheet">
+              <div className="section-title">
+                <div>
+                  <p className="eyebrow">Run the room</p>
+                  <h2>{facilitatorSession.dayPurpose}</h2>
+                  <p>{facilitatorSession.description}</p>
+                </div>
+                <Clock3 />
+              </div>
+
+              <div className="facilitator-session-outcomes">
+                <div><span>Session goal</span><strong>{facilitatorSession.goal}</strong></div>
+                <div><span>Learner outcome</span><strong>{facilitatorSession.learnerOutcome}</strong></div>
+                <div><span>Application context</span><strong>{facilitatorSession.applicationFrame}</strong></div>
+              </div>
+
+              <div className="facilitator-session-timeline" aria-label="45-minute facilitation rhythm">
+                {facilitatorSession.beats.map((beat) => (
+                  <div key={beat.label}>
+                    <strong>{beat.minutes} min</strong>
+                    <span>{beat.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <section className="facilitator-script-card">
+                <p className="eyebrow">Opening move</p>
+                <p>{facilitatorSession.openingMove}</p>
+              </section>
+
+              <section className="facilitator-moves">
+                <div>
+                  <p className="eyebrow">Facilitator moves</p>
+                  <h3>What to do while learners work</h3>
+                </div>
+                <ol>
+                  {facilitatorSession.facilitatorMoves.map((move) => <li key={move}>{move}</li>)}
+                </ol>
+              </section>
+
+              <section className="facilitator-watch-grid">
+                <div>
+                  <p className="eyebrow">Watch for</p>
+                  <ul>{facilitatorSession.watchFor.map((item) => <li key={item}>{item}</li>)}</ul>
+                </div>
+                <div>
+                  <p className="eyebrow">Close the session</p>
+                  <p>{facilitatorSession.closeMove}</p>
+                </div>
+              </section>
+
+              <section className="facilitator-principles">
+                <div className="section-title">
+                  <div>
+                    <p className="eyebrow">BIS facilitation stance</p>
+                    <h3>Guide discovery. Do not perform the learning for them.</h3>
+                  </div>
+                  <MessageSquareText />
+                </div>
+                <ul>
+                  {facilitatorSession.principles.map((principle) => <li key={principle}>{principle}</li>)}
+                </ul>
+              </section>
+
+              {sessionDay === 3 ? (
+                <section className="facilitator-lab-boundary">
+                  <BookOpen />
+                  <div>
+                    <strong>Day 3 has two separate experiences.</strong>
+                    <p>The guided learning session is 45 minutes. Lab Phase A is a separate 90-minute facilitated investigation. Finish the learning handover before opening the Lab.</p>
+                  </div>
+                </section>
+              ) : null}
+            </div>
+
+            <aside className="surface-card facilitator-learner-preview-card">
+              <div className="section-title">
+                <div>
+                  <p className="eyebrow">Learner material</p>
+                  <h2>{learnerPreviewLabel || `Day ${sessionDay}`}</h2>
+                  <p>This is a read-only facilitator preview of the material participants are working through. Responses remain private and are not shown here.</p>
+                </div>
+                <BookOpen />
+              </div>
+              {learnerPreviewState === "loading" ? <p className="ops-helper">Opening the learner material…</p> : null}
+              {learnerPreviewState === "unavailable" ? (
+                <div className="facilitator-preview-unavailable">
+                  <strong>Digital learner material is not active for this module yet.</strong>
+                  <p>The BIS source product exists, but this learning module still needs runtime activation before a classroom preview can be shown here.</p>
+                </div>
+              ) : null}
+              {learnerPreviewState === "ready" ? (
+                <article
+                  className="facilitator-learner-preview"
+                  aria-label="Read-only learner material preview"
+                  dangerouslySetInnerHTML={{ __html: learnerPreviewHtml }}
+                />
+              ) : null}
+            </aside>
           </section>
         </div>
       ) : null}
