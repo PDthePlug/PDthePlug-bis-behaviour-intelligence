@@ -1233,7 +1233,7 @@ export function ProgrammePlayer({
           <button
             type="button"
             className={section === "learn" ? "active" : ""}
-            onClick={() => { void saveDirtyResponses().then((saved) => { if (saved) window.location.assign("/learn"); }); }}
+            onClick={() => { void saveDirtyResponses().then((saved) => { if (saved) router.push("/learn"); }); }}
           >
             <BookOpen />
             <span><strong>Learn</strong><small>Browse handbooks</small></span>
@@ -1278,5 +1278,4 @@ export function ProgrammePlayer({
     </div>
   );
 }
-
 
