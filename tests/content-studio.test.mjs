@@ -114,3 +114,14 @@ test("Content Studio presents founder-facing language and supports pasted text",
   assert.match(ui, /Paste text/);
   assert.match(contract, /text\/plain/);
 });
+
+
+test("learner runtime can resolve active catalogue rows without opening Content Studio writes", async () => {
+  const migration = await source("supabase/migrations/20260930233000_learner_active_content_catalogue_read.sql");
+  assert.match(migration, /create policy content_library_items_active_read/);
+  assert.match(migration, /for select/);
+  assert.match(migration, /to authenticated/);
+  assert.match(migration, /using \(status = 'ACTIVE'\)/);
+  assert.doesNotMatch(migration, /for (?:insert|update|delete|all)/i);
+  assert.match(migration, /Archived catalogue rows and mutations remain administrator-only/);
+});
