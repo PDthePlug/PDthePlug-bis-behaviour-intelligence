@@ -820,7 +820,7 @@ function applySchoolLearnerLanguage(root: HTMLElement, context: HandbookEnhancem
     const parent = text.parentElement;
     if (
       parent &&
-      !["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA", "OPTION"].includes(parent.tagName) &&
+      !["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA"].includes(parent.tagName) &&
       !parent.closest("[data-school-language='keep-technical']")
     ) {
       nodes.push(text);
