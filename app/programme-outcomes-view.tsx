@@ -106,6 +106,27 @@ export type SponsorOutcome = {
       privacyNote: string;
     };
   };
+  learningChecks?: null | {
+    cohortId: string;
+    suppressed: boolean;
+    participantCount: number;
+    minimumReportableCohortSize: number;
+    signalsRecorded: number | null;
+    understoodRate: number | null;
+    supportSignalRate: number | null;
+    byDay: Array<{
+      semanticStepId: string;
+      signalsRecorded: number;
+      understoodRate: number | null;
+      supportSignalRate: number | null;
+    }>;
+    interpretationBoundary?: {
+      learnerReportedNotScored?: boolean;
+      excludedFromBEI?: boolean;
+      descriptiveNotCausal?: boolean;
+      note?: string;
+    };
+  };
   organisationLearning?: null | {
     cohortId: string;
     suppressed: boolean;
@@ -890,6 +911,48 @@ export function ProgrammeOutcomesView({
                   )}
                 </section>
               </div>
+            </section>
+          ) : null}
+
+          {outcome.learningChecks && !outcome.learningChecks.suppressed ? (
+            <section className="outcomes-learning-checks">
+              <div className="outcomes-section-heading">
+                <div>
+                  <p className="eyebrow">In-session learning checks</p>
+                  <h2>Where did learners feel clear, and where did they want more support?</h2>
+                </div>
+                <ClipboardCheck />
+              </div>
+              <p className="learning-checks-intro">
+                These are anonymous, learner-reported understanding signals captured during the 45-minute sessions. They show where facilitation may need another example or explanation; they are not marks and do not change BEI results.
+              </p>
+              <div className="journey-activity-strip learning-checks-summary">
+                <Metric label="Check signals" value={outcome.learningChecks.signalsRecorded ?? 0} detail="responses" />
+                <Metric label="Can explain" value={percent(outcome.learningChecks.understoodRate)} detail="self-reported" />
+                <Metric label="Want more support" value={percent(outcome.learningChecks.supportSignalRate)} detail="unsure / need example" />
+              </div>
+              {outcome.learningChecks.byDay.length ? (
+                <div className="learning-check-day-grid">
+                  {outcome.learningChecks.byDay.map((day) => {
+                    const token = day.semanticStepId.split(".").at(-1) ?? day.semanticStepId;
+                    const label = token.startsWith("DAY") ? `Day ${token.slice(3)}` : token.toLowerCase();
+                    return (
+                      <article key={day.semanticStepId}>
+                        <span>{label}</span>
+                        <strong>{percent(day.understoodRate)}</strong>
+                        <small>can explain</small>
+                        <div className="learning-check-day-bar"><i style={{ width: `${Math.min(100, day.understoodRate ?? 0)}%` }} /></div>
+                        <em>{percent(day.supportSignalRate)} want more support</em>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="outcome-muted">Learning-check signals will appear as learners use the new in-session checks.</p>
+              )}
+              <p className="learning-checks-boundary">
+                {outcome.learningChecks.interpretationBoundary?.note ?? "Use these signals as programme-design information, not as proof of mastery or individual performance."}
+              </p>
             </section>
           ) : null}
 

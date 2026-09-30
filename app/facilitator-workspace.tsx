@@ -51,6 +51,29 @@ type Cohort = {
   startsOn: string | null;
   endsOn: string | null;
   memberIds?: string[];
+  learningChecks?: null | {
+    participantCount: number;
+    signalsRecorded: number;
+    understood: number;
+    unsure: number;
+    needsExample: number;
+    understoodRate: number | null;
+    supportSignalRate: number | null;
+    byDay: Array<{
+      semanticStepId: string;
+      signalsRecorded: number;
+      understood: number;
+      unsure: number;
+      needsExample: number;
+      understoodRate: number | null;
+      supportSignalRate: number | null;
+    }>;
+    interpretationBoundary?: {
+      learnerReportedNotScored?: boolean;
+      excludedFromBEI?: boolean;
+      note?: string;
+    };
+  };
 };
 
 type FacilitatorData = {
@@ -69,6 +92,12 @@ function label(value: string) {
 function formatDate(value: string | null | undefined) {
   if (!value) return "Not yet";
   return new Date(value).toLocaleString("en-ZA", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function programmeStepLabel(value: string) {
+  const token = value.split(".").at(-1) ?? value;
+  const match = token.match(/^DAY(\d+)$/);
+  return match ? `Day ${match[1]}` : label(token);
 }
 
 function position(learner: ProgressRow) {
@@ -199,6 +228,7 @@ export function FacilitatorWorkspace({
   const experiments = participants.filter((item) => item.experiment).length;
   const reviewReady = participants.filter((item) => (item.enrolment?.currentInvestigation ?? 0) >= 8).length;
   const attention = participants.filter(needsAttention);
+  const learningChecks = cohort.learningChecks ?? null;
   const participantNotes = selected ? data.notes.filter((item) => item.learnerUserId === selected.userId) : [];
   const participantReferrals = selected ? data.referrals.filter((item) => item.learnerUserId === selected.userId) : [];
 
@@ -259,6 +289,43 @@ export function FacilitatorWorkspace({
             <article><ClipboardCheck /><span>Review stage</span><strong>{reviewReady}</strong></article>
             <article><ShieldAlert /><span>Needs attention</span><strong>{attention.length}</strong></article>
           </section>
+          {learningChecks ? (
+            <section className="surface-card ops-section facilitator-learning-checks">
+              <div className="section-title">
+                <div>
+                  <p className="eyebrow">Learning checks</p>
+                  <h2>Where learners want more support</h2>
+                  <p>These are learner-reported understanding signals from the lesson. They are not marks and do not change BEI results.</p>
+                </div>
+                <ClipboardCheck />
+              </div>
+              <section className="ops-metrics facilitator-learning-check-metrics">
+                <article><ClipboardCheck /><span>Checks recorded</span><strong>{learningChecks.signalsRecorded}</strong></article>
+                <article><Check /><span>Can explain</span><strong>{learningChecks.understoodRate === null ? "—" : `${learningChecks.understoodRate}%`}</strong></article>
+                <article><Activity /><span>Unsure</span><strong>{learningChecks.unsure}</strong></article>
+                <article><Users /><span>Need another example</span><strong>{learningChecks.needsExample}</strong></article>
+              </section>
+              {learningChecks.byDay.length ? (
+                <div className="facilitator-learning-check-days">
+                  {learningChecks.byDay.map((day) => (
+                    <div key={day.semanticStepId}>
+                      <span><strong>{programmeStepLabel(day.semanticStepId)}</strong><small>{day.signalsRecorded} check signal{day.signalsRecorded === 1 ? "" : "s"}</small></span>
+                      <span>
+                        <strong>{day.understoodRate === null ? "—" : `${day.understoodRate}% can explain`}</strong>
+                        <small>{day.needsExample} need another example · {day.unsure} unsure</small>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="ops-helper">Learning-check signals will appear as learners move through the new session format.</p>
+              )}
+              <p className="participant-attribute-note">
+                {learningChecks.interpretationBoundary?.note ?? "Use these signals to decide where to explain, model or practise again; do not treat them as learner scores."}
+              </p>
+            </section>
+          ) : null}
+
           <section className="ops-two-column">
             <div className="surface-card ops-section">
               <div className="section-title"><div><p className="eyebrow">Programme position</p><h2>Where the group is now</h2></div><Activity /></div>
