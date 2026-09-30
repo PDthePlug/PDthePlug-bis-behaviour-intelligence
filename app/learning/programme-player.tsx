@@ -1189,7 +1189,7 @@ export function ProgrammePlayer({
                   <p>
                     {moduleLabIsLive
                       ? `This page belongs after ${moduleLabTitle} Phase A. You can read it now, but programme progress resumes after the Lab.`
-                      : `This page belongs after ${moduleLabTitle}. The live Lab is still being prepared, so this page is shown for reference only.`}
+                      : `This page belongs after ${moduleLabTitle}. Digital Lab access is not enabled for this programme yet, so this page is shown for reference only.`}
                   </p>
                 </div>
               </section>
@@ -1212,7 +1212,7 @@ export function ProgrammePlayer({
                     <p>
                       {moduleLabHref
                         ? `Use this as your learning reference while you work through ${moduleLabTitle}.`
-                        : "The practical Lab will connect at this point when it is available. Continue with today’s learning material here."}
+                        : "The practical Lab connects at this point. Continue with today’s learning material here until digital Lab access is enabled."}
                     </p>
                     <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
                   </details>
@@ -1228,7 +1228,7 @@ export function ProgrammePlayer({
                         <p>
                           {moduleLabIsLive
                             ? "Your seven-day investigation begins when the live Lab phase is complete."
-                            : "Until that Lab is available, later programme pages remain available as reference rather than completed programme progress."}
+                            : "Until digital Lab access is enabled, later programme pages remain available as reference rather than completed programme progress."}
                         </p>
                       </div>
                     </section>
@@ -1241,6 +1241,7 @@ export function ProgrammePlayer({
                   <ProgrammeLabHandoff
                     title={moduleLabTitle}
                     href={moduleLabHref}
+                    status={moduleDefinition?.labStatus ?? "catalogued"}
                     isHabit={moduleCode === "HAB"}
                     habitPhaseAComplete={labPhaseAComplete}
                   />
