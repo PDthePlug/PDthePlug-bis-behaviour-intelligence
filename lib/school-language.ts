@@ -193,6 +193,9 @@ const EMERGING_ADULT_RULES: Rule[] = [
   [/\bSynthesis\b/g, "Evidence integration"],
   [/\bsynthesis\b/g, "evidence integration"],
   [/\binterpretive self-claims?\b/gi, "assumptions or beliefs about yourself"],
+  [/\blearner records\b/gi, "participant records"],
+  [/\blearners\b/gi, "participants"],
+  [/\blearner\b/gi, "participant"],
 ];
 
 // Workplace Edition: concise, professional and action-oriented. Preserve BIS
@@ -263,6 +266,9 @@ const WORKPLACE_RULES: Rule[] = [
   [/\breal-world test\b/gi, "field test"],
   [/\bseven-day real-world test\b/gi, "seven-day field test"],
   [/\bMy Commitment Statement\b/gi, "My commitment"],
+  [/\blearner records\b/gi, "participant records"],
+  [/\blearners\b/gi, "participants"],
+  [/\blearner\b/gi, "participant"],
 ];
 
 export function schoolLearnerText(value: string) {
