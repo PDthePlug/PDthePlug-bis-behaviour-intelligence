@@ -20,9 +20,49 @@ export const SCHOOL_HIGH_LOAD_TERMS = [
   "behaviour evidence indicator",
 ] as const;
 
-// Plain meaning first. Technical/research names remain in the evidence model,
-// facilitator views and sponsor reporting; a small number are retained in
-// brackets where teaching the term itself is useful.
+export const EMERGING_ADULT_HIGH_LOAD_TERMS = [
+  "falsification",
+  "adherence",
+  "calibration",
+  "provenance",
+  "diagnostic",
+  "impact domains",
+  "deliberateness",
+  "agency shift",
+  "automaticity",
+  "cognitive load",
+  "contradictory evidence",
+  "derived measures",
+  "behaviour evidence indicator",
+] as const;
+
+export const WORKPLACE_HIGH_LOAD_TERMS = [
+  "falsification",
+  "adherence",
+  "calibration",
+  "provenance",
+  "diagnostic",
+  "impact domains",
+  "deliberateness",
+  "agency shift",
+  "automaticity",
+  "cognitive load",
+  "contradictory evidence",
+  "derived measures",
+  "behaviour evidence indicator",
+] as const;
+
+function applyRules(value: string, rules: Rule[]) {
+  let result = value;
+  for (const [pattern, replacement] of rules) result = result.replace(pattern, replacement);
+  return result
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ");
+}
+
+// School Edition: plain meaning first. Technical/research names remain in the
+// evidence model, facilitator views and sponsor reporting. The learner should
+// never have to decode academic or product-development language to continue.
 const SCHOOL_RULES: Rule[] = [
   [/\bFacilitation time architecture\b/gi, "How the session time is used"],
   [/\bFacilitated discussion\/debrief\b/gi, "Guided discussion and review"],
@@ -94,14 +134,152 @@ const SCHOOL_RULES: Rule[] = [
   [/\bBEI-\d{2}(?:\s*Input)?\b/g, "BIS measure"],
 ];
 
+// Emerging Adult Edition: mature, independent and direct. Keep the conceptual
+// depth, but replace research-heavy or institutional wording with language a
+// young adult can use without needing a facilitator to translate it.
+const EMERGING_ADULT_RULES: Rule[] = [
+  [/\bFacilitation time architecture\b/gi, "Session structure"],
+  [/\bFacilitated discussion\/debrief\b/gi, "Guided discussion and debrief"],
+  [/\bTransitions\/recovery\/pair work\b/gi, "Transitions, breaks and pair work"],
+  [/\bsession envelope\b/gi, "session"],
+  [/\bBehavioural difficulty indicator\b/gi, "Thinking demand"],
+  [/\bintegrating evidence into self-understanding\b/gi, "using evidence to refine how you understand your behaviour"],
+  [/\bprivate baseline\b/gi, "private starting baseline"],
+  [/\bBaseline Profile\b/gi, "Starting Profile"],
+  [/\bbaseline profile\b/gi, "starting profile"],
+  [/\bevidence trail\b/gi, "evidence record"],
+  [/\btraceable evidence\b/gi, "evidence with a clear record"],
+  [/\bcorrections remain traceable\b/gi, "changes remain recorded"],
+  [/\bcalculated BEIs\b/gi, "calculated BIS measures"],
+  [/\bproduct consent\b/gi, "consent"],
+  [/\bpersonal behavioural evidence\b/gi, "your behaviour evidence"],
+  [/\bFalsification Test\b/gi, "Challenge test — what would show this explanation is wrong?"],
+  [/\bfalsification statement\b/gi, "statement of what would show the explanation is wrong"],
+  [/\bfalsification\b/gi, "testing what could show the explanation is wrong"],
+  [/\bprovisional explanation\b/gi, "working explanation"],
+  [/\bDecision Process Prediction Accuracy Score\b/gi, "Decision prediction accuracy"],
+  [/\bSpending Pause Prediction Accuracy Score\b/gi, "Spending prediction accuracy"],
+  [/\bHabit Prediction Accuracy\b/gi, "Habit prediction accuracy"],
+  [/\bPrediction Accuracy Score\b/gi, "Prediction accuracy"],
+  [/\bDecision Process Adherence Rate\b/gi, "Decision Pause consistency"],
+  [/\bSpending Pause Adherence Rate\b/gi, "Spending Pause consistency"],
+  [/\bHabit Adherence Rate\b/gi, "Habit plan consistency"],
+  [/\badherence rate\b/gi, "plan consistency rate"],
+  [/\badherence\b/gi, "plan consistency"],
+  [/\bcalibration checkpoint\b/gi, "prediction check"],
+  [/\bcalibration\b/gi, "checking your prediction against what happened"],
+  [/\bcalibrate\b/gi, "check and adjust"],
+  [/\bprovenance\b/gi, "evidence source"],
+  [/\bdiagnostic layer\b/gi, "supporting evidence"],
+  [/\bdiagnostic data\b/gi, "supporting evidence"],
+  [/\bdiagnostic evidence\b/gi, "supporting evidence"],
+  [/\bimpact domains\b/gi, "areas of impact"],
+  [/\bDecision Deliberateness Rating\b/gi, "Intentional Decision-Making Rating"],
+  [/\bdecision deliberateness\b/gi, "intentional decision-making"],
+  [/\bdeliberateness\b/gi, "intentional decision-making"],
+  [/\bAgency Shift Indicator\b/gi, "Change in Perceived Control"],
+  [/\bagency shift\b/gi, "change in perceived control"],
+  [/\bBehaviour Evidence Indicator(?:s)?\b/gi, "BIS measure"],
+  [/\bderived measures\b/gi, "calculated measures"],
+  [/\bevidence strength\b/gi, "strength of evidence"],
+  [/\bcontradictory evidence\b/gi, "evidence that challenges your explanation"],
+  [/\bcumulative cost\b/gi, "total cost over time"],
+  [/\bautomaticity\b/gi, "automatic behaviour"],
+  [/\bcognitive load\b/gi, "mental effort"],
+  [/\bpersonal confrontation\b/gi, "honest self-review"],
+  [/\bDeep Integration\b/gi, "Integrate the evidence"],
+  [/\bSynthesise\b/g, "Bring the evidence together"],
+  [/\bsynthesise\b/g, "bring the evidence together"],
+  [/\bSynthesis\b/g, "Evidence integration"],
+  [/\bsynthesis\b/g, "evidence integration"],
+  [/\binterpretive self-claims?\b/gi, "assumptions or beliefs about yourself"],
+];
+
+// Workplace Edition: concise, professional and action-oriented. Preserve BIS
+// measurement rigor underneath, while presenting the participant experience in
+// language suited to workplace learning, reflection and applied performance.
+const WORKPLACE_RULES: Rule[] = [
+  [/\bLearner View\b/g, "Participant View"],
+  [/\bLearner menu\b/gi, "Participant menu"],
+  [/\blearner profile\b/gi, "participant profile"],
+  [/\blearner responses\b/gi, "participant responses"],
+  [/\blearner signature\b/gi, "participant confirmation"],
+  [/\bpassed by learner\b/gi, "passed by participant"],
+  [/\bFacilitation time architecture\b/gi, "Session structure"],
+  [/\bFacilitated discussion\/debrief\b/gi, "Facilitated discussion and review"],
+  [/\bTransitions\/recovery\/pair work\b/gi, "Transitions, breaks and paired work"],
+  [/\bsession envelope\b/gi, "session"],
+  [/\bBehavioural difficulty indicator\b/gi, "Thinking demand"],
+  [/\bintegrating evidence into self-understanding\b/gi, "using evidence to refine your understanding of your behaviour"],
+  [/\bprivate baseline\b/gi, "private starting benchmark"],
+  [/\bBaseline Profile\b/gi, "Starting Profile"],
+  [/\bbaseline profile\b/gi, "starting profile"],
+  [/\bevidence trail\b/gi, "evidence record"],
+  [/\btraceable evidence\b/gi, "evidence with a clear audit record"],
+  [/\bcorrections remain traceable\b/gi, "changes remain recorded"],
+  [/\bcalculated BEIs\b/gi, "calculated BIS measures"],
+  [/\bproduct consent\b/gi, "consent"],
+  [/\bpersonal behavioural evidence\b/gi, "your behaviour evidence"],
+  [/\bFalsification Test\b/gi, "Challenge test — what evidence would disprove this explanation?"],
+  [/\bfalsification statement\b/gi, "statement of what evidence would disprove the explanation"],
+  [/\bfalsification\b/gi, "testing for evidence that disproves the explanation"],
+  [/\bprovisional explanation\b/gi, "working explanation"],
+  [/\bDecision Process Prediction Accuracy Score\b/gi, "Decision Prediction Accuracy"],
+  [/\bSpending Pause Prediction Accuracy Score\b/gi, "Spending Prediction Accuracy"],
+  [/\bHabit Prediction Accuracy\b/gi, "Habit Prediction Accuracy"],
+  [/\bPrediction Accuracy Score\b/gi, "Prediction Accuracy"],
+  [/\bDecision Process Adherence Rate\b/gi, "Decision Pause Follow-Through Rate"],
+  [/\bSpending Pause Adherence Rate\b/gi, "Spending Pause Follow-Through Rate"],
+  [/\bHabit Adherence Rate\b/gi, "Habit Plan Follow-Through Rate"],
+  [/\badherence rate\b/gi, "plan follow-through rate"],
+  [/\badherence\b/gi, "plan follow-through"],
+  [/\bcalibration checkpoint\b/gi, "prediction-to-outcome check"],
+  [/\bcalibration\b/gi, "prediction-to-outcome check"],
+  [/\bcalibrate\b/gi, "compare and adjust"],
+  [/\bprovenance\b/gi, "evidence source"],
+  [/\bdiagnostic layer\b/gi, "supporting evidence"],
+  [/\bdiagnostic data\b/gi, "supporting evidence"],
+  [/\bdiagnostic evidence\b/gi, "supporting evidence"],
+  [/\bimpact domains\b/gi, "areas of impact"],
+  [/\bDecision Deliberateness Rating\b/gi, "Intentional Decision-Making Rating"],
+  [/\bdecision deliberateness\b/gi, "intentional decision-making"],
+  [/\bdeliberateness\b/gi, "intentional decision-making"],
+  [/\bAgency Shift Indicator\b/gi, "Change in Perceived Control"],
+  [/\bagency shift\b/gi, "change in perceived control"],
+  [/\bBehaviour Evidence Indicator(?:s)?\b/gi, "BIS measure"],
+  [/\bderived measures\b/gi, "calculated measures"],
+  [/\bevidence strength\b/gi, "evidence quality"],
+  [/\bcontradictory evidence\b/gi, "evidence that challenges the explanation"],
+  [/\bcumulative cost\b/gi, "total cost over time"],
+  [/\bautomaticity\b/gi, "automatic behaviour"],
+  [/\bcognitive load\b/gi, "mental effort"],
+  [/\bpersonal confrontation\b/gi, "direct self-review"],
+  [/\bDeep Integration\b/gi, "Integrate the evidence"],
+  [/\bSynthesise\b/g, "Combine the evidence"],
+  [/\bsynthesise\b/g, "combine the evidence"],
+  [/\bSynthesis\b/g, "Evidence integration"],
+  [/\bsynthesis\b/g, "evidence integration"],
+  [/\binterpretive self-claims?\b/gi, "assumptions about yourself"],
+  [/\breal-world test\b/gi, "field test"],
+  [/\bseven-day real-world test\b/gi, "seven-day field test"],
+  [/\bMy Commitment Statement\b/gi, "My commitment"],
+];
+
 export function schoolLearnerText(value: string) {
-  let result = value;
-  for (const [pattern, replacement] of SCHOOL_RULES) result = result.replace(pattern, replacement);
-  return result
-    .replace(/\s+([,.;:!?])/g, "$1")
-    .replace(/[ \t]{2,}/g, " ");
+  return applyRules(value, SCHOOL_RULES);
+}
+
+export function emergingAdultLearnerText(value: string) {
+  return applyRules(value, EMERGING_ADULT_RULES);
+}
+
+export function workplaceLearnerText(value: string) {
+  return applyRules(value, WORKPLACE_RULES);
 }
 
 export function learnerText(value: string, edition?: LearnerEdition | null) {
-  return edition === "school" ? schoolLearnerText(value) : value;
+  if (edition === "school") return schoolLearnerText(value);
+  if (edition === "emerging_adult") return emergingAdultLearnerText(value);
+  if (edition === "workplace") return workplaceLearnerText(value);
+  return value;
 }
