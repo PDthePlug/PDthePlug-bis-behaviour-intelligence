@@ -14,7 +14,7 @@ test("all Day 3 Lab handovers use one light editorial component", async () => {
   assert.match(player, /prototype-lab-handoff \$\{live \? "live" : "planned"\}/);
   assert.match(player, /DAY 3 · LAB HANDOVER/);
   assert.match(player, /Lab ready/);
-  assert.match(player, /Planned integration/);
+  assert.match(player, /Lab source ready/);
   assert.match(player, /Phase A/);
   assert.match(player, /BIS_LAB_PHASE_A_MINUTES/);
   assert.match(player, /prototype-lab-handoff-action/);
