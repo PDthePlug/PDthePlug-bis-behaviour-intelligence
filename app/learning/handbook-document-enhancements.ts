@@ -16,6 +16,7 @@ export type HandbookEnhancementContext = {
   edition?: LearnerEdition;
   programmeDay?: number | null;
   formativeCheckTarget?: number;
+  enableFormativeLearningChecks?: boolean;
 };
 
 const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
@@ -1069,6 +1070,8 @@ export function enhanceHandbookDocument(
   softenLearnerTechnicalLabels(root);
   applyEditionLearnerLanguage(root, context);
   collapseSuggestedAnswers(root);
-  if (!context.referenceOnly) addInterleavedConceptChecks(root, labCode, pageId, context);
+  if (!context.referenceOnly && context.enableFormativeLearningChecks) {
+    addInterleavedConceptChecks(root, labCode, pageId, context);
+  }
   addMissingCheckpointResponses(root, labCode, pageId);
 }
