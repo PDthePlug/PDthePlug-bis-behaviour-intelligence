@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import type { UniversalLabPackage, UniversalLabPrompt } from "@/lib/content-compiler";
 import { serverUnlockedInvestigation } from "@/lib/lab-lifecycle-contract";
-import { SchoolLanguageScope } from "@/components/learning/school-language-scope";
+import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
 type Snapshot = {
   definition: UniversalLabPackage;
@@ -379,7 +379,7 @@ export function UniversalRuntimeLab({
 
   if (!snapshot.enrolment) {
     return (
-      <SchoolLanguageScope enabled={snapshot.deliveryEdition === "school"}><main className="corelab-welcome fidelity-welcome universal-package-welcome" style={{ "--lab-accent": snapshot.definition.identity.accent } as React.CSSProperties}>
+      <EditionLanguageScope edition={snapshot.deliveryEdition}><main className="corelab-welcome fidelity-welcome universal-package-welcome" style={{ "--lab-accent": snapshot.definition.identity.accent } as React.CSSProperties}>
         <section className="fidelity-hero">
           <div>
             <p className="eyebrow">Behaviour Intelligence Series™ · Universal Lab</p>
@@ -405,7 +405,7 @@ export function UniversalRuntimeLab({
             </Button>
           </div>
         </section>
-      </main></SchoolLanguageScope>
+      </main></EditionLanguageScope>
     );
   }
 
@@ -413,7 +413,7 @@ export function UniversalRuntimeLab({
   const maxStep = previewMode ? 9 : Math.max(1, snapshot.enrolment.currentInvestigation);
 
   return (
-    <SchoolLanguageScope enabled={snapshot.deliveryEdition === "school"}><LabInvestigationFrame
+    <EditionLanguageScope edition={snapshot.deliveryEdition}><LabInvestigationFrame
       labTitle={snapshot.definition.identity.shortTitle}
       accent={snapshot.definition.identity.accent}
       investigations={snapshot.definition.investigations}
@@ -445,6 +445,6 @@ export function UniversalRuntimeLab({
           window.scrollTo({ top: 0, behavior: "smooth" });
         }}
       />
-    </LabInvestigationFrame></SchoolLanguageScope>
+    </LabInvestigationFrame></EditionLanguageScope>
   );
 }
