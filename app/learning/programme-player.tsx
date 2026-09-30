@@ -150,24 +150,34 @@ function ProgrammeLabHandoff({
   isHabit: boolean;
   habitPhaseAComplete: boolean;
 }) {
+  const live = Boolean(href);
+  const actionLabel = isHabit
+    ? habitPhaseAComplete ? "Return to Habit Lab" : "Open Habit Lab Phase A"
+    : `Open ${title}`;
+
   return (
-    <section className={`prototype-lab-handoff ${href ? "live" : "planned"}`}>
-      <div>
-        <p>DAY 3 · LAB HANDOVER</p>
-        <h2>{href ? `Continue into ${title}.` : `${title} connects here.`}</h2>
-        <span>
-          {href
+    <section className={`prototype-lab-handoff ${live ? "live" : "planned"}`}>
+      <div className="prototype-lab-handoff-copy">
+        <div className="prototype-lab-handoff-meta">
+          <span>DAY 3 · LAB HANDOVER</span>
+          <em>{live ? "Lab ready" : "Planned integration"}</em>
+        </div>
+        <h2>{live ? `Continue into ${title}.` : `${title} connects here.`}</h2>
+        <p className="prototype-lab-handoff-description">
+          {live
             ? isHabit
-              ? "The handbook stays here as your learning reference. You’ll set your plan, start the seven-day test and record your observations once inside Habit Lab."
-              : "You have reached the practical part of Day 3. Open the Lab here, then return to this learning module when the Lab phase is complete."
+              ? "The handbook stays here as your learning reference. Complete Phase A in Habit Lab, begin the seven-day test, then return here as the investigation continues."
+              : "You have reached the practical part of Day 3. Complete Phase A in the Lab, then return to this learning module for the next programme step."
             : "This is where today’s learning will connect to the practical Lab. For now, continue with the Day 3 material below."}
-        </span>
+        </p>
+        <div className="prototype-lab-handoff-phase" aria-label="Lab phase details">
+          <strong>Phase A</strong>
+          <span>{BIS_LAB_PHASE_A_MINUTES} minutes · Facilitated</span>
+        </div>
       </div>
       {href ? (
-        <Link href={href}>
-          {isHabit
-            ? habitPhaseAComplete ? "Return to Habit Lab" : "Open Habit Lab Phase A"
-            : `Open ${title}`}
+        <Link className="prototype-lab-handoff-action" href={href}>
+          {actionLabel}
           <ArrowRight />
         </Link>
       ) : (
