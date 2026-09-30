@@ -86,6 +86,7 @@ test("handbooks interleave formative understanding checks before the end-of-day 
   assert.match(enhancement, /Quick check/);
   assert.match(enhancement, /This is for understanding, not a score/);
   assert.match(enhancement, /FORMATIVE_CHECK/);
+  assert.match(enhancement, /formative\|\$\{prompt\}/);
 });
 
 test("interleaved responses use stable workbook IDs and save through the existing workbook pipeline", async () => {
