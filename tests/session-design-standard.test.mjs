@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { gunzipSync } from "node:zlib";
 import test from "node:test";
+import ts from "typescript";
 
 const root = new URL("..", import.meta.url);
 const handbookRoot = new URL("../public/handbooks/v1/", import.meta.url);
@@ -39,7 +40,7 @@ function metrics(page) {
   };
 }
 
-test("all live programme days have sufficient authored substance for a facilitated 45-minute session", async () => {
+test("all live programme days retain sufficient authored substance", async () => {
   for (const item of manifest.handbooks) {
     const programme = await decode(item.asset);
     for (const page of programme.treatment.pages) {
@@ -64,39 +65,102 @@ test("BIS learning sessions are 45 minutes and Lab Phase A remains a separate 90
   assert.match(player, /live Lab Phase A is separate from this learning session/);
 });
 
-test("session design changes the use of time instead of padding lighter days with more prose", async () => {
-  const design = await source("lib/session-design.ts");
+test("the ten programme days use a deliberate learning arc rather than equal chapter density", async () => {
+  const designSource = await source("lib/session-design.ts");
+  const compiled = ts.transpileModule(designSource, {
+    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  const module = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
 
-  assert.match(design, /Less reading is intentional/);
-  assert.match(design, /more of the session is for practice, evidence, discussion and transfer/);
-  assert.match(design, /content-rich day/);
-  assert.match(design, /rest stays available as reference/);
+  const expectedPurpose = [
+    "Create relevance and introduce the problem",
+    "Build the first mental model",
+    "Prepare for the Lab handover",
+    "Interpret what the Lab revealed",
+    "Build the learner's personal model",
+    "Apply the model in real life",
+    "Diagnose what happened",
+    "Introduce the final major conceptual layer",
+    "Integrate the whole model",
+    "Demonstrate change and transfer forward",
+  ];
+  const expectedChecks = [3, 3, 2, 4, 3, 2, 2, 4, 2, 2];
 
-  for (const label of ["Reconnect", "Core concept", "Quick check", "Apply", "Discuss", "Close"]) {
-    assert.ok(design.includes(label), `Missing 45-minute session beat: ${label}`);
+  for (let day = 1; day <= 10; day += 1) {
+    const session = module.sessionDesignForPage({
+      programmeDay: day,
+      html: "<p>" + "learning ".repeat(day === 4 ? 2100 : 800) + "</p>",
+    });
+    assert.equal(session.minutes, 45);
+    assert.equal(session.dayPurpose, expectedPurpose[day - 1]);
+    assert.equal(session.checkTarget, expectedChecks[day - 1]);
+    assert.ok(session.checkTarget >= 2 && session.checkTarget <= 4);
+    assert.equal(session.beats.reduce((sum, beat) => sum + beat.minutes, 0), 45);
+    assert.ok(session.learnerOutcome.length > 20);
+    assert.ok(session.readingTreatment.length > 40);
   }
+
+  assert.equal(module.sessionDesignForPage({ programmeDay: 6, html: "<p>short</p>" }).learningLoad.reading, "low");
+  assert.equal(module.sessionDesignForPage({ programmeDay: 7, html: "<p>short</p>" }).learningLoad.application, "high");
+  assert.equal(module.sessionDesignForPage({ programmeDay: 9, html: "<p>short</p>" }).density, "application");
+  assert.equal(module.sessionDesignForPage({ programmeDay: 10, html: "<p>short</p>" }).learningLoad.evidence, "high");
 });
 
-test("handbooks interleave formative understanding checks before the end-of-day checkpoint", async () => {
+test("handbooks interleave 2–4 purpose-labelled formative checks before the end checkpoint", async () => {
   const enhancement = await source("app/learning/handbook-document-enhancements.ts");
 
-  assert.match(enhancement, /addInterleavedConceptChecks/);
-  assert.match(enhancement, /distributedConceptChecks\(candidates, 3\)/);
+  assert.match(enhancement, /context\.formativeCheckTarget \?\? 3/);
+  assert.match(enhancement, /Math\.max\(2, Math\.min\(4,/);
   assert.match(enhancement, /endCheckpointQuestions = new Set\(checkpointQuestionElements\(root\)\)/);
-  assert.match(enhancement, /Quick check/);
-  assert.match(enhancement, /This is for understanding, not a score/);
+  for (const kind of ["RECALL", "UNDERSTAND", "DISTINGUISH", "PREDICT", "APPLY", "CHALLENGE", "CONFIDENCE"]) {
+    assert.ok(enhancement.includes(kind), `Missing formative check kind: ${kind}`);
+  }
+  assert.match(enhancement, /This is for learning, not a mark or BEI score/);
   assert.match(enhancement, /FORMATIVE_CHECK/);
-  assert.match(enhancement, /formative\|\$\{prompt\}/);
 });
 
-test("interleaved responses use stable workbook IDs and save through the existing workbook pipeline", async () => {
-  const [enhancement, player] = await Promise.all([
+test("formative support signals are explicit and remain separate from BEI scoring", async () => {
+  const [enhancement, player, migration] = await Promise.all([
     source("app/learning/handbook-document-enhancements.ts"),
     source("app/learning/programme-player.tsx"),
+    source("supabase/migrations/20260930223000_learning_check_analytics.sql"),
   ]);
 
-  assert.match(enhancement, /WB\.AUTO/);
-  assert.match(enhancement, /field\.dataset\.fieldId/);
-  assert.match(player, /querySelectorAll<HTMLTextAreaElement \| HTMLInputElement \| HTMLSelectElement>\("\[data-field-id\]"\)/);
-  assert.match(player, /workbookResponses/);
+  for (const signal of ["UNDERSTOOD", "UNSURE", "NEEDS_EXAMPLE"]) {
+    assert.ok(enhancement.includes(signal), `Missing learner support signal: ${signal}`);
+  }
+  assert.match(enhancement, /FORMATIVE_SIGNAL/);
+  assert.match(enhancement, /WB\.CHECK/);
+  assert.match(player, /purpose: target\.dataset\.purpose/);
+  assert.match(player, /checkId: target\.dataset\.checkId/);
+  assert.match(player, /checkKind: target\.dataset\.checkKind/);
+  assert.match(migration, /excludedFromBEI', true/);
+  assert.match(migration, /not marks, BEI evidence, psychometric scores/);
+  assert.match(migration, /Never returns private workbook response text/);
+});
+
+test("formative response metadata survives the atomic workbook save queue", async () => {
+  const queue = await source("lib/workbook-save-queue.ts");
+  for (const field of ["purpose", "checkId", "checkKind", "privacyClass"]) {
+    assert.ok(queue.includes(field), `Workbook queue drops ${field}`);
+  }
+  assert.match(queue, /semanticFieldId/);
+  assert.match(queue, /semanticStepId/);
+  assert.match(queue, /sourceFieldKey/);
+});
+
+test("facilitator and sponsor analytics only expose aggregate learning-check signals", async () => {
+  const [staff, facilitator, sponsor] = await Promise.all([
+    source("app/api/staff/route.ts"),
+    source("app/facilitator-workspace.tsx"),
+    source("app/programme-outcomes-view.tsx"),
+  ]);
+
+  assert.match(staff, /facilitator_cohort_learning_checks/);
+  assert.match(staff, /sponsor_cohort_learning_checks/);
+  assert.match(staff, /Learning checks/);
+  assert.match(facilitator, /Where learners want more support/);
+  assert.match(facilitator, /not marks and do not change BEI results/);
+  assert.match(sponsor, /anonymous, learner-reported understanding signals/);
+  assert.match(sponsor, /not marks and do not change BEI results/);
 });
