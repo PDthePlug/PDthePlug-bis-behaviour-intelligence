@@ -19,6 +19,22 @@ export const LAB_LIFECYCLE = [
 
 export type LabLifecycleStage = (typeof LAB_LIFECYCLE)[number];
 
+export const LAB_TRANSITION_ACTION = {
+  1: "saveResponses",
+  2: "saveResponses",
+  3: "saveResponses",
+  4: "saveResponses",
+  5: "saveHypothesis",
+  6: "startExperiment",
+  7: "completeExperiment",
+  8: "saveResponses",
+  9: "completeLab",
+} as const;
+
+export function actionOwnsInvestigationUnlock(action: string, investigation: number) {
+  return LAB_TRANSITION_ACTION[investigation as keyof typeof LAB_TRANSITION_ACTION] === action;
+}
+
 /**
  * BIS progression invariant:
  * a completed Investigation N unlocks N+1 only after the save operation succeeds.
