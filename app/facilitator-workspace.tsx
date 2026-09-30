@@ -223,7 +223,8 @@ export function FacilitatorWorkspace({
   );
   const selectedLearnerId = searchParams.get("learner") ?? "";
   const selected = participants.find((learner) => learner.userId === selectedLearnerId);
-  const moduleDefinition = BIS_MODULES.find((item) => item.code === cohort?.labCode);
+  const cohortLabCode = cohort?.labCode ?? "";
+  const moduleDefinition = BIS_MODULES.find((item) => item.code === cohortLabCode);
   const participantEditions = [...new Set(participants.map((item) => item.deliveryEdition).filter(Boolean))];
   const cohortEdition: DeliveryEdition =
     participantEditions.length === 1 ? participantEditions[0] : "school";
@@ -238,19 +239,18 @@ export function FacilitatorWorkspace({
   const facilitatorSession = facilitatorSessionForDay(sessionDay, cohortEdition);
 
   useEffect(() => {
-    if (section !== "session" || !cohort) {
-      setLearnerPreviewState("idle");
-      return;
-    }
+    if (section !== "session" || !cohortLabCode) return;
     const controller = new AbortController();
-    setLearnerPreviewState("loading");
-    setLearnerPreviewHtml("");
-    setLearnerPreviewLabel("");
 
     void (async () => {
+      await Promise.resolve();
+      if (controller.signal.aborted) return;
+      setLearnerPreviewState("loading");
+      setLearnerPreviewHtml("");
+      setLearnerPreviewLabel("");
       try {
         const response = await fetch(
-          `/api/runtime-content?kind=LEARNING_MODULE&code=${encodeURIComponent(cohort.labCode)}&edition=${encodeURIComponent(cohortEdition)}`,
+          `/api/runtime-content?kind=LEARNING_MODULE&code=${encodeURIComponent(cohortLabCode)}&edition=${encodeURIComponent(cohortEdition)}`,
           { cache: "no-store", signal: controller.signal },
         );
         if (!response.ok) throw new Error("Learning module unavailable");
@@ -278,7 +278,7 @@ export function FacilitatorWorkspace({
     })();
 
     return () => controller.abort();
-  }, [cohort?.labCode, cohortEdition, section, sessionDay]);
+  }, [cohortLabCode, cohortEdition, section, sessionDay]);
 
   function navigateWorkspace(patch: { section?: FacilitatorSection; learner?: string | null; group?: string | null; day?: number | null }) {
     const params = new URLSearchParams(searchParams.toString());
