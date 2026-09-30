@@ -425,7 +425,10 @@ export function ProgrammePlayer({
 
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
-  const sessionDesign = useMemo(() => page ? sessionDesignForPage(page) : null, [page]);
+  const sessionDesign = useMemo(
+    () => page && programme?.edition === "school" ? sessionDesignForPage(page) : null,
+    [page, programme?.edition],
+  );
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const completed = useMemo(
@@ -780,6 +783,7 @@ export function ProgrammePlayer({
       edition: programme?.edition ?? snapshot?.profile.deliveryEdition,
       programmeDay: page.programmeDay,
       formativeCheckTarget: sessionDesign?.checkTarget,
+      enableFormativeLearningChecks: programme?.edition === "school",
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
