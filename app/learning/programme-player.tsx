@@ -1,7 +1,7 @@
 "use client";
 
 import { BisMark } from "@/components/brand/bis-mark";
-import { SchoolLanguageScope } from "@/components/learning/school-language-scope";
+import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -960,7 +960,7 @@ export function ProgrammePlayer({
   const moduleLabTitle = moduleDefinition?.title ?? `${programme.title} Lab`;
 
   return (
-    <SchoolLanguageScope enabled={snapshot.profile.deliveryEdition === "school"}>
+    <EditionLanguageScope edition={snapshot.profile.deliveryEdition}>
     <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition}>
       <header className="prototype-topbar">
         <button
@@ -1313,7 +1313,7 @@ export function ProgrammePlayer({
         <Menu /> <span>Menu</span>
       </button>
     </div>
-    </SchoolLanguageScope>
+    </EditionLanguageScope>
   );
 }
 
