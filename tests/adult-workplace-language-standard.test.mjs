@@ -159,5 +159,5 @@ test("participant-facing Core Lab metadata is distinct by edition", async () => 
   assert.match(core, /badge: "Workplace Edition"/);
   assert.match(core, /Ages 18–25 · Independent or facilitated/);
   assert.match(core, /Workplace participants · No prior BIS knowledge needed/);
-  assert.match(core, /seven-day field test/);
+  assert.match(core, /7-day field test/);
 });
