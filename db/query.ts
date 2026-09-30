@@ -6,6 +6,7 @@ type RuntimeTable = {
   readonly __meta: {
     readonly name: string;
     readonly columns: Record<string, Column>;
+    readonly columnOptions?: Record<string, { primaryKey: boolean }>;
   };
 };
 
@@ -120,17 +121,25 @@ class SelectQuery implements PromiseLike<any[]> {
 
   private async execute() {
     const select = selectionString(this.selection);
-    let query = this.client.from(this.table.__meta.name).select(select);
-    query = applyCondition(query, this.condition);
-    for (const order of this.orders) {
-      query = query.order(order.column.name, { ascending: order.ascending });
+    const primaryKey = Object.entries(this.table.__meta.columnOptions ?? {}).find(([, options]) => options.primaryKey)?.[0];
+    const stableColumn = primaryKey ? this.table.__meta.columns[primaryKey] : this.table.__meta.columns.id;
+    const orders = [...this.orders];
+    if (stableColumn && !orders.some((order) => order.column.name === stableColumn.name)) orders.push({ column: stableColumn, ascending: true });
+    const rows: any[] = [];
+    const pageSize = 500;
+    for (let offset = 0; this.rowLimit === undefined || offset < this.rowLimit;) {
+      const size = Math.min(pageSize, this.rowLimit === undefined ? pageSize : this.rowLimit - offset);
+      let query = this.client.from(this.table.__meta.name).select(select);
+      query = applyCondition(query, this.condition);
+      for (const order of orders) query = query.order(order.column.name, { ascending: order.ascending });
+      const { data, error } = await query.range(offset, offset + size - 1);
+      if (error) throw new Error(error.message);
+      const page = data ?? [];
+      rows.push(...page.map((row) => fromDatabaseRow(this.table, row as unknown as Record<string, unknown>, this.selection)));
+      if (page.length < size) break;
+      offset += page.length;
     }
-    if (this.rowLimit !== undefined) query = query.limit(this.rowLimit);
-    const { data, error } = await query;
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((row) =>
-      fromDatabaseRow(this.table, row as unknown as Record<string, unknown>, this.selection),
-    );
+    return rows;
   }
 }
 

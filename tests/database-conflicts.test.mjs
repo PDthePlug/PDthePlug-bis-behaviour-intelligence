@@ -17,6 +17,8 @@ function fixture(results) {
     const query = {
       select() { call.operation = "select"; return query; },
       limit() { return query; },
+      order(key, options) { (call.orders ??= []).push([key, options]); return query; },
+      range(start, end) { call.range = [start, end]; return query; },
       eq(key, value) { call.filters.push(["eq", key, value]); return query; },
       is(key, value) { call.filters.push(["is", key, value]); return query; },
       insert(row) { call.operation = "insert"; call.row = row; return query; },
@@ -57,4 +59,25 @@ test("ignore-duplicate handles a concurrent winner without overwriting it", asyn
   const { db, calls } = fixture([{ data: [] }, { error: { code: "23505", message: "duplicate" } }, { data: [{ id: "winner" }] }]);
   await db.insert(table).values(row).onConflictDoNothing({ target: conflict.target });
   assert.equal(calls.some((call) => call.operation === "update"), false);
+});
+
+test("unbounded reads retrieve every page beyond the platform row cap", async () => {
+  const { db, calls } = fixture([
+    { data: Array.from({ length: 500 }, (_, index) => ({ id: String(index) })) },
+    { data: Array.from({ length: 500 }, (_, index) => ({ id: String(index + 500) })) },
+    { data: [{ id: "1000" }] },
+  ]);
+  const rows = await db.select().from(table);
+  assert.equal(rows.length, 1001);
+  assert.equal(rows.at(-1).id, "1000");
+  assert.deepEqual(calls.map((call) => call.range), [[0, 499], [500, 999], [1000, 1499]]);
+  assert.ok(calls.every((call) => call.orders[0][0] === "id"));
+});
+
+test("explicit limits bound database reads and a later-page failure is surfaced", async () => {
+  const first = fixture([{ data: [{ id: "one" }] }]);
+  assert.equal((await first.db.select().from(table).limit(1)).length, 1);
+  assert.deepEqual(first.calls[0].range, [0, 0]);
+  const second = fixture([{ data: Array.from({ length: 500 }, () => ({ id: "row" })) }, { error: { message: "read interrupted" } }]);
+  await assert.rejects(async () => await second.db.select().from(table), /read interrupted/);
 });
