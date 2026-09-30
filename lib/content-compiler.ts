@@ -258,6 +258,16 @@ export async function compileLearningEdition(
     };
   });
 
+  const dayThree = compiledPages.find((page) => page.key === "Day 3");
+  if (
+    !dayThree?.labHandoff?.startMarker ||
+    !dayThree.labHandoff.endMarker ||
+    !dayThree.html.includes(dayThree.labHandoff.startMarker) ||
+    !dayThree.html.includes(dayThree.labHandoff.endMarker)
+  ) {
+    throw new Error(`${edition}: Day 3 must include authored labHandoff startMarker and endMarker anchors inside the Day 3 content.`);
+  }
+
   const fieldIds = compiledPages.flatMap((page) => [...page.html.matchAll(/data-field-id="([^"]+)"/g)].map((match) => match[1]));
   if (new Set(fieldIds).size !== fieldIds.length) throw new Error(`${edition}: duplicate workbook field IDs were found.`);
   const editionNamespace = `${expectedCode}.WB.${edition.toUpperCase()}.`;
