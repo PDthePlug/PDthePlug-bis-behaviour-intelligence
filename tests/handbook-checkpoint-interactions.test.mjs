@@ -119,7 +119,10 @@ test("digital hardening removes orphan controls and upgrades paper-era interacti
   assert.match(css, /\.handbook-check-row/);
   assert.match(css, /\.handbook-system-value/);
   assert.match(css, /\.handbook-inline-field/);
-  assert.match(css, /td\[data-label\]::before/);
+  const presentation = await source("app/learning/handbook-presentation.css");
+  assert.match(presentation, /display: table-cell/);
+  assert.match(presentation, /thead \{display: table-header-group/);
+  assert.match(presentation, /overflow-x: auto/);
 });
 
 test("system-known values are module-scoped and do not reuse Habit evidence in other Labs", async () => {

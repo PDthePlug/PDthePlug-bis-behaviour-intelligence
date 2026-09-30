@@ -53,12 +53,7 @@
  .habit-lab-route .investigation-rail button>span{width:26px;height:26px}
  .handbook-next>div{grid-template-columns:1fr}
  .prototype-reader-compact-head{gap:14px;min-width:0}
- .prototype-document table,.prototype-document tbody,.prototype-document tr{display:block;width:100%}
- .prototype-document thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
- .prototype-document tr{margin:12px 0;border:1px solid #deded5;border-radius:8px;overflow:hidden}
- .prototype-document :is(td,th){display:block;width:100%;padding:10px 12px;border:0;border-bottom:1px solid #e7e3dc}
- .prototype-document td[data-label]::before{content:attr(data-label);display:block;font-size:12px;font-weight:750;color:#27675c;margin-bottom:4px}
- .prototype-document td:last-child{border-bottom:0}
+
 }
 
 /* Phone density follows the supplied references at a native device viewport.

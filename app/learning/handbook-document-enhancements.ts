@@ -389,9 +389,23 @@ function enhanceTables(root: HTMLElement) {
     table.classList.toggle("handbook-data-table", hasLabels);
     table.classList.toggle("handbook-scroll-table", !hasLabels);
 
+    // Keep column relationships intact, including merged cells. Narrow tables
+    // reflow naturally; comparison and response tables scroll as one unit.
+    const columns = Math.max(0, ...Array.from(table.rows, (row) =>
+      Array.from(row.cells).reduce((count, cell) => count + cell.colSpan, 0)));
+    table.classList.toggle("handbook-wide-table", columns > 2 || Boolean(table.querySelector("input,textarea,select")));
+    table.querySelectorAll<HTMLTableCellElement>("thead th").forEach((cell) => {
+      if (!cell.hasAttribute("scope")) cell.scope = cell.colSpan > 1 ? "colgroup" : "col";
+    });
+
     if (table.parentElement?.classList.contains("handbook-table-scroll")) return;
     const wrapper = document.createElement("div");
     wrapper.className = "handbook-table-scroll";
+    wrapper.tabIndex = 0;
+    wrapper.setAttribute("role", "region");
+    const title = normalise(table.caption?.textContent ?? "") ||
+      normalise(table.querySelector("tr")?.textContent ?? "").slice(0, 120);
+    wrapper.setAttribute("aria-label", `${title || "Learning table"} — scroll horizontally if needed`);
     table.parentElement?.insertBefore(wrapper, table);
     wrapper.append(table);
   });
