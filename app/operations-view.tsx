@@ -35,8 +35,11 @@ import { FacilitatorWorkspace } from "./facilitator-workspace";
 
 type ProgressRow = {
   userId: string;
+  cohortId?: string;
+  labCode?: string;
   email: string;
   displayName: string;
+  deliveryEdition: "school" | "emerging_adult" | "workplace";
   mode: string;
   status: string;
   enrolment: null | {
