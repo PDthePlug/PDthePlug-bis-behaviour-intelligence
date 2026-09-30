@@ -29,6 +29,7 @@ test("all Day 3 Lab handovers use one light editorial component", async () => {
   assert.match(handoffCss, /\.prototype-lab-handoff-action\{[^}]*background:var\(--p-accent\)/);
   assert.doesNotMatch(handoffCss, /\.prototype-lab-handoff\{[^}]*background:var\(--p-accent\)/);
   assert.match(handoffCss, /\.prototype-lab-handoff\.planned\{background:#f6f3eb/);
+  assert.match(handoffCss, /\.prototype-lab-handoff\.planned \.prototype-lab-status/);
   assert.doesNotMatch(handoffCss, /\.prototype-lab-handoff\.planned\{[^}]*background:var\(--p-accent\)/);
 });
 
