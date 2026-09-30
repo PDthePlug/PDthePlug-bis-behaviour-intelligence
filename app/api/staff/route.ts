@@ -302,6 +302,16 @@ async function facilitatorSnapshot(identity: Identity) {
     .from(facilitatorNotes)
     .where(inArray(facilitatorNotes.cohortId, cohortIds))
     .orderBy(desc(facilitatorNotes.createdAt));
+  const client = requestSupabaseClient();
+  const learningCheckEntries = await Promise.all(
+    cohorts.map(async (cohort) => {
+      const result = await client.rpc("facilitator_cohort_learning_checks", { target_cohort_id: cohort.id });
+      if (result.error) throw new Error(result.error.message);
+      return [cohort.id, result.data ?? null] as const;
+    }),
+  );
+  const learningChecks = new Map(learningCheckEntries);
+
   const referrals = await db
     .select({
       id: safeguardingCases.id,
@@ -321,6 +331,7 @@ async function facilitatorSnapshot(identity: Identity) {
     cohorts: cohorts.map((cohort) => ({
       ...cohort,
       memberIds: members.filter((member) => member.cohortId === cohort.id).map((member) => member.learnerUserId),
+      learningChecks: learningChecks.get(cohort.id) ?? null,
     })),
     learners: progress,
     notes,
@@ -377,11 +388,12 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, decisions] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_organisational_learning", { target_cohort_id: cohortId }),
+      client.rpc("sponsor_cohort_learning_checks", { target_cohort_id: cohortId }),
       db
         .select()
         .from(programmeDecisions)
@@ -392,12 +404,14 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
     if (deeperResult.error) throw new Error(deeperResult.error.message);
     if (learningResult.error) throw new Error(learningResult.error.message);
     if (organisationLearningResult.error) throw new Error(organisationLearningResult.error.message);
+    if (learningChecksResult.error) throw new Error(learningChecksResult.error.message);
     if (outcomeResult.data) {
       cohorts.push({
         ...outcomeResult.data,
         deepAnalysis: deeperResult.data ?? null,
         learningSummary: learningResult.data ?? null,
         organisationLearning: organisationLearningResult.data ?? null,
+        learningChecks: learningChecksResult.data ?? null,
         decisionRegister: {
           canManage: await canManageProgrammeCohort(identity, roles, cohortId),
           decisions,
@@ -417,7 +431,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       { id: "support", label: "Support", status: "LIVE", description: "Learner-initiated requests for human help, aggregated only." },
       { id: "voice", label: "Voice / silence", status: "FUTURE_SIGNAL", description: "Activates when the relevant Identity or Communication evidence field is live." },
       { id: "mistakes", label: "Response to mistakes", status: "FUTURE_SIGNAL", description: "Activates with Failure Lab evidence." },
-      { id: "feedback", label: "Ungraded feedback", status: "FUTURE_SIGNAL", description: "Activates when the relevant feedback evidence protocol is live." },
+      { id: "feedback", label: "Learning checks", status: "LIVE", description: "Aggregate learner-reported understanding signals from in-session formative checks; separate from BEI evidence and marks." },
     ],
     privacy: {
       aggregationOnly: true,
@@ -455,9 +469,9 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
     identity,
     roles,
     privacyBoundary: {
-      facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes"],
+      facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes", "aggregate formative learning-check support signals"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
-      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness", "organisation-authored programme decisions and review outcomes"],
+      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness", "aggregate formative learning-check signals", "organisation-authored programme decisions and review outcomes"],
       sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },
