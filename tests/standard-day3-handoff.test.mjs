@@ -19,8 +19,10 @@ test("every live learning module renders a Day 3 Lab handover from catalogue sta
   assert.match(player, /moduleDefinition\?\.labStatus === "live"/);
   assert.match(player, /ProgrammeLabHandoff/);
   assert.match(player, /DAY 3 · LAB HANDOVER/);
-  assert.match(player, /Day 3 is still the Lab handover point in this programme/);
-  assert.match(player, /Lab coming soon/);
+  assert.match(player, /legacyDayThreeBoundary/);
+  assert.match(player, /today’s learning will connect to the practical Lab/);
+  assert.match(player, /Planned Lab/);
+  assert.doesNotMatch(player, /Day 3 is still the Lab handover point in this programme/);
 
   assert.doesNotMatch(
     player,
@@ -74,5 +76,26 @@ test("post-Lab programme completion stays locked until Phase A really exists", a
   assert.match(player, /programme progress resumes after the Lab/);
   assert.match(player, /disabled=\{saving \|\| completing \|\| labSequenceLocked\}/);
   assert.match(player, /disabled=\{completing \|\| \(labSequenceLocked && selected > dayThreeIndex\)\}/);
-  assert.match(player, /Lab coming soon/);
+  assert.match(player, /Continue when the Lab is available/);
+});
+
+
+test("new learning packages must carry authored Day 3 handover anchors", async () => {
+  const compiler = await source("lib/content-compiler.ts");
+
+  assert.match(compiler, /Day 3 must include authored labHandoff startMarker and endMarker anchors/);
+  assert.match(compiler, /dayThree\.html\.includes\(dayThree\.labHandoff\.startMarker\)/);
+  assert.match(compiler, /dayThree\.html\.includes\(dayThree\.labHandoff\.endMarker\)/);
+});
+
+test("planned Labs use a restrained Day 3 bridge rather than a blocking dark announcement", async () => {
+  const [player, css] = await Promise.all([
+    source("app/learning/programme-player.tsx"),
+    source("app/learning/programme-player.css"),
+  ]);
+
+  assert.match(player, /\$\{title\} connects here/);
+  assert.match(player, /Planned Lab/);
+  assert.match(css, /\.prototype-lab-handoff\.planned\{background:#f6f3eb/);
+  assert.match(css, /\.prototype-lab-handoff\.planned \.prototype-lab-status/);
 });
