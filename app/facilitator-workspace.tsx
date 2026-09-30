@@ -201,21 +201,86 @@ export function FacilitatorWorkspace({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const [learnerPreviewHtml, setLearnerPreviewHtml] = useState("");
+  const [learnerPreviewLabel, setLearnerPreviewLabel] = useState("");
+  const [learnerPreviewState, setLearnerPreviewState] = useState<"idle" | "loading" | "ready" | "unavailable">("idle");
+
   const requestedSection = searchParams.get("section");
   const section: FacilitatorSection =
-    requestedSection === "participants" || requestedSection === "support" || requestedSection === "review"
+    requestedSection === "session" ||
+    requestedSection === "participants" ||
+    requestedSection === "support" ||
+    requestedSection === "review"
       ? requestedSection
       : "cohort";
   const requestedGroup = searchParams.get("group");
   const cohort = data.cohorts.find((item) => item.id === requestedGroup) ?? data.cohorts[0];
   const participants = useMemo(
-    () => data.learners.filter((learner) => cohort?.memberIds?.includes(learner.userId)),
+    () => data.learners.filter((learner) =>
+      learner.cohortId ? learner.cohortId === cohort?.id : cohort?.memberIds?.includes(learner.userId),
+    ),
     [data.learners, cohort],
   );
   const selectedLearnerId = searchParams.get("learner") ?? "";
   const selected = participants.find((learner) => learner.userId === selectedLearnerId);
+  const moduleDefinition = BIS_MODULES.find((item) => item.code === cohort?.labCode);
+  const participantEditions = [...new Set(participants.map((item) => item.deliveryEdition).filter(Boolean))];
+  const cohortEdition: DeliveryEdition =
+    participantEditions.length === 1 ? participantEditions[0] : "school";
+  const requestedDay = Number(searchParams.get("day"));
+  const latestCheckDay = [...(cohort?.learningChecks?.byDay ?? [])]
+    .map((item) => Number(item.semanticStepId.match(/DAY(\d+)/)?.[1] ?? 0))
+    .filter((day) => day >= 1 && day <= 10)
+    .sort((a, b) => b - a)[0];
+  const sessionDay = Number.isInteger(requestedDay) && requestedDay >= 1 && requestedDay <= 10
+    ? requestedDay
+    : latestCheckDay ?? 1;
+  const facilitatorSession = facilitatorSessionForDay(sessionDay, cohortEdition);
 
-  function navigateWorkspace(patch: { section?: FacilitatorSection; learner?: string | null; group?: string | null }) {
+  useEffect(() => {
+    if (section !== "session" || !cohort) {
+      setLearnerPreviewState("idle");
+      return;
+    }
+    const controller = new AbortController();
+    setLearnerPreviewState("loading");
+    setLearnerPreviewHtml("");
+    setLearnerPreviewLabel("");
+
+    void (async () => {
+      try {
+        const response = await fetch(
+          `/api/runtime-content?kind=LEARNING_MODULE&code=${encodeURIComponent(cohort.labCode)}&edition=${encodeURIComponent(cohortEdition)}`,
+          { cache: "no-store", signal: controller.signal },
+        );
+        if (!response.ok) throw new Error("Learning module unavailable");
+        const data = await response.json() as { payload?: HabitProgramme };
+        const page = data.payload?.treatment.pages.find((item) => item.programmeDay === sessionDay);
+        if (!page) throw new Error("Session day unavailable");
+        if (controller.signal.aborted) return;
+
+        let html = page.html;
+        const platformIndex = html.search(/EXISTING\s+BIS\s+LAB\s+PLATFORM/i);
+        const dayLabelIndex = platformIndex >= 0
+          ? html.toUpperCase().indexOf("DAY 3 OF 10", platformIndex)
+          : -1;
+        if (dayLabelIndex >= 0) {
+          const dayStart = html.lastIndexOf("<", dayLabelIndex);
+          html = html.slice(dayStart >= 0 ? dayStart : dayLabelIndex);
+        }
+
+        setLearnerPreviewLabel(`Day ${sessionDay} · ${page.label}`);
+        setLearnerPreviewHtml(html);
+        setLearnerPreviewState("ready");
+      } catch {
+        if (!controller.signal.aborted) setLearnerPreviewState("unavailable");
+      }
+    })();
+
+    return () => controller.abort();
+  }, [cohort?.labCode, cohortEdition, section, sessionDay]);
+
+  function navigateWorkspace(patch: { section?: FacilitatorSection; learner?: string | null; group?: string | null; day?: number | null }) {
     const params = new URLSearchParams(searchParams.toString());
     params.set("view", "facilitator");
     if (patch.section) params.set("section", patch.section);
@@ -223,6 +288,8 @@ export function FacilitatorWorkspace({
     else if (patch.learner) params.set("learner", patch.learner);
     if (patch.group === null) params.delete("group");
     else if (patch.group) params.set("group", patch.group);
+    if (patch.day === null) params.delete("day");
+    else if (patch.day) params.set("day", String(patch.day));
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
