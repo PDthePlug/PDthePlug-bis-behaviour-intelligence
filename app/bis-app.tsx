@@ -64,7 +64,7 @@ import { getExperimentTiming } from "@/lib/experiment-timing.mjs";
 import { OperationsView } from "./operations-view";
 import { LabInvestigationFrame } from "./lab-investigation-frame";
 import { labExperienceManifest } from "@/lib/lab-experience-manifest";
-import { SchoolLanguageScope } from "@/components/learning/school-language-scope";
+import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
 type Snapshot = {
   identity: { id: string; email: string; displayName: string };
@@ -312,7 +312,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
     );
   }
 
-  const schoolEdition = state.profile?.deliveryEdition === "school";
+  const edition = state.profile?.deliveryEdition ?? null;
   const staffRoles = state.roles.filter((role) => ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role));
   const hasStaffAccess = staffRoles.length > 0;
   const baselineComplete = Boolean(state.responses["HAB.CONTROL.PRE"]) && baselineItems.every(([field]) => Boolean(state.responses[field]));
@@ -322,7 +322,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
   }
 
   if (state.profile && state.consent?.status === "WITHDRAWN") {
-    return <SchoolLanguageScope enabled={schoolEdition}><PrivacyPaused state={state} saving={saving} error={error} onRestore={act} /></SchoolLanguageScope>;
+    return <EditionLanguageScope edition={edition}><PrivacyPaused state={state} saving={saving} error={error} onRestore={act} /></EditionLanguageScope>;
   }
 
   if (!state.profile || state.consent?.status !== "GRANTED") {
@@ -330,14 +330,14 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
   }
 
   if (!baselineComplete) {
-    return <SchoolLanguageScope enabled={schoolEdition}><BaselineScreen state={state} saving={saving} error={error} act={act} /></SchoolLanguageScope>;
+    return <EditionLanguageScope edition={edition}><BaselineScreen state={state} saving={saving} error={error} act={act} /></EditionLanguageScope>;
   }
 
   const current = Math.max(1, state.enrolment?.currentInvestigation || 1);
   const displayName = state.profile.displayName.split(" ")[0] || "Investigator";
 
   return (
-    <SchoolLanguageScope enabled={schoolEdition && systemMode === "learner"}><>
+    <EditionLanguageScope edition={edition} enabled={systemMode === "learner"}><>
     <div className={`min-h-screen bg-background text-foreground ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible}>
       <header className="mobile-header">
         <button className="icon-button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu /></button>
@@ -410,7 +410,7 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
       {systemMode === "learner" && <nav className="mobile-task-dock" aria-label="Mobile learner navigation">{mobileNav.map((item) => { const Icon = item.icon; return <button key={item.id} className={view === item.id ? "active" : ""} onClick={() => setView(item.id)}><Icon /><span>{item.label}</span></button>; })}</nav>}
     </div>
     {!privateVisible && <PrivacyScreen state={state} onReveal={() => setPrivateVisible(true)} />}
-    </></SchoolLanguageScope>
+    </></EditionLanguageScope>
   );
 }
 

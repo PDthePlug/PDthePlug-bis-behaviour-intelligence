@@ -50,25 +50,27 @@ function plainText(html) {
     .trim();
 }
 
-test("the BIS School Language Standard is edition-gated and keeps adult editions unchanged", async () => {
+test("the BIS learner language system routes every edition through its own governed transform", async () => {
   const language = await source("lib/school-language.ts");
 
-  assert.match(language, /edition === "school" \? schoolLearnerText\(value\) : value/);
-  assert.match(language, /Plain meaning first/);
-  assert.match(language, /technical\/research names remain in the evidence model/i);
+  assert.match(language, /edition === "school".*schoolLearnerText/s);
+  assert.match(language, /edition === "emerging_adult".*emergingAdultLearnerText/s);
+  assert.match(language, /edition === "workplace".*workplaceLearnerText/s);
+  assert.match(language, /plain meaning first/i);
+  assert.match(language, /evidence model, facilitator views and sponsor reporting/i);
 });
 
-test("all five live school handbooks pass through the school-only learner language layer", async () => {
+test("all five live school handbooks pass through the edition-aware learner language layer", async () => {
   const [player, enhancement] = await Promise.all([
     source("app/learning/programme-player.tsx"),
     source("app/learning/handbook-document-enhancements.ts"),
   ]);
 
   assert.match(player, /edition: programme\?\.edition \?\? snapshot\?\.profile\.deliveryEdition/);
-  assert.match(player, /SchoolLanguageScope enabled=\{snapshot\.profile\.deliveryEdition === "school"\}/);
-  assert.match(enhancement, /context\.edition !== "school"/);
-  assert.match(enhancement, /applySchoolLearnerLanguage\(root, context\)/);
-  assert.match(enhancement, /schoolLearnerText\(before\)/);
+  assert.match(player, /EditionLanguageScope edition=\{snapshot\.profile\.deliveryEdition\}/);
+  assert.match(enhancement, /if \(!context\.edition\) return/);
+  assert.match(enhancement, /applyEditionLearnerLanguage\(root, context\)/);
+  assert.match(enhancement, /learnerText\(before, context\.edition\)/);
 });
 
 test("the current School Edition corpus has explicit translations for its recurring high-load vocabulary", async () => {
@@ -86,27 +88,30 @@ test("the current School Edition corpus has explicit translations for its recurr
   }
 });
 
-test("school learner Labs use plain-language rendering without changing staff terminology", async () => {
+test("learner Labs use edition language without changing staff terminology", async () => {
   const [habit, core, universal] = await Promise.all([
     source("app/bis-app.tsx"),
     source("app/core-lab-experience.tsx"),
     source("app/labs/[code]/universal-runtime-lab.tsx"),
   ]);
 
-  assert.match(habit, /SchoolLanguageScope enabled=\{schoolEdition && systemMode === "learner"\}/);
-  assert.match(core, /SchoolLanguageScope enabled=\{schoolEdition\}/);
-  assert.match(universal, /SchoolLanguageScope enabled=\{snapshot\.deliveryEdition === "school"\}/);
+  assert.match(habit, /EditionLanguageScope edition=\{edition\} enabled=\{systemMode === "learner"\}/);
+  assert.match(core, /EditionLanguageScope edition=\{edition\}/);
+  assert.match(universal, /EditionLanguageScope edition=\{snapshot\.deliveryEdition\}/);
   assert.match(habit, /systemMode === "learner"/);
 });
 
-test("the school Core Lab welcome removes production and commercial metadata from the learner view", async () => {
+test("the Core Lab welcome uses participant-facing metadata for all three editions", async () => {
   const core = await source("app/core-lab-experience.tsx");
 
-  assert.match(core, /schoolEdition \? "School Edition"/);
+  assert.match(core, /School Edition/);
+  assert.match(core, /Emerging Adult Edition/);
+  assert.match(core, /Workplace Edition/);
   assert.match(core, /Ages 14–18 · No prior knowledge needed/);
-  assert.match(core, /About 90 minutes, then a 7-day real-world test/);
-  assert.match(core, /schoolEdition \? <dl>/);
-  assert.match(core, /Price point/);
+  assert.match(core, /Ages 18–25 · Independent or facilitated/);
+  assert.match(core, /Workplace participants · No prior BIS knowledge needed/);
+  assert.doesNotMatch(core, /Price point/);
+  assert.doesNotMatch(core, /Production Master · Version/);
 });
 
 test("key technical concepts are translated into plain meaning for school learners", async () => {

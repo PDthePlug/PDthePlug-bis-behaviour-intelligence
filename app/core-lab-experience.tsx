@@ -28,7 +28,8 @@ import { Textarea } from "@/components/ui/textarea";
 import type { CoreLabDefinition, LabField } from "@/lib/core-labs";
 import { serverUnlockedInvestigation } from "@/lib/lab-lifecycle-contract";
 import { LabInvestigationFrame } from "./lab-investigation-frame";
-import { SchoolLanguageScope } from "@/components/learning/school-language-scope";
+import { EditionLanguageScope } from "@/components/learning/school-language-scope";
+import type { LearnerEdition } from "@/lib/school-language";
 
 type Snapshot = {
   lab: { code: string; slug: string; version: string; title: string };
@@ -156,15 +157,15 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
     }
   }
 
-  const schoolEdition = state?.profile?.deliveryEdition === "school";
+  const edition = state?.profile?.deliveryEdition ?? null;
 
   if (loading) return <main className="corelab-loading"><Brand /><div /><div /></main>;
   if (!state) return <main className="corelab-empty"><Brand /><div className="surface-card"><LockKeyhole /><h1>This Lab could not open.</h1><p>{error}</p><Button onClick={() => void load()}>Try again</Button></div></main>;
-  if (!state.profile || state.consent?.status !== "GRANTED") return <SchoolLanguageScope enabled={schoolEdition}><Prerequisite definition={definition} /></SchoolLanguageScope>;
-  if (!state.enrolment) return <SchoolLanguageScope enabled={schoolEdition}><LabWelcome definition={definition} saving={saving} error={error} onOpen={act} returnTo={returnTo} schoolEdition={schoolEdition} /></SchoolLanguageScope>;
+  if (!state.profile || state.consent?.status !== "GRANTED") return <EditionLanguageScope edition={edition}><Prerequisite definition={definition} /></EditionLanguageScope>;
+  if (!state.enrolment) return <EditionLanguageScope edition={edition}><LabWelcome definition={definition} saving={saving} error={error} onOpen={act} returnTo={returnTo} edition={edition} /></EditionLanguageScope>;
 
   const baselineComplete = Boolean(state.responses[definition.preMetric.id]) && definition.baselineItems.every(([id]) => Boolean(state.responses[id]));
-  if (!baselineComplete) return <SchoolLanguageScope enabled={schoolEdition}><><div className={privateVisible ? "" : "privacy-obscured"} aria-hidden={!privateVisible}><Baseline definition={definition} state={state} saving={saving} error={error} act={act} /></div>{!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}</></SchoolLanguageScope>;
+  if (!baselineComplete) return <EditionLanguageScope edition={edition}><><div className={privateVisible ? "" : "privacy-obscured"} aria-hidden={!privateVisible}><Baseline definition={definition} state={state} saving={saving} error={error} act={act} /></div>{!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}</></EditionLanguageScope>;
 
   const maxStep = Math.max(1, state.enrolment?.currentInvestigation ?? 1, step);
   const requestedStep = Number(searchParams.get("step"));
@@ -193,7 +194,7 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
     navigateToStep(target);
   }
 
-  return <SchoolLanguageScope enabled={schoolEdition}><>
+  return <EditionLanguageScope edition={edition}><>
     <div className={`corelab-shell universal-corelab ${privateVisible ? "" : "privacy-obscured"}`} aria-hidden={!privateVisible} style={{ "--lab-accent": definition.accent } as React.CSSProperties}>
       {error && <div className="error-banner corelab-error"><span>{error}</span></div>}
       <LabInvestigationFrame
@@ -216,7 +217,7 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
       </LabInvestigationFrame>
     </div>
     {!privateVisible && <PrivacyCover definition={definition} state={state} onReveal={() => setPrivateVisible(true)} />}
-  </></SchoolLanguageScope>;
+  </></EditionLanguageScope>;
 }
 
 function Prerequisite({ definition }: { definition: CoreLabDefinition }) {
@@ -229,20 +230,37 @@ function LabWelcome({
   error,
   onOpen,
   returnTo,
-  schoolEdition,
+  edition,
 }: {
   definition: CoreLabDefinition;
   saving: boolean;
   error: string;
   onOpen: (payload: Record<string, unknown>) => Promise<Snapshot>;
   returnTo: string;
-  schoolEdition: boolean;
+  edition: LearnerEdition | null;
 }) {
   const [consent, setConsent] = useState(false);
+  const editionMeta = edition === "school"
+    ? {
+        badge: "School Edition",
+        time: "About 90 minutes, then a 7-day real-world test",
+        audience: "Ages 14–18 · No prior knowledge needed",
+      }
+    : edition === "emerging_adult"
+      ? {
+          badge: "Emerging Adult Edition",
+          time: "About 90 minutes, then a 7-day real-world test",
+          audience: "Ages 18–25 · Independent or facilitated",
+        }
+      : {
+          badge: "Workplace Edition",
+          time: "About 90 minutes, then a 7-day field test",
+          audience: "Workplace participants · No prior BIS knowledge needed",
+        };
   return <main className="corelab-welcome fidelity-welcome" style={{ "--lab-accent": definition.accent } as React.CSSProperties}>
     <header><Brand /><Link href={returnTo}>{returnTo === "/labs" ? "Back to Labs" : "Back to learning"}</Link></header>
     <section className="fidelity-hero">
-      <div><Badge variant="outline">{schoolEdition ? "School Edition" : <>Production Master · Version {definition.version}</>}</Badge><p className="eyebrow">Applied Commerce® · Behaviour Intelligence Series™ · Volume 1</p><h1>{definition.title}</h1><p>{definition.focus}</p>{schoolEdition ? <dl><div><dt>Time</dt><dd>About 90 minutes, then a 7-day real-world test</dd></div><div><dt>For</dt><dd>Ages 14–18 · No prior knowledge needed</dd></div></dl> : <dl><div><dt>Classification</dt><dd>{definition.classification}</dd></div><div><dt>Status</dt><dd>{definition.status}</dd></div><div><dt>Workbook ID</dt><dd>{definition.workbookId}</dd></div><div><dt>Duration</dt><dd>Phase A: 90 minutes · Phase B: 7 days</dd></div><div><dt>Target audience</dt><dd>Ages 14–25 · No prior knowledge required</dd></div><div><dt>Price point</dt><dd>R350 per learner · R10,500 per 30-learner workshop</dd></div></dl>}</div>
+      <div><Badge variant="outline">{editionMeta.badge}</Badge><p className="eyebrow">Applied Commerce® · Behaviour Intelligence Series™ · Volume 1</p><h1>{definition.title}</h1><p>{definition.focus}</p><dl><div><dt>Time</dt><dd>{editionMeta.time}</dd></div><div><dt>For</dt><dd>{editionMeta.audience}</dd></div></dl></div>
       <div className="surface-card corelab-start-card"><FlaskConical /><h2>Begin with a private baseline.</h2><p>This creates a separate {definition.shortTitle} enrolment with its own responses, equation, experiment and profile. Evidence from your other Labs remains unchanged.</p><label className="consent-row"><Checkbox checked={consent} onCheckedChange={(checked) => setConsent(checked === true)} /><span>I understand how my private {definition.shortTitle} responses, daily observations and calculated BEIs will be stored. I may skip a question I am not ready to answer and may pause product consent from Settings.</span></label>{error && <p className="field-error">{error}</p>}<Button size="lg" disabled={saving || !consent} onClick={() => void onOpen({ action: "openLab", consent: true })}>{saving ? "Opening…" : <>Open {definition.shortTitle} <ArrowRight /></>}</Button></div>
     </section>
     <section className="fidelity-reference">
