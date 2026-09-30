@@ -65,6 +65,7 @@ test("all five live school handbooks pass through the school-only learner langua
   ]);
 
   assert.match(player, /edition: programme\?\.edition \?\? snapshot\?\.profile\.deliveryEdition/);
+  assert.match(player, /SchoolLanguageScope enabled=\{snapshot\.profile\.deliveryEdition === "school"\}/);
   assert.match(enhancement, /context\.edition !== "school"/);
   assert.match(enhancement, /applySchoolLearnerLanguage\(root, context\)/);
   assert.match(enhancement, /schoolLearnerText\(before\)/);
@@ -130,4 +131,12 @@ test("key technical concepts are translated into plain meaning for school learne
     assert.ok(language.includes(technical), `Missing technical term: ${technical}`);
     assert.ok(language.includes(plain), `Missing learner-first wording: ${plain}`);
   }
+});
+
+
+test("school translations do not recursively rewrite the plain-language replacement", async () => {
+  const language = await source("lib/school-language.ts");
+
+  assert.match(language, /Falsification Test\\b\/gi, "What would show this explanation is wrong\?"/);
+  assert.doesNotMatch(language, /wrong\? \(falsification test\)/);
 });
