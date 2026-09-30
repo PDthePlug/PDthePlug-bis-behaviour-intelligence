@@ -1,4 +1,4 @@
-import { schoolLearnerText, type LearnerEdition } from "../../lib/school-language";
+import { learnerText, type LearnerEdition } from "../../lib/school-language";
 
 type LabCode = string;
 
@@ -809,8 +809,8 @@ function hideEditorialProductionMetadata(root: HTMLElement) {
   });
 }
 
-function applySchoolLearnerLanguage(root: HTMLElement, context: HandbookEnhancementContext) {
-  if (context.edition !== "school") return;
+function applyEditionLearnerLanguage(root: HTMLElement, context: HandbookEnhancementContext) {
+  if (!context.edition) return;
 
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes: Text[] = [];
@@ -821,6 +821,7 @@ function applySchoolLearnerLanguage(root: HTMLElement, context: HandbookEnhancem
     if (
       parent &&
       !["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA"].includes(parent.tagName) &&
+      !parent.closest("[data-edition-language='keep-technical']") &&
       !parent.closest("[data-school-language='keep-technical']")
     ) {
       nodes.push(text);
@@ -830,16 +831,19 @@ function applySchoolLearnerLanguage(root: HTMLElement, context: HandbookEnhancem
 
   for (const node of nodes) {
     const before = node.nodeValue ?? "";
-    const after = schoolLearnerText(before);
+    const after = learnerText(before, context.edition);
     if (after !== before) node.nodeValue = after;
   }
 
   root.querySelectorAll<HTMLElement>("[aria-label],[title],[placeholder]").forEach((element) => {
-    if (element.closest("[data-school-language='keep-technical']")) return;
+    if (
+      element.closest("[data-edition-language='keep-technical']") ||
+      element.closest("[data-school-language='keep-technical']")
+    ) return;
     for (const attribute of ["aria-label", "title", "placeholder"] as const) {
       const before = element.getAttribute(attribute);
       if (!before) continue;
-      const after = schoolLearnerText(before);
+      const after = learnerText(before, context.edition);
       if (after !== before) element.setAttribute(attribute, after);
     }
   });
@@ -872,7 +876,7 @@ export function enhanceHandbookDocument(
   convertPriorityWorksheetRows(root, labCode, pageId);
   hideEditorialProductionMetadata(root);
   softenLearnerTechnicalLabels(root);
-  applySchoolLearnerLanguage(root, context);
+  applyEditionLearnerLanguage(root, context);
   collapseSuggestedAnswers(root);
   addMissingCheckpointResponses(root, labCode, pageId);
 }
