@@ -20,8 +20,9 @@ test("every live learning module renders a Day 3 Lab handover from catalogue sta
   assert.match(player, /ProgrammeLabHandoff/);
   assert.match(player, /DAY 3 · LAB HANDOVER/);
   assert.match(player, /legacyDayThreeBoundary/);
-  assert.match(player, /today’s learning will connect to the practical Lab/);
-  assert.match(player, /Planned Lab/);
+  assert.match(player, /Lab source ready/);
+  assert.match(player, /Lab access not yet enabled/);
+  assert.doesNotMatch(player, /Planned Lab/);
   assert.doesNotMatch(player, /Day 3 is still the Lab handover point in this programme/);
 
   assert.doesNotMatch(
@@ -40,8 +41,9 @@ test("live Decision and Money Labs are available to the standard Day 3 handover"
   assert.equal(byCode.DEC.labHref, "/decision");
   assert.equal(byCode.MON.labStatus, "live");
   assert.equal(byCode.MON.labHref, "/money");
-  assert.equal(byCode.IDN.labStatus, "planned");
-  assert.equal(byCode.ATT.labStatus, "planned");
+  assert.equal(byCode.IDN.labStatus, "source_ready");
+  assert.equal(byCode.ATT.labStatus, "source_ready");
+  assert.equal(raw.modules.filter((item) => item.labStatus === "source_ready").length, 31);
 });
 
 test("live core Labs preserve a safe return path back to Day 3 learning", async () => {
@@ -76,7 +78,7 @@ test("post-Lab programme completion stays locked until Phase A really exists", a
   assert.match(player, /programme progress resumes after the Lab/);
   assert.match(player, /disabled=\{saving \|\| completing \|\| labSequenceLocked\}/);
   assert.match(player, /disabled=\{completing \|\| \(labSequenceLocked && selected > dayThreeIndex\)\}/);
-  assert.match(player, /Continue when the Lab is available/);
+  assert.match(player, /Continue after the Lab/);
 });
 
 
@@ -88,14 +90,25 @@ test("new learning packages must carry authored Day 3 handover anchors", async (
   assert.match(compiler, /dayThree\.html\.includes\(dayThree\.labHandoff\.endMarker\)/);
 });
 
-test("planned Labs use a restrained Day 3 bridge rather than a blocking dark announcement", async () => {
+test("source-ready Labs use a restrained Day 3 bridge without pretending the Lab does not exist", async () => {
   const [player, css] = await Promise.all([
     source("app/learning/programme-player.tsx"),
     source("app/learning/programme-player.css"),
   ]);
 
   assert.match(player, /\$\{title\} connects here/);
-  assert.match(player, /Planned Lab/);
+  assert.match(player, /Lab source ready/);
+  assert.match(player, /Lab access not yet enabled/);
+  assert.doesNotMatch(player, /Planned Lab/);
   assert.match(css, /\.prototype-lab-handoff\.planned\{background:#f6f3eb/);
   assert.match(css, /\.prototype-lab-handoff\.planned \.prototype-lab-status/);
+});
+
+
+test("legacy Decision and Money Day 3 platform preambles are removed before learner rendering", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+  assert.match(player, /stripLegacyDayThreePlatformPreamble/);
+  assert.match(player, /EXISTING\\s\+BIS\\s\+LAB\\s\+PLATFORM/);
+  assert.match(player, /DAY 3 OF 10/);
+  assert.match(player, /const html = stripLegacyDayThreePlatformPreamble\(page\.html\)/);
 });
