@@ -122,19 +122,91 @@ function createResponse(
   pageId: string,
   prompt: string,
   occurrence: number,
+  purpose = "LEARNING_RESPONSE",
 ) {
   const token = hashPrompt(`${pageId}|${prompt}|${occurrence}`);
   const field = document.createElement("textarea");
   field.className = "response generated-question-response";
   field.dataset.fieldId = `${labCode}.WB.AUTO.${token}.${occurrence}`;
   field.dataset.sourceKey = `auto-question-${token.toLowerCase()}-${occurrence}`;
-  field.dataset.purpose = "LEARNING_RESPONSE";
+  field.dataset.purpose = purpose;
   field.dataset.privacyClass = "P3";
   field.maxLength = 20000;
   field.rows = 3;
   field.placeholder = "Write your answer…";
   field.setAttribute("aria-label", `Your answer: ${prompt}`);
   return field;
+}
+
+function interleavedQuestionCandidates(root: HTMLElement) {
+  return [...root.querySelectorAll<HTMLElement>("p,li,.authored-lines,.handbook-callout")]
+    .filter((element) => questionPrompts(element).length > 0)
+    .filter((element) =>
+      !element.closest(".checkpoint-answer-panel") &&
+      !element.closest(".prototype-reference") &&
+      !element.closest(".prototype-lab-handoff") &&
+      !element.closest("summary,table,details") &&
+      !isCheckpointHeading(element),
+    );
+}
+
+function distributedConceptChecks(candidates: HTMLElement[], target = 3) {
+  if (candidates.length <= target) return candidates;
+  const selected = new Set<HTMLElement>();
+  for (let step = 1; step <= target; step += 1) {
+    const position = step / (target + 1);
+    const index = Math.min(candidates.length - 1, Math.max(0, Math.round(position * (candidates.length - 1))));
+    selected.add(candidates[index]);
+  }
+  return [...selected];
+}
+
+function addInterleavedConceptChecks(root: HTMLElement, labCode: LabCode, pageId: string) {
+  const candidates = interleavedQuestionCandidates(root);
+  const selected = distributedConceptChecks(candidates, 3);
+  const occurrences = new Map<string, number>();
+
+  selected.forEach((element) => {
+    if (element.dataset.conceptCheck !== "true") {
+      element.dataset.conceptCheck = "true";
+      element.classList.add("handbook-concept-check-question");
+
+      const label = document.createElement("div");
+      label.className = "handbook-concept-check-label";
+      const title = document.createElement("strong");
+      title.textContent = "Quick check";
+      const note = document.createElement("span");
+      note.textContent = "Pause here before you continue. This is for understanding, not a score.";
+      label.append(title, note);
+
+      if (element.tagName === "LI") element.prepend(label);
+      else element.insertAdjacentElement("beforebegin", label);
+    }
+
+    if (hasExistingAnswerSpace(element)) return;
+    const prompts = questionPrompts(element);
+    if (!prompts.length) return;
+
+    const responseGroup = document.createElement("div");
+    responseGroup.className = "generated-question-responses handbook-concept-check-responses";
+
+    for (const prompt of prompts) {
+      const seen = (occurrences.get(prompt) ?? 0) + 1;
+      occurrences.set(prompt, seen);
+      const wrapper = document.createElement("label");
+      wrapper.className = "generated-question-response-row";
+      if (prompts.length > 1) {
+        const promptLabel = document.createElement("span");
+        promptLabel.textContent = prompt;
+        wrapper.append(promptLabel);
+      }
+      wrapper.append(createResponse(labCode, pageId, prompt, seen, "FORMATIVE_CHECK"));
+      responseGroup.append(wrapper);
+    }
+
+    if (element.tagName === "LI") element.append(responseGroup);
+    else element.insertAdjacentElement("afterend", responseGroup);
+  });
 }
 
 function checkpointQuestionElements(root: HTMLElement) {
@@ -878,5 +950,6 @@ export function enhanceHandbookDocument(
   softenLearnerTechnicalLabels(root);
   applyEditionLearnerLanguage(root, context);
   collapseSuggestedAnswers(root);
+  addInterleavedConceptChecks(root, labCode, pageId);
   addMissingCheckpointResponses(root, labCode, pageId);
 }
