@@ -952,6 +952,6 @@ export function enhanceHandbookDocument(
   softenLearnerTechnicalLabels(root);
   applyEditionLearnerLanguage(root, context);
   collapseSuggestedAnswers(root);
-  addInterleavedConceptChecks(root, labCode, pageId);
+  if (!context.referenceOnly) addInterleavedConceptChecks(root, labCode, pageId);
   addMissingCheckpointResponses(root, labCode, pageId);
 }
