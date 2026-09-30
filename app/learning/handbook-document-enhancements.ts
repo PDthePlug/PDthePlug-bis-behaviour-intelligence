@@ -1,3 +1,5 @@
+import { schoolLearnerText, type LearnerEdition } from "../../lib/school-language";
+
 type LabCode = string;
 
 export type HandbookKnownValue = {
@@ -11,6 +13,7 @@ export type HandbookEnhancementContext = {
   learnerName?: string;
   labAvailable?: boolean;
   referenceOnly?: boolean;
+  edition?: LearnerEdition;
 };
 
 const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
@@ -806,6 +809,42 @@ function hideEditorialProductionMetadata(root: HTMLElement) {
   });
 }
 
+function applySchoolLearnerLanguage(root: HTMLElement, context: HandbookEnhancementContext) {
+  if (context.edition !== "school") return;
+
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes: Text[] = [];
+  let current = walker.nextNode();
+  while (current) {
+    const text = current as Text;
+    const parent = text.parentElement;
+    if (
+      parent &&
+      !["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA", "OPTION"].includes(parent.tagName) &&
+      !parent.closest("[data-school-language='keep-technical']")
+    ) {
+      nodes.push(text);
+    }
+    current = walker.nextNode();
+  }
+
+  for (const node of nodes) {
+    const before = node.nodeValue ?? "";
+    const after = schoolLearnerText(before);
+    if (after !== before) node.nodeValue = after;
+  }
+
+  root.querySelectorAll<HTMLElement>("[aria-label],[title],[placeholder]").forEach((element) => {
+    if (element.closest("[data-school-language='keep-technical']")) return;
+    for (const attribute of ["aria-label", "title", "placeholder"] as const) {
+      const before = element.getAttribute(attribute);
+      if (!before) continue;
+      const after = schoolLearnerText(before);
+      if (after !== before) element.setAttribute(attribute, after);
+    }
+  });
+}
+
 function softenLearnerTechnicalLabels(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>("p,h2,h3,h4").forEach((element) => {
     const text = normalise(element.textContent ?? "");
@@ -833,6 +872,7 @@ export function enhanceHandbookDocument(
   convertPriorityWorksheetRows(root, labCode, pageId);
   hideEditorialProductionMetadata(root);
   softenLearnerTechnicalLabels(root);
+  applySchoolLearnerLanguage(root, context);
   collapseSuggestedAnswers(root);
   addMissingCheckpointResponses(root, labCode, pageId);
 }
