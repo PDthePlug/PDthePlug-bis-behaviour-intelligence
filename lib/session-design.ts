@@ -1,4 +1,5 @@
 import type { ProgrammePage } from "./programme-handbook";
+import type { DeliveryEdition } from "./learning-foundation";
 
 export const BIS_LEARNING_SESSION_MINUTES = 45 as const;
 export const BIS_LAB_PHASE_A_MINUTES = 90 as const;
@@ -24,6 +25,9 @@ export type SessionLearningLoad = {
 export type SessionDesign = {
   minutes: number;
   programmeDay: number;
+  edition: DeliveryEdition;
+  editionLabel: string;
+  applicationFrame: string;
   density: SessionDensity;
   wordCount: number;
   dayPurpose: string;
@@ -37,7 +41,14 @@ export type SessionDesign = {
   beats: SessionBeat[];
 };
 
-type DayBlueprint = Omit<SessionDesign, "wordCount" | "density">;
+type DayBlueprint = Omit<
+  SessionDesign,
+  "wordCount" | "density" | "edition" | "editionLabel" | "applicationFrame"
+>;
+
+type EditionDayOverride = Partial<
+  Pick<SessionDesign, "dayPurpose" | "goal" | "learnerOutcome" | "description" | "readingTreatment">
+>;
 
 const DAY_BLUEPRINTS: Record<number, DayBlueprint> = {
   1: {
@@ -272,6 +283,154 @@ const DAY_BLUEPRINTS: Record<number, DayBlueprint> = {
   },
 };
 
+
+const EDITION_SESSION_FRAMES: Record<
+  DeliveryEdition,
+  {
+    label: string;
+    applicationFrame: string;
+    dayOverrides: Record<number, EditionDayOverride>;
+  }
+> = {
+  school: {
+    label: "School Edition",
+    applicationFrame: "School, home, friendships and everyday routines.",
+    dayOverrides: {},
+  },
+  emerging_adult: {
+    label: "Emerging Adult Edition",
+    applicationFrame: "Study, job-seeking, first jobs, money, relationships and independent life.",
+    dayOverrides: {
+      1: {
+        dayPurpose: "Connect the topic to adult life now",
+        learnerOutcome: "I can explain where this pattern shows up in the choices and responsibilities I manage for myself.",
+        description:
+          "Start with a recognisable adult-life situation, then build one clear model the participant can use without needing the facilitator to translate it.",
+      },
+      2: {
+        dayPurpose: "Build a model I can use independently",
+        learnerOutcome: "I can recognise the main parts of the model in a new situation and explain them in my own words.",
+        description:
+          "Use short conceptual blocks and a worked example, then move quickly into independent interpretation and application.",
+      },
+      3: {
+        dayPurpose: "Turn the model into a practical investigation",
+        learnerOutcome: "I know what I am taking into the Lab, what I am testing and what I need to notice in my own behaviour.",
+        description:
+          "Use the session as a bridge from explanation to a practical investigation that feels relevant to independent adult decisions.",
+      },
+      4: {
+        dayPurpose: "Interpret what the investigation is showing",
+        learnerOutcome: "I can explain what my result suggests, what remains uncertain and what I should examine next.",
+        description:
+          "Keep theory concise and use the participant's own evidence to practise interpretation without overclaiming what one result proves.",
+      },
+      5: {
+        dayPurpose: "Build a personal working model",
+        learnerOutcome: "I can construct a working explanation of my own behaviour and explain why it fits the evidence I have.",
+        description:
+          "Shift from recognising BIS concepts to building a personal model that can be tested against real choices and routines.",
+      },
+      6: {
+        dayPurpose: "Apply the model in independent life",
+        learnerOutcome: "I can use the model on a real situation from study, work, money, relationships or daily life.",
+        description:
+          "Keep reading light and protect time for real-world application, observation and evidence from situations the participant actually manages.",
+      },
+      7: {
+        dayPurpose: "Diagnose what worked, failed or changed",
+        learnerOutcome: "I can compare what I expected with what happened and decide what to keep, change or test again.",
+        description:
+          "Treat this as deliberate practice: compare attempts, identify conditions that mattered and revise the plan using evidence rather than self-judgment.",
+      },
+      8: {
+        dayPurpose: "Add the final idea and pressure-test the model",
+        learnerOutcome: "I can use the final concept to challenge and improve my working explanation without losing the earlier evidence.",
+        description:
+          "Add one final conceptual layer, then make the participant use it to question assumptions, compare evidence and strengthen the model.",
+      },
+      9: {
+        dayPurpose: "Integrate the evidence into one usable picture",
+        learnerOutcome: "I can bring the parts together and use the full model on a new adult-life situation.",
+        description:
+          "Keep new content minimal. Use reconstruction, comparison and a fresh scenario to make the participant integrate the full model independently.",
+      },
+      10: {
+        dayPurpose: "Demonstrate what I can carry forward",
+        learnerOutcome: "I can use the model without BIS guiding each step and I know what I will carry into future decisions and routines.",
+        description:
+          "Close with demonstration, evidence review and a practical transfer plan for the participant's next real-world context.",
+      },
+    },
+  },
+  workplace: {
+    label: "Workplace Edition",
+    applicationFrame: "Workload, teams, customers, communication, decisions and professional routines.",
+    dayOverrides: {
+      1: {
+        dayPurpose: "Connect the topic to behaviour at work",
+        learnerOutcome: "I can identify where this pattern affects how I work, decide, communicate or follow through.",
+        description:
+          "Begin with a recognisable workplace situation, then introduce one clear model that can be applied to performance and professional behaviour.",
+      },
+      2: {
+        dayPurpose: "Build a practical workplace model",
+        learnerOutcome: "I can recognise the model in a new workplace scenario and explain what each part means in practice.",
+        description:
+          "Use concise teaching, a realistic worked example and a check before moving into workplace application.",
+      },
+      3: {
+        dayPurpose: "Prepare a workplace-relevant field test",
+        learnerOutcome: "I know what I am testing in the Lab, what evidence to notice and how it connects to my work context.",
+        description:
+          "Use the session as a bridge from the concept into a practical field test without turning the Lab into a classroom exercise.",
+      },
+      4: {
+        dayPurpose: "Interpret the evidence without overclaiming it",
+        learnerOutcome: "I can explain what the result suggests for my behaviour at work and what still needs more evidence.",
+        description:
+          "Keep explanation concise and use the participant's own result to practise evidence-based interpretation relevant to professional behaviour.",
+      },
+      5: {
+        dayPurpose: "Build a working model of my behaviour at work",
+        learnerOutcome: "I can construct and explain a model of my own workplace behaviour using the evidence I have gathered.",
+        description:
+          "Move from recognising the framework to building a practical model the participant can use in real work situations.",
+      },
+      6: {
+        dayPurpose: "Apply the model during real work",
+        learnerOutcome: "I can use the model on an actual workplace situation and record what happened.",
+        description:
+          "Keep reading deliberately light. Protect time for application to workload, communication, decisions, customers, teams or professional routines.",
+      },
+      7: {
+        dayPurpose: "Review performance and diagnose the conditions",
+        learnerOutcome: "I can compare expectation with actual behaviour and identify what supported or disrupted follow-through.",
+        description:
+          "Use comparison and correction rather than more theory. The participant should leave with a more workable plan for the next opportunity.",
+      },
+      8: {
+        dayPurpose: "Pressure-test the model against workplace complexity",
+        learnerOutcome: "I can use the final concept to challenge my explanation and improve how I respond in a real work context.",
+        description:
+          "Introduce the final conceptual layer, then apply it to a realistic workplace challenge, trade-off or competing demand.",
+      },
+      9: {
+        dayPurpose: "Integrate the model into professional practice",
+        learnerOutcome: "I can use the whole model to analyse a new workplace scenario and connect it to my evidence.",
+        description:
+          "Use synthesis, scenario analysis and evidence comparison rather than a final heavy chapter.",
+      },
+      10: {
+        dayPurpose: "Transfer the learning into future performance",
+        learnerOutcome: "I can use the model without step-by-step guidance and identify the behaviour I will carry into future work.",
+        description:
+          "Close with demonstration, evidence review and a concrete transfer plan tied to professional practice rather than another theory lesson.",
+      },
+    },
+  },
+};
+
 function textFromHtml(html: string) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -296,16 +455,26 @@ function observedDensity(programmeDay: number, wordCount: number): SessionDensit
   return "balanced";
 }
 
-export function sessionDesignForPage(page: ProgrammePage): SessionDesign | null {
+export function sessionDesignForPage(
+  page: ProgrammePage,
+  edition: DeliveryEdition = "school",
+): SessionDesign | null {
   if (!page.programmeDay) return null;
 
   const blueprint = DAY_BLUEPRINTS[page.programmeDay];
   if (!blueprint) return null;
+
+  const frame = EDITION_SESSION_FRAMES[edition] ?? EDITION_SESSION_FRAMES.school;
+  const override = frame.dayOverrides[page.programmeDay] ?? {};
   const wordCount = pageWordCount(page);
   const density = observedDensity(page.programmeDay, wordCount);
 
   return {
     ...blueprint,
+    ...override,
+    edition,
+    editionLabel: frame.label,
+    applicationFrame: frame.applicationFrame,
     density,
     wordCount,
   };

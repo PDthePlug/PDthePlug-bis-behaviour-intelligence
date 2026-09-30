@@ -426,8 +426,8 @@ export function ProgrammePlayer({
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
   const sessionDesign = useMemo(
-    () => page && programme?.edition === "school" ? sessionDesignForPage(page) : null,
-    [page, programme?.edition],
+    () => page && programme ? sessionDesignForPage(page, programme.edition) : null,
+    [page, programme],
   );
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
@@ -783,7 +783,7 @@ export function ProgrammePlayer({
       edition: programme?.edition ?? snapshot?.profile.deliveryEdition,
       programmeDay: page.programmeDay,
       formativeCheckTarget: sessionDesign?.checkTarget,
-      enableFormativeLearningChecks: programme?.edition === "school",
+      enableFormativeLearningChecks: Boolean(sessionDesign),
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
@@ -818,7 +818,7 @@ export function ProgrammePlayer({
     snapshot?.profile.deliveryEdition,
     snapshot?.profile.displayName,
     snapshot?.workbookResponses,
-    sessionDesign?.checkTarget,
+    sessionDesign,
   ]);
 
   useLayoutEffect(() => {
@@ -1119,7 +1119,7 @@ export function ProgrammePlayer({
               <section className={`prototype-session-plan ${sessionDesign.density}`} aria-label="Today's session plan">
                 <div className="prototype-session-plan-head">
                   <div>
-                    <p className="prototype-eyebrow">Today’s learning session</p>
+                    <p className="prototype-eyebrow">{sessionDesign.editionLabel} · Today’s learning session</p>
                     <h2>{sessionDesign.minutes} minutes</h2>
                   </div>
                   <span>{sessionDesign.density === "dense" ? "Core 45" : sessionDesign.density === "application" ? "Application-led" : "Balanced"}</span>
@@ -1133,6 +1133,10 @@ export function ProgrammePlayer({
                   <div>
                     <span>By the end</span>
                     <strong>{sessionDesign.learnerOutcome}</strong>
+                  </div>
+                  <div>
+                    <span>Apply it in</span>
+                    <strong>{sessionDesign.applicationFrame}</strong>
                   </div>
                 </div>
                 <div className="prototype-session-beats">

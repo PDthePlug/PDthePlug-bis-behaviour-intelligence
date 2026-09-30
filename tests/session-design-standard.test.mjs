@@ -90,7 +90,7 @@ test("the ten programme days use a deliberate learning arc rather than equal cha
     const session = sessionModule.sessionDesignForPage({
       programmeDay: day,
       html: "<p>" + "learning ".repeat(day === 4 ? 2100 : 800) + "</p>",
-    });
+    }, "school");
     assert.equal(session.minutes, 45);
     assert.equal(session.dayPurpose, expectedPurpose[day - 1]);
     assert.equal(session.checkTarget, expectedChecks[day - 1]);
@@ -100,10 +100,48 @@ test("the ten programme days use a deliberate learning arc rather than equal cha
     assert.ok(session.readingTreatment.length > 40);
   }
 
-  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 6, html: "<p>short</p>" }).learningLoad.reading, "low");
-  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 7, html: "<p>short</p>" }).learningLoad.application, "high");
-  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 9, html: "<p>short</p>" }).density, "application");
-  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 10, html: "<p>short</p>" }).learningLoad.evidence, "high");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 6, html: "<p>short</p>" }, "school").learningLoad.reading, "low");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 7, html: "<p>short</p>" }, "school").learningLoad.application, "high");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 9, html: "<p>short</p>" }, "school").density, "application");
+  assert.equal(sessionModule.sessionDesignForPage({ programmeDay: 10, html: "<p>short</p>" }, "school").learningLoad.evidence, "high");
+});
+
+test("School, Emerging Adult and Workplace share the session standard but use edition-specific framing", async () => {
+  const designSource = await source("lib/session-design.ts");
+  const compiled = ts.transpileModule(designSource, {
+    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  const sessionModule = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
+
+  const editions = ["school", "emerging_adult", "workplace"];
+  for (let day = 1; day <= 10; day += 1) {
+    const page = { programmeDay: day, html: "<p>" + "learning ".repeat(850) + "</p>" };
+    const sessions = editions.map((edition) => sessionModule.sessionDesignForPage(page, edition));
+
+    for (const session of sessions) {
+      assert.equal(session.minutes, 45);
+      assert.ok(session.checkTarget >= 2 && session.checkTarget <= 4);
+      assert.equal(session.beats.reduce((sum, beat) => sum + beat.minutes, 0), 45);
+      assert.ok(session.applicationFrame.length > 25);
+    }
+
+    assert.equal(sessions[0].checkTarget, sessions[1].checkTarget);
+    assert.equal(sessions[1].checkTarget, sessions[2].checkTarget);
+    assert.deepEqual(sessions[0].beats, sessions[1].beats);
+    assert.deepEqual(sessions[1].beats, sessions[2].beats);
+  }
+
+  const school = sessionModule.sessionDesignForPage({ programmeDay: 6, html: "<p>practice</p>" }, "school");
+  const emergingAdult = sessionModule.sessionDesignForPage({ programmeDay: 6, html: "<p>practice</p>" }, "emerging_adult");
+  const workplace = sessionModule.sessionDesignForPage({ programmeDay: 6, html: "<p>practice</p>" }, "workplace");
+
+  assert.equal(school.editionLabel, "School Edition");
+  assert.equal(emergingAdult.editionLabel, "Emerging Adult Edition");
+  assert.equal(workplace.editionLabel, "Workplace Edition");
+  assert.notEqual(school.dayPurpose, emergingAdult.dayPurpose);
+  assert.notEqual(emergingAdult.dayPurpose, workplace.dayPurpose);
+  assert.match(emergingAdult.applicationFrame, /Study|job-seeking|independent life/);
+  assert.match(workplace.applicationFrame, /Workload|teams|customers|professional routines/);
 });
 
 test("handbooks interleave 2–4 purpose-labelled formative checks before the end checkpoint", async () => {
@@ -132,7 +170,9 @@ test("formative support signals are explicit and remain separate from BEI scorin
   }
   assert.match(enhancement, /FORMATIVE_SIGNAL/);
   assert.match(enhancement, /WB\.CHECK/);
-  assert.match(player, /programme\?\.edition === "school"/);
+  assert.match(player, /sessionDesignForPage\(page, programme\.edition\)/);
+  assert.match(player, /enableFormativeLearningChecks: Boolean\(sessionDesign\)/);
+  assert.doesNotMatch(player, /programme\?\.edition === "school"/);
   assert.match(player, /purpose: target\.dataset\.purpose/);
   assert.match(player, /checkId: target\.dataset\.checkId/);
   assert.match(player, /checkKind: target\.dataset\.checkKind/);
