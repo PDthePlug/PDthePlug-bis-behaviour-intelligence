@@ -425,6 +425,7 @@ export function ProgrammePlayer({
 
   const release = snapshot?.releases.find((item) => item.labCode === moduleCode);
   const page = programme?.treatment.pages[selected];
+  const sessionDesign = useMemo(() => page ? sessionDesignForPage(page) : null, [page]);
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const completed = useMemo(
@@ -777,6 +778,8 @@ export function ProgrammePlayer({
         dayThreeIndex >= 0 &&
         selected > dayThreeIndex,
       edition: programme?.edition ?? snapshot?.profile.deliveryEdition,
+      programmeDay: page.programmeDay,
+      formativeCheckTarget: sessionDesign?.checkTarget,
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
@@ -786,6 +789,8 @@ export function ProgrammePlayer({
         const savedValue = drafts[id] ?? snapshot?.workbookResponses?.[id]?.value ?? "";
         if (field instanceof HTMLInputElement && field.type === "checkbox") {
           field.checked = savedValue === "true" || savedValue === field.value;
+        } else if (field instanceof HTMLInputElement && field.type === "radio") {
+          field.checked = savedValue === field.value;
         } else {
           field.value = savedValue;
         }
@@ -809,6 +814,7 @@ export function ProgrammePlayer({
     snapshot?.profile.deliveryEdition,
     snapshot?.profile.displayName,
     snapshot?.workbookResponses,
+    sessionDesign?.checkTarget,
   ]);
 
   useLayoutEffect(() => {
@@ -858,7 +864,16 @@ export function ProgrammePlayer({
       setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: value }));
       return;
     }
-    queue.current.edit({ semanticFieldId: target.dataset.fieldId, semanticStepId: page.id, sourceFieldKey: target.dataset.sourceKey, value });
+    queue.current.edit({
+      semanticFieldId: target.dataset.fieldId,
+      semanticStepId: page.id,
+      sourceFieldKey: target.dataset.sourceKey,
+      value,
+      purpose: target.dataset.purpose,
+      checkId: target.dataset.checkId,
+      checkKind: target.dataset.checkKind,
+      privacyClass: target.dataset.privacyClass,
+    });
     setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: value }));
     setSaveState("dirty");
   }
@@ -962,7 +977,6 @@ export function ProgrammePlayer({
     ? labHrefWithReturn(moduleDefinition.labHref, learningReturnTo)
     : null;
   const moduleLabTitle = moduleDefinition?.title ?? `${programme.title} Lab`;
-  const sessionDesign = sessionDesignForPage(page);
 
   return (
     <EditionLanguageScope edition={snapshot.profile.deliveryEdition}>
@@ -1107,6 +1121,16 @@ export function ProgrammePlayer({
                   <span>{sessionDesign.density === "dense" ? "Core 45" : sessionDesign.density === "application" ? "Application-led" : "Balanced"}</span>
                 </div>
                 <p>{sessionDesign.description}</p>
+                <div className="prototype-session-outcomes">
+                  <div>
+                    <span>Today’s focus</span>
+                    <strong>{sessionDesign.dayPurpose}</strong>
+                  </div>
+                  <div>
+                    <span>By the end</span>
+                    <strong>{sessionDesign.learnerOutcome}</strong>
+                  </div>
+                </div>
                 <div className="prototype-session-beats">
                   {sessionDesign.beats.map((beat) => (
                     <div key={beat.label}>
@@ -1115,6 +1139,14 @@ export function ProgrammePlayer({
                     </div>
                   ))}
                 </div>
+                <div className="prototype-session-guidance">
+                  <span>{sessionDesign.checkTarget} learning checks</span>
+                  <span>{sessionDesign.facilitatorMoments} facilitator moment{sessionDesign.facilitatorMoments === 1 ? "" : "s"}</span>
+                </div>
+                <details className="prototype-session-reading-note">
+                  <summary>How today is designed</summary>
+                  <p>{sessionDesign.readingTreatment}</p>
+                </details>
                 {isLabHandoffDay && moduleLabIsLive ? (
                   <small>
                     The live Lab Phase A is separate from this learning session and remains a {BIS_LAB_PHASE_A_MINUTES}-minute facilitated experience.
