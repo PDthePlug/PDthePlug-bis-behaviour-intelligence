@@ -1679,6 +1679,25 @@ function isStandaloneField(value: string) {
   return false;
 }
 
+function hasFollowingCheckboxGroup(body: SourceBlock[], index: number) {
+  let cursor = index + 1;
+  let options = 0;
+  while (cursor < body.length && cursor <= index + 10) {
+    const candidate = body[cursor];
+    const candidateText = candidate.text.replace(/\s+/g, " ").trim();
+    if (!candidateText) {
+      cursor += 1;
+      continue;
+    }
+    if (candidate.tableRows || candidate.heading) break;
+    const values = checkboxOptions(candidateText);
+    if (values.length !== 1) break;
+    options += 1;
+    cursor += 1;
+  }
+  return options >= 2;
+}
+
 function indicatorReferences(value: string) {
   const matches = [...String(value ?? "").matchAll(/\b(BEI-\d{2})(?:-(?:PRE|POST))?\s*:?[\t ]*([^<\n]{0,120})/gi)];
   return matches.map((match) => {
@@ -1804,7 +1823,7 @@ function labBodyToRuntime(
       continue;
     }
 
-    if (isStandaloneField(text)) {
+    if (isStandaloneField(text) && !hasFollowingCheckboxGroup(body, index)) {
       flushHtml();
       const spec = promptSpecFromMarker(text, formLabel(text));
       const previousHeading = [...body.slice(Math.max(0, index - 4), index)]
