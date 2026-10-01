@@ -381,3 +381,88 @@
   .prototype-lab-handoff{align-items:flex-start}
   .prototype-lab-handoff-action,.prototype-lab-handoff .prototype-lab-status{align-self:stretch;justify-content:center}
 }
+
+
+/* Facilitator role overlay: the underlying page is the learner experience.
+   These cues are additive and are never rendered for learner mode. */
+.prototype-facilitator-return{
+  min-height:34px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0 10px;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:999px;
+  color:#fff;
+  text-decoration:none;
+  font-size:10px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.prototype-facilitator-return svg{width:13px}
+.facilitator-inline-cue{
+  display:grid;
+  gap:7px;
+  margin:16px 0;
+  padding:16px 18px;
+  border:1px solid #bfd6cd;
+  border-left:4px solid var(--p-accent);
+  border-radius:14px;
+  background:#edf5f1;
+  color:#263630;
+  box-shadow:0 5px 18px rgba(23,63,53,.05);
+}
+.facilitator-inline-cue>span{
+  color:var(--p-accent);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.facilitator-inline-cue>strong{
+  color:#20312b;
+  font-size:14px;
+  line-height:1.35;
+}
+.facilitator-inline-cue>p{
+  margin:0!important;
+  color:#3e5149!important;
+  font-size:12px!important;
+  line-height:1.55!important;
+}
+.facilitator-inline-cue>small{
+  color:#617069;
+  font-size:11px;
+  line-height:1.5;
+}
+.facilitator-inline-cue-document{margin:20px 0}
+.facilitator-viewer .workbook-fields:disabled,
+.facilitator-viewer .workbook-fields[disabled]{opacity:1}
+.facilitator-viewer .prototype-document textarea:disabled,
+.facilitator-viewer .prototype-document input:disabled,
+.facilitator-viewer .prototype-document select:disabled{
+  opacity:1;
+  background:#fff;
+  color:#6b746f;
+  -webkit-text-fill-color:#6b746f;
+  cursor:default;
+}
+.facilitator-viewer .handbook-formative-signal-option input:disabled+span{
+  opacity:1;
+  background:#fff;
+  color:#66716c;
+  border-color:#dcd8cf;
+}
+@media(max-width:700px){
+  .prototype-top-context:has(.prototype-facilitator-return){display:flex;gap:5px}
+  .prototype-top-context:has(.prototype-facilitator-return)>strong{display:none}
+  .prototype-facilitator-return{min-height:32px;padding:0 9px;font-size:9px}
+  .facilitator-inline-cue{padding:14px 14px;margin:14px 0}
+}
+
+.facilitator-dashboard-cue{
+  border-color:#bfd6cd!important;
+  background:#edf5f1!important;
+}
+.facilitator-dashboard-cue h2{color:#20312b}
+.facilitator-dashboard-cue small{display:block;margin-top:4px;color:#617069;line-height:1.5}

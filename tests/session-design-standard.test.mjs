@@ -67,9 +67,10 @@ test("45-minute orchestration belongs to the facilitator experience, not the lea
   assert.doesNotMatch(player, /prototype-session-plan/);
   assert.doesNotMatch(player, /Today’s learning session/);
   assert.match(player, /enableFormativeLearningChecks: Boolean\(sessionDesign\)/);
-  assert.match(facilitator, /Facilitation experience/);
-  assert.match(facilitator, /45-minute facilitation rhythm/);
-  assert.match(facilitator, /Day 3 has two separate experiences/);
+  assert.match(facilitator, /Learner experience/);
+  assert.doesNotMatch(facilitator, /45-minute facilitation rhythm/);
+  assert.match(player, /facilitatorGuide/);
+  assert.match(player, /Facilitator cue/);
   assert.match(guide, /Create the conditions for discovery/);
   assert.match(guide, /Use silence deliberately/);
 });

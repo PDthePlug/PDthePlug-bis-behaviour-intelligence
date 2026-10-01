@@ -29,10 +29,18 @@ import {
   BIS_LAB_PHASE_A_MINUTES,
   sessionDesignForPage,
 } from "../../lib/session-design";
+import { facilitatorSessionForDay } from "../../lib/facilitator-session";
 
 type Edition = HabitProgramme["edition"];
 type AppSection = "today" | "learn";
 type LearnMode = "library" | "reader";
+type ViewerMode = "learner" | "facilitator";
+type FacilitatorContext = {
+  cohortId: string;
+  cohortName: string;
+  edition: Edition;
+  returnTo: string;
+};
 type Progress = {
   labCode: string;
   contentReleaseId: string;
@@ -285,12 +293,16 @@ export function ProgrammePlayer({
   initialLearnMode = "library",
   previewVersionId,
   previewEdition,
+  viewerMode = "learner",
+  facilitatorContext,
 }: {
   moduleCode?: string;
   initialSection?: AppSection;
   initialLearnMode?: LearnMode;
   previewVersionId?: string;
   previewEdition?: Edition;
+  viewerMode?: ViewerMode;
+  facilitatorContext?: FacilitatorContext;
 }) {
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
@@ -312,6 +324,8 @@ export function ProgrammePlayer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const previewMode = Boolean(previewVersionId && previewEdition);
+  const facilitatorMode = viewerMode === "facilitator" && Boolean(facilitatorContext);
+  const readOnlyMode = previewMode || facilitatorMode;
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1100px)");
@@ -330,7 +344,30 @@ export function ProgrammePlayer({
         let moduleLive: Runtime | null = null;
         let loaded: HabitProgramme;
 
-        if (previewVersionId && previewEdition) {
+        if (facilitatorMode && facilitatorContext) {
+          loaded = await loadProgramme(facilitatorContext.edition, moduleCode);
+          learning = {
+            profile: {
+              displayName: facilitatorContext.cohortName,
+              deliveryEdition: facilitatorContext.edition,
+              deliveryContext: "facilitated",
+              language: "en",
+              timezone: "Africa/Johannesburg",
+            },
+            releases: [],
+            progress: [],
+            workbookResponses: {},
+          };
+          live = {
+            roles: ["FACILITATOR"],
+            enrolment: null,
+            hypothesis: null,
+            experiment: null,
+            events: [],
+            measurements: {},
+          };
+          moduleLive = null;
+        } else if (previewVersionId && previewEdition) {
           const previewResponse = await fetch(
             `/api/content-studio/preview?versionId=${encodeURIComponent(previewVersionId)}&artifact=${encodeURIComponent(`learning:${previewEdition}`)}`,
             { cache: "no-store", signal: controller.signal },
@@ -436,7 +473,7 @@ export function ProgrammePlayer({
       }
     })();
     return () => controller.abort();
-  }, [moduleCode, previewEdition, previewVersionId]);
+  }, [facilitatorContext, facilitatorMode, moduleCode, previewEdition, previewVersionId]);
 
   useEffect(() => {
     if (!programme) return;
@@ -457,6 +494,12 @@ export function ProgrammePlayer({
     () => page && programme ? sessionDesignForPage(page, programme.edition) : null,
     [page, programme],
   );
+  const facilitatorGuide = useMemo(
+    () => facilitatorMode && page?.programmeDay && programme
+      ? facilitatorSessionForDay(page.programmeDay, programme.edition)
+      : null,
+    [facilitatorMode, page, programme],
+  );
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const completed = useMemo(
@@ -476,11 +519,11 @@ export function ProgrammePlayer({
   const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
   const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
   const labPhaseAComplete =
-    previewMode ||
+    readOnlyMode ||
     Boolean(activeModuleRuntime?.enrolment?.phaseACompletedAt || activeModuleRuntime?.experiment);
   const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
   const labSequenceLocked =
-    !previewMode &&
+    !readOnlyMode &&
     !labPhaseAComplete &&
     dayThreeIndex >= 0 &&
     selected >= dayThreeIndex;
@@ -708,7 +751,7 @@ export function ProgrammePlayer({
           100,
       )
     : 0;
-  const firstName = snapshot?.profile.displayName?.split(" ")[0] || "Investigator";
+  const firstName = facilitatorMode ? "Facilitator" : snapshot?.profile.displayName?.split(" ")[0] || "Investigator";
   const hasStaffAccess = Boolean(
     runtime?.roles?.some((role) =>
       ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role),
@@ -737,7 +780,7 @@ export function ProgrammePlayer({
   }, []);
 
   const saveDirtyResponses = useCallback(async (): Promise<boolean> => {
-    if (previewMode) return true;
+    if (readOnlyMode) return true;
     if (!release) return queue.current.size === 0;
     if (queue.current.size === 0) return true;
     setSaving(true);
@@ -761,7 +804,7 @@ export function ProgrammePlayer({
     setSaveState(success ? "saved" : "error");
     if (success) setError("");
     return success;
-  }, [mergeSnapshot, previewMode, programme, release]);
+  }, [mergeSnapshot, programme, readOnlyMode, release]);
 
   // Capture document-wide links, including the shared shell outside this player.
   useEffect(() => {
@@ -804,7 +847,7 @@ export function ProgrammePlayer({
       learnerName: snapshot?.profile.displayName,
       labAvailable: moduleLabIsLive,
       referenceOnly:
-        !previewMode &&
+        !readOnlyMode &&
         !moduleLabIsLive &&
         dayThreeIndex >= 0 &&
         selected > dayThreeIndex,
@@ -812,12 +855,26 @@ export function ProgrammePlayer({
       programmeDay: page.programmeDay,
       formativeCheckTarget: sessionDesign?.checkTarget,
       enableFormativeLearningChecks: Boolean(sessionDesign),
+      facilitatorMode,
+      facilitatorGuidance: facilitatorGuide ? {
+        discussionMove: facilitatorGuide.facilitatorMoves[0],
+      } : undefined,
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
       .forEach((field) => {
         const id = field.dataset.fieldId;
         if (!id) return;
+        if (facilitatorMode) {
+          if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) {
+            field.checked = false;
+          } else {
+            field.value = "";
+          }
+          field.disabled = true;
+          if ("placeholder" in field) field.placeholder = "Learners write here";
+          return;
+        }
         const savedValue = drafts[id] ?? snapshot?.workbookResponses?.[id]?.value ?? "";
         if (field instanceof HTMLInputElement && field.type === "checkbox") {
           field.checked = savedValue === "true" || savedValue === field.value;
@@ -839,7 +896,9 @@ export function ProgrammePlayer({
     moduleLabIsLive,
     page,
     programme?.edition,
-    previewMode,
+    facilitatorGuide,
+    facilitatorMode,
+    readOnlyMode,
     selected,
     dayThreeIndex,
     section,
@@ -880,6 +939,7 @@ export function ProgrammePlayer({
   }, [saveDirtyResponses, saveState]);
 
   function onDocumentInput(event: FormEvent<HTMLElement>) {
+    if (facilitatorMode) return;
     const target = event.target;
     if (
       !(target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement || target instanceof HTMLSelectElement) ||
@@ -927,7 +987,7 @@ export function ProgrammePlayer({
 
   async function completePage() {
     if (!page || saving || completing) return;
-    if (previewMode) {
+    if (readOnlyMode) {
       if (programme && selected < programme.treatment.pages.length - 1) {
         goToProgrammePage(selected + 1);
       }
@@ -1012,7 +1072,7 @@ export function ProgrammePlayer({
 
   return (
     <EditionLanguageScope edition={snapshot.profile.deliveryEdition}>
-    <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition}>
+    <div className={`prototype-player ${facilitatorMode ? "facilitator-viewer" : ""}`} data-edition={snapshot.profile.deliveryEdition}>
       <header className="prototype-topbar">
         <button
           type="button"
@@ -1024,7 +1084,12 @@ export function ProgrammePlayer({
           <strong>Behaviour Intelligence Series™</strong>
         </button>
         <div className="prototype-top-context">
-          {previewMode ? (
+          {facilitatorMode && facilitatorContext ? (
+            <>
+              <strong>Facilitator view · {facilitatorContext.cohortName}</strong>
+              <Link className="prototype-facilitator-return" href={facilitatorContext.returnTo}><ArrowLeft /> Back to group</Link>
+            </>
+          ) : previewMode ? (
             <strong>Preview mode · nothing here is saved to learner records</strong>
           ) : activeModuleRuntime?.experiment?.status === "ACTIVE" && experimentDay ? (
             <strong>Experiment Day {experimentDay} of 7</strong>
@@ -1038,23 +1103,38 @@ export function ProgrammePlayer({
             <div className="prototype-today-hero">
               <div>
                 <p className="prototype-eyebrow">Today · {programme.title}</p>
-                <h1>Good to see you, {firstName}.</h1>
+                <h1>{facilitatorMode ? "Learner experience." : `Good to see you, ${firstName}.`}</h1>
                 <p>
-                  Your programme, Lab and field experiment are one journey. This screen tells you
-                  what needs your attention now; it does not create another navigation system.
+                  {facilitatorMode
+                    ? "This is the same learning environment your group uses. Facilitation cues are added only for you; learner answers remain private."
+                    : "Your programme, Lab and field experiment are one journey. This screen tells you what needs your attention now; it does not create another navigation system."}
                 </p>
               </div>
               <div className="prototype-today-status">
                 <span>{page.programmeDay ? `Programme Day ${page.programmeDay} of 10` : page.key}</span>
                 <strong>{page.label}</strong>
-                <div className="prototype-progress-track">
-                  <i style={{ width: `${progressPercent}%` }} />
-                </div>
-                <small>{progressPercent}% of this handbook reviewed</small>
+                {facilitatorMode ? (
+                  <small>Individual learner progress is not shown in facilitator view.</small>
+                ) : (
+                  <>
+                    <div className="prototype-progress-track">
+                      <i style={{ width: `${progressPercent}%` }} />
+                    </div>
+                    <small>{progressPercent}% of this handbook reviewed</small>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="prototype-dashboard-grid">
+              {facilitatorMode ? (
+                <article className="prototype-card facilitator-dashboard-cue">
+                  <p className="prototype-eyebrow">Facilitator view</p>
+                  <h2>Lead from the page they are using.</h2>
+                  <p>Open the learning page below. Green facilitator cues will tell you when to invite reading, give quiet writing time, ask the room, and close the activity.</p>
+                  <small>The blank response spaces are intentional. You cannot see or write learner answers from this view.</small>
+                </article>
+              ) : null}
               <article className="prototype-card prototype-journey-card">
                 <p className="prototype-eyebrow">Continue your programme</p>
                 <h2>{page.label}</h2>
@@ -1123,8 +1203,8 @@ export function ProgrammePlayer({
           </section>
         ) : (
           <section className="prototype-page prototype-reader">
-            <Link className="prototype-back-link" href={previewMode ? "/content-studio" : "/learn"}>
-              <ArrowLeft /> Exit reader
+            <Link className="prototype-back-link" href={facilitatorMode && facilitatorContext ? facilitatorContext.returnTo : previewMode ? "/content-studio" : "/learn"}>
+              {facilitatorMode ? <><ArrowLeft /> Back to facilitator</> : <><ArrowLeft /> Exit reader</>}
             </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
@@ -1133,14 +1213,16 @@ export function ProgrammePlayer({
                   <p className="prototype-eyebrow">{programme.subtitle}</p>
                   <h1>{page.programmeDay ? `Day ${page.programmeDay} of 10` : page.key}</h1>
                 </div>
-                <strong>{progressPercent}%</strong>
+                <strong>{facilitatorMode ? "VIEW" : `${progressPercent}%`}</strong>
               </div>
               {page.experimentPosition ? (
                 <p className="prototype-reader-position">{page.experimentPosition}</p>
               ) : null}
-              <div className="prototype-progress-track light">
-                <i style={{ width: `${progressPercent}%` }} />
-              </div>
+              {!facilitatorMode ? (
+                <div className="prototype-progress-track light">
+                  <i style={{ width: `${progressPercent}%` }} />
+                </div>
+              ) : null}
             </div>
 
             <details className="prototype-programme-map" open={mapOpen} onToggle={(event) => setMapOpen(event.currentTarget.open)}>
@@ -1171,14 +1253,16 @@ export function ProgrammePlayer({
             </details>
 
             <div className="prototype-save-state" aria-live="polite">
-              {previewMode
-                ? "Preview mode · test answers stay in this browser only"
+              {facilitatorMode
+                ? "Facilitator view · learner responses are private and are not shown or saved here"
+                : previewMode
+                  ? "Preview mode · test answers stay in this browser only"
                 : saveState === "saving"
                   ? "Saving workbook responses…"
                   : saveState === "dirty"
                     ? "Changes waiting to save…"
                     : saveState === "error" ? "Not saved — retry before leaving" : "Workbook responses saved"}
-              {!previewMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
+              {!readOnlyMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
 
             {labSequenceLocked && selected > dayThreeIndex ? (
@@ -1193,6 +1277,15 @@ export function ProgrammePlayer({
                   </p>
                 </div>
               </section>
+            ) : null}
+
+            {facilitatorMode && facilitatorGuide ? (
+              <aside className="facilitator-inline-cue facilitator-inline-cue-start" role="note">
+                <span>Facilitator cue</span>
+                <strong>Read together, then ask before you explain.</strong>
+                <p>{facilitatorGuide.openingMove}</p>
+                <small>Invite one learner to read the next short section aloud. Stop at the key idea and ask the room what they noticed first.</small>
+              </aside>
             ) : null}
 
             <fieldset className="workbook-fields" disabled={completing || (labSequenceLocked && selected > dayThreeIndex)}>
@@ -1253,6 +1346,14 @@ export function ProgrammePlayer({
             </article>
             </fieldset>
 
+            {facilitatorMode && facilitatorGuide ? (
+              <aside className="facilitator-inline-cue facilitator-inline-cue-close" role="note">
+                <span>Facilitator cue · close</span>
+                <strong>End with the learner, not with another explanation.</strong>
+                <p>{facilitatorGuide.closeMove}</p>
+              </aside>
+            ) : null}
+
             {page.key === "Certificate" && completed.has(page.id) ? (
               <section className="handbook-next" aria-label="Continue learning">
                 <h2>Choose your next handbook</h2>
@@ -1280,9 +1381,11 @@ export function ProgrammePlayer({
                 onClick={() => void completePage()}
                 disabled={saving || completing || labSequenceLocked}
               >
-                {previewMode
-                  ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
-                  : labSequenceLocked
+                {facilitatorMode
+                  ? selected === programme.treatment.pages.length - 1 ? "End of learner experience" : "Next page"
+                  : previewMode
+                    ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
+                    : labSequenceLocked
                     ? moduleLabIsLive ? "Complete the Lab first" : "Continue after the Lab"
                     : completed.has(page.id)
                       ? "Reviewed"
@@ -1309,7 +1412,7 @@ export function ProgrammePlayer({
             <span><BisMark /></span>
             <div>
               <strong>Behaviour Intelligence Series™</strong>
-              <small>Learner menu</small>
+              <small>{facilitatorMode ? "Facilitator learner view" : "Learner menu"}</small>
             </div>
           </div>
           <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close menu">
@@ -1348,9 +1451,9 @@ export function ProgrammePlayer({
             </Link>
           ) : null}
           {hasStaffAccess ? (
-            <Link href="/workspace">
+            <Link href={facilitatorMode && facilitatorContext ? facilitatorContext.returnTo : "/workspace"}>
               <BriefcaseBusiness />
-              <span><strong>Staff workspace</strong><small>Tools for your programme role</small></span>
+              <span><strong>{facilitatorMode ? "Back to facilitator" : "Staff workspace"}</strong><small>{facilitatorMode ? "Return to your group" : "Tools for your programme role"}</small></span>
             </Link>
           ) : null}
         </div>
