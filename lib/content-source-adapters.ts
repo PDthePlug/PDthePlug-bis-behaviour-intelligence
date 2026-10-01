@@ -946,6 +946,114 @@ function htmlBlocks(html: string) {
   return blocks;
 }
 
+function markdownTablePairAt(lines: string[], index: number) {
+  const marker = lines[index]?.trim() ?? "";
+  const separator = lines[index + 1]?.trim() ?? "";
+  return /^\|\s*\|$/.test(marker) && /^\|\s*:?-{3,}:?\s*\|$/.test(separator);
+}
+
+function markdownTableCellText(lines: string[]) {
+  return decodeXml(lines.join(" "))
+    .replace(/\\([*_\.])/g, "$1")
+    .replace(/\*+/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function markdownHeaderCell(value: string) {
+  return /\*{2}|\\\*\\\*/.test(value);
+}
+
+function serializedMarkdownTable(
+  lines: string[],
+  start: number,
+): { block: SourceBlock; end: number } | null {
+  if (!markdownTablePairAt(lines, start)) return null;
+
+  const starts = [start];
+  let previous = start;
+  while (true) {
+    let next = -1;
+    for (let index = previous + 2; index < Math.min(lines.length, previous + 13); index += 1) {
+      if (markdownTablePairAt(lines, index)) {
+        next = index;
+        break;
+      }
+    }
+    if (next < 0) break;
+    starts.push(next);
+    previous = next;
+  }
+  if (starts.length < 2) return null;
+
+  let end = starts.at(-1)! + 2;
+  let seenContent = false;
+  let blankRun = 0;
+  while (end < lines.length && end < starts.at(-1)! + 16) {
+    if (markdownTablePairAt(lines, end)) break;
+    const value = lines[end].trim();
+    if (!value) {
+      blankRun += 1;
+      if ((seenContent && blankRun >= 2) || (!seenContent && blankRun >= 3)) break;
+    } else {
+      if (seenContent && /^\s{0,3}#{1,4}\s+/.test(lines[end])) break;
+      seenContent = true;
+      blankRun = 0;
+    }
+    end += 1;
+  }
+
+  const rawCells = starts.map((cellStart, index) => {
+    const cellEnd = starts[index + 1] ?? end;
+    return lines.slice(cellStart + 2, cellEnd);
+  });
+  const cells = rawCells.map(markdownTableCellText);
+  let leadingHeaders = 0;
+  for (const raw of rawCells) {
+    const joined = raw.join(" ").trim();
+    if (!joined || !markdownHeaderCell(joined)) break;
+    leadingHeaders += 1;
+  }
+  if (leadingHeaders < 2) return null;
+
+  const candidates: Array<{ columns: number; remainder: number }> = [];
+  for (let columns = 2; columns <= Math.min(leadingHeaders, 8); columns += 1) {
+    if (cells.length <= columns || cells.slice(0, columns).some((cell) => !cell)) continue;
+    candidates.push({ columns, remainder: (cells.length - columns) % columns });
+  }
+  if (!candidates.length) return null;
+  candidates.sort((left, right) => {
+    const leftExact = left.remainder === 0 ? 1 : 0;
+    const rightExact = right.remainder === 0 ? 1 : 0;
+    if (leftExact !== rightExact) return rightExact - leftExact;
+    if (left.remainder !== right.remainder) return left.remainder - right.remainder;
+    return right.columns - left.columns;
+  });
+  const columns = candidates[0].columns;
+  const headers = cells.slice(0, columns);
+  const data = cells.slice(columns);
+  while (data.length % columns) data.push("");
+
+  const rows = [
+    headers,
+    ...Array.from({ length: data.length / columns }, (_, row) =>
+      data.slice(row * columns, row * columns + columns),
+    ),
+  ];
+  if (rows.length < 2) return null;
+
+  return {
+    block: {
+      text: rows.map((row) => row.join(" | ")).join(" \n "),
+      heading: false,
+      html: tableHtml(rows),
+      tableRows: rows,
+      kind: "table",
+    },
+    end,
+  };
+}
+
 function markdownBlocks(markdown: string) {
   const blocks: SourceBlock[] = [];
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
@@ -968,7 +1076,16 @@ function markdownBlocks(markdown: string) {
     pushText(text, heading);
   };
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const table = serializedMarkdownTable(lines, index);
+    if (table) {
+      flush();
+      blocks.push(table.block);
+      index = table.end - 1;
+      continue;
+    }
+
+    const line = lines[index];
     const explicitHeading = line.match(/^\s{0,3}#{1,4}\s+(.+?)\s*#*\s*$/);
     if (explicitHeading) {
       flush();
