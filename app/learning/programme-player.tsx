@@ -1127,19 +1127,71 @@ export function ProgrammePlayer({
             </div>
 
             <div className="prototype-dashboard-grid">
-              {facilitatorMode ? (
+              {facilitatorMode && facilitatorGuide ? (
+                <article className="prototype-card facilitator-dashboard-cue facilitator-run-sheet">
+                  <div className="facilitator-run-sheet-head">
+                    <div>
+                      <p className="prototype-eyebrow">Facilitation plan · Day {page.programmeDay}</p>
+                      <h2>{facilitatorGuide.dayPurpose}</h2>
+                      <p>{facilitatorGuide.description}</p>
+                    </div>
+                    <span>{facilitatorGuide.minutes} min</span>
+                  </div>
+
+                  <div className="facilitator-run-sheet-outcome">
+                    <span>By the end</span>
+                    <strong>{facilitatorGuide.learnerOutcome}</strong>
+                  </div>
+
+                  <div className="facilitator-run-sheet-flow" aria-label="45-minute facilitation flow">
+                    {facilitatorGuide.beats.map((beat) => (
+                      <div key={beat.label}>
+                        <strong>{beat.minutes} min</strong>
+                        <span>{beat.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <details className="facilitator-run-sheet-details">
+                    <summary>How to lead this session</summary>
+                    <div className="facilitator-run-sheet-detail-grid">
+                      <section>
+                        <span>Start here</span>
+                        <p>{facilitatorGuide.openingMove}</p>
+                      </section>
+                      <section>
+                        <span>Facilitator moves</span>
+                        {facilitatorGuide.facilitatorMoves.map((move) => <p key={move}>{move}</p>)}
+                      </section>
+                      <section>
+                        <span>Watch for</span>
+                        {facilitatorGuide.watchFor.map((warning) => <p key={warning}>{warning}</p>)}
+                      </section>
+                      <section>
+                        <span>Context</span>
+                        <p>{facilitatorGuide.applicationFrame}</p>
+                        <p>{facilitatorGuide.readingTreatment}</p>
+                      </section>
+                    </div>
+                  </details>
+
+                  <div className="facilitator-run-sheet-privacy">
+                    <ShieldCheck />
+                    <span>The learner page stays read-only here. Responses remain private; you see the same content plus facilitation cues only.</span>
+                  </div>
+                </article>
+              ) : facilitatorMode ? (
                 <article className="prototype-card facilitator-dashboard-cue">
                   <p className="prototype-eyebrow">Facilitator view</p>
                   <h2>Lead from the page they are using.</h2>
-                  <p>Open the learning page below. Green facilitator cues will tell you when to invite reading, give quiet writing time, ask the room, and close the activity.</p>
-                  <small>The blank response spaces are intentional. You cannot see or write learner answers from this view.</small>
+                  <p>Open the learning page below. Green facilitator cues appear only for you.</p>
                 </article>
               ) : null}
               <article className="prototype-card prototype-journey-card">
                 <p className="prototype-eyebrow">Continue your programme</p>
                 <h2>{page.label}</h2>
                 <p>{page.experimentPosition || "Your handbook is ready where you left off."}</p>
-                {sessionDesign ? <small>{sessionDesign.minutes}-minute learning session · learn, check, apply and reflect</small> : null}
+                {facilitatorMode && sessionDesign ? <small>{sessionDesign.minutes}-minute learning session · learn, check, apply and reflect</small> : null}
                 <button type="button" className="prototype-btn primary" onClick={() => openLearn("reader")}>
                   Continue learning <ArrowRight />
                 </button>
@@ -1427,10 +1479,16 @@ export function ProgrammePlayer({
           <button
             type="button"
             className={section === "learn" ? "active" : ""}
-            onClick={() => { void saveDirtyResponses().then((saved) => { if (saved) router.push("/learn"); }); }}
+            onClick={() => {
+              if (facilitatorMode) {
+                openLearn("library");
+                return;
+              }
+              void saveDirtyResponses().then((saved) => { if (saved) router.push("/learn"); });
+            }}
           >
             <BookOpen />
-            <span><strong>Learn</strong><small>Browse handbooks</small></span>
+            <span><strong>Learn</strong><small>{facilitatorMode ? "Stay in this programme" : "Browse handbooks"}</small></span>
           </button>
           <Link href={moduleLabHref ?? "/labs"}>
             <FlaskConical />
