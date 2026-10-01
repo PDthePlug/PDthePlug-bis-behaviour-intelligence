@@ -88,6 +88,7 @@ test("future Universal Labs use the same server-owned progression invariant", as
 
   assert.match(api, /investigationUnlockedAfterSave\(investigation\)/);
   assert.match(client, /serverUnlockedInvestigation/);
-  assert.match(client, /onAdvance\(saved, Math\.min\(9, step \+ 1\)\)/);
-  assert.match(client, /saved\.enrolment\?\.currentInvestigation/);
+  assert.match(client, /const next = Math\.min\(9, step \+ 1\)/);
+  assert.match(client, /saved\.enrolment\.currentInvestigation >= next/);
+  assert.match(client, /onAdvance\(saved, next\)/);
 });
