@@ -29,10 +29,18 @@ import {
   BIS_LAB_PHASE_A_MINUTES,
   sessionDesignForPage,
 } from "../../lib/session-design";
+import { facilitatorSessionForDay } from "../../lib/facilitator-session";
 
 type Edition = HabitProgramme["edition"];
 type AppSection = "today" | "learn";
 type LearnMode = "library" | "reader";
+type ViewerMode = "learner" | "facilitator";
+type FacilitatorContext = {
+  cohortId: string;
+  cohortName: string;
+  edition: Edition;
+  returnTo: string;
+};
 type Progress = {
   labCode: string;
   contentReleaseId: string;
@@ -285,12 +293,16 @@ export function ProgrammePlayer({
   initialLearnMode = "library",
   previewVersionId,
   previewEdition,
+  viewerMode = "learner",
+  facilitatorContext,
 }: {
   moduleCode?: string;
   initialSection?: AppSection;
   initialLearnMode?: LearnMode;
   previewVersionId?: string;
   previewEdition?: Edition;
+  viewerMode?: ViewerMode;
+  facilitatorContext?: FacilitatorContext;
 }) {
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
@@ -312,6 +324,8 @@ export function ProgrammePlayer({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const previewMode = Boolean(previewVersionId && previewEdition);
+  const facilitatorMode = viewerMode === "facilitator" && Boolean(facilitatorContext);
+  const readOnlyMode = previewMode || facilitatorMode;
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1100px)");
