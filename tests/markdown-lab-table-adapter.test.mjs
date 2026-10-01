@@ -90,7 +90,12 @@ function riskFactoryMarkdown() {
     "",
     simpleInvestigation(1, "THE HOOK"),
     simpleInvestigation(2, "RISK BASELINE"),
-    simpleInvestigation(3, "PREDICTION"),
+    "### INVESTIGATION 3 — PREDICTION",
+    "",
+    "**MISSION:** *Calibrate the prediction.*",
+    "",
+    "**BEI-03: Prediction Calibration Score:** ☐ Correct ☐ Incorrect",
+    "",
     "### INVESTIGATION 4 — RISK MAPPING",
     "",
     "**MISSION:** *Map the risks.*",
@@ -100,7 +105,20 @@ function riskFactoryMarkdown() {
     riskMap,
     "",
     simpleInvestigation(5, "RISK EQUATION"),
-    simpleInvestigation(6, "RISK CONTRACT"),
+    "### INVESTIGATION 6 — RISK CONTRACT",
+    "",
+    "**MISSION:** *Commit to an action.*",
+    "",
+    "**BEI-05: Risk Index**",
+    "",
+    "**My biggest risk affects:**",
+    "",
+    "☐ My finances",
+    "",
+    "☐ My health",
+    "",
+    "☐ My future",
+    "",
     "### INVESTIGATION 7 — 7-DAY EXPERIMENT",
     "",
     "**MISSION:** *Track your actions for seven days.*",
@@ -156,6 +174,18 @@ test("Markdown Lab imports reconstruct serialized authored tables before manufac
     const lab = JSON.parse(new TextDecoder().decode(adapted));
 
     assert.equal(lab.investigations.length, 9);
+
+    const calibration = lab.investigations[2].prompts;
+    assert.equal(calibration.length, 1);
+    assert.equal(calibration[0].type, "CATEGORICAL");
+    assert.deepEqual(calibration[0].options, ["Correct", "Incorrect"]);
+    assert.equal(calibration[0].indicatorCode, "BEI-03");
+
+    const riskIndex = lab.investigations[5].prompts;
+    assert.equal(riskIndex.length, 1);
+    assert.equal(riskIndex[0].type, "MULTI_SELECT");
+    assert.deepEqual(riskIndex[0].options, ["My finances", "My health", "My future"]);
+    assert.equal(riskIndex[0].indicatorCode, "BEI-05");
 
     const mapping = lab.investigations[3].prompts;
     assert.equal(mapping.length, 8);
