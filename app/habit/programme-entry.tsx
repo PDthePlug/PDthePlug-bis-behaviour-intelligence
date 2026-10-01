@@ -217,8 +217,8 @@ export function ProgrammeEntry({
       <ProgrammePlayer
         key={`facilitator:${moduleCode}:${facilitatorContext.cohortId}`}
         moduleCode={moduleCode}
-        initialSection="learn"
-        initialLearnMode="reader"
+        initialSection={initialSection}
+        initialLearnMode={initialLearnMode}
         viewerMode="facilitator"
         facilitatorContext={facilitatorContext}
       />
