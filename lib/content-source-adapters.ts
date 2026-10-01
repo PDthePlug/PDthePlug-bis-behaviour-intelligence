@@ -946,13 +946,138 @@ function htmlBlocks(html: string) {
   return blocks;
 }
 
+function markdownTablePairAt(lines: string[], index: number) {
+  const marker = lines[index]?.trim() ?? "";
+  const separator = lines[index + 1]?.trim() ?? "";
+  return /^\|\s*\|$/.test(marker) && /^\|\s*:?-{3,}:?\s*\|$/.test(separator);
+}
+
+function cleanMarkdownAuthoredText(value: string) {
+  return decodeXml(value)
+    .replace(/\\([*_\.])/g, "$1")
+    .replace(/\*+/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function markdownTableCellText(lines: string[]) {
+  return cleanMarkdownAuthoredText(lines.join(" "));
+}
+
+function markdownHeaderCell(value: string) {
+  return /\*{2}|\\\*\\\*/.test(value);
+}
+
+function serializedMarkdownTable(
+  lines: string[],
+  start: number,
+): { block: SourceBlock; end: number } | null {
+  if (!markdownTablePairAt(lines, start)) return null;
+
+  const starts = [start];
+  let previous = start;
+  while (true) {
+    let next = -1;
+    for (let index = previous + 2; index < Math.min(lines.length, previous + 13); index += 1) {
+      if (/^\s{0,3}#{1,4}\s+/.test(lines[index])) {
+        next = -2;
+        break;
+      }
+      if (markdownTablePairAt(lines, index)) {
+        next = index;
+        break;
+      }
+    }
+    if (next < 0) break;
+    starts.push(next);
+    previous = next;
+  }
+  if (starts.length < 2) return null;
+
+  let end = starts.at(-1)! + 2;
+  let seenContent = false;
+  let blankRun = 0;
+  while (end < lines.length && end < starts.at(-1)! + 16) {
+    if (markdownTablePairAt(lines, end)) break;
+    const value = lines[end].trim();
+    if (!value) {
+      blankRun += 1;
+      if ((seenContent && blankRun >= 2) || (!seenContent && blankRun >= 3)) break;
+    } else {
+      if (seenContent && /^\s{0,3}#{1,4}\s+/.test(lines[end])) break;
+      seenContent = true;
+      blankRun = 0;
+    }
+    end += 1;
+  }
+
+  const rawCells = starts.map((cellStart, index) => {
+    const cellEnd = starts[index + 1] ?? end;
+    return lines.slice(cellStart + 2, cellEnd);
+  });
+  const cells = rawCells.map(markdownTableCellText);
+  let leadingHeaders = 0;
+  for (const raw of rawCells) {
+    const joined = raw.join(" ").trim();
+    if (!joined || !markdownHeaderCell(joined)) break;
+    leadingHeaders += 1;
+  }
+  if (leadingHeaders < 2) return null;
+
+  const candidates: Array<{ columns: number; remainder: number; rowStartCoverage: number }> = [];
+  for (let columns = 2; columns <= Math.min(leadingHeaders, 8); columns += 1) {
+    if (cells.length <= columns || cells.slice(0, columns).some((cell) => !cell)) continue;
+    const dataCells = cells.slice(columns);
+    const rowCount = Math.ceil(dataCells.length / columns);
+    const nonEmptyRowStarts = Array.from({ length: rowCount }, (_, row) => dataCells[row * columns])
+      .filter((cell) => Boolean(cell)).length;
+    candidates.push({
+      columns,
+      remainder: dataCells.length % columns,
+      rowStartCoverage: rowCount ? nonEmptyRowStarts / rowCount : 0,
+    });
+  }
+  if (!candidates.length) return null;
+  candidates.sort((left, right) => {
+    const leftExact = left.remainder === 0 ? 1 : 0;
+    const rightExact = right.remainder === 0 ? 1 : 0;
+    if (leftExact !== rightExact) return rightExact - leftExact;
+    if (left.rowStartCoverage !== right.rowStartCoverage) return right.rowStartCoverage - left.rowStartCoverage;
+    if (left.remainder !== right.remainder) return left.remainder - right.remainder;
+    return right.columns - left.columns;
+  });
+  const columns = candidates[0].columns;
+  const headers = cells.slice(0, columns);
+  const data = cells.slice(columns);
+  while (data.length % columns) data.push("");
+
+  const rows = [
+    headers,
+    ...Array.from({ length: data.length / columns }, (_, row) =>
+      data.slice(row * columns, row * columns + columns),
+    ),
+  ];
+  if (rows.length < 2) return null;
+
+  return {
+    block: {
+      text: rows.map((row) => row.join(" | ")).join(" \n "),
+      heading: false,
+      html: tableHtml(rows),
+      tableRows: rows,
+      kind: "table",
+    },
+    end,
+  };
+}
+
 function markdownBlocks(markdown: string) {
   const blocks: SourceBlock[] = [];
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
   let paragraph: string[] = [];
 
   const pushText = (text: string, heading = false) => {
-    const cleaned = text.trim().replace(/^[-*+]\s+/, "");
+    const cleaned = cleanMarkdownAuthoredText(text.trim().replace(/^[-*+]\s+/, ""));
     if (!cleaned) return;
     blocks.push({
       text: cleaned,
@@ -968,7 +1093,16 @@ function markdownBlocks(markdown: string) {
     pushText(text, heading);
   };
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const table = serializedMarkdownTable(lines, index);
+    if (table) {
+      flush();
+      blocks.push(table.block);
+      index = table.end - 1;
+      continue;
+    }
+
+    const line = lines[index];
     const explicitHeading = line.match(/^\s{0,3}#{1,4}\s+(.+?)\s*#*\s*$/);
     if (explicitHeading) {
       flush();
@@ -1545,6 +1679,25 @@ function isStandaloneField(value: string) {
   return false;
 }
 
+function hasFollowingCheckboxGroup(body: SourceBlock[], index: number) {
+  let cursor = index + 1;
+  let options = 0;
+  while (cursor < body.length && cursor <= index + 10) {
+    const candidate = body[cursor];
+    const candidateText = candidate.text.replace(/\s+/g, " ").trim();
+    if (!candidateText) {
+      cursor += 1;
+      continue;
+    }
+    if (candidate.tableRows || candidate.heading) break;
+    const values = checkboxOptions(candidateText);
+    if (values.length !== 1) break;
+    options += 1;
+    cursor += 1;
+  }
+  return options >= 2;
+}
+
 function indicatorReferences(value: string) {
   const matches = [...String(value ?? "").matchAll(/\b(BEI-\d{2})(?:-(?:PRE|POST))?\s*:?[\t ]*([^<\n]{0,120})/gi)];
   return matches.map((match) => {
@@ -1670,7 +1823,7 @@ function labBodyToRuntime(
       continue;
     }
 
-    if (isStandaloneField(text)) {
+    if (isStandaloneField(text) && !hasFollowingCheckboxGroup(body, index)) {
       flushHtml();
       const spec = promptSpecFromMarker(text, formLabel(text));
       const previousHeading = [...body.slice(Math.max(0, index - 4), index)]
@@ -1693,9 +1846,12 @@ function labBodyToRuntime(
 
     const inlineOptions = checkboxOptions(text);
     const inlineQuestion = promptQuestions(text);
-    if (inlineOptions.length && inlineQuestion.length) {
+    const inlineChoiceLead = inlineOptions.length
+      ? cleanAuthoredText(text.slice(0, text.indexOf("☐"))).replace(/\*+/g, "").replace(/\s*:\s*$/u, "").trim()
+      : "";
+    if (inlineOptions.length && (inlineQuestion.length || inlineChoiceLead)) {
       flushHtml();
-      const question = inlineQuestion[0];
+      const question = inlineQuestion[0] || inlineChoiceLead;
       const spec = promptSpecFromMarker(text, question);
       addPrompt(prompts, renderBlocks, code, investigation, {
         label: spec.label || question,
@@ -1736,7 +1892,27 @@ function labBodyToRuntime(
       );
     if (promptLead && markers.length) {
       flushHtml();
-      if (markers.length === 1) {
+      const combinedMarker = markers.map((marker) => marker.text).join(" ");
+      const combinedOptions = checkboxOptions(combinedMarker);
+      const separateCheckboxOptions = markers.length > 1
+        && combinedOptions.length === markers.length
+        && markers.every((marker) => checkboxOptions(marker.text).length === 1);
+
+      if (separateCheckboxOptions) {
+        const cleanedLead = cleanAuthoredText(promptLead).replace(/\*+/g, "").replace(/\s*:\s*$/u, "").trim();
+        const spec = promptSpecFromMarker(combinedMarker, cleanedLead);
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: cleanedLead || spec.label || "Choose an answer",
+          prompt: cleanedLead || "Choose an answer",
+          type: spec.type,
+          options: spec.options,
+          min: spec.min,
+          max: spec.max,
+          placeholder: spec.placeholder,
+          sensitivity: /future self|identity|health|relationship/i.test(cleanedLead) ? "P3" : "P2",
+          required: true,
+        });
+      } else if (markers.length === 1) {
         const marker = markers[0].text;
         const spec = promptSpecFromMarker(marker, promptLead);
         addPrompt(prompts, renderBlocks, code, investigation, {
