@@ -1016,16 +1016,25 @@ function serializedMarkdownTable(
   }
   if (leadingHeaders < 2) return null;
 
-  const candidates: Array<{ columns: number; remainder: number }> = [];
+  const candidates: Array<{ columns: number; remainder: number; rowStartCoverage: number }> = [];
   for (let columns = 2; columns <= Math.min(leadingHeaders, 8); columns += 1) {
     if (cells.length <= columns || cells.slice(0, columns).some((cell) => !cell)) continue;
-    candidates.push({ columns, remainder: (cells.length - columns) % columns });
+    const dataCells = cells.slice(columns);
+    const rowCount = Math.ceil(dataCells.length / columns);
+    const nonEmptyRowStarts = Array.from({ length: rowCount }, (_, row) => dataCells[row * columns])
+      .filter((cell) => Boolean(cell)).length;
+    candidates.push({
+      columns,
+      remainder: dataCells.length % columns,
+      rowStartCoverage: rowCount ? nonEmptyRowStarts / rowCount : 0,
+    });
   }
   if (!candidates.length) return null;
   candidates.sort((left, right) => {
     const leftExact = left.remainder === 0 ? 1 : 0;
     const rightExact = right.remainder === 0 ? 1 : 0;
     if (leftExact !== rightExact) return rightExact - leftExact;
+    if (left.rowStartCoverage !== right.rowStartCoverage) return right.rowStartCoverage - left.rowStartCoverage;
     if (left.remainder !== right.remainder) return left.remainder - right.remainder;
     return right.columns - left.columns;
   });
