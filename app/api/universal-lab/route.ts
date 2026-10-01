@@ -129,21 +129,46 @@ async function syncUniversalComputedMeasurements(
   labVersion: string,
   responseSnapshot: Record<string, { value: unknown; responseId?: string }>,
 ) {
-  if (definition.runtimeProfile !== "UNIVERSAL_V2" || !definition.computedFields?.length) return;
+  if (definition.runtimeProfile !== "UNIVERSAL_V2") return;
   const db = getDb();
   const computed = evaluateUniversalComputed(definition, responseValues(responseSnapshot));
   const now = new Date().toISOString();
+  const computedIds = new Set((definition.computedFields ?? []).map((field) => field.id));
 
-  for (const field of definition.computedFields) {
-    const value = computed[field.id];
+  const leafInputsFor = (semanticFieldId: string) =>
+    computedIds.has(semanticFieldId)
+      ? universalComputedLeafInputs(definition, semanticFieldId)
+      : [semanticFieldId];
+
+  const persistMeasurement = async (
+    code: string,
+    value: unknown,
+    formulaVersion: string,
+    semanticInputs: string[],
+  ) => {
+    const leafInputs = [...new Set(semanticInputs.flatMap(leafInputsFor))];
+    const sourceRows = leafInputs.flatMap((semanticFieldId) => {
+      const response = responseSnapshot[semanticFieldId];
+      if (!response?.responseId) return [];
+      return [{
+        semanticFieldId,
+        responseId: response.responseId,
+        value: response.value,
+      }];
+    });
+    const status = value === null || value === undefined ? "NA" : "VALUE";
+    const evidenceStrength = status === "NA"
+      ? "NONE"
+      : sourceRows.length >= 2
+        ? "SUFFICIENT_FOR_LAB"
+        : "LIMITED";
+
     const [existing] = await db.select({ id: measurementValues.id }).from(measurementValues).where(and(
       eq(measurementValues.userId, userId),
       eq(measurementValues.enrolmentId, enrolment.id),
-      eq(measurementValues.code, field.id),
+      eq(measurementValues.code, code),
     )).limit(1);
     const measurementId = existing?.id ?? crypto.randomUUID();
-    const status = value === null || value === undefined ? "NA" : "VALUE";
-    const evidenceStrength = status === "VALUE" ? "SUFFICIENT_FOR_LAB" : "NONE";
 
     await db.insert(measurementValues).values({
       id: measurementId,
@@ -152,11 +177,11 @@ async function syncUniversalComputedMeasurements(
       enrolmentId: enrolment.id,
       labCode: definition.identity.code,
       labVersion,
-      code: field.id,
+      code,
       value: JSON.stringify(value ?? null),
       status,
       evidenceStrength,
-      formulaVersion: "universal-lab-v2",
+      formulaVersion,
       calculatedAt: now,
     }).onConflictDoUpdate({
       target: [measurementValues.userId, measurementValues.enrolmentId, measurementValues.code],
@@ -166,28 +191,55 @@ async function syncUniversalComputedMeasurements(
         evidenceStrength,
         labCode: definition.identity.code,
         labVersion,
-        formulaVersion: "universal-lab-v2",
+        formulaVersion,
         calculatedAt: now,
       },
     });
 
     await db.delete(measurementSources).where(eq(measurementSources.measurementId, measurementId));
-    const leafInputs = universalComputedLeafInputs(definition, field.id);
-    const sources = leafInputs.flatMap((semanticFieldId) => {
-      const response = responseSnapshot[semanticFieldId];
-      if (!response?.responseId) return [];
-      return [{
+    if (sourceRows.length) {
+      await db.insert(measurementSources).values(sourceRows.map((source) => ({
         id: crypto.randomUUID(),
         measurementId,
         userId,
         sourceObjectType: "RESPONSE",
-        sourceObjectId: response.responseId,
-        inputRole: semanticFieldId,
-        inputValue: JSON.stringify(response.value ?? null),
+        sourceObjectId: source.responseId,
+        inputRole: source.semanticFieldId,
+        inputValue: JSON.stringify(source.value ?? null),
         createdAt: now,
-      }];
-    });
-    if (sources.length) await db.insert(measurementSources).values(sources);
+      })));
+    }
+  };
+
+  for (const field of definition.computedFields ?? []) {
+    await persistMeasurement(
+      field.id,
+      computed[field.id],
+      "universal-lab-v2:computed",
+      field.inputs,
+    );
+  }
+
+  const resolvedValue = (semanticFieldId: string) =>
+    Object.prototype.hasOwnProperty.call(computed, semanticFieldId)
+      ? computed[semanticFieldId]
+      : responseSnapshot[semanticFieldId]?.value;
+
+  for (const indicator of definition.indicatorRegistry ?? []) {
+    const value = indicator.primaryPromptId
+      ? resolvedValue(indicator.primaryPromptId)
+      : (() => {
+          const entries = indicator.promptIds
+            .map((promptId) => [promptId, resolvedValue(promptId)] as const)
+            .filter(([, entryValue]) => entryValue !== null && entryValue !== undefined && entryValue !== "");
+          return entries.length ? Object.fromEntries(entries) : null;
+        })();
+    await persistMeasurement(
+      `${definition.identity.code}.${indicator.code.replace("-", "")}`,
+      value,
+      "universal-lab-v2:bei",
+      indicator.promptIds,
+    );
   }
 }
 
