@@ -1103,23 +1103,38 @@ export function ProgrammePlayer({
             <div className="prototype-today-hero">
               <div>
                 <p className="prototype-eyebrow">Today · {programme.title}</p>
-                <h1>Good to see you, {firstName}.</h1>
+                <h1>{facilitatorMode ? "Learner experience." : `Good to see you, ${firstName}.`}</h1>
                 <p>
-                  Your programme, Lab and field experiment are one journey. This screen tells you
-                  what needs your attention now; it does not create another navigation system.
+                  {facilitatorMode
+                    ? "This is the same learning environment your group uses. Facilitation cues are added only for you; learner answers remain private."
+                    : "Your programme, Lab and field experiment are one journey. This screen tells you what needs your attention now; it does not create another navigation system."}
                 </p>
               </div>
               <div className="prototype-today-status">
                 <span>{page.programmeDay ? `Programme Day ${page.programmeDay} of 10` : page.key}</span>
                 <strong>{page.label}</strong>
-                <div className="prototype-progress-track">
-                  <i style={{ width: `${progressPercent}%` }} />
-                </div>
-                <small>{progressPercent}% of this handbook reviewed</small>
+                {facilitatorMode ? (
+                  <small>Individual learner progress is not shown in facilitator view.</small>
+                ) : (
+                  <>
+                    <div className="prototype-progress-track">
+                      <i style={{ width: `${progressPercent}%` }} />
+                    </div>
+                    <small>{progressPercent}% of this handbook reviewed</small>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="prototype-dashboard-grid">
+              {facilitatorMode ? (
+                <article className="prototype-card facilitator-dashboard-cue">
+                  <p className="prototype-eyebrow">Facilitator view</p>
+                  <h2>Lead from the page they are using.</h2>
+                  <p>Open the learning page below. Green facilitator cues will tell you when to invite reading, give quiet writing time, ask the room, and close the activity.</p>
+                  <small>The blank response spaces are intentional. You cannot see or write learner answers from this view.</small>
+                </article>
+              ) : null}
               <article className="prototype-card prototype-journey-card">
                 <p className="prototype-eyebrow">Continue your programme</p>
                 <h2>{page.label}</h2>
@@ -1188,8 +1203,8 @@ export function ProgrammePlayer({
           </section>
         ) : (
           <section className="prototype-page prototype-reader">
-            <Link className="prototype-back-link" href={previewMode ? "/content-studio" : "/learn"}>
-              <ArrowLeft /> Exit reader
+            <Link className="prototype-back-link" href={facilitatorMode && facilitatorContext ? facilitatorContext.returnTo : previewMode ? "/content-studio" : "/learn"}>
+              <ArrowLeft /> {facilitatorMode ? "Back to facilitator" : "Exit reader"}
             </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
@@ -1198,14 +1213,16 @@ export function ProgrammePlayer({
                   <p className="prototype-eyebrow">{programme.subtitle}</p>
                   <h1>{page.programmeDay ? `Day ${page.programmeDay} of 10` : page.key}</h1>
                 </div>
-                <strong>{progressPercent}%</strong>
+                <strong>{facilitatorMode ? "VIEW" : `${progressPercent}%`}</strong>
               </div>
               {page.experimentPosition ? (
                 <p className="prototype-reader-position">{page.experimentPosition}</p>
               ) : null}
-              <div className="prototype-progress-track light">
-                <i style={{ width: `${progressPercent}%` }} />
-              </div>
+              {!facilitatorMode ? (
+                <div className="prototype-progress-track light">
+                  <i style={{ width: `${progressPercent}%` }} />
+                </div>
+              ) : null}
             </div>
 
             <details className="prototype-programme-map" open={mapOpen} onToggle={(event) => setMapOpen(event.currentTarget.open)}>
