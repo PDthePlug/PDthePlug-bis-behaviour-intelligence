@@ -125,3 +125,19 @@ test("learner runtime can resolve active catalogue rows without opening Content 
   assert.doesNotMatch(migration, /for (?:insert|update|delete|all)/i);
   assert.match(migration, /Archived catalogue rows and mutations remain administrator-only/);
 });
+
+
+test("Content Studio exposes the prepared Lab runtime proof before publishing", async () => {
+  const [api, ui] = await Promise.all([
+    source("app/api/content-studio/route.ts"),
+    source("app/content-studio/content-studio.tsx"),
+  ]);
+  assert.match(api, /runtimeProfile: preparedLab\.runtimeProfile/);
+  assert.match(api, /detectedCapabilities/);
+  assert.match(api, /calculatedFields/);
+  assert.match(api, /experimentDays/);
+  assert.match(api, /profileEntries/);
+  assert.match(ui, /Behaviour runtime V2/);
+  assert.match(ui, /calculated fields/);
+  assert.match(ui, /profile entries/);
+});
