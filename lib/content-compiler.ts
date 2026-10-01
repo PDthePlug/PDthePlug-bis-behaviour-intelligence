@@ -1,5 +1,6 @@
 import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
+import { capabilitySummary, type LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
 import { sha256Hex } from "./content-studio";
 
 export const CONTENT_COMPILER_VERSION = "bis-content-compiler-2";
