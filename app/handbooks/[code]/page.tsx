@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 type HandbookSearchParams = {
   facilitator?: string;
   group?: string;
+  section?: string;
   page?: string;
   returnTo?: string;
 };
@@ -30,7 +31,7 @@ export default async function HandbookPage({
       : "/workspace?view=facilitator";
 
   if (code === "hab") {
-    const params = new URLSearchParams({ section: "learn", module: "HAB" });
+    const params = new URLSearchParams({ section: facilitatorMode && query.section !== "learn" ? "today" : "learn", module: "HAB" });
     if (query.page) params.set("page", query.page);
     if (facilitatorMode) {
       params.set("facilitator", "1");
@@ -41,11 +42,14 @@ export default async function HandbookPage({
   }
 
   const user = await requireUser(`/handbooks/${code}`);
+  const initialSection = facilitatorMode && query.section !== "learn" ? "today" : "learn";
+  const initialLearnMode = initialSection === "learn" ? "reader" : "library";
+
   return (
     <ProgrammeEntry
       moduleCode={code.toUpperCase()}
-      initialSection="learn"
-      initialLearnMode="reader"
+      initialSection={initialSection}
+      initialLearnMode={initialLearnMode}
       initialIdentity={{
         email: user.email,
         displayName:
