@@ -17,6 +17,10 @@ export type HandbookEnhancementContext = {
   programmeDay?: number | null;
   formativeCheckTarget?: number;
   enableFormativeLearningChecks?: boolean;
+  facilitatorMode?: boolean;
+  facilitatorGuidance?: {
+    discussionMove?: string;
+  };
 };
 
 const normalise = (value: string) => value.replace(/\s+/g, " ").trim();
@@ -1091,6 +1095,63 @@ function softenLearnerTechnicalLabels(root: HTMLElement) {
   });
 }
 
+function facilitatorCue(kind: string, kicker: string, title: string, body: string) {
+  const cue = document.createElement("aside");
+  cue.className = "facilitator-inline-cue facilitator-inline-cue-document";
+  cue.dataset.facilitatorCue = kind;
+  cue.setAttribute("role", "note");
+
+  const label = document.createElement("span");
+  label.textContent = kicker;
+  const heading = document.createElement("strong");
+  heading.textContent = title;
+  const copy = document.createElement("p");
+  copy.textContent = body;
+  cue.append(label, heading, copy);
+  return cue;
+}
+
+function addFacilitatorCues(root: HTMLElement, context: HandbookEnhancementContext) {
+  if (!context.facilitatorMode) {
+    root.removeAttribute("data-facilitator-view");
+    root.querySelectorAll("[data-facilitator-cue]").forEach((cue) => cue.remove());
+    return;
+  }
+  root.dataset.facilitatorView = "true";
+
+  if (!root.querySelector('[data-facilitator-cue="write"]')) {
+    const field = root.querySelector<HTMLElement>(".generated-question-responses, textarea.response[data-field-id], input[data-field-id], select[data-field-id]");
+    const anchor = field?.closest<HTMLElement>(".generated-question-responses") ?? field;
+    if (anchor?.parentElement && !anchor.closest(".checkpoint-answer-panel")) {
+      anchor.insertAdjacentElement(
+        "beforebegin",
+        facilitatorCue(
+          "write",
+          "Facilitator cue · write first",
+          "Give them quiet time before discussion.",
+          "Let every learner write their own answer first. Do not ask anyone to read a private response aloud. When most pens stop, invite observations rather than collecting personal answers.",
+        ),
+      );
+    }
+  }
+
+  if (!root.querySelector('[data-facilitator-cue="discuss"]')) {
+    const check = root.querySelector<HTMLElement>(".handbook-concept-check-label");
+    if (check?.parentElement) {
+      check.insertAdjacentElement(
+        "beforebegin",
+        facilitatorCue(
+          "discuss",
+          "Facilitator cue · ask the room",
+          "Ask first. Explain second.",
+          context.facilitatorGuidance?.discussionMove
+            ?? "Ask the question aloud, give everyone a moment to think, then invite two learners to explain what led them to their answer before you add anything.",
+        ),
+      );
+    }
+  }
+}
+
 export function enhanceHandbookDocument(
   root: HTMLElement,
   labCode: LabCode,
@@ -1118,4 +1179,5 @@ export function enhanceHandbookDocument(
     addInterleavedConceptChecks(root, labCode, pageId, context);
   }
   addMissingCheckpointResponses(root, labCode, pageId);
+  addFacilitatorCues(root, context);
 }
