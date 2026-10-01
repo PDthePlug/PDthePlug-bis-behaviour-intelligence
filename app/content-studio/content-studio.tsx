@@ -77,7 +77,17 @@ type ContentVersion = {
   status: string;
   releaseNotes: string;
   compilerStatus: string;
-  compilerReport: { summary?: string; requiredEditions?: string[]; artifactKeys?: string[] };
+  compilerReport: {
+    summary?: string;
+    requiredEditions?: string[];
+    artifactKeys?: string[];
+    schemaVersion?: string;
+    runtimeProfile?: string;
+    detectedCapabilities?: string[];
+    calculatedFields?: number;
+    experimentDays?: number | null;
+    profileEntries?: number;
+  };
   compiledAt: string | null;
   sourceFiles: ContentSourceFile[];
   artifacts: RuntimeArtifact[];
@@ -698,6 +708,14 @@ export function ContentStudio() {
                         <div className={entry.compilerStatus === "FAILED" ? "content-validation-summary bad" : "content-validation-summary"}>
                           <strong>{entry.compilerStatus === "FAILED" ? "This version needs attention." : entry.compilerReport.summary}</strong>
                           {entry.compilerStatus === "FAILED" ? <small>{entry.compilerReport.summary}</small> : null}
+                          {entry.compilerStatus === "COMPILED" && selected.kind === "LAB" && entry.compilerReport.runtimeProfile ? (
+                            <div className="content-runtime-proof">
+                              <span>{entry.compilerReport.runtimeProfile === "UNIVERSAL_V2" ? "Behaviour runtime V2" : "Universal Lab V1"}</span>
+                              {(entry.compilerReport.detectedCapabilities ?? []).map((capability) => <span key={capability}>{capability}</span>)}
+                              {entry.compilerReport.calculatedFields ? <span>{entry.compilerReport.calculatedFields} calculated fields</span> : null}
+                              {entry.compilerReport.profileEntries ? <span>{entry.compilerReport.profileEntries} profile entries</span> : null}
+                            </div>
+                          ) : null}
                         </div>
                       ) : null}
 
