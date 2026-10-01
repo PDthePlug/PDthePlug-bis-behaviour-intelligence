@@ -975,6 +975,10 @@ function serializedMarkdownTable(
   while (true) {
     let next = -1;
     for (let index = previous + 2; index < Math.min(lines.length, previous + 13); index += 1) {
+      if (/^\s{0,3}#{1,4}\s+/.test(lines[index])) {
+        next = -2;
+        break;
+      }
       if (markdownTablePairAt(lines, index)) {
         next = index;
         break;
