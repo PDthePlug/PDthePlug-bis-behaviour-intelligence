@@ -86,6 +86,8 @@ type ContentVersion = {
     runtimeProfile?: string;
     detectedCapabilities?: string[];
     calculatedFields?: number;
+    indicatorCount?: number;
+    unboundIndicators?: string[];
     experimentDays?: number | null;
     profileEntries?: number;
   };
@@ -723,6 +725,7 @@ export function ContentStudio() {
                             <div className="content-runtime-proof">
                               <span>{entry.compilerReport.runtimeProfile === "UNIVERSAL_V2" ? "Behaviour runtime V2" : "Universal Lab V1"}</span>
                               {(entry.compilerReport.detectedCapabilities ?? []).map((capability) => <span key={capability}>{capability}</span>)}
+                              {entry.compilerReport.indicatorCount ? <span>{entry.compilerReport.indicatorCount} BEIs bound</span> : null}
                               {entry.compilerReport.calculatedFields ? <span>{entry.compilerReport.calculatedFields} calculated fields</span> : null}
                               {entry.compilerReport.profileEntries ? <span>{entry.compilerReport.profileEntries} profile entries</span> : null}
                             </div>
