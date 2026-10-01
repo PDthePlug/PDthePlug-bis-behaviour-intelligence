@@ -47,12 +47,14 @@ test("manual hide and inactivity use a privacy cover rather than re-authenticati
   assert.match(shell, /onClick=\{\(\) => setHidden\(true\)\}/);
 });
 
-test("facilitator workspace uses distinct working views instead of page anchors", async () => {
+test("facilitator workspace keeps four operational views and opens learning through the shared learner experience", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
-  for (const label of ["Group", "Session", "Learners", "Support", "Review"]) {
+  for (const label of ["Group", "Learners", "Support", "Review"]) {
     assert.match(facilitator, new RegExp(">" + label + "<"));
   }
-  assert.match(facilitator, /type FacilitatorSection = "cohort" \| "session" \| "participants" \| "support" \| "review"/);
+  assert.doesNotMatch(facilitator, />Session<\/button>/);
+  assert.match(facilitator, /Learner experience/);
+  assert.match(facilitator, /type FacilitatorSection = "cohort" \| "participants" \| "support" \| "review"/);
   assert.match(facilitator, /navigateWorkspace\(\{ section: "participants"/);
   assert.doesNotMatch(facilitator, /href="#cohort-dashboard"/);
   assert.doesNotMatch(facilitator, /href="#learner-summaries"/);
