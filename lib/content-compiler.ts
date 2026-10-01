@@ -1,5 +1,6 @@
 import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
+import { capabilitySummary, type LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
 import { sha256Hex } from "./content-studio";
 
 export const CONTENT_COMPILER_VERSION = "bis-content-compiler-2";
@@ -91,6 +92,7 @@ export type UniversalLabPackage = {
     accent: string;
     focus?: string;
   };
+  factoryCapabilities?: LabFactoryCapabilities;
   investigations: UniversalLabInvestigation[];
 };
 
@@ -361,6 +363,17 @@ export async function compileUniversalLab(
   if (text(source.kind) !== "LAB") throw new Error('Lab package kind must be "LAB".');
   if (text(source.schemaVersion) !== "universal-lab-v1") throw new Error('Use schemaVersion "universal-lab-v1".');
   if (text(source.runtimeProfile) !== "UNIVERSAL_V1") throw new Error('Runtime activation currently requires runtimeProfile "UNIVERSAL_V1" for new Labs.');
+
+  const factoryCapabilities = object(source.factoryCapabilities) as LabFactoryCapabilities | null;
+  if (factoryCapabilities?.requiresBehaviourRuntimeV2) {
+    const requirements = capabilitySummary(factoryCapabilities);
+    throw new Error(
+      "This Lab is structurally readable, but Universal Lab V1 cannot preserve its full behavioural architecture. " +
+      "Required capabilities: " + requirements.join(", ") + ". " +
+      "Activation is blocked rather than flattening the Lab into generic prompts. Complete the Universal Lab V2 runtime contract first.",
+    );
+  }
+
   const identity = object(source.identity);
   const code = text(identity?.code);
   const version = text(identity?.version);
