@@ -751,7 +751,7 @@ export function ProgrammePlayer({
           100,
       )
     : 0;
-  const firstName = snapshot?.profile.displayName?.split(" ")[0] || "Investigator";
+  const firstName = facilitatorMode ? "Facilitator" : snapshot?.profile.displayName?.split(" ")[0] || "Investigator";
   const hasStaffAccess = Boolean(
     runtime?.roles?.some((role) =>
       ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER"].includes(role),
@@ -780,7 +780,7 @@ export function ProgrammePlayer({
   }, []);
 
   const saveDirtyResponses = useCallback(async (): Promise<boolean> => {
-    if (previewMode) return true;
+    if (readOnlyMode) return true;
     if (!release) return queue.current.size === 0;
     if (queue.current.size === 0) return true;
     setSaving(true);
@@ -804,7 +804,7 @@ export function ProgrammePlayer({
     setSaveState(success ? "saved" : "error");
     if (success) setError("");
     return success;
-  }, [mergeSnapshot, previewMode, programme, release]);
+  }, [mergeSnapshot, programme, readOnlyMode, release]);
 
   // Capture document-wide links, including the shared shell outside this player.
   useEffect(() => {
@@ -847,7 +847,7 @@ export function ProgrammePlayer({
       learnerName: snapshot?.profile.displayName,
       labAvailable: moduleLabIsLive,
       referenceOnly:
-        !previewMode &&
+        !readOnlyMode &&
         !moduleLabIsLive &&
         dayThreeIndex >= 0 &&
         selected > dayThreeIndex,
@@ -855,12 +855,26 @@ export function ProgrammePlayer({
       programmeDay: page.programmeDay,
       formativeCheckTarget: sessionDesign?.checkTarget,
       enableFormativeLearningChecks: Boolean(sessionDesign),
+      facilitatorMode,
+      facilitatorGuidance: facilitatorGuide ? {
+        discussionMove: facilitatorGuide.facilitatorMoves[0],
+      } : undefined,
     });
     documentRoot
       .querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>("[data-field-id]")
       .forEach((field) => {
         const id = field.dataset.fieldId;
         if (!id) return;
+        if (facilitatorMode) {
+          if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) {
+            field.checked = false;
+          } else {
+            field.value = "";
+          }
+          field.disabled = true;
+          if ("placeholder" in field) field.placeholder = "Learners write here";
+          return;
+        }
         const savedValue = drafts[id] ?? snapshot?.workbookResponses?.[id]?.value ?? "";
         if (field instanceof HTMLInputElement && field.type === "checkbox") {
           field.checked = savedValue === "true" || savedValue === field.value;
@@ -882,7 +896,9 @@ export function ProgrammePlayer({
     moduleLabIsLive,
     page,
     programme?.edition,
-    previewMode,
+    facilitatorGuide,
+    facilitatorMode,
+    readOnlyMode,
     selected,
     dayThreeIndex,
     section,
@@ -923,6 +939,7 @@ export function ProgrammePlayer({
   }, [saveDirtyResponses, saveState]);
 
   function onDocumentInput(event: FormEvent<HTMLElement>) {
+    if (facilitatorMode) return;
     const target = event.target;
     if (
       !(target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement || target instanceof HTMLSelectElement) ||
@@ -970,7 +987,7 @@ export function ProgrammePlayer({
 
   async function completePage() {
     if (!page || saving || completing) return;
-    if (previewMode) {
+    if (readOnlyMode) {
       if (programme && selected < programme.treatment.pages.length - 1) {
         goToProgrammePage(selected + 1);
       }
@@ -1055,7 +1072,7 @@ export function ProgrammePlayer({
 
   return (
     <EditionLanguageScope edition={snapshot.profile.deliveryEdition}>
-    <div className="prototype-player" data-edition={snapshot.profile.deliveryEdition}>
+    <div className={`prototype-player ${facilitatorMode ? "facilitator-viewer" : ""}`} data-edition={snapshot.profile.deliveryEdition}>
       <header className="prototype-topbar">
         <button
           type="button"
@@ -1067,7 +1084,12 @@ export function ProgrammePlayer({
           <strong>Behaviour Intelligence Series™</strong>
         </button>
         <div className="prototype-top-context">
-          {previewMode ? (
+          {facilitatorMode && facilitatorContext ? (
+            <>
+              <strong>Facilitator view · {facilitatorContext.cohortName}</strong>
+              <Link className="prototype-facilitator-return" href={facilitatorContext.returnTo}><ArrowLeft /> Back to group</Link>
+            </>
+          ) : previewMode ? (
             <strong>Preview mode · nothing here is saved to learner records</strong>
           ) : activeModuleRuntime?.experiment?.status === "ACTIVE" && experimentDay ? (
             <strong>Experiment Day {experimentDay} of 7</strong>
@@ -1214,14 +1236,16 @@ export function ProgrammePlayer({
             </details>
 
             <div className="prototype-save-state" aria-live="polite">
-              {previewMode
-                ? "Preview mode · test answers stay in this browser only"
+              {facilitatorMode
+                ? "Facilitator view · learner responses are private and are not shown or saved here"
+                : previewMode
+                  ? "Preview mode · test answers stay in this browser only"
                 : saveState === "saving"
                   ? "Saving workbook responses…"
                   : saveState === "dirty"
                     ? "Changes waiting to save…"
                     : saveState === "error" ? "Not saved — retry before leaving" : "Workbook responses saved"}
-              {!previewMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
+              {!readOnlyMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
 
             {labSequenceLocked && selected > dayThreeIndex ? (
@@ -1238,7 +1262,16 @@ export function ProgrammePlayer({
               </section>
             ) : null}
 
-            <fieldset className="workbook-fields" disabled={completing || (labSequenceLocked && selected > dayThreeIndex)}>
+            {facilitatorMode && facilitatorGuide ? (
+              <aside className="facilitator-inline-cue facilitator-inline-cue-start" role="note">
+                <span>Facilitator cue</span>
+                <strong>Read together, then ask before you explain.</strong>
+                <p>{facilitatorGuide.openingMove}</p>
+                <small>Invite one learner to read the next short section aloud. Stop at the key idea and ask the room what they noticed first.</small>
+              </aside>
+            ) : null}
+
+            <fieldset className="workbook-fields" disabled={facilitatorMode || completing || (labSequenceLocked && selected > dayThreeIndex)}>
             <article key={page.id} ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
@@ -1296,6 +1329,14 @@ export function ProgrammePlayer({
             </article>
             </fieldset>
 
+            {facilitatorMode && facilitatorGuide ? (
+              <aside className="facilitator-inline-cue facilitator-inline-cue-close" role="note">
+                <span>Facilitator cue · close</span>
+                <strong>End with the learner, not with another explanation.</strong>
+                <p>{facilitatorGuide.closeMove}</p>
+              </aside>
+            ) : null}
+
             {page.key === "Certificate" && completed.has(page.id) ? (
               <section className="handbook-next" aria-label="Continue learning">
                 <h2>Choose your next handbook</h2>
@@ -1323,9 +1364,11 @@ export function ProgrammePlayer({
                 onClick={() => void completePage()}
                 disabled={saving || completing || labSequenceLocked}
               >
-                {previewMode
-                  ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
-                  : labSequenceLocked
+                {facilitatorMode
+                  ? selected === programme.treatment.pages.length - 1 ? "End of learner experience" : "Next page"
+                  : previewMode
+                    ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
+                    : labSequenceLocked
                     ? moduleLabIsLive ? "Complete the Lab first" : "Continue after the Lab"
                     : completed.has(page.id)
                       ? "Reviewed"
@@ -1352,7 +1395,7 @@ export function ProgrammePlayer({
             <span><BisMark /></span>
             <div>
               <strong>Behaviour Intelligence Series™</strong>
-              <small>Learner menu</small>
+              <small>{facilitatorMode ? "Facilitator learner view" : "Learner menu"}</small>
             </div>
           </div>
           <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close menu">
@@ -1391,9 +1434,9 @@ export function ProgrammePlayer({
             </Link>
           ) : null}
           {hasStaffAccess ? (
-            <Link href="/workspace">
+            <Link href={facilitatorMode && facilitatorContext ? facilitatorContext.returnTo : "/workspace"}>
               <BriefcaseBusiness />
-              <span><strong>Staff workspace</strong><small>Tools for your programme role</small></span>
+              <span><strong>{facilitatorMode ? "Back to facilitator" : "Staff workspace"}</strong><small>{facilitatorMode ? "Return to your group" : "Tools for your programme role"}</small></span>
             </Link>
           ) : null}
         </div>
