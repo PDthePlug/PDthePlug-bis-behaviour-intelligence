@@ -19,6 +19,7 @@ import {
   LibraryBig,
   LockKeyhole,
   Menu,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
