@@ -83,6 +83,9 @@ test("document adapters carry factory capabilities into generated Lab packages",
   assert.match(adapter, /inspectLabSourceCapabilities/);
   assert.match(adapter, /factoryCapabilities: inspectLabSourceCapabilities\(sourceText\)/);
   assert.match(adapter, /sourceText = blocks\.map\(\(block\) => block\.text\)\.join/);
+  assert.match(adapter, /bindIndicatorContext/);
+  assert.match(adapter, /indicatorCode/);
+  assert.match(adapter, /indicatorLabel/);
 });
 
 test("Universal V2 upgrades rich Lab structures instead of flattening them", () => {
@@ -142,6 +145,60 @@ test("Universal V2 upgrades rich Lab structures instead of flattening them", () 
   assert.equal(computed["RSK.I9.PRIORITY"], "Account security");
 });
 
+test("Universal V2 carries authored BEIs into a governed indicator registry", () => {
+  const sourcePackage = {
+    kind: "LAB",
+    schemaVersion: "universal-lab-v1",
+    runtimeProfile: "UNIVERSAL_V1",
+    factoryCapabilities: {
+      ...inspectLabSourceCapabilities(riskSourceSignatures),
+      indicatorCodes: ["BEI-01", "BEI-02"],
+      derivedSignatures: [],
+      experiment: { detected: false, days: null },
+      repeatableEvidenceTable: false,
+      profileSummary: false,
+      requiresBehaviourRuntimeV2: true,
+    },
+    investigations: Array.from({ length: 9 }, (_, index) => ({
+      number: index + 1,
+      prompts: [],
+    })),
+  };
+  sourcePackage.investigations[0].prompts = [
+    {
+      id: "RSK.I1.AWARE",
+      label: "BEI-01-Pre",
+      prompt: "How aware are you of the risks in your life?",
+      required: true,
+      indicatorCode: "BEI-01",
+      indicatorLabel: "Risk Awareness Index (Pre)",
+    },
+    {
+      id: "RSK.I1.BASELINE.1",
+      label: "I check what could go wrong",
+      prompt: "I check what could go wrong",
+      required: true,
+      indicatorCode: "BEI-02",
+      indicatorLabel: "Risk Baseline Profile",
+    },
+    {
+      id: "RSK.I1.BASELINE.2",
+      label: "I prepare before acting",
+      prompt: "I prepare before acting",
+      required: true,
+      indicatorCode: "BEI-02",
+      indicatorLabel: "Risk Baseline Profile",
+    },
+  ];
+
+  const v2 = upgradeUniversalLabV2(sourcePackage);
+  assert.deepEqual(v2.indicatorRegistry.map((entry) => entry.code), ["BEI-01", "BEI-02"]);
+  assert.ok(v2.indicatorRegistry.every((entry) => entry.status === "BOUND"));
+  assert.equal(v2.indicatorRegistry[0].primaryPromptId, "RSK.I1.AWARE");
+  assert.equal(v2.indicatorRegistry[1].primaryPromptId, null);
+  assert.deepEqual(v2.indicatorRegistry[1].promptIds, ["RSK.I1.BASELINE.1", "RSK.I1.BASELINE.2"]);
+});
+
 test("Universal V2 experiment timing follows real calendar days", () => {
   assert.equal(experimentCalendarDay("2026-10-01T10:00:00.000Z", "2026-10-01", 7), 1);
   assert.equal(experimentCalendarDay("2026-10-01T10:00:00.000Z", "2026-10-03", 7), 3);
@@ -155,4 +212,5 @@ test("compiler automatically selects Universal V2 for rich source capabilities",
   assert.match(compiler, /schemaVersion: v2 \? "universal-lab-v2" : "universal-lab-v1"/);
   assert.match(compiler, /Universal V2 requires a valid real-world experiment contract/);
   assert.match(compiler, /Behaviour Profile projection contract/);
+  assert.match(compiler, /could not bind authored Behaviour Evidence Indicators to learner evidence fields/);
 });
