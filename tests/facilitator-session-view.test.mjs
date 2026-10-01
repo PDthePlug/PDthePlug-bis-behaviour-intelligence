@@ -92,6 +92,6 @@ test("facilitator view renders the complete 45-minute run sheet without exposing
   assert.match(player, /Stay in this programme/);
   assert.match(guide, /const DAY_GUIDES: Record<number, DayGuide>/);
   for (let day = 1; day <= 10; day += 1) {
-    assert.match(guide, new RegExp(String.raw`\n  ${day}: \\\{`));
+    assert.match(guide, new RegExp(String.raw`\n  ${day}: \{`));
   }
 });
