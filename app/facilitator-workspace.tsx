@@ -297,7 +297,7 @@ export function FacilitatorWorkspace({
               <Badge variant="outline">{label(cohort.status)}</Badge>
               <Link
                 className="facilitator-learner-experience-link"
-                href={`/handbooks/${cohort.labCode.toLowerCase()}?facilitator=1&group=${encodeURIComponent(cohort.id)}&section=learn&page=1&returnTo=${encodeURIComponent(`${pathname}?view=facilitator&group=${cohort.id}`)}`}
+                href={`/handbooks/${cohort.labCode.toLowerCase()}?facilitator=1&group=${encodeURIComponent(cohort.id)}&section=today&returnTo=${encodeURIComponent(`${pathname}?view=facilitator&group=${cohort.id}`)}`}
               >
                 <BookOpen /> Learner experience
               </Link>
