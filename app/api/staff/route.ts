@@ -736,6 +736,14 @@ async function postHandler(request: Request) {
     const roles = await getRoles(identity);
     requireAnyRole(roles, [...STAFF_ROLES]);
 
+    // Keep each restricted mutation visibly gated even when they share one handler.
+    if (action === "assignRole") {
+      requireRole(roles, "SYSTEM_ADMIN");
+    }
+    if (action === "updateRoleAssignment") {
+      requireRole(roles, "SYSTEM_ADMIN");
+    }
+
     if (action === "assignRole" || action === "updateRoleAssignment") {
       requireRole(roles, "SYSTEM_ADMIN");
       const principalEmail = normalizeEmail(String(body.email ?? ""));
@@ -880,6 +888,13 @@ async function postHandler(request: Request) {
         ...participantResult,
       });
       return Response.json(await staffSnapshot(identity, roles), { status: 201 });
+    }
+
+    if (action === "addCohortMember") {
+      requireRole(roles, "SYSTEM_ADMIN");
+    }
+    if (action === "addCohortParticipants") {
+      requireRole(roles, "SYSTEM_ADMIN");
     }
 
     if (action === "addCohortMember" || action === "addCohortParticipants") {
