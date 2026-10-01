@@ -77,6 +77,7 @@ type ContentVersion = {
   status: string;
   releaseNotes: string;
   compilerStatus: string;
+  compilerCurrent: boolean;
   compilerReport: {
     summary?: string;
     requiredEditions?: string[];
@@ -168,8 +169,9 @@ function formatDate(value: string | null | undefined) {
 
 function versionState(entry: ContentVersion) {
   if (entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") return { label: "Published", tone: "good" };
+  if (entry.compilerStatus === "COMPILED" && !entry.compilerCurrent) return { label: "Re-prepare required", tone: "bad" };
   if (entry.status === "APPROVED") return { label: "Ready to publish", tone: "good" };
-  if (entry.compilerStatus === "COMPILED") return { label: "Ready to review", tone: "good" };
+  if (entry.compilerStatus === "COMPILED" && entry.compilerCurrent) return { label: "Ready to review", tone: "good" };
   if (entry.compilerStatus === "FAILED" || entry.runtimeStatus === "BLOCKED") return { label: "Needs attention", tone: "bad" };
   return { label: "In progress", tone: "neutral" };
 }
@@ -597,7 +599,9 @@ export function ContentStudio() {
 
                 {selected.versions.map((entry) => {
                   const state = versionState(entry);
+                  const staleCompilation = entry.compilerStatus === "COMPILED" && !entry.compilerCurrent;
                   const canEdit = entry.status === "DRAFT";
+                  const canPrepare = canEdit || (staleCompilation && ["VALIDATED", "APPROVED"].includes(entry.status));
                   const sourceSlots = selected.kind === "LEARNING_MODULE"
                     ? editionSlots
                     : [{ key: "lab" as const, label: "Lab", note: "Interactive investigation" }];
@@ -638,7 +642,7 @@ export function ContentStudio() {
                         {sourceSlots.map((slot) => {
                           const source = entry.sourceFiles.find((candidate) => candidate.sourceKey === slot.key);
                           const artifactKey = slot.key === "lab" ? "lab:universal" : `learning:${slot.key}`;
-                          const prepared = entry.artifacts.some((artifact) => artifact.artifactKey === artifactKey);
+                          const prepared = entry.compilerCurrent && entry.artifacts.some((artifact) => artifact.artifactKey === artifactKey);
                           const liveEdition = slot.key !== "lab"
                             ? selected.activeEditions.some((activation) => activation.deliveryEdition === slot.key && activation.versionId === entry.id)
                               || (
@@ -704,11 +708,18 @@ export function ContentStudio() {
                         })}
                       </div>
 
+                      {staleCompilation ? (
+                        <div className="content-validation-summary bad">
+                          <strong>This version was prepared by an older BIS engine.</strong>
+                          <small>Prepare it again before preview, approval or publishing. Your uploaded source stays in place.</small>
+                        </div>
+                      ) : null}
+
                       {entry.compilerReport?.summary ? (
                         <div className={entry.compilerStatus === "FAILED" ? "content-validation-summary bad" : "content-validation-summary"}>
                           <strong>{entry.compilerStatus === "FAILED" ? "This version needs attention." : entry.compilerReport.summary}</strong>
                           {entry.compilerStatus === "FAILED" ? <small>{entry.compilerReport.summary}</small> : null}
-                          {entry.compilerStatus === "COMPILED" && selected.kind === "LAB" && entry.compilerReport.runtimeProfile ? (
+                          {entry.compilerStatus === "COMPILED" && entry.compilerCurrent && selected.kind === "LAB" && entry.compilerReport.runtimeProfile ? (
                             <div className="content-runtime-proof">
                               <span>{entry.compilerReport.runtimeProfile === "UNIVERSAL_V2" ? "Behaviour runtime V2" : "Universal Lab V1"}</span>
                               {(entry.compilerReport.detectedCapabilities ?? []).map((capability) => <span key={capability}>{capability}</span>)}
@@ -719,7 +730,7 @@ export function ContentStudio() {
                         </div>
                       ) : null}
 
-                      {entry.compilerStatus === "COMPILED" && ["VALIDATED", "APPROVED", "PUBLISHED"].includes(entry.status) ? (
+                      {entry.compilerStatus === "COMPILED" && entry.compilerCurrent && ["VALIDATED", "APPROVED", "PUBLISHED"].includes(entry.status) ? (
                         <section className="content-uat-card">
                           <header>
                             <div>
@@ -803,23 +814,23 @@ export function ContentStudio() {
                       {entry.releaseNotes ? <p className="content-release-notes"><strong>Note:</strong> {entry.releaseNotes}</p> : null}
 
                       <footer>
-                        {entry.status === "DRAFT" ? (
+                        {canPrepare ? (
                           <Button disabled={busy || !hasAnySource} onClick={() => void act(
                             { action: "compileVersion", versionId: entry.id },
                             selected.kind === "LEARNING_MODULE"
                               ? "Your uploaded edition is ready to preview."
                               : "Your Lab is ready to preview.",
                           )}>
-                            <PackageCheck /> Prepare preview
+                            <PackageCheck /> {staleCompilation ? "Re-prepare preview" : "Prepare preview"}
                           </Button>
                         ) : null}
-                        {entry.status === "VALIDATED" && finalCheckPassed ? (
+                        {entry.compilerCurrent && entry.status === "VALIDATED" && finalCheckPassed ? (
                           <Button disabled={busy} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Approved. You can publish when ready.")}>
                             <ShieldCheck /> Approve for publishing
                           </Button>
                         ) : null}
-                        {entry.status === "VALIDATED" && !finalCheckPassed ? <span className="activation-note"><Eye /> Preview and complete the final check first.</span> : null}
-                        {entry.status === "APPROVED" && finalCheckPassed ? (
+                        {entry.compilerCurrent && entry.status === "VALIDATED" && !finalCheckPassed ? <span className="activation-note"><Eye /> Preview and complete the final check first.</span> : null}
+                        {entry.compilerCurrent && entry.status === "APPROVED" && finalCheckPassed ? (
                           <Button disabled={busy} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, selected.kind === "LEARNING_MODULE" ? "Published the editions included in this version." : "Lab published.")}>
                             <PackageCheck /> Publish
                           </Button>
