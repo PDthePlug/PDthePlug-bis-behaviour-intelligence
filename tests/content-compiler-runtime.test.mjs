@@ -182,5 +182,5 @@ test("digital implementation metadata is manufactured rather than demanded from 
   assert.match(adapter, /inferTableResponseColumns/);
   assert.match(adapter, /responseColumns: inferTableResponseColumns\(tableRows\)/);
   assert.match(runtime, /makeBlankLearnerTableCellsEditable/);
-  assert.match(runtime, /[-–—]\{3,/);
+  assert.ok(runtime.includes("[-–—]{3,}"));
 });
