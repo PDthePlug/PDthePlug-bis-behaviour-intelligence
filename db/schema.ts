@@ -507,6 +507,9 @@ export const measurementValues = sqliteTable(
     id: text("id").primaryKey(),
     userId: text("user_id").notNull(),
     experimentId: text("experiment_id"),
+    enrolmentId: text("enrolment_id"),
+    labCode: text("lab_code"),
+    labVersion: text("lab_version"),
     code: text("code").notNull(),
     value: text("value"),
     status: text("status").notNull(),
@@ -520,7 +523,13 @@ export const measurementValues = sqliteTable(
       table.experimentId,
       table.code,
     ),
+    uniqueIndex("uq_measurement_user_enrolment_code").on(
+      table.userId,
+      table.enrolmentId,
+      table.code,
+    ),
     index("idx_measurement_user_id").on(table.userId),
+    index("idx_measurement_user_lab").on(table.userId, table.labCode, table.labVersion),
   ],
 );
 
