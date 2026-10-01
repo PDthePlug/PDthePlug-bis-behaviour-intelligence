@@ -45,7 +45,11 @@ test("Universal V2 derived values persist as enrolment-scoped measurements with 
   assert.match(route, /measurementValues/);
   assert.match(route, /measurementSources/);
   assert.match(route, /universalComputedLeafInputs/);
-  assert.match(route, /formulaVersion: "universal-lab-v2"/);
+  assert.match(route, /formulaVersion/);
+  assert.match(route, /universal-lab-v2:computed/);
+  assert.match(route, /universal-lab-v2:bei/);
+  assert.match(route, /indicatorRegistry/);
+  assert.match(route, /indicator\.code\.replace\("-", ""\)/);
   assert.match(route, /sourceObjectType: "RESPONSE"/);
   assert.match(schema, /enrolmentId: text\("enrolment_id"\)/);
   assert.match(schema, /uq_measurement_user_enrolment_code/);
