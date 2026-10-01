@@ -952,12 +952,16 @@ function markdownTablePairAt(lines: string[], index: number) {
   return /^\|\s*\|$/.test(marker) && /^\|\s*:?-{3,}:?\s*\|$/.test(separator);
 }
 
-function markdownTableCellText(lines: string[]) {
-  return decodeXml(lines.join(" "))
+function cleanMarkdownAuthoredText(value: string) {
+  return decodeXml(value)
     .replace(/\\([*_\.])/g, "$1")
     .replace(/\*+/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function markdownTableCellText(lines: string[]) {
+  return cleanMarkdownAuthoredText(lines.join(" "));
 }
 
 function markdownHeaderCell(value: string) {
@@ -1073,7 +1077,7 @@ function markdownBlocks(markdown: string) {
   let paragraph: string[] = [];
 
   const pushText = (text: string, heading = false) => {
-    const cleaned = text.trim().replace(/^[-*+]\s+/, "");
+    const cleaned = cleanMarkdownAuthoredText(text.trim().replace(/^[-*+]\s+/, ""));
     if (!cleaned) return;
     blocks.push({
       text: cleaned,
