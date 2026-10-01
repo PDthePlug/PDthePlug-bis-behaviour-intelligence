@@ -14,6 +14,7 @@ import {
   requireRole,
 } from "../../../../lib/bis-access";
 import { CONTENT_STUDIO_BUCKET, type ContentKind } from "../../../../lib/content-studio";
+import { CONTENT_COMPILER_VERSION } from "../../../../lib/content-compiler";
 import { artifactFingerprint, requiredPreviewKeys } from "../../../../lib/content-uat";
 import { requestSupabaseClient } from "../../../../lib/supabase/server";
 
@@ -48,6 +49,11 @@ async function handler(request: Request) {
     const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
     if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
       return Response.json({ error: "Only compiled draft versions can enter Activation UAT." }, { status: 409 });
+    }
+    if (version.compilerVersion !== CONTENT_COMPILER_VERSION) {
+      return Response.json({
+        error: "This preview was prepared by an older BIS engine. Prepare the version again before reviewing it.",
+      }, { status: 409 });
     }
     const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
     if (!item || item.status !== "ACTIVE") {
