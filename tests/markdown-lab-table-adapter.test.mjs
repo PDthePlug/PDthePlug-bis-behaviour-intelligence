@@ -174,6 +174,8 @@ test("Markdown Lab imports reconstruct serialized authored tables before manufac
     const lab = JSON.parse(new TextDecoder().decode(adapted));
 
     assert.equal(lab.investigations.length, 9);
+    assert.equal(lab.investigations[0].mission, "Investigate the evidence.");
+    assert.ok(lab.investigations.every((investigation) => !investigation.mission.includes("*")));
 
     const calibration = lab.investigations[2].prompts;
     assert.equal(calibration.length, 1);
