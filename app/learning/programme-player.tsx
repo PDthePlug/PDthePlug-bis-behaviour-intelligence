@@ -344,7 +344,30 @@ export function ProgrammePlayer({
         let moduleLive: Runtime | null = null;
         let loaded: HabitProgramme;
 
-        if (previewVersionId && previewEdition) {
+        if (facilitatorMode && facilitatorContext) {
+          loaded = await loadProgramme(facilitatorContext.edition, moduleCode);
+          learning = {
+            profile: {
+              displayName: facilitatorContext.cohortName,
+              deliveryEdition: facilitatorContext.edition,
+              deliveryContext: "facilitated",
+              language: "en",
+              timezone: "Africa/Johannesburg",
+            },
+            releases: [],
+            progress: [],
+            workbookResponses: {},
+          };
+          live = {
+            roles: ["FACILITATOR"],
+            enrolment: null,
+            hypothesis: null,
+            experiment: null,
+            events: [],
+            measurements: {},
+          };
+          moduleLive = null;
+        } else if (previewVersionId && previewEdition) {
           const previewResponse = await fetch(
             `/api/content-studio/preview?versionId=${encodeURIComponent(previewVersionId)}&artifact=${encodeURIComponent(`learning:${previewEdition}`)}`,
             { cache: "no-store", signal: controller.signal },
@@ -450,7 +473,7 @@ export function ProgrammePlayer({
       }
     })();
     return () => controller.abort();
-  }, [moduleCode, previewEdition, previewVersionId]);
+  }, [facilitatorContext, facilitatorMode, moduleCode, previewEdition, previewVersionId]);
 
   useEffect(() => {
     if (!programme) return;
@@ -471,6 +494,12 @@ export function ProgrammePlayer({
     () => page && programme ? sessionDesignForPage(page, programme.edition) : null,
     [page, programme],
   );
+  const facilitatorGuide = useMemo(
+    () => facilitatorMode && page?.programmeDay && programme
+      ? facilitatorSessionForDay(page.programmeDay, programme.edition)
+      : null,
+    [facilitatorMode, page, programme],
+  );
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
   const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
   const completed = useMemo(
@@ -490,11 +519,11 @@ export function ProgrammePlayer({
   const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
   const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
   const labPhaseAComplete =
-    previewMode ||
+    readOnlyMode ||
     Boolean(activeModuleRuntime?.enrolment?.phaseACompletedAt || activeModuleRuntime?.experiment);
   const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
   const labSequenceLocked =
-    !previewMode &&
+    !readOnlyMode &&
     !labPhaseAComplete &&
     dayThreeIndex >= 0 &&
     selected >= dayThreeIndex;
