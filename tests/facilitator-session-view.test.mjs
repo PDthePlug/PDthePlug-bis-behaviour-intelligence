@@ -5,34 +5,50 @@ import test from "node:test";
 const root = new URL("..", import.meta.url);
 const source = (path) => readFile(new URL(path, root), "utf8");
 
-test("facilitators get a dedicated classroom session view instead of learner-facing timing", async () => {
-  const [workspace, learner] = await Promise.all([
+test("facilitator uses the same learner experience with role-specific cues instead of a second session dashboard", async () => {
+  const [workspace, player, entry, enhancement] = await Promise.all([
     source("app/facilitator-workspace.tsx"),
     source("app/learning/programme-player.tsx"),
+    source("app/habit/programme-entry.tsx"),
+    source("app/learning/handbook-document-enhancements.ts"),
   ]);
 
-  assert.match(workspace, /type FacilitatorSection = "cohort" \| "session"/);
-  assert.match(workspace, />Session<\/button>/);
-  assert.match(workspace, /Facilitation experience/);
-  assert.match(workspace, /Run the room/);
-  assert.match(workspace, /Facilitator moves/);
-  assert.match(workspace, /Watch for/);
-  assert.match(workspace, /Close the session/);
-  assert.match(workspace, /BIS facilitation stance/);
-  assert.match(workspace, /45-minute facilitation rhythm/);
-  assert.doesNotMatch(learner, /prototype-session-plan/);
-  assert.doesNotMatch(learner, /3 learning checks/);
-  assert.doesNotMatch(learner, /facilitator moment/);
+  assert.doesNotMatch(workspace, /type FacilitatorSection = "cohort" \| "session"/);
+  assert.doesNotMatch(workspace, />Session<\/button>/);
+  assert.doesNotMatch(workspace, /Facilitation experience/);
+  assert.match(workspace, /Learner experience/);
+  assert.match(workspace, /facilitator=1/);
+  assert.match(entry, /viewerMode="facilitator"/);
+  assert.match(player, /facilitator-viewer/);
+  assert.match(player, /Read together, then ask before you explain/);
+  assert.match(player, /End with the learner, not with another explanation/);
+  assert.match(enhancement, /Facilitator cue · write first/);
+  assert.match(enhancement, /Facilitator cue · ask the room/);
 });
 
-test("facilitator session view can mirror static learner material without exposing learner responses", async () => {
-  const workspace = await source("app/facilitator-workspace.tsx");
+test("facilitator learner view is read-only and never loads learner workbook responses", async () => {
+  const [player, entry] = await Promise.all([
+    source("app/learning/programme-player.tsx"),
+    source("app/habit/programme-entry.tsx"),
+  ]);
 
-  assert.match(workspace, /\/api\/runtime-content\?kind=LEARNING_MODULE/);
-  assert.match(workspace, /Read-only learner material preview/);
-  assert.match(workspace, /Responses remain private and are not shown here/);
-  assert.match(workspace, /dangerouslySetInnerHTML=\{\{ __html: learnerPreviewHtml \}\}/);
-  assert.match(workspace, /strip|EXISTING\\s\+BIS\\s\+LAB\\s\+PLATFORM/i);
+  assert.match(player, /workbookResponses: \{\}/);
+  assert.match(player, /if \(facilitatorMode\) \{/);
+  assert.match(player, /field\.disabled = true/);
+  assert.match(player, /Learners write here/);
+  assert.match(player, /learner responses are private and are not shown or saved here/);
+  assert.match(player, /if \(readOnlyMode\) return true/);
+  assert.match(entry, /data\.roles\.includes\("FACILITATOR"\)/);
+  assert.match(entry, /cohort\.labCode !== moduleCode/);
+});
+
+test("facilitator shared learner view resolves the assigned cohort edition", async () => {
+  const entry = await source("app/habit/programme-entry.tsx");
+
+  assert.match(entry, /fetch\("\/api\/staff"/);
+  assert.match(entry, /learner\.cohortId \? learner\.cohortId === cohort\.id/);
+  assert.match(entry, /deliveryEdition/);
+  assert.match(entry, /editions\.length === 1 \? editions\[0\]! : "school"/);
 });
 
 test("facilitator progress is scoped to each cohort Lab and carries edition context", async () => {
