@@ -448,6 +448,7 @@ async function postHandler(request: Request) {
               runtimeProfile?: string;
               factoryCapabilities?: Parameters<typeof capabilitySummary>[0];
               computedFields?: unknown[];
+              indicatorRegistry?: Array<{ code?: string; status?: string }>;
               experiment?: { days?: number } | null;
               profile?: { entries?: unknown[] } | null;
             }
@@ -468,6 +469,11 @@ async function postHandler(request: Request) {
               ? capabilitySummary(preparedLab.factoryCapabilities)
               : [],
             calculatedFields: preparedLab.computedFields?.length ?? 0,
+            indicatorCount: preparedLab.indicatorRegistry?.length ?? 0,
+            unboundIndicators: preparedLab.indicatorRegistry
+              ?.filter((indicator) => indicator.status !== "BOUND")
+              .map((indicator) => indicator.code)
+              .filter(Boolean) ?? [],
             experimentDays: preparedLab.experiment?.days ?? null,
             profileEntries: preparedLab.profile?.entries?.length ?? 0,
           } : {}),

@@ -135,9 +135,12 @@ test("Content Studio exposes the prepared Lab runtime proof before publishing", 
   assert.match(api, /runtimeProfile: preparedLab\.runtimeProfile/);
   assert.match(api, /detectedCapabilities/);
   assert.match(api, /calculatedFields/);
+  assert.match(api, /indicatorCount/);
+  assert.match(api, /unboundIndicators/);
   assert.match(api, /experimentDays/);
   assert.match(api, /profileEntries/);
   assert.match(ui, /Behaviour runtime V2/);
+  assert.match(ui, /BEIs bound/);
   assert.match(ui, /calculated fields/);
   assert.match(ui, /profile entries/);
 });

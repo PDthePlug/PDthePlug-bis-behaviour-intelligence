@@ -1349,6 +1349,8 @@ type ImportedPrompt = {
   min?: number;
   max?: number;
   group?: string;
+  indicatorCode?: string;
+  indicatorLabel?: string;
 };
 
 type ImportedRenderBlock =
@@ -1543,6 +1545,65 @@ function isStandaloneField(value: string) {
   return false;
 }
 
+function indicatorReferences(value: string) {
+  const matches = [...String(value ?? "").matchAll(/\b(BEI-\d{2})(?:-(?:PRE|POST))?\s*:?[\t ]*([^<\n]{0,120})/gi)];
+  return matches.map((match) => {
+    const code = match[1].toUpperCase();
+    const rawLabel = cleanAuthoredText(match[2] ?? "")
+      .replace(/\*+/g, "")
+      .replace(/\\?_+/g, " ")
+      .replace(/^[-–—:\s]+|[-–—:\s]+$/g, "")
+      .trim();
+    const label = rawLabel
+      && !/^(?:pre|post)?\s*\d*\s*\/?\s*\d*$/i.test(rawLabel)
+      && rawLabel.length <= 100
+      ? rawLabel
+      : "";
+    return { code, label };
+  });
+}
+
+function bindIndicatorContext(prompts: ImportedPrompt[], renderBlocks: ImportedRenderBlock[]) {
+  const byId = new Map(prompts.map((prompt) => [prompt.id, prompt]));
+  const labels = new Map<string, string>();
+
+  for (const block of renderBlocks) {
+    const source = block.type === "HTML"
+      ? block.html
+      : promptTextForIndicator(byId.get(block.promptId));
+    for (const reference of indicatorReferences(source)) {
+      if (reference.label && !labels.has(reference.code)) labels.set(reference.code, reference.label);
+    }
+  }
+
+  let active: { code: string; label: string } | null = null;
+  for (const block of renderBlocks) {
+    if (block.type === "HTML") {
+      const references = indicatorReferences(block.html);
+      if (references.length) {
+        const reference = references.at(-1)!;
+        active = { code: reference.code, label: labels.get(reference.code) || reference.label };
+      }
+      continue;
+    }
+
+    const prompt = byId.get(block.promptId);
+    if (!prompt) continue;
+    const self = indicatorReferences(promptTextForIndicator(prompt)).at(-1);
+    const reference = self
+      ? { code: self.code, label: labels.get(self.code) || self.label }
+      : active;
+    if (!reference) continue;
+    prompt.indicatorCode = reference.code;
+    prompt.indicatorLabel = reference.label || labels.get(reference.code) || undefined;
+  }
+}
+
+function promptTextForIndicator(prompt?: ImportedPrompt) {
+  if (!prompt) return "";
+  return [prompt.id, prompt.label, prompt.prompt, prompt.group].filter(Boolean).join(" ");
+}
+
 function labBodyToRuntime(
   body: SourceBlock[],
   code: string,
@@ -1714,6 +1775,7 @@ function labBodyToRuntime(
     html.push(block.html);
   }
   flushHtml();
+  bindIndicatorContext(prompts, renderBlocks);
 
   return { prompts, renderBlocks };
 }

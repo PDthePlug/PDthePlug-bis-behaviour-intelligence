@@ -30,10 +30,21 @@ export type UniversalProfileEntry = {
   mode: "PROJECTION" | "INPUT";
 };
 
+export type UniversalIndicatorBinding = {
+  code: string;
+  label: string;
+  investigationNumbers: number[];
+  promptIds: string[];
+  computedPromptIds: string[];
+  primaryPromptId: string | null;
+  status: "BOUND" | "UNBOUND";
+};
+
 export type UniversalV2Additions = {
   schemaVersion: "universal-lab-v2";
   runtimeProfile: "UNIVERSAL_V2";
   computedFields: UniversalComputedField[];
+  indicatorRegistry: UniversalIndicatorBinding[];
   experiment: UniversalExperimentContract | null;
   profile: null | { investigation: number; entries: UniversalProfileEntry[] };
 };
