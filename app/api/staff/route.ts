@@ -833,57 +833,74 @@ async function postHandler(request: Request) {
       requireRole(roles, "SYSTEM_ADMIN");
       const name = String(body.name ?? "").trim();
       const facilitatorEmail = normalizeEmail(String(body.facilitatorEmail ?? ""));
-      const labVersion = String(body.labVersion ?? LAB_VERSION);
-      if (name.length < 3 || name.length > 100) throw new Error("Use a cohort name between 3 and 100 characters.");
+      const programmeFormat = String(body.programmeFormat ?? "SINGLE_LAB") as ProgrammeFormat;
+      if (!PROGRAMME_FORMATS.includes(programmeFormat)) throw new Error("Choose a programme format.");
+      const labCodes = programmeLabCodes(body.labCodes, programmeFormat);
+      const participantList = participantEmails(body.participantEmails);
+      const labVersion = labCodes.includes("HAB") ? String(body.labVersion ?? LAB_VERSION) : "ACTIVE";
+      if (name.length < 3 || name.length > 100) throw new Error("Use a group name between 3 and 100 characters.");
       if (!EMAIL_PATTERN.test(facilitatorEmail)) throw new Error("Enter a valid facilitator email.");
-      if (!SUPPORTED_LAB_VERSIONS.includes(labVersion as typeof LAB_VERSION)) throw new Error("Choose a supported canonical lab version.");
-      const [facilitatorRole] = await db
-        .select({ id: roleAssignments.id })
-        .from(roleAssignments)
-        .where(and(
-          eq(roleAssignments.principalEmail, facilitatorEmail),
-          eq(roleAssignments.role, "FACILITATOR"),
-          eq(roleAssignments.status, "ACTIVE"),
-        ))
-        .limit(1);
-      if (!facilitatorRole) throw new Error("Assign the facilitator role to this email before creating the cohort.");
+      if (labCodes.includes("HAB") && !SUPPORTED_LAB_VERSIONS.includes(labVersion as typeof LAB_VERSION)) {
+        throw new Error("Choose a supported Habit Lab version.");
+      }
+
       const id = crypto.randomUUID();
+      const primaryLabCode = labCodes[0];
       await db.insert(pilotCohorts).values({
         id,
         name,
+        labCode: primaryLabCode,
         labVersion,
+        programmeFormat,
+        labCodes: JSON.stringify(labCodes),
         facilitatorEmail,
         startsOn: String(body.startsOn ?? "") || null,
         endsOn: String(body.endsOn ?? "") || null,
         createdBy: identity.id,
       });
-      await staffAudit(identity, "PILOT_COHORT_CREATED", "PILOT_COHORT", id, { labVersion, facilitatorEmail });
+      await upsertRoleAssignment(identity, facilitatorEmail, "FACILITATOR", "COHORT", id);
+      const participantResult = participantList.length
+        ? await addParticipantsToCohort(identity, {
+            id,
+            name,
+            labCode: primaryLabCode,
+            labVersion,
+            programmeFormat,
+            labCodes: JSON.stringify(labCodes),
+            facilitatorEmail,
+            status: "ACTIVE",
+            startsOn: String(body.startsOn ?? "") || null,
+            endsOn: String(body.endsOn ?? "") || null,
+            createdBy: identity.id,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }, participantList)
+        : { added: 0, pending: 0 };
+
+      await staffAudit(identity, "PILOT_COHORT_CREATED", "PILOT_COHORT", id, {
+        programmeFormat,
+        labCodes,
+        facilitatorEmail,
+        participantCount: participantList.length,
+        ...participantResult,
+      });
       return Response.json(await staffSnapshot(identity, roles), { status: 201 });
     }
 
-    if (action === "addCohortMember") {
+    if (action === "addCohortMember" || action === "addCohortParticipants") {
       requireRole(roles, "SYSTEM_ADMIN");
       const cohortId = String(body.cohortId ?? "");
       const [cohort] = await db.select().from(pilotCohorts).where(eq(pilotCohorts.id, cohortId)).limit(1);
-      if (!cohort || cohort.status !== "ACTIVE") throw new Error("Choose an active pilot cohort.");
-      const learner = await learnerByEmail(String(body.learnerEmail ?? ""));
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      await db
-        .insert(cohortMembers)
-        .values({
-          id,
-          cohortId,
-          learnerUserId: learner.userId,
-          learnerEmail: normalizeEmail(learner.email),
-          addedBy: identity.id,
-        })
-        .onConflictDoUpdate({
-          target: [cohortMembers.cohortId, cohortMembers.learnerUserId],
-          set: { status: "ACTIVE", addedBy: identity.id, joinedAt: now, removedAt: null },
-        });
-      await assignLab(identity, learner, cohort.labVersion);
-      await staffAudit(identity, "COHORT_MEMBER_ADDED", "PILOT_COHORT", cohortId, { learnerUserId: learner.userId, labVersion: cohort.labVersion });
+      if (!cohort || cohort.status !== "ACTIVE") throw new Error("Choose an active programme group.");
+      const emails = action === "addCohortMember"
+        ? participantEmails([String(body.learnerEmail ?? "")])
+        : participantEmails(body.participantEmails);
+      if (!emails.length) throw new Error("Add at least one participant email.");
+      const result = await addParticipantsToCohort(identity, cohort, emails);
+      await staffAudit(identity, "COHORT_PARTICIPANTS_ADDED", "PILOT_COHORT", cohortId, {
+        participantCount: emails.length,
+        ...result,
+      });
       return Response.json(await staffSnapshot(identity, roles), { status: 201 });
     }
 
