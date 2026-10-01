@@ -736,51 +736,75 @@ async function postHandler(request: Request) {
     const roles = await getRoles(identity);
     requireAnyRole(roles, [...STAFF_ROLES]);
 
-    if (action === "assignRole") {
+    if (action === "assignRole" || action === "updateRoleAssignment") {
       requireRole(roles, "SYSTEM_ADMIN");
       const principalEmail = normalizeEmail(String(body.email ?? ""));
       const role = String(body.role ?? "") as StaffRole;
       if (!EMAIL_PATTERN.test(principalEmail)) throw new Error("Enter a valid staff email address.");
       if (!STAFF_ROLES.includes(role)) throw new Error("Choose a supported staff role.");
 
-      const organisationRole = role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
-      const scopeType = organisationRole ? "COHORT" : "GLOBAL";
-      const scopeId = organisationRole ? String(body.cohortId ?? "") : "GLOBAL";
-      if (organisationRole) {
+      const cohortScoped = role === "FACILITATOR" || role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
+      const scopeType: "GLOBAL" | "COHORT" = cohortScoped ? "COHORT" : "GLOBAL";
+      const scopeId = cohortScoped ? String(body.cohortId ?? "") : "GLOBAL";
+      if (cohortScoped) {
         const [cohort] = await db
           .select({ id: pilotCohorts.id })
           .from(pilotCohorts)
           .where(and(eq(pilotCohorts.id, scopeId), eq(pilotCohorts.status, "ACTIVE")))
           .limit(1);
-        if (!cohort) throw new Error("Choose an active programme group for organisation reporting.");
+        if (!cohort) throw new Error("Choose an active programme group for this access.");
       }
 
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      await db
-        .insert(roleAssignments)
-        .values({ id, principalEmail, role, scopeType, scopeId, assignedBy: identity.id })
-        .onConflictDoUpdate({
-          target: [roleAssignments.principalEmail, roleAssignments.role, roleAssignments.scopeType, roleAssignments.scopeId],
-          set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null },
-        });
-      const [assignment] = await db
-        .select({ id: roleAssignments.id })
-        .from(roleAssignments)
-        .where(and(
-          eq(roleAssignments.principalEmail, principalEmail),
-          eq(roleAssignments.role, role),
-          eq(roleAssignments.scopeType, scopeType),
+      const editingId = action === "updateRoleAssignment" ? String(body.assignmentId ?? "") : "";
+      if (editingId) {
+        const [previous] = await db.select().from(roleAssignments).where(eq(roleAssignments.id, editingId)).limit(1);
+        if (!previous || previous.status !== "ACTIVE") throw new Error("That active access assignment was not found.");
+        if (previous.role === "SYSTEM_ADMIN" && role !== "SYSTEM_ADMIN") {
+          const admins = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+            eq(roleAssignments.role, "SYSTEM_ADMIN"),
+            eq(roleAssignments.status, "ACTIVE"),
+          ));
+          if (admins.length <= 1) throw new Error("The final system administrator cannot be changed to another role.");
+        }
+        const now = new Date().toISOString();
+        await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, editingId));
+        if (
+          previous.role === "FACILITATOR"
+          && previous.scopeType === "COHORT"
+          && (previous.scopeId !== scopeId || role !== "FACILITATOR" || normalizeEmail(previous.principalEmail) !== principalEmail)
+        ) {
+          const [oldCohort] = await db.select({ facilitatorEmail: pilotCohorts.facilitatorEmail }).from(pilotCohorts)
+            .where(eq(pilotCohorts.id, previous.scopeId)).limit(1);
+          if (normalizeEmail(oldCohort?.facilitatorEmail ?? "") === normalizeEmail(previous.principalEmail)) {
+            await db.update(pilotCohorts).set({ facilitatorEmail: null, updatedAt: now }).where(eq(pilotCohorts.id, previous.scopeId));
+          }
+        }
+      }
+
+      if (role === "FACILITATOR") {
+        const existingFacilitators = await db.select().from(roleAssignments).where(and(
+          eq(roleAssignments.role, "FACILITATOR"),
+          eq(roleAssignments.scopeType, "COHORT"),
           eq(roleAssignments.scopeId, scopeId),
-        ))
-        .limit(1);
-      await staffAudit(identity, "STAFF_ROLE_ASSIGNED", "ROLE_ASSIGNMENT", assignment?.id ?? id, {
-        role,
-        principalEmail,
-        scopeType,
-        scopeId,
-      });
-      return Response.json(await staffSnapshot(identity, await getRoles(identity)), { status: 201 });
+          eq(roleAssignments.status, "ACTIVE"),
+        ));
+        const now = new Date().toISOString();
+        for (const current of existingFacilitators) {
+          if (normalizeEmail(current.principalEmail) === principalEmail) continue;
+          await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, current.id));
+        }
+        await db.update(pilotCohorts).set({ facilitatorEmail: principalEmail, updatedAt: now }).where(eq(pilotCohorts.id, scopeId));
+      }
+
+      const assignment = await upsertRoleAssignment(identity, principalEmail, role, scopeType, scopeId);
+      await staffAudit(
+        identity,
+        editingId ? "STAFF_ROLE_UPDATED" : "STAFF_ROLE_ASSIGNED",
+        "ROLE_ASSIGNMENT",
+        assignment.id,
+        { role, principalEmail, scopeType, scopeId, replacedAssignmentId: editingId || null },
+      );
+      return Response.json(await staffSnapshot(identity, await getRoles(identity)), { status: editingId ? 200 : 201 });
     }
 
     if (action === "revokeRole") {
