@@ -329,7 +329,12 @@ async function postHandler(request: Request) {
       }
 
       let nextInvestigation = investigationUnlockedAfterSave(investigation);
-      const enrolmentUpdate: Record<string, unknown> = { updatedAt: now };
+      const enrolmentUpdate: {
+        updatedAt: string;
+        currentInvestigation?: number;
+        phaseACompletedAt?: string;
+        experimentStartedAt?: string;
+      } = { updatedAt: now };
 
       if (
         runtime.definition.runtimeProfile === "UNIVERSAL_V2"
