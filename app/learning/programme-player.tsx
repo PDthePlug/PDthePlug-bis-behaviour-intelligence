@@ -1204,7 +1204,7 @@ export function ProgrammePlayer({
         ) : (
           <section className="prototype-page prototype-reader">
             <Link className="prototype-back-link" href={facilitatorMode && facilitatorContext ? facilitatorContext.returnTo : previewMode ? "/content-studio" : "/learn"}>
-              <ArrowLeft /> {facilitatorMode ? "Back to facilitator" : "Exit reader"}
+              {facilitatorMode ? <><ArrowLeft /> Back to facilitator</> : <><ArrowLeft /> Exit reader</>}
             </Link>
 
             <div className="prototype-reader-hero prototype-reader-hero-compact">
@@ -1288,7 +1288,7 @@ export function ProgrammePlayer({
               </aside>
             ) : null}
 
-            <fieldset className="workbook-fields" disabled={facilitatorMode || completing || (labSequenceLocked && selected > dayThreeIndex)}>
+            <fieldset className="workbook-fields" disabled={completing || (labSequenceLocked && selected > dayThreeIndex)}>
             <article key={page.id} ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
