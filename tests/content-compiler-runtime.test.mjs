@@ -32,6 +32,10 @@ test("learning compiler preserves the canonical 13-position Programme Player con
   assert.match(compiler, /workbook fields must stay inside/);
   assert.match(compiler, /data-purpose="LEARNING_RESPONSE"/);
   assert.match(compiler, /executable HTML is not allowed/);
+  assert.match(compiler, /ensureDigitalLabHandoff/);
+  assert.match(compiler, /data-bis-lab-handoff="start"/);
+  assert.match(compiler, /source: "COMPILER"/);
+  assert.doesNotMatch(compiler, /must include authored labHandoff/);
 });
 
 test("compiler emits immutable runtime artifacts and activation pointers", async () => {
@@ -117,6 +121,8 @@ test("Word PDF HTML Markdown and ZIP learning sources can be manufactured into P
   assert.match(adapters, /handbookChoice/);
   assert.match(adapters, /pseudoTableBlock/);
   assert.match(adapters, /answerColumn/);
+  assert.match(adapters, /inferTableResponseColumns/);
+  assert.match(adapters, /learnerResponseHeader/);
   assert.match(adapters, /word\/document\.xml/);
   assert.match(adapters, /PDF source contains no extractable text/);
   assert.match(adapters, /HTML source contains executable content/);
@@ -162,4 +168,19 @@ test("package templates still reflect executable runtime contracts", async () =>
   assert.equal(lab.schemaVersion, "universal-lab-v1");
   assert.equal(lab.runtimeProfile, "UNIVERSAL_V1");
   assert.equal(lab.investigations.length, 9);
+});
+
+
+test("digital implementation metadata is manufactured rather than demanded from authored books", async () => {
+  const [compiler, adapter, runtime] = await Promise.all([
+    source("lib/content-compiler.ts"),
+    source("lib/content-source-adapters.ts"),
+    source("app/learning/handbook-document-enhancements.ts"),
+  ]);
+  assert.match(compiler, /digitalLabHandoffBoundary/);
+  assert.match(compiler, /ensureDigitalLabHandoff/);
+  assert.match(adapter, /inferTableResponseColumns/);
+  assert.match(adapter, /responseColumns: inferTableResponseColumns\(tableRows\)/);
+  assert.match(runtime, /makeBlankLearnerTableCellsEditable/);
+  assert.ok(runtime.includes("[-–—]{3,}"));
 });

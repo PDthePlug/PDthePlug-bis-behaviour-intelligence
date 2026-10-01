@@ -582,8 +582,93 @@ function upgradePrintableCheckboxes(root: HTMLElement, pageId: string) {
   });
 }
 
-function enhanceTables(root: HTMLElement) {
+function tableResponseHeader(value: string) {
+  const header = normalise(value).toLowerCase();
+  if (!header) return false;
+  return /^(?:your|my)\b/.test(header)
+    || /\b(?:your|my)\s+(?:answer|response|cue|entry|note|notes|action|evidence|example|value|observation|reflection|plan)\b/.test(header);
+}
+
+function blankWorkbookCell(value: string) {
+  const text = normalise(value)
+    .replace(/[_—–-]{2,}/g, "")
+    .replace(/\.{3,}/g, "")
+    .trim();
+  return text === "";
+}
+
+function createTableResponse(
+  labCode: LabCode,
+  pageId: string,
+  prompt: string,
+  identitySeed: string,
+  multiline: boolean,
+) {
+  const token = hashPrompt(`${pageId}|table-cell|${identitySeed}`);
+  const field = multiline ? document.createElement("textarea") : document.createElement("input");
+  field.className = multiline
+    ? "response compiled-workbook-response handbook-table-response"
+    : "handbook-inline-response handbook-table-response";
+  field.dataset.fieldId = `${labCode}.WB.AUTO.TABLE.${token}`;
+  field.dataset.sourceKey = `table-cell-${token.toLowerCase()}`;
+  field.dataset.purpose = "LEARNING_RESPONSE";
+  field.dataset.privacyClass = "P3";
+  field.setAttribute("aria-label", prompt);
+  if (field instanceof HTMLTextAreaElement) {
+    field.rows = 2;
+    field.maxLength = 20000;
+    field.placeholder = "Write your response…";
+  } else {
+    field.type = "text";
+    field.placeholder = "Write here…";
+  }
+  return field;
+}
+
+function makeBlankLearnerTableCellsEditable(table: HTMLTableElement, labCode: LabCode, pageId: string) {
+  if (table.closest(".prototype-reference,.checkpoint-answer-panel")) return;
+  const headerCells = [...table.querySelectorAll<HTMLTableCellElement>("thead th")];
+  const firstRow = table.rows[0];
+  const headers = headerCells.length
+    ? headerCells.map((cell) => normalise(cell.textContent ?? ""))
+    : firstRow
+      ? [...firstRow.cells].map((cell) => normalise(cell.textContent ?? ""))
+      : [];
+  if (!headers.length) return;
+
+  const responseColumns = headers
+    .map((header, index) => tableResponseHeader(header) ? index : -1)
+    .filter((index) => index >= 0);
+  if (!responseColumns.length) return;
+
+  const bodyRows = table.tBodies.length
+    ? [...table.tBodies].flatMap((body) => [...body.rows])
+    : [...table.rows].slice(headerCells.length ? 0 : 1);
+
+  bodyRows.forEach((row, rowIndex) => {
+    const rowLabel = normalise(row.cells[0]?.textContent ?? "") || `Row ${rowIndex + 1}`;
+    for (const columnIndex of responseColumns) {
+      const cell = row.cells[columnIndex];
+      if (!cell || cell.querySelector("[data-field-id],input,textarea,select")) continue;
+      if (!blankWorkbookCell(cell.textContent ?? "")) continue;
+      const header = headers[columnIndex] || "Your response";
+      const prompt = `${rowLabel} — ${header}`;
+      const multiline = /\b(?:notes?|reflection|evidence|observation|explain|why|how)\b/i.test(header);
+      cell.textContent = "";
+      cell.append(createTableResponse(
+        labCode,
+        pageId,
+        prompt,
+        `${header}|${rowLabel}|${rowIndex + 1}|${columnIndex}`,
+        multiline,
+      ));
+    }
+  });
+}
+
+function enhanceTables(root: HTMLElement, labCode: LabCode, pageId: string) {
   root.querySelectorAll<HTMLTableElement>("table").forEach((table) => {
+    makeBlankLearnerTableCellsEditable(table, labCode, pageId);
     const hasLabels = Boolean(table.querySelector("td[data-label],th[data-label]"));
     table.classList.toggle("handbook-data-table", hasLabels);
     table.classList.toggle("handbook-scroll-table", !hasLabels);
@@ -847,7 +932,7 @@ function convertNumberedPaperBlanks(root: HTMLElement, labCode: LabCode, pageId:
   root.querySelectorAll<HTMLElement>("p").forEach((element) => {
     if (element.dataset.digitalNumberedField === "true" || element.querySelector("[data-field-id]")) return;
     const text = normalise(element.textContent ?? "");
-    const match = text.match(/^(\d+)[.)]\s*(?:_{3,})?$/);
+    const match = text.match(/^(\d+)[.)]\s*(?:(?:_{3,}|\.{3,}|[-–—]{3,}))?$/);
     if (!match) return;
     const context = nearbyWorksheetContext(element);
     if (!context) return;
@@ -1162,7 +1247,7 @@ export function enhanceHandbookDocument(
   labelAuthoredResponses(root);
   removeUnboundGenericResponses(root);
   upgradePrintableCheckboxes(root, pageId);
-  enhanceTables(root);
+  enhanceTables(root, labCode, pageId);
   applyKnownValues(root, context);
   applyKnownTableValues(root, context);
   replacePaperIdentityFields(root, context, labCode, pageId);

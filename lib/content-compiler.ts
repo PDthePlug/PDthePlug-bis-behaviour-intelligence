@@ -10,7 +10,7 @@ import {
 } from "./universal-lab-v2.mjs";
 import { sha256Hex } from "./content-studio";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-2";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-3";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -215,6 +215,46 @@ function validatePageHtml(html: string, key: string) {
   if (unsafeHtml.test(html)) throw new Error(`${key}: executable HTML is not allowed.`);
 }
 
+function digitalLabHandoffBoundary(html: string) {
+  if (!html.trim()) return -1;
+  const minimum = Math.floor(html.length * 0.18);
+  const maximum = Math.floor(html.length * 0.7);
+
+  const responseEnds = [...html.matchAll(/<\/textarea>/gi)]
+    .map((match) => (match.index ?? -1) + match[0].length)
+    .filter((index) => index >= minimum && index <= maximum);
+  if (responseEnds.length) return responseEnds[0];
+
+  const structural = [...html.matchAll(/<(?:hr|h2|h3|h4)\b[^>]*>/gi)]
+    .map((match) => match.index ?? -1)
+    .find((index) => index >= Math.floor(html.length * 0.28) && index <= maximum);
+  if (structural !== undefined) return structural;
+
+  const paragraphEnd = html.indexOf("</p>", Math.floor(html.length * 0.32));
+  return paragraphEnd >= 0 ? paragraphEnd + 4 : Math.floor(html.length * 0.5);
+}
+
+function ensureDigitalLabHandoff(
+  html: string,
+  existing?: { startMarker?: string; endMarker?: string },
+) {
+  const authoredStart = text(existing?.startMarker);
+  const authoredEnd = text(existing?.endMarker);
+  if (authoredStart && authoredEnd && html.includes(authoredStart) && html.includes(authoredEnd)) {
+    return { html, startMarker: authoredStart, endMarker: authoredEnd, source: "AUTHORED" as const };
+  }
+
+  const boundary = Math.max(0, digitalLabHandoffBoundary(html));
+  const startMarker = '<span data-bis-lab-handoff="start" aria-hidden="true"></span>';
+  const endMarker = '<span data-bis-lab-handoff="end" aria-hidden="true"></span>';
+  return {
+    html: html.slice(0, boundary) + startMarker + html.slice(boundary) + endMarker,
+    startMarker,
+    endMarker,
+    source: "COMPILER" as const,
+  };
+}
+
 async function canonicalHash(value: unknown) {
   const bytes = new TextEncoder().encode(JSON.stringify(value));
   return sha256Hex(bytes);
@@ -254,8 +294,12 @@ export async function compileLearningEdition(
     if (key !== expectedKey) {
       throw new Error(`${edition}: programme position ${index + 1} must be "${expectedKey}", received "${key || "missing"}".`);
     }
-    const html = sanitizeContentHtml(ensureWorkbookBindings(text(page.html), expectedCode, edition, key));
-    validatePageHtml(html, key);
+    const preparedHtml = sanitizeContentHtml(ensureWorkbookBindings(text(page.html), expectedCode, edition, key));
+    validatePageHtml(preparedHtml, key);
+    const handoff = key === "Day 3"
+      ? ensureDigitalLabHandoff(preparedHtml, object(page.labHandoff) as { startMarker?: string; endMarker?: string } | undefined)
+      : null;
+    const html = handoff?.html ?? preparedHtml;
     const id = programmeStep(expectedCode, key);
     const authoredId = text(page.id);
     if (authoredId && authoredId !== id) throw new Error(`${edition}: ${key} must use semantic step ID ${id}.`);
@@ -267,10 +311,11 @@ export async function compileLearningEdition(
       programmeDay: typeof page.programmeDay === "number" ? page.programmeDay : programmeDay(key),
       experimentPosition: page.experimentPosition == null ? null : String(page.experimentPosition),
       html,
-      ...(object(page.labHandoff)
+      ...(handoff
         ? { labHandoff: {
-            startMarker: text(object(page.labHandoff)?.startMarker),
-            endMarker: text(object(page.labHandoff)?.endMarker),
+            startMarker: handoff.startMarker,
+            endMarker: handoff.endMarker,
+            source: handoff.source,
           } }
         : {}),
     };
@@ -283,7 +328,7 @@ export async function compileLearningEdition(
     !dayThree.html.includes(dayThree.labHandoff.startMarker) ||
     !dayThree.html.includes(dayThree.labHandoff.endMarker)
   ) {
-    throw new Error(`${edition}: Day 3 must include authored labHandoff startMarker and endMarker anchors inside the Day 3 content.`);
+    throw new Error(`${edition}: BIS could not create the Day 3 Lab handover boundary.`);
   }
 
   const fieldIds = compiledPages.flatMap((page) => [...page.html.matchAll(/data-field-id="([^"]+)"/g)].map((match) => match[1]));

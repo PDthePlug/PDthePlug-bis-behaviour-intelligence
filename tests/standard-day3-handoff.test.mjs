@@ -82,12 +82,16 @@ test("post-Lab programme completion stays locked until Phase A really exists", a
 });
 
 
-test("new learning packages must carry authored Day 3 handover anchors", async () => {
+test("the compiler manufactures the Day 3 Lab handover when books do not contain digital anchors", async () => {
   const compiler = await source("lib/content-compiler.ts");
 
-  assert.match(compiler, /Day 3 must include authored labHandoff startMarker and endMarker anchors/);
+  assert.match(compiler, /ensureDigitalLabHandoff/);
+  assert.match(compiler, /data-bis-lab-handoff="start"/);
+  assert.match(compiler, /data-bis-lab-handoff="end"/);
+  assert.match(compiler, /source: "COMPILER"/);
   assert.match(compiler, /dayThree\.html\.includes\(dayThree\.labHandoff\.startMarker\)/);
   assert.match(compiler, /dayThree\.html\.includes\(dayThree\.labHandoff\.endMarker\)/);
+  assert.doesNotMatch(compiler, /must include authored labHandoff/);
 });
 
 test("source-ready Labs use a restrained Day 3 bridge without pretending the Lab does not exist", async () => {
