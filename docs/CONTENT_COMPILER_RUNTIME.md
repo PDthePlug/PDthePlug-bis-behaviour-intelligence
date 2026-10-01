@@ -110,6 +110,8 @@ Learning Modules render through Programme Player and keep the canonical learner 
 
 Universal Labs render through `LabInvestigationFrame` and keep the shared nine-investigation navigation and responsive layout.
 
+Before a document-based Lab is compiled, Content Studio runs a capability preflight. A Lab that contains behavioural-runtime features that Universal V1 cannot execute — such as derived measures, a real multi-day experiment, repeatable evidence rows or a Behaviour Profile projection — is blocked rather than flattened into generic prompts. Risk Lab is the first acceptance specimen for that V2 contract.
+
 Raw uploaded source files are private to the Super User. Learners receive only prepared runtime content.
 
 ## Final check before publishing
