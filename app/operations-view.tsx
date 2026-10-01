@@ -79,11 +79,14 @@ type Cohort = {
   name: string;
   labCode: string;
   labVersion: string;
-  facilitatorEmail: string;
+  programmeFormat: string;
+  labCodes: string[];
+  facilitatorEmail: string | null;
   status: string;
   startsOn: string | null;
   endsOn: string | null;
   memberCount?: number;
+  pendingCount?: number;
   memberIds?: string[];
 };
 
@@ -129,6 +132,7 @@ type StaffSnapshot = {
     cohorts: Cohort[];
     labAssignments: Array<{ id: string; learnerEmail: string; labVersion: string; status: string; assignedAt: string }>;
     supportedLabVersions: string[];
+    availableLabs: Array<{ code: string; title: string; status: string }>;
   };
   facilitator: null | {
     cohorts: Cohort[];
@@ -284,15 +288,235 @@ function AdminPanel({ data, identity, saving, act }: { data: NonNullable<StaffSn
   const [roleEmail, setRoleEmail] = useState(identity.email);
   const [role, setRole] = useState("FACILITATOR");
   const [roleCohortId, setRoleCohortId] = useState(data.cohorts[0]?.id ?? "");
+  const [editingAssignmentId, setEditingAssignmentId] = useState("");
   const [cohortName, setCohortName] = useState("");
   const [facilitatorEmail, setFacilitatorEmail] = useState(identity.email);
+  const [programmeFormat, setProgrammeFormat] = useState("SINGLE_LAB");
+  const [programmeLabs, setProgrammeLabs] = useState<string[]>(["HAB"]);
+  const [labToAdd, setLabToAdd] = useState("HAB");
+  const [participantEmails, setParticipantEmails] = useState("");
   const [cohortId, setCohortId] = useState(data.cohorts[0]?.id ?? "");
-  const [learnerEmail, setLearnerEmail] = useState(data.learners[0]?.email ?? "");
-  const [versionLearnerEmail, setVersionLearnerEmail] = useState(data.learners[0]?.email ?? "");
+  const [moreParticipantEmails, setMoreParticipantEmails] = useState("");
   const [labVersion, setLabVersion] = useState(data.supportedLabVersions[0] ?? "4.5.2");
   const activeRoles = data.roleAssignments.filter((assignment) => assignment.status === "ACTIVE");
+  const scopedRole = role === "FACILITATOR" || role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
 
-  return <div className="ops-stack"><section className="ops-metrics"><article><UserCog /><span>Learners in BIS</span><strong>{data.metrics.learners}</strong></article><article><ClipboardCheck /><span>Labs completed</span><strong>{data.metrics.completed}</strong></article><article><Activity /><span>Real-world tests running</span><strong>{data.metrics.experimentActive}</strong></article><article><ShieldAlert /><span>Open support cases</span><strong>{data.metrics.openSafeguardingCases}</strong><small>Group count only</small></article></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Access</p><h2>Manage access</h2><p>Choose what each person can access.</p></div><UserCog /></div><div className="ops-form-row"><Input type="email" value={roleEmail} onChange={(event) => setRoleEmail(event.target.value)} placeholder="staff@example.org" /><Select value={role} onValueChange={setRole}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR">Facilitator</SelectItem><SelectItem value="SAFEGUARDING_OFFICER">Safeguarding officer</SelectItem><SelectItem value="SPONSOR_VIEWER">Programme results · view only</SelectItem><SelectItem value="PROGRAMME_OWNER">Programme lead · decisions</SelectItem><SelectItem value="SYSTEM_ADMIN">BIS administrator</SelectItem></SelectContent></Select>{(role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? <Select value={roleCohortId} onValueChange={setRoleCohortId}><SelectTrigger><SelectValue placeholder="Programme" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select> : null}<Button disabled={saving || !roleEmail || ((role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") && !roleCohortId)} onClick={() => void act({ action: "assignRole", email: roleEmail, role, cohortId: (role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? roleCohortId : undefined })}><UserPlus /> Give access</Button></div><div className="ops-role-list">{activeRoles.map((assignment) => <div key={assignment.id}><span><strong>{assignment.principalEmail}</strong><small>{label(assignment.role)}{assignment.scopeType === "COHORT" ? ` · group ${data.cohorts.find((cohort) => cohort.id === assignment.scopeId)?.name ?? assignment.scopeId}` : ""} · assigned {formatDate(assignment.assignedAt)}</small></span><Button variant="outline" size="sm" disabled={saving} onClick={() => void act({ action: "revokeRole", assignmentId: assignment.id })}>Remove access</Button></div>)}</div></section><section className="ops-two-column"><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Programmes</p><h2>Create a group</h2></div><Users /></div><div className="ops-form-stack"><label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Habit Lab pilot · Group A" /></label><label>Assigned facilitator<Input type="email" value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} /></label><label>Habit Lab version<Select value={labVersion} onValueChange={setLabVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{data.supportedLabVersions.map((version) => <SelectItem key={version} value={version}>Habit Lab {version}</SelectItem>)}</SelectContent></Select></label><Button disabled={saving || !cohortName || !facilitatorEmail} onClick={async () => { if (await act({ action: "createCohort", name: cohortName, facilitatorEmail, labVersion })) setCohortName(""); }}><Plus /> Create group</Button></div><div className="ops-cohort-list">{data.cohorts.map((cohort) => <div key={cohort.id}><span><strong>{cohort.name}</strong><small>{cohort.facilitatorEmail} · {cohort.memberCount ?? 0} learners</small></span><Badge variant="outline">v{cohort.labVersion}</Badge></div>)}</div></div><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Learners</p><h2>Add a learner</h2></div><UserPlus /></div><div className="ops-form-stack"><label>Active group<Select value={cohortId} onValueChange={setCohortId}><SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select></label><label>Learner email<Input type="email" value={learnerEmail} onChange={(event) => setLearnerEmail(event.target.value)} placeholder="learner@example.org" /></label><Button disabled={saving || !cohortId || !learnerEmail} onClick={() => void act({ action: "addCohortMember", cohortId, learnerEmail })}>Add learner</Button></div><div className="ops-divider" /><div className="ops-form-stack"><p className="ops-helper">Give a learner a Habit Lab version without adding them to a group.</p><label>Learner email<Input type="email" value={versionLearnerEmail} onChange={(event) => setVersionLearnerEmail(event.target.value)} /></label><Button variant="outline" disabled={saving || !versionLearnerEmail} onClick={() => void act({ action: "assignLabVersion", learnerEmail: versionLearnerEmail, labVersion })}>Assign Habit Lab {labVersion}</Button></div></div></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2><p>Shows how often learners had a real chance to test the behaviour.</p></div><Activity /></div><div className="opportunity-bands"><div><span>No opportunity</span><strong>{data.metrics.opportunityBands.none}</strong></div><div><span>One</span><strong>{data.metrics.opportunityBands.one}</strong></div><div><span>Two</span><strong>{data.metrics.opportunityBands.two}</strong></div><div><span>Three or more</span><strong>{data.metrics.opportunityBands.threePlus}</strong></div></div></section><section><div className="ops-section-heading"><div><p className="eyebrow">Learners</p><h2>Learner progress</h2></div><Badge variant="outline">Private responses hidden</Badge></div><div className="ops-learner-grid">{data.learners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div></section></div>;
+  function editAssignment(assignment: RoleAssignment) {
+    setEditingAssignmentId(assignment.id);
+    setRoleEmail(assignment.principalEmail);
+    setRole(assignment.role);
+    setRoleCohortId(assignment.scopeType === "COHORT" ? assignment.scopeId : data.cohorts[0]?.id ?? "");
+  }
+
+  function cancelAccessEdit() {
+    setEditingAssignmentId("");
+    setRoleEmail(identity.email);
+    setRole("FACILITATOR");
+    setRoleCohortId(data.cohorts[0]?.id ?? "");
+  }
+
+  async function saveAccess() {
+    const ok = await act({
+      action: editingAssignmentId ? "updateRoleAssignment" : "assignRole",
+      assignmentId: editingAssignmentId || undefined,
+      email: roleEmail,
+      role,
+      cohortId: scopedRole ? roleCohortId : undefined,
+    });
+    if (ok) cancelAccessEdit();
+  }
+
+  function addProgrammeLab() {
+    if (!labToAdd) return;
+    if (programmeFormat === "SINGLE_LAB") {
+      setProgrammeLabs([labToAdd]);
+      return;
+    }
+    setProgrammeLabs((current) => current.includes(labToAdd) ? current : [...current, labToAdd]);
+  }
+
+  function removeProgrammeLab(code: string) {
+    setProgrammeLabs((current) => current.filter((item) => item !== code));
+  }
+
+  function changeProgrammeFormat(value: string) {
+    setProgrammeFormat(value);
+    if (value === "SINGLE_LAB" && programmeLabs.length > 1) setProgrammeLabs([programmeLabs[0]]);
+  }
+
+  async function createGroup() {
+    const ok = await act({
+      action: "createCohort",
+      name: cohortName,
+      facilitatorEmail,
+      programmeFormat,
+      labCodes: programmeLabs,
+      participantEmails,
+      labVersion,
+    });
+    if (!ok) return;
+    setCohortName("");
+    setParticipantEmails("");
+  }
+
+  return (
+    <div className="ops-stack">
+      <section className="ops-metrics">
+        <article><UserCog /><span>Learners in BIS</span><strong>{data.metrics.learners}</strong></article>
+        <article><ClipboardCheck /><span>Labs completed</span><strong>{data.metrics.completed}</strong></article>
+        <article><Activity /><span>Real-world tests running</span><strong>{data.metrics.experimentActive}</strong></article>
+        <article><ShieldAlert /><span>Open support cases</span><strong>{data.metrics.openSafeguardingCases}</strong><small>Group count only</small></article>
+      </section>
+
+      <section className="surface-card ops-section">
+        <div className="section-title">
+          <div><p className="eyebrow">Access</p><h2>{editingAssignmentId ? "Edit access" : "Manage access"}</h2><p>Choose the role and, where relevant, the programme group.</p></div>
+          <UserCog />
+        </div>
+        <div className="ops-form-row">
+          <Input type="email" value={roleEmail} onChange={(event) => setRoleEmail(event.target.value)} placeholder="staff@example.org" />
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="FACILITATOR">Facilitator</SelectItem>
+              <SelectItem value="SAFEGUARDING_OFFICER">Safeguarding officer</SelectItem>
+              <SelectItem value="SPONSOR_VIEWER">Programme results · view only</SelectItem>
+              <SelectItem value="PROGRAMME_OWNER">Programme lead · decisions</SelectItem>
+              <SelectItem value="SYSTEM_ADMIN">BIS administrator</SelectItem>
+            </SelectContent>
+          </Select>
+          {scopedRole ? (
+            <Select value={roleCohortId} onValueChange={setRoleCohortId}>
+              <SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger>
+              <SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent>
+            </Select>
+          ) : null}
+          <Button disabled={saving || !roleEmail || (scopedRole && !roleCohortId)} onClick={() => void saveAccess()}>
+            <UserPlus /> {editingAssignmentId ? "Save access" : "Give access"}
+          </Button>
+          {editingAssignmentId ? <Button variant="outline" disabled={saving} onClick={cancelAccessEdit}>Cancel</Button> : null}
+        </div>
+        <div className="ops-role-list">
+          {activeRoles.map((assignment) => (
+            <div key={assignment.id}>
+              <span>
+                <strong>{assignment.principalEmail}</strong>
+                <small>{label(assignment.role)}{assignment.scopeType === "COHORT" ? ` · group ${data.cohorts.find((cohort) => cohort.id === assignment.scopeId)?.name ?? assignment.scopeId}` : ""} · assigned {formatDate(assignment.assignedAt)}</small>
+              </span>
+              <span className="ops-inline-actions">
+                <Button variant="outline" size="sm" disabled={saving} onClick={() => editAssignment(assignment)}>Edit</Button>
+                <Button variant="outline" size="sm" disabled={saving} onClick={() => void act({ action: "revokeRole", assignmentId: assignment.id })}>Remove access</Button>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="ops-two-column">
+        <div className="surface-card ops-section">
+          <div className="section-title">
+            <div><p className="eyebrow">Programmes</p><h2>Create a programme group</h2><p>Set up the facilitator, Labs and participant list together.</p></div>
+            <Users />
+          </div>
+          <div className="ops-form-stack">
+            <label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Leap9 · Group A" /></label>
+            <label>Facilitator email<Input type="email" value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} /></label>
+            <label>Programme format
+              <Select value={programmeFormat} onValueChange={changeProgrammeFormat}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SINGLE_LAB">Single Lab</SelectItem>
+                  <SelectItem value="PILOT">Pilot</SelectItem>
+                  <SelectItem value="SIX_CYCLE">Six-Lab cycle</SelectItem>
+                  <SelectItem value="CUSTOM">Custom programme</SelectItem>
+                </SelectContent>
+              </Select>
+            </label>
+            <label>Labs
+              <div className="ops-form-row">
+                <Select value={labToAdd} onValueChange={setLabToAdd}>
+                  <SelectTrigger><SelectValue placeholder="Choose a Lab" /></SelectTrigger>
+                  <SelectContent>{data.availableLabs.map((lab) => <SelectItem key={lab.code} value={lab.code}>{lab.code} · {lab.title}</SelectItem>)}</SelectContent>
+                </Select>
+                <Button type="button" variant="outline" onClick={addProgrammeLab}>Add Lab</Button>
+              </div>
+            </label>
+            <div className="ops-role-list">
+              {programmeLabs.map((code) => {
+                const lab = data.availableLabs.find((item) => item.code === code);
+                return (
+                  <div key={code}>
+                    <span><strong>{lab?.title ?? code}</strong><small>{code}{lab?.status === "live" ? " · available now" : " · publishes when ready"}</small></span>
+                    <Button type="button" variant="outline" size="sm" disabled={programmeLabs.length === 1} onClick={() => removeProgrammeLab(code)}>Remove</Button>
+                  </div>
+                );
+              })}
+            </div>
+            {programmeLabs.includes("HAB") ? (
+              <label>Habit Lab version
+                <Select value={labVersion} onValueChange={setLabVersion}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{data.supportedLabVersions.map((version) => <SelectItem key={version} value={version}>Habit Lab {version}</SelectItem>)}</SelectContent>
+                </Select>
+              </label>
+            ) : null}
+            <label>Participant emails <span>(optional)</span>
+              <Textarea value={participantEmails} onChange={(event) => setParticipantEmails(event.target.value)} placeholder={"one@email.org\nanother@email.org\nthird@email.org"} />
+            </label>
+            <Button disabled={saving || !cohortName || !facilitatorEmail || programmeLabs.length === 0} onClick={() => void createGroup()}><Plus /> Create programme group</Button>
+          </div>
+          <div className="ops-cohort-list">
+            {data.cohorts.map((cohort) => (
+              <div key={cohort.id}>
+                <span>
+                  <strong>{cohort.name}</strong>
+                  <small>{cohort.facilitatorEmail || "Facilitator not assigned"} · {cohort.memberCount ?? 0} active{cohort.pendingCount ? ` · ${cohort.pendingCount} awaiting sign-in` : ""}</small>
+                  <small>{label(cohort.programmeFormat)} · {cohort.labCodes.join(", ")}</small>
+                </span>
+                <Badge variant="outline">{cohort.labCodes.length} Lab{cohort.labCodes.length === 1 ? "" : "s"}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="surface-card ops-section">
+          <div className="section-title">
+            <div><p className="eyebrow">Participants</p><h2>Add people to a group</h2><p>Paste several email addresses at once. People who have not signed in yet will join automatically when they set up BIS.</p></div>
+            <UserPlus />
+          </div>
+          <div className="ops-form-stack">
+            <label>Programme group
+              <Select value={cohortId} onValueChange={setCohortId}>
+                <SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger>
+                <SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </label>
+            <label>Participant emails
+              <Textarea value={moreParticipantEmails} onChange={(event) => setMoreParticipantEmails(event.target.value)} placeholder={"learner1@example.org\nlearner2@example.org"} />
+            </label>
+            <Button disabled={saving || !cohortId || !moreParticipantEmails.trim()} onClick={async () => {
+              if (await act({ action: "addCohortParticipants", cohortId, participantEmails: moreParticipantEmails })) setMoreParticipantEmails("");
+            }}>Add participants</Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="surface-card ops-section">
+        <div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2><p>Shows how often learners had a real chance to test the behaviour.</p></div><Activity /></div>
+        <div className="opportunity-bands">
+          <div><span>No opportunity</span><strong>{data.metrics.opportunityBands.none}</strong></div>
+          <div><span>One</span><strong>{data.metrics.opportunityBands.one}</strong></div>
+          <div><span>Two</span><strong>{data.metrics.opportunityBands.two}</strong></div>
+          <div><span>Three or more</span><strong>{data.metrics.opportunityBands.threePlus}</strong></div>
+        </div>
+      </section>
+
+      <section>
+        <div className="ops-section-heading"><div><p className="eyebrow">Learners</p><h2>Learner progress</h2></div><Badge variant="outline">Private responses hidden</Badge></div>
+        <div className="ops-learner-grid">{data.learners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div>
+      </section>
+    </div>
+  );
 }
 
 function SafeguardingPanel({ data, saving, act }: { data: NonNullable<StaffSnapshot["safeguarding"]>; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {
