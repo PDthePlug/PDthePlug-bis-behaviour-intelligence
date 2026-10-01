@@ -10,7 +10,7 @@ import {
 } from "./universal-lab-v2.mjs";
 import { sha256Hex } from "./content-studio";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-2";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-3";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
