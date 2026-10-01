@@ -79,7 +79,7 @@ test("static learning handbooks are decoded server-side for browser compatibilit
   assert.match(runtime, /published programme could not be opened/);
 });
 
-test("Universal V1 Labs stay in the canonical nine-investigation presentation", async () => {
+test("Universal V1 and V2 Labs stay in the same canonical nine-investigation presentation", async () => {
   const [compiler, runner, frame, api] = await Promise.all([
     source("lib/content-compiler.ts"),
     source("app/labs/[code]/universal-runtime-lab.tsx"),
@@ -92,6 +92,11 @@ test("Universal V1 Labs stay in the canonical nine-investigation presentation", 
   assert.match(runner, /Prefer not to answer/);
   assert.match(frame, /universal-investigation-nav/);
   assert.match(api, /saveInvestigation/);
+  assert.match(compiler, /UNIVERSAL_V2/);
+  assert.match(compiler, /upgradeUniversalLabV2/);
+  assert.match(runner, /universal-computed-value/);
+  assert.match(runner, /Only evidence for calendar days that have actually arrived can be recorded/);
+  assert.match(api, /experimentCalendarDay/);
 });
 
 test("Word PDF HTML Markdown and ZIP learning sources can be manufactured into Programme Player content", async () => {

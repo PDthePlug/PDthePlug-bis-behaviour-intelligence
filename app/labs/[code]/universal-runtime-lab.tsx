@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import type { UniversalLabPackage, UniversalLabPrompt } from "@/lib/content-compiler";
 import { serverUnlockedInvestigation } from "@/lib/lab-lifecycle-contract";
+import { evaluateUniversalComputed } from "@/lib/universal-lab-v2.mjs";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
 type Snapshot = {
@@ -22,13 +23,25 @@ type Snapshot = {
     id: string;
     status: string;
     currentInvestigation: number;
+    phaseACompletedAt?: string | null;
+    experimentStartedAt?: string | null;
     completedAt?: string | null;
   };
   responses: Record<string, { value: unknown; status: string; recordedAt: string }>;
+  computed?: Record<string, unknown>;
+  experimentTiming?: null | {
+    startedAt: string | null;
+    availableDay: number;
+    totalDays: number;
+    today: string;
+    reviewReady: boolean;
+  };
 };
 
 function valueOf(snapshot: Snapshot, id: string) {
-  const value = snapshot.responses[id]?.value;
+  const value = Object.prototype.hasOwnProperty.call(snapshot.computed ?? {}, id)
+    ? snapshot.computed?.[id]
+    : snapshot.responses[id]?.value;
   if (value === null || value === undefined) return "";
   return String(value);
 }
@@ -62,7 +75,12 @@ function UniversalPrompt({
       <div className="prompt-body">
         <h2>{prompt.label}</h2>
         {prompt.prompt !== prompt.label ? <p>{prompt.prompt}</p> : null}
-        {passed ? (
+        {prompt.readOnly ? (
+          <div className="universal-computed-value" aria-live="polite">
+            <strong>{value === "" ? "Calculated when the required evidence is available" : value}</strong>
+            <small>Calculated by BIS from your recorded evidence.</small>
+          </div>
+        ) : passed ? (
           <p className="passed-note">You chose not to answer this question. You can add an answer before saving if you change your mind.</p>
         ) : (
           <div className="prompt-controls">
@@ -107,10 +125,12 @@ function UniversalPrompt({
             )}
           </div>
         )}
-        <label className="pass-control">
-          <Checkbox checked={passed} onCheckedChange={(checked) => onPass(checked === true)} />
-          <span>Prefer not to answer</span>
-        </label>
+        {!prompt.readOnly ? (
+          <label className="pass-control">
+            <Checkbox checked={passed} onCheckedChange={(checked) => onPass(checked === true)} />
+            <span>Prefer not to answer</span>
+          </label>
+        ) : null}
       </div>
     </section>
   );
@@ -141,20 +161,28 @@ function UniversalInvestigationForm({
   const [passed, setPassed] = useState<Set<string>>(() =>
     new Set(investigation.prompts.filter((prompt) => snapshot.responses[prompt.id]?.status === "PASS").map((prompt) => prompt.id)),
   );
+  const availableExperimentDay = previewMode
+    ? (snapshot.definition.experiment?.days ?? 9)
+    : (snapshot.experimentTiming?.availableDay ?? 0);
+  const visiblePrompts = investigation.prompts.filter((prompt) =>
+    !prompt.scheduleDay || prompt.scheduleDay <= availableExperimentDay,
+  );
   const ready = useMemo(
-    () => investigation.prompts.every((prompt) => {
-      if (!prompt.required || passed.has(prompt.id)) return true;
+    () => visiblePrompts.every((prompt) => {
+      if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return true;
       const value = values[prompt.id] ?? "";
       return prompt.type === "MULTI_SELECT" ? multiValues(value).length > 0 : Boolean(value.trim());
     }),
-    [investigation.prompts, passed, values],
+    [passed, values, visiblePrompts],
   );
 
-  const items = () => investigation.prompts.map((prompt) => ({
-    semanticFieldId: prompt.id,
-    value: values[prompt.id] ?? "",
-    responseStatus: passed.has(prompt.id) ? "PASS" : "ANSWERED",
-  }));
+  const items = () => visiblePrompts
+    .filter((prompt) => !prompt.readOnly)
+    .map((prompt) => ({
+      semanticFieldId: prompt.id,
+      value: values[prompt.id] ?? "",
+      responseStatus: passed.has(prompt.id) ? "PASS" : "ANSWERED",
+    }));
 
   const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
   const blockPromptIds = new Set(
@@ -162,11 +190,13 @@ function UniversalInvestigationForm({
       .filter((block) => block.type === "PROMPT")
       .map((block) => block.type === "PROMPT" ? block.promptId : ""),
   );
-  const renderPrompt = (prompt: UniversalLabPrompt) => (
+  const renderPrompt = (prompt: UniversalLabPrompt) => {
+    if (prompt.scheduleDay && prompt.scheduleDay > availableExperimentDay) return null;
+    return (
     <UniversalPrompt
       key={prompt.id}
       prompt={prompt}
-      value={values[prompt.id] ?? ""}
+      value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
       passed={passed.has(prompt.id)}
       onValue={(value) => {
         setValues((current) => ({ ...current, [prompt.id]: value }));
@@ -182,10 +212,28 @@ function UniversalInvestigationForm({
         return next;
       })}
     />
-  );
+    );
+  };
 
   return (
     <div className="investigation-stack universal-package-lab">
+      {snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
+        && step === snapshot.definition.experiment?.investigation
+        && snapshot.definition.experiment ? (
+        <section className="universal-experiment-status">
+          <div>
+            <span>Real-world experiment</span>
+            <strong>{previewMode ? "Previewing all days" : `Day ${Math.max(1, snapshot.experimentTiming?.availableDay ?? 1)} of ${snapshot.definition.experiment.days}`}</strong>
+          </div>
+          <p>
+            {previewMode
+              ? "Preview mode shows the complete experiment structure."
+              : snapshot.experimentTiming?.reviewReady
+                ? "Your full experiment window is complete. Save the remaining evidence to continue to review."
+                : "Only evidence for calendar days that have actually arrived can be recorded."}
+          </p>
+        </section>
+      ) : null}
       {investigation.blocks?.length ? investigation.blocks.map((block, index) => {
         if (block.type === "HTML") {
           return <article key={`content-${index}`} className="story-card imported-lab-content" dangerouslySetInnerHTML={{ __html: block.html }} />;
@@ -223,9 +271,17 @@ function UniversalInvestigationForm({
           ) : (
             <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
-              if (saved) onAdvance(saved, Math.min(9, step + 1));
+              if (!saved) return;
+              const next = Math.min(9, step + 1);
+              if (saved.enrolment && saved.enrolment.currentInvestigation >= next) onAdvance(saved, next);
             })()}>
-              {saving ? "Saving…" : <>Save and continue <ArrowRight /></>}
+              {saving
+                ? "Saving…"
+                : snapshot.definition.runtimeProfile === "UNIVERSAL_V2" && step === snapshot.definition.experiment?.investigation
+                  ? snapshot.experimentTiming?.reviewReady
+                    ? <>Save and continue to review <ArrowRight /></>
+                    : <>Save today’s evidence <Check /></>
+                  : <>Save and continue <ArrowRight /></>}
             </Button>
           )}
         </div>
@@ -277,6 +333,14 @@ export function UniversalRuntimeLab({
             deliveryEdition: undefined,
             enrolment: null,
             responses: {},
+            computed: {},
+            experimentTiming: preview.payload.runtimeProfile === "UNIVERSAL_V2" && preview.payload.experiment ? {
+              startedAt: new Date().toISOString(),
+              availableDay: preview.payload.experiment.days,
+              totalDays: preview.payload.experiment.days,
+              today: new Date().toISOString().slice(0, 10),
+              reviewReady: true,
+            } : null,
           };
         } else {
           const response = await fetch(`/api/universal-lab?lab=${encodeURIComponent(labCode)}`, { cache: "no-store", signal: controller.signal });
@@ -313,6 +377,8 @@ export function UniversalRuntimeLab({
               id: "uat-preview",
               status: "IN_PROGRESS",
               currentInvestigation: 9,
+              phaseACompletedAt: new Date().toISOString(),
+              experimentStartedAt: new Date().toISOString(),
               completedAt: null,
             },
           };
@@ -331,7 +397,16 @@ export function UniversalRuntimeLab({
               recordedAt: now,
             };
           }
-          data = { ...snapshot, responses: nextResponses };
+          data = {
+            ...snapshot,
+            responses: nextResponses,
+            computed: snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
+              ? evaluateUniversalComputed(
+                  snapshot.definition,
+                  Object.fromEntries(Object.entries(nextResponses).map(([id, row]) => [id, row.value])),
+                )
+              : {},
+          };
         } else if (action === "completeLab" && snapshot.enrolment) {
           data = {
             ...snapshot,

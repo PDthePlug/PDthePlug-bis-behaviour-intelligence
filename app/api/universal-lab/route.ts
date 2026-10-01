@@ -18,6 +18,11 @@ import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { CONTENT_STUDIO_BUCKET } from "../../../lib/content-studio";
 import type { UniversalLabPackage, UniversalLabPrompt } from "../../../lib/content-compiler";
 import { investigationUnlockedAfterSave } from "../../../lib/lab-lifecycle-contract";
+import {
+  evaluateUniversalComputed,
+  experimentCalendarDay,
+  v2RequiredPromptIds,
+} from "../../../lib/universal-lab-v2.mjs";
 
 function decode(value: string | null) {
   if (value === null) return "";
@@ -26,6 +31,38 @@ function decode(value: string | null) {
   } catch {
     return value;
   }
+}
+
+function todayInZone(timeZone = "Africa/Johannesburg") {
+  try {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(new Date());
+    const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    return `${value.year}-${value.month}-${value.day}`;
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
+function responseValues(rows: Record<string, { value: unknown }>) {
+  return Object.fromEntries(Object.entries(rows).map(([id, row]) => [id, row.value]));
+}
+
+function requiredFor(
+  definition: UniversalLabPackage,
+  investigation: number,
+  availableExperimentDay: number,
+) {
+  if (definition.runtimeProfile === "UNIVERSAL_V2") {
+    return v2RequiredPromptIds(definition, investigation, availableExperimentDay);
+  }
+  return definition.investigations[investigation - 1]?.prompts
+    .filter((prompt) => prompt.required !== false)
+    .map((prompt) => prompt.id) ?? [];
 }
 
 async function audit(actorId: string, action: string, objectType: string, objectId: string, metadata: Record<string, unknown>) {
@@ -63,7 +100,11 @@ async function activeLab(code: string) {
   const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(artifact.storagePath);
   if (download.error || !download.data) throw new Error("The Lab package could not be loaded.");
   const definition = sanitizeRuntimePackage(JSON.parse(await download.data.text())) as UniversalLabPackage;
-  if (definition.kind !== "LAB" || definition.runtimeProfile !== "UNIVERSAL_V1" || definition.identity.code !== code) {
+  if (
+    definition.kind !== "LAB"
+    || !["UNIVERSAL_V1", "UNIVERSAL_V2"].includes(definition.runtimeProfile)
+    || definition.identity.code !== code
+  ) {
     throw new Error("The active Lab package does not match this route.");
   }
   return { item, version, activation, definition };
@@ -105,6 +146,18 @@ async function snapshot(userId: string, code: string) {
     };
   }
 
+  const timeZone = profile.timezone || "Africa/Johannesburg";
+  const today = todayInZone(timeZone);
+  const experimentDays = runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+    ? Number(runtime.definition.experiment?.days ?? 0)
+    : 0;
+  const availableDay = experimentDays
+    ? experimentCalendarDay(enrolment?.experimentStartedAt, today, experimentDays)
+    : 0;
+  const computed = runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+    ? evaluateUniversalComputed(runtime.definition, responseValues(latest))
+    : {};
+
   return {
     definition: runtime.definition,
     version: runtime.version.version,
@@ -114,9 +167,19 @@ async function snapshot(userId: string, code: string) {
       id: enrolment.id,
       status: enrolment.status,
       currentInvestigation: enrolment.currentInvestigation,
+      phaseACompletedAt: enrolment.phaseACompletedAt,
+      experimentStartedAt: enrolment.experimentStartedAt,
       completedAt: enrolment.completedAt,
     } : null,
     responses: latest,
+    computed,
+    experimentTiming: experimentDays ? {
+      startedAt: enrolment?.experimentStartedAt ?? null,
+      availableDay,
+      totalDays: experimentDays,
+      today,
+      reviewReady: availableDay >= experimentDays,
+    } : null,
   };
 }
 
@@ -182,16 +245,46 @@ async function postHandler(request: Request) {
       const items = Array.isArray(body.items) ? body.items : [];
       if (!items.length || items.length > 60) throw new Error("Save between 1 and 60 responses.");
       const registry = promptRegistry(runtime.definition);
-      const allowed = new Map([...registry].filter(([, prompt]) => prompt.investigation === investigation));
+      const availableExperimentDay = runtime.definition.runtimeProfile === "UNIVERSAL_V2" && runtime.definition.experiment
+        ? experimentCalendarDay(
+            enrolment.experimentStartedAt,
+            todayInZone(profile.timezone || "Africa/Johannesburg"),
+            runtime.definition.experiment.days,
+          )
+        : 0;
+      if (
+        runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+        && investigation === runtime.definition.experiment?.investigation
+        && availableExperimentDay < 1
+      ) {
+        throw new Error("The real-world experiment begins after Phase A is complete.");
+      }
+
+      const allowed = new Map([...registry].filter(([, prompt]) =>
+        prompt.investigation === investigation
+        && prompt.readOnly !== true
+        && (!prompt.scheduleDay || prompt.scheduleDay <= availableExperimentDay),
+      ));
       const ids = new Set<string>();
       for (const raw of items) {
         const item = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
         const id = String(item.semanticFieldId ?? "");
         const prompt = allowed.get(id);
-        if (!prompt || ids.has(id) || !validPromptResponse(prompt, item.value, String(item.responseStatus ?? "ANSWERED"))) throw new Error("Check the responses in this investigation before saving.");
+        if (!prompt || ids.has(id) || !validPromptResponse(prompt, item.value, String(item.responseStatus ?? "ANSWERED"))) {
+          throw new Error("Check the responses in this investigation before saving.");
+        }
         ids.add(id);
       }
-      if ([...allowed.values()].some((prompt) => prompt.required !== false && !ids.has(prompt.id))) throw new Error("Answer or pass each required question before continuing.");
+
+      const existing = await snapshot(identity.id, code);
+      const completedIds = new Set([
+        ...Object.keys(existing.responses),
+        ...ids,
+      ]);
+      const required = requiredFor(runtime.definition, investigation, availableExperimentDay);
+      if (required.some((id) => !completedIds.has(id))) {
+        throw new Error("Answer or pass each currently available required question before continuing.");
+      }
       const now = new Date().toISOString();
 
       for (const raw of items) {
@@ -235,18 +328,64 @@ async function postHandler(request: Request) {
         if (previous) await db.update(responses).set({ responseStatus: "SUPERSEDED" }).where(eq(responses.id, previous.id));
       }
 
-      await db.update(labEnrollments).set({
-        currentInvestigation: Math.max(enrolment.currentInvestigation, investigationUnlockedAfterSave(investigation)),
-        updatedAt: now,
-      }).where(eq(labEnrollments.id, enrolment.id));
-      await audit(identity.id, "UNIVERSAL_LAB_INVESTIGATION_SAVED", "LAB_ENROLLMENT", enrolment.id, { labCode: code, investigation });
+      let nextInvestigation = investigationUnlockedAfterSave(investigation);
+      const enrolmentUpdate: {
+        updatedAt: string;
+        currentInvestigation?: number;
+        phaseACompletedAt?: string;
+        experimentStartedAt?: string;
+      } = { updatedAt: now };
+
+      if (
+        runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+        && runtime.definition.experiment
+        && investigation === runtime.definition.experiment.startAfterInvestigation
+      ) {
+        enrolmentUpdate.phaseACompletedAt = enrolment.phaseACompletedAt ?? now;
+        enrolmentUpdate.experimentStartedAt = enrolment.experimentStartedAt ?? now;
+        nextInvestigation = runtime.definition.experiment.investigation;
+      } else if (
+        runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+        && runtime.definition.experiment
+        && investigation === runtime.definition.experiment.investigation
+      ) {
+        const afterSave = await snapshot(identity.id, code);
+        const timing = afterSave.experimentTiming;
+        const allExperimentIds = v2RequiredPromptIds(
+          runtime.definition,
+          investigation,
+          runtime.definition.experiment.days,
+        );
+        const allRecorded = allExperimentIds.every((id) => Boolean(afterSave.responses[id]));
+        nextInvestigation = timing?.reviewReady && allRecorded
+          ? runtime.definition.experiment.reviewInvestigation
+          : runtime.definition.experiment.investigation;
+      }
+
+      enrolmentUpdate.currentInvestigation = Math.max(enrolment.currentInvestigation, nextInvestigation);
+      await db.update(labEnrollments).set(enrolmentUpdate).where(eq(labEnrollments.id, enrolment.id));
+      await audit(identity.id, "UNIVERSAL_LAB_INVESTIGATION_SAVED", "LAB_ENROLLMENT", enrolment.id, {
+        labCode: code,
+        investigation,
+        runtimeProfile: runtime.definition.runtimeProfile,
+        nextInvestigation,
+      });
       return Response.json(await snapshot(identity.id, code));
     }
 
     if (action === "completeLab") {
       const current = await snapshot(identity.id, code);
+      if (
+        runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+        && runtime.definition.experiment
+        && !current.experimentTiming?.reviewReady
+      ) {
+        throw new Error("Complete the real-world experiment before finishing this Lab.");
+      }
       const required = runtime.definition.investigations.flatMap((investigation) =>
-        investigation.prompts.filter((prompt) => prompt.required !== false).map((prompt) => prompt.id),
+        investigation.prompts
+          .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
+          .map((prompt) => prompt.id),
       );
       const registry = promptRegistry(runtime.definition);
       const missing = required.filter((id) => {

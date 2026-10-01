@@ -52,6 +52,8 @@ This is intentional. A failed preparation with a precise explanation is safer th
 
 ## Gate 2 — Universal Lab V2
 
+**Implementation status:** runtime contract implemented on the Risk proof branch; final CI, Content Studio preview and authenticated persistence acceptance remain required.
+
 Risk Lab may pass only when the shared runtime can represent and execute, declaratively:
 
 1. stable semantic evidence fields;
@@ -68,6 +70,8 @@ Risk Lab may pass only when the shared runtime can represent and execute, declar
 12. privacy classes and response-pass behaviour.
 
 The V2 package is data. The renderer and evidence engine remain shared.
+
+The current V2 engine adds a deliberately small calculation vocabulary (product, difference, counts, maximum, copy and paired pre/post projection), server-owned calendar gating for scheduled experiment fields, and profile projection from prior evidence. Imported advanced Labs are upgraded through the same compiler path; no Lab-code switch is used.
 
 ## Gate 3 — Content Studio proof
 

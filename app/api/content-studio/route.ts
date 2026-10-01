@@ -43,6 +43,7 @@ import {
   requireRole,
 } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
+import { capabilitySummary } from "../../../lib/lab-factory-capabilities.mjs";
 
 function parseJson(value: string | null | undefined, fallback: unknown) {
   if (!value) return fallback;
@@ -418,6 +419,16 @@ async function postHandler(request: Request) {
         }
 
         const now = new Date().toISOString();
+        const preparedLab = item.kind === "LAB" && compiled[0]
+          ? JSON.parse(compiled[0].content) as {
+              schemaVersion?: string;
+              runtimeProfile?: string;
+              factoryCapabilities?: Parameters<typeof capabilitySummary>[0];
+              computedFields?: unknown[];
+              experiment?: { days?: number } | null;
+              profile?: { entries?: unknown[] } | null;
+            }
+          : null;
         const report = {
           summary: item.kind === "LEARNING_MODULE"
             ? `Prepared ${compiled.length} learning edition${compiled.length === 1 ? "" : "s"} for preview.`
@@ -427,6 +438,16 @@ async function postHandler(request: Request) {
           requiredEditions: item.kind === "LEARNING_MODULE"
             ? compiled.map((artifact) => artifact.deliveryEdition).filter(Boolean)
             : [],
+          ...(preparedLab ? {
+            schemaVersion: preparedLab.schemaVersion,
+            runtimeProfile: preparedLab.runtimeProfile,
+            detectedCapabilities: preparedLab.factoryCapabilities
+              ? capabilitySummary(preparedLab.factoryCapabilities)
+              : [],
+            calculatedFields: preparedLab.computedFields?.length ?? 0,
+            experimentDays: preparedLab.experiment?.days ?? null,
+            profileEntries: preparedLab.profile?.entries?.length ?? 0,
+          } : {}),
         };
         await db.update(contentLibraryVersions).set({
           compilerStatus: "COMPILED",

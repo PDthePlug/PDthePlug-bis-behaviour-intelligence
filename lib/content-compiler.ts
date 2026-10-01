@@ -1,6 +1,12 @@
 import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
-import { capabilitySummary, type LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
+import type { LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
+import {
+  upgradeUniversalLabV2,
+  type UniversalComputedField,
+  type UniversalExperimentContract,
+  type UniversalProfileEntry,
+} from "./universal-lab-v2.mjs";
 import { sha256Hex } from "./content-studio";
 
 export const CONTENT_COMPILER_VERSION = "bis-content-compiler-2";
@@ -54,6 +60,9 @@ export type UniversalLabPrompt = {
   label: string;
   prompt: string;
   type?: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL" | "MULTI_SELECT" | "DATE";
+  readOnly?: boolean;
+  scheduleDay?: number;
+  computed?: UniversalComputedField;
   placeholder?: string;
   sensitivity?: "P1" | "P2" | "P3";
   required?: boolean;
@@ -82,8 +91,8 @@ export type UniversalLabInvestigation = {
 
 export type UniversalLabPackage = {
   kind: "LAB";
-  schemaVersion: "universal-lab-v1";
-  runtimeProfile: "UNIVERSAL_V1";
+  schemaVersion: "universal-lab-v1" | "universal-lab-v2";
+  runtimeProfile: "UNIVERSAL_V1" | "UNIVERSAL_V2";
   identity: {
     code: string;
     version: string;
@@ -93,6 +102,9 @@ export type UniversalLabPackage = {
     focus?: string;
   };
   factoryCapabilities?: LabFactoryCapabilities;
+  computedFields?: UniversalComputedField[];
+  experiment?: UniversalExperimentContract | null;
+  profile?: null | { investigation: number; entries: UniversalProfileEntry[] };
   investigations: UniversalLabInvestigation[];
 };
 
@@ -350,6 +362,9 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
     min,
     max,
     group: text(value.group) || undefined,
+    readOnly: value.readOnly === true || undefined,
+    scheduleDay: Number.isInteger(value.scheduleDay) ? Number(value.scheduleDay) : undefined,
+    computed: object(value.computed) as UniversalComputedField | undefined,
   };
 }
 
@@ -358,20 +373,25 @@ export async function compileUniversalLab(
   expectedCode: string,
   expectedVersion: string,
 ): Promise<RuntimeArtifact> {
-  const source = parseJson(bytes);
+  let source = parseJson(bytes);
   if (!source) throw new Error("Lab source must be a BIS JSON package.");
   if (text(source.kind) !== "LAB") throw new Error('Lab package kind must be "LAB".');
-  if (text(source.schemaVersion) !== "universal-lab-v1") throw new Error('Use schemaVersion "universal-lab-v1".');
-  if (text(source.runtimeProfile) !== "UNIVERSAL_V1") throw new Error('Runtime activation currently requires runtimeProfile "UNIVERSAL_V1" for new Labs.');
 
   const factoryCapabilities = object(source.factoryCapabilities) as LabFactoryCapabilities | null;
-  if (factoryCapabilities?.requiresBehaviourRuntimeV2) {
-    const requirements = capabilitySummary(factoryCapabilities);
-    throw new Error(
-      "This Lab is structurally readable, but Universal Lab V1 cannot preserve its full behavioural architecture. " +
-      "Required capabilities: " + requirements.join(", ") + ". " +
-      "Activation is blocked rather than flattening the Lab into generic prompts. Complete the Universal Lab V2 runtime contract first.",
-    );
+  const authoredV2 = text(source.schemaVersion) === "universal-lab-v2" || text(source.runtimeProfile) === "UNIVERSAL_V2";
+  if (factoryCapabilities?.requiresBehaviourRuntimeV2 && !authoredV2) {
+    source = upgradeUniversalLabV2(source) as Record<string, unknown>;
+  }
+
+  const schemaVersion = text(source.schemaVersion);
+  const runtimeProfile = text(source.runtimeProfile);
+  const v2 = schemaVersion === "universal-lab-v2" && runtimeProfile === "UNIVERSAL_V2";
+  const v1 = schemaVersion === "universal-lab-v1" && runtimeProfile === "UNIVERSAL_V1";
+  if (!v1 && !v2) {
+    const needs = factoryCapabilities?.requiresBehaviourRuntimeV2
+      ? " This source needs the Universal V2 behaviour runtime."
+      : "";
+    throw new Error('Use a matching Universal Lab schema/runtime profile.' + needs);
   }
 
   const identity = object(source.identity);
@@ -432,10 +452,45 @@ export async function compileUniversalLab(
   });
   if (investigations.some((item) => !item.title || !item.mission)) throw new Error("Every investigation needs a title and mission.");
 
+  const computedFields = Array.isArray(source.computedFields)
+    ? source.computedFields as unknown as UniversalComputedField[]
+    : [];
+  const experiment = object(source.experiment) as unknown as UniversalExperimentContract | null;
+  const profile = object(source.profile) as unknown as { investigation: number; entries: UniversalProfileEntry[] } | null;
+
+  if (v2) {
+    const promptIds = new Set(investigations.flatMap((item) => item.prompts.map((prompt) => prompt.id)));
+    if (factoryCapabilities?.derivedSignatures?.length && !computedFields.length) {
+      throw new Error("Universal V2 requires declarative calculations for the derived measures in this Lab.");
+    }
+    for (const field of computedFields) {
+      if (!field?.id || !promptIds.has(field.id)) throw new Error("A Universal V2 calculation points to an unknown output field.");
+      if (!Array.isArray(field.inputs) || !field.inputs.length) throw new Error(`${field.id}: add at least one calculation input.`);
+      for (const input of field.inputs) {
+        if (!promptIds.has(input) && !computedFields.some((candidate) => candidate.id === input)) {
+          throw new Error(`${field.id}: calculation input ${input} is not registered.`);
+        }
+      }
+    }
+    if (factoryCapabilities?.experiment?.detected) {
+      if (!experiment || Number(experiment.days) < 1 || Number(experiment.investigation) !== 7) {
+        throw new Error("Universal V2 requires a valid real-world experiment contract for this Lab.");
+      }
+      for (const scheduled of experiment.scheduledPromptIds ?? []) {
+        if (!promptIds.has(scheduled.promptId) || scheduled.day < 1 || scheduled.day > experiment.days) {
+          throw new Error("Universal V2 experiment scheduling contains an invalid field or day.");
+        }
+      }
+    }
+    if (factoryCapabilities?.profileSummary && (!profile || !Array.isArray(profile.entries) || !profile.entries.length)) {
+      throw new Error("Universal V2 requires a Behaviour Profile projection contract for this Lab.");
+    }
+  }
+
   const runtimePackage: UniversalLabPackage = {
     kind: "LAB",
-    schemaVersion: "universal-lab-v1",
-    runtimeProfile: "UNIVERSAL_V1",
+    schemaVersion: v2 ? "universal-lab-v2" : "universal-lab-v1",
+    runtimeProfile: v2 ? "UNIVERSAL_V2" : "UNIVERSAL_V1",
     identity: {
       code: expectedCode,
       version: expectedVersion,
@@ -445,6 +500,12 @@ export async function compileUniversalLab(
       focus: text(identity?.focus) || undefined,
     },
     investigations,
+    ...(v2 ? {
+      factoryCapabilities: factoryCapabilities ?? undefined,
+      computedFields,
+      experiment,
+      profile,
+    } : {}),
   };
   const content = JSON.stringify(runtimePackage);
   const encoded = new TextEncoder().encode(content);
