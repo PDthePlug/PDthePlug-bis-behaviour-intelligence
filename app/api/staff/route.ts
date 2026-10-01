@@ -825,6 +825,13 @@ async function postHandler(request: Request) {
       }
       const now = new Date().toISOString();
       await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, assignmentId));
+      if (assignment.role === "FACILITATOR" && assignment.scopeType === "COHORT") {
+        const [cohort] = await db.select({ facilitatorEmail: pilotCohorts.facilitatorEmail }).from(pilotCohorts)
+          .where(eq(pilotCohorts.id, assignment.scopeId)).limit(1);
+        if (normalizeEmail(cohort?.facilitatorEmail ?? "") === normalizeEmail(assignment.principalEmail)) {
+          await db.update(pilotCohorts).set({ facilitatorEmail: null, updatedAt: now }).where(eq(pilotCohorts.id, assignment.scopeId));
+        }
+      }
       await staffAudit(identity, "STAFF_ROLE_REVOKED", "ROLE_ASSIGNMENT", assignmentId, { role: assignment.role, principalEmail: assignment.principalEmail });
       return Response.json(await staffSnapshot(identity, await getRoles(identity)));
     }
