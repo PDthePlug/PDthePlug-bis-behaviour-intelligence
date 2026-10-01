@@ -859,22 +859,10 @@ async function postHandler(request: Request) {
         createdBy: identity.id,
       });
       await upsertRoleAssignment(identity, facilitatorEmail, "FACILITATOR", "COHORT", id);
+      const [createdCohort] = await db.select().from(pilotCohorts).where(eq(pilotCohorts.id, id)).limit(1);
+      if (!createdCohort) throw new Error("The programme group could not be confirmed after creation.");
       const participantResult = participantList.length
-        ? await addParticipantsToCohort(identity, {
-            id,
-            name,
-            labCode: primaryLabCode,
-            labVersion,
-            programmeFormat,
-            labCodes: JSON.stringify(labCodes),
-            facilitatorEmail,
-            status: "ACTIVE",
-            startsOn: String(body.startsOn ?? "") || null,
-            endsOn: String(body.endsOn ?? "") || null,
-            createdBy: identity.id,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          }, participantList)
+        ? await addParticipantsToCohort(identity, createdCohort, participantList)
         : { added: 0, pending: 0 };
 
       await staffAudit(identity, "PILOT_COHORT_CREATED", "PILOT_COHORT", id, {
