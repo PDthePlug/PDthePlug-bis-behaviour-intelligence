@@ -4,6 +4,7 @@ import { scopedStaffExperimentProgress as staffExperimentProgress } from "../../
 import {
   auditEvents,
   cohortMembers,
+  cohortParticipantInvites,
   facilitatorNotes,
   labAssignments,
   labEnrollments,
@@ -29,9 +30,73 @@ import type { Identity, StaffRole } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { LAB_VERSION } from "../../../lib/habit-lab";
 import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib/programme-report-pdf";
+import { BIS_MODULES } from "../../../lib/bis-catalogue";
 
 const SUPPORTED_LAB_VERSIONS = [LAB_VERSION] as const;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const PROGRAMME_FORMATS = ["SINGLE_LAB", "PILOT", "SIX_CYCLE", "CUSTOM"] as const;
+type ProgrammeFormat = (typeof PROGRAMME_FORMATS)[number];
+
+function parseJsonList(value: string | null | undefined) {
+  if (!value) return [] as string[];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+function programmeLabCodes(value: unknown, format: ProgrammeFormat) {
+  const raw = Array.isArray(value) ? value : [];
+  const available = new Set(BIS_MODULES.map((module) => module.code));
+  const codes = [...new Set(raw.map((item) => String(item).trim().toUpperCase()).filter((code) => available.has(code)))];
+  if (!codes.length) throw new Error("Choose at least one Lab for this programme.");
+  if (format === "SINGLE_LAB" && codes.length !== 1) throw new Error("A single-Lab programme needs exactly one Lab.");
+  if (format === "SIX_CYCLE" && codes.length !== 6) throw new Error("A six-cycle programme needs six Labs.");
+  if (codes.length > 12) throw new Error("Choose up to 12 Labs for one programme group.");
+  return codes;
+}
+
+function participantEmails(value: unknown) {
+  const raw = Array.isArray(value) ? value.map(String).join("\n") : String(value ?? "");
+  const emails = [...new Set(raw.split(/[\s,;]+/).map(normalizeEmail).filter(Boolean))];
+  const invalid = emails.filter((email) => !EMAIL_PATTERN.test(email));
+  if (invalid.length) throw new Error(`Check these participant emails: ${invalid.slice(0, 3).join(", ")}${invalid.length > 3 ? "…" : ""}`);
+  if (emails.length > 250) throw new Error("Add up to 250 participant emails at a time.");
+  return emails;
+}
+
+async function upsertRoleAssignment(
+  identity: Identity,
+  principalEmail: string,
+  role: StaffRole,
+  scopeType: "GLOBAL" | "COHORT",
+  scopeId: string,
+) {
+  const db = getDb();
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  await db.insert(roleAssignments).values({
+    id,
+    principalEmail,
+    role,
+    scopeType,
+    scopeId,
+    assignedBy: identity.id,
+  }).onConflictDoUpdate({
+    target: [roleAssignments.principalEmail, roleAssignments.role, roleAssignments.scopeType, roleAssignments.scopeId],
+    set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null },
+  });
+  const [assignment] = await db.select().from(roleAssignments).where(and(
+    eq(roleAssignments.principalEmail, principalEmail),
+    eq(roleAssignments.role, role),
+    eq(roleAssignments.scopeType, scopeType),
+    eq(roleAssignments.scopeId, scopeId),
+  )).limit(1);
+  return assignment ?? { id, principalEmail, role, scopeType, scopeId };
+}
 
 function errorResponse(error: unknown) {
   if (error instanceof AccessError) {
@@ -72,17 +137,38 @@ async function staffAudit(
 }
 
 async function assignedCohort(identity: Identity, cohortId: string) {
-  const [cohort] = await getDb()
+  const db = getDb();
+  const [cohort] = await db
     .select()
     .from(pilotCohorts)
-    .where(and(
-      eq(pilotCohorts.id, cohortId),
-      eq(pilotCohorts.facilitatorEmail, identity.email),
-      eq(pilotCohorts.status, "ACTIVE"),
-    ))
+    .where(and(eq(pilotCohorts.id, cohortId), eq(pilotCohorts.status, "ACTIVE")))
     .limit(1);
-  if (!cohort) throw new AccessError("This cohort is not assigned to your facilitator account.");
-  return cohort;
+  if (!cohort) throw new AccessError("This programme group is not active.");
+
+  const [scoped] = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "COHORT"),
+    eq(roleAssignments.scopeId, cohortId),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  )).limit(1);
+  if (scoped) return cohort;
+
+  const [legacyGlobal] = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "GLOBAL"),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  )).limit(1);
+  if (legacyGlobal && normalizeEmail(cohort.facilitatorEmail ?? "") === identity.email) return cohort;
+
+  throw new AccessError("This group is not assigned to your facilitator account.");
 }
 
 async function learnerByEmail(email: string) {
