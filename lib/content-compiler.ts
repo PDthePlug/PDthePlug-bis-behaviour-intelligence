@@ -5,6 +5,7 @@ import {
   upgradeUniversalLabV2,
   type UniversalComputedField,
   type UniversalExperimentContract,
+  type UniversalIndicatorBinding,
   type UniversalProfileEntry,
 } from "./universal-lab-v2.mjs";
 import { sha256Hex } from "./content-studio";
@@ -63,6 +64,8 @@ export type UniversalLabPrompt = {
   readOnly?: boolean;
   scheduleDay?: number;
   computed?: UniversalComputedField;
+  indicatorCode?: string;
+  indicatorLabel?: string;
   placeholder?: string;
   sensitivity?: "P1" | "P2" | "P3";
   required?: boolean;
@@ -103,6 +106,7 @@ export type UniversalLabPackage = {
   };
   factoryCapabilities?: LabFactoryCapabilities;
   computedFields?: UniversalComputedField[];
+  indicatorRegistry?: UniversalIndicatorBinding[];
   experiment?: UniversalExperimentContract | null;
   profile?: null | { investigation: number; entries: UniversalProfileEntry[] };
   investigations: UniversalLabInvestigation[];
@@ -365,6 +369,8 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
     readOnly: value.readOnly === true || undefined,
     scheduleDay: Number.isInteger(value.scheduleDay) ? Number(value.scheduleDay) : undefined,
     computed: object(value.computed) as UniversalComputedField | undefined,
+    indicatorCode: text(value.indicatorCode) || undefined,
+    indicatorLabel: text(value.indicatorLabel) || undefined,
   };
 }
 
@@ -455,11 +461,32 @@ export async function compileUniversalLab(
   const computedFields = Array.isArray(source.computedFields)
     ? source.computedFields as unknown as UniversalComputedField[]
     : [];
+  const indicatorRegistry = Array.isArray(source.indicatorRegistry)
+    ? source.indicatorRegistry as unknown as UniversalIndicatorBinding[]
+    : [];
   const experiment = object(source.experiment) as unknown as UniversalExperimentContract | null;
   const profile = object(source.profile) as unknown as { investigation: number; entries: UniversalProfileEntry[] } | null;
 
   if (v2) {
     const promptIds = new Set(investigations.flatMap((item) => item.prompts.map((prompt) => prompt.id)));
+    const requiredIndicatorCodes = new Set(factoryCapabilities?.indicatorCodes ?? []);
+    const registeredIndicatorCodes = new Set(indicatorRegistry.map((indicator) => indicator.code));
+    const missingIndicatorCodes = [...requiredIndicatorCodes].filter((code) => !registeredIndicatorCodes.has(code));
+    const unboundIndicatorCodes = indicatorRegistry.filter((indicator) =>
+      requiredIndicatorCodes.has(indicator.code) && (!indicator.promptIds.length || indicator.status !== "BOUND")
+    ).map((indicator) => indicator.code);
+    if (missingIndicatorCodes.length || unboundIndicatorCodes.length) {
+      const codes = [...new Set([...missingIndicatorCodes, ...unboundIndicatorCodes])];
+      throw new Error(`Universal V2 could not bind authored Behaviour Evidence Indicators to learner evidence fields: ${codes.join(", ")}.`);
+    }
+    for (const indicator of indicatorRegistry) {
+      for (const promptId of indicator.promptIds) {
+        if (!promptIds.has(promptId)) throw new Error(`${indicator.code}: indicator registry points to an unknown learner field ${promptId}.`);
+      }
+      if (indicator.primaryPromptId && !promptIds.has(indicator.primaryPromptId)) {
+        throw new Error(`${indicator.code}: primary indicator field is not registered.`);
+      }
+    }
     if (factoryCapabilities?.derivedSignatures?.length && !computedFields.length) {
       throw new Error("Universal V2 requires declarative calculations for the derived measures in this Lab.");
     }
@@ -503,6 +530,7 @@ export async function compileUniversalLab(
     ...(v2 ? {
       factoryCapabilities: factoryCapabilities ?? undefined,
       computedFields,
+      indicatorRegistry,
       experiment,
       profile,
     } : {}),
