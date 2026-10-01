@@ -72,3 +72,26 @@ test("facilitator guidance follows BIS discovery-first facilitation principles",
   assert.match(guide, /Do not begin the 90-minute Lab inside the 45-minute learning session/);
   assert.match(guide, /Phase A is the separate facilitated investigation/);
 });
+
+
+test("facilitator view renders the complete 45-minute run sheet without exposing it to learners", async () => {
+  const [player, guide] = await Promise.all([
+    source("app/learning/programme-player.tsx"),
+    source("lib/facilitator-session.ts"),
+  ]);
+
+  assert.match(player, /Facilitation plan · Day/);
+  assert.match(player, /facilitatorGuide\.dayPurpose/);
+  assert.match(player, /facilitatorGuide\.learnerOutcome/);
+  assert.match(player, /facilitatorGuide\.beats\.map/);
+  assert.match(player, /facilitatorGuide\.facilitatorMoves\.map/);
+  assert.match(player, /facilitatorGuide\.watchFor\.map/);
+  assert.match(player, /facilitatorGuide\.applicationFrame/);
+  assert.match(player, /facilitatorGuide\.readingTreatment/);
+  assert.match(player, /facilitatorMode && sessionDesign \?/);
+  assert.match(player, /Stay in this programme/);
+  assert.match(guide, /const DAY_GUIDES: Record<number, DayGuide>/);
+  for (let day = 1; day <= 10; day += 1) {
+    assert.match(guide, new RegExp(String.raw`\n  ${day}: \{`));
+  }
+});
