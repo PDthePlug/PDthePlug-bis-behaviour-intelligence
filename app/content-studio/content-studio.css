@@ -374,3 +374,22 @@
   .content-source-slot>.content-paste-box{padding:12px 0 0}
   .content-source-slot>.content-paste-box>textarea{min-height:320px}
 }
+
+.content-runtime-proof{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+.content-runtime-proof span{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:0 9px;
+  border:1px solid #c8d8d2;
+  border-radius:999px;
+  background:#f1f6f3;
+  color:#31584c;
+  font-size:10px;
+  font-weight:800;
+}
