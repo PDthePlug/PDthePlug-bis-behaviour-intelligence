@@ -29,6 +29,29 @@ type EntrySnapshot = {
   consent: null | { status: string; policyVersion: string };
 };
 
+type FacilitatorContext = {
+  cohortId: string;
+  cohortName: string;
+  edition: "school" | "emerging_adult" | "workplace";
+  returnTo: string;
+};
+
+type StaffSnapshot = {
+  facilitator: null | {
+    cohorts: Array<{
+      id: string;
+      name: string;
+      labCode: string;
+      memberIds?: string[];
+    }>;
+    learners: Array<{
+      userId: string;
+      cohortId?: string;
+      deliveryEdition: "school" | "emerging_adult" | "workplace";
+    }>;
+  };
+};
+
 type InitialSection = "today" | "learn";
 
 function Brand() {
@@ -49,16 +72,23 @@ export function ProgrammeEntry({
   initialIdentity,
   initialSection = "today",
   initialLearnMode = "library",
+  facilitatorMode = false,
+  facilitatorGroupId = "",
+  facilitatorReturnTo = "/workspace?view=facilitator",
 }: {
   moduleCode?: string;
   initialIdentity: { email: string; displayName: string };
   initialSection?: InitialSection;
   initialLearnMode?: "library" | "reader";
+  facilitatorMode?: boolean;
+  facilitatorGroupId?: string;
+  facilitatorReturnTo?: string;
 }) {
   const [snapshot, setSnapshot] = useState<EntrySnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [facilitatorContext, setFacilitatorContext] = useState<FacilitatorContext | null>(null);
   const [ageBand, setAgeBand] = useState("");
   const [mode, setMode] = useState("INDEPENDENT");
   const [consent, setConsent] = useState(false);
@@ -66,10 +96,37 @@ export function ProgrammeEntry({
   async function load() {
     setLoading(true);
     setError("");
+    setFacilitatorContext(null);
     try {
       const response = await fetch("/api/bis", { cache: "no-store" });
       const data = await response.json() as EntrySnapshot & { error?: string };
       if (!response.ok) throw new Error(data.error || "Your BIS learning environment could not be opened.");
+
+      if (facilitatorMode) {
+        if (!data.roles.includes("FACILITATOR")) {
+          throw new Error("Facilitator access is required to open the learner experience.");
+        }
+        const staffResponse = await fetch("/api/staff", { cache: "no-store" });
+        const staff = await staffResponse.json() as StaffSnapshot & { error?: string };
+        if (!staffResponse.ok || !staff.facilitator) {
+          throw new Error(staff.error || "Your facilitator programme could not be opened.");
+        }
+        const cohort = staff.facilitator.cohorts.find((item) => item.id === facilitatorGroupId);
+        if (!cohort || cohort.labCode !== moduleCode) {
+          throw new Error("This learner experience is not assigned to your facilitator account.");
+        }
+        const cohortLearners = staff.facilitator.learners.filter((learner) =>
+          learner.cohortId ? learner.cohortId === cohort.id : cohort.memberIds?.includes(learner.userId),
+        );
+        const editions = [...new Set(cohortLearners.map((learner) => learner.deliveryEdition))];
+        setFacilitatorContext({
+          cohortId: cohort.id,
+          cohortName: cohort.name,
+          edition: editions.length === 1 ? editions[0]! : "school",
+          returnTo: facilitatorReturnTo,
+        });
+      }
+
       setSnapshot(data);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Your BIS learning environment could not be opened.");
@@ -104,7 +161,37 @@ export function ProgrammeEntry({
         const response = await fetch("/api/bis", { cache: "no-store", signal: controller.signal });
         const data = await response.json() as EntrySnapshot & { error?: string };
         if (!response.ok) throw new Error(data.error || "Your BIS learning environment could not be opened.");
-        if (!controller.signal.aborted) setSnapshot(data);
+
+        let nextFacilitatorContext: FacilitatorContext | null = null;
+        if (facilitatorMode) {
+          if (!data.roles.includes("FACILITATOR")) {
+            throw new Error("Facilitator access is required to open the learner experience.");
+          }
+          const staffResponse = await fetch("/api/staff", { cache: "no-store", signal: controller.signal });
+          const staff = await staffResponse.json() as StaffSnapshot & { error?: string };
+          if (!staffResponse.ok || !staff.facilitator) {
+            throw new Error(staff.error || "Your facilitator programme could not be opened.");
+          }
+          const cohort = staff.facilitator.cohorts.find((item) => item.id === facilitatorGroupId);
+          if (!cohort || cohort.labCode !== moduleCode) {
+            throw new Error("This learner experience is not assigned to your facilitator account.");
+          }
+          const cohortLearners = staff.facilitator.learners.filter((learner) =>
+            learner.cohortId ? learner.cohortId === cohort.id : cohort.memberIds?.includes(learner.userId),
+          );
+          const editions = [...new Set(cohortLearners.map((learner) => learner.deliveryEdition))];
+          nextFacilitatorContext = {
+            cohortId: cohort.id,
+            cohortName: cohort.name,
+            edition: editions.length === 1 ? editions[0]! : "school",
+            returnTo: facilitatorReturnTo,
+          };
+        }
+
+        if (!controller.signal.aborted) {
+          setSnapshot(data);
+          setFacilitatorContext(nextFacilitatorContext);
+        }
       } catch (cause) {
         if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Your BIS learning environment could not be opened.");
       } finally {
@@ -112,7 +199,7 @@ export function ProgrammeEntry({
       }
     })();
     return () => controller.abort();
-  }, []);
+  }, [facilitatorGroupId, facilitatorMode, facilitatorReturnTo, moduleCode]);
 
   if (loading) {
     return <main className="learning-state"><span className="learning-loader"/><h1>Opening BIS…</h1><p>Getting your programme ready.</p></main>;
@@ -120,6 +207,22 @@ export function ProgrammeEntry({
 
   if (!snapshot) {
     return <main className="learning-state"><ShieldCheck/><h1>Your learning environment could not open</h1><p>{error || "Please try again."}</p><Button onClick={() => void load()}>Try again</Button></main>;
+  }
+
+  if (facilitatorMode) {
+    if (!facilitatorContext) {
+      return <main className="learning-state"><ShieldCheck/><h1>Learner experience unavailable</h1><p>{error || "This programme could not be opened for facilitation."}</p><Button onClick={() => void load()}>Try again</Button></main>;
+    }
+    return (
+      <ProgrammePlayer
+        key={`facilitator:${moduleCode}:${facilitatorContext.cohortId}`}
+        moduleCode={moduleCode}
+        initialSection="learn"
+        initialLearnMode="reader"
+        viewerMode="facilitator"
+        facilitatorContext={facilitatorContext}
+      />
+    );
   }
 
   if (snapshot.profile && snapshot.consent?.status === "GRANTED") {
