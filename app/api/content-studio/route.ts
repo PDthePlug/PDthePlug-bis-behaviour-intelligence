@@ -54,6 +54,17 @@ function parseJson(value: string | null | undefined, fallback: unknown) {
   }
 }
 
+function compilerIsCurrent(version: { compilerStatus?: string | null; compilerVersion?: string | null }) {
+  return version.compilerStatus === "COMPILED" && version.compilerVersion === CONTENT_COMPILER_VERSION;
+}
+
+function requireCurrentCompilation(
+  version: { compilerStatus?: string | null; compilerVersion?: string | null },
+  message = "Prepare this version again with the current BIS engine before continuing.",
+) {
+  if (!compilerIsCurrent(version)) throw new Error(message);
+}
+
 function errorResponse(error: unknown) {
   if (error instanceof AccessError) {
     return Response.json({ error: error.message }, { status: error.status });
@@ -121,6 +132,7 @@ async function snapshot() {
   ]);
   const mappedVersions = versions.map((row) => ({
     ...row,
+    compilerCurrent: compilerIsCurrent(row),
     deliveryEditions: parseJson(row.deliveryEditions, []),
     manifest: parseJson(row.manifest, {}),
     validationReport: parseJson(row.validationReport, {}),
@@ -155,8 +167,12 @@ async function snapshot() {
       labs: items.filter((item) => item.kind === "LAB" && item.status === "ACTIVE").length,
       drafts: versions.filter((version) => ["DRAFT", "VALIDATED", "APPROVED"].includes(version.status)).length,
       live: versions.filter((version) => version.runtimeStatus === "LIVE" && version.status === "PUBLISHED").length,
-      ready: versions.filter((version) => version.runtimeStatus === "READY" && ["VALIDATED", "APPROVED"].includes(version.status)).length,
-      compiled: versions.filter((version) => version.compilerStatus === "COMPILED").length,
+      ready: versions.filter((version) =>
+        version.runtimeStatus === "READY"
+        && ["VALIDATED", "APPROVED"].includes(version.status)
+        && compilerIsCurrent(version),
+      ).length,
+      compiled: versions.filter((version) => compilerIsCurrent(version)).length,
       activeDynamic: activations.filter((activation) => activation.status === "ACTIVE" && activation.runtimeMode === "DYNAMIC").length,
     },
     items: mappedItems,
@@ -258,7 +274,14 @@ async function postHandler(request: Request) {
       const mimeType = String(body.mimeType ?? "").trim() || null;
       const sourceFormat = String(body.sourceFormat ?? "") as ContentSourceFormat;
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-      if (!version || version.status !== "DRAFT") throw new Error("Choose an editable draft version.");
+      const staleReviewable = Boolean(
+        version
+        && ["VALIDATED", "APPROVED"].includes(version.status)
+        && !compilerIsCurrent(version),
+      );
+      if (!version || (version.status !== "DRAFT" && !staleReviewable)) {
+        throw new Error("Choose an editable draft or an older prepared version that needs the current BIS engine.");
+      }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
       if (!item) throw new Error("That BIS title could not be found.");
       const expectedKeys = item.kind === "LEARNING_MODULE" ? [...LEARNING_EDITION_KEYS] : ["lab"];
@@ -526,6 +549,7 @@ async function postHandler(request: Request) {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version) throw new Error("That draft version was not found.");
+      requireCurrentCompilation(version);
       if (version.validationStatus !== "VALID" || version.status !== "VALIDATED" || version.compilerStatus !== "COMPILED") {
         throw new Error("Prepare this version successfully before approval.");
       }
@@ -576,7 +600,9 @@ async function postHandler(request: Request) {
       if (notes.length > 2000) throw new Error("Keep your review notes under 2,000 characters.");
       const checklist = normalizeUatChecklist(body.checklist);
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-      if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
+      if (!version) throw new Error("That content version was not found.");
+      requireCurrentCompilation(version);
+      if (version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
         throw new Error("Prepare this version before starting the final check.");
       }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
@@ -617,7 +643,9 @@ async function postHandler(request: Request) {
     if (action === "signOffUat") {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-      if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
+      if (!version) throw new Error("That content version was not found.");
+      requireCurrentCompilation(version);
+      if (version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
         throw new Error("Prepare this version before completing the final check.");
       }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
@@ -656,7 +684,9 @@ async function postHandler(request: Request) {
     if (action === "activateVersion") {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-      if (!version || version.status !== "APPROVED" || version.compilerStatus !== "COMPILED" || version.runtimeStatus !== "READY") {
+      if (!version) throw new Error("That content version was not found.");
+      requireCurrentCompilation(version);
+      if (version.status !== "APPROVED" || version.compilerStatus !== "COMPILED" || version.runtimeStatus !== "READY") {
         throw new Error("Prepare, review and approve this version before publishing.");
       }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
