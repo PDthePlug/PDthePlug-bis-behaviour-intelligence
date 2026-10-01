@@ -1819,9 +1819,12 @@ function labBodyToRuntime(
 
     const inlineOptions = checkboxOptions(text);
     const inlineQuestion = promptQuestions(text);
-    if (inlineOptions.length && inlineQuestion.length) {
+    const inlineChoiceLead = inlineOptions.length
+      ? cleanAuthoredText(text.slice(0, text.indexOf("☐"))).replace(/\*+/g, "").replace(/\s*:\s*$/u, "").trim()
+      : "";
+    if (inlineOptions.length && (inlineQuestion.length || inlineChoiceLead)) {
       flushHtml();
-      const question = inlineQuestion[0];
+      const question = inlineQuestion[0] || inlineChoiceLead;
       const spec = promptSpecFromMarker(text, question);
       addPrompt(prompts, renderBlocks, code, investigation, {
         label: spec.label || question,
@@ -1862,7 +1865,27 @@ function labBodyToRuntime(
       );
     if (promptLead && markers.length) {
       flushHtml();
-      if (markers.length === 1) {
+      const combinedMarker = markers.map((marker) => marker.text).join(" ");
+      const combinedOptions = checkboxOptions(combinedMarker);
+      const separateCheckboxOptions = markers.length > 1
+        && combinedOptions.length === markers.length
+        && markers.every((marker) => checkboxOptions(marker.text).length === 1);
+
+      if (separateCheckboxOptions) {
+        const cleanedLead = cleanAuthoredText(promptLead).replace(/\*+/g, "").replace(/\s*:\s*$/u, "").trim();
+        const spec = promptSpecFromMarker(combinedMarker, cleanedLead);
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: cleanedLead || spec.label || "Choose an answer",
+          prompt: cleanedLead || "Choose an answer",
+          type: spec.type,
+          options: spec.options,
+          min: spec.min,
+          max: spec.max,
+          placeholder: spec.placeholder,
+          sensitivity: /future self|identity|health|relationship/i.test(cleanedLead) ? "P3" : "P2",
+          required: true,
+        });
+      } else if (markers.length === 1) {
         const marker = markers[0].text;
         const spec = promptSpecFromMarker(marker, promptLead);
         addPrompt(prompts, renderBlocks, code, investigation, {
