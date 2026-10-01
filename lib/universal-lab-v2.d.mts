@@ -43,6 +43,10 @@ export function evaluateUniversalComputed(
   definition: { computedFields?: UniversalComputedField[] },
   responseValues: Record<string, unknown>,
 ): Record<string, unknown>;
+export function universalComputedLeafInputs(
+  definition: { computedFields?: UniversalComputedField[] },
+  computationId: string,
+): string[];
 export function experimentCalendarDay(startedAt: string | null | undefined, todayIso: string, totalDays: number): number;
 export function v2RequiredPromptIds(
   definition: { investigations?: unknown[] },

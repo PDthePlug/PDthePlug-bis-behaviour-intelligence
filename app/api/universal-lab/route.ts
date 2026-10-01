@@ -9,8 +9,11 @@ import {
   contentLibraryVersions,
   contentRuntimeActivations,
   contentRuntimeArtifacts,
+  evidenceRecords,
   labEnrollments,
   learners,
+  measurementSources,
+  measurementValues,
   responses,
 } from "../../../db/schema";
 import { identityFrom } from "../../../lib/bis-access";
@@ -21,6 +24,7 @@ import { investigationUnlockedAfterSave } from "../../../lib/lab-lifecycle-contr
 import {
   evaluateUniversalComputed,
   experimentCalendarDay,
+  universalComputedLeafInputs,
   v2RequiredPromptIds,
 } from "../../../lib/universal-lab-v2.mjs";
 
@@ -118,6 +122,75 @@ function promptRegistry(definition: UniversalLabPackage) {
   return registry;
 }
 
+async function syncUniversalComputedMeasurements(
+  userId: string,
+  enrolment: { id: string },
+  definition: UniversalLabPackage,
+  labVersion: string,
+  responseSnapshot: Record<string, { value: unknown; responseId?: string }>,
+) {
+  if (definition.runtimeProfile !== "UNIVERSAL_V2" || !definition.computedFields?.length) return;
+  const db = getDb();
+  const computed = evaluateUniversalComputed(definition, responseValues(responseSnapshot));
+  const now = new Date().toISOString();
+
+  for (const field of definition.computedFields) {
+    const value = computed[field.id];
+    const [existing] = await db.select({ id: measurementValues.id }).from(measurementValues).where(and(
+      eq(measurementValues.userId, userId),
+      eq(measurementValues.enrolmentId, enrolment.id),
+      eq(measurementValues.code, field.id),
+    )).limit(1);
+    const measurementId = existing?.id ?? crypto.randomUUID();
+    const status = value === null || value === undefined ? "NA" : "VALUE";
+    const evidenceStrength = status === "VALUE" ? "SUFFICIENT_FOR_LAB" : "NONE";
+
+    await db.insert(measurementValues).values({
+      id: measurementId,
+      userId,
+      experimentId: null,
+      enrolmentId: enrolment.id,
+      labCode: definition.identity.code,
+      labVersion,
+      code: field.id,
+      value: JSON.stringify(value ?? null),
+      status,
+      evidenceStrength,
+      formulaVersion: "universal-lab-v2",
+      calculatedAt: now,
+    }).onConflictDoUpdate({
+      target: [measurementValues.userId, measurementValues.enrolmentId, measurementValues.code],
+      set: {
+        value: JSON.stringify(value ?? null),
+        status,
+        evidenceStrength,
+        labCode: definition.identity.code,
+        labVersion,
+        formulaVersion: "universal-lab-v2",
+        calculatedAt: now,
+      },
+    });
+
+    await db.delete(measurementSources).where(eq(measurementSources.measurementId, measurementId));
+    const leafInputs = universalComputedLeafInputs(definition, field.id);
+    const sources = leafInputs.flatMap((semanticFieldId) => {
+      const response = responseSnapshot[semanticFieldId];
+      if (!response?.responseId) return [];
+      return [{
+        id: crypto.randomUUID(),
+        measurementId,
+        userId,
+        sourceObjectType: "RESPONSE",
+        sourceObjectId: response.responseId,
+        inputRole: semanticFieldId,
+        inputValue: JSON.stringify(response.value ?? null),
+        createdAt: now,
+      }];
+    });
+    if (sources.length) await db.insert(measurementSources).values(sources);
+  }
+}
+
 async function snapshot(userId: string, code: string) {
   const db = getDb();
   const runtime = await activeLab(code);
@@ -136,13 +209,14 @@ async function snapshot(userId: string, code: string) {
     eq(responses.labVersion, runtime.version.version),
   )).orderBy(desc(responses.recordedAt));
 
-  const latest: Record<string, { value: unknown; status: string; recordedAt: string }> = {};
+  const latest: Record<string, { value: unknown; status: string; recordedAt: string; responseId: string }> = {};
   for (const row of rows) {
     if (row.responseStatus === "SUPERSEDED" || latest[row.semanticFieldId]) continue;
     latest[row.semanticFieldId] = {
       value: decode(row.value),
       status: row.responseStatus,
       recordedAt: String(row.recordedAt ?? ""),
+      responseId: row.id,
     };
   }
 
@@ -157,6 +231,16 @@ async function snapshot(userId: string, code: string) {
   const computed = runtime.definition.runtimeProfile === "UNIVERSAL_V2"
     ? evaluateUniversalComputed(runtime.definition, responseValues(latest))
     : {};
+  const measurementRows = enrolment
+    ? await db.select().from(measurementValues).where(and(
+        eq(measurementValues.userId, userId),
+        eq(measurementValues.enrolmentId, enrolment.id),
+      ))
+    : [];
+  const measurements = Object.fromEntries(measurementRows.map((row) => [
+    row.code,
+    { ...row, value: decode(row.value) },
+  ]));
 
   return {
     definition: runtime.definition,
@@ -173,6 +257,7 @@ async function snapshot(userId: string, code: string) {
     } : null,
     responses: latest,
     computed,
+    measurements,
     experimentTiming: experimentDays ? {
       startedAt: enrolment?.experimentStartedAt ?? null,
       availableDay,
@@ -307,6 +392,11 @@ async function postHandler(request: Request) {
         if (previous && previous.value === encoded && previous.responseStatus === responseStatus) continue;
 
         const id = crypto.randomUUID();
+        if (previous) {
+          await db.update(evidenceRecords)
+            .set({ status: "SUPERSEDED" })
+            .where(eq(evidenceRecords.sourceObjectId, previous.id));
+        }
         await db.insert(responses).values({
           id,
           userId: identity.id,
@@ -326,7 +416,34 @@ async function postHandler(request: Request) {
           supersedesResponseId: previous?.id ?? null,
         });
         if (previous) await db.update(responses).set({ responseStatus: "SUPERSEDED" }).where(eq(responses.id, previous.id));
+        await db.insert(evidenceRecords).values({
+          id: crypto.randomUUID(),
+          userId: identity.id,
+          labCode: code,
+          labVersion: runtime.version.version,
+          contentReleaseId: null,
+          investigationId: `${code}.I${investigation}`,
+          semanticFieldId,
+          sourceObjectType: "RESPONSE",
+          sourceObjectId: id,
+          provenance: "SR",
+          valueType: prompt.type ?? "TEXT",
+          value: responseStatus === "PASS" ? null : encoded,
+          status: responseStatus === "PASS" ? "WITHDRAWN" : "ACTIVE",
+          sensitivity: prompt.sensitivity ?? "P2",
+          occurredAt: now,
+          recordedAt: now,
+        });
       }
+
+      const afterResponses = await snapshot(identity.id, code);
+      await syncUniversalComputedMeasurements(
+        identity.id,
+        enrolment,
+        runtime.definition,
+        runtime.version.version,
+        afterResponses.responses,
+      );
 
       let nextInvestigation = investigationUnlockedAfterSave(investigation);
       const enrolmentUpdate: {
