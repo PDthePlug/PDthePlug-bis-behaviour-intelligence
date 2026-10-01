@@ -141,3 +141,22 @@ test("Content Studio exposes the prepared Lab runtime proof before publishing", 
   assert.match(ui, /calculated fields/);
   assert.match(ui, /profile entries/);
 });
+
+
+test("stale compiler artifacts cannot be previewed approved or published", async () => {
+  const [api, preview, ui] = await Promise.all([
+    source("app/api/content-studio/route.ts"),
+    source("app/api/content-studio/preview/route.ts"),
+    source("app/content-studio/content-studio.tsx"),
+  ]);
+
+  assert.match(api, /compilerIsCurrent/);
+  assert.match(api, /requireCurrentCompilation/);
+  assert.match(api, /compilerCurrent: compilerIsCurrent\(row\)/);
+  assert.match(api, /staleReviewable/);
+  assert.match(preview, /version\.compilerVersion !== CONTENT_COMPILER_VERSION/);
+  assert.match(preview, /Prepare the version again before reviewing it/);
+  assert.match(ui, /Re-prepare required/);
+  assert.match(ui, /Re-prepare preview/);
+  assert.match(ui, /Your uploaded source stays in place/);
+});
