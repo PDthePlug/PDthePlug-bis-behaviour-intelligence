@@ -150,7 +150,9 @@ test("real BIS handbook grammar compiles from Word into the 13-position Programm
   const temp = await mkdtemp(join(tmpdir(), "bis-handbook-adapter-"));
   try {
     const modulePath = join(temp, "content-source-adapters.mjs");
+    const capabilityPath = join(temp, "lab-factory-capabilities.mjs");
     await writeFile(modulePath, compiled, "utf8");
+    await writeFile(capabilityPath, await source("lib/lab-factory-capabilities.mjs"), "utf8");
     const adapter = await import(pathToFileURL(modulePath).href + "?v=" + Date.now());
 
     const bytes = riskHandbookDocx();
