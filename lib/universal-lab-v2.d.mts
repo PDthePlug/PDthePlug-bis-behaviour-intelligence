@@ -4,7 +4,8 @@ export type UniversalComputedOperation =
   | "COUNT_TRUE"
   | "COUNT_PRESENT"
   | "MAX"
-  | "COPY";
+  | "COPY"
+  | "PAIR";
 
 export type UniversalComputedField = {
   id: string;
