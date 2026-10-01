@@ -1,6 +1,7 @@
 import { inflateRawSync, inflateSync } from "node:zlib";
 import type { ContentSourceFormat } from "./content-studio";
 import type { DeliveryEdition } from "./learning-foundation";
+import { inspectLabSourceCapabilities } from "./lab-factory-capabilities.mjs";
 
 type AdaptMetadata = {
   title: string;
@@ -1722,6 +1723,7 @@ function labPackageFromBlocks(
   code: string,
   version: string,
   metadata: AdaptMetadata,
+  sourceText = blocks.map((block) => block.text).join("\n"),
 ) {
   const facilitatorIndex = blocks.findIndex((block) => /\bfacilitator guide\b/i.test(block.text));
   const certificateIndex = blocks.findIndex((block) => /\b(?:transformation|completion) certificate\b/i.test(block.text));
@@ -1818,6 +1820,7 @@ function labPackageFromBlocks(
       accent: "#2f8276",
       focus: "A private behavioural investigation.",
     },
+    factoryCapabilities: inspectLabSourceCapabilities(sourceText),
     investigations,
   }));
 }
@@ -1842,16 +1845,22 @@ export async function adaptLabSource(
   }
 
   if (sourceFormat === "DOCX") {
-    return labPackageFromBlocks(docxBlocks(bytes), code, version, metadata);
+    const blocks = docxBlocks(bytes);
+    return labPackageFromBlocks(blocks, code, version, metadata);
   }
   if (sourceFormat === "PDF") {
-    return labPackageFromBlocks(pdfBlocks(bytes), code, version, metadata);
+    const blocks = pdfBlocks(bytes);
+    return labPackageFromBlocks(blocks, code, version, metadata);
   }
   if (sourceFormat === "HTML") {
-    return labPackageFromBlocks(htmlBlocks(new TextDecoder().decode(bytes)), code, version, metadata);
+    const sourceText = new TextDecoder().decode(bytes);
+    const blocks = htmlBlocks(sourceText);
+    return labPackageFromBlocks(blocks, code, version, metadata, sourceText);
   }
   if (sourceFormat === "MARKDOWN") {
-    return labPackageFromBlocks(markdownBlocks(new TextDecoder().decode(bytes)), code, version, metadata);
+    const sourceText = new TextDecoder().decode(bytes);
+    const blocks = markdownBlocks(sourceText);
+    return labPackageFromBlocks(blocks, code, version, metadata, sourceText);
   }
 
   throw new Error("I can store this Lab source, but I cannot read this file type yet.");
