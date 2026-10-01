@@ -19,9 +19,11 @@ test("every restricted mutation has a server-side role gate", async () => {
   const route = await readFile(new URL("app/api/staff/route.ts", root), "utf8");
   const gates = {
     assignRole: "SYSTEM_ADMIN",
+    updateRoleAssignment: "SYSTEM_ADMIN",
     revokeRole: "SYSTEM_ADMIN",
     createCohort: "SYSTEM_ADMIN",
     addCohortMember: "SYSTEM_ADMIN",
+    addCohortParticipants: "SYSTEM_ADMIN",
     assignLabVersion: "SYSTEM_ADMIN",
     addFacilitatorNote: "FACILITATOR",
     openSafeguardingCase: "FACILITATOR",
