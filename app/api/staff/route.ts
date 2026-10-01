@@ -181,6 +181,70 @@ async function learnerByEmail(email: string) {
   return learner;
 }
 
+async function learnerIfRegistered(email: string) {
+  const [learner] = await getDb()
+    .select()
+    .from(learners)
+    .where(eq(learners.email, normalizeEmail(email)))
+    .limit(1);
+  return learner ?? null;
+}
+
+async function addParticipantsToCohort(
+  identity: Identity,
+  cohort: typeof pilotCohorts.$inferSelect,
+  emails: string[],
+) {
+  const db = getDb();
+  const codes = parseJsonList(cohort.labCodes);
+  let added = 0;
+  let pending = 0;
+  const now = new Date().toISOString();
+
+  for (const email of emails) {
+    const learner = await learnerIfRegistered(email);
+    if (learner) {
+      await db.insert(cohortMembers).values({
+        id: crypto.randomUUID(),
+        cohortId: cohort.id,
+        learnerUserId: learner.userId,
+        learnerEmail: normalizeEmail(learner.email),
+        addedBy: identity.id,
+      }).onConflictDoUpdate({
+        target: [cohortMembers.cohortId, cohortMembers.learnerUserId],
+        set: { status: "ACTIVE", addedBy: identity.id, joinedAt: now, removedAt: null },
+      });
+      await db.insert(cohortParticipantInvites).values({
+        id: crypto.randomUUID(),
+        cohortId: cohort.id,
+        email,
+        status: "CLAIMED",
+        invitedBy: identity.id,
+        claimedUserId: learner.userId,
+        claimedAt: now,
+      }).onConflictDoUpdate({
+        target: [cohortParticipantInvites.cohortId, cohortParticipantInvites.email],
+        set: { status: "CLAIMED", invitedBy: identity.id, claimedUserId: learner.userId, claimedAt: now },
+      });
+      if (codes.includes("HAB")) await assignLab(identity, learner, cohort.labVersion === "ACTIVE" ? LAB_VERSION : cohort.labVersion);
+      added += 1;
+    } else {
+      await db.insert(cohortParticipantInvites).values({
+        id: crypto.randomUUID(),
+        cohortId: cohort.id,
+        email,
+        status: "PENDING",
+        invitedBy: identity.id,
+      }).onConflictDoUpdate({
+        target: [cohortParticipantInvites.cohortId, cohortParticipantInvites.email],
+        set: { status: "PENDING", invitedBy: identity.id, claimedUserId: null, claimedAt: null },
+      });
+      pending += 1;
+    }
+  }
+  return { added, pending };
+}
+
 async function assignLab(identity: Identity, learner: typeof learners.$inferSelect, labVersion: string) {
   if (!SUPPORTED_LAB_VERSIONS.includes(labVersion as typeof LAB_VERSION)) {
     throw new Error("Only a canonical supported Habit Lab version can be assigned.");
@@ -335,6 +399,9 @@ async function adminSnapshot() {
   const members = await db
     .select({ cohortId: cohortMembers.cohortId, status: cohortMembers.status })
     .from(cohortMembers);
+  const invites = await db
+    .select({ cohortId: cohortParticipantInvites.cohortId, status: cohortParticipantInvites.status })
+    .from(cohortParticipantInvites);
   const labRows = await db.select().from(labAssignments).orderBy(desc(labAssignments.assignedAt));
   const openCaseRows = await db
     .select({ id: safeguardingCases.id })
@@ -360,24 +427,54 @@ async function adminSnapshot() {
     roleAssignments: assignments,
     cohorts: cohorts.map((cohort) => ({
       ...cohort,
+      labCodes: parseJsonList(cohort.labCodes),
       memberCount: members.filter((member) => member.cohortId === cohort.id && member.status === "ACTIVE").length,
+      pendingCount: invites.filter((invite) => invite.cohortId === cohort.id && invite.status === "PENDING").length,
     })),
     labAssignments: labRows,
     supportedLabVersions: SUPPORTED_LAB_VERSIONS,
+    availableLabs: BIS_MODULES.map((module) => ({
+      code: module.code,
+      title: module.title,
+      status: module.labStatus,
+    })),
   };
 }
 
 async function facilitatorSnapshot(identity: Identity) {
   const db = getDb();
-  const cohorts = await db
-    .select()
-    .from(pilotCohorts)
-    .where(and(
-      eq(pilotCohorts.facilitatorEmail, identity.email),
-      eq(pilotCohorts.status, "ACTIVE"),
-    ))
-    .orderBy(asc(pilotCohorts.name));
-  const cohortIds = cohorts.map((cohort) => cohort.id);
+  const scopedAssignments = await db.select({ scopeId: roleAssignments.scopeId }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "COHORT"),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  ));
+  const scopedIds = [...new Set(scopedAssignments.map((assignment) => assignment.scopeId))];
+  const [globalAssignment] = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "GLOBAL"),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  )).limit(1);
+  const legacyRows = globalAssignment
+    ? await db.select({ id: pilotCohorts.id }).from(pilotCohorts).where(and(
+        eq(pilotCohorts.facilitatorEmail, identity.email),
+        eq(pilotCohorts.status, "ACTIVE"),
+      ))
+    : [];
+  const cohortIds = [...new Set([...scopedIds, ...legacyRows.map((row) => row.id)])];
+  const cohorts = cohortIds.length
+    ? await db.select().from(pilotCohorts).where(and(
+        inArray(pilotCohorts.id, cohortIds),
+        eq(pilotCohorts.status, "ACTIVE"),
+      )).orderBy(asc(pilotCohorts.name))
+    : [];
   if (cohortIds.length === 0) return { cohorts: [], learners: [], notes: [], referrals: [] };
   const members = await db
     .select()
@@ -430,6 +527,7 @@ async function facilitatorSnapshot(identity: Identity) {
   return {
     cohorts: cohorts.map((cohort) => ({
       ...cohort,
+      labCodes: parseJsonList(cohort.labCodes),
       memberIds: members.filter((member) => member.cohortId === cohort.id).map((member) => member.learnerUserId),
       learningChecks: learningChecks.get(cohort.id) ?? null,
     })),
