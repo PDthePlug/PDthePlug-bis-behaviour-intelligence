@@ -161,6 +161,41 @@ type SourceBlock = {
 
 const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
 
+function learnerResponseHeader(value: string) {
+  const header = value.replace(/\*+/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+  if (!header) return false;
+  return /^(?:your|my)\b/.test(header)
+    || /\b(?:your|my)\s+(?:answer|response|cue|entry|note|notes|action|evidence|example|value|observation|reflection|plan)\b/.test(header);
+}
+
+function authoredBlankCell(value: string) {
+  return value
+    .replace(/[_—–-]{2,}/g, "")
+    .replace(/\.{3,}/g, "")
+    .replace(/\s+/g, "")
+    .trim() === "";
+}
+
+function inferTableResponseColumns(rows: string[][]): SourceBlock["responseColumns"] | undefined {
+  if (rows.length < 2 || rows[0].length < 2) return undefined;
+  const headers = rows[0].map((cell) => cell.replace(/\*+/g, "").replace(/\s+/g, " ").trim());
+  const dataRows = rows.slice(1);
+  const inferred: NonNullable<SourceBlock["responseColumns"]> = [];
+
+  headers.forEach((header, index) => {
+    if (!learnerResponseHeader(header)) return;
+    const values = dataRows.map((row) => row[index] ?? "");
+    const blankCount = values.filter(authoredBlankCell).length;
+    if (!values.length || blankCount === 0) return;
+    inferred.push({
+      index,
+      type: "TEXT",
+    });
+  });
+
+  return inferred.length ? inferred : undefined;
+}
+
 function sourceToken(value: string) {
   let hash = 2166136261;
   for (let index = 0; index < value.length; index += 1) {
@@ -911,6 +946,7 @@ function docxTable(block: string): SourceBlock | null {
     heading: false,
     html: "<table><tbody>" + htmlRows.join("") + "</tbody></table>",
     tableRows,
+    responseColumns: inferTableResponseColumns(tableRows),
     kind: "table",
   };
 }
@@ -1065,6 +1101,7 @@ function serializedMarkdownTable(
       heading: false,
       html: tableHtml(rows),
       tableRows: rows,
+      responseColumns: inferTableResponseColumns(rows),
       kind: "table",
     },
     end,
@@ -1518,6 +1555,8 @@ function promptsFromTable(
   const headers = rows[0].map((cell) => cleanAuthoredText(cell).replace(/\*\*/g, ""));
   const joined = headers.join(" | ").toLowerCase();
 
+  const inferredResponseColumns = block.responseColumns ?? inferTableResponseColumns(rows);
+
   if (joined.includes("behaviour") && headers.some((header) => /^never$/i.test(header))) {
     const options = headers.slice(1).filter(Boolean);
     for (const row of rows.slice(1)) {
@@ -1638,6 +1677,28 @@ function promptsFromTable(
       });
     }
     return true;
+  }
+
+  if (inferredResponseColumns?.length) {
+    const profileTable = /behaviou?r profile/i.test(
+      [block.text, ...headers].join(" "),
+    ) || (headers.some((header) => /^element$/i.test(header)) && headers.some((header) => learnerResponseHeader(header)));
+    for (const row of rows.slice(1)) {
+      const rowLabel = cleanAuthoredText(row[0] ?? "");
+      if (!rowLabel) continue;
+      for (const column of inferredResponseColumns) {
+        const header = headers[column.index] || "Your response";
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: rowLabel,
+          prompt: rowLabel,
+          type: "TEXT",
+          sensitivity: /identity|health|relationship/i.test(rowLabel) ? "P3" : "P2",
+          required: false,
+          group: profileTable ? "Behaviour Profile Summary" : header,
+        });
+      }
+    }
+    return prompts.length > 0;
   }
 
   return false;
