@@ -606,3 +606,49 @@
   }
   .facilitator-run-sheet-detail-grid section:last-child{border-bottom:0}
 }
+
+
+/* Investigation 7 belongs to the learner's Today surface. When today's
+   evidence is due, it becomes the primary action rather than a passive status card. */
+.prototype-evidence-due{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:18px;
+  align-items:center;
+  border-color:#b9d2c8!important;
+  background:linear-gradient(135deg,#eef7f3 0%,#ffffff 72%)!important;
+}
+.prototype-evidence-due>svg{
+  width:32px!important;
+  height:32px!important;
+  margin:0!important;
+}
+.prototype-evidence-due>div>h3{
+  margin:4px 0 7px;
+}
+.prototype-evidence-due>div>p:not(.prototype-eyebrow){
+  max-width:680px;
+  margin:0;
+}
+.prototype-evidence-due .prototype-btn{
+  white-space:nowrap;
+  justify-self:end;
+}
+.prototype-experiment-status{
+  border-color:#e1e5e1;
+  background:#fbfcfa!important;
+}
+@media(max-width:700px){
+  .prototype-evidence-due{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .prototype-evidence-due>svg{
+    margin-bottom:2px!important;
+  }
+  .prototype-evidence-due .prototype-btn{
+    width:100%;
+    justify-self:stretch;
+  }
+}
