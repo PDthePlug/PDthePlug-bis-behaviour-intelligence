@@ -1,3 +1,4 @@
+import { applyDigitalLabBaseline } from "./digital-lab-baseline.mjs";
 import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
 import type { LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
@@ -65,6 +66,7 @@ export type UniversalLabPrompt = {
   type?: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL" | "MULTI_SELECT" | "DATE";
   readOnly?: boolean;
   scheduleDay?: number;
+  scheduleEndDay?: number;
   computed?: UniversalComputedField;
   indicatorCode?: string;
   indicatorLabel?: string;
@@ -465,6 +467,7 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
     group: text(value.group) || undefined,
     readOnly: value.readOnly === true || undefined,
     scheduleDay: Number.isInteger(value.scheduleDay) ? Number(value.scheduleDay) : undefined,
+    scheduleEndDay: Number.isInteger(value.scheduleEndDay) ? Number(value.scheduleEndDay) : undefined,
     computed: object(value.computed) as UniversalComputedField | undefined,
     indicatorCode: text(value.indicatorCode) || undefined,
     indicatorLabel: text(value.indicatorLabel) || undefined,
@@ -481,7 +484,7 @@ export async function compileUniversalLab(
   let source = parseJson(bytes);
   if (!source) throw new Error("Lab source must be a BIS JSON package.");
   if (text(source.kind) !== "LAB") throw new Error('Lab package kind must be "LAB".');
-  source = applyHabitLabStandard(source) as Record<string, unknown>;
+  source = applyHabitLabStandard(applyDigitalLabBaseline(source)) as Record<string, unknown>;
 
   const factoryCapabilities = object(source.factoryCapabilities) as LabFactoryCapabilities | null;
   const authoredV2 = text(source.schemaVersion) === "universal-lab-v2" || text(source.runtimeProfile) === "UNIVERSAL_V2";
@@ -570,7 +573,7 @@ export async function compileUniversalLab(
 
   if (v2) {
     const promptIds = new Set(investigations.flatMap((item) => item.prompts.map((prompt) => prompt.id)));
-    const requiredIndicatorCodes = new Set(factoryCapabilities?.indicatorCodes ?? []);
+    const requiredIndicatorCodes = new Set((factoryCapabilities?.indicatorCodes ?? []).filter((code) => !factoryCapabilities?.facilitatorOnlyIndicatorCodes?.includes(code)));
     const registeredIndicatorCodes = new Set(indicatorRegistry.map((indicator) => indicator.code));
     const missingIndicatorCodes = [...requiredIndicatorCodes].filter((code) => !registeredIndicatorCodes.has(code));
     const unboundIndicatorCodes = indicatorRegistry.filter((indicator) =>

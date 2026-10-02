@@ -176,7 +176,9 @@ test("Programme experiment status is authored-window aware instead of assuming s
   assert.match(player, /const experimentRecordedDays =/);
   assert.match(player, /programmeHandoff\?\.evidenceDaysRecorded/);
   assert.match(player, /Experiment Day \{experimentDay\} of \{experimentTotalDays\}/);
-  assert.match(player, /\{experimentRecordedDays\}\/\{experimentTotalDays\} observation days recorded/);
+  assert.match(player, /programmeHandoff\?\.evidenceWindowCount/);
+  assert.match(player, /weekly entries/);
+  assert.match(player, /observation days/);
   assert.doesNotMatch(player, /activeModuleRuntime\.events\.length\}\/7 observation days recorded/);
 });
 

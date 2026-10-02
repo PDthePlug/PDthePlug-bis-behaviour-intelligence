@@ -202,7 +202,7 @@ test("Universal V2 carries authored BEIs into a governed indicator registry", ()
 test("Universal V2 experiment timing follows real calendar days", () => {
   assert.equal(experimentCalendarDay("2026-10-01T10:00:00.000Z", "2026-10-01", 7), 1);
   assert.equal(experimentCalendarDay("2026-10-01T10:00:00.000Z", "2026-10-03", 7), 3);
-  assert.equal(experimentCalendarDay("2026-10-01T10:00:00.000Z", "2026-10-20", 7), 7);
+  assert.equal(experimentCalendarDay("2026-10-01T10:00:00.000Z", "2026-10-20", 7), 8);
   assert.equal(experimentCalendarDay("2026-10-03T10:00:00.000Z", "2026-10-01", 7), 0);
 });
 

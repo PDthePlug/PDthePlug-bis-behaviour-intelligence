@@ -1,6 +1,7 @@
 export type LabFactoryCapabilities = {
   baseline: boolean;
   indicatorCodes: string[];
+  facilitatorOnlyIndicatorCodes?: string[];
   derivedSignatures: string[];
   experiment: {
     detected: boolean;

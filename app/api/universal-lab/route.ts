@@ -1,4 +1,5 @@
-import { normalizePromptResponseValue, validPromptResponse } from "../../../lib/evidence-validation.mjs";
+import { requiredLabPromptIds, validateLabSubmission } from "../../../lib/lab-interaction-contract.mjs";
+import { validPromptResponse } from "../../../lib/evidence-validation.mjs";
 import { sanitizeRuntimePackage } from "../../../lib/content-html.mjs";
 import { and, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
@@ -27,7 +28,6 @@ import {
   experimentCalendarDay,
   universalComputedLeafInputs,
   universalExperimentEvidenceProgress,
-  v2RequiredPromptIds,
 } from "../../../lib/universal-lab-v2.mjs";
 
 function decode(value: string | null) {
@@ -70,24 +70,7 @@ function requiredFor(
   investigation: number,
   availableExperimentDay: number,
 ) {
-  if (investigation === 0) {
-    return baselinePrompts(definition)
-      .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
-      .map((prompt) => prompt.id);
-  }
-  if (definition.runtimeProfile === "UNIVERSAL_V2") {
-    const active = definition.investigations[investigation - 1];
-    if (definition.experiment?.investigation === investigation) {
-      return active?.prompts
-        .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
-        .filter((prompt) => Boolean(prompt.scheduleDay) && Number(prompt.scheduleDay) === availableExperimentDay)
-        .map((prompt) => prompt.id) ?? [];
-    }
-    return v2RequiredPromptIds(definition, investigation, availableExperimentDay);
-  }
-  return definition.investigations[investigation - 1]?.prompts
-    .filter((prompt) => prompt.required !== false)
-    .map((prompt) => prompt.id) ?? [];
+  return requiredLabPromptIds(definition, investigation, availableExperimentDay);
 }
 
 async function audit(actorId: string, action: string, objectType: string, objectId: string, metadata: Record<string, unknown>) {
@@ -252,6 +235,7 @@ async function syncUniversalComputedMeasurements(
       : responseSnapshot[semanticFieldId]?.value;
 
   for (const indicator of definition.indicatorRegistry ?? []) {
+    if (indicator.status === "NOT_COLLECTED") continue;
     const value = indicator.primaryPromptId
       ? resolvedValue(indicator.primaryPromptId)
       : (() => {
@@ -304,7 +288,7 @@ async function snapshot(userId: string, code: string) {
     ? Number(runtime.definition.experiment?.days ?? 0)
     : 0;
   const availableDay = experimentDays
-    ? experimentCalendarDay(enrolment?.experimentStartedAt, today, experimentDays)
+    ? experimentCalendarDay(enrolment?.experimentStartedAt, today, experimentDays, timeZone)
     : 0;
   const computed = runtime.definition.runtimeProfile === "UNIVERSAL_V2"
     ? evaluateUniversalComputed(runtime.definition, responseValues(latest))
@@ -337,7 +321,9 @@ async function snapshot(userId: string, code: string) {
     enrolment: enrolment ? {
       id: enrolment.id,
       status: enrolment.status,
-      currentInvestigation: enrolment.currentInvestigation,
+      currentInvestigation: experimentDays && availableDay > experimentDays
+        ? Math.max(enrolment.currentInvestigation, runtime.definition.experiment?.reviewInvestigation ?? 8)
+        : enrolment.currentInvestigation,
       phaseACompletedAt: enrolment.phaseACompletedAt,
       experimentStartedAt: enrolment.experimentStartedAt,
       completedAt: enrolment.completedAt,
@@ -417,15 +403,19 @@ async function postHandler(request: Request) {
       if (!Number.isInteger(investigation) || investigation < 0 || investigation > 9 || (investigation === 0 && !baselineSave)) {
         throw new Error("Choose a valid investigation.");
       }
-      if (investigation > enrolment.currentInvestigation) throw new Error("Complete the current investigation before moving ahead.");
+      const progress = await snapshot(identity.id, code);
+      if (investigation > (progress.enrolment?.currentInvestigation ?? enrolment.currentInvestigation)) throw new Error("Complete the current investigation before moving ahead.");
+      if (investigation > 0 && runtime.definition.presentationBaseline) {
+        validateLabSubmission(runtime.definition, 0, 0, [], progress.responses);
+      }
       const items = Array.isArray(body.items) ? body.items : [];
       if (!items.length || items.length > 60) throw new Error("Save between 1 and 60 responses.");
-      const registry = promptRegistry(runtime.definition);
       const availableExperimentDay = runtime.definition.runtimeProfile === "UNIVERSAL_V2" && runtime.definition.experiment
         ? experimentCalendarDay(
             enrolment.experimentStartedAt,
             todayInZone(profile.timezone || "Africa/Johannesburg"),
             runtime.definition.experiment.days,
+            profile.timezone || "Africa/Johannesburg",
           )
         : 0;
       if (
@@ -436,62 +426,14 @@ async function postHandler(request: Request) {
         throw new Error("The real-world experiment begins after Phase A is complete.");
       }
 
-      const isExperimentSave =
-        runtime.definition.runtimeProfile === "UNIVERSAL_V2"
-        && investigation === runtime.definition.experiment?.investigation;
-      const allowed = new Map([...registry].filter(([, prompt]) =>
-        prompt.investigation === investigation
-        && prompt.readOnly !== true
-        && (
-          isExperimentSave
-            ? Boolean(prompt.scheduleDay) && Number(prompt.scheduleDay) === availableExperimentDay
-            : !prompt.scheduleDay || Number(prompt.scheduleDay) <= availableExperimentDay
-        ),
-      ));
-      const ids = new Set<string>();
-      const validatedItems: Array<{
-        semanticFieldId: string;
-        prompt: UniversalLabPrompt;
-        responseStatus: "PASS" | "ANSWERED";
-        value: unknown;
-      }> = [];
-      for (const raw of items) {
-        const item = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
-        const semanticFieldId = String(item.semanticFieldId ?? "");
-        const prompt = allowed.get(semanticFieldId);
-        const responseStatus = item.responseStatus === "PASS" ? "PASS" : "ANSWERED";
-        const value = responseStatus === "PASS"
-          ? ""
-          : normalizePromptResponseValue(prompt, item.value);
-        if (
-          !prompt
-          || ids.has(semanticFieldId)
-          || !validPromptResponse(prompt, value, responseStatus)
-        ) {
-          throw new Error("Check the responses in this investigation before saving.");
-        }
-        ids.add(semanticFieldId);
-        validatedItems.push({ semanticFieldId, prompt, responseStatus, value });
+      if (investigation === runtime.definition.experiment?.investigation
+        && availableExperimentDay > runtime.definition.experiment.days) {
+        throw new Error("The evidence window has ended. Continue to the evidence review; missed days remain missing.");
       }
-
-      const existing = await snapshot(identity.id, code);
-      const completedIds = new Set([
-        ...Object.keys(existing.responses),
-        ...ids,
-      ]);
-      const required = requiredFor(runtime.definition, investigation, availableExperimentDay);
-      const missingRequired = required.filter((id) => !completedIds.has(id));
-      if (missingRequired.length) {
-        const labels = missingRequired
-          .map((id) => registry.get(id)?.label)
-          .filter((label): label is string => Boolean(label))
-          .slice(0, 4);
-        throw new Error(
-          labels.length
-            ? `Complete or pass: ${labels.join(" · ")}`
-            : "Answer or pass each currently available required question before continuing.",
-        );
-      }
+      const existing = progress;
+      const validatedItems = validateLabSubmission(
+        runtime.definition, investigation, availableExperimentDay, items, existing.responses,
+      );
       const now = new Date().toISOString();
 
       for (const item of validatedItems) {

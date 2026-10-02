@@ -96,6 +96,7 @@ type Runtime = {
     totalDays: number;
     evidenceDaysRecorded: number;
     todayEvidenceRecorded: boolean;
+    evidenceWindowCount?: number;
   };
 };
 
@@ -1281,6 +1282,7 @@ export function ProgrammePlayer({
                 && experimentTotalDays > 0
                 && programmeHandoff
                 && programmeHandoff.currentDay > 0
+                && programmeHandoff.currentDay <= programmeHandoff.totalDays
                 && !programmeHandoff.todayEvidenceRecorded ? (
                 <article className="prototype-card prototype-action-card prototype-evidence-due" role="status">
                   <CalendarDays />
@@ -1288,7 +1290,7 @@ export function ProgrammePlayer({
                     <p className="prototype-eyebrow">Today’s Lab evidence · Investigation 7</p>
                     <h3>Experiment Day {experimentDay ?? programmeHandoff.currentDay} is ready.</h3>
                     <p>
-                      Record only what happened today. Tomorrow’s evidence opens tomorrow; an unrecorded past day remains missing evidence.
+                      {programmeHandoff.evidenceWindowCount ? "Record your observations for the current week. The next weekly entry opens on its calendar date; missed entries remain missing." : "Record only what happened today. Tomorrow’s evidence opens tomorrow; an unrecorded past day remains missing evidence."}
                     </p>
                   </div>
                   <Link
@@ -1299,16 +1301,18 @@ export function ProgrammePlayer({
                         : moduleLabHref ?? "/labs"
                     }
                   >
-                    Capture today’s evidence <ArrowRight />
+                    {programmeHandoff.evidenceWindowCount ? "Capture this week’s evidence" : "Capture today’s evidence"} <ArrowRight />
                   </Link>
                 </article>
               ) : labExperimentStarted && moduleLabIsLive && experimentTotalDays > 0 ? (
                 <article className="prototype-card prototype-action-card prototype-experiment-status">
                   <CalendarDays />
                   <p className="prototype-eyebrow">Real-world test</p>
-                  <h3>{experimentRecordedDays}/{experimentTotalDays} observation days recorded.</h3>
+                  <h3>{experimentRecordedDays}/{programmeHandoff?.evidenceWindowCount ?? experimentTotalDays} {programmeHandoff?.evidenceWindowCount ? "weekly entries" : "observation days"} recorded.</h3>
                   <p>
-                    {programmeHandoff?.todayEvidenceRecorded
+                    {programmeHandoff && programmeHandoff.currentDay > programmeHandoff.totalDays
+                      ? "Your experiment window has ended. Review the evidence you recorded; missed days remain missing."
+                      : programmeHandoff?.todayEvidenceRecorded
                       ? `Experiment Day ${experimentDay ?? programmeHandoff.currentDay} is recorded. Your next evidence window opens on its calendar day.`
                       : "The experiment has its own clock. Only the current calendar day can be recorded."}
                   </p>

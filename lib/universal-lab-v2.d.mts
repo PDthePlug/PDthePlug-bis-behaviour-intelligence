@@ -22,8 +22,9 @@ export type UniversalExperimentContract = {
   investigation: number;
   startAfterInvestigation: number;
   days: number;
+  cadence?: "WEEKLY";
   reviewInvestigation: number;
-  scheduledPromptIds: Array<{ day: number; promptId: string }>;
+  scheduledPromptIds: Array<{ day: number; endDay?: number; promptId: string }>;
 };
 
 export type UniversalProfileEntry = {
@@ -39,7 +40,7 @@ export type UniversalIndicatorBinding = {
   promptIds: string[];
   computedPromptIds: string[];
   primaryPromptId: string | null;
-  status: "BOUND" | "UNBOUND";
+  status: "BOUND" | "UNBOUND" | "NOT_COLLECTED";
 };
 
 export type UniversalV2Additions = {
@@ -62,7 +63,7 @@ export function universalComputedLeafInputs(
   definition: { computedFields?: UniversalComputedField[] },
   computationId: string,
 ): string[];
-export function experimentCalendarDay(startedAt: string | null | undefined, todayIso: string, totalDays: number): number;
+export function experimentCalendarDay(startedAt: string | null | undefined, todayIso: string, totalDays: number, timeZone?: string): number;
 export function universalExperimentEvidenceProgress(
   definition: {
     experiment?: UniversalExperimentContract | null;
@@ -83,6 +84,7 @@ export function universalExperimentEvidenceProgress(
   totalDays: number;
   evidenceDaysRecorded: number;
   todayEvidenceRecorded: boolean;
+  evidenceWindowCount?: number;
 };
 export function v2RequiredPromptIds(
   definition: { investigations?: unknown[] },

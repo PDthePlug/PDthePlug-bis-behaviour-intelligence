@@ -13,6 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import type { UniversalLabPackage, UniversalLabPrompt } from "@/lib/content-compiler";
 import { serverUnlockedInvestigation } from "@/lib/lab-lifecycle-contract";
 import { evaluateUniversalComputed } from "@/lib/universal-lab-v2.mjs";
+import { availableLabPrompts } from "@/lib/lab-interaction-contract.mjs";
+import { validPromptResponse } from "@/lib/evidence-validation.mjs";
 import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentation.mjs";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
@@ -398,7 +400,6 @@ function UniversalEvidenceTable({
   passed,
   onValue,
   onPass,
-  activeExperimentDay,
   previewMode = false,
 }: {
   block: Extract<NonNullable<UniversalLabPackage["investigations"][number]["blocks"]>[number], { type: "TABLE" }>;
@@ -411,13 +412,8 @@ function UniversalEvidenceTable({
   previewMode?: boolean;
 }) {
   const visibleRows = block.rows.filter((row) => {
-    const scheduledDays = row.flatMap((cell) => {
-      if (cell.kind !== "PROMPT" && cell.kind !== "CHOICE") return [];
-      const day = promptById.get(cell.promptId)?.scheduleDay;
-      return day ? [Number(day)] : [];
-    });
-    if (!scheduledDays.length || previewMode) return true;
-    return Boolean(activeExperimentDay && scheduledDays.includes(activeExperimentDay));
+    const responseCells = row.filter((cell) => cell.kind === "PROMPT" || cell.kind === "CHOICE");
+    return previewMode || !responseCells.length || responseCells.some((cell) => "promptId" in cell && promptById.has(cell.promptId));
   });
 
   return (
@@ -716,23 +712,17 @@ function UniversalInvestigationForm({
   const availableExperimentDay = previewMode
     ? (snapshot.definition.experiment?.days ?? 9)
     : (snapshot.experimentTiming?.availableDay ?? 0);
+  const experimentWindowClosed = !previewMode && isExperimentInvestigation
+    && availableExperimentDay > (snapshot.definition.experiment?.days ?? 0);
   const activeExperimentDay = previewMode || !isExperimentInvestigation
     ? null
     : availableExperimentDay;
-  const visiblePrompts = investigation.prompts.filter((prompt) => {
-    if (previewMode) return true;
-    if (isExperimentInvestigation) {
-      if (!prompt.scheduleDay) return prompt.readOnly === true;
-      return Number(prompt.scheduleDay) === activeExperimentDay;
-    }
-    if (!prompt.scheduleDay) return true;
-    return Number(prompt.scheduleDay) <= availableExperimentDay;
-  });
+  const visiblePrompts = availableLabPrompts(snapshot.definition, step, availableExperimentDay, previewMode);
   const ready = useMemo(
     () => visiblePrompts.every((prompt) => {
       if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return true;
       const value = values[prompt.id] ?? "";
-      return prompt.type === "MULTI_SELECT" ? multiValues(value).length > 0 : Boolean(value.trim());
+      return validPromptResponse(prompt, value, "ANSWERED");
     }),
     [passed, values, visiblePrompts],
   );
@@ -748,7 +738,7 @@ function UniversalInvestigationForm({
   const missingRequiredPrompts = visiblePrompts.filter((prompt) => {
     if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return false;
     const current = values[prompt.id] ?? "";
-    return prompt.type === "MULTI_SELECT" ? multiValues(current).length === 0 : !current.trim();
+    return !validPromptResponse(prompt, current, "ANSWERED");
   });
   const missingRequiredCount = missingRequiredPrompts.length;
 
@@ -769,7 +759,7 @@ function UniversalInvestigationForm({
     return false;
   };
 
-  const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
+  const promptById = new Map(visiblePrompts.map((prompt) => [prompt.id, prompt]));
   const blockPromptIds = new Set(
     (investigation.blocks ?? []).flatMap((block) => {
       if (block.type === "PROMPT") return [block.promptId];
@@ -798,12 +788,7 @@ function UniversalInvestigationForm({
     return next;
   });
   const renderPrompt = (prompt: UniversalLabPrompt) => {
-    if (!previewMode && isExperimentInvestigation) {
-      if (!prompt.scheduleDay && prompt.readOnly !== true) return null;
-      if (prompt.scheduleDay && Number(prompt.scheduleDay) !== activeExperimentDay) return null;
-    } else if (!previewMode && prompt.scheduleDay && Number(prompt.scheduleDay) > availableExperimentDay) {
-      return null;
-    }
+    if (!promptById.has(prompt.id)) return null;
     return (
       <UniversalPrompt
         key={prompt.id}
@@ -945,14 +930,18 @@ function UniversalInvestigationForm({
         <section className="universal-experiment-status">
           <div>
             <span>Real-world experiment</span>
-            <strong>{previewMode ? "Previewing all days" : `Day ${Math.max(1, snapshot.experimentTiming?.availableDay ?? 1)} of ${snapshot.definition.experiment.days}`}</strong>
+            <strong>{previewMode ? "Previewing all days" : experimentWindowClosed ? "Evidence window finished" : snapshot.definition.experiment.cadence === "WEEKLY" ? `${visiblePrompts.find((prompt) => prompt.scheduleEndDay)?.group ?? "Weekly evidence"} · ${snapshot.definition.experiment.days}-day experiment` : `Day ${Math.max(1, snapshot.experimentTiming?.availableDay ?? 1)} of ${snapshot.definition.experiment.days}`}</strong>
           </div>
           <p>
             {previewMode
               ? "Preview mode shows the complete experiment structure."
-              : snapshot.experimentTiming?.reviewReady
+              : experimentWindowClosed
+                ? "Continue to review the evidence you recorded. Missed days remain missing."
+                : snapshot.experimentTiming?.reviewReady
                 ? "This is the final experiment day. Record today’s evidence to continue to review."
-                : "Only today’s evidence is open. Tomorrow’s evidence unlocks when tomorrow arrives."}
+                : snapshot.definition.experiment.cadence === "WEEKLY"
+                  ? "Record one action in the current weekly window. The next week opens on its calendar date."
+                  : "Only today’s evidence is open. Tomorrow’s evidence unlocks when tomorrow arrives."}
           </p>
         </section>
       ) : null}
@@ -989,6 +978,10 @@ function UniversalInvestigationForm({
           <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Your responses save privately to this Lab."}</span>
           {step === 9 ? (
             <Button size="lg" disabled={saving} onClick={() => void (async () => {
+              if (experimentWindowClosed) {
+                onAdvance(snapshot, snapshot.definition.experiment?.reviewInvestigation ?? 8);
+                return;
+              }
               if (!guardSave()) return;
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
               if (saved) await act({ action: "completeLab" });
@@ -997,6 +990,10 @@ function UniversalInvestigationForm({
             </Button>
           ) : (
             <Button size="lg" disabled={saving} onClick={() => void (async () => {
+              if (experimentWindowClosed) {
+                onAdvance(snapshot, snapshot.definition.experiment?.reviewInvestigation ?? 8);
+                return;
+              }
               if (!guardSave()) return;
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
               if (!saved) return;
@@ -1010,7 +1007,9 @@ function UniversalInvestigationForm({
             })()}>
               {saving
                 ? "Saving…"
-                : snapshot.definition.runtimeProfile === "UNIVERSAL_V2" && step === snapshot.definition.experiment?.investigation
+                : experimentWindowClosed
+                  ? <>Continue to evidence review <ArrowRight /></>
+                  : snapshot.definition.runtimeProfile === "UNIVERSAL_V2" && step === snapshot.definition.experiment?.investigation
                   ? returnToProgramme
                     ? <>Save today’s evidence & return <ArrowRight /></>
                     : snapshot.experimentTiming?.reviewReady
@@ -1274,7 +1273,8 @@ export function UniversalRuntimeLab({
           const experimentStep =
             snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
             && step === snapshot.definition.experiment?.investigation;
-          if (!previewMode && experimentStep && programmeReturnTo) {
+          if (!previewMode && experimentStep && programmeReturnTo
+            && (saved.experimentTiming?.availableDay ?? 0) <= (snapshot.definition.experiment?.days ?? 0)) {
             router.replace(programmeReturnTo);
             return;
           }

@@ -101,9 +101,9 @@ test("Investigation 7 saves one calendar day and hands the learner back to the p
     source("app/bis-app.tsx"),
   ]);
 
-  assert.match(api, /Number\(prompt\.scheduleDay\) === availableExperimentDay/);
+  assert.match(api, /validateLabSubmission/);
   assert.match(api, /Only today’s experiment evidence can be recorded|availableExperimentDay/);
-  assert.match(universalClient, /Number\(prompt\.scheduleDay\) === activeExperimentDay/);
+  assert.match(universalClient, /availableLabPrompts/);
   assert.match(universalClient, /programmeReturnTo/);
   assert.match(universalClient, /router\.replace\(programmeReturnTo\)/);
   assert.match(universalClient, /Save today’s evidence & return/);
@@ -162,22 +162,20 @@ test("Universal Investigation 7 requires only the current calendar day's schedul
     source("app/labs/[code]/universal-runtime-lab.tsx"),
   ]);
 
-  assert.match(
-    api,
-    /Boolean\(prompt\.scheduleDay\) && Number\(prompt\.scheduleDay\) === availableExperimentDay/,
-  );
-  assert.match(
-    client,
-    /if \(!prompt\.scheduleDay\) return prompt\.readOnly === true;/,
-  );
-  assert.match(
-    client,
-    /if \(!prompt\.scheduleDay && prompt\.readOnly !== true\) return null;/,
-  );
-  assert.doesNotMatch(
-    api,
-    /!prompt\.scheduleDay \|\| Number\(prompt\.scheduleDay\) === availableExperimentDay/,
-  );
+  assert.match(api, /validateLabSubmission/);
+  assert.match(client, /availableLabPrompts/);
+  const { availableLabPrompts, requiredLabPromptIds } = await import("../lib/lab-interaction-contract.mjs");
+  const definition = {
+    runtimeProfile: "UNIVERSAL_V2", experiment: { investigation: 7 },
+    investigations: [{ number: 7, prompts: [
+      { id: "today", scheduleDay: 1, required: true },
+      { id: "tomorrow", scheduleDay: 2, required: true },
+      { id: "old-workbook-residue", required: true },
+      { id: "computed", readOnly: true },
+    ] }],
+  };
+  assert.deepEqual(availableLabPrompts(definition, 7, 1).map((prompt) => prompt.id), ["today", "computed"]);
+  assert.deepEqual(requiredLabPromptIds(definition, 7, 1), ["today"]);
 });
 
 test("Universal Lab completion does not resurrect unscheduled Investigation 7 workbook fields", async () => {
