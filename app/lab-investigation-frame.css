@@ -557,6 +557,46 @@
   letter-spacing:.1em;
   text-transform:uppercase;
 }
+
+.universal-package-lab .imported-lab-content .bis-digital-section-heading{
+  margin:30px 0 8px;
+  padding-top:22px;
+  border-top:1px solid var(--border,#d9ddda);
+  color:var(--ink,#17313a);
+  font:600 clamp(24px,3.6vw,34px)/1.16 var(--font-serif);
+  letter-spacing:-.018em;
+}
+.universal-package-lab .imported-lab-content .bis-digital-pause{
+  margin:24px 0 6px;
+  color:#8a6330;
+  font-family:var(--font-sans);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.universal-package-lab .imported-lab-content .bis-digital-instruction{
+  padding:14px 16px;
+  border-left:3px solid var(--teal,#2f8276);
+  border-radius:4px 14px 14px 4px;
+  background:#edf5f1;
+  color:#425650;
+  font-family:var(--font-sans);
+  font-size:13px;
+  line-height:1.55;
+}
+.universal-package-lab .imported-lab-content .bis-profile-note{
+  display:block;
+  margin:22px 0;
+  padding:14px 16px;
+  border:1px solid #d8ddd9;
+  border-radius:14px;
+  background:#f7f6f1;
+  color:#5c6b66;
+  font-family:var(--font-sans);
+  font-size:12px;
+  line-height:1.55;
+}
 .universal-package-lab .imported-lab-content table{
   display:block;
   width:100%;
