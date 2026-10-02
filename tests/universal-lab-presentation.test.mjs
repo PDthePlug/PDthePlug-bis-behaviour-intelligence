@@ -637,3 +637,27 @@ test("Contract stage removes paper-only I, Signed and Date blanks from learner p
   assert.equal(prompts.some((prompt) => ["I,", "Signed", "Date"].includes(prompt.label)), false);
   assert.ok(prompts.some((prompt) => prompt.label === "My restart plan"));
 });
+
+
+test("authored equations become compact digital formula objects", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    {
+      type: "HTML",
+      html: "<p>Your Personal Equation</p>"
+        + "<p>Inherited Beliefs + Chosen Actions = Current Identity</p>"
+        + "<p>Chosen Beliefs + Chosen Actions = Becoming Identity</p>",
+    },
+    { type: "PROMPT", promptId: "PEF.I1.Q1" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const html = result.investigations[0].blocks
+    .filter((block) => block.type === "HTML")
+    .map((block) => block.html)
+    .join("");
+  assert.equal((html.match(/bis-digital-equation/g) ?? []).length, 2);
+  assert.match(universalHtmlText(html), /Inherited Beliefs \+ Chosen Actions = Current Identity/);
+});
