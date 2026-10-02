@@ -92,3 +92,24 @@ test("future Universal Labs use the same server-owned progression invariant", as
   assert.match(client, /saved\.enrolment\.currentInvestigation >= next/);
   assert.match(client, /onAdvance\(saved, next\)/);
 });
+
+
+test("Investigation 7 saves one calendar day and hands the learner back to the programme", async () => {
+  const [api, universalClient, habitClient] = await Promise.all([
+    source("app/api/universal-lab/route.ts"),
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("app/bis-app.tsx"),
+  ]);
+
+  assert.match(api, /Number\(prompt\.scheduleDay\) === availableExperimentDay/);
+  assert.match(api, /Only today’s experiment evidence can be recorded|availableExperimentDay/);
+  assert.match(universalClient, /Number\(prompt\.scheduleDay\) === activeExperimentDay/);
+  assert.match(universalClient, /programmeReturnTo/);
+  assert.match(universalClient, /router\.replace\(programmeReturnTo\)/);
+  assert.match(universalClient, /Save today’s evidence & return/);
+
+  assert.match(habitClient, /selectedDay !== calendarDay/);
+  assert.match(habitClient, /Only the current calendar day can be recorded/);
+  assert.match(habitClient, /programmeReturnTo/);
+  assert.match(habitClient, /window\.location\.assign\(programmeReturnTo\)/);
+});
