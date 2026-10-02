@@ -89,7 +89,7 @@ export type UniversalLabInlineSegment =
   | { kind: "PROMPT"; promptId: string };
 
 export type UniversalLabRenderBlock =
-  | { type: "HTML"; html: string }
+  | { type: "HTML"; html: string; visibility?: "AFTER_EXPERIMENT" }
   | { type: "PROMPT"; promptId: string }
   | {
       type: "INLINE";
