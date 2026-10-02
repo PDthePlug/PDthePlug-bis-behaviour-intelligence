@@ -63,6 +63,27 @@ export function universalComputedLeafInputs(
   computationId: string,
 ): string[];
 export function experimentCalendarDay(startedAt: string | null | undefined, todayIso: string, totalDays: number): number;
+export function universalExperimentEvidenceProgress(
+  definition: {
+    experiment?: UniversalExperimentContract | null;
+    investigations?: Array<{
+      number: number;
+      prompts?: Array<{
+        id: string;
+        required?: boolean;
+        readOnly?: boolean;
+      }>;
+    }>;
+  },
+  responses: Record<string, { status?: string }>,
+  availableExperimentDay?: number,
+): {
+  experimentStarted: boolean;
+  currentDay: number;
+  totalDays: number;
+  evidenceDaysRecorded: number;
+  todayEvidenceRecorded: boolean;
+};
 export function v2RequiredPromptIds(
   definition: { investigations?: unknown[] },
   investigationNumber: number,
