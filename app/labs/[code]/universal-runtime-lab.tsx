@@ -82,6 +82,10 @@ function UniversalPrompt({
   const booleanChoices = prompt.type === "BOOLEAN";
   const integerMin = Number(prompt.min);
   const integerMax = Number(prompt.max);
+  const compactField =
+    /^(?:signed|signed name|date|name)$/i.test(prompt.label.trim())
+    && (prompt.type === "TEXT" || prompt.type === "DATE");
+
   const ratingScale =
     prompt.type === "INTEGER"
     && Number.isFinite(integerMin)
@@ -91,6 +95,26 @@ function UniversalPrompt({
     && /confidence|control|rating|agency|deliberate|clarity|certainty|awareness|how much|how strongly/i.test(
       `${prompt.label} ${prompt.prompt}`,
     );
+
+  if (compactField) {
+    return (
+      <section className={`universal-compact-prompt ${passed ? "passed" : ""}`}>
+        <label htmlFor={`compact-${prompt.id}`}>{prompt.label}</label>
+        <Input
+          id={`compact-${prompt.id}`}
+          type={prompt.type === "DATE" ? "date" : "text"}
+          disabled={passed}
+          value={value}
+          placeholder={prompt.type === "DATE" ? undefined : prompt.placeholder ?? prompt.label}
+          onChange={(event) => onValue(event.target.value)}
+        />
+        <label className="pass-control">
+          <Checkbox checked={passed} onCheckedChange={(checked) => onPass(checked === true)} />
+          <span>Prefer not to answer</span>
+        </label>
+      </section>
+    );
+  }
 
   return (
     <section className={`prompt-section universal-prompt ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
