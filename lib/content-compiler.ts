@@ -1,6 +1,7 @@
 import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
 import type { LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
+import type { HabitLabStandardStage, UniversalEditorialAudit } from "./universal-lab-standard.mjs";
 import {
   upgradeUniversalLabV2,
   type UniversalComputedField,
@@ -10,7 +11,7 @@ import {
 } from "./universal-lab-v2.mjs";
 import { sha256Hex } from "./content-studio";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-3";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-4";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -73,6 +74,8 @@ export type UniversalLabPrompt = {
   min?: number;
   max?: number;
   group?: string;
+  origin?: "SOURCE" | "BIS_STANDARD";
+  standardPurpose?: string;
 };
 
 export type UniversalLabRenderBlock =
@@ -90,6 +93,7 @@ export type UniversalLabInvestigation = {
   introHtml?: string;
   blocks?: UniversalLabRenderBlock[];
   prompts: UniversalLabPrompt[];
+  standardStage?: HabitLabStandardStage;
 };
 
 export type UniversalLabPackage = {
@@ -105,6 +109,8 @@ export type UniversalLabPackage = {
     focus?: string;
   };
   factoryCapabilities?: LabFactoryCapabilities;
+  standardVersion?: string;
+  editorialAudit?: UniversalEditorialAudit;
   computedFields?: UniversalComputedField[];
   indicatorRegistry?: UniversalIndicatorBinding[];
   experiment?: UniversalExperimentContract | null;
