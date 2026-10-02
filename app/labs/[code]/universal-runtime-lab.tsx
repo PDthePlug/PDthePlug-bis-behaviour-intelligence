@@ -118,7 +118,8 @@ function UniversalPrompt({
                         key={option}
                         className={value === String(option) ? "selected" : ""}
                         aria-pressed={value === String(option)}
-                        disabled={passed}\n                        onClick={() => onValue(String(option))}
+                        disabled={passed}
+                        onClick={() => onValue(String(option))}
                       >
                         {option}
                       </button>
@@ -134,6 +135,7 @@ function UniversalPrompt({
                   type="number"
                   min={prompt.min}
                   max={prompt.max}
+                  disabled={passed}
                   value={value}
                   onChange={(event) => onValue(event.target.value)}
                 />
@@ -146,6 +148,7 @@ function UniversalPrompt({
                       type="button"
                       key={option}
                       className={value === option ? "selected" : ""}
+                      disabled={passed}
                       onClick={() => onValue(option)}
                     >
                       <span>{value === option ? <Check /> : null}</span>
@@ -160,6 +163,7 @@ function UniversalPrompt({
                       type="button"
                       key={option}
                       className={value === option ? "selected" : ""}
+                      disabled={passed}
                       onClick={() => onValue(option)}
                     >
                       <span>{value === option ? <Check /> : null}</span>
@@ -172,6 +176,7 @@ function UniversalPrompt({
                   {(prompt.options ?? []).map((option) => (
                     <label key={option}>
                       <Checkbox
+                        disabled={passed}
                         checked={selected.has(option)}
                         onCheckedChange={(checked) => {
                           const next = new Set(selected);
@@ -682,7 +687,9 @@ function UniversalInvestigationForm({
     }
     setAttemptedSubmit(true);
     requestAnimationFrame(() => {
-      document.querySelector<HTMLElement>(".universal-prompt:not(.passed)")?.scrollIntoView({
+      document.querySelector<HTMLElement>(
+        ".universal-prompt:not(.passed), .universal-prompt-collection, .universal-inline-response",
+      )?.scrollIntoView({
         block: "center",
         behavior: "smooth",
       });
