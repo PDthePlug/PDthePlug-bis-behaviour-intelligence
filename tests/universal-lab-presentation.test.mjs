@@ -677,3 +677,76 @@ test("bounded confidence measures render as digital rating scales instead of num
   assert.match(css, /\.universal-rating-options\{/);
   assert.match(css, /grid-template-columns:repeat\(10,minmax\(0,1fr\)\)/);
 });
+
+
+test("presentation baseline collapses repeated source rows before the learner sees them", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  const options = ["Never", "Rarely", "Sometimes", "Often", "Always"];
+  first.prompts.unshift(
+    {
+      id: "LDR.I1.BASELINE.ONE.A",
+      label: "See yourself as a leader",
+      prompt: "See yourself as a leader",
+      type: "CATEGORICAL",
+      options,
+      required: true,
+      group: "Baseline",
+    },
+    {
+      id: "LDR.I1.BASELINE.ONE.B",
+      label: "See yourself as a leader",
+      prompt: "See yourself as a leader",
+      type: "CATEGORICAL",
+      options,
+      required: true,
+      group: "Baseline",
+    },
+    {
+      id: "LDR.I1.BASELINE.TWO",
+      label: "Take responsibility for outcomes",
+      prompt: "Take responsibility for outcomes",
+      type: "CATEGORICAL",
+      options,
+      required: true,
+      group: "Baseline",
+    },
+  );
+  first.blocks.unshift(
+    { type: "HTML", html: "<h3>LEADERSHIP BASELINE — PRE</h3>" },
+    { type: "HTML", html: "<p>Before you begin, complete this diagnostic.</p>" },
+    { type: "PROMPT", promptId: "LDR.I1.BASELINE.ONE.A" },
+    { type: "PROMPT", promptId: "LDR.I1.BASELINE.ONE.B" },
+    { type: "PROMPT", promptId: "LDR.I1.BASELINE.TWO" },
+  );
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  assert.ok(result.presentationBaseline);
+  assert.deepEqual(
+    result.presentationBaseline.items.map((prompt) => prompt.label),
+    ["See yourself as a leader", "Take responsibility for outcomes"],
+  );
+});
+
+test("published workbook response stems become real controls even when the investigation already has authored prompts", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.blocks.push(
+    { type: "HTML", html: "<p>Right now I feel like someone who...</p>" },
+    { type: "HTML", html: "<p>✍️ ____________________________________</p>" },
+    { type: "HTML", html: "<p>1.</p><p>2.</p><p>3.</p>" },
+  );
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  const insight = investigation.prompts.find((prompt) => prompt.label === "Today’s Insight");
+  assert.ok(insight);
+  assert.equal(insight.type, "TEXT");
+  assert.match(insight.prompt, /Right now I feel like someone who/);
+
+  const html = investigation.blocks
+    .filter((block) => block.type === "HTML")
+    .map((block) => block.html)
+    .join("");
+  assert.doesNotMatch(universalHtmlText(html), /^1\.\s*2\.\s*3\.$/);
+});
