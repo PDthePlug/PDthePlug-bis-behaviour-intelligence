@@ -36,19 +36,24 @@ test("keeps Decision, Money and Habit evidence namespaces separate", async () =>
   assert.match(habit, /LAB_VERSION = "4\.5\.2"/);
 });
 
-test("enforces a seven-day calendar-gated experiment for both new Labs", async () => {
+test("enforces one calendar-day observation at a time for both live core Labs", async () => {
   const [route, experience] = await Promise.all([
     readFile(new URL("app/api/labs/route.ts", root), "utf8"),
     readFile(new URL("app/core-lab-experience.tsx", root), "utf8"),
   ]);
 
   assert.match(route, /plannedEnd\.setUTCDate\(plannedEnd\.getUTCDate\(\) \+ 6\)/);
-  assert.match(route, /dayNumber > unlocked/);
-  assert.match(route, /Future experiment days stay locked/);
-  assert.match(route, /calendarDay\(experiment\.startDate[\s\S]*< 7/);
-  assert.match(route, /eventRows\.length < 7/);
+  assert.match(route, /dayNumber !== currentDay/);
+  assert.match(route, /Only today’s experiment evidence can be recorded/);
+  assert.match(route, /missed past days remain missing evidence/);
+  assert.match(route, /currentDay === 7 && !eventRows\.some/);
+  assert.doesNotMatch(route, /eventRows\.length < 7/);
+  assert.match(experience, /One observation day opens at a time/);
+  assert.match(experience, /number === todayDay/);
+  assert.match(experience, /Earlier unrecorded days remain missing evidence/);
+  assert.match(experience, /Save today’s evidence & return/);
+  assert.match(experience, /router\.replace\(returnTo\)/);
   assert.match(experience, /No matching situation/);
-  assert.match(experience, /Not experienced yet/);
   assert.match(experience, /privacy-obscured/);
   assert.match(experience, /Privacy screen active/);
 });
@@ -122,7 +127,7 @@ test("keeps canonical prompts while retaining explicit pass and seven-day safegu
   assert.match(source, /If you are under 18, a parent or guardian should also consent where required|Skip any question you don't feel ready to answer/);
   assert.match(experience, /Pass this question/);
   assert.match(experience, /Changes to your plan/);
-  assert.match(experience, /Future days stay locked until they have been experienced/);
+  assert.match(experience, /Future days unlock only on their calendar day/);
   assert.match(route, /responseStatus === "PASS"/);
   assert.match(route, /plannedEnd\.setUTCDate\(plannedEnd\.getUTCDate\(\) \+ 6\)/);
 });
