@@ -277,23 +277,19 @@ test("Identity Lab proves the shared factory can represent a second source-backe
   assert.equal(capabilities.requiresBehaviourRuntimeV2, true);
 });
 
-test("Identity source repetition is strengthened into the canonical Pattern stage without losing provenance", () => {
+test("Identity keeps the authored Pattern-stage evidence without replacing source repetition or reflection", () => {
   const result = applyHabitLabStandard(identityPackage());
   const pattern = result.investigations.find((item) => item.number === 2);
 
   assert.equal(pattern.standardStage.key, "PATTERN");
-  assert.equal(pattern.prompts.some((prompt) => prompt.id === "IDN.I2.BECOMING"), false);
-  assert.equal(pattern.prompts.some((prompt) => prompt.id === "IDN.I2.INSIGHT"), false);
-  assert.ok(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_TARGET"));
-  assert.ok(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_EVIDENCE"));
-  assert.ok(result.normalizationNotes.some((note) =>
-    note.code === "DUPLICATE_PROMPT_SUPPRESSED"
-    && note.sourcePromptId === "IDN.I2.BECOMING"
-  ));
-  assert.ok(result.normalizationNotes.some((note) =>
-    note.code === "LOW_INFORMATION_PROMPT_SUPPRESSED"
-    && note.sourcePromptId === "IDN.I2.INSIGHT"
-  ));
+  for (const id of ["IDN.I2.BECOMING", "IDN.I2.INFLUENCE", "IDN.I2.INSIGHT"]) {
+    assert.ok(pattern.prompts.some((prompt) => prompt.id === id), `${id} must remain source-authoritative`);
+  }
+  assert.equal(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_TARGET"), false);
+  assert.equal(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_EVIDENCE"), false);
+  assert.equal(result.normalizationNotes.some((note) =>
+    note.sourcePromptId === "IDN.I2.BECOMING" || note.sourcePromptId === "IDN.I2.INSIGHT"
+  ), false);
 });
 
 test("Identity receives the same Universal V2 calendar experiment contract as Risk without an IDN-specific engine branch", async () => {
