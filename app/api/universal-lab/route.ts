@@ -480,8 +480,17 @@ async function postHandler(request: Request) {
         ...ids,
       ]);
       const required = requiredFor(runtime.definition, investigation, availableExperimentDay);
-      if (required.some((id) => !completedIds.has(id))) {
-        throw new Error("Answer or pass each currently available required question before continuing.");
+      const missingRequired = required.filter((id) => !completedIds.has(id));
+      if (missingRequired.length) {
+        const labels = missingRequired
+          .map((id) => registry.get(id)?.label)
+          .filter((label): label is string => Boolean(label))
+          .slice(0, 4);
+        throw new Error(
+          labels.length
+            ? `Complete or pass: ${labels.join(" · ")}`
+            : "Answer or pass each currently available required question before continuing.",
+        );
       }
       const now = new Date().toISOString();
 

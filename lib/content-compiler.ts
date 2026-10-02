@@ -84,9 +84,18 @@ export type UniversalLabTableCell =
   | { kind: "PROMPT"; promptId: string }
   | { kind: "CHOICE"; promptId: string; value: string };
 
+export type UniversalLabInlineSegment =
+  | { kind: "TEXT"; text: string }
+  | { kind: "PROMPT"; promptId: string };
+
 export type UniversalLabRenderBlock =
-  | { type: "HTML"; html: string }
+  | { type: "HTML"; html: string; visibility?: "AFTER_EXPERIMENT" }
   | { type: "PROMPT"; promptId: string }
+  | {
+      type: "INLINE";
+      id: string;
+      segments: UniversalLabInlineSegment[];
+    }
   | {
       type: "TABLE";
       id: string;
@@ -113,6 +122,7 @@ export type UniversalLabPackage = {
   kind: "LAB";
   schemaVersion: "universal-lab-v1" | "universal-lab-v2";
   runtimeProfile: "UNIVERSAL_V1" | "UNIVERSAL_V2";
+  presentationVersion?: string;
   identity: {
     code: string;
     version: string;
