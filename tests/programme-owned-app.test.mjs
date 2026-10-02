@@ -124,3 +124,15 @@ test("Day 3 Lab handoff preserves the exact learner handbook return path", async
   assert.match(experimentPage, /returnTo=\{params\.returnTo\}/);
   assert.match(shell, /programmeReturnTo=\{safeReturnTo\}/);
 });
+
+
+test("Day 3 continuation unlocks only after Investigation 7 has captured real evidence", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+
+  assert.match(player, /const labExperimentStarted =/);
+  assert.match(player, /const labHandoffComplete =/);
+  assert.match(player, /activeModuleRuntime\?\.experiment && activeModuleRuntime\.events\.length > 0/);
+  assert.match(player, /!labHandoffComplete/);
+  assert.match(player, /Record today’s Investigation 7 evidence/);
+  assert.match(player, /Save today’s finding in the Lab and BIS will return you here to finish Day 3/);
+});
