@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   description: "The focused Day 3 Habit Lab investigation inside your BIS Habit programme.",
 };
 
-export default function HabitLabPage() {
-  return <HabitLabShell view="lab" />;
+export default async function HabitLabPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>;
+}) {
+  const params = await searchParams;
+  return <HabitLabShell view="lab" returnTo={params.returnTo} />;
 }
