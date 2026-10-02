@@ -1276,15 +1276,41 @@ export function ProgrammePlayer({
                 </article>
               ) : null}
 
-              {labExperimentStarted && moduleLabIsLive && experimentTotalDays > 0 ? (
-                <article className="prototype-card prototype-action-card">
+              {labExperimentStarted
+                && moduleLabIsLive
+                && experimentTotalDays > 0
+                && programmeHandoff
+                && programmeHandoff.currentDay > 0
+                && !programmeHandoff.todayEvidenceRecorded ? (
+                <article className="prototype-card prototype-action-card prototype-evidence-due" role="status">
+                  <CalendarDays />
+                  <div>
+                    <p className="prototype-eyebrow">Today’s Lab evidence · Investigation 7</p>
+                    <h3>Experiment Day {experimentDay ?? programmeHandoff.currentDay} is ready.</h3>
+                    <p>
+                      Record only what happened today. Tomorrow’s evidence opens tomorrow; an unrecorded past day remains missing evidence.
+                    </p>
+                  </div>
+                  <Link
+                    className="prototype-btn primary"
+                    href={
+                      moduleCode === "HAB"
+                        ? labHrefWithReturn("/habit-lab/experiment", learningReturnTo)
+                        : moduleLabHref ?? "/labs"
+                    }
+                  >
+                    Capture today’s evidence <ArrowRight />
+                  </Link>
+                </article>
+              ) : labExperimentStarted && moduleLabIsLive && experimentTotalDays > 0 ? (
+                <article className="prototype-card prototype-action-card prototype-experiment-status">
                   <CalendarDays />
                   <p className="prototype-eyebrow">Real-world test</p>
                   <h3>{experimentRecordedDays}/{experimentTotalDays} observation days recorded.</h3>
                   <p>
-                    {programmeHandoff && !programmeHandoff.todayEvidenceRecorded
-                      ? `Experiment Day ${experimentDay ?? programmeHandoff.currentDay} is ready when the matching situation has been experienced.`
-                      : "No matching situation is valid evidence. The experiment has its own clock."}
+                    {programmeHandoff?.todayEvidenceRecorded
+                      ? `Experiment Day ${experimentDay ?? programmeHandoff.currentDay} is recorded. Your next evidence window opens on its calendar day.`
+                      : "The experiment has its own clock. Only the current calendar day can be recorded."}
                   </p>
                   <Link
                     className="prototype-btn soft"
@@ -1294,7 +1320,7 @@ export function ProgrammePlayer({
                         : moduleLabHref ?? "/labs"
                     }
                   >
-                    {moduleCode === "HAB" ? "Open experiment" : "Open live Lab"} <ArrowRight />
+                    Review experiment <ArrowRight />
                   </Link>
                 </article>
               ) : null}
