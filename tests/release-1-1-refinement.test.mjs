@@ -32,6 +32,6 @@ test("gives the seven-day wait a purposeful learner state", async () => {
   assert.match(experience, /Between observations/);
   assert.match(experience, /There is nothing else to submit right now/);
   assert.match(experience, /do not force the evidence/);
-  assert.match(experience, /Future days unlock only after they happen/);
-  assert.match(experience, /never fill a gap by guessing/);
+  assert.match(experience, /Only the current calendar day can be recorded/);
+  assert.match(experience, /missed past day remains missing evidence rather than being backfilled later/);
 });
