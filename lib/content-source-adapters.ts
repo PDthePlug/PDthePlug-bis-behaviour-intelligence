@@ -1880,6 +1880,14 @@ function labBodyToRuntime(
       continue;
     }
 
+    // Sentence blanks carry both the answer location and the authored suffix.
+    // Keep them intact for the inline-control compiler rather than consuming
+    // the sentence as the preceding paragraph's answer marker.
+    if (/\S.*_{3,}\s*[A-Za-z]/u.test(text) && !/\b(?:BEI|TEI)-\d|\/\s*(?:5|7|10)\b/i.test(text)) {
+      html.push(block.html);
+      continue;
+    }
+
     if (/^dear future me\b/i.test(cleanAuthoredText(text))) {
       flushHtml();
       addPrompt(prompts, renderBlocks, code, investigation, {
@@ -1972,7 +1980,7 @@ function labBodyToRuntime(
         cursor += 1;
         continue;
       }
-      if (candidate.tableRows || candidate.heading || !looksLikeAnswerMarker(candidateText)) break;
+      if (candidate.tableRows || candidate.heading || /\S.*_{3,}\s*[A-Za-z]/u.test(candidateText) || !looksLikeAnswerMarker(candidateText)) break;
       markers.push(candidate);
       cursor += 1;
     }

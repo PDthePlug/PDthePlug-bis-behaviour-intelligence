@@ -117,3 +117,52 @@ test("Launch preserves four weekly evidence windows across the authored thirty d
   assert.equal(universalExperimentEvidenceProgress(result, responses, 8).todayEvidenceRecorded, false);
   assert.throws(() => validateLabSubmission(result, 7, 8, weekOne.map((prompt) => ({ semanticFieldId: prompt.id, responseStatus: "PASS" }))), /outside the current activity/);
 });
+
+
+test("Attention baseline accepts selected ratings and an explicit pass through the save contract", () => {
+  const result = definition("ATT");
+  const fields = availableLabPrompts(result, 0);
+  for (const rating of [1, 5, 10]) {
+    const items = fields.map((prompt) => ({ semanticFieldId: prompt.id, value: prompt.type === "INTEGER" ? rating : prompt.options[0] }));
+    const saved = validateLabSubmission(result, 0, 0, items);
+    assert.equal(saved.find((item) => item.prompt.type === "INTEGER").value, String(rating));
+    items.find((item) => item.semanticFieldId === result.presentationBaseline.metric.id).responseStatus = "PASS";
+    assert.equal(validateLabSubmission(result, 0, 0, items).at(-1).responseStatus, "PASS");
+  }
+});
+
+test("Attention renders every authored answer once, with contextual mapping and one daily action check", () => {
+  const result = definition("ATT");
+  auditDefinition(authored("ATT"), result);
+  for (const investigation of result.investigations) {
+    const occurrences = investigation.blocks.flatMap((block) => block.type === "PROMPT" ? [block.promptId]
+      : block.type === "INLINE" ? block.segments.filter((part) => part.kind === "PROMPT").map((part) => part.promptId)
+      : block.type === "TABLE" ? block.rows.flat().filter((cell) => cell.kind === "PROMPT").map((cell) => cell.promptId) : []);
+    assert.equal(new Set(occurrences).size, occurrences.length, `Investigation ${investigation.number}`);
+  }
+  assert.match(result.investigations[3].prompts.find((prompt) => prompt.label === "Night").prompt, /typical day.*attention/);
+  assert.equal(availableLabPrompts(result, 7, 1).filter((prompt) => prompt.type === "BOOLEAN").length, 1);
+  assert.equal(result.investigations[5].prompts.find((prompt) => /focus time/i.test(prompt.label)).type, "INTEGER");
+});
+
+test("legacy Attention packages reconcile duplicated inline answers, choices and daily checks", () => {
+  const legacy = structuredClone(definition("ATT"));
+  legacy.presentationVersion = "bis-lab-presentation-4";
+  const contract = legacy.investigations[5];
+  const impact = contract.prompts.find((prompt) => /attention most affects/i.test(prompt.label));
+  contract.prompts.push({ ...impact, id: "ATT.LEGACY.IMPACT", label: "⭐ EVIDENCE POINT", prompt: "⭐ EVIDENCE POINT" });
+  contract.blocks.push({ type: "PROMPT", promptId: "ATT.LEGACY.IMPACT" });
+  const first = legacy.investigations[0];
+  const phone = first.prompts.find((prompt) => /today's phone/i.test(prompt.label));
+  first.blocks.push({ type: "INLINE", segments: [{ kind: "TEXT", text: "Today's phone time so far: " }, { kind: "PROMPT", promptId: phone.id }] });
+  const experiment = legacy.investigations[6];
+  const action = experiment.prompts.find((prompt) => prompt.scheduleDay === 1 && prompt.type === "BOOLEAN");
+  experiment.prompts.push({ ...action, id: "ATT.LEGACY.ACTION", origin: "BIS_STANDARD", prompt: "Did you complete the action or observation you committed to?" });
+  experiment.blocks.push({ type: "PROMPT", promptId: "ATT.LEGACY.ACTION" });
+  const result = prepareUniversalLabPresentation(legacy);
+  assert.equal(result.investigations[5].prompts.filter((prompt) => JSON.stringify(prompt.options) === JSON.stringify(impact.options)).length, 1);
+  assert.equal(availableLabPrompts(result, 7, 1).filter((prompt) => prompt.type === "BOOLEAN").length, 1);
+  assert.equal(result.investigations[0].blocks.filter((block) => block.type === "PROMPT" && block.promptId === phone.id).length, 0);
+  assert.equal(result.investigations[0].blocks.filter((block) => block.type === "INLINE" && block.segments.some((part) => part.promptId === phone.id)).length, 1);
+  assert.equal(JSON.stringify(prepareUniversalLabPresentation(result)), JSON.stringify(result));
+});

@@ -85,7 +85,7 @@ function UniversalPrompt({
   const integerMin = Number(prompt.min);
   const integerMax = Number(prompt.max);
   const compactField =
-    /^(?:signed|signed name|date|name)$/i.test(prompt.label.trim())
+    /^(?:signed|signed name|date|name|(?:my )?witness(?: \(.*\))?|(?:today\x27s|yesterday\x27s) phone time(?: so far)?|unread notifications|unreplied conversations)$/i.test(prompt.label.trim())
     && (prompt.type === "TEXT" || prompt.type === "DATE");
 
   const ratingScale =
@@ -215,7 +215,7 @@ function UniversalPrompt({
                   ))}
                 </div>
               ) : (
-                <Textarea rows={4} disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
+                <Textarea rows={3} disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
               )}
             </div>
           </>
@@ -663,7 +663,7 @@ function UniversalBaseline({
                   })),
                   ...(metric ? [{
                     semanticFieldId: metric.id,
-                    value: metricValue ?? "",
+                    value: metricValue === null ? "" : String(metricValue),
                     responseStatus: metricPassed ? "PASS" : "ANSWERED",
                   }] : []),
                 ],
@@ -804,6 +804,18 @@ function UniversalInvestigationForm({
   const renderedBlocks = (() => {
     const nodes: React.ReactNode[] = [];
     const blocks = investigation.blocks ?? [];
+    if (isExperimentInvestigation && !previewMode) {
+      return [
+        ...blocks.flatMap((block, index) => block.type === "HTML" && block.visibility !== "AFTER_EXPERIMENT" ? [(
+          <article key={`instructions-${index}`} className="imported-lab-content" dangerouslySetInnerHTML={{ __html: block.html }} />
+        )] : []),
+        <section key="daily-entry" className="universal-daily-entry" aria-label="Current experiment evidence">
+          <h2>Record one real moment</h2>
+          <p>Describe what happened, record your action, and add what you noticed.</p>
+          {visiblePrompts.filter((prompt) => !prompt.readOnly).map((prompt) => renderPrompt({ ...prompt, label: prompt.prompt || prompt.label, prompt: prompt.prompt || prompt.label }))}
+        </section>,
+      ];
+    }
     let previousCollection: UniversalLabPrompt[] | null = null;
 
     for (let index = 0; index < blocks.length; index += 1) {

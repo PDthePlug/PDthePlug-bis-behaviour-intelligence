@@ -2217,3 +2217,28 @@
   }
   .universal-evidence-episode-field textarea{min-height:96px}
 }
+
+/* Compact response surfaces; learner navigation retains its existing styling. */
+.universal-baseline .control-rating{padding:16px;margin:18px 0;gap:10px;grid-template-columns:minmax(0,1fr) auto;background:#edf5f1;color:#17313a}
+.universal-baseline .control-rating h3{font-family:var(--font-sans);font-size:17px;line-height:1.4}
+.universal-baseline .control-rating p:last-child,.universal-baseline .control-rating>strong span{color:#52685f}
+.universal-baseline .control-rating .universal-rating-scale,.universal-baseline .control-rating .pass-control{grid-column:1/-1}
+.universal-baseline .universal-rating-options{grid-template-columns:repeat(10,minmax(0,1fr));gap:5px}
+.universal-baseline .universal-rating-options button{min-height:38px;padding:5px 0;border-radius:8px}
+.universal-package-lab .universal-prompt{padding:18px 0}
+.universal-package-lab .universal-prompt .prompt-body h2{font-size:20px}
+.universal-package-lab .prompt-controls textarea{min-height:88px}
+.universal-package-lab .universal-choice-list button{min-height:44px;padding:10px 12px}
+.universal-inline-response{padding:14px 16px;margin:16px 0;border-radius:12px}
+.universal-inline-sentence{font-size:18px;line-height:2}
+.universal-daily-entry{max-width:720px;margin:18px auto;padding:0;border:0;background:transparent}
+.universal-daily-entry>h2{font-size:22px;margin:0 0 6px}
+.universal-daily-entry>p{font-size:15px;color:#52685f;margin:0 0 12px}
+.universal-daily-entry .universal-prompt .prompt-kicker{display:none}
+.universal-daily-entry .universal-prompt .prompt-body h2{font-size:17px}
+.universal-daily-entry .prompt-controls{margin-top:10px}
+.universal-daily-entry .prompt-controls textarea{min-height:80px}
+.universal-daily-entry .universal-choice-list{display:flex;gap:10px}
+.universal-daily-entry .universal-choice-list button{flex:1}
+
+@media(max-width:520px){.universal-baseline .universal-rating-options{grid-template-columns:repeat(5,minmax(0,1fr))}}
