@@ -48,3 +48,11 @@ test("legacy learner chrome is suppressed only inside the canonical route shell"
   assert.match(css, /\.canonical-shell \.prototype-bottom-trigger/);
   assert.match(css, /\.canonical-shell \.habit-lab-route-header/);
 });
+
+
+test("learner navigation uses one centred Menu trigger and no top-right duplicate", () => {
+  assert.match(shell, /className="canonical-menu-trigger"/);
+  assert.doesNotMatch(shell, /canonical-topbar-menu/);
+  assert.doesNotMatch(css, /canonical-shell:not\(\[data-stage="lab"\]\) \.canonical-menu-trigger/);
+  assert.match(css, /\.canonical-menu-trigger\{display:flex!important\}/);
+});
