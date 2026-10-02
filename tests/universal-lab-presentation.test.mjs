@@ -400,3 +400,10 @@ test("Universal table renderer supports matrix choice cells and table selects", 
   assert.match(runtime, /role="radio"/);
   assert.match(runtime, /categoricalOptions/);
 });
+
+
+test("legacy The Prediction does not appear as a competing subtitle under canonical The Pattern", async () => {
+  const frame = await source("app/lab-investigation-frame.tsx");
+  assert.match(frame, /legacyPredictionTitle/);
+  assert.match(frame, /!legacyPredictionTitle/);
+});
