@@ -1,7 +1,7 @@
 {
   "kind": "LAB",
-  "schemaVersion": "universal-lab-v2",
-  "runtimeProfile": "UNIVERSAL_V2",
+  "schemaVersion": "universal-lab-v1",
+  "runtimeProfile": "UNIVERSAL_V1",
   "identity": {
     "code": "FOC",
     "version": "1.0",
