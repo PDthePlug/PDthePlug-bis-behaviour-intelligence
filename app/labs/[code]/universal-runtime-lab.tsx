@@ -358,11 +358,14 @@ function UniversalBaseline({
     ),
   );
   const metric = baseline.metric ?? null;
-  const initialMetric = metric ? Number(valueOf(snapshot, metric.id) || metric.min || 1) : 0;
-  const [metricValue, setMetricValue] = useState(Number.isFinite(initialMetric) ? initialMetric : 1);
+  const savedMetricValue = metric ? valueOf(snapshot, metric.id) : "";
+  const initialMetric = savedMetricValue === "" ? null : Number(savedMetricValue);
+  const [metricValue, setMetricValue] = useState<number | null>(
+    initialMetric !== null && Number.isFinite(initialMetric) ? initialMetric : null,
+  );
   const [metricPassed, setMetricPassed] = useState(Boolean(metric && snapshot.responses[metric.id]?.status === "PASS"));
   const complete = baseline.items.every((prompt) => Boolean(values[prompt.id]))
-    && (!metric || metricPassed || Number.isFinite(metricValue));
+    && (!metric || metricPassed || metricValue !== null);
 
   return (
     <EditionLanguageScope edition={snapshot.deliveryEdition}>
@@ -420,15 +423,36 @@ function UniversalBaseline({
                   <h3>{metric.prompt === metric.label ? "How would you rate your starting point?" : metric.prompt}</h3>
                   <p>{metric.min ?? 1} = lower · {metric.max ?? 10} = higher</p>
                 </div>
-                <strong>{metricPassed ? "Passed" : <>{metricValue}<span>/{metric.max ?? 10}</span></>}</strong>
+                <strong>
+                  {metricPassed
+                    ? "Passed"
+                    : metricValue === null
+                      ? <>—<span>/{metric.max ?? 10}</span></>
+                      : <>{metricValue}<span>/{metric.max ?? 10}</span></>}
+                </strong>
                 {!metricPassed ? (
-                  <Slider
-                    value={[metricValue]}
-                    min={metric.min ?? 1}
-                    max={metric.max ?? 10}
-                    step={1}
-                    onValueChange={([value]) => setMetricValue(value)}
-                  />
+                  <div className="universal-rating-scale" role="group" aria-label={metric.prompt}>
+                    <div className="universal-rating-options">
+                      {Array.from(
+                        { length: (metric.max ?? 10) - (metric.min ?? 1) + 1 },
+                        (_, index) => (metric.min ?? 1) + index,
+                      ).map((option) => (
+                        <button
+                          type="button"
+                          key={option}
+                          className={metricValue === option ? "selected" : ""}
+                          aria-pressed={metricValue === option}
+                          onClick={() => setMetricValue(option)}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="universal-rating-anchors">
+                      <span>{metric.min ?? 1} · lower</span>
+                      <span>{metric.max ?? 10} · higher</span>
+                    </div>
+                  </div>
                 ) : null}
                 <label className="pass-control">
                   <Checkbox checked={metricPassed} onCheckedChange={(checked) => setMetricPassed(checked === true)} />
@@ -453,7 +477,7 @@ function UniversalBaseline({
                   })),
                   ...(metric ? [{
                     semanticFieldId: metric.id,
-                    value: metricValue,
+                    value: metricValue ?? "",
                     responseStatus: metricPassed ? "PASS" : "ANSWERED",
                   }] : []),
                 ],
