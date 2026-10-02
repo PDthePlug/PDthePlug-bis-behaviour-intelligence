@@ -734,6 +734,7 @@ test("published workbook response stems become real controls even when the inves
   first.blocks.push(
     { type: "HTML", html: "<p>Right now I feel like someone who...</p>" },
     { type: "HTML", html: "<p>✍️ ____________________________________</p>" },
+    { type: "HTML", html: "<p>✍️ Leader I admire: ____________________________________</p>" },
     { type: "HTML", html: "<p>1.</p><p>2.</p><p>3.</p>" },
   );
 
@@ -743,12 +744,14 @@ test("published workbook response stems become real controls even when the inves
   assert.ok(insight);
   assert.equal(insight.type, "TEXT");
   assert.match(insight.prompt, /Right now I feel like someone who/);
+  assert.ok(investigation.prompts.some((prompt) => prompt.label === "Leader I admire"));
 
   const html = investigation.blocks
     .filter((block) => block.type === "HTML")
     .map((block) => block.html)
     .join("");
   assert.doesNotMatch(universalHtmlText(html), /^1\.\s*2\.\s*3\.$/);
+  assert.doesNotMatch(universalHtmlText(html), /Leader I admire/);
 });
 
 
@@ -812,4 +815,13 @@ test("already-published legacy daily trackers regain Day N scheduling without re
   assert.ok(tracking.some((prompt) => prompt.label === "Day 1 action check" && prompt.type === "BOOLEAN"));
   assert.ok(tracking.some((prompt) => prompt.label === "Day 1 notes" && prompt.required === false));
   assert.equal(result.experiment.scheduledPromptIds.length, 8);
+});
+
+
+test("baseline index cannot be silently saved at the minimum without a learner choice", async () => {
+  const runtime = await source("app/labs/[code]/universal-runtime-lab.tsx");
+  assert.match(runtime, /metricValue !== null/);
+  assert.match(runtime, /const initialMetric = savedMetricValue === "" \? null : Number\(savedMetricValue\)/);
+  assert.match(runtime, /onClick=\{\(\) => setMetricValue\(option\)\}/);
+  assert.doesNotMatch(runtime, /Number\(valueOf\(snapshot, metric\.id\) \|\| metric\.min/);
 });
