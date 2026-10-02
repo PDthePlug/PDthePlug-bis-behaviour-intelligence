@@ -546,7 +546,10 @@ test("workbook section labels become digital hierarchy and paper-only commitment
         + '<p>My Commitment Statement</p>'
         + '<p>"I, ________________________________, commit to observing my identity for 7 days, starting on ___________ and ending on ___________. I understand that I will not be perfect."</p>'
         + '<p>"Right now I feel like someone who..."</p>'
-        + '<p>Example Equations:</p>',
+        + '<p>Example Equations:</p>'
+        + '<p>Final Reflection Questions</p>'
+        + '<p>My Meta-Identity Skill</p>'
+        + '<p>BEHAVIOUR PROFILE SUMMARY</p>',
     },
     { type: "PROMPT", promptId: "PEF.I1.Q1" },
   ];
@@ -557,7 +560,7 @@ test("workbook section labels become digital hierarchy and paper-only commitment
     .map((block) => block.html)
     .join("");
 
-  assert.match(html, /bis-digital-section-heading/);
+  assert.ok((html.match(/bis-digital-section-heading/g) ?? []).length >= 5);
   assert.match(html, /bis-digital-instruction-panel/);
   assert.match(html, /bis-digital-commitment/);
   assert.match(html, /bis-reflection-stem/);
