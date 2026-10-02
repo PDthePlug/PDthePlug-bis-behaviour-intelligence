@@ -111,8 +111,10 @@ test("dynamic Lab route owns only one canonical shell", async () => {
     source("app/labs/layout.tsx"),
     source("app/labs/[code]/layout.tsx"),
   ]);
-  assert.match(parentLayout, /CanonicalAdaptiveShell/);
-  assert.doesNotMatch(routeLayout, /CanonicalAdaptiveShell/);
+  assert.match(parentLayout, /import \{ CanonicalAdaptiveShell \}/);
+  assert.match(parentLayout, /<CanonicalAdaptiveShell>/);
+  assert.doesNotMatch(routeLayout, /import \{ CanonicalAdaptiveShell \}/);
+  assert.doesNotMatch(routeLayout, /<CanonicalAdaptiveShell>/);
 });
 
 test("Universal runtime uses numbered Habit-style prompt controls and choice buttons", async () => {
