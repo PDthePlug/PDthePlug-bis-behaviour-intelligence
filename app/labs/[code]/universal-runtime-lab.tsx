@@ -2,11 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Check, FlaskConical, LoaderCircle, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, Eye, FlaskConical, LoaderCircle, LockKeyhole, Search, ShieldCheck } from "lucide-react";
 import { LabInvestigationFrame } from "@/app/lab-investigation-frame";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import type { UniversalLabPackage, UniversalLabPrompt } from "@/lib/content-compiler";
 import { serverUnlockedInvestigation } from "@/lib/lab-lifecycle-contract";
@@ -158,6 +161,150 @@ function UniversalPrompt({
         ) : null}
       </div>
     </section>
+  );
+}
+
+function baselinePrompts(definition: UniversalLabPackage) {
+  return [
+    ...(definition.presentationBaseline?.items ?? []),
+    ...(definition.presentationBaseline?.metric ? [definition.presentationBaseline.metric] : []),
+  ];
+}
+
+function baselineComplete(snapshot: Snapshot) {
+  const required = baselinePrompts(snapshot.definition).filter((prompt) => prompt.required !== false && prompt.readOnly !== true);
+  return required.length === 0 || required.every((prompt) => Boolean(snapshot.responses[prompt.id]));
+}
+
+function UniversalBaseline({
+  snapshot,
+  saving,
+  error,
+  act,
+}: {
+  snapshot: Snapshot;
+  saving: boolean;
+  error: string;
+  act: (payload: Record<string, unknown>) => Promise<Snapshot | null>;
+}) {
+  const baseline = snapshot.definition.presentationBaseline!;
+
+  const [values, setValues] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      baseline.items.map((prompt) => [
+        prompt.id,
+        snapshot.responses[prompt.id]?.status === "PASS" ? "__PASS__" : valueOf(snapshot, prompt.id),
+      ]),
+    ),
+  );
+  const metric = baseline.metric ?? null;
+  const initialMetric = metric ? Number(valueOf(snapshot, metric.id) || metric.min || 1) : 0;
+  const [metricValue, setMetricValue] = useState(Number.isFinite(initialMetric) ? initialMetric : 1);
+  const [metricPassed, setMetricPassed] = useState(Boolean(metric && snapshot.responses[metric.id]?.status === "PASS"));
+  const complete = baseline.items.every((prompt) => Boolean(values[prompt.id]))
+    && (!metric || metricPassed || Number.isFinite(metricValue));
+
+  return (
+    <EditionLanguageScope edition={snapshot.deliveryEdition}>
+      <main
+        className="baseline-shell corelab-baseline universal-baseline"
+        style={{ "--lab-accent": snapshot.definition.identity.accent } as React.CSSProperties}
+      >
+        <section className="baseline-layout">
+          <div className="baseline-copy">
+            <Badge variant="outline">Starting point</Badge>
+            <p className="eyebrow">Before Investigation 1</p>
+            <h1>Create your starting point.</h1>
+            <p>{baseline.introduction}</p>
+            <div className="baseline-principles">
+              <div><ShieldCheck /><span><strong>Private</strong>Your responses stay tied to this Lab.</span></div>
+              <div><Eye /><span><strong>Editable</strong>You can correct an answer later.</span></div>
+              <div><Search /><span><strong>Descriptive</strong>This records a starting pattern, not who you are.</span></div>
+            </div>
+          </div>
+
+          <div className="surface-card baseline-card">
+            <div className="section-title">
+              <div>
+                <p className="eyebrow">{baseline.title}</p>
+                <h2>How often do you…</h2>
+              </div>
+              <Badge>{baseline.items.length} items</Badge>
+            </div>
+
+            <div className="baseline-items">
+              {baseline.items.map((prompt, index) => (
+                <div key={prompt.id}>
+                  <span className="baseline-index">{String(index + 1).padStart(2, "0")}</span>
+                  <label>{prompt.label}</label>
+                  <Select
+                    value={values[prompt.id] ?? ""}
+                    onValueChange={(value) => setValues((current) => ({ ...current, [prompt.id]: value }))}
+                  >
+                    <SelectTrigger className="baseline-select"><SelectValue placeholder="Choose" /></SelectTrigger>
+                    <SelectContent>
+                      {(prompt.options ?? ["Never", "Rarely", "Sometimes", "Often", "Always"]).map((option) => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
+                      <SelectItem value="__PASS__">Prefer not to answer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+            </div>
+
+            {metric ? (
+              <div className={`control-rating ${metricPassed ? "passed" : ""}`}>
+                <div>
+                  <p className="eyebrow">{metric.label}</p>
+                  <h3>{metric.prompt === metric.label ? "How would you rate your starting point?" : metric.prompt}</h3>
+                  <p>{metric.min ?? 1} = lower · {metric.max ?? 10} = higher</p>
+                </div>
+                <strong>{metricPassed ? "Passed" : <>{metricValue}<span>/{metric.max ?? 10}</span></>}</strong>
+                {!metricPassed ? (
+                  <Slider
+                    value={[metricValue]}
+                    min={metric.min ?? 1}
+                    max={metric.max ?? 10}
+                    step={1}
+                    onValueChange={([value]) => setMetricValue(value)}
+                  />
+                ) : null}
+                <label className="pass-control">
+                  <Checkbox checked={metricPassed} onCheckedChange={(checked) => setMetricPassed(checked === true)} />
+                  <span>Prefer not to answer</span>
+                </label>
+              </div>
+            ) : null}
+
+            {error ? <p className="field-error">{error}</p> : null}
+            <Button
+              className="w-full"
+              size="lg"
+              disabled={saving || !complete}
+              onClick={() => void act({
+                action: "saveInvestigation",
+                investigation: 0,
+                items: [
+                  ...baseline.items.map((prompt) => ({
+                    semanticFieldId: prompt.id,
+                    value: values[prompt.id] === "__PASS__" ? "" : values[prompt.id],
+                    responseStatus: values[prompt.id] === "__PASS__" ? "PASS" : "ANSWERED",
+                  })),
+                  ...(metric ? [{
+                    semanticFieldId: metric.id,
+                    value: metricValue,
+                    responseStatus: metricPassed ? "PASS" : "ANSWERED",
+                  }] : []),
+                ],
+              })}
+            >
+              {saving ? "Saving your starting point…" : <>Enter {snapshot.definition.identity.shortTitle} <ArrowRight /></>}
+            </Button>
+          </div>
+        </section>
+      </main>
+    </EditionLanguageScope>
   );
 }
 
@@ -523,6 +670,10 @@ export function UniversalRuntimeLab({
         </main>
       </EditionLanguageScope>
     );
+  }
+
+  if (!previewMode && snapshot.definition.presentationBaseline && !baselineComplete(snapshot)) {
+    return <UniversalBaseline snapshot={snapshot} saving={saving} error={error} act={act} />;
   }
 
   if (!investigation) return null;

@@ -57,11 +57,23 @@ function responseValues(rows: Record<string, { value: unknown }>) {
   return Object.fromEntries(Object.entries(rows).map(([id, row]) => [id, row.value]));
 }
 
+function baselinePrompts(definition: UniversalLabPackage) {
+  return [
+    ...(definition.presentationBaseline?.items ?? []),
+    ...(definition.presentationBaseline?.metric ? [definition.presentationBaseline.metric] : []),
+  ];
+}
+
 function requiredFor(
   definition: UniversalLabPackage,
   investigation: number,
   availableExperimentDay: number,
 ) {
+  if (investigation === 0) {
+    return baselinePrompts(definition)
+      .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
+      .map((prompt) => prompt.id);
+  }
   if (definition.runtimeProfile === "UNIVERSAL_V2") {
     return v2RequiredPromptIds(definition, investigation, availableExperimentDay);
   }
@@ -119,6 +131,9 @@ async function activeLab(code: string) {
 
 function promptRegistry(definition: UniversalLabPackage) {
   const registry = new Map<string, UniversalLabPrompt & { investigation: number }>();
+  for (const prompt of baselinePrompts(definition)) {
+    registry.set(prompt.id, { ...prompt, investigation: 0 });
+  }
   for (const investigation of definition.investigations) {
     for (const prompt of investigation.prompts) registry.set(prompt.id, { ...prompt, investigation: investigation.number });
   }
@@ -380,7 +395,10 @@ async function postHandler(request: Request) {
 
     if (action === "saveInvestigation") {
       const investigation = Number(body.investigation);
-      if (!Number.isInteger(investigation) || investigation < 1 || investigation > 9) throw new Error("Choose a valid investigation.");
+      const baselineSave = investigation === 0 && Boolean(runtime.definition.presentationBaseline);
+      if (!Number.isInteger(investigation) || investigation < 0 || investigation > 9 || (investigation === 0 && !baselineSave)) {
+        throw new Error("Choose a valid investigation.");
+      }
       if (investigation > enrolment.currentInvestigation) throw new Error("Complete the current investigation before moving ahead.");
       const items = Array.isArray(body.items) ? body.items : [];
       if (!items.length || items.length > 60) throw new Error("Save between 1 and 60 responses.");
@@ -477,7 +495,7 @@ async function postHandler(request: Request) {
           labCode: code,
           labVersion: runtime.version.version,
           contentReleaseId: null,
-          investigationId: `${code}.I${investigation}`,
+          investigationId: investigation === 0 ? `${code}.BASELINE` : `${code}.I${investigation}`,
           semanticFieldId,
           sourceObjectType: "RESPONSE",
           sourceObjectId: id,
@@ -500,7 +518,7 @@ async function postHandler(request: Request) {
         afterResponses.responses,
       );
 
-      let nextInvestigation = investigationUnlockedAfterSave(investigation);
+      let nextInvestigation = investigation === 0 ? 1 : investigationUnlockedAfterSave(investigation);
       const enrolmentUpdate: {
         updatedAt: string;
         currentInvestigation?: number;
@@ -536,12 +554,18 @@ async function postHandler(request: Request) {
 
       enrolmentUpdate.currentInvestigation = Math.max(enrolment.currentInvestigation, nextInvestigation);
       await db.update(labEnrollments).set(enrolmentUpdate).where(eq(labEnrollments.id, enrolment.id));
-      await audit(identity.id, "UNIVERSAL_LAB_INVESTIGATION_SAVED", "LAB_ENROLLMENT", enrolment.id, {
-        labCode: code,
-        investigation,
-        runtimeProfile: runtime.definition.runtimeProfile,
-        nextInvestigation,
-      });
+      await audit(
+        identity.id,
+        investigation === 0 ? "UNIVERSAL_LAB_BASELINE_SAVED" : "UNIVERSAL_LAB_INVESTIGATION_SAVED",
+        "LAB_ENROLLMENT",
+        enrolment.id,
+        {
+          labCode: code,
+          investigation,
+          runtimeProfile: runtime.definition.runtimeProfile,
+          nextInvestigation,
+        },
+      );
       return Response.json(await snapshot(identity.id, code));
     }
 
@@ -554,11 +578,16 @@ async function postHandler(request: Request) {
       ) {
         throw new Error("Complete the real-world experiment before finishing this Lab.");
       }
-      const required = runtime.definition.investigations.flatMap((investigation) =>
-        investigation.prompts
+      const required = [
+        ...baselinePrompts(runtime.definition)
           .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
           .map((prompt) => prompt.id),
-      );
+        ...runtime.definition.investigations.flatMap((investigation) =>
+          investigation.prompts
+            .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
+            .map((prompt) => prompt.id),
+        ),
+      ];
       const registry = promptRegistry(runtime.definition);
       const missing = required.filter((id) => {
         const response = current.responses[id];

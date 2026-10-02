@@ -124,3 +124,67 @@ test("Universal runtime uses numbered Habit-style prompt controls and choice but
   assert.match(runtime, /prepareUniversalLabPresentation/);
   assert.match(runtime, /same nine-investigation BIS method as Habit Lab/);
 });
+
+
+test("Volume 1 source baseline is preserved as a dedicated pre-investigation model", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts.unshift(
+    {
+      id: "PEF.I1.BASELINE.ONE",
+      label: "Know where your effort goes",
+      prompt: "Know where your effort goes",
+      type: "CATEGORICAL",
+      options: ["**Never**", "**Rarely**", "**Sometimes**", "**Often**", "**Always**"],
+      required: true,
+      group: "Baseline",
+    },
+    {
+      id: "PEF.I1.BEI_01_PRE",
+      label: "BEI-01-Pre",
+      prompt: "How much control do you feel you have over your effectiveness?",
+      type: "INTEGER",
+      min: 1,
+      max: 10,
+      required: true,
+      group: "PERSONAL EFFECTIVENESS BASELINE — PRE",
+    },
+  );
+  first.blocks.unshift(
+    { type: "HTML", html: "<h3>PERSONAL EFFECTIVENESS BASELINE — PRE</h3>" },
+    { type: "HTML", html: "<p>Before you begin, complete this diagnostic. Be honest.</p>" },
+    { type: "PROMPT", promptId: "PEF.I1.BASELINE.ONE" },
+    { type: "PROMPT", promptId: "PEF.I1.BEI_01_PRE" },
+  );
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  assert.ok(result.presentationBaseline);
+  assert.equal(result.presentationBaseline.items.length, 1);
+  assert.deepEqual(result.presentationBaseline.items[0].options, [
+    "Never",
+    "Rarely",
+    "Sometimes",
+    "Often",
+    "Always",
+  ]);
+  assert.equal(result.presentationBaseline.metric.id, "PEF.I1.BEI_01_PRE");
+  assert.equal(
+    result.investigations[0].prompts.some((prompt) => prompt.id === "PEF.I1.BASELINE.ONE"),
+    false,
+    "baseline controls must not leak into Investigation 1",
+  );
+});
+
+test("Universal runtime saves baseline as investigation zero without unlocking past Investigation 1", async () => {
+  const [api, runtime] = await Promise.all([
+    source("app/api/universal-lab/route.ts"),
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+  ]);
+  assert.match(api, /baselinePrompts\(definition/);
+  assert.match(api, /investigation === 0/);
+  assert.match(api, /UNIVERSAL_LAB_BASELINE_SAVED/);
+  assert.match(api, /investigation === 0 \? 1 : investigationUnlockedAfterSave/);
+  assert.match(runtime, /Create your starting point\./);
+  assert.match(runtime, /investigation: 0/);
+  assert.match(runtime, /presentationBaseline/);
+});

@@ -133,6 +133,12 @@ export type UniversalLabPackage = {
   indicatorRegistry?: UniversalIndicatorBinding[];
   experiment?: UniversalExperimentContract | null;
   profile?: null | { investigation: number; entries: UniversalProfileEntry[] };
+  presentationBaseline?: {
+    title: string;
+    introduction: string;
+    items: UniversalLabPrompt[];
+    metric?: UniversalLabPrompt | null;
+  } | null;
   investigations: UniversalLabInvestigation[];
 };
 
