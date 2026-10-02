@@ -113,3 +113,20 @@ test("Investigation 7 saves one calendar day and hands the learner back to the p
   assert.match(habitClient, /programmeReturnTo/);
   assert.match(habitClient, /window\.location\.assign\(programmeReturnTo\)/);
 });
+
+
+test("Universal Lab API exposes programme handoff state from saved Investigation 7 responses", async () => {
+  const [api, engine, player] = await Promise.all([
+    source("app/api/universal-lab/route.ts"),
+    source("lib/universal-lab-v2.mjs"),
+    source("app/learning/programme-player.tsx"),
+  ]);
+
+  assert.match(engine, /universalExperimentEvidenceProgress/);
+  assert.match(engine, /evidenceDaysRecorded/);
+  assert.match(engine, /todayEvidenceRecorded/);
+  assert.match(api, /universalExperimentEvidenceProgress\(runtime\.definition, latest, availableDay\)/);
+  assert.match(api, /programmeHandoff,/);
+  assert.match(player, /programmeHandoff\?\.experimentStarted/);
+  assert.match(player, /programmeHandoff && programmeHandoff\.evidenceDaysRecorded > 0/);
+});
