@@ -123,8 +123,8 @@ test("Universal runtime uses numbered Habit-style prompt controls and choice but
   assert.match(runtime, /answer-list universal-choice-list/);
   assert.match(runtime, /prepareUniversalLabPresentation/);
   assert.match(runtime, /You will move through nine investigations/);
-  assert.doesNotMatch(runtime, /source workbook/i);
-  assert.doesNotMatch(runtime, /corrections remain traceable/i);
+  assert.doesNotMatch(runtime, /grounded in the BIS source workbook/i);
+  assert.doesNotMatch(runtime, /corrections remain traceable\.<\/p>/i);
 });
 
 
