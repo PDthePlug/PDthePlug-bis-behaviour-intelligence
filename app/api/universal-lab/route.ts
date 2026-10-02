@@ -1,4 +1,4 @@
-import { validPromptResponse } from "../../../lib/evidence-validation.mjs";
+import { normalizePromptResponseValue, validPromptResponse } from "../../../lib/evidence-validation.mjs";
 import { sanitizeRuntimePackage } from "../../../lib/content-html.mjs";
 import { and, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
@@ -449,14 +449,29 @@ async function postHandler(request: Request) {
         ),
       ));
       const ids = new Set<string>();
+      const validatedItems: Array<{
+        semanticFieldId: string;
+        prompt: UniversalLabPrompt;
+        responseStatus: "PASS" | "ANSWERED";
+        value: unknown;
+      }> = [];
       for (const raw of items) {
         const item = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
-        const id = String(item.semanticFieldId ?? "");
-        const prompt = allowed.get(id);
-        if (!prompt || ids.has(id) || !validPromptResponse(prompt, item.value, String(item.responseStatus ?? "ANSWERED"))) {
+        const semanticFieldId = String(item.semanticFieldId ?? "");
+        const prompt = allowed.get(semanticFieldId);
+        const responseStatus = item.responseStatus === "PASS" ? "PASS" : "ANSWERED";
+        const value = responseStatus === "PASS"
+          ? ""
+          : normalizePromptResponseValue(prompt, item.value);
+        if (
+          !prompt
+          || ids.has(semanticFieldId)
+          || !validPromptResponse(prompt, value, responseStatus)
+        ) {
           throw new Error("Check the responses in this investigation before saving.");
         }
-        ids.add(id);
+        ids.add(semanticFieldId);
+        validatedItems.push({ semanticFieldId, prompt, responseStatus, value });
       }
 
       const existing = await snapshot(identity.id, code);
@@ -470,13 +485,8 @@ async function postHandler(request: Request) {
       }
       const now = new Date().toISOString();
 
-      for (const raw of items) {
-        const item = raw && typeof raw === "object" ? raw as Record<string, unknown> : {};
-        const semanticFieldId = String(item.semanticFieldId ?? "");
-        const prompt = allowed.get(semanticFieldId);
-        if (!prompt) throw new Error(`Unexpected field ${semanticFieldId || "missing"} in Investigation ${investigation}.`);
-        const responseStatus = item.responseStatus === "PASS" ? "PASS" : "ANSWERED";
-        const value = responseStatus === "PASS" ? "" : item.value;
+      for (const item of validatedItems) {
+        const { semanticFieldId, prompt, responseStatus, value } = item;
         const encoded = JSON.stringify(value ?? "");
         if (encoded.length > 20_000) throw new Error(`${prompt.label}: response is too long.`);
 

@@ -144,37 +144,24 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
             <small>Applied Commerce®</small>
           </div>
         </Link>
-        <button
-          ref={triggerRef}
-          type="button"
-          className="canonical-topbar-menu"
-          onClick={() => setMenuOpen(true)}
-          aria-label={`Open BIS menu · current area ${stageLabels[stage]}`}
-          aria-haspopup="dialog"
-          aria-expanded={menuOpen}
-        >
-          <strong>{stageLabels[stage]}</strong>
-          <Menu />
-        </button>
       </header>
 
       <div id="bis-task-surface" className="canonical-task" tabIndex={-1}>
         {children}
       </div>
 
-      {stage === "lab" ? (
-        <button
-          type="button"
-          className="canonical-menu-trigger"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Open BIS menu"
-          aria-haspopup="dialog"
-          aria-expanded={menuOpen}
-        >
-          <Menu />
-          <span>Menu</span>
-        </button>
-      ) : null}
+      <button
+        ref={triggerRef}
+        type="button"
+        className="canonical-menu-trigger"
+        onClick={() => setMenuOpen(true)}
+        aria-label={`Open BIS menu · current area ${stageLabels[stage]}`}
+        aria-haspopup="dialog"
+        aria-expanded={menuOpen}
+      >
+        <Menu />
+        <span>Menu</span>
+      </button>
 
       {menuOpen ? (
         <>
