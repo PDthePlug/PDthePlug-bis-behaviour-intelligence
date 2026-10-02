@@ -56,9 +56,9 @@ test("Habit Lab and field experiment are focused child surfaces under the canoni
   for (const label of ["Today", "Learn", "Lab", "Experiment", "Profile"]) {
     assert.match(canonical, new RegExp(`label: "${label}"`));
   }
-  assert.match(canonical, /canonical-topbar-menu/);
-  assert.match(canonical, /stage === "lab"/);
+  assert.doesNotMatch(canonical, /canonical-topbar-menu/);
   assert.match(canonical, /className="canonical-menu-trigger"/);
+  assert.match(canonical, /Open BIS menu · current area/);
 });
 
 test("learning player keeps its focused navigation while Lab restores the convenient centre Menu", async () => {
