@@ -2159,7 +2159,7 @@ function hasNearbyProductClassification(
 ) {
   const window = blocks.slice(start, Math.min(blocks.length, start + 14));
   return window.some((block) =>
-    new RegExp("commercial\\s+product\\s*#\\s*" + sourceProductNumber + "\\b", "i").test(block.text)
+    new RegExp("commercial\\s+product\\s*#\\s*" + sourceProductNumber + "(?!\\d)", "i").test(block.text)
   );
 }
 
