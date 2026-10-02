@@ -2,7 +2,7 @@ import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
 import type { LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
 import { applyHabitLabStandard } from "./universal-lab-standard.mjs";
-import type { HabitLabStandardStage, UniversalEditorialAudit } from "./universal-lab-standard.mjs";
+import type { HabitLabStandardStage, UniversalEditorialAudit, UniversalNormalizationNote } from "./universal-lab-standard.mjs";
 import {
   upgradeUniversalLabV2,
   type UniversalComputedField,
@@ -112,6 +112,23 @@ export type UniversalLabPackage = {
   factoryCapabilities?: LabFactoryCapabilities;
   standardVersion?: string;
   editorialAudit?: UniversalEditorialAudit;
+  normalizationNotes?: UniversalNormalizationNote[];
+  sourceMigration?: {
+    corpus?: string;
+    sourceVolume?: number;
+    sourcePosition?: number;
+    canonicalPosition?: number;
+    sourceProductNumber?: number;
+    sourceInvestigation2?: string;
+    canonicalInvestigation2?: string;
+    detectedLearnerCopies?: number;
+    expectedLearnerCopies?: number;
+    selectedLearnerCopy?: number;
+    duplicateCopyPolicy?: string;
+    experimentDays?: number;
+    transferSubstage?: number | null;
+    warnings?: string[];
+  };
   computedFields?: UniversalComputedField[];
   indicatorRegistry?: UniversalIndicatorBinding[];
   experiment?: UniversalExperimentContract | null;
@@ -574,6 +591,10 @@ export async function compileUniversalLab(
     kind: "LAB",
     standardVersion: text(source.standardVersion) || undefined,
     editorialAudit: object(source.editorialAudit) as UniversalEditorialAudit | undefined,
+    normalizationNotes: Array.isArray(source.normalizationNotes)
+      ? source.normalizationNotes as UniversalNormalizationNote[]
+      : undefined,
+    sourceMigration: object(source.sourceMigration) as UniversalLabPackage["sourceMigration"] | undefined,
     schemaVersion: v2 ? "universal-lab-v2" : "universal-lab-v1",
     runtimeProfile: v2 ? "UNIVERSAL_V2" : "UNIVERSAL_V1",
     identity: {
