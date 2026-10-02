@@ -81,6 +81,17 @@ function UniversalPrompt({
       : null;
   const categorical = prompt.type === "CATEGORICAL" && (prompt.options?.length ?? 0) > 0;
   const booleanChoices = prompt.type === "BOOLEAN";
+  const integerMin = Number(prompt.min);
+  const integerMax = Number(prompt.max);
+  const ratingScale =
+    prompt.type === "INTEGER"
+    && Number.isFinite(integerMin)
+    && Number.isFinite(integerMax)
+    && integerMax > integerMin
+    && integerMax - integerMin <= 10
+    && /confidence|control|rating|agency|deliberate|clarity|certainty|awareness|how much|how strongly/i.test(
+      `${prompt.label} ${prompt.prompt}`,
+    );
 
   return (
     <section className={`prompt-section universal-prompt ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
@@ -96,7 +107,30 @@ function UniversalPrompt({
         ) : (
           <>
             <div className={`prompt-controls ${passed ? "is-passed" : ""}`}>
-              {prompt.type === "INTEGER" ? (
+              {ratingScale ? (
+                <div className="universal-rating-scale" role="group" aria-label={prompt.label}>
+                  <div className="universal-rating-options">
+                    {Array.from(
+                      { length: integerMax - integerMin + 1 },
+                      (_, index) => integerMin + index,
+                    ).map((option) => (
+                      <button
+                        type="button"
+                        key={option}
+                        className={value === String(option) ? "selected" : ""}
+                        aria-pressed={value === String(option)}
+                        onClick={() => onValue(String(option))}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="universal-rating-anchors">
+                    <span>{integerMin} · lower</span>
+                    <span>{integerMax} · higher</span>
+                  </div>
+                </div>
+              ) : prompt.type === "INTEGER" ? (
                 <Input
                   type="number"
                   min={prompt.min}
