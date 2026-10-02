@@ -69,14 +69,15 @@ test("learner menu never routes another module into the Habit experiment by acci
   );
 });
 
-test("post-Lab programme completion stays locked until Phase A really exists", async () => {
+test("post-Lab programme completion stays locked until the first Investigation 7 evidence handback", async () => {
   const player = await source("app/learning/programme-player.tsx");
 
   assert.match(player, /const labSequenceLocked =/);
   assert.match(player, /selected >= dayThreeIndex/);
-  assert.match(player, /activeModuleRuntime\?\.enrolment\?\.phaseACompletedAt/);
+  assert.match(player, /programmeHandoff && programmeHandoff\.evidenceDaysRecorded > 0/);
+  assert.match(player, /activeModuleRuntime\?\.experiment && activeModuleRuntime\.events\.length > 0/);
   assert.match(player, /Reference view/);
-  assert.match(player, /programme progress resumes after the Lab/);
+  assert.match(player, /programme progress resumes after that Lab handback/);
   assert.match(player, /disabled=\{saving \|\| completing \|\| labSequenceLocked\}/);
   assert.match(player, /disabled=\{completing \|\| \(labSequenceLocked && selected > dayThreeIndex\)\}/);
   assert.match(player, /Continue after the Lab/);
