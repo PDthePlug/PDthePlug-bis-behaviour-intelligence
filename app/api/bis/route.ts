@@ -158,7 +158,7 @@ function buildReminders(
     reminders.push({ id: "experiment-started", title: "Your experiment is active", detail: "Record what happens when the target condition appears. No opportunity is valid evidence.", priority: "INFO" });
   }
   if (experiment.status === "ACTIVE" && elapsed >= 1 && elapsed <= totalDays && !todayRecorded && preference.dailyObservation) {
-    reminders.push({ id: `daily-${todayNumber}`, title: `Day ${todayNumber} observation is ready`, detail: `Your in-app reminder time is ${preference.reminderTime}. Backfill is available if you are recording later.`, priority: "ACTION" });
+    reminders.push({ id: `daily-${todayNumber}`, title: `Day ${todayNumber} observation is ready`, detail: `Your in-app reminder time is ${preference.reminderTime}. Only today’s observation can be recorded; future days unlock on their calendar day.`, priority: "ACTION" });
   }
   if (experiment.status === "ACTIVE" && events.length >= 3 && checkpoints.length === 0 && preference.dayThreeCheckpoint) {
     reminders.push({ id: "day-three", title: "Day 3 checkpoint is ready", detail: "Review what surprised you and keep or adjust the experiment without overwriting version 1.", priority: "ACTION" });
@@ -813,7 +813,9 @@ async function postHandler(request: Request) {
       const plannedDays = Math.floor((end.getTime() - start.getTime()) / 86_400_000) + 1;
       if (dayNumber > plannedDays) throw new Error("That day is outside the current experiment window.");
       const timing = getExperimentTiming(experiment, [], todayInZone());
-      if (dayNumber > timing.availableDay) throw new Error("That experiment day has not started yet.");
+      if (timing.calendarDay === null || dayNumber !== timing.calendarDay) {
+        throw new Error("Only today’s experiment evidence can be recorded. Future days unlock on their calendar day, and missed past days remain missing evidence.");
+      }
       const cueOccurred = body.targetConditionOccurred === true;
       const existing = await db
         .select()
