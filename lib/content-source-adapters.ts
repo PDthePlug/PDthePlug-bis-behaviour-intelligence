@@ -1760,7 +1760,7 @@ function hasFollowingCheckboxGroup(body: SourceBlock[], index: number) {
 }
 
 function indicatorReferences(value: string) {
-  const matches = [...String(value ?? "").matchAll(/\b(BEI-\d{2})(?:-(?:PRE|POST))?\s*:?[\t ]*([^<\n]{0,120})/gi)];
+  const matches = [...String(value ?? "").matchAll(/\b((?:BEI|TEI)-\d{2})(?:-(?:PRE|POST))?\s*:?[\t ]*([^<\n]{0,120})/gi)];
   return matches.map((match) => {
     const code = match[1].toUpperCase();
     const rawLabel = cleanAuthoredText(match[2] ?? "")
