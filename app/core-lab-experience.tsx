@@ -211,7 +211,7 @@ export function CoreLabExperience({ definition }: { definition: CoreLabDefinitio
         {activeStep === 4 && <FieldsStep fields={definition.sections[4]} pauseQuestion={definition.pauses[4]} state={state} saving={saving} act={act} next={(saved) => goToSavedStep(saved, 5)} />}
         {activeStep === 5 && <EquationStep definition={definition} state={state} saving={saving} act={act} next={(saved) => goToSavedStep(saved, 6)} />}
         {activeStep === 6 && <ContractStep definition={definition} state={state} saving={saving} act={act} next={(saved) => goToSavedStep(saved, 7)} />}
-        {activeStep === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={(saved) => goToSavedStep(saved, 8)} onDailySaved={() => { if (returnTo !== "/labs") router.replace(returnTo); }} />}
+        {activeStep === 7 && <CanonicalExperimentStep definition={definition} state={state} saving={saving} act={act} next={(saved) => goToSavedStep(saved, 8)} onDailySaved={() => router.replace(returnTo)} />}
         {activeStep === 8 && <ReviewStep definition={definition} state={state} saving={saving} act={act} next={(saved) => goToSavedStep(saved, 9)} />}
         {activeStep === 9 && <CanonicalFinalStep definition={definition} state={state} saving={saving} act={act} returnTo={returnTo} />}
       </LabInvestigationFrame>
