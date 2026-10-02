@@ -117,9 +117,10 @@ test("dynamic Lab route owns only one canonical shell", async () => {
   assert.doesNotMatch(routeLayout, /<CanonicalAdaptiveShell>/);
 });
 
-test("Universal runtime uses numbered Habit-style prompt controls and choice buttons", async () => {
+test("Universal runtime uses continuous digital prompt controls without workbook card numbering", async () => {
   const runtime = await source("app/labs/[code]/universal-runtime-lab.tsx");
-  assert.match(runtime, /String\(index\)\.padStart\(2, "0"\)/);
+  assert.doesNotMatch(runtime, /String\(index\)\.padStart\(2, "0"\)/);
+  assert.doesNotMatch(runtime, /className="prompt-number"/);
   assert.match(runtime, /answer-list universal-choice-list/);
   assert.match(runtime, /prepareUniversalLabPresentation/);
   assert.match(runtime, /You will move through nine investigations/);
