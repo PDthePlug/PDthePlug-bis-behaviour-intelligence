@@ -611,7 +611,7 @@ function UniversalInvestigationForm({
               ? "Preview mode shows the complete experiment structure."
               : snapshot.experimentTiming?.reviewReady
                 ? "This is the final experiment day. Record today’s evidence to continue to review."
-                : "Only today’s evidence is open. Earlier missing days stay recorded as missing; tomorrow opens on its own calendar day."}
+                : "Only today’s evidence is open. Tomorrow’s evidence unlocks when tomorrow arrives."}
           </p>
         </section>
       ) : null}
