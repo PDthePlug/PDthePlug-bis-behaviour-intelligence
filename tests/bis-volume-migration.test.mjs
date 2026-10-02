@@ -109,7 +109,7 @@ test("shared Lab frame gives legacy live Labs the same canonical stage layer", a
   const frame = await source("app/lab-investigation-frame.tsx");
   assert.match(frame, /HABIT_LAB_STAGES/);
   assert.match(frame, /canonicalStage/);
-  assert.match(frame, /<h1>{canonicalTitle}<\\/h1>/);
-  assert.match(frame, /Investigation {step} of {total}/);
-  assert.doesNotMatch(frame, /canonicalStage\\?\\.role/);
+  assert.ok(frame.includes("<h1>{canonicalTitle}</h1>"));
+  assert.ok(frame.includes("Investigation {step} of {total}"));
+  assert.doesNotMatch(frame, /canonicalStage\?\.role/);
 });
