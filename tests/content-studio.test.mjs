@@ -173,7 +173,7 @@ test("Content Studio surfaces the Habit standard and blocks editorially unfinish
   ]);
   assert.match(api, /editorialStatus/);
   assert.match(api, /Strengthen the Lab source before approval/);
-  assert.match(api, /editorialAudit\.status === "BLOCKED"/);
+  assert.match(api, /editorialAudit\?\.status === "BLOCKED"/);
   assert.match(ui, /Habit Lab standard 1\.0/);
   assert.match(ui, /Editorial review before approval/);
   assert.match(compiler, /applyHabitLabStandard/);
