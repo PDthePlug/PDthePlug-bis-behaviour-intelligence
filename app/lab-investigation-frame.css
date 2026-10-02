@@ -1019,6 +1019,50 @@
 }
 .universal-table-response.passed{background:#fafaf8}
 
+.universal-table-choice{
+  text-align:center;
+  vertical-align:middle!important;
+}
+.universal-table-choice button{
+  display:inline-grid;
+  width:34px;
+  height:34px;
+  place-items:center;
+  margin:auto;
+  border:1px solid #cfd8d3;
+  border-radius:50%;
+  background:#fff;
+  color:#9ba6a1;
+  font:800 15px/1 var(--font-sans,system-ui,sans-serif);
+  transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease;
+}
+.universal-table-choice button:hover{
+  border-color:#2f8276;
+  color:#2f8276;
+}
+.universal-table-choice button.selected{
+  border-color:#2f8276;
+  background:#e8f3ef;
+  color:#1f6f64;
+  transform:scale(1.04);
+}
+.universal-table-choice-label{
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
+.universal-table-field [data-slot="select-trigger"]{
+  width:100%;
+  min-height:44px;
+  border-color:#ced6d2;
+  border-radius:10px;
+  background:#fbfaf6;
+}
+
 /* Welcome is editorially quieter and lets the task become the product. */
 .universal-package-welcome .universal-welcome-grid{
   width:min(1020px,100%);
@@ -1151,6 +1195,15 @@
     text-transform:uppercase;
   }
   .universal-table-static{padding-top:5px}
+  .universal-table-choice{
+    display:grid!important;
+    grid-template-columns:minmax(82px,.36fr) minmax(0,1fr)!important;
+    text-align:left;
+  }
+  .universal-table-choice button{
+    margin:0;
+    justify-self:start;
+  }
   .universal-table-field>span{display:none}
   .universal-table-pass{
     grid-column:2;

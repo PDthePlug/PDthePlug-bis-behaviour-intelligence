@@ -1557,19 +1557,21 @@ function promptsFromTable(
 
   const inferredResponseColumns = block.responseColumns ?? inferTableResponseColumns(rows);
 
-  if (joined.includes("behaviour") && headers.some((header) => /^never$/i.test(header))) {
+  const likertOptions = ["never", "rarely", "sometimes", "often", "always"];
+  const headerOptions = headers.slice(1).map((header) => header.toLowerCase());
+  if (likertOptions.every((option) => headerOptions.includes(option))) {
     const options = headers.slice(1).filter(Boolean);
     for (const row of rows.slice(1)) {
-      const behaviour = cleanAuthoredText(row[0] ?? "");
-      if (!behaviour) continue;
+      const statement = cleanAuthoredText(row[0] ?? "");
+      if (!statement) continue;
       addPrompt(prompts, renderBlocks, code, investigation, {
-        label: behaviour,
-        prompt: behaviour,
+        label: statement,
+        prompt: statement,
         type: "CATEGORICAL",
         options,
         sensitivity: "P2",
         required: true,
-        group: "Risk baseline",
+        group: "Baseline",
       });
     }
     return true;

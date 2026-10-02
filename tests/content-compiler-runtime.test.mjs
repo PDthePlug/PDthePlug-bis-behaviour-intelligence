@@ -149,7 +149,7 @@ test("structured Lab documents can be manufactured into nine-investigation runti
   assert.match(adapters, /certificateIndex/);
   assert.match(adapters, /investigation\\s\*\[1-9\]\\s\*of\\s\*9/);
   assert.match(adapters, /lastIndexOf\("\?"\)/);
-  assert.match(adapters, /Risk baseline/);
+  assert.match(adapters, /group: "Baseline"/);
   assert.match(adapters, /Probability \(1–5\)/);
   assert.match(adapters, /Day " \+ day/);
   assert.match(compiler, /MULTI_SELECT/);

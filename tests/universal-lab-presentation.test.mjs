@@ -122,7 +122,9 @@ test("Universal runtime uses numbered Habit-style prompt controls and choice but
   assert.match(runtime, /String\(index\)\.padStart\(2, "0"\)/);
   assert.match(runtime, /answer-list universal-choice-list/);
   assert.match(runtime, /prepareUniversalLabPresentation/);
-  assert.match(runtime, /same nine-investigation BIS method as Habit Lab/);
+  assert.match(runtime, /You will move through nine investigations/);
+  assert.doesNotMatch(runtime, /grounded in the BIS source workbook/i);
+  assert.doesNotMatch(runtime, /corrections remain traceable\.<\/p>/i);
 });
 
 
@@ -313,4 +315,95 @@ test("Volume 3 TEI codes are first-class evidence indicators", async () => {
   assert.match(adapter, /BEI\\|TEI/);
   assert.match(capabilities, /BEI\\|TEI/);
   assert.match(v2, /bei\\|tei/);
+});
+
+
+test("Volume 3 Likert tables become a real pre-investigation baseline instead of static checkboxes", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [{
+    id: "SYS.I1.PREDICTION",
+    label: "Your prediction",
+    prompt: "What do you think Myah will learn?",
+    type: "TEXT",
+    required: true,
+  }];
+  first.blocks = [
+    {
+      type: "HTML",
+      html: "<h3>THINKING BASELINE — PRE</h3><p>Before you begin, complete this diagnostic.</p>"
+        + "<table><tr><th>When you think about problems, how often do you...</th><th>Never</th><th>Rarely</th><th>Sometimes</th><th>Often</th><th>Always</th></tr>"
+        + "<tr><td>Notice patterns repeating over time</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr>"
+        + "<tr><td>Ask why a problem keeps happening</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td><td>☐</td></tr></table>",
+    },
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    { type: "PROMPT", promptId: "SYS.I1.PREDICTION" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  assert.ok(result.presentationBaseline);
+  assert.equal(result.presentationBaseline.items.length, 2);
+  assert.deepEqual(result.presentationBaseline.items[0].options, [
+    "Never", "Rarely", "Sometimes", "Often", "Always",
+  ]);
+  assert.equal(result.presentationBaseline.items[0].label, "Notice patterns repeating over time");
+  assert.equal(
+    result.investigations[0].blocks.some((block) =>
+      block.type === "HTML" && /Notice patterns repeating/.test(universalHtmlText(block.html))
+    ),
+    false,
+    "baseline matrix must not remain as a static workbook table inside Investigation 1",
+  );
+});
+
+test("experiment table checkbox choices become answer controls rather than printed checkbox text", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    {
+      type: "HTML",
+      html: "<table><tr><th>Day</th><th>Date</th><th>Moment I Noticed</th><th>Did I see the system?</th><th>Notes</th></tr>"
+        + "<tr><td>1</td><td></td><td></td><td>☐ Yes ☐ No</td><td></td></tr>"
+        + "<tr><td>2</td><td></td><td></td><td>☐ Yes ☐ No</td><td></td></tr></table>",
+    },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  const table = investigation.blocks.find((block) => block.type === "TABLE");
+  assert.ok(table);
+  const choicePrompts = investigation.prompts.filter((prompt) => prompt.type === "BOOLEAN");
+  assert.equal(choicePrompts.length, 2);
+  assert.ok(choicePrompts.every((prompt) => /Did I see the system/.test(prompt.label)));
+  assert.equal(
+    table.rows.flatMap((row) => row).some((cell) => cell.kind === "TEXT" && /☐/.test(cell.text)),
+    false,
+  );
+});
+
+test("Likert compilation is domain-neutral so TEI baselines are first-class too", async () => {
+  const adapter = await source("lib/content-source-adapters.ts");
+  assert.match(adapter, /const likertOptions = \["never", "rarely", "sometimes", "often", "always"\]/);
+  assert.match(adapter, /group: "Baseline"/);
+  assert.doesNotMatch(adapter, /group: "Risk baseline"/);
+});
+
+test("Universal table renderer supports matrix choice cells and table selects", async () => {
+  const [runtime, compiler] = await Promise.all([
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("lib/content-compiler.ts"),
+  ]);
+  assert.match(compiler, /kind: "CHOICE"/);
+  assert.match(runtime, /cell\.kind === "CHOICE"/);
+  assert.match(runtime, /role="radio"/);
+  assert.match(runtime, /categoricalOptions/);
+});
+
+
+test("legacy The Prediction does not appear as a competing subtitle under canonical The Pattern", async () => {
+  const frame = await source("app/lab-investigation-frame.tsx");
+  assert.match(frame, /legacyPredictionTitle/);
+  assert.match(frame, /!legacyPredictionTitle/);
 });
