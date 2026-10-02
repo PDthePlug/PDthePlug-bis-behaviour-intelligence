@@ -57,10 +57,11 @@ test("Habit Lab and field experiment are focused child surfaces under the canoni
     assert.match(canonical, new RegExp(`label: "${label}"`));
   }
   assert.match(canonical, /canonical-topbar-menu/);
-  assert.doesNotMatch(canonical, /className="canonical-menu-trigger"/);
+  assert.match(canonical, /stage === "lab"/);
+  assert.match(canonical, /className="canonical-menu-trigger"/);
 });
 
-test("learning player keeps its focused navigation while the canonical shell menu stays out of task content", async () => {
+test("learning player keeps its focused navigation while Lab restores the convenient centre Menu", async () => {
   const [player, css, layout] = await Promise.all([
     source("app/learning/programme-player.tsx"),
     source("app/learning/programme-player.css"),
