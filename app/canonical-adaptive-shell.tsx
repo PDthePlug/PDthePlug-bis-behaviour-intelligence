@@ -162,6 +162,20 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         {children}
       </div>
 
+      {stage === "lab" ? (
+        <button
+          type="button"
+          className="canonical-menu-trigger"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open BIS menu"
+          aria-haspopup="dialog"
+          aria-expanded={menuOpen}
+        >
+          <Menu />
+          <span>Menu</span>
+        </button>
+      ) : null}
+
       {menuOpen ? (
         <>
           <button
