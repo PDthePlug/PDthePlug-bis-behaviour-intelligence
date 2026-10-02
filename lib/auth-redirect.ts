@@ -21,6 +21,12 @@ export function safeReturnPath(value: string | null | undefined) {
   }
 }
 
+export function optionalSafeReturnPath(value: string | null | undefined) {
+  if (!value) return undefined;
+  const safe = safeReturnPath(value);
+  return safe === "/" && value !== "/" ? undefined : safe;
+}
+
 export function confirmationRedirectUrl(next: string, runtimeOrigin: string) {
   const origin = applicationOrigin(runtimeOrigin);
   return `${origin}/auth/callback?next=${encodeURIComponent(safeReturnPath(next))}`;
