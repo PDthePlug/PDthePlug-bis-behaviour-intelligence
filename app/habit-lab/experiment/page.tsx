@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   description: "Your seven-day Habit Lab field experiment inside the BIS Habit programme.",
 };
 
-export default function HabitExperimentPage() {
-  return <HabitLabShell view="experiment" />;
+export default async function HabitExperimentPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>;
+}) {
+  const params = await searchParams;
+  return <HabitLabShell view="experiment" returnTo={params.returnTo} />;
 }
