@@ -81,7 +81,8 @@ export type UniversalLabPrompt = {
 
 export type UniversalLabTableCell =
   | { kind: "TEXT"; text: string }
-  | { kind: "PROMPT"; promptId: string };
+  | { kind: "PROMPT"; promptId: string }
+  | { kind: "CHOICE"; promptId: string; value: string };
 
 export type UniversalLabRenderBlock =
   | { type: "HTML"; html: string }
