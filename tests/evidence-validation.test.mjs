@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isIsoDate, ratingShift, todayInZone, validPromptResponse } from "../lib/evidence-validation.mjs";
+import { isIsoDate, normalizePromptResponseValue, ratingShift, todayInZone, validPromptResponse } from "../lib/evidence-validation.mjs";
 import { getExperimentTiming } from "../lib/experiment-timing.mjs";
 
 test("rating shifts require two actual bounded observations", () => {
@@ -46,4 +46,17 @@ test("dynamic responses respect typed controls, required fields and the right to
   const multi = { type: "MULTI_SELECT", options: ["A", "B"] };
   assert.equal(validPromptResponse(multi, '["A","B"]'), true);
   for (const value of ['[]', '["C"]', '["A","A"]', '{}']) assert.equal(validPromptResponse(multi, value), false);
+});
+
+
+test("legacy Investigation 7 typed values normalize to canonical evidence values", () => {
+  const booleanPrompt = { type: "BOOLEAN", required: true };
+  assert.equal(normalizePromptResponseValue(booleanPrompt, "No i did not"), "No");
+  assert.equal(normalizePromptResponseValue(booleanPrompt, "Yes, I did"), "Yes");
+  assert.equal(normalizePromptResponseValue(booleanPrompt, "maybe"), "maybe");
+  assert.equal(validPromptResponse(booleanPrompt, normalizePromptResponseValue(booleanPrompt, "No i did not")), true);
+
+  const datePrompt = { type: "DATE", required: false };
+  assert.equal(normalizePromptResponseValue(datePrompt, "02/10/2026"), "2026-10-02");
+  assert.equal(validPromptResponse(datePrompt, normalizePromptResponseValue(datePrompt, "02/10/2026")), true);
 });
