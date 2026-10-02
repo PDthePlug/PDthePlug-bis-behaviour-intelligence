@@ -99,7 +99,7 @@ test("Universal V1 and V2 Labs stay in the same canonical nine-investigation pre
   assert.match(compiler, /UNIVERSAL_V2/);
   assert.match(compiler, /upgradeUniversalLabV2/);
   assert.match(runner, /universal-computed-value/);
-  assert.match(runner, /Only evidence for calendar days that have actually arrived can be recorded/);
+  assert.match(runner, /Only today’s evidence is open\. Tomorrow’s evidence unlocks when tomorrow arrives/);
   assert.match(api, /experimentCalendarDay/);
 });
 
