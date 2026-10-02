@@ -91,6 +91,18 @@ export function LabMissionHeader({
 }) {
   const canonicalStage = investigation.standardStage
     ?? HABIT_LAB_STAGES.find((stage) => stage.number === investigation.number);
+  const authoredTitle = String(investigation.title ?? "").trim();
+  const canonicalTitle = canonicalStage?.label ?? authoredTitle;
+  const comparable = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const malformedTitle =
+    !authoredTitle
+    || /^of\s+\d+$/i.test(authoredTitle)
+    || /^\d+\s*\/\s*9$/.test(authoredTitle)
+    || /^investigation\s+\d+/i.test(authoredTitle);
+  const displayTitle =
+    malformedTitle || comparable(authoredTitle) === comparable(canonicalTitle)
+      ? canonicalTitle
+      : authoredTitle;
   return (
     <header className="universal-lab-mission">
       <div className="universal-lab-mission-copy">
@@ -99,7 +111,7 @@ export function LabMissionHeader({
             ? `Investigation ${step} · ${canonicalStage.label}`
             : "Mission"}
         </p>
-        <h1>{investigation.title}</h1>
+        <h1>{displayTitle}</h1>
         <p>{investigation.mission}</p>
         {canonicalStage?.role ? (
           <p className="universal-lab-stage-role">{canonicalStage.role}</p>
