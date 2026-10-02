@@ -21,6 +21,7 @@ import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { CONTENT_STUDIO_BUCKET } from "../../../lib/content-studio";
 import type { UniversalLabPackage, UniversalLabPrompt } from "../../../lib/content-compiler";
 import { investigationUnlockedAfterSave } from "../../../lib/lab-lifecycle-contract";
+import { prepareUniversalLabPresentation } from "../../../lib/universal-lab-presentation.mjs";
 import {
   evaluateUniversalComputed,
   experimentCalendarDay,
@@ -103,7 +104,9 @@ async function activeLab(code: string) {
   if (!artifact) throw new Error("The compiled Lab package is missing.");
   const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(artifact.storagePath);
   if (download.error || !download.data) throw new Error("The Lab package could not be loaded.");
-  const definition = sanitizeRuntimePackage(JSON.parse(await download.data.text())) as UniversalLabPackage;
+  const definition = prepareUniversalLabPresentation(
+    sanitizeRuntimePackage(JSON.parse(await download.data.text())) as UniversalLabPackage,
+  ) as UniversalLabPackage;
   if (
     definition.kind !== "LAB"
     || !["UNIVERSAL_V1", "UNIVERSAL_V2"].includes(definition.runtimeProfile)

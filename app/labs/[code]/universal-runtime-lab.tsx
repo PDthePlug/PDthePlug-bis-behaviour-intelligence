@@ -7,11 +7,11 @@ import { LabInvestigationFrame } from "@/app/lab-investigation-frame";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { UniversalLabPackage, UniversalLabPrompt } from "@/lib/content-compiler";
 import { serverUnlockedInvestigation } from "@/lib/lab-lifecycle-contract";
 import { evaluateUniversalComputed } from "@/lib/universal-lab-v2.mjs";
+import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentation.mjs";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
 type Snapshot = {
@@ -57,22 +57,29 @@ function multiValues(value: string) {
 
 function UniversalPrompt({
   prompt,
+  index,
   value,
   passed,
   onValue,
   onPass,
 }: {
   prompt: UniversalLabPrompt;
+  index: number;
   value: string;
   passed: boolean;
   onValue: (value: string) => void;
   onPass: (value: boolean) => void;
 }) {
   const selected = prompt.type === "MULTI_SELECT" ? new Set(multiValues(value)) : new Set<string>();
+  const group = prompt.group && prompt.group !== "BIS Laboratory Standard" ? prompt.group : null;
+  const categorical = prompt.type === "CATEGORICAL" && (prompt.options?.length ?? 0) > 0;
+  const booleanChoices = prompt.type === "BOOLEAN";
+
   return (
-    <section className={`prompt-section ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
-      <div className="prompt-number">{prompt.group ? prompt.group : prompt.id.split(".").slice(-1)[0]}</div>
+    <section className={`prompt-section universal-prompt ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
+      <div className="prompt-number">{String(index).padStart(2, "0")}</div>
       <div className="prompt-body">
+        {group ? <p className="prompt-kicker">{group}</p> : null}
         <h2>{prompt.label}</h2>
         {prompt.prompt !== prompt.label ? <p>{prompt.prompt}</p> : null}
         {prompt.readOnly ? (
@@ -94,16 +101,34 @@ function UniversalPrompt({
               />
             ) : prompt.type === "DATE" ? (
               <Input type="date" value={value} onChange={(event) => onValue(event.target.value)} />
-            ) : prompt.type === "BOOLEAN" ? (
-              <Select value={value} onValueChange={onValue}>
-                <SelectTrigger><SelectValue placeholder="Choose" /></SelectTrigger>
-                <SelectContent><SelectItem value="Yes">Yes</SelectItem><SelectItem value="No">No</SelectItem></SelectContent>
-              </Select>
-            ) : prompt.type === "CATEGORICAL" ? (
-              <Select value={value} onValueChange={onValue}>
-                <SelectTrigger><SelectValue placeholder="Choose" /></SelectTrigger>
-                <SelectContent>{(prompt.options ?? []).map((option) => <SelectItem value={option} key={option}>{option}</SelectItem>)}</SelectContent>
-              </Select>
+            ) : booleanChoices ? (
+              <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
+                {["Yes", "No"].map((option) => (
+                  <button
+                    type="button"
+                    key={option}
+                    className={value === option ? "selected" : ""}
+                    onClick={() => onValue(option)}
+                  >
+                    <span>{value === option ? <Check /> : null}</span>
+                    {option}
+                  </button>
+                ))}
+              </div>
+            ) : categorical ? (
+              <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
+                {(prompt.options ?? []).map((option) => (
+                  <button
+                    type="button"
+                    key={option}
+                    className={value === option ? "selected" : ""}
+                    onClick={() => onValue(option)}
+                  >
+                    <span>{value === option ? <Check /> : null}</span>
+                    {option}
+                  </button>
+                ))}
+              </div>
             ) : prompt.type === "MULTI_SELECT" ? (
               <div className="universal-multi-select">
                 {(prompt.options ?? []).map((option) => (
@@ -185,6 +210,7 @@ function UniversalInvestigationForm({
     }));
 
   const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
+  const promptOrder = new Map(visiblePrompts.map((prompt, index) => [prompt.id, index + 1]));
   const blockPromptIds = new Set(
     (investigation.blocks ?? [])
       .filter((block) => block.type === "PROMPT")
@@ -196,6 +222,7 @@ function UniversalInvestigationForm({
     <UniversalPrompt
       key={prompt.id}
       prompt={prompt}
+      index={promptOrder.get(prompt.id) ?? 1}
       value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
       passed={passed.has(prompt.id)}
       onValue={(value) => {
@@ -348,6 +375,10 @@ export function UniversalRuntimeLab({
           if (!response.ok) throw new Error(data.error ?? "The Lab could not be opened.");
         }
         if (controller.signal.aborted) return;
+        data = {
+          ...data,
+          definition: prepareUniversalLabPresentation(data.definition) as UniversalLabPackage,
+        };
         setSnapshot(data);
         const requested = Number(new URLSearchParams(window.location.search).get("step"));
         const max = previewVersionId ? 9 : Math.max(1, data.enrolment?.currentInvestigation ?? 1);
@@ -426,8 +457,12 @@ export function UniversalRuntimeLab({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ labCode, ...payload }),
       });
-      const data = await response.json() as Snapshot & { error?: string };
+      let data = await response.json() as Snapshot & { error?: string };
       if (!response.ok) throw new Error(data.error ?? "The Lab could not save your evidence.");
+      data = {
+        ...data,
+        definition: prepareUniversalLabPresentation(data.definition) as UniversalLabPackage,
+      };
       setSnapshot(data);
       return data;
     } catch (cause) {
@@ -454,33 +489,39 @@ export function UniversalRuntimeLab({
 
   if (!snapshot.enrolment) {
     return (
-      <EditionLanguageScope edition={snapshot.deliveryEdition}><main className="corelab-welcome fidelity-welcome universal-package-welcome" style={{ "--lab-accent": snapshot.definition.identity.accent } as React.CSSProperties}>
-        <section className="fidelity-hero">
-          <div>
-            <p className="eyebrow">Behaviour Intelligence Series™ · Universal Lab</p>
-            <h1>{snapshot.definition.identity.title}</h1>
-            <p>{snapshot.definition.identity.focus ?? "A private behavioural investigation."}</p>
-            <div className="surface-card canonical-card">
-              <FlaskConical />
-              <h2>Nine investigations. One evidence trail.</h2>
-              <p>This Lab uses the shared BIS investigation system. Your responses remain separate from your learning-module reflections.</p>
+      <EditionLanguageScope edition={snapshot.deliveryEdition}>
+        <main
+          className="corelab-welcome fidelity-welcome universal-package-welcome"
+          style={{ "--lab-accent": snapshot.definition.identity.accent } as React.CSSProperties}
+        >
+          <section className="fidelity-hero universal-welcome-grid">
+            <div className="universal-welcome-copy">
+              <p className="eyebrow">Applied Commerce® · Behaviour Intelligence Series™</p>
+              <h1>{snapshot.definition.identity.title}</h1>
+              <p>{snapshot.definition.identity.focus ?? "A private behavioural investigation."}</p>
+              <div className="universal-welcome-meta">
+                <span><strong>9</strong> investigations</span>
+                <span><strong>1</strong> evidence trail</span>
+                <span><strong>Private</strong> learner responses</span>
+              </div>
             </div>
-          </div>
-          <div className="surface-card corelab-start-card">
-            <ShieldCheck />
-            <h2>Begin with private evidence.</h2>
-            <p>You may pass any question you are not ready to answer. Corrections remain traceable.</p>
-            <label className="consent-row">
-              <Checkbox checked={consent} onCheckedChange={(checked) => setConsent(checked === true)} />
-              <span>I understand that my Lab responses will be stored as private behavioural evidence for this investigation.</span>
-            </label>
-            {error ? <p className="field-error">{error}</p> : null}
-            <Button size="lg" disabled={saving || !consent} onClick={() => void act({ action: "openLab", consent: true })}>
-              {saving ? "Opening…" : <>Open {snapshot.definition.identity.shortTitle} <ArrowRight /></>}
-            </Button>
-          </div>
-        </section>
-      </main></EditionLanguageScope>
+            <div className="surface-card corelab-start-card universal-start-card">
+              <FlaskConical />
+              <p className="eyebrow">Before you begin</p>
+              <h2>Start with private evidence.</h2>
+              <p>This Lab follows the same nine-investigation BIS method as Habit Lab. You may pass a question you are not ready to answer, and corrections remain traceable.</p>
+              <label className="consent-row">
+                <Checkbox checked={consent} onCheckedChange={(checked) => setConsent(checked === true)} />
+                <span>I understand that my Lab responses will be stored as private behavioural evidence for this investigation.</span>
+              </label>
+              {error ? <p className="field-error">{error}</p> : null}
+              <Button size="lg" disabled={saving || !consent} onClick={() => void act({ action: "openLab", consent: true })}>
+                {saving ? "Opening…" : <>Open {snapshot.definition.identity.shortTitle} <ArrowRight /></>}
+              </Button>
+            </div>
+          </section>
+        </main>
+      </EditionLanguageScope>
     );
   }
 
