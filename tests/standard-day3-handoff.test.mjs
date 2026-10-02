@@ -43,7 +43,8 @@ test("live Decision and Money Labs are available to the standard Day 3 handover"
   assert.equal(byCode.MON.labHref, "/money");
   assert.equal(byCode.IDN.labStatus, "source_ready");
   assert.equal(byCode.ATT.labStatus, "source_ready");
-  assert.equal(raw.modules.filter((item) => item.labStatus === "source_ready").length, 31);
+  assert.equal(raw.modules.filter((item) => item.labStatus === "source_ready").length, 30);
+  assert.equal(byCode.FAI.labStatus, "planned");
 });
 
 test("live core Labs preserve a safe return path back to Day 3 learning", async () => {
