@@ -207,3 +207,46 @@ test("Markdown Lab imports reconstruct serialized authored tables before manufac
     await rm(temp, { recursive: true, force: true });
   }
 });
+
+
+test("Leadership-style daily trackers are manufactured as calendar-ready evidence prompts", async () => {
+  const tsSource = await source("lib/content-source-adapters.ts");
+  const compiled = ts.transpileModule(tsSource, {
+    compilerOptions: {
+      target: ts.ScriptTarget.ES2022,
+      module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.Bundler,
+      verbatimModuleSyntax: false,
+    },
+  }).outputText;
+
+  const temp = await mkdtemp(join(tmpdir(), "bis-leadership-tracker-"));
+  try {
+    const adapterPath = join(temp, "content-source-adapters.mjs");
+    const capabilitiesPath = join(temp, "lab-factory-capabilities.mjs");
+    await writeFile(adapterPath, compiled, "utf8");
+    await writeFile(capabilitiesPath, await source("lib/lab-factory-capabilities.mjs"), "utf8");
+
+    const adapter = await import(pathToFileURL(adapterPath).href + "?v=" + Date.now());
+    const markdown = riskFactoryMarkdown()
+      .replace("**Action I Took**", "**Moment I Noticed**")
+      .replace("**Did I take action?**", "**Did I act?**");
+    const adapted = await adapter.adaptLabSource(
+      new TextEncoder().encode(markdown),
+      "MARKDOWN",
+      "LDR",
+      "3.0",
+      { title: "Leadership Lab™", slug: "leadership" },
+    );
+    const lab = JSON.parse(new TextDecoder().decode(adapted));
+    const tracking = lab.investigations[6].prompts;
+
+    assert.equal(tracking.filter((prompt) => prompt.group === "Day 1").length, 4);
+    assert.equal(tracking.filter((prompt) => prompt.group === "Day 2").length, 4);
+    assert.ok(tracking.some((prompt) => prompt.label === "Day 1 evidence" && /Moment I Noticed/.test(prompt.prompt)));
+    assert.ok(tracking.some((prompt) => prompt.label === "Day 1 action check" && prompt.type === "BOOLEAN"));
+    assert.ok(tracking.some((prompt) => prompt.label === "Day 1 notes" && prompt.required === false));
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
