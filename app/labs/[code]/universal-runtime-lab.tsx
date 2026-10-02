@@ -444,6 +444,7 @@ function UniversalInvestigationForm({
   act,
   onAdvance,
   previewMode = false,
+  returnToProgramme = false,
 }: {
   snapshot: Snapshot;
   investigation: UniversalLabPackage["investigations"][number];
@@ -453,6 +454,7 @@ function UniversalInvestigationForm({
   act: (payload: Record<string, unknown>) => Promise<Snapshot | null>;
   onAdvance: (saved: Snapshot, step: number) => void;
   previewMode?: boolean;
+  returnToProgramme?: boolean;
 }) {
   const [values, setValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(investigation.prompts.map((prompt) => [prompt.id, valueOf(snapshot, prompt.id)])),
@@ -653,7 +655,7 @@ function UniversalInvestigationForm({
               {saving
                 ? "Saving…"
                 : snapshot.definition.runtimeProfile === "UNIVERSAL_V2" && step === snapshot.definition.experiment?.investigation
-                  ? programmeReturnTo
+                  ? returnToProgramme
                     ? <>Save today’s evidence & return <ArrowRight /></>
                     : snapshot.experimentTiming?.reviewReady
                       ? <>Save and continue to review <ArrowRight /></>
@@ -911,6 +913,7 @@ export function UniversalRuntimeLab({
         error={error}
         act={act}
         previewMode={previewMode}
+        returnToProgramme={Boolean(programmeReturnTo)}
         onAdvance={(saved, requested) => {
           const experimentStep =
             snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
