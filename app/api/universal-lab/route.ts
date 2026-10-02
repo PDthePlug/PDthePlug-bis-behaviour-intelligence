@@ -80,7 +80,7 @@ function requiredFor(
     if (definition.experiment?.investigation === investigation) {
       return active?.prompts
         .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
-        .filter((prompt) => !prompt.scheduleDay || Number(prompt.scheduleDay) === availableExperimentDay)
+        .filter((prompt) => Boolean(prompt.scheduleDay) && Number(prompt.scheduleDay) === availableExperimentDay)
         .map((prompt) => prompt.id) ?? [];
     }
     return v2RequiredPromptIds(definition, investigation, availableExperimentDay);
@@ -443,10 +443,9 @@ async function postHandler(request: Request) {
         prompt.investigation === investigation
         && prompt.readOnly !== true
         && (
-          !prompt.scheduleDay
-          || (isExperimentSave
-            ? Number(prompt.scheduleDay) === availableExperimentDay
-            : Number(prompt.scheduleDay) <= availableExperimentDay)
+          isExperimentSave
+            ? Boolean(prompt.scheduleDay) && Number(prompt.scheduleDay) === availableExperimentDay
+            : !prompt.scheduleDay || Number(prompt.scheduleDay) <= availableExperimentDay
         ),
       ));
       const ids = new Set<string>();
@@ -615,7 +614,6 @@ async function postHandler(request: Request) {
               !(
                 runtime.definition.runtimeProfile === "UNIVERSAL_V2"
                 && investigation.number === runtime.definition.experiment?.investigation
-                && prompt.scheduleDay
               ),
             )
             .map((prompt) => prompt.id),
