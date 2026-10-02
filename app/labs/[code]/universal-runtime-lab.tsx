@@ -234,6 +234,54 @@ function isScaffoldPrompt(prompt: UniversalLabPrompt) {
   return /\.SCAFFOLD\./.test(String(prompt.id));
 }
 
+function isEvidenceEpisodePair(first: UniversalLabPrompt, second: UniversalLabPrompt) {
+  const firstLabel = first.label.trim().toLowerCase();
+  const secondLabel = second.label.trim().toLowerCase();
+  return (
+    /^(?:what i said|the question i asked|the question i asked \(or should have asked\)|the question i should have asked)$/.test(firstLabel)
+    && /^what happened next$/.test(secondLabel)
+  );
+}
+
+function UniversalEvidenceEpisode({
+  prompts,
+  values,
+  passed,
+  onValue,
+  onPass,
+}: {
+  prompts: [UniversalLabPrompt, UniversalLabPrompt];
+  values: Record<string, string>;
+  passed: Set<string>;
+  onValue: (promptId: string, value: string) => void;
+  onPass: (promptId: string, value: boolean) => void;
+}) {
+  return (
+    <section className="universal-evidence-episode">
+      {prompts.map((prompt) => {
+        const isPassed = passed.has(prompt.id);
+        return (
+          <div className={`universal-evidence-episode-field ${isPassed ? "passed" : ""}`} key={prompt.id}>
+            <label htmlFor={`episode-${prompt.id}`}>{prompt.label}</label>
+            <Textarea
+              id={`episode-${prompt.id}`}
+              rows={3}
+              disabled={isPassed}
+              value={values[prompt.id] ?? ""}
+              placeholder={prompt.placeholder ?? "Write your response…"}
+              onChange={(event) => onValue(prompt.id, event.target.value)}
+            />
+            <label className="universal-collection-pass">
+              <Checkbox checked={isPassed} onCheckedChange={(checked) => onPass(prompt.id, checked === true)} />
+              <span>Prefer not to answer</span>
+            </label>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
 function UniversalPromptCollection({
   prompts,
   values,
@@ -828,6 +876,26 @@ function UniversalInvestigationForm({
 
       const prompt = promptById.get(block.promptId);
       if (!prompt) continue;
+
+      const nextPromptBlock = blocks[index + 1];
+      const nextPrompt =
+        nextPromptBlock?.type === "PROMPT"
+          ? promptById.get(nextPromptBlock.promptId)
+          : undefined;
+      if (nextPrompt && isEvidenceEpisodePair(prompt, nextPrompt)) {
+        nodes.push(
+          <UniversalEvidenceEpisode
+            key={`evidence-episode-${index}`}
+            prompts={[prompt, nextPrompt]}
+            values={values}
+            passed={passed}
+            onValue={updatePromptValue}
+            onPass={updatePromptPass}
+          />,
+        );
+        index += 1;
+        continue;
+      }
 
       if (isScaffoldPrompt(prompt)) {
         const group = prompt.group || "";
