@@ -156,3 +156,25 @@ test("Lab entry routes preserve the programme return path even when sign-in is r
     assert.match(route, /requireUser\(next\)/);
   }
 });
+
+
+test("Programme Player discovers active source-backed Universal Labs without bespoke catalogue wiring", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+
+  assert.match(player, /\/api\/universal-lab\?lab=/);
+  assert.match(player, /programmeHandoff: universal\.programmeHandoff/);
+  assert.match(player, /const universalLabHref = moduleRuntime\?\.programmeHandoff/);
+  assert.match(player, /const resolvedLabHref = moduleDefinition\?\.labHref \?\? universalLabHref/);
+  assert.match(player, /labHrefWithReturn\(resolvedLabHref, learningReturnTo\)/);
+});
+
+test("Programme experiment status is authored-window aware instead of assuming seven days", async () => {
+  const player = await source("app/learning/programme-player.tsx");
+
+  assert.match(player, /const experimentTotalDays = programmeHandoff\?\.totalDays \|\| 7/);
+  assert.match(player, /const experimentRecordedDays =/);
+  assert.match(player, /programmeHandoff\?\.evidenceDaysRecorded/);
+  assert.match(player, /Experiment Day \{experimentDay\} of \{experimentTotalDays\}/);
+  assert.match(player, /\{experimentRecordedDays\}\/\{experimentTotalDays\} observation days recorded/);
+  assert.doesNotMatch(player, /activeModuleRuntime\.events\.length\}\/7 observation days recorded/);
+});
