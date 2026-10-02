@@ -75,6 +75,13 @@ function requiredFor(
       .map((prompt) => prompt.id);
   }
   if (definition.runtimeProfile === "UNIVERSAL_V2") {
+    const active = definition.investigations[investigation - 1];
+    if (definition.experiment?.investigation === investigation) {
+      return active?.prompts
+        .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
+        .filter((prompt) => !prompt.scheduleDay || Number(prompt.scheduleDay) === availableExperimentDay)
+        .map((prompt) => prompt.id) ?? [];
+    }
     return v2RequiredPromptIds(definition, investigation, availableExperimentDay);
   }
   return definition.investigations[investigation - 1]?.prompts
@@ -418,10 +425,18 @@ async function postHandler(request: Request) {
         throw new Error("The real-world experiment begins after Phase A is complete.");
       }
 
+      const isExperimentSave =
+        runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+        && investigation === runtime.definition.experiment?.investigation;
       const allowed = new Map([...registry].filter(([, prompt]) =>
         prompt.investigation === investigation
         && prompt.readOnly !== true
-        && (!prompt.scheduleDay || prompt.scheduleDay <= availableExperimentDay),
+        && (
+          !prompt.scheduleDay
+          || (isExperimentSave
+            ? Number(prompt.scheduleDay) === availableExperimentDay
+            : Number(prompt.scheduleDay) <= availableExperimentDay)
+        ),
       ));
       const ids = new Set<string>();
       for (const raw of items) {
@@ -541,13 +556,13 @@ async function postHandler(request: Request) {
       ) {
         const afterSave = await snapshot(identity.id, code);
         const timing = afterSave.experimentTiming;
-        const allExperimentIds = v2RequiredPromptIds(
+        const todayIds = requiredFor(
           runtime.definition,
           investigation,
-          runtime.definition.experiment.days,
+          availableExperimentDay,
         );
-        const allRecorded = allExperimentIds.every((id) => Boolean(afterSave.responses[id]));
-        nextInvestigation = timing?.reviewReady && allRecorded
+        const todayRecorded = todayIds.every((id) => Boolean(afterSave.responses[id]));
+        nextInvestigation = timing?.reviewReady && todayRecorded
           ? runtime.definition.experiment.reviewInvestigation
           : runtime.definition.experiment.investigation;
       }
@@ -585,6 +600,13 @@ async function postHandler(request: Request) {
         ...runtime.definition.investigations.flatMap((investigation) =>
           investigation.prompts
             .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
+            .filter((prompt) =>
+              !(
+                runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+                && investigation.number === runtime.definition.experiment?.investigation
+                && prompt.scheduleDay
+              ),
+            )
             .map((prompt) => prompt.id),
         ),
       ];
