@@ -113,7 +113,7 @@ export async function POST(request: Request) {
           normalizationNotes: compiled.normalizationNotes ?? [],
           investigationCount: compiled.investigations?.length ?? 0,
           promptCount: compiled.investigations?.reduce((sum, item) => sum + (item.prompts?.length ?? 0), 0) ?? 0,
-          stageStatus: stage ? "PENDING" as const : "NOT_REQUESTED" as const,
+          stageStatus: (stage ? "PENDING" : "NOT_REQUESTED") as "PENDING" | "NOT_REQUESTED" | "STAGED",
         };
 
         if (stage) {
