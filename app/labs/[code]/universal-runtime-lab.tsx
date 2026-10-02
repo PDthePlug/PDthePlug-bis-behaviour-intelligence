@@ -204,7 +204,32 @@ function UniversalEvidenceTable({
                   }
                   const prompt = promptById.get(cell.promptId);
                   if (!prompt) return <td key={columnIndex} data-label={header} />;
+
+                  if (cell.kind === "CHOICE") {
+                    const selected = values[prompt.id] === cell.value;
+                    return (
+                      <td key={columnIndex} data-label={header} className="universal-table-choice">
+                        <button
+                          type="button"
+                          className={selected ? "selected" : ""}
+                          role="radio"
+                          aria-checked={selected}
+                          aria-label={`${prompt.prompt}: ${cell.value}`}
+                          onClick={() => onValue(prompt.id, cell.value)}
+                        >
+                          <span aria-hidden="true">{selected ? "●" : "○"}</span>
+                          <span className="universal-table-choice-label">{cell.value}</span>
+                        </button>
+                      </td>
+                    );
+                  }
+
                   const isPassed = passed.has(prompt.id);
+                  const categoricalOptions = prompt.type === "BOOLEAN"
+                    ? ["Yes", "No"]
+                    : prompt.type === "CATEGORICAL"
+                      ? (prompt.options ?? [])
+                      : [];
                   return (
                     <td key={columnIndex} data-label={header} className={`universal-table-response ${isPassed ? "passed" : ""}`}>
                       <label className="universal-table-field">
@@ -218,6 +243,15 @@ function UniversalEvidenceTable({
                             onChange={(event) => onValue(prompt.id, event.target.value)}
                             aria-label={prompt.prompt}
                           />
+                        ) : categoricalOptions.length ? (
+                          <Select value={values[prompt.id] ?? ""} onValueChange={(value) => onValue(prompt.id, value)}>
+                            <SelectTrigger aria-label={prompt.prompt}><SelectValue placeholder="Choose" /></SelectTrigger>
+                            <SelectContent>
+                              {categoricalOptions.map((option) => (
+                                <SelectItem key={option} value={option}>{option}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         ) : (
                           <Textarea
                             rows={2}
@@ -443,7 +477,7 @@ function UniversalInvestigationForm({
       if (block.type === "PROMPT") return [block.promptId];
       if (block.type === "TABLE") {
         return block.rows.flatMap((row) =>
-          row.flatMap((cell) => cell.kind === "PROMPT" ? [cell.promptId] : []),
+          row.flatMap((cell) => cell.kind === "PROMPT" || cell.kind === "CHOICE" ? [cell.promptId] : []),
         );
       }
       return [];
@@ -748,7 +782,12 @@ export function UniversalRuntimeLab({
             <div className="universal-welcome-copy">
               <p className="eyebrow">Applied Commerce® · Behaviour Intelligence Series™</p>
               <h1>{snapshot.definition.identity.title}</h1>
-              <p>{snapshot.definition.identity.focus ?? "A private behavioural investigation."}</p>
+              <p>{
+                snapshot.definition.identity.focus
+                  && !/source workbook|private behavioural investigation/i.test(snapshot.definition.identity.focus)
+                  ? snapshot.definition.identity.focus
+                  : "Investigate a real pattern, test what you think is happening, and build evidence from your own life."
+              }</p>
               <div className="universal-welcome-meta">
                 <span><strong>9</strong> investigations</span>
                 <span><strong>1</strong> evidence trail</span>
@@ -759,10 +798,10 @@ export function UniversalRuntimeLab({
               <FlaskConical />
               <p className="eyebrow">Before you begin</p>
               <h2>Start with private evidence.</h2>
-              <p>This Lab follows the same nine-investigation BIS method as Habit Lab. You may pass a question you are not ready to answer, and corrections remain traceable.</p>
+              <p>You will move through nine investigations: notice a pattern, form a working explanation, test it in real life, and review what the evidence actually shows. You may pass any question you are not ready to answer.</p>
               <label className="consent-row">
                 <Checkbox checked={consent} onCheckedChange={(checked) => setConsent(checked === true)} />
-                <span>I understand that my Lab responses will be stored as private behavioural evidence for this investigation.</span>
+                <span>I understand that my responses are private and will be used to build my evidence record for this Lab.</span>
               </label>
               {error ? <p className="field-error">{error}</p> : null}
               <Button size="lg" disabled={saving || !consent} onClick={() => void act({ action: "openLab", consent: true })}>
@@ -812,7 +851,9 @@ export function UniversalRuntimeLab({
           const params = new URLSearchParams(searchParams.toString());
           params.set("step", String(target));
           router.push(`${pathname}?${params.toString()}`, { scroll: false });
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          requestAnimationFrame(() => {
+            document.getElementById("bis-task-surface")?.scrollIntoView({ block: "start", behavior: "smooth" });
+          });
         }}
       />
     </LabInvestigationFrame></EditionLanguageScope>
