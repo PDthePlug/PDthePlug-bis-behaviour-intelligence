@@ -506,10 +506,13 @@ function UniversalInvestigationForm({
     ? null
     : availableExperimentDay;
   const visiblePrompts = investigation.prompts.filter((prompt) => {
-    if (!prompt.scheduleDay) return true;
     if (previewMode) return true;
-    if (!isExperimentInvestigation) return Number(prompt.scheduleDay) <= availableExperimentDay;
-    return Number(prompt.scheduleDay) === activeExperimentDay;
+    if (isExperimentInvestigation) {
+      if (!prompt.scheduleDay) return prompt.readOnly === true;
+      return Number(prompt.scheduleDay) === activeExperimentDay;
+    }
+    if (!prompt.scheduleDay) return true;
+    return Number(prompt.scheduleDay) <= availableExperimentDay;
   });
   const ready = useMemo(
     () => visiblePrompts.every((prompt) => {
@@ -575,14 +578,11 @@ function UniversalInvestigationForm({
     return next;
   });
   const renderPrompt = (prompt: UniversalLabPrompt) => {
-    if (prompt.scheduleDay) {
-      if (previewMode) {
-        // Preview intentionally shows the whole experiment.
-      } else if (isExperimentInvestigation && Number(prompt.scheduleDay) !== activeExperimentDay) {
-        return null;
-      } else if (!isExperimentInvestigation && Number(prompt.scheduleDay) > availableExperimentDay) {
-        return null;
-      }
+    if (!previewMode && isExperimentInvestigation) {
+      if (!prompt.scheduleDay && prompt.readOnly !== true) return null;
+      if (prompt.scheduleDay && Number(prompt.scheduleDay) !== activeExperimentDay) return null;
+    } else if (!previewMode && prompt.scheduleDay && Number(prompt.scheduleDay) > availableExperimentDay) {
+      return null;
     }
     return (
       <UniversalPrompt
@@ -611,7 +611,7 @@ function UniversalInvestigationForm({
               ? "Preview mode shows the complete experiment structure."
               : snapshot.experimentTiming?.reviewReady
                 ? "This is the final experiment day. Record today’s evidence to continue to review."
-                : "Only today’s evidence is open. Tomorrow’s evidence unlocks when tomorrow arrives."}
+                : "Only today’s evidence is open. Earlier missing days stay recorded as missing; tomorrow opens on its own calendar day."}
           </p>
         </section>
       ) : null}
