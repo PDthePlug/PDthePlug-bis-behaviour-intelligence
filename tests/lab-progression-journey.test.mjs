@@ -154,3 +154,36 @@ test("Habit, core and Universal Lab APIs expose one programme handoff contract",
   assert.match(player, /programmeHandoff\?\.totalDays/);
   assert.match(player, /programmeHandoff\?\.evidenceDaysRecorded/);
 });
+
+
+test("Universal Investigation 7 requires only the current calendar day's scheduled evidence", async () => {
+  const [api, client] = await Promise.all([
+    source("app/api/universal-lab/route.ts"),
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+  ]);
+
+  assert.match(
+    api,
+    /Boolean\(prompt\.scheduleDay\) && Number\(prompt\.scheduleDay\) === availableExperimentDay/,
+  );
+  assert.match(
+    client,
+    /if \(!prompt\.scheduleDay\) return prompt\.readOnly === true;/,
+  );
+  assert.match(
+    client,
+    /if \(!prompt\.scheduleDay && prompt\.readOnly !== true\) return null;/,
+  );
+  assert.doesNotMatch(
+    api,
+    /!prompt\.scheduleDay \|\| Number\(prompt\.scheduleDay\) === availableExperimentDay/,
+  );
+});
+
+test("Universal Lab completion does not resurrect unscheduled Investigation 7 workbook fields", async () => {
+  const api = await source("app/api/universal-lab/route.ts");
+  assert.match(
+    api,
+    /runtime\.definition\.runtimeProfile === "UNIVERSAL_V2"[\s\S]*investigation\.number === runtime\.definition\.experiment\?\.investigation/,
+  );
+});
