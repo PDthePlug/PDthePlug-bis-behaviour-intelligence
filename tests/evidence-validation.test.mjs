@@ -28,6 +28,12 @@ test("South African midnight unlocks only the local calendar day", () => {
   assert.equal(getExperimentTiming(experiment, [{ dayNumber: 7 }], after).canClose, false);
 });
 
+test("todayInZone accepts an explicit timezone without treating it as the date value", () => {
+  const instant = new Date("2026-10-02T17:00:00Z");
+  assert.equal(todayInZone(instant, "Africa/Johannesburg"), "2026-10-02");
+  assert.doesNotThrow(() => todayInZone("Africa/Johannesburg"));
+});
+
 test("dynamic responses respect typed controls, required fields and the right to pass", () => {
   const rating = { type: "INTEGER", min: 1, max: 5 };
   assert.equal(validPromptResponse(rating, "3"), true);
