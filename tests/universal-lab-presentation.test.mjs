@@ -296,14 +296,16 @@ test("learner frame shows the canonical nine-stage journey without internal faci
   assert.doesNotMatch(frame, />□ \{output\}</);
 });
 
-test("BIS menu lives in the top app bar and no longer overlays evidence", async () => {
+test("Lab keeps top-bar context and restores the centre Menu without adding it to Learn", async () => {
   const [shell, css] = await Promise.all([
     source("app/canonical-adaptive-shell.tsx"),
     source("app/canonical-shell.css"),
   ]);
   assert.match(shell, /className="canonical-topbar-menu"/);
-  assert.doesNotMatch(shell, /className="canonical-menu-trigger"/);
-  assert.match(css, /\.canonical-menu-trigger\{display:none!important\}/);
+  assert.match(shell, /stage === "lab"/);
+  assert.match(shell, /className="canonical-menu-trigger"/);
+  assert.match(css, /canonical-shell\[data-stage="lab"\] \.canonical-menu-trigger\{display:flex!important\}/);
+  assert.match(css, /canonical-shell:not\(\[data-stage="lab"\]\) \.canonical-menu-trigger\{display:none!important\}/);
 });
 
 test("Volume 3 TEI codes are first-class evidence indicators", async () => {
@@ -466,4 +468,67 @@ test("server and learner client share the same runtime presentation normalizer",
   assert.match(api, /prepareUniversalLabPresentation/);
   assert.match(runtime, /prepareUniversalLabPresentation/);
   assert.match(presentation, /applyHabitLabStandard/);
+});
+
+test("each investigation is one Learn-style document instead of a stack of cards", async () => {
+  const [frame, css] = await Promise.all([
+    source("app/lab-investigation-frame.tsx"),
+    source("app/lab-investigation-frame.css"),
+  ]);
+  assert.match(frame, /className="universal-lab-document"/);
+  assert.match(frame, /className="universal-lab-document-body"/);
+  assert.match(frame, /id="lab-investigation-start"/);
+  assert.match(css, /BIS Laboratory Reader v4/);
+  assert.match(css, /\.universal-lab-document\{/);
+  assert.match(css, /\.universal-package-lab \.universal-prompt\{/);
+  assert.match(css, /border-top:1px solid #e2e6e3!important/);
+  assert.match(css, /background:transparent!important/);
+});
+
+test("passed questions keep their input visible and use compact skip language", async () => {
+  const runtime = await source("app/labs/[code]/universal-runtime-lab.tsx");
+  assert.match(runtime, /prompt-controls/);
+  assert.match(runtime, /is-passed/);
+  assert.match(runtime, /Skipped for now\. Start typing or choose an answer to respond\./);
+  assert.doesNotMatch(runtime, /You chose not to answer this question/);
+});
+
+test("save validation appears only after the learner tries to continue", async () => {
+  const runtime = await source("app/labs/[code]/universal-runtime-lab.tsx");
+  assert.match(runtime, /const \[attemptedSubmit, setAttemptedSubmit\] = useState\(false\)/);
+  assert.match(runtime, /attemptedSubmit && !ready/);
+  assert.match(runtime, /if \(!guardSave\(\)\) return/);
+  assert.doesNotMatch(runtime, /Saved as private, traceable evidence/);
+});
+
+test("authored mapping activities are not duplicated by a generic generated Draw prompt", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [{
+    id: "IDN.I4.MAP",
+    label: "My Identity Map",
+    prompt: "What belongs on your identity map?",
+    type: "TEXT",
+    required: true,
+    origin: "SOURCE",
+  }];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    {
+      type: "HTML",
+      html: "<p>Step 1: Draw Your Identity Map</p><p>Draw yourself in the centre. Around you, draw circles for family, friends and school.</p>",
+    },
+    { type: "PROMPT", promptId: "IDN.I4.MAP" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  assert.equal(
+    investigation.prompts.filter((prompt) => String(prompt.id).includes(".ACTION.")).length,
+    0,
+  );
+  assert.equal(
+    investigation.prompts.filter((prompt) => prompt.label === "My Identity Map").length,
+    1,
+  );
 });
