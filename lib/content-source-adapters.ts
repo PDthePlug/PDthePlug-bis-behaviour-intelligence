@@ -2,6 +2,7 @@ import { inflateRawSync, inflateSync } from "node:zlib";
 import type { ContentSourceFormat } from "./content-studio";
 import type { DeliveryEdition } from "./learning-foundation";
 import { inspectLabSourceCapabilities } from "./lab-factory-capabilities.mjs";
+import bisVolumeMigrationManifest from "./bis-volume-migration-manifest.json";
 
 type AdaptMetadata = {
   title: string;
@@ -2122,6 +2123,197 @@ function labPackageFromBlocks(
     factoryCapabilities: inspectLabSourceCapabilities(sourceText),
     investigations,
   }));
+}
+
+
+type BisVolumeMigrationEntry = (typeof bisVolumeMigrationManifest.entries)[number];
+
+export type AdaptedBisVolumeLab = {
+  code: string;
+  title: string;
+  slug: string;
+  sourceVolume: number;
+  sourceProductNumber: number;
+  sourcePosition: number;
+  canonicalPosition: number;
+  detectedLearnerCopies: number;
+  expectedLearnerCopies: number;
+  warnings: string[];
+  packageBytes: Uint8Array;
+};
+
+function normalizedLabHeading(value: string) {
+  return value
+    .replace(/[™®]/g, "")
+    .replace(/[–—]/g, "-")
+    .replace(/[^a-z0-9]+/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function hasNearbyProductClassification(
+  blocks: SourceBlock[],
+  start: number,
+  sourceProductNumber: number,
+) {
+  const window = blocks.slice(start, Math.min(blocks.length, start + 14));
+  return window.some((block) =>
+    new RegExp("commercial\\s+product\\s*#\\s*" + sourceProductNumber + "\\b", "i").test(block.text)
+  );
+}
+
+function volumeLearnerHeadingMatches(
+  blocks: SourceBlock[],
+  index: number,
+  entry: BisVolumeMigrationEntry,
+) {
+  const block = blocks[index];
+  if (!block?.heading) return false;
+  const text = normalizedLabHeading(block.text);
+  const title = normalizedLabHeading(entry.title);
+  const stem = normalizedLabHeading(entry.titleStem);
+  if (!text.includes(stem)) return false;
+  if (!hasNearbyProductClassification(blocks, index, entry.sourceProductNumber)) return false;
+
+  if (entry.volume === 1) {
+    return text === title;
+  }
+  if (entry.volume === 2) {
+    return text.includes("production architecture")
+      && !text.includes("facilitator guide");
+  }
+  return text.includes("learner workbook")
+    && !text.includes("teacher")
+    && !text.includes("facilitator");
+}
+
+function learnerStartsForEntry(blocks: SourceBlock[], entry: BisVolumeMigrationEntry) {
+  const starts: number[] = [];
+  for (let index = 0; index < blocks.length; index += 1) {
+    if (volumeLearnerHeadingMatches(blocks, index, entry)) starts.push(index);
+  }
+  return starts;
+}
+
+function packageWithMigrationTrace(
+  packageBytes: Uint8Array,
+  entry: BisVolumeMigrationEntry,
+  detectedLearnerCopies: number,
+  warnings: string[],
+) {
+  const payload = JSON.parse(new TextDecoder().decode(packageBytes)) as Record<string, unknown>;
+  payload.sourceMigration = {
+    corpus: "BIS volumes supplied by the user",
+    sourceVolume: entry.volume,
+    sourcePosition: entry.sourcePosition,
+    canonicalPosition: entry.canonicalPosition,
+    sourceProductNumber: entry.sourceProductNumber,
+    sourceInvestigation2: entry.sourceInvestigation2,
+    canonicalInvestigation2: entry.canonicalInvestigation2,
+    detectedLearnerCopies,
+    expectedLearnerCopies: entry.expectedLearnerCopies,
+    selectedLearnerCopy: 1,
+    duplicateCopyPolicy: "FIRST_COMPLETE_LEARNER_COPY",
+    experimentDays: entry.experimentDays,
+    transferSubstage: entry.transferSubstage,
+    warnings,
+  };
+  if (entry.transferSubstage) {
+    payload.normalizationNotes = [
+      {
+        code: "TRANSFER_SUBSTAGE_FOLDED",
+        sourceInvestigation: entry.transferSubstage,
+        targetInvestigation: 8,
+        message: "Source Investigation 8.5 — Transfer Test remains inside Investigation 8 during volume extraction so the canonical digital Lab keeps nine investigations.",
+      },
+    ];
+  }
+  return new TextEncoder().encode(JSON.stringify(payload));
+}
+
+export async function adaptBisVolumeSource(
+  bytes: Uint8Array,
+  volume: 1 | 2 | 3,
+  version: string,
+): Promise<AdaptedBisVolumeLab[]> {
+  const blocks = docxBlocks(bytes);
+  const entries = bisVolumeMigrationManifest.entries
+    .filter((entry) => entry.volume === volume)
+    .sort((left, right) => left.sourcePosition - right.sourcePosition);
+
+  if (!entries.length) throw new Error("No BIS migration entries are registered for Volume " + volume + ".");
+
+  const detections = entries.map((entry) => ({
+    entry,
+    starts: learnerStartsForEntry(blocks, entry),
+  }));
+
+  const missing = detections.filter((item) => item.starts.length === 0);
+  if (missing.length) {
+    throw new Error(
+      "Volume " + volume + " is missing learner source boundaries for: "
+      + missing.map((item) => item.entry.code + " " + item.entry.title).join(", ")
+      + ". No Lab packages were produced.",
+    );
+  }
+
+  const everyStart = detections
+    .flatMap((item) => item.starts.map((index) => ({ index, code: item.entry.code })))
+    .sort((left, right) => left.index - right.index);
+
+  const results: AdaptedBisVolumeLab[] = [];
+  for (const { entry, starts } of detections) {
+    const selected = starts[0];
+    const next = everyStart.find((candidate) => candidate.index > selected);
+    const end = next?.index ?? blocks.length;
+    const labBlocks = blocks.slice(selected, end);
+    const warnings: string[] = [];
+
+    if (starts.length !== entry.expectedLearnerCopies) {
+      warnings.push(
+        `Expected ${entry.expectedLearnerCopies} learner source cop${entry.expectedLearnerCopies === 1 ? "y" : "ies"} but detected ${starts.length}.`,
+      );
+    }
+    if (starts.length > 1) {
+      warnings.push(
+        `Detected ${starts.length} complete learner copies. The first complete copy was selected; later duplicates remain source provenance only.`,
+      );
+    }
+    if (entry.sourceInvestigation2 !== entry.canonicalInvestigation2) {
+      warnings.push(
+        `Source Investigation 2 is "${entry.sourceInvestigation2}" while the current digital Habit standard uses "${entry.canonicalInvestigation2}". Editorial review is required before approval.`,
+      );
+    }
+    if (entry.transferSubstage) {
+      warnings.push(
+        `Source Investigation ${entry.transferSubstage} Transfer Test is retained inside canonical Investigation 8.`,
+      );
+    }
+
+    const raw = labPackageFromBlocks(
+      labBlocks,
+      entry.code,
+      version,
+      { title: entry.title, slug: entry.slug },
+      labBlocks.map((block) => block.text).join("\n"),
+    );
+    results.push({
+      code: entry.code,
+      title: entry.title,
+      slug: entry.slug,
+      sourceVolume: entry.volume,
+      sourceProductNumber: entry.sourceProductNumber,
+      sourcePosition: entry.sourcePosition,
+      canonicalPosition: entry.canonicalPosition,
+      detectedLearnerCopies: starts.length,
+      expectedLearnerCopies: entry.expectedLearnerCopies,
+      warnings,
+      packageBytes: packageWithMigrationTrace(raw, entry, starts.length, warnings),
+    });
+  }
+
+  return results;
 }
 
 export async function adaptLabSource(
