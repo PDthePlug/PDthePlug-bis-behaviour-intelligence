@@ -841,9 +841,11 @@ function UniversalInvestigationForm({
           collection.push(candidate);
           cursor += 1;
         }
-        const relatedLabels = /^for each\b/i.test(group) && previousCollection
-          ? previousCollection.map((item) => values[item.id] ?? "")
-          : undefined;
+        const relatedLabels =
+          previousCollection
+          && (/^for each\b/i.test(group) || /^how i lead\b/i.test(group))
+            ? previousCollection.map((item) => values[item.id] ?? "")
+            : undefined;
         nodes.push(
           <UniversalPromptCollection
             key={`collection-${group}-${index}`}
