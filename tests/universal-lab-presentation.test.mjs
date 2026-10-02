@@ -534,7 +534,7 @@ test("authored mapping activities are not duplicated by a generic generated Draw
   );
 });
 
-test("workbook section labels keep hierarchy while authored blanks become real controls", () => {
+test("workbook section labels keep hierarchy while sentence blanks stay inside the sentence as controls", () => {
   const sourceFixture = fixture();
   const first = sourceFixture.investigations[0];
   first.blocks = [
@@ -560,13 +560,21 @@ test("workbook section labels keep hierarchy while authored blanks become real c
     .filter((block) => block.type === "HTML")
     .map((block) => block.html)
     .join("");
+  const inline = investigation.blocks.find((block) => block.type === "INLINE");
 
   assert.ok((html.match(/bis-digital-section-heading/g) ?? []).length >= 5);
   assert.match(html, /bis-digital-instruction-panel/);
-  assert.match(html, /_{3,}/, "authored commitment wording must not be silently rewritten away");
-  assert.ok(
-    investigation.prompts.some((prompt) => /commit to observing my identity for 7 days/i.test(prompt.prompt)),
-    "the commitment sentence must also have a real digital response control",
+  assert.ok(inline, "the commitment sentence should be represented as an inline interaction block");
+  const inlineIds = inline.segments.filter((segment) => segment.kind === "PROMPT").map((segment) => segment.promptId);
+  assert.equal(inlineIds.length, 3);
+  assert.deepEqual(
+    inlineIds.map((id) => investigation.prompts.find((prompt) => prompt.id === id)?.label),
+    ["Name", "Start date", "End date"],
+  );
+  assert.equal(
+    investigation.prompts.some((prompt) => /commit to observing my identity for 7 days/i.test(prompt.label)),
+    false,
+    "the sentence must not be duplicated as a giant standalone textarea",
   );
   assert.ok(
     investigation.prompts.some((prompt) => prompt.label === "Today’s Insight"),
@@ -767,6 +775,75 @@ test("published workbook response stems become real controls even when the inves
   assert.doesNotMatch(universalHtmlText(html), /Leader I admire/);
 });
 
+
+
+test("presentation normalization is idempotent so server and client enforce the same prompt schema", () => {
+  const once = prepareUniversalLabPresentation(fixture());
+  const twice = prepareUniversalLabPresentation(once);
+  assert.strictEqual(twice, once);
+  assert.ok(once.presentationVersion);
+  assert.deepEqual(
+    twice.investigations.map((investigation) => investigation.prompts.map((prompt) => prompt.id)),
+    once.investigations.map((investigation) => investigation.prompts.map((prompt) => prompt.id)),
+  );
+});
+
+test("Pause and Ask yourself reflection becomes a required learner response", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.blocks.push(
+    { type: "HTML", html: "<p>Close the workbook.</p>" },
+    { type: "HTML", html: "<p>Take 30 seconds.</p>" },
+    { type: "HTML", html: "<p>Ask yourself:</p>" },
+    { type: "HTML", html: '<p>"What is one thing I now see that I did not see before?"</p>' },
+    { type: "HTML", html: "<p>Then continue.</p>" },
+  );
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const prompt = result.investigations[0].prompts.find((item) =>
+    /What is one thing I now see that I did not see before/i.test(item.label),
+  );
+  assert.ok(prompt);
+  assert.equal(prompt.required, true);
+  assert.equal(prompt.group, "Pause reflection");
+});
+
+test("legacy text confidence prompts recover their authored 1-to-10 measurement scale", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [{
+    id: "LDR.I5.CONFIDENCE",
+    label: "How confident are you that this equation explains your leadership pattern?",
+    prompt: "How confident are you that this equation explains your leadership pattern?",
+    type: "TEXT",
+    required: true,
+    origin: "SOURCE",
+  }];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    { type: "PROMPT", promptId: "LDR.I5.CONFIDENCE" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const prompt = result.investigations[0].prompts[0];
+  assert.equal(prompt.type, "INTEGER");
+  assert.equal(prompt.min, 1);
+  assert.equal(prompt.max, 10);
+});
+
+test("runtime groups numbered writing scaffolds and renders sentence blanks inline", async () => {
+  const [runtime, css] = await Promise.all([
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("app/lab-investigation-frame.css"),
+  ]);
+  assert.match(runtime, /UniversalPromptCollection/);
+  assert.match(runtime, /UniversalInlineResponse/);
+  assert.match(runtime, /relatedLabels/);
+  assert.match(runtime, /block\.visibility === "AFTER_EXPERIMENT"/);
+  assert.match(css, /\.universal-prompt-collection\{/);
+  assert.match(css, /\.universal-inline-response\{/);
+  assert.match(css, /\.universal-inline-input/);
+});
 
 test("already-published legacy daily trackers regain Day N scheduling without re-uploading the Lab", () => {
   const investigations = Array.from({ length: 9 }, (_, index) => ({
