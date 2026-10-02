@@ -1262,3 +1262,14 @@
     border-radius:16px!important;
   }
 }
+
+
+/* On phones, progress belongs to the investigation header rather than floating
+   through the middle of stories and evidence controls. */
+@media(max-width:820px){
+  .universal-lab-progress{
+    position:static;
+    top:auto;
+    z-index:auto;
+  }
+}
