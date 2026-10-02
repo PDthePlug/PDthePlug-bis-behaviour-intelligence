@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   evaluateUniversalComputed,
   universalComputedLeafInputs,
+  universalExperimentEvidenceProgress,
 } from "../lib/universal-lab-v2.mjs";
 
 const source = (path) => readFile(new URL("../" + path, import.meta.url), "utf8");
@@ -55,4 +56,84 @@ test("Universal V2 derived values persist as enrolment-scoped measurements with 
   assert.match(schema, /uq_measurement_user_enrolment_code/);
   assert.match(migration, /add column if not exists enrolment_id text/);
   assert.match(migration, /where enrolment_id is not null/);
+});
+
+
+test("Universal experiment progress counts completed calendar-day evidence without inventing event rows", () => {
+  const definition = {
+    experiment: {
+      investigation: 7,
+      startAfterInvestigation: 6,
+      days: 3,
+      reviewInvestigation: 8,
+      scheduledPromptIds: [
+        { day: 1, promptId: "TST.I7.D1.A" },
+        { day: 1, promptId: "TST.I7.D1.B" },
+        { day: 2, promptId: "TST.I7.D2.A" },
+        { day: 2, promptId: "TST.I7.D2.B" },
+        { day: 3, promptId: "TST.I7.D3.A" },
+      ],
+    },
+    investigations: [{
+      number: 7,
+      prompts: [
+        { id: "TST.I7.D1.A", required: true },
+        { id: "TST.I7.D1.B", required: true },
+        { id: "TST.I7.D2.A", required: true },
+        { id: "TST.I7.D2.B", required: true },
+        { id: "TST.I7.D3.A", required: true },
+      ],
+    }],
+  };
+
+  const progress = universalExperimentEvidenceProgress(definition, {
+    "TST.I7.D1.A": { status: "ANSWERED" },
+    "TST.I7.D1.B": { status: "PASS" },
+    "TST.I7.D2.A": { status: "ANSWERED" },
+  }, 2);
+
+  assert.deepEqual(progress, {
+    experimentStarted: true,
+    currentDay: 2,
+    totalDays: 3,
+    evidenceDaysRecorded: 1,
+    todayEvidenceRecorded: false,
+  });
+
+  const completedToday = universalExperimentEvidenceProgress(definition, {
+    "TST.I7.D1.A": { status: "ANSWERED" },
+    "TST.I7.D1.B": { status: "PASS" },
+    "TST.I7.D2.A": { status: "ANSWERED" },
+    "TST.I7.D2.B": { status: "ANSWERED" },
+  }, 2);
+
+  assert.equal(completedToday.evidenceDaysRecorded, 2);
+  assert.equal(completedToday.todayEvidenceRecorded, true);
+});
+
+test("Universal experiment progress supports authored windows longer than seven days", () => {
+  const scheduledPromptIds = Array.from({ length: 30 }, (_, index) => ({
+    day: index + 1,
+    promptId: `LCH.I7.DAY${index + 1}`,
+  }));
+  const prompts = scheduledPromptIds.map(({ promptId }) => ({ id: promptId, required: true }));
+  const responses = Object.fromEntries(
+    scheduledPromptIds.slice(0, 12).map(({ promptId }) => [promptId, { status: "ANSWERED" }]),
+  );
+
+  const progress = universalExperimentEvidenceProgress({
+    experiment: {
+      investigation: 7,
+      startAfterInvestigation: 6,
+      days: 30,
+      reviewInvestigation: 8,
+      scheduledPromptIds,
+    },
+    investigations: [{ number: 7, prompts }],
+  }, responses, 12);
+
+  assert.equal(progress.currentDay, 12);
+  assert.equal(progress.totalDays, 30);
+  assert.equal(progress.evidenceDaysRecorded, 12);
+  assert.equal(progress.todayEvidenceRecorded, true);
 });
