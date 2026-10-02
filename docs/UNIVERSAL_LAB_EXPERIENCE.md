@@ -33,9 +33,11 @@ Those differences are data/content differences. They must not create a new appli
 
 ## Current engines
 
-Habit preserves its established Habit evidence runtime and authored content. Decision and Money share the generic Core Lab evidence runtime. Both runtimes render active investigations through `LabInvestigationFrame`.
+Habit preserves its established Habit evidence runtime and authored content. Decision and Money share the generic Core Lab evidence runtime. Source-backed Labs prepared through Content Studio use the Universal Lab runtime; rich behavioural Labs are upgraded declaratively to Universal V2 for baselines, calendar-bound experiments, derived measures, evidence provenance and profile projection. All active investigations render through `LabInvestigationFrame`.
 
-This deliberately separates **evidence ownership** from **presentation ownership**. The universal frame does not merge evidence namespaces or rewrite Lab-specific calculations.
+This deliberately separates **evidence ownership** from **presentation ownership**. The universal frame does not merge evidence namespaces or rewrite Lab-specific calculations. Content differences live in compiled Lab data rather than route-specific learner applications.
+
+The shared editorial layer now also applies the Habit Lab standard during preparation/runtime: legacy Investigation 2 material is presented as the canonical Pattern stage, exact cross-stage question repeats can be suppressed with migration notes, low-information reflections can be removed when stronger evidence prompts already exist, and Volume 3 transfer material is folded into Evidence Review while preserving provenance.
 
 ## Adding a future Lab
 
