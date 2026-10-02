@@ -96,7 +96,7 @@ export async function POST(request: Request) {
           sourceMigration?: Record<string, unknown>;
           investigations?: Array<{ number?: number; title?: string; prompts?: unknown[] }>;
         };
-        labs.push({
+        const labResult = {
           code: draft.code,
           title: draft.title,
           slug: draft.slug,
@@ -106,14 +106,15 @@ export async function POST(request: Request) {
           detectedLearnerCopies: draft.detectedLearnerCopies,
           expectedLearnerCopies: draft.expectedLearnerCopies,
           sourceWarnings: draft.warnings,
-          compileStatus: "COMPILED",
+          compileStatus: "COMPILED" as const,
           standardVersion: compiled.standardVersion ?? null,
           editorialStatus: compiled.editorialAudit?.status ?? "REVIEW",
           editorialIssues: compiled.editorialAudit?.issues ?? [],
           normalizationNotes: compiled.normalizationNotes ?? [],
           investigationCount: compiled.investigations?.length ?? 0,
           promptCount: compiled.investigations?.reduce((sum, item) => sum + (item.prompts?.length ?? 0), 0) ?? 0,
-        });
+          stageStatus: stage ? "PENDING" as const : "NOT_REQUESTED" as const,
+        };
 
         if (stage) {
           const versionId = `content:lab:${draft.code}:1.0`;
@@ -217,7 +218,9 @@ export async function POST(request: Request) {
           }).where(eq(contentLibraryVersions.id, versionId));
 
           staged.push({ code: draft.code, versionId, storagePath });
+          labResult.stageStatus = "STAGED";
         }
+        labs.push(labResult);
       } catch (error) {
         labs.push({
           code: draft.code,
@@ -240,6 +243,7 @@ export async function POST(request: Request) {
           normalizationNotes: [],
           investigationCount: 0,
           promptCount: 0,
+          stageStatus: stage ? "FAILED" : "NOT_REQUESTED",
         });
       }
     }
@@ -254,6 +258,7 @@ export async function POST(request: Request) {
       editorialReviewLabs: labs.filter((lab) => lab.editorialStatus === "REVIEW").length,
       passLabs: labs.filter((lab) => lab.editorialStatus === "PASS").length,
       stagedLabs: staged.length,
+      stageRequested: stage,
       staged,
       labs,
     });
