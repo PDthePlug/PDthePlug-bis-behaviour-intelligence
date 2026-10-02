@@ -581,6 +581,14 @@ async function postHandler(request: Request) {
       if (version.validationStatus !== "VALID" || version.status !== "VALIDATED" || version.compilerStatus !== "COMPILED") {
         throw new Error("Prepare this version successfully before approval.");
       }
+      const [approvalItem] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
+      const approvalReport = parseJson(version.compilerReport, {}) as { editorialStatus?: string; editorialWarnings?: string[] };
+      if (approvalItem?.kind === "LAB" && approvalReport.editorialStatus !== "PASS") {
+        const detail = approvalReport.editorialWarnings?.[0];
+        throw new Error(detail
+          ? `Strengthen the Lab source before approval. ${detail}`
+          : "Strengthen the Lab source before approval. The editorial review must pass.");
+      }
       const [review] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
       if (!review || review.status !== "PASSED") {
         throw new Error("Complete the final preview check before approving this version.");
