@@ -394,13 +394,6 @@ function UniversalBaseline({
             ) : null}
 
             {error ? <p className="field-error">{error}</p> : null}
-      {attemptedSubmit && !ready ? (
-        <p className="universal-validation-note" role="alert">
-          {missingRequiredCount === 1
-            ? "One response still needs an answer or “Prefer not to answer”."
-            : `${missingRequiredCount} responses still need an answer or “Prefer not to answer”.`}
-        </p>
-      ) : null}
             <Button
               className="w-full"
               size="lg"
@@ -590,6 +583,13 @@ function UniversalInvestigationForm({
         ? investigation.prompts.filter((prompt) => !blockPromptIds.has(prompt.id)).map(renderPrompt)
         : null}
       {error ? <p className="field-error">{error}</p> : null}
+      {attemptedSubmit && !ready ? (
+        <p className="universal-validation-note" role="alert">
+          {missingRequiredCount === 1
+            ? "One response still needs an answer or “Prefer not to answer”."
+            : `${missingRequiredCount} responses still need an answer or “Prefer not to answer”.`}
+        </p>
+      ) : null}
       {snapshot.enrolment?.status === "COMPLETED" && step === 9 ? (
         <section className="corelab-certificate">
           <Check />
