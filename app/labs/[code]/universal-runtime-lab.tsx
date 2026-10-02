@@ -78,6 +78,7 @@ function UniversalPrompt({
     && prompt.group !== "BIS Laboratory Standard"
     && !/^(?:BEI|TEI)-\d{2}\b/i.test(prompt.group)
     && !/\bbaseline\b/i.test(prompt.group)
+    && !/^(?:investigate|evidence challenge|map your evidence|reflection|respond)$/i.test(prompt.group.trim())
       ? prompt.group
       : null;
   const categorical = prompt.type === "CATEGORICAL" && (prompt.options?.length ?? 0) > 0;
@@ -88,75 +89,76 @@ function UniversalPrompt({
       <div className="prompt-number">{String(index).padStart(2, "0")}</div>
       <div className="prompt-body">
         {group ? <p className="prompt-kicker">{group}</p> : null}
-        <h2>{prompt.label}</h2>
+        <h2 className={prompt.label.length > 90 ? "long-prompt-title" : undefined}>{prompt.label}</h2>
         {prompt.prompt !== prompt.label ? <p>{prompt.prompt}</p> : null}
         {prompt.readOnly ? (
           <div className="universal-computed-value" aria-live="polite">
             <strong>{value === "" ? "Calculated when the required evidence is available" : value}</strong>
             <small>Calculated by BIS from your recorded evidence.</small>
           </div>
-        ) : passed ? (
-          <p className="passed-note">You chose not to answer this question. You can add an answer before saving if you change your mind.</p>
         ) : (
-          <div className="prompt-controls">
-            {prompt.type === "INTEGER" ? (
-              <Input
-                type="number"
-                min={prompt.min}
-                max={prompt.max}
-                value={value}
-                onChange={(event) => onValue(event.target.value)}
-              />
-            ) : prompt.type === "DATE" ? (
-              <Input type="date" value={value} onChange={(event) => onValue(event.target.value)} />
-            ) : booleanChoices ? (
-              <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
-                {["Yes", "No"].map((option) => (
-                  <button
-                    type="button"
-                    key={option}
-                    className={value === option ? "selected" : ""}
-                    onClick={() => onValue(option)}
-                  >
-                    <span>{value === option ? <Check /> : null}</span>
-                    {option}
-                  </button>
-                ))}
-              </div>
-            ) : categorical ? (
-              <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
-                {(prompt.options ?? []).map((option) => (
-                  <button
-                    type="button"
-                    key={option}
-                    className={value === option ? "selected" : ""}
-                    onClick={() => onValue(option)}
-                  >
-                    <span>{value === option ? <Check /> : null}</span>
-                    {option}
-                  </button>
-                ))}
-              </div>
-            ) : prompt.type === "MULTI_SELECT" ? (
-              <div className="universal-multi-select">
-                {(prompt.options ?? []).map((option) => (
-                  <label key={option}>
-                    <Checkbox
-                      checked={selected.has(option)}
-                      onCheckedChange={(checked) => {
-                        const next = new Set(selected);
-                        if (checked === true) next.add(option); else next.delete(option);
-                        onValue(JSON.stringify([...next]));
-                      }}
-                    />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </div>
-            ) : (
-              <Textarea rows={4} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write what you noticed…"} />
-            )}
-          </div>
+          <>
+            <div className={`prompt-controls ${passed ? "is-passed" : ""}`}>
+              {prompt.type === "INTEGER" ? (
+                <Input
+                  type="number"
+                  min={prompt.min}
+                  max={prompt.max}
+                  value={value}
+                  onChange={(event) => onValue(event.target.value)}
+                />
+              ) : prompt.type === "DATE" ? (
+                <Input type="date" value={value} onChange={(event) => onValue(event.target.value)} />
+              ) : booleanChoices ? (
+                <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
+                  {["Yes", "No"].map((option) => (
+                    <button
+                      type="button"
+                      key={option}
+                      className={value === option ? "selected" : ""}
+                      onClick={() => onValue(option)}
+                    >
+                      <span>{value === option ? <Check /> : null}</span>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : categorical ? (
+                <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
+                  {(prompt.options ?? []).map((option) => (
+                    <button
+                      type="button"
+                      key={option}
+                      className={value === option ? "selected" : ""}
+                      onClick={() => onValue(option)}
+                    >
+                      <span>{value === option ? <Check /> : null}</span>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : prompt.type === "MULTI_SELECT" ? (
+                <div className="universal-multi-select">
+                  {(prompt.options ?? []).map((option) => (
+                    <label key={option}>
+                      <Checkbox
+                        checked={selected.has(option)}
+                        onCheckedChange={(checked) => {
+                          const next = new Set(selected);
+                          if (checked === true) next.add(option); else next.delete(option);
+                          onValue(JSON.stringify([...next]));
+                        }}
+                      />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <Textarea rows={4} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
+              )}
+            </div>
+            {passed ? <p className="passed-note">Skipped for now. Start typing or choose an answer to respond.</p> : null}
+          </>
         )}
         {!prompt.readOnly ? (
           <label className="pass-control">
@@ -447,6 +449,7 @@ function UniversalInvestigationForm({
   const [passed, setPassed] = useState<Set<string>>(() =>
     new Set(investigation.prompts.filter((prompt) => snapshot.responses[prompt.id]?.status === "PASS").map((prompt) => prompt.id)),
   );
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   const availableExperimentDay = previewMode
     ? (snapshot.definition.experiment?.days ?? 9)
     : (snapshot.experimentTiming?.availableDay ?? 0);
@@ -469,6 +472,27 @@ function UniversalInvestigationForm({
       value: values[prompt.id] ?? "",
       responseStatus: passed.has(prompt.id) ? "PASS" : "ANSWERED",
     }));
+
+  const missingRequiredCount = visiblePrompts.filter((prompt) => {
+    if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return false;
+    const current = values[prompt.id] ?? "";
+    return prompt.type === "MULTI_SELECT" ? multiValues(current).length === 0 : !current.trim();
+  }).length;
+
+  const guardSave = () => {
+    if (ready) {
+      setAttemptedSubmit(false);
+      return true;
+    }
+    setAttemptedSubmit(true);
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>(".universal-prompt:not(.passed)")?.scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
+    });
+    return false;
+  };
 
   const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
   const promptOrder = new Map(visiblePrompts.map((prompt, index) => [prompt.id, index + 1]));
@@ -559,6 +583,13 @@ function UniversalInvestigationForm({
         ? investigation.prompts.filter((prompt) => !blockPromptIds.has(prompt.id)).map(renderPrompt)
         : null}
       {error ? <p className="field-error">{error}</p> : null}
+      {attemptedSubmit && !ready ? (
+        <p className="universal-validation-note" role="alert">
+          {missingRequiredCount === 1
+            ? "One response still needs an answer or “Prefer not to answer”."
+            : `${missingRequiredCount} responses still need an answer or “Prefer not to answer”.`}
+        </p>
+      ) : null}
       {snapshot.enrolment?.status === "COMPLETED" && step === 9 ? (
         <section className="corelab-certificate">
           <Check />
@@ -569,16 +600,18 @@ function UniversalInvestigationForm({
         </section>
       ) : (
         <div className="step-footer">
-          <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Saved as private, traceable evidence."}</span>
+          <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Your responses save privately to this Lab."}</span>
           {step === 9 ? (
-            <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
+            <Button size="lg" disabled={saving} onClick={() => void (async () => {
+              if (!guardSave()) return;
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
               if (saved) await act({ action: "completeLab" });
             })()}>
               {saving ? "Saving…" : <>Complete Lab <Check /></>}
             </Button>
           ) : (
-            <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
+            <Button size="lg" disabled={saving} onClick={() => void (async () => {
+              if (!guardSave()) return;
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
               if (!saved) return;
               const next = Math.min(9, step + 1);
@@ -764,7 +797,7 @@ export function UniversalRuntimeLab({
     params.set("step", String(target));
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     requestAnimationFrame(() => {
-      document.getElementById("bis-task-surface")?.scrollIntoView({ block: "start", behavior: "smooth" });
+      document.getElementById("lab-investigation-start")?.scrollIntoView({ block: "start", behavior: "smooth" });
     });
   }
 
@@ -852,7 +885,7 @@ export function UniversalRuntimeLab({
           params.set("step", String(target));
           router.push(`${pathname}?${params.toString()}`, { scroll: false });
           requestAnimationFrame(() => {
-            document.getElementById("bis-task-surface")?.scrollIntoView({ block: "start", behavior: "smooth" });
+            document.getElementById("lab-investigation-start")?.scrollIntoView({ block: "start", behavior: "smooth" });
           });
         }}
       />

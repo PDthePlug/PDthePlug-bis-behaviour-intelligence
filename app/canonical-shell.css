@@ -20,8 +20,16 @@
 }
 .canonical-topbar-menu svg{width:17px;height:17px}
 .canonical-topbar-menu:hover{background:var(--canonical-soft)}
-.canonical-menu-trigger{display:none!important}
 @media(max-width:820px){
   .canonical-topbar-menu{min-height:38px;padding:0 9px 0 11px}
   .canonical-topbar-menu strong{font-size:11px}
+}
+
+
+/* Lab navigation keeps both the contextual top-bar entry and the convenient
+   centre floating trigger. The latter is intentionally Lab-only. */
+.canonical-shell:not([data-stage="lab"]) .canonical-menu-trigger{display:none!important}
+.canonical-shell[data-stage="lab"] .canonical-menu-trigger{display:flex!important}
+.canonical-shell[data-stage="lab"] .canonical-task{
+  padding-bottom:calc(76px + env(safe-area-inset-bottom));
 }

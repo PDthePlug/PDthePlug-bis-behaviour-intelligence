@@ -72,9 +72,13 @@ export function LabInvestigationFrame({
         })}
       </nav>
 
-      <section className="universal-lab-stage">
-        <LabMissionHeader investigation={current} step={step} total={investigations.length} />
-        {children}
+      <section className="universal-lab-stage" id="lab-investigation-start">
+        <article className="universal-lab-document">
+          <LabMissionHeader investigation={current} step={step} total={investigations.length} />
+          <div className="universal-lab-document-body">
+            {children}
+          </div>
+        </article>
       </section>
     </div>
   );
