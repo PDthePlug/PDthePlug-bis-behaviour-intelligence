@@ -1577,44 +1577,76 @@ function promptsFromTable(
     return true;
   }
 
-  if (joined.includes("day") && joined.includes("action") && joined.includes("notes")) {
+  const dayColumn = headers.findIndex((header) => /^day$/i.test(header.trim()));
+  const notesColumn = headers.findIndex((header) => /\bnotes?|reflection|what helped|what got in the way\b/i.test(header));
+  const dateColumn = headers.findIndex((header) => /\bdate\b/i.test(header));
+  const actionCheckColumn = headers.findIndex((header, index) =>
+    index !== dayColumn
+    && /\b(?:did i|did you|acted|done|completed|followed|used)\b|yes\s*\/?\s*no/i.test(header),
+  );
+  const evidenceColumn = headers.findIndex((header, index) =>
+    index !== dayColumn
+    && index !== dateColumn
+    && index !== notesColumn
+    && index !== actionCheckColumn
+    && /\b(?:moment|action|situation|event|cue|decision|purchase|risk|observation|what happened|what i noticed)\b/i.test(header),
+  );
+  const dailyTracker =
+    dayColumn >= 0
+    && (notesColumn >= 0 || actionCheckColumn >= 0 || evidenceColumn >= 0)
+    && rows.slice(1).some((row) => /^\d{1,2}$/.test(cleanAuthoredText(row[dayColumn] ?? "")));
+
+  if (dailyTracker) {
     for (const row of rows.slice(1)) {
-      const day = cleanAuthoredText(row[0] ?? "");
-      if (!day) continue;
+      const day = cleanAuthoredText(row[dayColumn] ?? "");
+      if (!/^\d{1,2}$/.test(day)) continue;
       const group = "Day " + day;
-      addPrompt(prompts, renderBlocks, code, investigation, {
-        label: group + " date",
-        prompt: "Date",
-        type: "DATE",
-        sensitivity: "P2",
-        required: false,
-        group,
-      });
-      addPrompt(prompts, renderBlocks, code, investigation, {
-        label: group + " action",
-        prompt: headers[2] || "Action I took",
-        type: "TEXT",
-        placeholder: "What action did you take or notice?",
-        sensitivity: "P2",
-        required: true,
-        group,
-      });
-      addPrompt(prompts, renderBlocks, code, investigation, {
-        label: group + " action check",
-        prompt: headers[3] || "Did I take action?",
-        type: "BOOLEAN",
-        sensitivity: "P2",
-        required: true,
-        group,
-      });
-      addPrompt(prompts, renderBlocks, code, investigation, {
-        label: group + " notes",
-        prompt: headers[4] || "Notes",
-        type: "TEXT",
-        sensitivity: "P2",
-        required: false,
-        group,
-      });
+
+      if (dateColumn >= 0) {
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: group + " date",
+          prompt: headers[dateColumn] || "Date",
+          type: "DATE",
+          sensitivity: "P2",
+          required: false,
+          group,
+        });
+      }
+
+      if (evidenceColumn >= 0) {
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: group + " evidence",
+          prompt: headers[evidenceColumn] || "What happened?",
+          type: "TEXT",
+          placeholder: "Record one specific moment or observation from today…",
+          sensitivity: "P2",
+          required: true,
+          group,
+        });
+      }
+
+      if (actionCheckColumn >= 0) {
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: group + " action check",
+          prompt: headers[actionCheckColumn] || "Did I act?",
+          type: "BOOLEAN",
+          sensitivity: "P2",
+          required: true,
+          group,
+        });
+      }
+
+      if (notesColumn >= 0) {
+        addPrompt(prompts, renderBlocks, code, investigation, {
+          label: group + " notes",
+          prompt: headers[notesColumn] || "Notes",
+          type: "TEXT",
+          placeholder: "Add a short note if it helps explain what happened.",
+          sensitivity: "P2",
+          required: false,
+          group,
+        });
+      }
     }
     return true;
   }
@@ -1737,7 +1769,7 @@ function isStandaloneField(value: string) {
   if (/^✍️\s*Complete this sentence\s*:?$/iu.test(value.trim())) return false;
   if (/^✍️/u.test(value.trim())) return true;
   if (looksLikeBlank(text)) return true;
-  if (/^(one risk i will address|my protection action|my witness|what i will do if|my failure signal|my biggest risk|my current protection|my priority risk|the cost|the gap|avoided risk|most expensive risk|reducible risk|unprotected risks|my equation|signed|date|from me, in grade)\b/i.test(text)) return true;
+  if (/^(one risk i will address|one .{2,80} i will\b|my protection action|my witness|my .{2,80} promise\b|what i will do if|my failure signal|my biggest risk|my current protection|my priority risk|the cost|the gap|avoided risk|most expensive risk|reducible risk|unprotected risks|my equation|signed|date|from me, in grade)\b/i.test(text)) return true;
   if (/^dear future me\b/i.test(text)) return true;
   return false;
 }
