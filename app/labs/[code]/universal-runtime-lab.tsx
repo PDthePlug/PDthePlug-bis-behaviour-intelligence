@@ -648,7 +648,12 @@ function UniversalInvestigationForm({
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
               if (!saved) return;
               const next = Math.min(9, step + 1);
-              if (saved.enrolment && saved.enrolment.currentInvestigation >= next) onAdvance(saved, next);
+              const experimentStep =
+                snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
+                && step === snapshot.definition.experiment?.investigation;
+              if (experimentStep || (saved.enrolment && saved.enrolment.currentInvestigation >= next)) {
+                onAdvance(saved, next);
+              }
             })()}>
               {saving
                 ? "Saving…"
