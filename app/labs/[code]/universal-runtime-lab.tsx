@@ -118,7 +118,7 @@ function UniversalPrompt({
                         key={option}
                         className={value === String(option) ? "selected" : ""}
                         aria-pressed={value === String(option)}
-                        onClick={() => onValue(String(option))}
+                        disabled={passed}\n                        onClick={() => onValue(String(option))}
                       >
                         {option}
                       </button>
@@ -138,7 +138,7 @@ function UniversalPrompt({
                   onChange={(event) => onValue(event.target.value)}
                 />
               ) : prompt.type === "DATE" ? (
-                <Input type="date" value={value} onChange={(event) => onValue(event.target.value)} />
+                <Input type="date" disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} />
               ) : booleanChoices ? (
                 <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
                   {["Yes", "No"].map((option) => (
@@ -184,7 +184,7 @@ function UniversalPrompt({
                   ))}
                 </div>
               ) : (
-                <Textarea rows={4} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
+                <Textarea rows={4} disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
               )}
             </div>
           </>
@@ -195,6 +195,120 @@ function UniversalPrompt({
             <span>Prefer not to answer</span>
           </label>
         ) : null}
+      </div>
+    </section>
+  );
+}
+
+
+function isScaffoldPrompt(prompt: UniversalLabPrompt) {
+  return /\.SCAFFOLD\./.test(String(prompt.id));
+}
+
+function UniversalPromptCollection({
+  prompts,
+  values,
+  passed,
+  onValue,
+  onPass,
+  relatedLabels,
+}: {
+  prompts: UniversalLabPrompt[];
+  values: Record<string, string>;
+  passed: Set<string>;
+  onValue: (promptId: string, value: string) => void;
+  onPass: (promptId: string, value: boolean) => void;
+  relatedLabels?: string[];
+}) {
+  const heading = prompts[0]?.group || prompts[0]?.prompt || "Your responses";
+  return (
+    <section className="universal-prompt-collection">
+      <h2>{heading}</h2>
+      <div className="universal-collection-fields">
+        {prompts.map((prompt, index) => {
+          const isPassed = passed.has(prompt.id);
+          const related = relatedLabels?.[index]?.trim();
+          return (
+            <div className={`universal-collection-row ${isPassed ? "passed" : ""}`} key={prompt.id}>
+              <label htmlFor={`collection-${prompt.id}`}>
+                <strong>{index + 1}.</strong>
+                {related ? <span>{related}</span> : null}
+              </label>
+              <Input
+                id={`collection-${prompt.id}`}
+                disabled={isPassed}
+                value={values[prompt.id] ?? ""}
+                onChange={(event) => onValue(prompt.id, event.target.value)}
+                placeholder={related ? "How do you lead there?" : prompt.placeholder ?? "Write your response…"}
+              />
+              <label className="universal-collection-pass">
+                <Checkbox checked={isPassed} onCheckedChange={(checked) => onPass(prompt.id, checked === true)} />
+                <span>Prefer not to answer</span>
+              </label>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function UniversalInlineResponse({
+  block,
+  promptById,
+  values,
+  passed,
+  onValue,
+  onPass,
+}: {
+  block: Extract<NonNullable<UniversalLabPackage["investigations"][number]["blocks"]>[number], { type: "INLINE" }>;
+  promptById: Map<string, UniversalLabPrompt>;
+  values: Record<string, string>;
+  passed: Set<string>;
+  onValue: (promptId: string, value: string) => void;
+  onPass: (promptId: string, value: boolean) => void;
+}) {
+  const inlinePrompts = block.segments
+    .filter((segment) => segment.kind === "PROMPT")
+    .map((segment) => promptById.get(segment.promptId))
+    .filter((prompt): prompt is UniversalLabPrompt => Boolean(prompt));
+
+  return (
+    <section className="universal-inline-response">
+      <p className="universal-inline-sentence">
+        {block.segments.map((segment, index) => {
+          if (segment.kind === "TEXT") return <span key={`text-${index}`}>{segment.text}</span>;
+          const prompt = promptById.get(segment.promptId);
+          if (!prompt) return null;
+          const isPassed = passed.has(prompt.id);
+          const inputType = prompt.type === "DATE" ? "date" : prompt.type === "INTEGER" ? "number" : "text";
+          return (
+            <Input
+              key={prompt.id}
+              type={inputType}
+              min={prompt.min}
+              max={prompt.max}
+              disabled={isPassed}
+              aria-label={prompt.label}
+              title={prompt.label}
+              className={`universal-inline-input ${prompt.type === "DATE" ? "date" : ""}`}
+              value={values[prompt.id] ?? ""}
+              placeholder={isPassed ? "Passed" : prompt.placeholder ?? prompt.label}
+              onChange={(event) => onValue(prompt.id, event.target.value)}
+            />
+          );
+        })}
+      </p>
+      <div className="universal-inline-pass-list">
+        {inlinePrompts.map((prompt) => (
+          <label key={prompt.id}>
+            <Checkbox
+              checked={passed.has(prompt.id)}
+              onCheckedChange={(checked) => onPass(prompt.id, checked === true)}
+            />
+            <span>Prefer not to answer · {prompt.label}</span>
+          </label>
+        ))}
       </div>
     </section>
   );
@@ -289,7 +403,7 @@ function UniversalEvidenceTable({
                             aria-label={prompt.prompt}
                           />
                         ) : categoricalOptions.length ? (
-                          <Select value={values[prompt.id] ?? ""} onValueChange={(value) => onValue(prompt.id, value)}>
+                          <Select disabled={isPassed} value={values[prompt.id] ?? ""} onValueChange={(value) => onValue(prompt.id, value)}>
                             <SelectTrigger aria-label={prompt.prompt}><SelectValue placeholder="Choose" /></SelectTrigger>
                             <SelectContent>
                               {categoricalOptions.map((option) => (
@@ -554,11 +668,12 @@ function UniversalInvestigationForm({
       responseStatus: passed.has(prompt.id) ? "PASS" : "ANSWERED",
     }));
 
-  const missingRequiredCount = visiblePrompts.filter((prompt) => {
+  const missingRequiredPrompts = visiblePrompts.filter((prompt) => {
     if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return false;
     const current = values[prompt.id] ?? "";
     return prompt.type === "MULTI_SELECT" ? multiValues(current).length === 0 : !current.trim();
-  }).length;
+  });
+  const missingRequiredCount = missingRequiredPrompts.length;
 
   const guardSave = () => {
     if (ready) {
@@ -579,6 +694,9 @@ function UniversalInvestigationForm({
   const blockPromptIds = new Set(
     (investigation.blocks ?? []).flatMap((block) => {
       if (block.type === "PROMPT") return [block.promptId];
+      if (block.type === "INLINE") {
+        return block.segments.flatMap((segment) => segment.kind === "PROMPT" ? [segment.promptId] : []);
+      }
       if (block.type === "TABLE") {
         return block.rows.flatMap((row) =>
           row.flatMap((cell) => cell.kind === "PROMPT" || cell.kind === "CHOICE" ? [cell.promptId] : []),
@@ -619,6 +737,105 @@ function UniversalInvestigationForm({
     );
   };
 
+  const renderedBlocks = (() => {
+    const nodes: React.ReactNode[] = [];
+    const blocks = investigation.blocks ?? [];
+    let previousCollection: UniversalLabPrompt[] | null = null;
+
+    for (let index = 0; index < blocks.length; index += 1) {
+      const block = blocks[index];
+
+      if (block.type === "HTML") {
+        if (
+          block.visibility === "AFTER_EXPERIMENT"
+          && !previewMode
+          && !snapshot.experimentTiming?.reviewReady
+        ) {
+          continue;
+        }
+        nodes.push(
+          <article
+            key={`content-${index}`}
+            className="imported-lab-content"
+            dangerouslySetInnerHTML={{ __html: block.html }}
+          />,
+        );
+        continue;
+      }
+
+      if (block.type === "TABLE") {
+        nodes.push(
+          <UniversalEvidenceTable
+            key={block.id || `table-${index}`}
+            block={block}
+            promptById={promptById}
+            values={values}
+            passed={passed}
+            onValue={updatePromptValue}
+            onPass={updatePromptPass}
+            activeExperimentDay={activeExperimentDay}
+            previewMode={previewMode}
+          />,
+        );
+        continue;
+      }
+
+      if (block.type === "INLINE") {
+        nodes.push(
+          <UniversalInlineResponse
+            key={block.id || `inline-${index}`}
+            block={block}
+            promptById={promptById}
+            values={values}
+            passed={passed}
+            onValue={updatePromptValue}
+            onPass={updatePromptPass}
+          />,
+        );
+        continue;
+      }
+
+      const prompt = promptById.get(block.promptId);
+      if (!prompt) continue;
+
+      if (isScaffoldPrompt(prompt)) {
+        const group = prompt.group || "";
+        const collection: UniversalLabPrompt[] = [prompt];
+        let cursor = index + 1;
+        while (cursor < blocks.length) {
+          const candidateBlock = blocks[cursor];
+          if (candidateBlock.type !== "PROMPT") break;
+          const candidate = promptById.get(candidateBlock.promptId);
+          if (!candidate || !isScaffoldPrompt(candidate) || (candidate.group || "") !== group) break;
+          collection.push(candidate);
+          cursor += 1;
+        }
+        const relatedLabels = /^for each\b/i.test(group) && previousCollection
+          ? previousCollection.map((item) => values[item.id] ?? "")
+          : undefined;
+        nodes.push(
+          <UniversalPromptCollection
+            key={`collection-${group}-${index}`}
+            prompts={collection}
+            values={values}
+            passed={passed}
+            onValue={updatePromptValue}
+            onPass={updatePromptPass}
+            relatedLabels={relatedLabels}
+          />,
+        );
+        previousCollection = collection;
+        index = cursor - 1;
+        continue;
+      }
+
+      const node = renderPrompt(prompt);
+      if (node) nodes.push(node);
+    }
+
+    return nodes;
+  })();
+
   return (
     <div className="investigation-stack universal-package-lab">
       {snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
@@ -638,28 +855,7 @@ function UniversalInvestigationForm({
           </p>
         </section>
       ) : null}
-      {investigation.blocks?.length ? investigation.blocks.map((block, index) => {
-        if (block.type === "HTML") {
-          return <article key={`content-${index}`} className="imported-lab-content" dangerouslySetInnerHTML={{ __html: block.html }} />;
-        }
-        if (block.type === "TABLE") {
-          return (
-            <UniversalEvidenceTable
-              key={block.id || `table-${index}`}
-              block={block}
-              promptById={promptById}
-              values={values}
-              passed={passed}
-              onValue={updatePromptValue}
-              onPass={updatePromptPass}
-              activeExperimentDay={activeExperimentDay}
-              previewMode={previewMode}
-            />
-          );
-        }
-        const prompt = promptById.get(block.promptId);
-        return prompt ? renderPrompt(prompt) : null;
-      }) : (
+      {investigation.blocks?.length ? renderedBlocks : (
         <>
           {investigation.introHtml ? <article className="story-card" dangerouslySetInnerHTML={{ __html: investigation.introHtml }} /> : null}
           {investigation.prompts.map(renderPrompt)}
@@ -670,11 +866,14 @@ function UniversalInvestigationForm({
         : null}
       {error ? <p className="field-error">{error}</p> : null}
       {attemptedSubmit && !ready ? (
-        <p className="universal-validation-note" role="alert">
-          {missingRequiredCount === 1
-            ? "One response still needs an answer or “Prefer not to answer”."
-            : `${missingRequiredCount} responses still need an answer or “Prefer not to answer”.`}
-        </p>
+        <div className="universal-validation-note" role="alert">
+          <strong>
+            {missingRequiredCount === 1
+              ? "One response still needs an answer or “Prefer not to answer”."
+              : `${missingRequiredCount} responses still need an answer or “Prefer not to answer”.`}
+          </strong>
+          <span>{missingRequiredPrompts.slice(0, 4).map((prompt) => prompt.label).join(" · ")}</span>
+        </div>
       ) : null}
       {snapshot.enrolment?.status === "COMPLETED" && step === 9 ? (
         <section className="corelab-certificate">
