@@ -661,3 +661,16 @@ test("authored equations become compact digital formula objects", () => {
   assert.equal((html.match(/bis-digital-equation/g) ?? []).length, 2);
   assert.match(universalHtmlText(html), /Inherited Beliefs \+ Chosen Actions = Current Identity/);
 });
+
+
+test("bounded confidence measures render as digital rating scales instead of number blanks", async () => {
+  const [runtime, css] = await Promise.all([
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("app/lab-investigation-frame.css"),
+  ]);
+  assert.match(runtime, /const ratingScale =/);
+  assert.match(runtime, /universal-rating-scale/);
+  assert.match(runtime, /aria-pressed=/);
+  assert.match(css, /\.universal-rating-options\{/);
+  assert.match(css, /grid-template-columns:repeat\(10,minmax\(0,1fr\)\)/);
+});
