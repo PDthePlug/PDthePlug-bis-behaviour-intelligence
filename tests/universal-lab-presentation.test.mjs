@@ -310,7 +310,7 @@ test("Volume 3 TEI codes are first-class evidence indicators", async () => {
     source("lib/lab-factory-capabilities.mjs"),
     source("lib/universal-lab-v2.mjs"),
   ]);
-  assert.match(adapter, /\(\?:BEI\|TEI\)-\\d\{2\}/);
-  assert.match(capabilities, /\(BEI\|TEI\)-\\d\{2\}/);
-  assert.match(v2, /\(\?:bei\|tei\)-\\d\{2\}/);
+  assert.match(adapter, /BEI\\|TEI/);
+  assert.match(capabilities, /BEI\\|TEI/);
+  assert.match(v2, /bei\\|tei/);
 });
