@@ -407,3 +407,63 @@ test("legacy The Prediction does not appear as a competing subtitle under canoni
   assert.match(frame, /legacyPredictionTitle/);
   assert.match(frame, /!legacyPredictionTitle/);
 });
+
+
+test("already-published Labs receive current Pattern-stage evidence prompts at runtime", () => {
+  const published = {
+    kind: "LAB",
+    schemaVersion: "universal-lab-v2",
+    runtimeProfile: "UNIVERSAL_V2",
+    identity: { code: "TIM", version: "1.0", title: "Time Lab", shortTitle: "Time Lab", accent: "#2f8276" },
+    investigations: Array.from({ length: 9 }, (_, index) => ({
+      number: index + 1,
+      title: index === 1 ? "The Prediction" : `Stage ${index + 1}`,
+      mission: "Investigate with evidence.",
+      phase: "Investigation",
+      time: "10 minutes",
+      difficulty: "Observe",
+      produces: [],
+      blocks: [],
+      prompts: index === 1 ? [{
+        id: "TIM.I2.LEGACY",
+        label: "Your prediction",
+        prompt: "If you tracked your time for one day, where do you think most of it would go?",
+        type: "TEXT",
+        required: true,
+        origin: "SOURCE",
+      }] : [],
+    })),
+    indicatorRegistry: [],
+    computedFields: [],
+    experiment: null,
+    profile: null,
+  };
+
+  const result = prepareUniversalLabPresentation(published);
+  const pattern = result.investigations[1];
+  const purposes = pattern.prompts.map((prompt) => prompt.standardPurpose).filter(Boolean);
+  assert.ok(purposes.includes("PATTERN_TARGET"));
+  assert.ok(purposes.includes("PATTERN_EVIDENCE"));
+  assert.equal(pattern.standardStage?.key, "PATTERN");
+
+  const twice = prepareUniversalLabPresentation(result);
+  assert.equal(
+    twice.investigations[1].prompts.filter((prompt) => prompt.standardPurpose === "PATTERN_TARGET").length,
+    1,
+  );
+  assert.equal(
+    twice.investigations[1].prompts.filter((prompt) => prompt.standardPurpose === "PATTERN_EVIDENCE").length,
+    1,
+  );
+});
+
+test("server and learner client share the same runtime presentation normalizer", async () => {
+  const [api, runtime, presentation] = await Promise.all([
+    source("app/api/universal-lab/route.ts"),
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("lib/universal-lab-presentation.mjs"),
+  ]);
+  assert.match(api, /prepareUniversalLabPresentation/);
+  assert.match(runtime, /prepareUniversalLabPresentation/);
+  assert.match(presentation, /applyHabitLabStandard/);
+});
