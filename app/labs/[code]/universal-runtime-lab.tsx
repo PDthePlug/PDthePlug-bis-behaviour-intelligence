@@ -653,9 +653,11 @@ function UniversalInvestigationForm({
               {saving
                 ? "Saving…"
                 : snapshot.definition.runtimeProfile === "UNIVERSAL_V2" && step === snapshot.definition.experiment?.investigation
-                  ? snapshot.experimentTiming?.reviewReady
-                    ? <>Save and continue to review <ArrowRight /></>
-                    : <>Save today’s evidence <Check /></>
+                  ? programmeReturnTo
+                    ? <>Save today’s evidence & return <ArrowRight /></>
+                    : snapshot.experimentTiming?.reviewReady
+                      ? <>Save and continue to review <ArrowRight /></>
+                      : <>Save today’s evidence <Check /></>
                   : <>Save and continue <ArrowRight /></>}
             </Button>
           )}
@@ -910,19 +912,19 @@ export function UniversalRuntimeLab({
         act={act}
         previewMode={previewMode}
         onAdvance={(saved, requested) => {
+          const experimentStep =
+            snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
+            && step === snapshot.definition.experiment?.investigation;
+          if (!previewMode && experimentStep && programmeReturnTo) {
+            router.replace(programmeReturnTo);
+            return;
+          }
+
           const target = previewMode
             ? requested
             : serverUnlockedInvestigation(saved.enrolment?.currentInvestigation, requested);
           if (target < requested) {
-            const experimentStep =
-              snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
-              && step === snapshot.definition.experiment?.investigation;
-            if (experimentStep) {
-              if (programmeReturnTo) {
-                router.replace(programmeReturnTo);
-              }
-              return;
-            }
+            if (experimentStep) return;
             setError("Your evidence was saved, but the next investigation is still locked. Please try again.");
             return;
           }
