@@ -26,8 +26,10 @@ test("authenticated BIS entry resolves staff and learner routes from one root", 
 
 test("every primary learner and staff surface requires authenticated identity", () => {
   assert.match(habitPage, /requireUser\("\/habit"\)/);
-  assert.match(decisionPage, /requireUser\("\/decision"\)/);
-  assert.match(moneyPage, /requireUser\("\/money"\)/);
+  assert.match(decisionPage, /const next = returnTo \? `\/decision\?returnTo=\$\{encodeURIComponent\(returnTo\)\}` : "\/decision"/);
+  assert.match(decisionPage, /requireUser\(next\)/);
+  assert.match(moneyPage, /const next = returnTo \? `\/money\?returnTo=\$\{encodeURIComponent\(returnTo\)\}` : "\/money"/);
+  assert.match(moneyPage, /requireUser\(next\)/);
   assert.match(workspacePage, /requireUser\("\/workspace"\)/);
   assert.match(requireUser, /redirect\(`\/sign-in\?next=\$\{encodeURIComponent\(next\)\}`\)/);
 });
