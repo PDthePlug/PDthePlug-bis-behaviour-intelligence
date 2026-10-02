@@ -750,3 +750,66 @@ test("published workbook response stems become real controls even when the inves
     .join("");
   assert.doesNotMatch(universalHtmlText(html), /^1\.\s*2\.\s*3\.$/);
 });
+
+
+test("already-published legacy daily trackers regain Day N scheduling without re-uploading the Lab", () => {
+  const investigations = Array.from({ length: 9 }, (_, index) => ({
+    number: index + 1,
+    title: `Stage ${index + 1}`,
+    mission: "Investigate the evidence.",
+    produces: [],
+    prompts: [],
+    blocks: [],
+  }));
+  investigations[6] = {
+    ...investigations[6],
+    title: "7-Day Experiment",
+    prompts: [
+      { id: "LDR.I7.D1.DATE", label: "1", prompt: "1", type: "TEXT", required: true, group: "Date" },
+      { id: "LDR.I7.D1.MOMENT", label: "1", prompt: "1", type: "TEXT", required: true, group: "Moment I Noticed" },
+      { id: "LDR.I7.D1.ACT", label: "1", prompt: "1", type: "TEXT", required: true, group: "Did I act?" },
+      { id: "LDR.I7.D1.NOTES", label: "1", prompt: "1", type: "TEXT", required: true, group: "Notes" },
+      { id: "LDR.I7.D2.DATE", label: "2", prompt: "2", type: "TEXT", required: true, group: "Date" },
+      { id: "LDR.I7.D2.MOMENT", label: "2", prompt: "2", type: "TEXT", required: true, group: "Moment I Noticed" },
+      { id: "LDR.I7.D2.ACT", label: "2", prompt: "2", type: "TEXT", required: true, group: "Did I act?" },
+      { id: "LDR.I7.D2.NOTES", label: "2", prompt: "2", type: "TEXT", required: true, group: "Notes" },
+    ],
+    blocks: [
+      { type: "PROMPT", promptId: "LDR.I7.D1.DATE" },
+      { type: "PROMPT", promptId: "LDR.I7.D1.MOMENT" },
+      { type: "PROMPT", promptId: "LDR.I7.D1.ACT" },
+      { type: "PROMPT", promptId: "LDR.I7.D1.NOTES" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.DATE" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.MOMENT" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.ACT" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.NOTES" },
+    ],
+  };
+
+  const sourceFixture = {
+    kind: "LAB",
+    schemaVersion: "universal-lab-v2",
+    runtimeProfile: "UNIVERSAL_V2",
+    identity: { code: "LDR", version: "1.0", title: "Leadership Lab", shortTitle: "Leadership Lab", accent: "#2f8276" },
+    investigations,
+    experiment: {
+      investigation: 7,
+      startAfterInvestigation: 6,
+      days: 7,
+      reviewInvestigation: 8,
+      scheduledPromptIds: [],
+    },
+    indicatorRegistry: [],
+    computedFields: [],
+    profile: null,
+  };
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const tracking = result.investigations.find((item) => item.number === 7).prompts;
+  assert.equal(tracking.filter((prompt) => prompt.group === "Day 1").length, 4);
+  assert.equal(tracking.filter((prompt) => prompt.group === "Day 2").length, 4);
+  assert.ok(tracking.some((prompt) => prompt.label === "Day 1 evidence" && prompt.scheduleDay === 1));
+  assert.ok(tracking.some((prompt) => prompt.label === "Day 1 action check" && prompt.type === "BOOLEAN"));
+  assert.ok(tracking.some((prompt) => prompt.label === "Day 1 notes" && prompt.required === false));
+  assert.equal(result.experiment.scheduledPromptIds.length, 8);
+});
