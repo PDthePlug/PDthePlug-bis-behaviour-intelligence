@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { HABIT_LAB_STAGES } from "@/lib/universal-lab-standard.mjs";
 
 export type UniversalInvestigation = {
   number: number;
@@ -88,18 +89,20 @@ export function LabMissionHeader({
   step: number;
   total: number;
 }) {
+  const canonicalStage = investigation.standardStage
+    ?? HABIT_LAB_STAGES.find((stage) => stage.number === investigation.number);
   return (
     <header className="universal-lab-mission">
       <div className="universal-lab-mission-copy">
         <p className="eyebrow">
-          {investigation.standardStage
-            ? `Investigation ${step} · ${investigation.standardStage.label}`
+          {canonicalStage
+            ? `Investigation ${step} · ${canonicalStage.label}`
             : "Mission"}
         </p>
         <h1>{investigation.title}</h1>
         <p>{investigation.mission}</p>
-        {investigation.standardStage?.role ? (
-          <p className="universal-lab-stage-role">{investigation.standardStage.role}</p>
+        {canonicalStage?.role ? (
+          <p className="universal-lab-stage-role">{canonicalStage.role}</p>
         ) : null}
         {investigation.produces?.length ? (
           <div className="universal-lab-produces">

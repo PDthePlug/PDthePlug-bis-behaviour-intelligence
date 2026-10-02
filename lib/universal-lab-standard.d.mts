@@ -17,10 +17,17 @@ export type HabitLabStandardStage = {
 };
 
 export type UniversalEditorialIssue = {
-  code: "STAGE_COUNT" | "MISSING_STAGE" | "REPEATED_QUESTION" | "LOW_INFORMATION_PROMPT";
+  code: "STAGE_COUNT" | "MISSING_STAGE" | "REPEATED_QUESTION" | "LOW_INFORMATION_PROMPT" | "LEGACY_PREDICTION_STAGE";
   severity: "ERROR" | "REVIEW";
   investigation?: number;
   promptId?: string;
+  message: string;
+};
+
+export type UniversalNormalizationNote = {
+  code: "TRANSFER_SUBSTAGE_FOLDED";
+  sourceInvestigation: number;
+  targetInvestigation: number;
   message: string;
 };
 
@@ -36,4 +43,5 @@ export function auditUniversalLabEditorialQuality(definition: Record<string, unk
 export function applyHabitLabStandard<T extends Record<string, unknown>>(source: T): T & {
   standardVersion: string;
   editorialAudit: UniversalEditorialAudit;
+  normalizationNotes: UniversalNormalizationNote[];
 };
