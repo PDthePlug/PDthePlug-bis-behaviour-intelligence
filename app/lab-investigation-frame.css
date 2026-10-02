@@ -1867,3 +1867,90 @@
     padding-right:18px;
   }
 }
+
+
+/* Digital-first source translation. These surfaces preserve authored meaning
+   without carrying paper blanks, workbook labels, or undifferentiated paragraphs. */
+.universal-package-lab .imported-lab-content .bis-digital-subheading{
+  margin:24px 0 9px;
+  color:#2f8276;
+  font:850 10px/1.35 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.universal-package-lab .imported-lab-content .bis-digital-instruction-panel{
+  margin:24px 0 28px;
+  padding:18px 20px;
+  border-left:3px solid #2f8276;
+  border-radius:4px 14px 14px 4px;
+  background:#edf5f1;
+}
+.universal-package-lab .imported-lab-content .bis-digital-instruction-panel>span{
+  display:block;
+  margin-bottom:7px;
+  color:#276e64;
+  font:850 9px/1.3 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.universal-package-lab .imported-lab-content .bis-digital-instruction-panel>p{
+  margin:0;
+  color:#354b45;
+  font:500 14px/1.65 var(--font-sans,system-ui,sans-serif);
+}
+.universal-package-lab .imported-lab-content .bis-digital-commitment{
+  margin:28px 0 30px;
+  padding:22px 22px 20px;
+  border:1px solid #d8dfda;
+  border-radius:16px;
+  background:#fafbf8;
+}
+.universal-package-lab .imported-lab-content .bis-digital-commitment>span{
+  display:block;
+  margin-bottom:9px;
+  color:#2f8276;
+  font:850 10px/1.3 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.universal-package-lab .imported-lab-content .bis-digital-commitment>p{
+  margin:0;
+  color:#243e39;
+  font:500 16px/1.7 var(--font-sans,system-ui,sans-serif);
+}
+.universal-package-lab .imported-lab-content .bis-digital-commitment>small{
+  display:block;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #e0e5e1;
+  color:#6d7873;
+  font:600 10px/1.5 var(--font-sans,system-ui,sans-serif);
+}
+.universal-package-lab .imported-lab-content .bis-reflection-stem{
+  margin:26px 0;
+  padding:18px 20px;
+  border:0;
+  border-left:3px solid #c69a56;
+  background:#fbf7ed;
+  color:#344943;
+  font:500 clamp(18px,2.6vw,23px)/1.5 var(--font-serif);
+}
+.universal-package-lab .prompt-controls.is-passed{
+  opacity:1;
+}
+.universal-package-lab .prompt-controls.is-passed :is(textarea,input){
+  background:#f7f8f6;
+}
+.universal-package-lab .prompt-number{
+  display:none!important;
+}
+@media(max-width:700px){
+  .universal-package-lab .imported-lab-content .bis-digital-instruction-panel,
+  .universal-package-lab .imported-lab-content .bis-digital-commitment,
+  .universal-package-lab .imported-lab-content .bis-reflection-stem{
+    padding:16px 17px;
+  }
+  .universal-package-lab .imported-lab-content .bis-digital-commitment>p{
+    font-size:15px;
+  }
+}
