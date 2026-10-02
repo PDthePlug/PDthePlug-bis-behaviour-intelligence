@@ -254,7 +254,7 @@ async function snapshot(identity: Identity) {
     ? getExperimentTiming(
         experiment,
         events,
-        todayInZone(notificationPreference.timezone ?? "Africa/Johannesburg"),
+        todayInZone(new Date(), notificationPreference.timezone ?? "Africa/Johannesburg"),
       )
     : null;
   const programmeHandoff = {
