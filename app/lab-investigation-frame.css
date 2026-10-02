@@ -2150,3 +2150,33 @@
   .universal-inline-input{width:min(155px,58vw)!important}
   .universal-inline-input.date{width:145px!important}
 }
+
+
+.universal-compact-prompt{
+  width:100%;
+  max-width:720px;
+  margin:10px auto 18px;
+  display:grid;
+  grid-template-columns:minmax(92px,auto) minmax(0,1fr);
+  gap:8px 14px;
+  align-items:center;
+}
+.universal-compact-prompt>label:first-child{
+  color:#384f49;
+  font-size:13px;
+  font-weight:800;
+}
+.universal-compact-prompt>[data-slot="input"]{
+  max-width:320px;
+  min-height:42px;
+  border-radius:10px;
+  background:#fbfaf6;
+}
+.universal-compact-prompt>.pass-control{
+  grid-column:2;
+  margin-top:0;
+}
+@media(max-width:520px){
+  .universal-compact-prompt{grid-template-columns:1fr}
+  .universal-compact-prompt>.pass-control{grid-column:1}
+}
