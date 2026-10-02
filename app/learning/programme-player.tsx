@@ -519,13 +519,16 @@ export function ProgrammePlayer({
   );
   const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
   const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
-  const labPhaseAComplete =
+  const labExperimentStarted =
     readOnlyMode ||
     Boolean(activeModuleRuntime?.enrolment?.phaseACompletedAt || activeModuleRuntime?.experiment);
+  const labHandoffComplete =
+    readOnlyMode ||
+    Boolean(activeModuleRuntime?.experiment && activeModuleRuntime.events.length > 0);
   const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
   const labSequenceLocked =
     !readOnlyMode &&
-    !labPhaseAComplete &&
+    !labHandoffComplete &&
     dayThreeIndex >= 0 &&
     selected >= dayThreeIndex;
   const knownValues = useMemo<HandbookKnownValue[]>(() => {
@@ -998,7 +1001,7 @@ export function ProgrammePlayer({
     if (labSequenceLocked) {
       setError(
         moduleLabIsLive
-          ? `Complete ${moduleLabTitle} Phase A before continuing the programme.`
+          ? `Record today’s Investigation 7 evidence in ${moduleLabTitle} before continuing the programme.`
           : `${moduleLabTitle} is the next programme step. The live Lab is still being prepared.`,
       );
       return;
@@ -1214,7 +1217,7 @@ export function ProgrammePlayer({
                   </p>
                   {moduleLabHref ? (
                     <Link className="prototype-btn primary" href={moduleLabHref}>
-                      {moduleCode === "HAB" && labPhaseAComplete ? "Return to Habit Lab" : `Open ${moduleLabTitle}`}
+                      {moduleCode === "HAB" && labExperimentStarted ? "Return to Habit Lab" : `Open ${moduleLabTitle}`}
                       <ArrowRight />
                     </Link>
                   ) : (
@@ -1351,7 +1354,7 @@ export function ProgrammePlayer({
                     href={moduleLabHref}
                     status={moduleDefinition?.labStatus ?? "catalogued"}
                     isHabit={moduleCode === "HAB"}
-                    habitPhaseAComplete={labPhaseAComplete}
+                    habitPhaseAComplete={labExperimentStarted}
                   />
                   <details className="prototype-reference">
                     <summary>{moduleLabHref ? "Open the full Day 3 reference" : "Continue with the Day 3 learning"}</summary>
@@ -1362,18 +1365,18 @@ export function ProgrammePlayer({
                     </p>
                     <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
                   </details>
-                  {!labPhaseAComplete ? (
+                  {!labHandoffComplete ? (
                     <section className="prototype-after-lab">
                       <LockKeyhole />
                       <div>
                         <strong>
                           {moduleLabIsLive
-                            ? `Finish ${moduleLabTitle} Phase A to continue.`
+                            ? `Record today’s Investigation 7 evidence in ${moduleLabTitle} to continue.`
                             : "The practical Lab completes this Day 3 sequence."}
                         </strong>
                         <p>
                           {moduleLabIsLive
-                            ? "Your seven-day investigation begins when the live Lab phase is complete."
+                            ? "Only one experiment day is open at a time. Save today’s finding in the Lab and BIS will return you here to finish Day 3."
                             : "Until digital Lab access is enabled, later programme pages remain available as reference rather than completed programme progress."}
                         </p>
                       </div>
@@ -1389,7 +1392,7 @@ export function ProgrammePlayer({
                     href={moduleLabHref}
                     status={moduleDefinition?.labStatus ?? "catalogued"}
                     isHabit={moduleCode === "HAB"}
-                    habitPhaseAComplete={labPhaseAComplete}
+                    habitPhaseAComplete={labExperimentStarted}
                   />
                   <div dangerouslySetInnerHTML={{ __html: page.html }} />
                 </>
