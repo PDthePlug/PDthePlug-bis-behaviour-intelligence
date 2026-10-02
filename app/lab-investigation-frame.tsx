@@ -99,9 +99,11 @@ export function LabMissionHeader({
     || /^of\s+\d+$/i.test(authoredTitle)
     || /^\d+\s*\/\s*9$/.test(authoredTitle)
     || /^investigation\s+\d+/i.test(authoredTitle);
+  const legacyPredictionTitle = /^the\s+prediction$|^prediction$/i.test(authoredTitle.trim());
   const authoredFocus =
     !malformedTitle
     && canonicalStage
+    && !legacyPredictionTitle
     && comparable(authoredTitle) !== comparable(canonicalTitle)
       ? authoredTitle
       : "";
