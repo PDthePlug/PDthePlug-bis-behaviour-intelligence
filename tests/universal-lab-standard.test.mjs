@@ -152,3 +152,97 @@ test("Investigation 2 receives a pattern target and recent evidence anchor when 
   assert.ok(purposes.includes("PATTERN_EVIDENCE"));
   assert.equal(result.investigations[1].standardStage?.key, "PATTERN");
 });
+
+
+test("exact cross-stage repeats are suppressed while the earlier authored evidence stays authoritative", () => {
+  const source = baseLab();
+  source.investigations[0].prompts.push({
+    id: "TST.I1.IDENTITY",
+    label: "The identity I am building",
+    prompt: "If you had to describe who you are becoming in one sentence, what would it be?",
+    type: "TEXT",
+    required: true,
+  });
+  source.investigations[1].prompts.push({
+    id: "TST.I2.IDENTITY",
+    label: "The identity I am building",
+    prompt: "If you had to describe who you are becoming in one sentence, what would it be?",
+    type: "TEXT",
+    required: true,
+  });
+
+  const result = applyHabitLabStandard(source);
+
+  assert.ok(result.investigations[0].prompts.some((prompt) => prompt.id === "TST.I1.IDENTITY"));
+  assert.equal(result.investigations[1].prompts.some((prompt) => prompt.id === "TST.I2.IDENTITY"), false);
+  assert.ok(result.normalizationNotes.some((note) =>
+    note.code === "DUPLICATE_PROMPT_SUPPRESSED"
+    && note.sourcePromptId === "TST.I2.IDENTITY"
+    && note.retainedPromptId === "TST.I1.IDENTITY"
+  ));
+});
+
+test("repeated daily experiment prompts are preserved because each calendar day is distinct evidence", () => {
+  const source = baseLab();
+  source.investigations[6].prompts = [
+    {
+      id: "TST.I7.DAY1",
+      label: "What happened?",
+      prompt: "What happened in the matching situation today?",
+      type: "TEXT",
+      required: true,
+      group: "Day 1",
+      scheduleDay: 1,
+    },
+    {
+      id: "TST.I7.DAY2",
+      label: "What happened?",
+      prompt: "What happened in the matching situation today?",
+      type: "TEXT",
+      required: true,
+      group: "Day 2",
+      scheduleDay: 2,
+    },
+  ];
+
+  const result = applyHabitLabStandard(source);
+  const experimentIds = result.investigations[6].prompts.map((prompt) => prompt.id);
+
+  assert.ok(experimentIds.includes("TST.I7.DAY1"));
+  assert.ok(experimentIds.includes("TST.I7.DAY2"));
+  assert.equal(
+    result.normalizationNotes.some((note) =>
+      note.code === "DUPLICATE_PROMPT_SUPPRESSED"
+      && ["TST.I7.DAY1", "TST.I7.DAY2"].includes(note.sourcePromptId)
+    ),
+    false,
+  );
+});
+
+test("duplicate prompt blocks disappear with the duplicate prompt so the digital page does not render a dead question", () => {
+  const source = baseLab();
+  source.investigations[0].prompts.push({
+    id: "TST.I1.REPEAT",
+    label: "Current reflection",
+    prompt: "Right now I feel like someone who...",
+    type: "TEXT",
+    required: true,
+  });
+  source.investigations[1].prompts.push({
+    id: "TST.I2.REPEAT",
+    label: "Current reflection",
+    prompt: "Right now I feel like someone who...",
+    type: "TEXT",
+    required: true,
+  });
+  source.investigations[1].blocks = [
+    { type: "PROMPT", promptId: "TST.I2.REPEAT" },
+    { type: "HTML", html: "<p>Keep this authored explanation.</p>" },
+  ];
+
+  const result = applyHabitLabStandard(source);
+
+  assert.equal(result.investigations[1].prompts.some((prompt) => prompt.id === "TST.I2.REPEAT"), false);
+  assert.equal(result.investigations[1].blocks.some((block) => block.promptId === "TST.I2.REPEAT"), false);
+  assert.ok(result.investigations[1].blocks.some((block) => block.type === "HTML"));
+});
