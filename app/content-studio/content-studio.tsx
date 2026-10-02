@@ -138,6 +138,34 @@ type ContentItem = {
   versions: ContentVersion[];
 };
 
+type VolumeAuditResult = {
+  volume: number;
+  fileName: string;
+  version: string;
+  expectedLabs: number;
+  compiledLabs: number;
+  blockedLabs: number;
+  editorialReviewLabs: number;
+  passLabs: number;
+  labs: Array<{
+    code: string;
+    title: string;
+    sourceProductNumber: number;
+    sourcePosition: number;
+    canonicalPosition: number;
+    detectedLearnerCopies: number;
+    expectedLearnerCopies: number;
+    sourceWarnings: string[];
+    compileStatus: "COMPILED" | "BLOCKED";
+    standardVersion: string | null;
+    editorialStatus: "PASS" | "REVIEW" | "BLOCKED";
+    editorialIssues: Array<{ code?: string; severity?: string; investigation?: number; message?: string }>;
+    normalizationNotes: Array<{ message?: string }>;
+    investigationCount: number;
+    promptCount: number;
+  }>;
+};
+
 type StudioSnapshot = {
   metrics: {
     learningModules: number;
@@ -191,6 +219,12 @@ export function ContentStudio() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
+  const [volumeAuditOpen, setVolumeAuditOpen] = useState(false);
+  const [volumeAuditVolume, setVolumeAuditVolume] = useState("1");
+  const [volumeAuditVersion, setVolumeAuditVersion] = useState("source-2026");
+  const [volumeAuditFile, setVolumeAuditFile] = useState<File | null>(null);
+  const [volumeAuditResult, setVolumeAuditResult] = useState<VolumeAuditResult | null>(null);
+  const [auditingVolume, setAuditingVolume] = useState(false);
   const [kind, setKind] = useState<ContentKind>("LEARNING_MODULE");
   const [code, setCode] = useState("");
   const [slug, setSlug] = useState("");
@@ -256,6 +290,35 @@ export function ContentStudio() {
       return null;
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function auditVolume() {
+    if (!volumeAuditFile) {
+      setError("Choose the original BIS Volume Word document.");
+      return;
+    }
+    setAuditingVolume(true);
+    setError("");
+    setMessage("");
+    setVolumeAuditResult(null);
+    try {
+      const form = new FormData();
+      form.set("file", volumeAuditFile);
+      form.set("volume", volumeAuditVolume);
+      form.set("version", volumeAuditVersion.trim() || "source-2026");
+      const response = await fetch("/api/content-studio/volume-audit", {
+        method: "POST",
+        body: form,
+      });
+      const result = await response.json() as VolumeAuditResult & { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "The BIS volume could not be audited.");
+      setVolumeAuditResult(result);
+      setMessage(`Volume ${result.volume} split into ${result.expectedLabs} Lab drafts. Nothing was published.`);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "The BIS volume could not be audited.");
+    } finally {
+      setAuditingVolume(false);
     }
   }
 
@@ -478,6 +541,7 @@ export function ContentStudio() {
         </Link>
         <div className="content-studio-header-actions">
           <Button asChild variant="outline"><Link href="/workspace?view=admin"><ArrowLeft /> Administration</Link></Button>
+          <Button variant="outline" onClick={() => setVolumeAuditOpen((value) => !value)}><ClipboardCheck /> Audit a volume</Button>
           <Button variant="outline" onClick={() => setCreateOpen((value) => !value)}><Plus /> Add something new</Button>
         </div>
       </header>
@@ -501,6 +565,89 @@ export function ContentStudio() {
         <article><PackageCheck /><span>Ready to publish</span><strong>{data.metrics.ready}</strong></article>
         <article><ShieldCheck /><span>Published versions</span><strong>{data.metrics.live}</strong></article>
       </section>
+
+      {volumeAuditOpen ? (
+        <section className="content-studio-card volume-audit-card">
+          <div className="content-studio-section-title">
+            <div>
+              <p className="eyebrow">Volume intake</p>
+              <h2>Audit a complete BIS volume before migration</h2>
+              <p>The source stays unchanged. BIS splits the Word document into individual Lab drafts, runs the Habit Lab standard and reports what must be strengthened before approval.</p>
+            </div>
+            <ClipboardCheck />
+          </div>
+          <div className="volume-audit-controls">
+            <label>
+              Source volume
+              <Select value={volumeAuditVolume} onValueChange={setVolumeAuditVolume}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Volume 1 · 12 Labs</SelectItem>
+                  <SelectItem value="2">Volume 2 · 10 source-backed Labs</SelectItem>
+                  <SelectItem value="3">Volume 3 · 10 Labs</SelectItem>
+                </SelectContent>
+              </Select>
+            </label>
+            <label>
+              Audit version
+              <Input value={volumeAuditVersion} onChange={(event) => setVolumeAuditVersion(event.target.value)} placeholder="source-2026" />
+            </label>
+            <label className="volume-audit-file">
+              Word source
+              <input
+                type="file"
+                accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={(event) => setVolumeAuditFile(event.target.files?.[0] ?? null)}
+              />
+              <small>{volumeAuditFile ? volumeAuditFile.name : "Choose the original Volume DOCX"}</small>
+            </label>
+            <Button onClick={() => void auditVolume()} disabled={auditingVolume || !volumeAuditFile}>
+              {auditingVolume ? <LoaderCircle className="spin" /> : <ClipboardCheck />}
+              {auditingVolume ? "Auditing volume…" : "Run volume audit"}
+            </Button>
+          </div>
+
+          {volumeAuditResult ? (
+            <div className="volume-audit-results">
+              <div className="volume-audit-summary">
+                <article><strong>{volumeAuditResult.expectedLabs}</strong><span>Lab drafts found</span></article>
+                <article><strong>{volumeAuditResult.compiledLabs}</strong><span>Structurally compiled</span></article>
+                <article><strong>{volumeAuditResult.editorialReviewLabs}</strong><span>Need strengthening</span></article>
+                <article><strong>{volumeAuditResult.blockedLabs}</strong><span>Blocked</span></article>
+                <article><strong>{volumeAuditResult.passLabs}</strong><span>Editorial pass</span></article>
+              </div>
+              <div className="volume-audit-list">
+                {volumeAuditResult.labs.map((lab) => (
+                  <article key={lab.code} data-status={lab.editorialStatus.toLowerCase()}>
+                    <header>
+                      <div>
+                        <span>{lab.code}</span>
+                        <strong>{lab.title}</strong>
+                        <small>Source Product #{lab.sourceProductNumber} · source position {lab.sourcePosition} · {lab.promptCount} captured fields</small>
+                      </div>
+                      <b>{lab.editorialStatus}</b>
+                    </header>
+                    {lab.sourceWarnings.length ? (
+                      <ul>{lab.sourceWarnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
+                    ) : null}
+                    {lab.editorialIssues.length ? (
+                      <div className="volume-audit-issues">
+                        {lab.editorialIssues.slice(0, 6).map((issue, index) => (
+                          <p key={`${lab.code}-${issue.code ?? "issue"}-${index}`}>
+                            <strong>{issue.investigation ? `Investigation ${issue.investigation}: ` : ""}{issue.code ?? "Review"}</strong>
+                            {issue.message}
+                          </p>
+                        ))}
+                        {lab.editorialIssues.length > 6 ? <small>+ {lab.editorialIssues.length - 6} more review findings</small> : null}
+                      </div>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       {createOpen ? (
         <section className="content-studio-card content-create">
