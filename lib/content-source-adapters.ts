@@ -2,7 +2,6 @@ import { inflateRawSync, inflateSync } from "node:zlib";
 import type { ContentSourceFormat } from "./content-studio";
 import type { DeliveryEdition } from "./learning-foundation";
 import { inspectLabSourceCapabilities } from "./lab-factory-capabilities.mjs";
-import bisVolumeMigrationManifest from "./bis-volume-migration-manifest.json";
 
 type AdaptMetadata = {
   title: string;
@@ -2126,7 +2125,21 @@ function labPackageFromBlocks(
 }
 
 
-type BisVolumeMigrationEntry = (typeof bisVolumeMigrationManifest.entries)[number];
+type BisVolumeMigrationEntry = {
+  code: string;
+  volume: number;
+  title: string;
+  titleStem: string;
+  slug: string;
+  sourceProductNumber: number;
+  sourcePosition: number;
+  canonicalPosition: number;
+  experimentDays: number;
+  expectedLearnerCopies: number;
+  sourceInvestigation2: string;
+  canonicalInvestigation2: string;
+  transferSubstage: number | null;
+};
 
 export type AdaptedBisVolumeLab = {
   code: string;
@@ -2237,6 +2250,8 @@ export async function adaptBisVolumeSource(
   volume: 1 | 2 | 3,
   version: string,
 ): Promise<AdaptedBisVolumeLab[]> {
+  const manifestModule = await import("./bis-volume-migration-manifest.json");
+  const bisVolumeMigrationManifest = manifestModule.default as { entries: BisVolumeMigrationEntry[] };
   const blocks = docxBlocks(bytes);
   const entries = bisVolumeMigrationManifest.entries
     .filter((entry) => entry.volume === volume)
