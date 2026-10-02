@@ -90,6 +90,13 @@ type Runtime = {
   events: Array<{ dayNumber: number; eligibleOpportunity: boolean; alternativeUsed: boolean | null; details?: Record<string, unknown> | null }>;
   measurements: Record<string, { value: unknown; status: string; evidenceStrength: string }>;
   responses?: Record<string, { value: unknown; status: string; responseId?: string; recordedAt?: string }>;
+  programmeHandoff?: {
+    experimentStarted: boolean;
+    currentDay: number;
+    totalDays: number;
+    evidenceDaysRecorded: number;
+    todayEvidenceRecorded: boolean;
+  };
 };
 
 const emptyRuntime = (): Runtime => ({
@@ -416,7 +423,29 @@ export function ProgrammePlayer({
               })
                 .then(async (response) => response.ok ? await response.json() as Runtime : null)
                 .catch(() => null)
-            : Promise.resolve<Runtime | null>(null);
+            : moduleCode !== "HAB"
+              ? fetch(`/api/universal-lab?lab=${encodeURIComponent(moduleCode)}`, {
+                  cache: "no-store",
+                  signal: controller.signal,
+                })
+                  .then(async (response) => {
+                    if (!response.ok) return null;
+                    const universal = await response.json() as {
+                      enrolment?: Runtime["enrolment"];
+                      measurements?: Runtime["measurements"];
+                      responses?: Runtime["responses"];
+                      programmeHandoff?: Runtime["programmeHandoff"];
+                    };
+                    return {
+                      ...emptyRuntime(),
+                      enrolment: universal.enrolment ?? null,
+                      measurements: universal.measurements ?? {},
+                      responses: universal.responses ?? {},
+                      programmeHandoff: universal.programmeHandoff,
+                    } satisfies Runtime;
+                  })
+                  .catch(() => null)
+              : Promise.resolve<Runtime | null>(null);
 
           const [learningResponse, runtimeResponse, moduleRuntimeResult] = await Promise.all([
             fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
@@ -502,7 +531,14 @@ export function ProgrammePlayer({
     [facilitatorMode, page, programme],
   );
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
-  const moduleLabIsLive = moduleDefinition?.labStatus === "live" && Boolean(moduleDefinition.labHref);
+  const universalLabHref = moduleRuntime?.programmeHandoff
+    ? `/labs/${moduleCode.toLowerCase()}`
+    : null;
+  const resolvedLabHref = moduleDefinition?.labHref ?? universalLabHref;
+  const moduleLabIsLive = Boolean(
+    (moduleDefinition?.labStatus === "live" && moduleDefinition.labHref)
+    || universalLabHref,
+  );
   const completed = useMemo(
     () =>
       new Set(
@@ -518,13 +554,27 @@ export function ProgrammePlayer({
     [snapshot, release, moduleCode],
   );
   const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
-  const experimentDay = currentExperimentDay(activeModuleRuntime?.experiment ?? null);
+  const programmeHandoff = activeModuleRuntime?.programmeHandoff;
+  const experimentDay =
+    programmeHandoff?.currentDay
+    || currentExperimentDay(activeModuleRuntime?.experiment ?? null);
+  const experimentTotalDays = programmeHandoff?.totalDays || 7;
+  const experimentRecordedDays =
+    programmeHandoff?.evidenceDaysRecorded
+    ?? new Set(activeModuleRuntime?.events.map((event) => event.dayNumber) ?? []).size;
   const labExperimentStarted =
     readOnlyMode ||
-    Boolean(activeModuleRuntime?.enrolment?.phaseACompletedAt || activeModuleRuntime?.experiment);
+    Boolean(
+      programmeHandoff?.experimentStarted
+      || activeModuleRuntime?.enrolment?.phaseACompletedAt
+      || activeModuleRuntime?.experiment,
+    );
   const labHandoffComplete =
     readOnlyMode ||
-    Boolean(activeModuleRuntime?.experiment && activeModuleRuntime.events.length > 0);
+    Boolean(
+      (programmeHandoff && programmeHandoff.evidenceDaysRecorded > 0)
+      || (activeModuleRuntime?.experiment && activeModuleRuntime.events.length > 0),
+    );
   const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
   const labSequenceLocked =
     !readOnlyMode &&
@@ -1069,8 +1119,8 @@ export function ProgrammePlayer({
     page.programmeDay === BIS_MODULE_TEMPLATE.handoffProgrammeDay || page.key === "Day 3";
   const dayThree = isLabHandoffDay ? splitDayThree(page) : null;
   const learningReturnTo = `${pathname}?section=learn&page=${selected + 1}`;
-  const moduleLabHref = moduleLabIsLive && moduleDefinition?.labHref
-    ? labHrefWithReturn(moduleDefinition.labHref, learningReturnTo)
+  const moduleLabHref = moduleLabIsLive && resolvedLabHref
+    ? labHrefWithReturn(resolvedLabHref, learningReturnTo)
     : null;
   const moduleLabTitle = moduleDefinition?.title ?? `${programme.title} Lab`;
 
@@ -1095,8 +1145,8 @@ export function ProgrammePlayer({
             </>
           ) : previewMode ? (
             <strong>Preview mode · nothing here is saved to learner records</strong>
-          ) : activeModuleRuntime?.experiment?.status === "ACTIVE" && experimentDay ? (
-            <strong>Experiment Day {experimentDay} of 7</strong>
+          ) : labExperimentStarted && experimentDay ? (
+            <strong>Experiment Day {experimentDay} of {experimentTotalDays}</strong>
           ) : null}
         </div>
       </header>
@@ -1226,12 +1276,16 @@ export function ProgrammePlayer({
                 </article>
               ) : null}
 
-              {activeModuleRuntime?.experiment && moduleLabIsLive ? (
+              {labExperimentStarted && moduleLabIsLive && experimentTotalDays > 0 ? (
                 <article className="prototype-card prototype-action-card">
                   <CalendarDays />
                   <p className="prototype-eyebrow">Real-world test</p>
-                  <h3>{activeModuleRuntime.events.length}/7 observation days recorded.</h3>
-                  <p>No matching situation is valid evidence. The experiment has its own clock.</p>
+                  <h3>{experimentRecordedDays}/{experimentTotalDays} observation days recorded.</h3>
+                  <p>
+                    {programmeHandoff && !programmeHandoff.todayEvidenceRecorded
+                      ? `Experiment Day ${experimentDay ?? programmeHandoff.currentDay} is ready when the matching situation has been experienced.`
+                      : "No matching situation is valid evidence. The experiment has its own clock."}
+                  </p>
                   <Link
                     className="prototype-btn soft"
                     href={
@@ -1328,7 +1382,7 @@ export function ProgrammePlayer({
                   <strong>Reference view</strong>
                   <p>
                     {moduleLabIsLive
-                      ? `This page belongs after ${moduleLabTitle} Phase A. You can read it now, but programme progress resumes after the Lab.`
+                      ? `This page belongs after the first Investigation 7 evidence in ${moduleLabTitle}. You can read it now, but programme progress resumes after that Lab handback.`
                       : `This page belongs after ${moduleLabTitle}. Digital Lab access is not enabled for this programme yet, so this page is shown for reference only.`}
                   </p>
                 </div>
@@ -1442,7 +1496,7 @@ export function ProgrammePlayer({
                   : previewMode
                     ? selected === programme.treatment.pages.length - 1 ? "Preview complete" : "Next preview page"
                     : labSequenceLocked
-                    ? moduleLabIsLive ? "Complete the Lab first" : "Continue after the Lab"
+                    ? moduleLabIsLive ? "Record Lab evidence first" : "Continue after the Lab"
                     : completed.has(page.id)
                       ? "Reviewed"
                       : "Complete & continue"}
