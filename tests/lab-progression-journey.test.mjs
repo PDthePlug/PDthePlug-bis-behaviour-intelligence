@@ -130,3 +130,27 @@ test("Universal Lab API exposes programme handoff state from saved Investigation
   assert.match(player, /programmeHandoff\?\.experimentStarted/);
   assert.match(player, /programmeHandoff && programmeHandoff\.evidenceDaysRecorded > 0/);
 });
+
+
+test("Habit, core and Universal Lab APIs expose one programme handoff contract", async () => {
+  const [habitApi, coreApi, universalApi, player] = await Promise.all([
+    source("app/api/bis/route.ts"),
+    source("app/api/labs/route.ts"),
+    source("app/api/universal-lab/route.ts"),
+    source("app/learning/programme-player.tsx"),
+  ]);
+
+  for (const api of [habitApi, coreApi, universalApi]) {
+    assert.match(api, /programmeHandoff/);
+    assert.match(api, /experimentStarted/);
+    assert.match(api, /currentDay/);
+    assert.match(api, /totalDays/);
+    assert.match(api, /evidenceDaysRecorded/);
+    assert.match(api, /todayEvidenceRecorded/);
+  }
+
+  assert.match(player, /const programmeHandoff = activeModuleRuntime\?\.programmeHandoff/);
+  assert.match(player, /programmeHandoff\?\.currentDay/);
+  assert.match(player, /programmeHandoff\?\.totalDays/);
+  assert.match(player, /programmeHandoff\?\.evidenceDaysRecorded/);
+});
