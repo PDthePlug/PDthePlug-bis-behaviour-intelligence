@@ -178,6 +178,8 @@ function UniversalEvidenceTable({
   passed,
   onValue,
   onPass,
+  activeExperimentDay,
+  previewMode = false,
 }: {
   block: Extract<NonNullable<UniversalLabPackage["investigations"][number]["blocks"]>[number], { type: "TABLE" }>;
   promptById: Map<string, UniversalLabPrompt>;
@@ -185,7 +187,19 @@ function UniversalEvidenceTable({
   passed: Set<string>;
   onValue: (promptId: string, value: string) => void;
   onPass: (promptId: string, value: boolean) => void;
+  activeExperimentDay?: number | null;
+  previewMode?: boolean;
 }) {
+  const visibleRows = block.rows.filter((row) => {
+    const scheduledDays = row.flatMap((cell) => {
+      if (cell.kind !== "PROMPT" && cell.kind !== "CHOICE") return [];
+      const day = promptById.get(cell.promptId)?.scheduleDay;
+      return day ? [Number(day)] : [];
+    });
+    if (!scheduledDays.length || previewMode) return true;
+    return Boolean(activeExperimentDay && scheduledDays.includes(activeExperimentDay));
+  });
+
   return (
     <section className="universal-evidence-table" aria-label={block.caption || "Evidence table"}>
       {block.caption ? <h2>{block.caption}</h2> : null}
@@ -197,7 +211,7 @@ function UniversalEvidenceTable({
             </tr>
           </thead>
           <tbody>
-            {block.rows.map((row, rowIndex) => (
+            {visibleRows.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {row.map((cell, columnIndex) => {
                   const header = block.headers[columnIndex] || `Column ${columnIndex + 1}`;
@@ -450,12 +464,21 @@ function UniversalInvestigationForm({
     new Set(investigation.prompts.filter((prompt) => snapshot.responses[prompt.id]?.status === "PASS").map((prompt) => prompt.id)),
   );
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+  const isExperimentInvestigation =
+    snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
+    && step === snapshot.definition.experiment?.investigation;
   const availableExperimentDay = previewMode
     ? (snapshot.definition.experiment?.days ?? 9)
     : (snapshot.experimentTiming?.availableDay ?? 0);
-  const visiblePrompts = investigation.prompts.filter((prompt) =>
-    !prompt.scheduleDay || prompt.scheduleDay <= availableExperimentDay,
-  );
+  const activeExperimentDay = previewMode || !isExperimentInvestigation
+    ? null
+    : availableExperimentDay;
+  const visiblePrompts = investigation.prompts.filter((prompt) => {
+    if (!prompt.scheduleDay) return true;
+    if (previewMode) return true;
+    if (!isExperimentInvestigation) return Number(prompt.scheduleDay) <= availableExperimentDay;
+    return Number(prompt.scheduleDay) === activeExperimentDay;
+  });
   const ready = useMemo(
     () => visiblePrompts.every((prompt) => {
       if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return true;
@@ -521,7 +544,15 @@ function UniversalInvestigationForm({
     return next;
   });
   const renderPrompt = (prompt: UniversalLabPrompt) => {
-    if (prompt.scheduleDay && prompt.scheduleDay > availableExperimentDay) return null;
+    if (prompt.scheduleDay) {
+      if (previewMode) {
+        // Preview intentionally shows the whole experiment.
+      } else if (isExperimentInvestigation && Number(prompt.scheduleDay) !== activeExperimentDay) {
+        return null;
+      } else if (!isExperimentInvestigation && Number(prompt.scheduleDay) > availableExperimentDay) {
+        return null;
+      }
+    }
     return (
       <UniversalPrompt
         key={prompt.id}
@@ -549,8 +580,8 @@ function UniversalInvestigationForm({
             {previewMode
               ? "Preview mode shows the complete experiment structure."
               : snapshot.experimentTiming?.reviewReady
-                ? "Your full experiment window is complete. Save the remaining evidence to continue to review."
-                : "Only evidence for calendar days that have actually arrived can be recorded."}
+                ? "This is the final experiment day. Record today’s evidence to continue to review."
+                : "Only today’s evidence is open. Tomorrow’s evidence unlocks when tomorrow arrives."}
           </p>
         </section>
       ) : null}
@@ -568,6 +599,8 @@ function UniversalInvestigationForm({
               passed={passed}
               onValue={updatePromptValue}
               onPass={updatePromptPass}
+              activeExperimentDay={activeExperimentDay}
+              previewMode={previewMode}
             />
           );
         }
@@ -649,6 +682,10 @@ export function UniversalRuntimeLab({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const previewMode = Boolean(previewVersionId);
+  const programmeReturnTo = (() => {
+    const value = searchParams.get("returnTo");
+    return value?.startsWith("/") && !value.startsWith("//") ? value : null;
+  })();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -877,6 +914,15 @@ export function UniversalRuntimeLab({
             ? requested
             : serverUnlockedInvestigation(saved.enrolment?.currentInvestigation, requested);
           if (target < requested) {
+            const experimentStep =
+              snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
+              && step === snapshot.definition.experiment?.investigation;
+            if (experimentStep) {
+              if (programmeReturnTo) {
+                router.replace(programmeReturnTo);
+              }
+              return;
+            }
             setError("Your evidence was saved, but the next investigation is still locked. Please try again.");
             return;
           }
