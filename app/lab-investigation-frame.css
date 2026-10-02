@@ -1954,3 +1954,23 @@
     font-size:15px;
   }
 }
+
+
+.universal-package-lab .imported-lab-content .bis-digital-equation{
+  margin:14px 0;
+  padding:16px 18px;
+  border:1px solid #d8e0db;
+  border-radius:12px;
+  background:#f6f9f7;
+  color:#193f38;
+  font:750 clamp(15px,2.4vw,18px)/1.5 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:-.01em;
+  text-align:center;
+}
+@media(max-width:700px){
+  .universal-package-lab .imported-lab-content .bis-digital-equation{
+    padding:14px 13px;
+    font-size:15px;
+    text-align:left;
+  }
+}
