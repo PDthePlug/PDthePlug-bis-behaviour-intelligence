@@ -2,6 +2,18 @@
 
 BIS is a private, evidence-first behaviour investigation product. This repository ships Habit Lab 4.5.2, Decision Lab 4.2.1, Money Lab 4.2 and the closed-pilot operations gate.
 
+## Universal Laboratory presentation contract
+
+The learner runtime follows a semantic presentation contract inspired by the Applied Commerce reader architecture:
+
+- source files remain the canonical authored record, but Word/Markdown formatting is never treated as the learner interface;
+- narrative, guidance, questions, choices, evidence fields, measures and tables are interpreted as different interaction types before rendering;
+- the visible journey is always the nine-stage BIS laboratory sequence: Hook, Pattern, Revelation, Mapping, Equation, Contract, Experiment, Evidence Review and Profile;
+- BEI/TEI codes remain measurement metadata rather than answer choices or duplicated learner questions;
+- workbook tables that contain learner blanks become native evidence controls, including responsive mobile row cards;
+- reading content stays editorial and quiet while evidence-response surfaces carry the strongest visual hierarchy;
+- application navigation stays in product chrome and never floats over learner evidence.
+
 ## Universal Laboratory — source-backed production runtime
 
 BIS now exposes the supplied source-backed catalogue through one governed Universal Lab runtime rather than separate one-off readers:
