@@ -197,7 +197,8 @@ test("planned Labs keep post-Day-3 handbook pages as honest reference material",
 test("shared learner shell uses the active module Lab rather than leaking Habit state", async () => {
   const player = await source("app/learning/programme-player.tsx");
 
-  assert.match(player, /activeModuleRuntime\?\.experiment\?\.status === "ACTIVE"/);
-  assert.match(player, /activeModuleRuntime\.events\.length/);
+  assert.match(player, /const activeModuleRuntime = moduleCode === "HAB" \? runtime : moduleRuntime/);
+  assert.match(player, /programmeHandoff\?\.experimentStarted/);
+  assert.match(player, /experimentRecordedDays/);
   assert.doesNotMatch(player, /moduleCode === "HAB" && runtime\.experiment/);
 });
