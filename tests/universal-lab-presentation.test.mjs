@@ -486,11 +486,11 @@ test("each investigation is one Learn-style document instead of a stack of cards
   assert.match(css, /background:transparent!important/);
 });
 
-test("passed questions keep their input visible and use compact skip language", async () => {
+test("passed questions keep their input visible without repetitive skip prose", async () => {
   const runtime = await source("app/labs/[code]/universal-runtime-lab.tsx");
   assert.match(runtime, /prompt-controls/);
   assert.match(runtime, /is-passed/);
-  assert.match(runtime, /Skipped for now\. Start typing or choose an answer to respond\./);
+  assert.doesNotMatch(runtime, /Skipped for now/);
   assert.doesNotMatch(runtime, /You chose not to answer this question/);
 });
 
@@ -532,4 +532,45 @@ test("authored mapping activities are not duplicated by a generic generated Draw
     investigation.prompts.filter((prompt) => prompt.label === "My Identity Map").length,
     1,
   );
+});
+
+test("workbook section labels become digital hierarchy and paper-only commitment blanks disappear", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    {
+      type: "HTML",
+      html: '<p>Your Personal Equation</p>'
+        + '<p>Instructions: Each day, record ONE moment when you noticed the pattern.</p>'
+        + '<p>My Commitment Statement</p>'
+        + '<p>"I, ________________________________, commit to observing my identity for 7 days, starting on ___________ and ending on ___________. I understand that I will not be perfect."</p>'
+        + '<p>"Right now I feel like someone who..."</p>'
+        + '<p>Example Equations:</p>',
+    },
+    { type: "PROMPT", promptId: "PEF.I1.Q1" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const html = result.investigations[0].blocks
+    .filter((block) => block.type === "HTML")
+    .map((block) => block.html)
+    .join("");
+
+  assert.match(html, /bis-digital-section-heading/);
+  assert.match(html, /bis-digital-instruction-panel/);
+  assert.match(html, /bis-digital-commitment/);
+  assert.match(html, /bis-reflection-stem/);
+  assert.doesNotMatch(html, /_{3,}/);
+  assert.match(universalHtmlText(html), /I commit to observing my identity for 7 days/);
+  assert.match(universalHtmlText(html), /BIS sets the seven-day evidence window when Investigation 7 begins/);
+});
+
+test("Universal Lab CSS permanently suppresses the obsolete side-number gutter", async () => {
+  const [runtime, css] = await Promise.all([
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("app/lab-investigation-frame.css"),
+  ]);
+  assert.doesNotMatch(runtime, /className="prompt-number"/);
+  assert.match(css, /\.universal-package-lab \.prompt-number\{\s*display:none!important/);
 });
