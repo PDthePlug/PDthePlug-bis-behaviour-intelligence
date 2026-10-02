@@ -99,27 +99,23 @@ export function LabMissionHeader({
     || /^of\s+\d+$/i.test(authoredTitle)
     || /^\d+\s*\/\s*9$/.test(authoredTitle)
     || /^investigation\s+\d+/i.test(authoredTitle);
-  const displayTitle =
-    malformedTitle || comparable(authoredTitle) === comparable(canonicalTitle)
-      ? canonicalTitle
-      : authoredTitle;
+  const authoredFocus =
+    !malformedTitle
+    && canonicalStage
+    && comparable(authoredTitle) !== comparable(canonicalTitle)
+      ? authoredTitle
+      : "";
   return (
     <header className="universal-lab-mission">
       <div className="universal-lab-mission-copy">
-        <p className="eyebrow">
-          {canonicalStage
-            ? `Investigation ${step} · ${canonicalStage.label}`
-            : "Mission"}
-        </p>
-        <h1>{displayTitle}</h1>
+        <p className="eyebrow">Investigation {step} of {total}</p>
+        <h1>{canonicalTitle}</h1>
+        {authoredFocus ? <p className="universal-lab-focus">{authoredFocus}</p> : null}
         <p>{investigation.mission}</p>
-        {canonicalStage?.role ? (
-          <p className="universal-lab-stage-role">{canonicalStage.role}</p>
-        ) : null}
         {investigation.produces?.length ? (
           <div className="universal-lab-produces">
             <strong>You will produce:</strong>
-            {investigation.produces.map((output) => <span key={output}>□ {output}</span>)}
+            {investigation.produces.map((output) => <span key={output}>{output}</span>)}
           </div>
         ) : null}
       </div>

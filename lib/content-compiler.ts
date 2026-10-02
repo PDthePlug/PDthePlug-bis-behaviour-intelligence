@@ -79,9 +79,20 @@ export type UniversalLabPrompt = {
   standardPurpose?: string;
 };
 
+export type UniversalLabTableCell =
+  | { kind: "TEXT"; text: string }
+  | { kind: "PROMPT"; promptId: string };
+
 export type UniversalLabRenderBlock =
   | { type: "HTML"; html: string }
-  | { type: "PROMPT"; promptId: string };
+  | { type: "PROMPT"; promptId: string }
+  | {
+      type: "TABLE";
+      id: string;
+      caption?: string;
+      headers: string[];
+      rows: UniversalLabTableCell[][];
+    };
 
 export type UniversalLabInvestigation = {
   number: number;

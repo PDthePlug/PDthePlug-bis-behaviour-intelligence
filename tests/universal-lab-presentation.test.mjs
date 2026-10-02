@@ -188,3 +188,129 @@ test("Universal runtime saves baseline as investigation zero without unlocking p
   assert.match(runtime, /investigation: 0/);
   assert.match(runtime, /presentationBaseline/);
 });
+
+
+test("TEI prediction metadata never becomes a learner answer and duplicate check collapses", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [
+    {
+      id: "SYS.I3.HUMAN",
+      label: "Was your prediction correct?",
+      prompt: "Was your prediction correct?",
+      type: "CATEGORICAL",
+      options: ["TEI-03: Prediction prediction-to-outcome check Score:", "Correct", "Incorrect"],
+      required: true,
+      group: "Were you correct?",
+    },
+    {
+      id: "SYS.I3.TEI03",
+      label: "TEI-03: Prediction prediction-to-outcome check Score",
+      prompt: "TEI-03: Prediction prediction-to-outcome check Score:",
+      type: "CATEGORICAL",
+      options: ["Correct", "Incorrect"],
+      required: true,
+      group: "Were you correct?",
+    },
+  ];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    { type: "PROMPT", promptId: "SYS.I3.HUMAN" },
+    { type: "PROMPT", promptId: "SYS.I3.TEI03" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const prompts = result.investigations[0].prompts;
+  assert.equal(prompts.length, 1);
+  assert.equal(prompts[0].prompt, "Was your prediction correct?");
+  assert.deepEqual(prompts[0].options, ["Correct", "Incorrect"]);
+  assert.equal(prompts.flatMap((prompt) => prompt.options ?? []).some((option) => /^TEI-03/.test(option)), false);
+});
+
+test("workbook blank tables become native evidence tables with real prompt cells", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [{
+    id: "TIM.I2.NOTICE",
+    label: "What did you notice?",
+    prompt: "What did you notice?",
+    type: "TEXT",
+    required: true,
+  }];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    {
+      type: "HTML",
+      html: "<table><tr><th>**Day**</th><th>**Planned**</th><th>**Actual**</th></tr><tr><td>Day 1</td><td>_____</td><td>_____</td></tr><tr><td>Day 2</td><td>_____</td><td>_____</td></tr><tr><td>Day 3</td><td>_____</td><td>_____</td></tr></table>",
+    },
+    { type: "PROMPT", promptId: "TIM.I2.NOTICE" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  const table = investigation.blocks.find((block) => block.type === "TABLE");
+  assert.ok(table);
+  assert.deepEqual(table.headers, ["Day", "Planned", "Actual"]);
+  assert.equal(table.rows.length, 3);
+  assert.equal(
+    table.rows.flatMap((row) => row).filter((cell) => cell.kind === "PROMPT").length,
+    6,
+  );
+  assert.equal(investigation.prompts.filter((prompt) => /Planned|Actual/.test(prompt.label)).length, 6);
+});
+
+test("produced outputs are not repeated inside imported source prose", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.produces = [
+    "Understanding of time as attention",
+    "Prediction prediction-to-outcome check check",
+  ];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    {
+      type: "HTML",
+      html: "<p>☐ Understanding of time as attention</p><p>☐ Prediction prediction-to-outcome check check</p><p>Episode 2: What Myah Couldn't Fix</p>",
+    },
+    { type: "PROMPT", promptId: "PEF.I1.Q1" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  const html = investigation.blocks.filter((block) => block.type === "HTML").map((block) => block.html).join("");
+  assert.doesNotMatch(universalHtmlText(html), /Understanding of time as attention/);
+  assert.doesNotMatch(universalHtmlText(html), /prediction-to-outcome check/i);
+  assert.match(universalHtmlText(html), /Episode 2/);
+  assert.deepEqual(investigation.produces, [
+    "Understanding of time as attention",
+    "A check of your original prediction",
+  ]);
+});
+
+test("learner frame shows the canonical nine-stage journey without internal facilitation instructions", async () => {
+  const frame = await source("app/lab-investigation-frame.tsx");
+  assert.match(frame, /<h1>{canonicalTitle}<\/h1>/);
+  assert.doesNotMatch(frame, /canonicalStage\?\.role/);
+  assert.doesNotMatch(frame, />□ \{output\}</);
+});
+
+test("BIS menu lives in the top app bar and no longer overlays evidence", async () => {
+  const [shell, css] = await Promise.all([
+    source("app/canonical-adaptive-shell.tsx"),
+    source("app/canonical-shell.css"),
+  ]);
+  assert.match(shell, /className="canonical-topbar-menu"/);
+  assert.doesNotMatch(shell, /className="canonical-menu-trigger"/);
+  assert.match(css, /\.canonical-menu-trigger\{display:none!important\}/);
+});
+
+test("Volume 3 TEI codes are first-class evidence indicators", async () => {
+  const [adapter, capabilities, v2] = await Promise.all([
+    source("lib/content-source-adapters.ts"),
+    source("lib/lab-factory-capabilities.mjs"),
+    source("lib/universal-lab-v2.mjs"),
+  ]);
+  assert.match(adapter, /BEI\\|TEI/);
+  assert.match(capabilities, /BEI\\|TEI/);
+  assert.match(v2, /bei\\|tei/);
+});

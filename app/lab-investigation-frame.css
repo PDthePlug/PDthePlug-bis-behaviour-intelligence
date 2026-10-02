@@ -731,3 +731,545 @@
     padding-bottom:calc(112px + env(safe-area-inset-bottom));
   }
 }
+
+
+/* Universal Laboratory Presentation System v2
+   Editorial rhythm borrowed from the Applied Commerce reader:
+   source meaning is preserved, source formatting is not. */
+.universal-lab-frame{
+  background:#f5f6f4;
+}
+.universal-lab-progress{
+  min-height:50px;
+  background:rgba(247,248,246,.97);
+}
+.universal-investigation-nav{
+  max-width:100%;
+  padding-top:10px;
+  padding-bottom:10px;
+  background:#f5f6f4;
+}
+.universal-investigation-nav button{
+  flex-basis:158px;
+  min-height:58px;
+  border-radius:13px;
+}
+.universal-investigation-nav button>span{
+  width:30px;
+  height:30px;
+}
+.universal-lab-stage{
+  width:min(820px,calc(100% - 48px));
+  padding:40px 0 104px;
+}
+.universal-lab-mission{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:18px 28px;
+  margin-bottom:34px;
+  padding-bottom:30px;
+  border-bottom:1px solid #dfe3df;
+}
+.universal-lab-mission-copy{max-width:700px}
+.universal-lab-mission .eyebrow{
+  margin-bottom:8px;
+  font-size:10px;
+}
+.universal-lab-mission h1{
+  font-size:clamp(38px,5vw,54px);
+  line-height:1;
+  letter-spacing:-.035em;
+}
+.universal-lab-mission .universal-lab-focus{
+  margin:10px 0 0!important;
+  color:#24423d!important;
+  font:800 12px/1.45 var(--font-sans,system-ui,sans-serif)!important;
+  letter-spacing:.035em;
+  text-transform:uppercase;
+}
+.universal-lab-mission-copy>p:not(.eyebrow):not(.universal-lab-focus){
+  max-width:640px;
+  margin-top:12px;
+  font-size:16px;
+  line-height:1.62;
+}
+.universal-lab-produces{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:18px;
+  padding-left:0;
+}
+.universal-lab-produces strong{
+  width:100%;
+  margin-bottom:2px;
+  color:#53635e;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.universal-lab-produces span{
+  padding:7px 10px;
+  border:1px solid #d7ddd9;
+  border-radius:999px;
+  background:#fff;
+  color:#334943;
+  font:700 11px/1.3 var(--font-sans,system-ui,sans-serif);
+}
+.universal-lab-meta{
+  align-self:start;
+  max-width:210px;
+}
+.universal-lab-meta small{display:none}
+
+/* Reading content is a document, not a pile of cards. */
+.universal-package-lab{
+  gap:0!important;
+}
+.universal-package-lab .imported-lab-content{
+  display:block;
+  width:100%;
+  max-width:720px;
+  margin:0 auto;
+  padding:4px 0 26px;
+  overflow:visible;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.universal-package-lab .imported-lab-content + .imported-lab-content{
+  padding-top:0;
+}
+.universal-package-lab .imported-lab-content h2,
+.universal-package-lab .imported-lab-content h3,
+.universal-package-lab .imported-lab-content h4{
+  max-width:680px;
+  margin:26px 0 10px;
+  color:#17313a;
+}
+.universal-package-lab .imported-lab-content h2{
+  font-size:32px;
+  line-height:1.08;
+}
+.universal-package-lab .imported-lab-content h3{
+  font-size:25px;
+  line-height:1.14;
+}
+.universal-package-lab .imported-lab-content h4{
+  color:#2f8276;
+  font:850 11px/1.35 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.universal-package-lab .imported-lab-content p,
+.universal-package-lab .imported-lab-content li{
+  max-width:680px;
+  margin:0 0 16px;
+  color:#32464f;
+  font:400 18px/1.68 var(--font-serif);
+}
+.universal-package-lab .imported-lab-content p:first-of-type{
+  font-size:18px;
+}
+.universal-package-lab .imported-lab-content .bis-source-pause-kicker{
+  display:inline-flex;
+  margin:14px 0 14px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eee6d7;
+  color:#7c5c2f;
+  font:850 10px/1 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+/* Response surfaces carry the visual weight; prose stays quiet. */
+.universal-package-lab .universal-prompt{
+  margin:18px auto 26px;
+  grid-template-columns:46px minmax(0,1fr);
+  border:1px solid #d9dfdb;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 10px 30px rgb(21 49 58 / 4%);
+}
+.universal-package-lab .universal-prompt .prompt-number,
+.universal-package-lab .prompt-section[data-group] .prompt-number{
+  padding-top:24px;
+  border-right:1px solid #e0e4e1;
+  color:#c9684d;
+  font-size:11px;
+}
+.universal-package-lab .universal-prompt .prompt-body{
+  padding:24px 24px 22px;
+}
+.universal-package-lab .universal-prompt .prompt-kicker{
+  margin-bottom:7px;
+  font-size:9px;
+}
+.universal-package-lab .universal-prompt .prompt-body h2{
+  max-width:620px;
+  font-size:clamp(23px,3vw,29px);
+  line-height:1.13;
+}
+.universal-package-lab .universal-prompt .prompt-body>p{
+  margin-top:9px;
+  font-size:13px;
+  line-height:1.58;
+}
+.universal-package-lab .prompt-controls{margin-top:18px}
+.universal-package-lab .prompt-controls textarea{
+  min-height:104px;
+  border-radius:12px;
+  background:#fbfaf6;
+}
+.universal-package-lab .universal-choice-list{
+  gap:8px;
+}
+.universal-package-lab .universal-choice-list button{
+  min-height:48px;
+  padding:11px 13px;
+  border-radius:12px;
+}
+.universal-package-lab .pass-control{
+  margin-top:12px;
+  font-size:10px;
+}
+
+/* Native evidence table — no manuscript underscores, no horizontal workbook screenshot. */
+.universal-evidence-table{
+  width:100%;
+  margin:18px auto 30px;
+  padding:22px;
+  border:1px solid #d9dfdb;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 10px 30px rgb(21 49 58 / 4%);
+}
+.universal-evidence-table>h2{
+  margin:0 0 16px;
+  font:600 26px/1.1 var(--font-serif);
+}
+.universal-evidence-table-scroll{
+  width:100%;
+  overflow-x:auto;
+}
+.universal-evidence-table table{
+  width:100%;
+  min-width:560px;
+  border-collapse:separate;
+  border-spacing:0;
+  font-family:var(--font-sans,system-ui,sans-serif);
+}
+.universal-evidence-table th{
+  padding:10px 12px;
+  border-bottom:1px solid #d7ddda;
+  background:#eef3f1;
+  color:#314a43;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.05em;
+  text-align:left;
+  text-transform:uppercase;
+}
+.universal-evidence-table td{
+  padding:12px;
+  border-bottom:1px solid #e6e9e7;
+  color:#344842;
+  font-size:12px;
+  vertical-align:top;
+}
+.universal-evidence-table tbody tr:last-child td{border-bottom:0}
+.universal-table-static{
+  display:block;
+  padding-top:9px;
+  font-weight:750;
+}
+.universal-table-field{
+  display:grid;
+  gap:6px;
+}
+.universal-table-field>span{
+  display:none;
+  color:#68736f;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.universal-table-field textarea,
+.universal-table-field input{
+  width:100%;
+  min-height:44px;
+  padding:10px 11px;
+  border:1px solid #ced6d2;
+  border-radius:10px;
+  background:#fbfaf6;
+  color:#17313a;
+  font-size:13px;
+}
+.universal-table-field textarea{min-height:66px;resize:vertical}
+.universal-table-pass{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:7px;
+  color:#7a827e;
+  font-size:9px;
+}
+.universal-table-response.passed{background:#fafaf8}
+
+/* Welcome is editorially quieter and lets the task become the product. */
+.universal-package-welcome .universal-welcome-grid{
+  width:min(1020px,100%);
+  margin-top:4vh;
+  padding:42px;
+}
+.universal-welcome-copy h1{
+  font-size:clamp(50px,6.5vw,78px);
+}
+.universal-package-welcome .universal-start-card{
+  padding:30px;
+}
+.universal-package-welcome .universal-start-card h2{
+  font-size:34px;
+}
+
+/* The menu now lives in the top bar; old bottom clearance is unnecessary. */
+.canonical-shell .universal-lab-frame,
+.canonical-shell .universal-package-welcome,
+.canonical-shell .universal-baseline{
+  padding-bottom:72px;
+}
+
+@media(max-width:820px){
+  .universal-lab-progress{
+    min-height:50px;
+    padding:0 18px;
+  }
+  .universal-investigation-nav{
+    padding:9px 10px;
+  }
+  .universal-investigation-nav button{
+    min-height:48px;
+    padding:5px 1px;
+  }
+  .universal-investigation-nav button>span{
+    width:27px;
+    height:27px;
+  }
+  .universal-lab-stage{
+    width:calc(100% - 32px);
+    padding:30px 0 76px;
+  }
+  .universal-lab-mission{
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-bottom:26px;
+    padding-bottom:24px;
+  }
+  .universal-lab-mission h1{
+    font-size:38px;
+  }
+  .universal-lab-mission-copy>p:not(.eyebrow):not(.universal-lab-focus){
+    font-size:15px;
+  }
+  .universal-lab-meta{
+    max-width:none;
+    justify-content:flex-start;
+  }
+  .universal-package-lab .imported-lab-content{
+    max-width:none;
+    padding:2px 3px 22px;
+  }
+  .universal-package-lab .imported-lab-content p,
+  .universal-package-lab .imported-lab-content li{
+    font-size:17px;
+    line-height:1.62;
+  }
+  .universal-package-lab .universal-prompt{
+    grid-template-columns:38px minmax(0,1fr);
+    margin:14px 0 22px;
+    border-radius:16px;
+  }
+  .universal-package-lab .universal-prompt .prompt-number,
+  .universal-package-lab .prompt-section[data-group] .prompt-number{
+    padding-top:21px;
+  }
+  .universal-package-lab .universal-prompt .prompt-body{
+    padding:21px 17px 19px;
+  }
+  .universal-package-lab .universal-prompt .prompt-body h2{
+    font-size:24px;
+  }
+  .universal-evidence-table{
+    padding:16px;
+    border-radius:16px;
+  }
+  .universal-evidence-table-scroll{overflow:visible}
+  .universal-evidence-table table,
+  .universal-evidence-table tbody,
+  .universal-evidence-table tr,
+  .universal-evidence-table td{
+    display:block;
+    width:100%;
+    min-width:0;
+  }
+  .universal-evidence-table thead{
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    clip-path:inset(50%);
+  }
+  .universal-evidence-table tbody{
+    display:grid;
+    gap:12px;
+  }
+  .universal-evidence-table tr{
+    padding:14px;
+    border:1px solid #e0e4e1;
+    border-radius:13px;
+    background:#fbfaf7;
+  }
+  .universal-evidence-table td{
+    display:grid;
+    grid-template-columns:minmax(82px,.36fr) minmax(0,1fr);
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid #e8ebe9;
+  }
+  .universal-evidence-table td:last-child{border-bottom:0}
+  .universal-evidence-table td::before{
+    content:attr(data-label);
+    padding-top:7px;
+    color:#6a746f;
+    font-size:9px;
+    font-weight:850;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+  .universal-table-static{padding-top:5px}
+  .universal-table-field>span{display:none}
+  .universal-table-pass{
+    grid-column:2;
+  }
+  .universal-package-welcome{
+    padding:14px 12px 58px;
+  }
+  .universal-package-welcome .universal-welcome-grid{
+    margin-top:10px;
+    padding:28px 18px 18px;
+  }
+  .universal-welcome-copy h1{
+    font-size:44px;
+  }
+  .universal-package-welcome .universal-start-card{
+    padding:24px 20px;
+  }
+  .universal-package-welcome .universal-start-card h2{
+    font-size:30px;
+  }
+}
+
+
+/* Habit Lab v4.5.2 uses the same editorial hierarchy:
+   reading is quiet; learner evidence is visually primary. */
+.universal-habit-lab .investigation-stack{
+  gap:0;
+}
+.universal-habit-lab .story-card{
+  margin:0 auto 28px;
+  padding:2px 0 26px;
+  border:0;
+  border-bottom:1px solid #dfe3df;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.universal-habit-lab .story-heading{
+  max-width:700px;
+  margin-bottom:16px;
+}
+.universal-habit-lab .story-heading>svg{
+  width:24px;
+  color:#2f8276;
+}
+.universal-habit-lab .story-heading small{
+  color:#2f8276;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.universal-habit-lab .story-heading h2{
+  margin-top:3px;
+  font-size:clamp(30px,4vw,42px);
+  line-height:1.08;
+}
+.universal-habit-lab .story-card>p{
+  max-width:680px;
+  margin:0 0 15px;
+  color:#32464f;
+  font:400 18px/1.68 var(--font-serif);
+}
+.universal-habit-lab .prompt-card,
+.universal-habit-lab .mapping-banner,
+.universal-habit-lab .equation-card,
+.universal-habit-lab .contract-intro{
+  margin:18px auto 26px;
+  padding:24px;
+  border:1px solid #d9dfdb;
+  border-radius:18px!important;
+  background:#fff;
+  box-shadow:0 10px 30px rgb(21 49 58 / 4%);
+}
+.universal-habit-lab .prompt-card h3,
+.universal-habit-lab .mapping-banner h2,
+.universal-habit-lab .equation-card h2,
+.universal-habit-lab .contract-intro h2{
+  font-size:clamp(24px,3.4vw,32px);
+  line-height:1.12;
+}
+.universal-habit-lab .answer-list button{
+  min-height:50px;
+  border-radius:12px;
+  background:#fbfaf6;
+}
+.universal-habit-lab .answer-list button.selected{
+  background:#edf5f1;
+}
+.universal-habit-lab .pause-card{
+  margin:4px auto 28px;
+  border-radius:14px;
+}
+.universal-habit-lab .step-footer{
+  margin-top:22px;
+  padding-top:20px;
+  border-top:1px solid #dfe3df;
+}
+@media(max-width:820px){
+  .universal-habit-lab .story-card>p{
+    font-size:17px;
+    line-height:1.62;
+  }
+  .universal-habit-lab .prompt-card,
+  .universal-habit-lab .mapping-banner,
+  .universal-habit-lab .equation-card,
+  .universal-habit-lab .contract-intro{
+    padding:20px 18px;
+    border-radius:16px!important;
+  }
+}
+
+
+/* On phones, progress belongs to the investigation header rather than floating
+   through the middle of stories and evidence controls. */
+@media(max-width:820px){
+  .universal-lab-progress{
+    position:static;
+    top:auto;
+    z-index:auto;
+  }
+}
