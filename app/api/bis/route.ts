@@ -250,6 +250,21 @@ async function snapshot(identity: Identity) {
     ...defaultNotificationPreference,
     updatedAt: "",
   };
+  const programmeExperimentTiming = experiment
+    ? getExperimentTiming(
+        experiment,
+        events,
+        todayInZone(notificationPreference.timezone ?? "Africa/Johannesburg"),
+      )
+    : null;
+  const programmeHandoff = {
+    experimentStarted: Boolean(experiment),
+    currentDay: programmeExperimentTiming?.calendarDay ?? 0,
+    totalDays: programmeExperimentTiming?.totalDays ?? 0,
+    evidenceDaysRecorded: new Set(events.map((event) => event.dayNumber)).size,
+    todayEvidenceRecorded: programmeExperimentTiming?.todayRecorded ?? false,
+  };
+
   const memories = await db
     .select()
     .from(memoryItems)
@@ -293,6 +308,7 @@ async function snapshot(identity: Identity) {
     events,
     checkpoints,
     parameterVersions,
+    programmeHandoff,
     measurements: Object.fromEntries(
       measurements.map((item) => [
         item.code,
