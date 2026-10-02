@@ -154,7 +154,6 @@ function UniversalPrompt({
                 <Textarea rows={4} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
               )}
             </div>
-            {passed ? <p className="passed-note">Skipped for now. Start typing or choose an answer to respond.</p> : null}
           </>
         )}
         {!prompt.readOnly ? (
