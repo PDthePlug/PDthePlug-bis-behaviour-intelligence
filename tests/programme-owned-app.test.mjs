@@ -136,3 +136,23 @@ test("Day 3 continuation unlocks only after Investigation 7 has captured real ev
   assert.match(player, /Record today’s Investigation 7 evidence/);
   assert.match(player, /Save today’s finding in the Lab and BIS will return you here to finish Day 3/);
 });
+
+
+test("Lab entry routes preserve the programme return path even when sign-in is required", async () => {
+  const [auth, habitShell, decision, money, universal] = await Promise.all([
+    source("lib/auth-redirect.ts"),
+    source("app/habit-lab/habit-lab-shell.tsx"),
+    source("app/decision/page.tsx"),
+    source("app/money/page.tsx"),
+    source("app/labs/[code]/page.tsx"),
+  ]);
+
+  assert.match(auth, /optionalSafeReturnPath/);
+  assert.match(habitShell, /returnTo=\$\{encodeURIComponent\(safeReturnTo\)\}/);
+  assert.match(decision, /returnTo=\$\{encodeURIComponent\(returnTo\)\}/);
+  assert.match(money, /returnTo=\$\{encodeURIComponent\(returnTo\)\}/);
+  assert.match(universal, /returnTo=\$\{encodeURIComponent\(returnTo\)\}/);
+  for (const route of [habitShell, decision, money, universal]) {
+    assert.match(route, /requireUser\(next\)/);
+  }
+});
