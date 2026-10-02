@@ -90,6 +90,9 @@ type ContentVersion = {
     unboundIndicators?: string[];
     experimentDays?: number | null;
     profileEntries?: number;
+    standardVersion?: string | null;
+    editorialStatus?: "PASS" | "REVIEW" | "BLOCKED" | null;
+    editorialWarnings?: string[];
   };
   compiledAt: string | null;
   sourceFiles: ContentSourceFile[];
@@ -728,6 +731,18 @@ export function ContentStudio() {
                               {entry.compilerReport.indicatorCount ? <span>{entry.compilerReport.indicatorCount} BEIs bound</span> : null}
                               {entry.compilerReport.calculatedFields ? <span>{entry.compilerReport.calculatedFields} calculated fields</span> : null}
                               {entry.compilerReport.profileEntries ? <span>{entry.compilerReport.profileEntries} profile entries</span> : null}
+                              {entry.compilerReport.standardVersion ? <span>Habit Lab standard 1.0</span> : null}
+                              {entry.compilerReport.editorialStatus ? <span>Editorial {entry.compilerReport.editorialStatus.toLowerCase()}</span> : null}
+                            </div>
+                          ) : null}
+                          {entry.compilerStatus === "COMPILED" && entry.compilerReport.editorialWarnings?.length ? (
+                            <div className="content-editorial-review">
+                              <strong>Editorial review before approval</strong>
+                              <p>The Lab can be previewed, but these source questions should be strengthened before it is treated as finished.</p>
+                              <ul>
+                                {entry.compilerReport.editorialWarnings.slice(0, 8).map((warning) => <li key={warning}>{warning}</li>)}
+                              </ul>
+                              {entry.compilerReport.editorialWarnings.length > 8 ? <small>+ {entry.compilerReport.editorialWarnings.length - 8} more review items</small> : null}
                             </div>
                           ) : null}
                         </div>
