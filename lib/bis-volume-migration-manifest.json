@@ -1,0 +1,473 @@
+{
+  "schemaVersion": "1.0",
+  "canonicalStandard": "habit-lab-standard-1.0",
+  "sourceBackedLabCount": 32,
+  "sourceCorpus": [
+    {
+      "volume": 1,
+      "fileLabel": "BIS Volume 1 Learner's Workbook v3.0",
+      "labCount": 12,
+      "sourceShape": "LEARNER_ONLY"
+    },
+    {
+      "volume": 2,
+      "fileLabel": "BIS Volume 2",
+      "labCount": 10,
+      "sourceShape": "LEARNER_AND_FACILITATOR"
+    },
+    {
+      "volume": 3,
+      "fileLabel": "BIS Volume 3",
+      "labCount": 10,
+      "sourceShape": "LEARNER_AND_FACILITATOR"
+    }
+  ],
+  "outsideSuppliedVolumeCorpus": [
+    {
+      "code": "CAR",
+      "title": "Career Lab™",
+      "note": "Not present in the three supplied volume files. This does not assert that no separate Career source exists."
+    },
+    {
+      "code": "FAI",
+      "title": "Failure Lab™",
+      "note": "Pending user source. Do not infer or manufacture content."
+    }
+  ],
+  "sourceAnomalies": [
+    {
+      "code": "DUPLICATE_PRODUCT_NUMBER",
+      "detail": "Purpose Lab™ and Resilience Lab™ both identify themselves as Commercial Product #12 in Volume 1. Canonical BIS code/title is the identity authority."
+    },
+    {
+      "code": "DUPLICATE_VOLUME_COPY",
+      "detail": "Launch Lab™ and Growth Mindset Lab™ each appear twice as complete learner/facilitator sets in Volume 2. Import the first complete learner copy and report the duplicate."
+    },
+    {
+      "code": "LEGACY_I2_PREDICTION",
+      "detail": "The supplied workbooks place The Prediction at Investigation 2. Current digital Habit Lab captures prediction inside The Hook and uses Investigation 2 for The Pattern. Imported source must remain reviewable until this migration is strengthened."
+    },
+    {
+      "code": "VOLUME3_TRANSFER_8_5",
+      "detail": "Volume 3 includes Investigation 8.5 — Transfer Test. Canonical digital structure folds transfer evidence into Investigation 8 while preserving provenance."
+    }
+  ],
+  "entries": [
+    {
+      "code": "HAB",
+      "volume": 1,
+      "position": 1,
+      "title": "Habit Lab™",
+      "sourceProductNumber": 2,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Habit Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "DEC",
+      "volume": 1,
+      "position": 2,
+      "title": "Decision Lab™",
+      "sourceProductNumber": 3,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Decision Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "MON",
+      "volume": 1,
+      "position": 3,
+      "title": "Money Lab™",
+      "sourceProductNumber": 4,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Money Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "IDN",
+      "volume": 1,
+      "position": 4,
+      "title": "Identity Lab™",
+      "sourceProductNumber": 5,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Identity Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "ATT",
+      "volume": 1,
+      "position": 5,
+      "title": "Attention Lab™",
+      "sourceProductNumber": 6,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Attention Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "TIM",
+      "volume": 1,
+      "position": 6,
+      "title": "Time Lab™",
+      "sourceProductNumber": 7,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Time Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "RSK",
+      "volume": 1,
+      "position": 7,
+      "title": "Risk Lab™",
+      "sourceProductNumber": 8,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Risk Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "TRU",
+      "volume": 1,
+      "position": 8,
+      "title": "Trust Lab™",
+      "sourceProductNumber": 9,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Trust Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "INF",
+      "volume": 1,
+      "position": 9,
+      "title": "Influence Lab™",
+      "sourceProductNumber": 10,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Influence Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "LDR",
+      "volume": 1,
+      "position": 10,
+      "title": "Leadership Lab™",
+      "sourceProductNumber": 11,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Leadership Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "PUR",
+      "volume": 1,
+      "position": 11,
+      "title": "Purpose Lab™",
+      "sourceProductNumber": 12,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Purpose Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "RES",
+      "volume": 1,
+      "position": 12,
+      "title": "Resilience Lab™",
+      "sourceProductNumber": 12,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Resilience Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "LCH",
+      "volume": 2,
+      "position": 1,
+      "title": "Launch Lab™",
+      "sourceProductNumber": 14,
+      "experimentDays": 30,
+      "expectedLearnerCopies": 2,
+      "titleStem": "Launch Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "GMN",
+      "volume": 2,
+      "position": 2,
+      "title": "Growth Mindset Lab™",
+      "sourceProductNumber": 16,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 2,
+      "titleStem": "Growth Mindset Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "GRT",
+      "volume": 2,
+      "position": 3,
+      "title": "Grit Lab™",
+      "sourceProductNumber": 17,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Grit Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "ENT",
+      "volume": 2,
+      "position": 4,
+      "title": "Entrepreneurship Lab™",
+      "sourceProductNumber": 18,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Entrepreneurship Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "NEG",
+      "volume": 2,
+      "position": 5,
+      "title": "Negotiation Lab™",
+      "sourceProductNumber": 19,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Negotiation Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "TEAM",
+      "volume": 2,
+      "position": 6,
+      "title": "Team Lab™",
+      "sourceProductNumber": 20,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Team Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "ETH",
+      "volume": 2,
+      "position": 7,
+      "title": "Ethics Lab™",
+      "sourceProductNumber": 21,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Ethics Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "FSF",
+      "volume": 2,
+      "position": 8,
+      "title": "Future Self Lab™",
+      "sourceProductNumber": 22,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Future Self Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "OPP",
+      "volume": 2,
+      "position": 9,
+      "title": "Opportunity Lab™",
+      "sourceProductNumber": 23,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Opportunity Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "COM",
+      "volume": 2,
+      "position": 10,
+      "title": "Communication Lab™",
+      "sourceProductNumber": 24,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Communication Lab",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": null
+    },
+    {
+      "code": "SYS",
+      "volume": 3,
+      "position": 1,
+      "title": "Systems Thinking™ Lab",
+      "sourceProductNumber": 25,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Systems Thinking",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "LTT",
+      "volume": 3,
+      "position": 2,
+      "title": "Long-Term Thinking™ Lab",
+      "sourceProductNumber": 26,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Long-Term Thinking",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "ECO",
+      "volume": 3,
+      "position": 3,
+      "title": "Economics for Humans™ Lab",
+      "sourceProductNumber": 27,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Economics for Humans",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "CUS",
+      "volume": 3,
+      "position": 4,
+      "title": "Customer Thinking™ Lab",
+      "sourceProductNumber": 28,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Customer Thinking",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "INN",
+      "volume": 3,
+      "position": 5,
+      "title": "Innovation Thinking™ Lab",
+      "sourceProductNumber": 29,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Innovation Thinking",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "AST",
+      "volume": 3,
+      "position": 6,
+      "title": "Asset Thinking™ Lab",
+      "sourceProductNumber": 30,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Asset Thinking",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "FIN",
+      "volume": 3,
+      "position": 7,
+      "title": "Financial Philosophy™ Lab",
+      "sourceProductNumber": 31,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Financial Philosophy",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "PEF",
+      "volume": 3,
+      "position": 8,
+      "title": "Personal Effectiveness™ Lab",
+      "sourceProductNumber": 32,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Personal Effectiveness",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "TRS",
+      "volume": 3,
+      "position": 9,
+      "title": "Transferable Skills™ Lab",
+      "sourceProductNumber": 33,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Transferable Skills",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    },
+    {
+      "code": "MTL",
+      "volume": 3,
+      "position": 10,
+      "title": "Meta-Learning™ Lab",
+      "sourceProductNumber": 34,
+      "experimentDays": 7,
+      "expectedLearnerCopies": 1,
+      "titleStem": "Meta-Learning",
+      "sourceInvestigation2": "The Prediction",
+      "canonicalInvestigation2": "The Pattern",
+      "transferSubstage": 8.5
+    }
+  ]
+}
