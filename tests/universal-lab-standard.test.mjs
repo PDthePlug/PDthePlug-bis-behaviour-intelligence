@@ -57,6 +57,8 @@ test("Habit Lab standard adds missing evidence mechanics without pretending they
   );
   for (const required of [
     "PREDICTION",
+    "PATTERN_TARGET",
+    "PATTERN_EVIDENCE",
     "FALSIFICATION",
     "WITNESS",
     "MINIMUM_VERSION",
@@ -128,4 +130,25 @@ test("missing canonical investigations block the Lab", () => {
   const audit = auditUniversalLabEditorialQuality(source);
   assert.equal(audit.status, "BLOCKED");
   assert.ok(audit.issues.some((issue) => issue.code === "MISSING_STAGE" && issue.investigation === 6));
+});
+
+
+test("Investigation 2 receives a pattern target and recent evidence anchor when the source only predicts", () => {
+  const source = baseLab();
+  source.investigations[1].title = "The Prediction";
+  source.investigations[1].prompts = [{
+    id: "TST.I2.PREDICT",
+    label: "Your prediction",
+    prompt: "If you tracked this for one day, where do you think most of it would go?",
+    type: "TEXT",
+    required: true,
+  }];
+
+  const result = applyHabitLabStandard(source);
+  const purposes = result.investigations[1].prompts
+    .filter((prompt) => prompt.origin === "BIS_STANDARD")
+    .map((prompt) => prompt.standardPurpose);
+  assert.ok(purposes.includes("PATTERN_TARGET"));
+  assert.ok(purposes.includes("PATTERN_EVIDENCE"));
+  assert.equal(result.investigations[1].standardStage?.key, "PATTERN");
 });
