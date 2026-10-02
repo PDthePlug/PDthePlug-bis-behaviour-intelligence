@@ -1615,7 +1615,7 @@ function promptsFromTable(
 
       if (evidenceColumn >= 0) {
         addPrompt(prompts, renderBlocks, code, investigation, {
-          label: group + " evidence",
+          label: /\baction\b/i.test(headers[evidenceColumn] || "") ? group + " action" : group + " evidence",
           prompt: headers[evidenceColumn] || "What happened?",
           type: "TEXT",
           placeholder: "Record one specific moment or observation from today…",
