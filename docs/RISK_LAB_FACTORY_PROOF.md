@@ -92,9 +92,11 @@ Acceptance requires:
 
 ## Gate 4 — Reuse proof
 
-After Risk Lab passes, one second unpublished Lab must pass the same path without structural product-code changes.
+**Code-level status:** the second reuse specimen is Identity Lab. Its source characteristics are exercised against the same capability detector, Habit Lab editorial standard and Universal V2 experiment compiler without an Identity-specific runtime branch. The proof also covers two source-quality defects that matter for bulk migration: a repeated learner question between the Hook and legacy Prediction stage, and broad repeated reflection prompts that do not add decision-useful evidence.
 
-Only after that second proof should BIS treat the factory as frozen enough for bulk import of the remaining Volumes 1–3 content.
+**Still required before bulk publication:** prepare the real Identity source through Content Studio, inspect the learner preview, activate the compiled runtime artifact, and verify authenticated persistence end to end. That production acceptance is deliberately separate from the code-level reuse proof.
+
+Only after the live second proof passes should BIS treat the factory as frozen enough for bulk activation of the remaining Volumes 1–3 content.
 
 ## Non-negotiable rule
 
