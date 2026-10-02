@@ -610,7 +610,7 @@ async function postHandler(request: Request) {
         ...runtime.definition.investigations.flatMap((investigation) =>
           investigation.prompts
             .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
-            .filter((prompt) =>
+            .filter(() =>
               !(
                 runtime.definition.runtimeProfile === "UNIVERSAL_V2"
                 && investigation.number === runtime.definition.experiment?.investigation
