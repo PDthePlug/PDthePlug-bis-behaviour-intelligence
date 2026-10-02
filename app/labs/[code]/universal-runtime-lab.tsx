@@ -74,7 +74,12 @@ function UniversalPrompt({
   onPass: (value: boolean) => void;
 }) {
   const selected = prompt.type === "MULTI_SELECT" ? new Set(multiValues(value)) : new Set<string>();
-  const group = prompt.group && prompt.group !== "BIS Laboratory Standard" ? prompt.group : null;
+  const group = prompt.group
+    && prompt.group !== "BIS Laboratory Standard"
+    && !/^(?:BEI|TEI)-\d{2}\b/i.test(prompt.group)
+    && !/\bbaseline\b/i.test(prompt.group)
+      ? prompt.group
+      : null;
   const categorical = prompt.type === "CATEGORICAL" && (prompt.options?.length ?? 0) > 0;
   const booleanChoices = prompt.type === "BOOLEAN";
 
@@ -159,6 +164,81 @@ function UniversalPrompt({
             <span>Prefer not to answer</span>
           </label>
         ) : null}
+      </div>
+    </section>
+  );
+}
+
+function UniversalEvidenceTable({
+  block,
+  promptById,
+  values,
+  passed,
+  onValue,
+  onPass,
+}: {
+  block: Extract<NonNullable<UniversalLabPackage["investigations"][number]["blocks"]>[number], { type: "TABLE" }>;
+  promptById: Map<string, UniversalLabPrompt>;
+  values: Record<string, string>;
+  passed: Set<string>;
+  onValue: (promptId: string, value: string) => void;
+  onPass: (promptId: string, value: boolean) => void;
+}) {
+  return (
+    <section className="universal-evidence-table" aria-label={block.caption || "Evidence table"}>
+      {block.caption ? <h2>{block.caption}</h2> : null}
+      <div className="universal-evidence-table-scroll">
+        <table>
+          <thead>
+            <tr>
+              {block.headers.map((header, index) => <th scope="col" key={`${header}-${index}`}>{header}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {block.rows.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell, columnIndex) => {
+                  const header = block.headers[columnIndex] || `Column ${columnIndex + 1}`;
+                  if (cell.kind === "TEXT") {
+                    return <td key={columnIndex} data-label={header}><span className="universal-table-static">{cell.text}</span></td>;
+                  }
+                  const prompt = promptById.get(cell.promptId);
+                  if (!prompt) return <td key={columnIndex} data-label={header} />;
+                  const isPassed = passed.has(prompt.id);
+                  return (
+                    <td key={columnIndex} data-label={header} className={`universal-table-response ${isPassed ? "passed" : ""}`}>
+                      <label className="universal-table-field">
+                        <span>{header}</span>
+                        {isPassed ? (
+                          <small>Passed</small>
+                        ) : prompt.type === "DATE" ? (
+                          <Input
+                            type="date"
+                            value={values[prompt.id] ?? ""}
+                            onChange={(event) => onValue(prompt.id, event.target.value)}
+                            aria-label={prompt.prompt}
+                          />
+                        ) : (
+                          <Textarea
+                            rows={2}
+                            value={values[prompt.id] ?? ""}
+                            onChange={(event) => onValue(prompt.id, event.target.value)}
+                            placeholder={prompt.placeholder ?? "Type your response…"}
+                            aria-label={prompt.prompt}
+                          />
+                        )}
+                      </label>
+                      <label className="universal-table-pass">
+                        <Checkbox checked={isPassed} onCheckedChange={(checked) => onPass(prompt.id, checked === true)} />
+                        <span>Prefer not to answer</span>
+                      </label>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   );
@@ -359,33 +439,41 @@ function UniversalInvestigationForm({
   const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
   const promptOrder = new Map(visiblePrompts.map((prompt, index) => [prompt.id, index + 1]));
   const blockPromptIds = new Set(
-    (investigation.blocks ?? [])
-      .filter((block) => block.type === "PROMPT")
-      .map((block) => block.type === "PROMPT" ? block.promptId : ""),
+    (investigation.blocks ?? []).flatMap((block) => {
+      if (block.type === "PROMPT") return [block.promptId];
+      if (block.type === "TABLE") {
+        return block.rows.flatMap((row) =>
+          row.flatMap((cell) => cell.kind === "PROMPT" ? [cell.promptId] : []),
+        );
+      }
+      return [];
+    }),
   );
+  const updatePromptValue = (promptId: string, value: string) => {
+    setValues((current) => ({ ...current, [promptId]: value }));
+    setPassed((current) => {
+      const next = new Set(current);
+      next.delete(promptId);
+      return next;
+    });
+  };
+  const updatePromptPass = (promptId: string, value: boolean) => setPassed((current) => {
+    const next = new Set(current);
+    if (value) next.add(promptId); else next.delete(promptId);
+    return next;
+  });
   const renderPrompt = (prompt: UniversalLabPrompt) => {
     if (prompt.scheduleDay && prompt.scheduleDay > availableExperimentDay) return null;
     return (
-    <UniversalPrompt
-      key={prompt.id}
-      prompt={prompt}
-      index={promptOrder.get(prompt.id) ?? 1}
-      value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
-      passed={passed.has(prompt.id)}
-      onValue={(value) => {
-        setValues((current) => ({ ...current, [prompt.id]: value }));
-        setPassed((current) => {
-          const next = new Set(current);
-          next.delete(prompt.id);
-          return next;
-        });
-      }}
-      onPass={(value) => setPassed((current) => {
-        const next = new Set(current);
-        if (value) next.add(prompt.id); else next.delete(prompt.id);
-        return next;
-      })}
-    />
+      <UniversalPrompt
+        key={prompt.id}
+        prompt={prompt}
+        index={promptOrder.get(prompt.id) ?? 1}
+        value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
+        passed={passed.has(prompt.id)}
+        onValue={(value) => updatePromptValue(prompt.id, value)}
+        onPass={(value) => updatePromptPass(prompt.id, value)}
+      />
     );
   };
 
@@ -410,7 +498,20 @@ function UniversalInvestigationForm({
       ) : null}
       {investigation.blocks?.length ? investigation.blocks.map((block, index) => {
         if (block.type === "HTML") {
-          return <article key={`content-${index}`} className="story-card imported-lab-content" dangerouslySetInnerHTML={{ __html: block.html }} />;
+          return <article key={`content-${index}`} className="imported-lab-content" dangerouslySetInnerHTML={{ __html: block.html }} />;
+        }
+        if (block.type === "TABLE") {
+          return (
+            <UniversalEvidenceTable
+              key={block.id || `table-${index}`}
+              block={block}
+              promptById={promptById}
+              values={values}
+              passed={passed}
+              onValue={updatePromptValue}
+              onPass={updatePromptPass}
+            />
+          );
         }
         const prompt = promptById.get(block.promptId);
         return prompt ? renderPrompt(prompt) : null;
@@ -628,7 +729,9 @@ export function UniversalRuntimeLab({
     const params = new URLSearchParams(searchParams.toString());
     params.set("step", String(target));
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    requestAnimationFrame(() => {
+      document.getElementById("bis-task-surface")?.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
   }
 
   if (loading) return <main className="learning-state"><LoaderCircle className="learning-loader" /><h1>Opening Lab…</h1></main>;
