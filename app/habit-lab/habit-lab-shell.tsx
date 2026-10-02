@@ -1,5 +1,6 @@
 import { BISApp } from "../bis-app";
 import { HabitRouteBridge, type RequestedHabitView } from "../habit-route-bridge";
+import { optionalSafeReturnPath } from "@/lib/auth-redirect";
 import { requireUser } from "@/lib/supabase/require-user";
 
 export async function HabitLabShell({
@@ -9,8 +10,9 @@ export async function HabitLabShell({
   view: RequestedHabitView;
   returnTo?: string;
 }) {
-  const next = view === "experiment" ? "/habit-lab/experiment" : "/habit-lab";
-  const safeReturnTo = returnTo?.startsWith("/") && !returnTo.startsWith("//") ? returnTo : undefined;
+  const baseNext = view === "experiment" ? "/habit-lab/experiment" : "/habit-lab";
+  const safeReturnTo = optionalSafeReturnPath(returnTo);
+  const next = safeReturnTo ? `${baseNext}?returnTo=${encodeURIComponent(safeReturnTo)}` : baseNext;
   const user = await requireUser(next);
   const displayName =
     typeof user.user_metadata?.full_name === "string"
