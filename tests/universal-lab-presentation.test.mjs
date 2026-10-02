@@ -574,3 +574,66 @@ test("Universal Lab CSS permanently suppresses the obsolete side-number gutter",
   assert.doesNotMatch(runtime, /className="prompt-number"/);
   assert.match(css, /\.universal-package-lab \.prompt-number\{\s*display:none!important/);
 });
+
+
+test("generic workbook response controls inherit the authored question instead of repeating it as prose", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [{
+    id: "IDN.I5.CONFIDENCE",
+    label: "Your response",
+    prompt: "Your response",
+    type: "INTEGER",
+    min: 1,
+    max: 10,
+    required: true,
+    origin: "SOURCE",
+  }];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    { type: "HTML", html: '<p>"How confident are you that this equation explains your identity pattern?"</p>' },
+    { type: "PROMPT", promptId: "IDN.I5.CONFIDENCE" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  const prompt = investigation.prompts.find((item) => item.id === "IDN.I5.CONFIDENCE");
+  assert.equal(prompt?.label, "How confident are you that this equation explains your identity pattern?");
+  assert.equal(
+    investigation.blocks.some((block) =>
+      block.type === "HTML" && /How confident are you/.test(universalHtmlText(block.html))
+    ),
+    false,
+    "the question should exist once as the digital control, not as duplicated prose",
+  );
+});
+
+test("Contract stage removes paper-only I, Signed and Date blanks from learner presentation", () => {
+  const sourceFixture = fixture();
+  const base = sourceFixture.investigations[0];
+  sourceFixture.investigations = Array.from({ length: 9 }, (_, index) => ({
+    ...structuredClone(base),
+    number: index + 1,
+    title: `Stage ${index + 1}`,
+    prompts: [],
+    blocks: [{ type: "HTML", html: `<h3>INVESTIGATION ${index + 1} — STAGE</h3>` }],
+  }));
+  const contract = sourceFixture.investigations[5];
+  contract.prompts = [
+    { id: "IDN.I6.I", label: "I,", prompt: "I,", type: "TEXT", required: true, origin: "SOURCE" },
+    { id: "IDN.I6.SIGNED", label: "Signed", prompt: "Signed", type: "TEXT", required: false, origin: "SOURCE" },
+    { id: "IDN.I6.DATE", label: "Date", prompt: "Date", type: "DATE", required: false, origin: "SOURCE" },
+    { id: "IDN.I6.RESTART", label: "My restart plan", prompt: "What will you do if you miss a day?", type: "TEXT", required: true, origin: "SOURCE" },
+  ];
+  contract.blocks.push(
+    { type: "PROMPT", promptId: "IDN.I6.I" },
+    { type: "PROMPT", promptId: "IDN.I6.SIGNED" },
+    { type: "PROMPT", promptId: "IDN.I6.DATE" },
+    { type: "PROMPT", promptId: "IDN.I6.RESTART" },
+  );
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const prompts = result.investigations[5].prompts;
+  assert.equal(prompts.some((prompt) => ["I,", "Signed", "Date"].includes(prompt.label)), false);
+  assert.ok(prompts.some((prompt) => prompt.label === "My restart plan"));
+});
