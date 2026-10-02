@@ -4,6 +4,7 @@ import { scopedStaffExperimentProgress as staffExperimentProgress } from "../../
 import {
   auditEvents,
   cohortMembers,
+  cohortParticipantInvites,
   facilitatorNotes,
   labAssignments,
   labEnrollments,
@@ -29,9 +30,73 @@ import type { Identity, StaffRole } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { LAB_VERSION } from "../../../lib/habit-lab";
 import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib/programme-report-pdf";
+import { BIS_MODULES } from "../../../lib/bis-catalogue";
 
 const SUPPORTED_LAB_VERSIONS = [LAB_VERSION] as const;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const PROGRAMME_FORMATS = ["SINGLE_LAB", "PILOT", "SIX_CYCLE", "CUSTOM"] as const;
+type ProgrammeFormat = (typeof PROGRAMME_FORMATS)[number];
+
+function parseJsonList(value: string | null | undefined) {
+  if (!value) return [] as string[];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+function programmeLabCodes(value: unknown, format: ProgrammeFormat) {
+  const raw = Array.isArray(value) ? value : [];
+  const available = new Set(BIS_MODULES.map((module) => module.code));
+  const codes = [...new Set(raw.map((item) => String(item).trim().toUpperCase()).filter((code) => available.has(code)))];
+  if (!codes.length) throw new Error("Choose at least one Lab for this programme.");
+  if (format === "SINGLE_LAB" && codes.length !== 1) throw new Error("A single-Lab programme needs exactly one Lab.");
+  if (format === "SIX_CYCLE" && codes.length !== 6) throw new Error("A six-cycle programme needs six Labs.");
+  if (codes.length > 12) throw new Error("Choose up to 12 Labs for one programme group.");
+  return codes;
+}
+
+function participantEmails(value: unknown) {
+  const raw = Array.isArray(value) ? value.map(String).join("\n") : String(value ?? "");
+  const emails = [...new Set(raw.split(/[\s,;]+/).map(normalizeEmail).filter(Boolean))];
+  const invalid = emails.filter((email) => !EMAIL_PATTERN.test(email));
+  if (invalid.length) throw new Error(`Check these participant emails: ${invalid.slice(0, 3).join(", ")}${invalid.length > 3 ? "…" : ""}`);
+  if (emails.length > 250) throw new Error("Add up to 250 participant emails at a time.");
+  return emails;
+}
+
+async function upsertRoleAssignment(
+  identity: Identity,
+  principalEmail: string,
+  role: StaffRole,
+  scopeType: "GLOBAL" | "COHORT",
+  scopeId: string,
+) {
+  const db = getDb();
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  await db.insert(roleAssignments).values({
+    id,
+    principalEmail,
+    role,
+    scopeType,
+    scopeId,
+    assignedBy: identity.id,
+  }).onConflictDoUpdate({
+    target: [roleAssignments.principalEmail, roleAssignments.role, roleAssignments.scopeType, roleAssignments.scopeId],
+    set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null },
+  });
+  const [assignment] = await db.select().from(roleAssignments).where(and(
+    eq(roleAssignments.principalEmail, principalEmail),
+    eq(roleAssignments.role, role),
+    eq(roleAssignments.scopeType, scopeType),
+    eq(roleAssignments.scopeId, scopeId),
+  )).limit(1);
+  return assignment ?? { id, principalEmail, role, scopeType, scopeId };
+}
 
 function errorResponse(error: unknown) {
   if (error instanceof AccessError) {
@@ -72,17 +137,38 @@ async function staffAudit(
 }
 
 async function assignedCohort(identity: Identity, cohortId: string) {
-  const [cohort] = await getDb()
+  const db = getDb();
+  const [cohort] = await db
     .select()
     .from(pilotCohorts)
-    .where(and(
-      eq(pilotCohorts.id, cohortId),
-      eq(pilotCohorts.facilitatorEmail, identity.email),
-      eq(pilotCohorts.status, "ACTIVE"),
-    ))
+    .where(and(eq(pilotCohorts.id, cohortId), eq(pilotCohorts.status, "ACTIVE")))
     .limit(1);
-  if (!cohort) throw new AccessError("This cohort is not assigned to your facilitator account.");
-  return cohort;
+  if (!cohort) throw new AccessError("This programme group is not active.");
+
+  const [scoped] = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "COHORT"),
+    eq(roleAssignments.scopeId, cohortId),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  )).limit(1);
+  if (scoped) return cohort;
+
+  const [legacyGlobal] = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "GLOBAL"),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  )).limit(1);
+  if (legacyGlobal && normalizeEmail(cohort.facilitatorEmail ?? "") === identity.email) return cohort;
+
+  throw new AccessError("This group is not assigned to your facilitator account.");
 }
 
 async function learnerByEmail(email: string) {
@@ -93,6 +179,70 @@ async function learnerByEmail(email: string) {
     .limit(1);
   if (!learner) throw new Error("That learner must sign in and complete setup before being assigned.");
   return learner;
+}
+
+async function learnerIfRegistered(email: string) {
+  const [learner] = await getDb()
+    .select()
+    .from(learners)
+    .where(eq(learners.email, normalizeEmail(email)))
+    .limit(1);
+  return learner ?? null;
+}
+
+async function addParticipantsToCohort(
+  identity: Identity,
+  cohort: typeof pilotCohorts.$inferSelect,
+  emails: string[],
+) {
+  const db = getDb();
+  const codes = parseJsonList(cohort.labCodes);
+  let added = 0;
+  let pending = 0;
+  const now = new Date().toISOString();
+
+  for (const email of emails) {
+    const learner = await learnerIfRegistered(email);
+    if (learner) {
+      await db.insert(cohortMembers).values({
+        id: crypto.randomUUID(),
+        cohortId: cohort.id,
+        learnerUserId: learner.userId,
+        learnerEmail: normalizeEmail(learner.email),
+        addedBy: identity.id,
+      }).onConflictDoUpdate({
+        target: [cohortMembers.cohortId, cohortMembers.learnerUserId],
+        set: { status: "ACTIVE", addedBy: identity.id, joinedAt: now, removedAt: null },
+      });
+      await db.insert(cohortParticipantInvites).values({
+        id: crypto.randomUUID(),
+        cohortId: cohort.id,
+        email,
+        status: "CLAIMED",
+        invitedBy: identity.id,
+        claimedUserId: learner.userId,
+        claimedAt: now,
+      }).onConflictDoUpdate({
+        target: [cohortParticipantInvites.cohortId, cohortParticipantInvites.email],
+        set: { status: "CLAIMED", invitedBy: identity.id, claimedUserId: learner.userId, claimedAt: now },
+      });
+      if (codes.includes("HAB")) await assignLab(identity, learner, cohort.labVersion === "ACTIVE" ? LAB_VERSION : cohort.labVersion);
+      added += 1;
+    } else {
+      await db.insert(cohortParticipantInvites).values({
+        id: crypto.randomUUID(),
+        cohortId: cohort.id,
+        email,
+        status: "PENDING",
+        invitedBy: identity.id,
+      }).onConflictDoUpdate({
+        target: [cohortParticipantInvites.cohortId, cohortParticipantInvites.email],
+        set: { status: "PENDING", invitedBy: identity.id, claimedUserId: null, claimedAt: null },
+      });
+      pending += 1;
+    }
+  }
+  return { added, pending };
 }
 
 async function assignLab(identity: Identity, learner: typeof learners.$inferSelect, labVersion: string) {
@@ -249,6 +399,9 @@ async function adminSnapshot() {
   const members = await db
     .select({ cohortId: cohortMembers.cohortId, status: cohortMembers.status })
     .from(cohortMembers);
+  const invites = await db
+    .select({ cohortId: cohortParticipantInvites.cohortId, status: cohortParticipantInvites.status })
+    .from(cohortParticipantInvites);
   const labRows = await db.select().from(labAssignments).orderBy(desc(labAssignments.assignedAt));
   const openCaseRows = await db
     .select({ id: safeguardingCases.id })
@@ -274,24 +427,54 @@ async function adminSnapshot() {
     roleAssignments: assignments,
     cohorts: cohorts.map((cohort) => ({
       ...cohort,
+      labCodes: parseJsonList(cohort.labCodes),
       memberCount: members.filter((member) => member.cohortId === cohort.id && member.status === "ACTIVE").length,
+      pendingCount: invites.filter((invite) => invite.cohortId === cohort.id && invite.status === "PENDING").length,
     })),
     labAssignments: labRows,
     supportedLabVersions: SUPPORTED_LAB_VERSIONS,
+    availableLabs: BIS_MODULES.map((module) => ({
+      code: module.code,
+      title: module.title,
+      status: module.labStatus,
+    })),
   };
 }
 
 async function facilitatorSnapshot(identity: Identity) {
   const db = getDb();
-  const cohorts = await db
-    .select()
-    .from(pilotCohorts)
-    .where(and(
-      eq(pilotCohorts.facilitatorEmail, identity.email),
-      eq(pilotCohorts.status, "ACTIVE"),
-    ))
-    .orderBy(asc(pilotCohorts.name));
-  const cohortIds = cohorts.map((cohort) => cohort.id);
+  const scopedAssignments = await db.select({ scopeId: roleAssignments.scopeId }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "COHORT"),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  ));
+  const scopedIds = [...new Set(scopedAssignments.map((assignment) => assignment.scopeId))];
+  const [globalAssignment] = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+    eq(roleAssignments.role, "FACILITATOR"),
+    eq(roleAssignments.scopeType, "GLOBAL"),
+    eq(roleAssignments.status, "ACTIVE"),
+    or(
+      eq(roleAssignments.principalEmail, identity.email),
+      eq(roleAssignments.userId, identity.id),
+    ),
+  )).limit(1);
+  const legacyRows = globalAssignment
+    ? await db.select({ id: pilotCohorts.id }).from(pilotCohorts).where(and(
+        eq(pilotCohorts.facilitatorEmail, identity.email),
+        eq(pilotCohorts.status, "ACTIVE"),
+      ))
+    : [];
+  const cohortIds = [...new Set([...scopedIds, ...legacyRows.map((row) => row.id)])];
+  const cohorts = cohortIds.length
+    ? await db.select().from(pilotCohorts).where(and(
+        inArray(pilotCohorts.id, cohortIds),
+        eq(pilotCohorts.status, "ACTIVE"),
+      )).orderBy(asc(pilotCohorts.name))
+    : [];
   if (cohortIds.length === 0) return { cohorts: [], learners: [], notes: [], referrals: [] };
   const members = await db
     .select()
@@ -344,6 +527,7 @@ async function facilitatorSnapshot(identity: Identity) {
   return {
     cohorts: cohorts.map((cohort) => ({
       ...cohort,
+      labCodes: parseJsonList(cohort.labCodes),
       memberIds: members.filter((member) => member.cohortId === cohort.id).map((member) => member.learnerUserId),
       learningChecks: learningChecks.get(cohort.id) ?? null,
     })),
@@ -552,51 +736,83 @@ async function postHandler(request: Request) {
     const roles = await getRoles(identity);
     requireAnyRole(roles, [...STAFF_ROLES]);
 
+    // Keep each restricted mutation visibly gated even when they share one handler.
     if (action === "assignRole") {
+      requireRole(roles, "SYSTEM_ADMIN");
+    }
+    if (action === "updateRoleAssignment") {
+      requireRole(roles, "SYSTEM_ADMIN");
+    }
+
+    if (action === "assignRole" || action === "updateRoleAssignment") {
       requireRole(roles, "SYSTEM_ADMIN");
       const principalEmail = normalizeEmail(String(body.email ?? ""));
       const role = String(body.role ?? "") as StaffRole;
       if (!EMAIL_PATTERN.test(principalEmail)) throw new Error("Enter a valid staff email address.");
       if (!STAFF_ROLES.includes(role)) throw new Error("Choose a supported staff role.");
 
-      const organisationRole = role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
-      const scopeType = organisationRole ? "COHORT" : "GLOBAL";
-      const scopeId = organisationRole ? String(body.cohortId ?? "") : "GLOBAL";
-      if (organisationRole) {
+      const cohortScoped = role === "FACILITATOR" || role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
+      const scopeType: "GLOBAL" | "COHORT" = cohortScoped ? "COHORT" : "GLOBAL";
+      const scopeId = cohortScoped ? String(body.cohortId ?? "") : "GLOBAL";
+      if (cohortScoped) {
         const [cohort] = await db
           .select({ id: pilotCohorts.id })
           .from(pilotCohorts)
           .where(and(eq(pilotCohorts.id, scopeId), eq(pilotCohorts.status, "ACTIVE")))
           .limit(1);
-        if (!cohort) throw new Error("Choose an active programme group for organisation reporting.");
+        if (!cohort) throw new Error("Choose an active programme group for this access.");
       }
 
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      await db
-        .insert(roleAssignments)
-        .values({ id, principalEmail, role, scopeType, scopeId, assignedBy: identity.id })
-        .onConflictDoUpdate({
-          target: [roleAssignments.principalEmail, roleAssignments.role, roleAssignments.scopeType, roleAssignments.scopeId],
-          set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null },
-        });
-      const [assignment] = await db
-        .select({ id: roleAssignments.id })
-        .from(roleAssignments)
-        .where(and(
-          eq(roleAssignments.principalEmail, principalEmail),
-          eq(roleAssignments.role, role),
-          eq(roleAssignments.scopeType, scopeType),
+      const editingId = action === "updateRoleAssignment" ? String(body.assignmentId ?? "") : "";
+      if (editingId) {
+        const [previous] = await db.select().from(roleAssignments).where(eq(roleAssignments.id, editingId)).limit(1);
+        if (!previous || previous.status !== "ACTIVE") throw new Error("That active access assignment was not found.");
+        if (previous.role === "SYSTEM_ADMIN" && role !== "SYSTEM_ADMIN") {
+          const admins = await db.select({ id: roleAssignments.id }).from(roleAssignments).where(and(
+            eq(roleAssignments.role, "SYSTEM_ADMIN"),
+            eq(roleAssignments.status, "ACTIVE"),
+          ));
+          if (admins.length <= 1) throw new Error("The final system administrator cannot be changed to another role.");
+        }
+        const now = new Date().toISOString();
+        await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, editingId));
+        if (
+          previous.role === "FACILITATOR"
+          && previous.scopeType === "COHORT"
+          && (previous.scopeId !== scopeId || role !== "FACILITATOR" || normalizeEmail(previous.principalEmail) !== principalEmail)
+        ) {
+          const [oldCohort] = await db.select({ facilitatorEmail: pilotCohorts.facilitatorEmail }).from(pilotCohorts)
+            .where(eq(pilotCohorts.id, previous.scopeId)).limit(1);
+          if (normalizeEmail(oldCohort?.facilitatorEmail ?? "") === normalizeEmail(previous.principalEmail)) {
+            await db.update(pilotCohorts).set({ facilitatorEmail: null, updatedAt: now }).where(eq(pilotCohorts.id, previous.scopeId));
+          }
+        }
+      }
+
+      if (role === "FACILITATOR") {
+        const existingFacilitators = await db.select().from(roleAssignments).where(and(
+          eq(roleAssignments.role, "FACILITATOR"),
+          eq(roleAssignments.scopeType, "COHORT"),
           eq(roleAssignments.scopeId, scopeId),
-        ))
-        .limit(1);
-      await staffAudit(identity, "STAFF_ROLE_ASSIGNED", "ROLE_ASSIGNMENT", assignment?.id ?? id, {
-        role,
-        principalEmail,
-        scopeType,
-        scopeId,
-      });
-      return Response.json(await staffSnapshot(identity, await getRoles(identity)), { status: 201 });
+          eq(roleAssignments.status, "ACTIVE"),
+        ));
+        const now = new Date().toISOString();
+        for (const current of existingFacilitators) {
+          if (normalizeEmail(current.principalEmail) === principalEmail) continue;
+          await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, current.id));
+        }
+        await db.update(pilotCohorts).set({ facilitatorEmail: principalEmail, updatedAt: now }).where(eq(pilotCohorts.id, scopeId));
+      }
+
+      const assignment = await upsertRoleAssignment(identity, principalEmail, role, scopeType, scopeId);
+      await staffAudit(
+        identity,
+        editingId ? "STAFF_ROLE_UPDATED" : "STAFF_ROLE_ASSIGNED",
+        "ROLE_ASSIGNMENT",
+        assignment.id,
+        { role, principalEmail, scopeType, scopeId, replacedAssignmentId: editingId || null },
+      );
+      return Response.json(await staffSnapshot(identity, await getRoles(identity)), { status: editingId ? 200 : 201 });
     }
 
     if (action === "revokeRole") {
@@ -617,6 +833,13 @@ async function postHandler(request: Request) {
       }
       const now = new Date().toISOString();
       await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, assignmentId));
+      if (assignment.role === "FACILITATOR" && assignment.scopeType === "COHORT") {
+        const [cohort] = await db.select({ facilitatorEmail: pilotCohorts.facilitatorEmail }).from(pilotCohorts)
+          .where(eq(pilotCohorts.id, assignment.scopeId)).limit(1);
+        if (normalizeEmail(cohort?.facilitatorEmail ?? "") === normalizeEmail(assignment.principalEmail)) {
+          await db.update(pilotCohorts).set({ facilitatorEmail: null, updatedAt: now }).where(eq(pilotCohorts.id, assignment.scopeId));
+        }
+      }
       await staffAudit(identity, "STAFF_ROLE_REVOKED", "ROLE_ASSIGNMENT", assignmentId, { role: assignment.role, principalEmail: assignment.principalEmail });
       return Response.json(await staffSnapshot(identity, await getRoles(identity)));
     }
@@ -625,57 +848,69 @@ async function postHandler(request: Request) {
       requireRole(roles, "SYSTEM_ADMIN");
       const name = String(body.name ?? "").trim();
       const facilitatorEmail = normalizeEmail(String(body.facilitatorEmail ?? ""));
-      const labVersion = String(body.labVersion ?? LAB_VERSION);
-      if (name.length < 3 || name.length > 100) throw new Error("Use a cohort name between 3 and 100 characters.");
+      const programmeFormat = String(body.programmeFormat ?? "SINGLE_LAB") as ProgrammeFormat;
+      if (!PROGRAMME_FORMATS.includes(programmeFormat)) throw new Error("Choose a programme format.");
+      const labCodes = programmeLabCodes(body.labCodes, programmeFormat);
+      const participantList = participantEmails(body.participantEmails);
+      const labVersion = labCodes.includes("HAB") ? String(body.labVersion ?? LAB_VERSION) : "ACTIVE";
+      if (name.length < 3 || name.length > 100) throw new Error("Use a group name between 3 and 100 characters.");
       if (!EMAIL_PATTERN.test(facilitatorEmail)) throw new Error("Enter a valid facilitator email.");
-      if (!SUPPORTED_LAB_VERSIONS.includes(labVersion as typeof LAB_VERSION)) throw new Error("Choose a supported canonical lab version.");
-      const [facilitatorRole] = await db
-        .select({ id: roleAssignments.id })
-        .from(roleAssignments)
-        .where(and(
-          eq(roleAssignments.principalEmail, facilitatorEmail),
-          eq(roleAssignments.role, "FACILITATOR"),
-          eq(roleAssignments.status, "ACTIVE"),
-        ))
-        .limit(1);
-      if (!facilitatorRole) throw new Error("Assign the facilitator role to this email before creating the cohort.");
+      if (labCodes.includes("HAB") && !SUPPORTED_LAB_VERSIONS.includes(labVersion as typeof LAB_VERSION)) {
+        throw new Error("Choose a supported Habit Lab version.");
+      }
+
       const id = crypto.randomUUID();
+      const primaryLabCode = labCodes[0];
       await db.insert(pilotCohorts).values({
         id,
         name,
+        labCode: primaryLabCode,
         labVersion,
+        programmeFormat,
+        labCodes: JSON.stringify(labCodes),
         facilitatorEmail,
         startsOn: String(body.startsOn ?? "") || null,
         endsOn: String(body.endsOn ?? "") || null,
         createdBy: identity.id,
       });
-      await staffAudit(identity, "PILOT_COHORT_CREATED", "PILOT_COHORT", id, { labVersion, facilitatorEmail });
+      await upsertRoleAssignment(identity, facilitatorEmail, "FACILITATOR", "COHORT", id);
+      const [createdCohort] = await db.select().from(pilotCohorts).where(eq(pilotCohorts.id, id)).limit(1);
+      if (!createdCohort) throw new Error("The programme group could not be confirmed after creation.");
+      const participantResult = participantList.length
+        ? await addParticipantsToCohort(identity, createdCohort, participantList)
+        : { added: 0, pending: 0 };
+
+      await staffAudit(identity, "PILOT_COHORT_CREATED", "PILOT_COHORT", id, {
+        programmeFormat,
+        labCodes,
+        facilitatorEmail,
+        participantCount: participantList.length,
+        ...participantResult,
+      });
       return Response.json(await staffSnapshot(identity, roles), { status: 201 });
     }
 
     if (action === "addCohortMember") {
       requireRole(roles, "SYSTEM_ADMIN");
+    }
+    if (action === "addCohortParticipants") {
+      requireRole(roles, "SYSTEM_ADMIN");
+    }
+
+    if (action === "addCohortMember" || action === "addCohortParticipants") {
+      requireRole(roles, "SYSTEM_ADMIN");
       const cohortId = String(body.cohortId ?? "");
       const [cohort] = await db.select().from(pilotCohorts).where(eq(pilotCohorts.id, cohortId)).limit(1);
-      if (!cohort || cohort.status !== "ACTIVE") throw new Error("Choose an active pilot cohort.");
-      const learner = await learnerByEmail(String(body.learnerEmail ?? ""));
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      await db
-        .insert(cohortMembers)
-        .values({
-          id,
-          cohortId,
-          learnerUserId: learner.userId,
-          learnerEmail: normalizeEmail(learner.email),
-          addedBy: identity.id,
-        })
-        .onConflictDoUpdate({
-          target: [cohortMembers.cohortId, cohortMembers.learnerUserId],
-          set: { status: "ACTIVE", addedBy: identity.id, joinedAt: now, removedAt: null },
-        });
-      await assignLab(identity, learner, cohort.labVersion);
-      await staffAudit(identity, "COHORT_MEMBER_ADDED", "PILOT_COHORT", cohortId, { learnerUserId: learner.userId, labVersion: cohort.labVersion });
+      if (!cohort || cohort.status !== "ACTIVE") throw new Error("Choose an active programme group.");
+      const emails = action === "addCohortMember"
+        ? participantEmails([String(body.learnerEmail ?? "")])
+        : participantEmails(body.participantEmails);
+      if (!emails.length) throw new Error("Add at least one participant email.");
+      const result = await addParticipantsToCohort(identity, cohort, emails);
+      await staffAudit(identity, "COHORT_PARTICIPANTS_ADDED", "PILOT_COHORT", cohortId, {
+        participantCount: emails.length,
+        ...result,
+      });
       return Response.json(await staffSnapshot(identity, roles), { status: 201 });
     }
 

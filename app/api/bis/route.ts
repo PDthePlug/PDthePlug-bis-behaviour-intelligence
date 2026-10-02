@@ -5,6 +5,8 @@ import {
   companionTurns,
   consentRecords,
   contentReleases,
+  cohortMembers,
+  cohortParticipantInvites,
   evidenceRecords,
   experimentCheckpoints,
   experimentEvents,
@@ -579,6 +581,29 @@ async function postHandler(request: Request) {
           target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
           set: { contentReleaseId: release?.id ?? null, status: "IN_PROGRESS", updatedAt: now },
         });
+
+      const pendingInvites = await db.select().from(cohortParticipantInvites).where(and(
+        eq(cohortParticipantInvites.email, identity.email),
+        eq(cohortParticipantInvites.status, "PENDING"),
+      ));
+      for (const invite of pendingInvites) {
+        await db.insert(cohortMembers).values({
+          id: crypto.randomUUID(),
+          cohortId: invite.cohortId,
+          learnerUserId: identity.id,
+          learnerEmail: identity.email,
+          addedBy: invite.invitedBy,
+        }).onConflictDoUpdate({
+          target: [cohortMembers.cohortId, cohortMembers.learnerUserId],
+          set: { status: "ACTIVE", learnerEmail: identity.email, joinedAt: now, removedAt: null },
+        });
+        await db.update(cohortParticipantInvites).set({
+          status: "CLAIMED",
+          claimedUserId: identity.id,
+          claimedAt: now,
+        }).where(eq(cohortParticipantInvites.id, invite.id));
+      }
+
       await audit(identity.id, "CONSENT_CHANGED", "CONSENT_RECORD", consentId, { status: "GRANTED" });
       await pilotEvent(identity.id, "ONBOARDING_COMPLETED", "CONSENT_RECORD", consentId, { mode, ageBand, experienceVersion: LAB_VERSION });
       return Response.json(await snapshot(identity), { status: 201 });

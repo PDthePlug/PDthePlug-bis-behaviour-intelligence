@@ -147,3 +147,43 @@ test("programme owner opens Programme results without gaining administration", a
   assert.match(shell, /return "outcomes"/);
   assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
 });
+
+
+test("administration supports scoped facilitators editable access and one-pass programme onboarding", async () => {
+  const [view, route, schema, migration] = await Promise.all([
+    source("app/operations-view.tsx"),
+    source("app/api/staff/route.ts"),
+    source("db/schema.ts"),
+    source("supabase/migrations/20261001123500_programme_onboarding.sql"),
+  ]);
+
+  assert.match(view, /Edit access/);
+  assert.match(view, /updateRoleAssignment/);
+  assert.match(view, /role === "FACILITATOR" \|\| role === "SPONSOR_VIEWER" \|\| role === "PROGRAMME_OWNER"/);
+  assert.match(view, /Create a programme group/);
+  assert.match(view, /Programme format/);
+  assert.match(view, /Participant emails/);
+  assert.match(view, /addCohortParticipants/);
+
+  assert.match(route, /programmeLabCodes/);
+  assert.match(route, /participantEmails/);
+  assert.match(route, /scopeType: "GLOBAL" \| "COHORT"/);
+  assert.match(route, /"FACILITATOR", "COHORT"/);
+  assert.match(route, /cohortParticipantInvites/);
+
+  assert.match(schema, /programmeFormat: text\("programme_format"\)/);
+  assert.match(schema, /labCodes: text\("lab_codes"\)/);
+  assert.match(schema, /cohortParticipantInvites/);
+
+  assert.match(migration, /alter column facilitator_email drop not null/);
+  assert.match(migration, /create table if not exists public\.cohort_participant_invites/);
+  assert.match(migration, /r\.scope_type = 'COHORT'/);
+});
+
+test("pending participant emails are claimed automatically when the learner completes setup", async () => {
+  const route = await source("app/api/bis/route.ts");
+  assert.match(route, /cohortParticipantInvites/);
+  assert.match(route, /eq\(cohortParticipantInvites\.email, identity\.email\)/);
+  assert.match(route, /status: "CLAIMED"/);
+  assert.match(route, /cohortMembers/);
+});
