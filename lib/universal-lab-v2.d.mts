@@ -1,3 +1,5 @@
+import type { UniversalEditorialAudit } from "./universal-lab-standard.mjs";
+
 export type UniversalComputedOperation =
   | "PRODUCT"
   | "DIFFERENCE"
@@ -41,6 +43,8 @@ export type UniversalIndicatorBinding = {
 };
 
 export type UniversalV2Additions = {
+  standardVersion: string;
+  editorialAudit: UniversalEditorialAudit;
   schemaVersion: "universal-lab-v2";
   runtimeProfile: "UNIVERSAL_V2";
   computedFields: UniversalComputedField[];

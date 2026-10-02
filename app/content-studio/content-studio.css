@@ -393,3 +393,33 @@
   font-size:10px;
   font-weight:800;
 }
+
+
+.content-editorial-review {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--background) 92%, var(--foreground) 8%);
+}
+
+.content-editorial-review strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.content-editorial-review p,
+.content-editorial-review small,
+.content-editorial-review li {
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+
+.content-editorial-review ul {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+
+.content-editorial-review li + li {
+  margin-top: 5px;
+}

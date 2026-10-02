@@ -451,8 +451,24 @@ async function postHandler(request: Request) {
               indicatorRegistry?: Array<{ code?: string; status?: string }>;
               experiment?: { days?: number } | null;
               profile?: { entries?: unknown[] } | null;
+              standardVersion?: string;
+              editorialAudit?: {
+                status?: "PASS" | "REVIEW" | "BLOCKED";
+                issues?: Array<{ code?: string; severity?: string; message?: string }>;
+              };
             }
           : null;
+        if (preparedLab?.editorialAudit?.status === "BLOCKED") {
+          const blockers = (preparedLab.editorialAudit.issues ?? [])
+            .filter((issue) => issue.severity === "ERROR")
+            .map((issue) => issue.message)
+            .filter(Boolean);
+          throw new Error(
+            blockers.length
+              ? `This Lab does not yet meet the Habit Lab standard: ${blockers.join(" ")}`
+              : "This Lab does not yet meet the Habit Lab standard.",
+          );
+        }
         const report = {
           summary: item.kind === "LEARNING_MODULE"
             ? `Prepared ${compiled.length} learning edition${compiled.length === 1 ? "" : "s"} for preview.`
@@ -476,6 +492,12 @@ async function postHandler(request: Request) {
               .filter(Boolean) ?? [],
             experimentDays: preparedLab.experiment?.days ?? null,
             profileEntries: preparedLab.profile?.entries?.length ?? 0,
+            standardVersion: preparedLab.standardVersion ?? null,
+            editorialStatus: preparedLab.editorialAudit?.status ?? null,
+            editorialWarnings: (preparedLab.editorialAudit?.issues ?? [])
+              .filter((issue) => issue.severity !== "ERROR")
+              .map((issue) => issue.message)
+              .filter(Boolean),
           } : {}),
         };
         await db.update(contentLibraryVersions).set({
@@ -558,6 +580,14 @@ async function postHandler(request: Request) {
       requireCurrentCompilation(version);
       if (version.validationStatus !== "VALID" || version.status !== "VALIDATED" || version.compilerStatus !== "COMPILED") {
         throw new Error("Prepare this version successfully before approval.");
+      }
+      const [approvalItem] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
+      const approvalReport = parseJson(version.compilerReport, {}) as { editorialStatus?: string; editorialWarnings?: string[] };
+      if (approvalItem?.kind === "LAB" && approvalReport.editorialStatus !== "PASS") {
+        const detail = approvalReport.editorialWarnings?.[0];
+        throw new Error(detail
+          ? `Strengthen the Lab source before approval. ${detail}`
+          : "Strengthen the Lab source before approval. The editorial review must pass.");
       }
       const [review] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
       if (!review || review.status !== "PASSED") {

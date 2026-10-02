@@ -12,6 +12,12 @@ export type UniversalInvestigation = {
   phase: string;
   difficulty?: string;
   produces?: readonly string[];
+  standardStage?: {
+    number: number;
+    key: string;
+    label: string;
+    role: string;
+  };
 };
 
 export function LabInvestigationFrame({
@@ -85,9 +91,16 @@ export function LabMissionHeader({
   return (
     <header className="universal-lab-mission">
       <div className="universal-lab-mission-copy">
-        <p className="eyebrow">Mission</p>
+        <p className="eyebrow">
+          {investigation.standardStage
+            ? `Investigation ${step} · ${investigation.standardStage.label}`
+            : "Mission"}
+        </p>
         <h1>{investigation.title}</h1>
         <p>{investigation.mission}</p>
+        {investigation.standardStage?.role ? (
+          <p className="universal-lab-stage-role">{investigation.standardStage.role}</p>
+        ) : null}
         {investigation.produces?.length ? (
           <div className="universal-lab-produces">
             <strong>You will produce:</strong>

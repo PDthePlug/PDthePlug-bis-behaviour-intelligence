@@ -163,3 +163,19 @@ test("stale compiler artifacts cannot be previewed approved or published", async
   assert.match(ui, /Re-prepare preview/);
   assert.match(ui, /Your uploaded source stays in place/);
 });
+
+
+test("Content Studio surfaces the Habit standard and blocks editorially unfinished Labs from approval", async () => {
+  const [api, ui, compiler] = await Promise.all([
+    source("app/api/content-studio/route.ts"),
+    source("app/content-studio/content-studio.tsx"),
+    source("lib/content-compiler.ts"),
+  ]);
+  assert.match(api, /editorialStatus/);
+  assert.match(api, /Strengthen the Lab source before approval/);
+  assert.match(api, /editorialAudit\?\.status === "BLOCKED"/);
+  assert.match(ui, /Habit Lab standard 1\.0/);
+  assert.match(ui, /Editorial review before approval/);
+  assert.match(compiler, /applyHabitLabStandard/);
+  assert.match(compiler, /bis-content-compiler-4/);
+});

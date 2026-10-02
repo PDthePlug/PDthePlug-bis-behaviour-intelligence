@@ -23,13 +23,13 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I1.REFLECTION",
-          "label": "Investigation 1 reflection",
-          "prompt": "What evidence from The Hook matters most to your investigation?",
+          "id": "FOC.I1.PREDICTION",
+          "label": "Your prediction",
+          "prompt": "Before anything is explained, what do you think is driving this focus moment, and what do you predict will happen next?",
           "type": "TEXT",
           "sensitivity": "P2",
           "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "placeholder": "Commit to your current explanation before the reveal…"
         }
       ]
     },
@@ -45,13 +45,13 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I2.REFLECTION",
-          "label": "Investigation 2 reflection",
-          "prompt": "What evidence from The Pattern matters most to your investigation?",
+          "id": "FOC.I2.PATTERN",
+          "label": "Repeated pattern",
+          "prompt": "Which focus pattern has repeated, and what specific example from the last seven days shows that it actually happened?",
           "type": "TEXT",
           "sensitivity": "P2",
           "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "placeholder": "Name the pattern and one concrete trace…"
         }
       ]
     },
@@ -67,13 +67,13 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I3.REFLECTION",
-          "label": "Investigation 3 reflection",
-          "prompt": "What evidence from The Revelation matters most to your investigation?",
+          "id": "FOC.I3.REVISION",
+          "label": "What the evidence changes",
+          "prompt": "Which part of your first explanation does the revealed principle now challenge, support or complicate?",
           "type": "TEXT",
           "sensitivity": "P2",
           "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "placeholder": "Compare the reveal with what you predicted…"
         }
       ]
     },
@@ -89,13 +89,13 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I4.REFLECTION",
-          "label": "Investigation 4 reflection",
-          "prompt": "What evidence from Mapping matters most to your investigation?",
+          "id": "FOC.I4.MAP",
+          "label": "Focus map",
+          "prompt": "Map one real focus moment: what happened before it, what you did, what competed for attention, and what happened next?",
           "type": "TEXT",
           "sensitivity": "P2",
           "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "placeholder": "Use one real moment rather than a general description…"
         }
       ]
     },
@@ -111,13 +111,22 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I5.REFLECTION",
-          "label": "Investigation 5 reflection",
-          "prompt": "What evidence from Equation matters most to your investigation?",
+          "id": "FOC.I5.EQUATION",
+          "label": "Working equation",
+          "prompt": "Write a simple working explanation for what appears to increase or reduce your focus.",
           "type": "TEXT",
           "sensitivity": "P2",
           "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "placeholder": "Write a relationship you can actually test…"
+        },
+        {
+          "id": "FOC.I5.FALSIFICATION",
+          "label": "Falsification test",
+          "prompt": "What would you need to observe for this working explanation to be wrong or incomplete?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "placeholder": "Name evidence that would force you to revise it…"
         }
       ]
     },
@@ -133,13 +142,54 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I6.REFLECTION",
-          "label": "Investigation 6 reflection",
-          "prompt": "What evidence from Contract matters most to your investigation?",
+          "id": "FOC.I6.ACTION",
+          "label": "Action to test",
+          "prompt": "What specific focus action will you test when the target situation occurs?",
           "type": "TEXT",
           "sensitivity": "P2",
-          "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "required": true
+        },
+        {
+          "id": "FOC.I6.WITNESS",
+          "label": "Witness or accountability",
+          "prompt": "Who or what will help you verify that the test actually happened?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true
+        },
+        {
+          "id": "FOC.I6.MINIMUM_VERSION",
+          "label": "Minimum version",
+          "prompt": "What is the smallest version of the action that still counts as completing the test?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true
+        },
+        {
+          "id": "FOC.I6.FAILURE_SIGNAL",
+          "label": "Failure signal",
+          "prompt": "What observable signal will tell you that the test did not happen as designed?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true
+        },
+        {
+          "id": "FOC.I6.RESTART",
+          "label": "Restart response",
+          "prompt": "If the test breaks, what will you do at the next opportunity instead of abandoning it?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true
+        },
+        {
+          "id": "FOC.I6.PREDICTED_ADHERENCE",
+          "label": "Predicted adherence",
+          "prompt": "Before the experiment begins, what percentage of real opportunities do you predict you will follow through on?",
+          "type": "INTEGER",
+          "min": 0,
+          "max": 100,
+          "sensitivity": "P2",
+          "required": true
         }
       ]
     },
@@ -155,13 +205,13 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I7.REFLECTION",
-          "label": "Investigation 7 reflection",
-          "prompt": "What evidence from Experiment matters most to your investigation?",
+          "id": "FOC.I7.OBSERVATION",
+          "label": "Experiment observation",
+          "prompt": "For the opportunity you are recording, what happened, what action did you take, and what evidence shows the outcome?",
           "type": "TEXT",
           "sensitivity": "P2",
           "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "placeholder": "Record the event, action and result without polishing it…"
         }
       ]
     },
@@ -177,13 +227,36 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I8.REFLECTION",
-          "label": "Investigation 8 reflection",
-          "prompt": "What evidence from Evidence Review matters most to your investigation?",
+          "id": "FOC.I8.SUPPORTING_EVIDENCE",
+          "label": "Evidence that supported the explanation",
+          "prompt": "Which observation most strongly supported your original working explanation?",
           "type": "TEXT",
           "sensitivity": "P2",
-          "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "required": true
+        },
+        {
+          "id": "FOC.I8.CHALLENGING_EVIDENCE",
+          "label": "Evidence that challenged the explanation",
+          "prompt": "Which observation most strongly challenged, contradicted or complicated your original explanation?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true
+        },
+        {
+          "id": "FOC.I8.ASSUMPTION_REVISED",
+          "label": "Assumption to revise",
+          "prompt": "Which assumption from the beginning of the Lab is now harder to defend, and why?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true
+        },
+        {
+          "id": "FOC.I8.TRANSFER",
+          "label": "Transfer test",
+          "prompt": "Where else would this focus principle need to hold before you would trust it beyond this experiment?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true
         }
       ]
     },
@@ -199,13 +272,40 @@
       ],
       "prompts": [
         {
-          "id": "FOC.I9.REFLECTION",
-          "label": "Investigation 9 reflection",
-          "prompt": "What evidence from Behaviour Profile matters most to your investigation?",
+          "id": "FOC.I9.OBSERVED",
+          "label": "What I observed",
+          "prompt": "What can you now say you actually observed, rather than assumed?",
           "type": "TEXT",
           "sensitivity": "P2",
           "required": true,
-          "placeholder": "Write what you actually noticed…"
+          "group": "Behaviour Profile Summary"
+        },
+        {
+          "id": "FOC.I9.CHANGED",
+          "label": "What changed",
+          "prompt": "What changed between your starting prediction and the evidence you collected?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "group": "Behaviour Profile Summary"
+        },
+        {
+          "id": "FOC.I9.UNCERTAIN",
+          "label": "What remains uncertain",
+          "prompt": "What remains uncertain or untested after this Lab?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "group": "Behaviour Profile Summary"
+        },
+        {
+          "id": "FOC.I9.NEXT_TEST",
+          "label": "What I will test next",
+          "prompt": "What is the next focus pattern, context or assumption worth testing?",
+          "type": "TEXT",
+          "sensitivity": "P2",
+          "required": true,
+          "group": "Behaviour Profile Summary"
         }
       ]
     }

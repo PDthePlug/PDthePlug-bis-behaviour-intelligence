@@ -194,9 +194,9 @@
       "code": "FAI",
       "slug": "failure",
       "title": "Failure Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "planned",
       "learningHref": null,
-      "labStatus": "source_ready",
+      "labStatus": "planned",
       "labHref": null
     },
     {
@@ -428,5 +428,11 @@
       "labHref": null
     }
   ],
-  "futureSourceCandidates": []
+  "futureSourceCandidates": [
+    {
+      "code": "FAI",
+      "title": "Failure Lab™",
+      "status": "PENDING_USER_SOURCE"
+    }
+  ]
 }

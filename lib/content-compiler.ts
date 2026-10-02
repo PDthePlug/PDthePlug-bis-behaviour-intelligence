@@ -1,6 +1,8 @@
 import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
 import type { LabFactoryCapabilities } from "./lab-factory-capabilities.mjs";
+import { applyHabitLabStandard } from "./universal-lab-standard.mjs";
+import type { HabitLabStandardStage, UniversalEditorialAudit } from "./universal-lab-standard.mjs";
 import {
   upgradeUniversalLabV2,
   type UniversalComputedField,
@@ -10,7 +12,7 @@ import {
 } from "./universal-lab-v2.mjs";
 import { sha256Hex } from "./content-studio";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-3";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-4";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -73,6 +75,8 @@ export type UniversalLabPrompt = {
   min?: number;
   max?: number;
   group?: string;
+  origin?: "SOURCE" | "BIS_STANDARD";
+  standardPurpose?: string;
 };
 
 export type UniversalLabRenderBlock =
@@ -90,6 +94,7 @@ export type UniversalLabInvestigation = {
   introHtml?: string;
   blocks?: UniversalLabRenderBlock[];
   prompts: UniversalLabPrompt[];
+  standardStage?: HabitLabStandardStage;
 };
 
 export type UniversalLabPackage = {
@@ -105,6 +110,8 @@ export type UniversalLabPackage = {
     focus?: string;
   };
   factoryCapabilities?: LabFactoryCapabilities;
+  standardVersion?: string;
+  editorialAudit?: UniversalEditorialAudit;
   computedFields?: UniversalComputedField[];
   indicatorRegistry?: UniversalIndicatorBinding[];
   experiment?: UniversalExperimentContract | null;
@@ -416,6 +423,8 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
     computed: object(value.computed) as UniversalComputedField | undefined,
     indicatorCode: text(value.indicatorCode) || undefined,
     indicatorLabel: text(value.indicatorLabel) || undefined,
+    origin: text(value.origin) === "BIS_STANDARD" ? "BIS_STANDARD" : text(value.origin) === "SOURCE" ? "SOURCE" : undefined,
+    standardPurpose: text(value.standardPurpose) || undefined,
   };
 }
 
@@ -427,6 +436,7 @@ export async function compileUniversalLab(
   let source = parseJson(bytes);
   if (!source) throw new Error("Lab source must be a BIS JSON package.");
   if (text(source.kind) !== "LAB") throw new Error('Lab package kind must be "LAB".');
+  source = applyHabitLabStandard(source) as Record<string, unknown>;
 
   const factoryCapabilities = object(source.factoryCapabilities) as LabFactoryCapabilities | null;
   const authoredV2 = text(source.schemaVersion) === "universal-lab-v2" || text(source.runtimeProfile) === "UNIVERSAL_V2";
@@ -499,6 +509,7 @@ export async function compileUniversalLab(
       introHtml: introHtml || undefined,
       blocks: blocks.length ? blocks : undefined,
       prompts,
+      standardStage: object(item.standardStage) as HabitLabStandardStage | undefined,
     };
   });
   if (investigations.some((item) => !item.title || !item.mission)) throw new Error("Every investigation needs a title and mission.");
@@ -561,6 +572,8 @@ export async function compileUniversalLab(
 
   const runtimePackage: UniversalLabPackage = {
     kind: "LAB",
+    standardVersion: text(source.standardVersion) || undefined,
+    editorialAudit: object(source.editorialAudit) as UniversalEditorialAudit | undefined,
     schemaVersion: v2 ? "universal-lab-v2" : "universal-lab-v1",
     runtimeProfile: v2 ? "UNIVERSAL_V2" : "UNIVERSAL_V1",
     identity: {

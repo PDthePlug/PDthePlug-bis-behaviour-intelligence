@@ -58,11 +58,15 @@ test("current 34-module scope preserves the sourced volume sequence", async () =
   );
 });
 
-test("all non-live Labs are registered as source-ready rather than planned", async () => {
+test("non-live Labs distinguish source-ready material from explicitly pending source", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
   assert.equal(catalogue.modules.filter((item) => item.labStatus === "live").length, 3);
-  assert.equal(catalogue.modules.filter((item) => item.labStatus === "source_ready").length, 31);
-  assert.equal(catalogue.modules.filter((item) => item.labStatus === "planned").length, 0);
+  assert.equal(catalogue.modules.filter((item) => item.labStatus === "source_ready").length, 30);
+  assert.equal(catalogue.modules.filter((item) => item.labStatus === "planned").length, 1);
+  const failure = catalogue.modules.find((item) => item.code === "FAI");
+  assert.equal(failure?.labStatus, "planned");
+  assert.equal(failure?.learningStatus, "planned");
+  assert.equal(failure?.labHref, null);
   for (const item of catalogue.modules.filter((item) => item.labStatus === "source_ready")) {
     assert.equal(item.labHref, null, `${item.code} must not claim a digital route before runtime activation`);
   }
@@ -121,7 +125,9 @@ test("module template freezes three editions and the 13-position handbook patter
 
 test("Volume 3 Labs 9 and 10 are part of the canonical 34-module catalogue", async () => {
   const catalogue = JSON.parse(await source("lib/bis-catalogue.json"));
-  assert.deepEqual(catalogue.futureSourceCandidates, []);
+  assert.deepEqual(catalogue.futureSourceCandidates, [
+    { code: "FAI", title: "Failure Lab™", status: "PENDING_USER_SOURCE" },
+  ]);
   assert.deepEqual(
     catalogue.modules.filter((item) => item.volume === 3 && item.position >= 9).map((item) => item.title),
     ["Transferable Skills™ Lab", "Meta-Learning™ Lab"],
