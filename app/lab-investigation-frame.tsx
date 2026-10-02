@@ -115,7 +115,7 @@ export function LabMissionHeader({
         {investigation.produces?.length ? (
           <div className="universal-lab-produces">
             <strong>You will produce:</strong>
-            {investigation.produces.map((output) => <span key={output}>□ {output}</span>)}
+            {investigation.produces.map((output) => <span key={output}>{output}</span>)}
           </div>
         ) : null}
       </div>
