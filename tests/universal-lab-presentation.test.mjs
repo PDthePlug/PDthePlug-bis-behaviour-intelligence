@@ -677,3 +677,151 @@ test("bounded confidence measures render as digital rating scales instead of num
   assert.match(css, /\.universal-rating-options\{/);
   assert.match(css, /grid-template-columns:repeat\(10,minmax\(0,1fr\)\)/);
 });
+
+
+test("presentation baseline collapses repeated source rows before the learner sees them", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  const options = ["Never", "Rarely", "Sometimes", "Often", "Always"];
+  first.prompts.unshift(
+    {
+      id: "LDR.I1.BASELINE.ONE.A",
+      label: "See yourself as a leader",
+      prompt: "See yourself as a leader",
+      type: "CATEGORICAL",
+      options,
+      required: true,
+      group: "Baseline",
+    },
+    {
+      id: "LDR.I1.BASELINE.ONE.B",
+      label: "See yourself as a leader",
+      prompt: "See yourself as a leader",
+      type: "CATEGORICAL",
+      options,
+      required: true,
+      group: "Baseline",
+    },
+    {
+      id: "LDR.I1.BASELINE.TWO",
+      label: "Take responsibility for outcomes",
+      prompt: "Take responsibility for outcomes",
+      type: "CATEGORICAL",
+      options,
+      required: true,
+      group: "Baseline",
+    },
+  );
+  first.blocks.unshift(
+    { type: "HTML", html: "<h3>LEADERSHIP BASELINE — PRE</h3>" },
+    { type: "HTML", html: "<p>Before you begin, complete this diagnostic.</p>" },
+    { type: "PROMPT", promptId: "LDR.I1.BASELINE.ONE.A" },
+    { type: "PROMPT", promptId: "LDR.I1.BASELINE.ONE.B" },
+    { type: "PROMPT", promptId: "LDR.I1.BASELINE.TWO" },
+  );
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  assert.ok(result.presentationBaseline);
+  assert.deepEqual(
+    result.presentationBaseline.items.map((prompt) => prompt.label),
+    ["See yourself as a leader", "Take responsibility for outcomes"],
+  );
+});
+
+test("published workbook response stems become real controls even when the investigation already has authored prompts", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.blocks.push(
+    { type: "HTML", html: "<p>Right now I feel like someone who...</p>" },
+    { type: "HTML", html: "<p>✍️ ____________________________________</p>" },
+    { type: "HTML", html: "<p>✍️ Leader I admire: ____________________________________</p>" },
+    { type: "HTML", html: "<p>1.</p><p>2.</p><p>3.</p>" },
+  );
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  const insight = investigation.prompts.find((prompt) => prompt.label === "Today’s Insight");
+  assert.ok(insight);
+  assert.equal(insight.type, "TEXT");
+  assert.match(insight.prompt, /Right now I feel like someone who/);
+  assert.ok(investigation.prompts.some((prompt) => prompt.label === "Leader I admire"));
+
+  const html = investigation.blocks
+    .filter((block) => block.type === "HTML")
+    .map((block) => block.html)
+    .join("");
+  assert.doesNotMatch(universalHtmlText(html), /^1\.\s*2\.\s*3\.$/);
+  assert.doesNotMatch(universalHtmlText(html), /Leader I admire/);
+});
+
+
+test("already-published legacy daily trackers regain Day N scheduling without re-uploading the Lab", () => {
+  const investigations = Array.from({ length: 9 }, (_, index) => ({
+    number: index + 1,
+    title: `Stage ${index + 1}`,
+    mission: "Investigate the evidence.",
+    produces: [],
+    prompts: [],
+    blocks: [],
+  }));
+  investigations[6] = {
+    ...investigations[6],
+    title: "7-Day Experiment",
+    prompts: [
+      { id: "LDR.I7.D1.DATE", label: "1", prompt: "1", type: "TEXT", required: true, group: "Date" },
+      { id: "LDR.I7.D1.MOMENT", label: "1", prompt: "1", type: "TEXT", required: true, group: "Moment I Noticed" },
+      { id: "LDR.I7.D1.ACT", label: "1", prompt: "1", type: "TEXT", required: true, group: "Did I act?" },
+      { id: "LDR.I7.D1.NOTES", label: "1", prompt: "1", type: "TEXT", required: true, group: "Notes" },
+      { id: "LDR.I7.D2.DATE", label: "2", prompt: "2", type: "TEXT", required: true, group: "Date" },
+      { id: "LDR.I7.D2.MOMENT", label: "2", prompt: "2", type: "TEXT", required: true, group: "Moment I Noticed" },
+      { id: "LDR.I7.D2.ACT", label: "2", prompt: "2", type: "TEXT", required: true, group: "Did I act?" },
+      { id: "LDR.I7.D2.NOTES", label: "2", prompt: "2", type: "TEXT", required: true, group: "Notes" },
+    ],
+    blocks: [
+      { type: "PROMPT", promptId: "LDR.I7.D1.DATE" },
+      { type: "PROMPT", promptId: "LDR.I7.D1.MOMENT" },
+      { type: "PROMPT", promptId: "LDR.I7.D1.ACT" },
+      { type: "PROMPT", promptId: "LDR.I7.D1.NOTES" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.DATE" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.MOMENT" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.ACT" },
+      { type: "PROMPT", promptId: "LDR.I7.D2.NOTES" },
+    ],
+  };
+
+  const sourceFixture = {
+    kind: "LAB",
+    schemaVersion: "universal-lab-v2",
+    runtimeProfile: "UNIVERSAL_V2",
+    identity: { code: "LDR", version: "1.0", title: "Leadership Lab", shortTitle: "Leadership Lab", accent: "#2f8276" },
+    investigations,
+    experiment: {
+      investigation: 7,
+      startAfterInvestigation: 6,
+      days: 7,
+      reviewInvestigation: 8,
+      scheduledPromptIds: [],
+    },
+    indicatorRegistry: [],
+    computedFields: [],
+    profile: null,
+  };
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const tracking = result.investigations.find((item) => item.number === 7).prompts;
+  assert.equal(tracking.filter((prompt) => prompt.group === "Day 1").length, 4);
+  assert.equal(tracking.filter((prompt) => prompt.group === "Day 2").length, 4);
+  assert.ok(tracking.some((prompt) => prompt.label === "Day 1 evidence" && prompt.scheduleDay === 1));
+  assert.ok(tracking.some((prompt) => prompt.label === "Day 1 action check" && prompt.type === "BOOLEAN"));
+  assert.ok(tracking.some((prompt) => prompt.label === "Day 1 notes" && prompt.required === false));
+  assert.equal(result.experiment.scheduledPromptIds.length, 8);
+});
+
+
+test("baseline index cannot be silently saved at the minimum without a learner choice", async () => {
+  const runtime = await source("app/labs/[code]/universal-runtime-lab.tsx");
+  assert.match(runtime, /metricValue !== null/);
+  assert.match(runtime, /const initialMetric = savedMetricValue === "" \? null : Number\(savedMetricValue\)/);
+  assert.match(runtime, /onClick=\{\(\) => setMetricValue\(option\)\}/);
+  assert.doesNotMatch(runtime, /Number\(valueOf\(snapshot, metric\.id\) \|\| metric\.min/);
+});
