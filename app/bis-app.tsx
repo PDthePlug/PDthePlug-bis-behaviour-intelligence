@@ -223,7 +223,13 @@ function todayInTimeZone(timeZone: string) {
   }
 }
 
-export function BISApp({ initialIdentity }: { initialIdentity: { email: string; displayName: string } | null }) {
+export function BISApp({
+  initialIdentity,
+  programmeReturnTo,
+}: {
+  initialIdentity: { email: string; displayName: string } | null;
+  programmeReturnTo?: string;
+}) {
   const [state, setState] = useState<Snapshot | null>(null);
   const [view, setView] = useState<View>("home");
   const [step, setStep] = useState(1);
@@ -398,8 +404,8 @@ export function BISApp({ initialIdentity }: { initialIdentity: { email: string; 
       <main className="app-main">
         {error && <div className="error-banner"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
         {view === "home" && <HomeView state={state} name={displayName} onView={setView} onContinue={() => { setStep(current); setView("lab"); }} />}
-        {view === "lab" && <LabRunner state={state} step={step} setStep={setStep} saving={saving} act={act} onView={setView} />}
-        {view === "experiment" && <ExperimentView state={state} saving={saving} act={act} onView={setView} />}
+        {view === "lab" && <LabRunner state={state} step={step} setStep={setStep} saving={saving} act={act} onView={setView} programmeReturnTo={programmeReturnTo} />}
+        {view === "experiment" && <ExperimentView state={state} saving={saving} act={act} onView={setView} programmeReturnTo={programmeReturnTo} />}
         {view === "evidence" && <EvidenceView state={state} onView={setView} />}
         {view === "companion" && <CompanionView state={state} saving={saving} act={act} />}
         {view === "progress" && <ProgressView state={state} onView={setView} />}
@@ -589,7 +595,7 @@ function HomeView({ state, name, onContinue, onView }: { state: Snapshot; name: 
   );
 }
 
-function LabRunner({ state, step, setStep, saving, act, onView }: { state: Snapshot; step: number; setStep: (step: number) => void; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void }) {
+function LabRunner({ state, step, setStep, saving, act, onView, programmeReturnTo }: { state: Snapshot; step: number; setStep: (step: number) => void; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; programmeReturnTo?: string }) {
   const maxStep = Math.max(1, state.enrolment?.currentInvestigation || 1, step);
   return (
     <div className="runner-shell universal-habit-lab">
@@ -607,7 +613,7 @@ function LabRunner({ state, step, setStep, saving, act, onView }: { state: Snaps
         {step === 4 && <InvestigationFour state={state} saving={saving} act={act} next={() => setStep(5)} />}
         {step === 5 && <InvestigationFive state={state} saving={saving} act={act} next={() => setStep(6)} />}
         {step === 6 && <InvestigationSix state={state} saving={saving} act={act} next={() => { setStep(7); onView("experiment"); }} />}
-        {step === 7 && <ExperimentView state={state} saving={saving} act={act} onView={onView} embedded />}
+        {step === 7 && <ExperimentView state={state} saving={saving} act={act} onView={onView} embedded programmeReturnTo={programmeReturnTo} />}
         {step === 8 && <InvestigationEight state={state} saving={saving} act={act} next={() => setStep(9)} />}
         {step === 9 && <InvestigationNine state={state} saving={saving} act={act} onView={onView} />}
       </LabInvestigationFrame>
@@ -729,10 +735,10 @@ function InvestigationSix({ state, saving, act, next }: StepProps) {
   </div><div className="commitment-note"><ShieldCheck /><p>I understand that this experiment is for evidence, not perfection. If I miss a day, I will return without guilt—because guilt is not a strategy.</p></div><StepFooter label="Start seven-day experiment" saving={saving} disabled={!allReady} onSave={async () => { await act({ action: "startExperiment", ...form, impactDomains: domains }); next(); }} /></div>;
 }
 
-function ExperimentView({ state, saving, act, onView, embedded = false }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; embedded?: boolean }) {
+function ExperimentView({ state, saving, act, onView, embedded = false, programmeReturnTo }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; embedded?: boolean; programmeReturnTo?: string }) {
   const experiment = state.experiment;
   const timing = experiment ? getExperimentTiming(experiment, state.events, todayInTimeZone(state.notificationPreference.timezone)) : null;
-  const [selectedDay, setSelectedDay] = useState(() => timing?.suggestedDay ?? 1);
+  const [selectedDay, setSelectedDay] = useState(() => timing?.calendarDay ?? timing?.availableDay ?? 1);
   const existing = experiment ? state.events.find((event) => event.dayNumber === selectedDay) : undefined;
   const [cueOccurred, setCueOccurred] = useState<boolean | null>(existing?.targetConditionOccurred ?? null);
   const [alternativeUsed, setAlternativeUsed] = useState<boolean | null>(existing?.alternativeUsed ?? null);
@@ -750,6 +756,7 @@ function ExperimentView({ state, saving, act, onView, embedded = false }: { stat
   const start = new Date(`${experiment.startDate}T00:00:00Z`);
   const totalDays = timing!.totalDays;
   const availableDay = timing!.availableDay;
+  const calendarDay = timing!.calendarDay;
   const opportunityCount = Number(state.measurements["HAB.EXPERIMENT.OPPORTUNITY_COUNT"]?.value ?? 0);
   const replacementCount = Number(state.measurements["HAB.EXPERIMENT.REPLACEMENT_COUNT"]?.value ?? 0);
   const adherence = state.measurements["HAB.BEI06"]?.value;
@@ -758,10 +765,10 @@ function ExperimentView({ state, saving, act, onView, embedded = false }: { stat
   const canClose = timing!.canClose;
   const selectedDate = new Date(start);
   selectedDate.setUTCDate(start.getUTCDate() + selectedDay - 1);
-  const selectedUnavailable = selectedDay > availableDay;
+  const selectedUnavailable = calendarDay === null || selectedDay !== calendarDay;
   const nextDate = timing!.nextUnlockDate ? new Date(`${timing!.nextUnlockDate}T00:00:00Z`).toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" }) : null;
   const statusTitle = timing!.status === "BEFORE_START" ? "Your experiment is prepared—not late." : timing!.status === "READY_TODAY" ? `Day ${timing!.calendarDay} is open.` : timing!.status === "WINDOW_COMPLETE" ? "The evidence window is complete." : timing!.status === "CLOSED" ? "This experiment is closed." : "You are done for today.";
-  const statusMessage = timing!.status === "BEFORE_START" ? `Day 1 opens on ${start.toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" })}. Future evidence cannot be entered early.` : timing!.status === "READY_TODAY" ? "Wait for the first real target opportunity. If the cue does not appear, record no opportunity at the end of the day." : timing!.status === "CATCH_UP_AVAILABLE" ? `Today's entry is complete. Day ${timing!.missingAvailableDay} is still empty; fill it only if you clearly remember what happened.` : timing!.status === "WAITING_NEXT_DAY" ? `Nothing else is required today. Your next observation opens ${nextDate}.` : timing!.status === "WINDOW_COMPLETE" ? "Review the opportunity count and choose whether to finish, extend or refine the cue." : "The record remains available for inspection and correction.";
+  const statusMessage = timing!.status === "BEFORE_START" ? `Day 1 opens on ${start.toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" })}. Future evidence cannot be entered early.` : timing!.status === "READY_TODAY" ? "Only today’s observation is open. If the cue does not appear, record no opportunity rather than guessing." : timing!.status === "CATCH_UP_AVAILABLE" ? "Today’s entry is complete. Any earlier unrecorded day remains missing evidence; BIS does not ask you to backfill it later." : timing!.status === "WAITING_NEXT_DAY" ? `Nothing else is required today. Your next observation opens ${nextDate}.` : timing!.status === "WINDOW_COMPLETE" ? "The evidence window is complete. Review what was actually recorded, including any missing days." : "The record remains available for inspection.";
   const strengthLabel = evidenceStrength === "SUFFICIENT_FOR_LAB" ? "Sufficient for this Lab" : evidenceStrength === "LIMITED" ? "Limited evidence" : "No opportunities yet";
 
   return <div className={`experiment-view ${embedded ? "embedded" : "page-wrap"}`}>
@@ -770,12 +777,16 @@ function ExperimentView({ state, saving, act, onView, embedded = false }: { stat
     <section className={`experiment-status ${timing!.status.toLowerCase().replaceAll("_", "-")}`}><div className="experiment-status-icon">{timing!.status === "READY_TODAY" ? <Eye /> : timing!.status === "WINDOW_COMPLETE" || timing!.status === "CLOSED" ? <Check /> : <CalendarDays />}</div><div><p className="eyebrow">Current state</p><h2>{statusTitle}</h2><p>{statusMessage}</p></div><Badge variant="outline">{timing!.calendarDay ? `Day ${timing!.calendarDay} of ${totalDays}` : timing!.status === "BEFORE_START" ? "Starts soon" : "Review ready"}</Badge></section>
     {active && timing!.status !== "WINDOW_COMPLETE" && <section className="between-observations surface-card"><div className="section-title"><div><p className="eyebrow">Between observations</p><h3>{timing!.status === "READY_TODAY" ? "Live the experiment; do not force the evidence." : "There is nothing else to submit right now."}</h3><p>The experiment continues in real life even while the form is waiting.</p></div><Compass /></div><ol><li><span>1</span><div><strong>Watch for the first cue</strong><p>Notice the first genuine target opportunity—not every possible moment.</p></div></li><li><span>2</span><div><strong>Use the smallest useful alternative</strong><p>Your minimum version counts when the full replacement routine is unrealistic.</p></div></li><li><span>3</span><div><strong>Return once for that day</strong><p>Record what happened. If no opportunity appeared, say so rather than guessing.</p></div></li></ol><div className="between-actions"><Button variant="outline" onClick={() => onView("companion")}>Ask the Companion</Button><Button variant="outline" onClick={() => onView("evidence")}>Review evidence overview</Button></div></section>}
     <section className="experiment-grid">
-      <div className="surface-card days-card"><div className="section-title"><div><h3>{totalDays > 7 ? "Extended evidence window" : "Seven-day evidence"}</h3><p>Future days unlock only after they happen. Correct an earlier day only from clear memory—never fill a gap by guessing.</p></div><CalendarDays /></div><div className="day-list">{Array.from({ length: totalDays }, (_, index) => index + 1).map((day) => {
+      <div className="surface-card days-card"><div className="section-title"><div><h3>{totalDays > 7 ? "Extended evidence window" : "Seven-day evidence"}</h3><p>Only the current calendar day can be recorded. Future days stay locked, and a missed past day remains missing evidence rather than being backfilled later.</p></div><CalendarDays /></div><div className="day-list">{Array.from({ length: totalDays }, (_, index) => index + 1).map((day) => {
         const event = state.events.find((item) => item.dayNumber === day);
-        const disabled = day > availableDay;
-        return <button key={day} disabled={disabled} className={`${selectedDay === day ? "selected" : ""} ${event ? "recorded" : ""}`} onClick={() => chooseDay(day)}><span>{event ? <Check /> : day}</span><div><strong>Day {day}</strong><small>{disabled ? "Not experienced yet" : event ? event.targetConditionOccurred ? event.alternativeUsed ? "Alternative used" : "Cue observed" : "No target opportunity" : day === timing!.calendarDay ? "Ready today" : "Available to recall"}</small></div>{disabled ? <LockKeyhole /> : <ChevronRight />}</button>;
+        const isToday = day === calendarDay;
+        const disabled = !isToday;
+        return <button key={day} disabled={disabled} className={`${selectedDay === day ? "selected" : ""} ${event ? "recorded" : ""}`} onClick={() => chooseDay(day)}><span>{event ? <Check /> : day}</span><div><strong>Day {day}</strong><small>{isToday ? event ? event.targetConditionOccurred ? event.alternativeUsed ? "Alternative used" : "Cue observed" : "No target opportunity" : "Ready today" : event ? "Recorded" : day < availableDay ? "Not recorded" : "Not available yet"}</small></div>{disabled ? <LockKeyhole /> : <ChevronRight />}</button>;
       })}</div></div>
-      <div className="surface-card checkin-card"><p className="eyebrow">Day {selectedDay} check-in · {selectedDate.toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</p>{selectedUnavailable ? <div className="waiting-checkin"><LockKeyhole /><h3>This day has not happened yet.</h3><p>Future observations stay locked. Return on that date so the record remains evidence rather than prediction.</p></div> : active ? <><h3>Did your cue occur?</h3><div className="choice-grid two"><ChoiceButton active={cueOccurred === true} title="Yes" detail="A target opportunity occurred" onClick={() => setCueOccurred(true)} /><ChoiceButton active={cueOccurred === false} title="No" detail="No target opportunity today" onClick={() => { setCueOccurred(false); setAlternativeUsed(null); }} /></div>{cueOccurred === true && <><h3>Did you use your new routine?</h3><div className="choice-grid two"><ChoiceButton active={alternativeUsed === true} title="Yes" detail="I used the alternative" onClick={() => setAlternativeUsed(true)} /><ChoiceButton active={alternativeUsed === false} title="No" detail="I used the old routine" onClick={() => setAlternativeUsed(false)} /></div></>} {cueOccurred === false && <div className="no-opportunity"><Eye /><div><strong>No target opportunity today.</strong><p>This is valid evidence. It is excluded from adherence rather than scored as 0%.</p></div></div>}<label className="field-label">What happened? <span>Optional</span></label><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Add only what will help you remember the moment…" /><Button className="w-full" size="lg" disabled={saving || cueOccurred === null || (cueOccurred === true && alternativeUsed === null)} onClick={() => void act({ action: "saveEvent", experimentId: experiment.id, dayNumber: selectedDay, occurredAt: selectedDate.toISOString(), targetConditionOccurred: cueOccurred, alternativeUsed, notes })}>{saving ? "Saving evidence…" : existing ? "Update this evidence" : "Save this evidence"}</Button></> : <div className="closed-checkin"><ShieldCheck /><h3>This evidence window is closed.</h3><p>You can inspect each day, the calculation trail and parameter history. New observations are paused for this experiment.</p><Button variant="outline" onClick={() => onView("evidence")}>Open evidence vault</Button></div>}</div>
+      <div className="surface-card checkin-card"><p className="eyebrow">Day {selectedDay} check-in · {selectedDate.toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</p>{selectedUnavailable ? <div className="waiting-checkin"><LockKeyhole /><h3>This day has not happened yet.</h3><p>Future observations stay locked. Return on that date so the record remains evidence rather than prediction.</p></div> : active ? <><h3>Did your cue occur?</h3><div className="choice-grid two"><ChoiceButton active={cueOccurred === true} title="Yes" detail="A target opportunity occurred" onClick={() => setCueOccurred(true)} /><ChoiceButton active={cueOccurred === false} title="No" detail="No target opportunity today" onClick={() => { setCueOccurred(false); setAlternativeUsed(null); }} /></div>{cueOccurred === true && <><h3>Did you use your new routine?</h3><div className="choice-grid two"><ChoiceButton active={alternativeUsed === true} title="Yes" detail="I used the alternative" onClick={() => setAlternativeUsed(true)} /><ChoiceButton active={alternativeUsed === false} title="No" detail="I used the old routine" onClick={() => setAlternativeUsed(false)} /></div></>} {cueOccurred === false && <div className="no-opportunity"><Eye /><div><strong>No target opportunity today.</strong><p>This is valid evidence. It is excluded from adherence rather than scored as 0%.</p></div></div>}<label className="field-label">What happened? <span>Optional</span></label><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Add only what will help you remember the moment…" /><Button className="w-full" size="lg" disabled={saving || cueOccurred === null || (cueOccurred === true && alternativeUsed === null)} onClick={() => void (async () => {
+        const saved = await act({ action: "saveEvent", experimentId: experiment.id, dayNumber: selectedDay, occurredAt: selectedDate.toISOString(), targetConditionOccurred: cueOccurred, alternativeUsed, notes });
+        if (saved && programmeReturnTo) window.location.assign(programmeReturnTo);
+      })()}>{saving ? "Saving evidence…" : existing ? "Update today’s evidence" : "Save today’s evidence"}</Button></> : <div className="closed-checkin"><ShieldCheck /><h3>This evidence window is closed.</h3><p>You can inspect each day, the calculation trail and parameter history. New observations are paused for this experiment.</p><Button variant="outline" onClick={() => onView("evidence")}>Open evidence vault</Button></div>}</div>
     </section>
     <section className="measurement-strip"><div><span>Opportunities observed</span><strong>{opportunityCount}</strong></div><div><span>Alternative used</span><strong>{replacementCount}</strong></div><div><span>Adherence</span><strong>{adherence === null || adherence === undefined ? "N/A" : `${adherence}%`}</strong></div><div><span>Evidence strength</span><strong>{strengthLabel}</strong></div></section>
     {state.events.length >= 3 && <CheckpointPanel state={state} saving={saving} act={act} />}
