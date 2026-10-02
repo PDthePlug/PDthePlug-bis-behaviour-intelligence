@@ -60,14 +60,12 @@ function multiValues(value: string) {
 
 function UniversalPrompt({
   prompt,
-  index,
   value,
   passed,
   onValue,
   onPass,
 }: {
   prompt: UniversalLabPrompt;
-  index: number;
   value: string;
   passed: boolean;
   onValue: (value: string) => void;
@@ -86,7 +84,6 @@ function UniversalPrompt({
 
   return (
     <section className={`prompt-section universal-prompt ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
-      <div className="prompt-number">{String(index).padStart(2, "0")}</div>
       <div className="prompt-body">
         {group ? <p className="prompt-kicker">{group}</p> : null}
         <h2 className={prompt.label.length > 90 ? "long-prompt-title" : undefined}>{prompt.label}</h2>
@@ -518,7 +515,6 @@ function UniversalInvestigationForm({
   };
 
   const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
-  const promptOrder = new Map(visiblePrompts.map((prompt, index) => [prompt.id, index + 1]));
   const blockPromptIds = new Set(
     (investigation.blocks ?? []).flatMap((block) => {
       if (block.type === "PROMPT") return [block.promptId];
@@ -557,7 +553,6 @@ function UniversalInvestigationForm({
       <UniversalPrompt
         key={prompt.id}
         prompt={prompt}
-        index={promptOrder.get(prompt.id) ?? 1}
         value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
         passed={passed.has(prompt.id)}
         onValue={(value) => updatePromptValue(prompt.id, value)}
