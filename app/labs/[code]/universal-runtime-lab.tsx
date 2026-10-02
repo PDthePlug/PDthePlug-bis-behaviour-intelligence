@@ -394,6 +394,13 @@ function UniversalBaseline({
             ) : null}
 
             {error ? <p className="field-error">{error}</p> : null}
+      {attemptedSubmit && !ready ? (
+        <p className="universal-validation-note" role="alert">
+          {missingRequiredCount === 1
+            ? "One response still needs an answer or “Prefer not to answer”."
+            : `${missingRequiredCount} responses still need an answer or “Prefer not to answer”.`}
+        </p>
+      ) : null}
             <Button
               className="w-full"
               size="lg"
@@ -449,6 +456,7 @@ function UniversalInvestigationForm({
   const [passed, setPassed] = useState<Set<string>>(() =>
     new Set(investigation.prompts.filter((prompt) => snapshot.responses[prompt.id]?.status === "PASS").map((prompt) => prompt.id)),
   );
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   const availableExperimentDay = previewMode
     ? (snapshot.definition.experiment?.days ?? 9)
     : (snapshot.experimentTiming?.availableDay ?? 0);
@@ -471,6 +479,27 @@ function UniversalInvestigationForm({
       value: values[prompt.id] ?? "",
       responseStatus: passed.has(prompt.id) ? "PASS" : "ANSWERED",
     }));
+
+  const missingRequiredCount = visiblePrompts.filter((prompt) => {
+    if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return false;
+    const current = values[prompt.id] ?? "";
+    return prompt.type === "MULTI_SELECT" ? multiValues(current).length === 0 : !current.trim();
+  }).length;
+
+  const guardSave = () => {
+    if (ready) {
+      setAttemptedSubmit(false);
+      return true;
+    }
+    setAttemptedSubmit(true);
+    requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>(".universal-prompt:not(.passed)")?.scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
+    });
+    return false;
+  };
 
   const promptById = new Map(investigation.prompts.map((prompt) => [prompt.id, prompt]));
   const promptOrder = new Map(visiblePrompts.map((prompt, index) => [prompt.id, index + 1]));
@@ -571,16 +600,18 @@ function UniversalInvestigationForm({
         </section>
       ) : (
         <div className="step-footer">
-          <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Saved as private, traceable evidence."}</span>
+          <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Your responses save privately to this Lab."}</span>
           {step === 9 ? (
-            <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
+            <Button size="lg" disabled={saving} onClick={() => void (async () => {
+              if (!guardSave()) return;
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
               if (saved) await act({ action: "completeLab" });
             })()}>
               {saving ? "Saving…" : <>Complete Lab <Check /></>}
             </Button>
           ) : (
-            <Button size="lg" disabled={saving || !ready} onClick={() => void (async () => {
+            <Button size="lg" disabled={saving} onClick={() => void (async () => {
+              if (!guardSave()) return;
               const saved = await act({ action: "saveInvestigation", investigation: step, items: items() });
               if (!saved) return;
               const next = Math.min(9, step + 1);
