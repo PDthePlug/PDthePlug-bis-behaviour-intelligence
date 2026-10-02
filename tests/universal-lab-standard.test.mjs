@@ -154,7 +154,68 @@ test("Investigation 2 receives a pattern target and recent evidence anchor when 
 });
 
 
-test("exact cross-stage repeats are suppressed while the earlier authored evidence stays authoritative", () => {
+
+test("a rich authored Pattern stage is not padded with generic Pattern target and recent-example questions", () => {
+  const source = baseLab();
+  source.investigations[1].prompts = [
+    {
+      id: "TST.I2.BELIEF",
+      label: "What I believe",
+      prompt: "What is one thing you believe you are not good at, and where did that belief come from?",
+      type: "TEXT",
+      required: true,
+    },
+    {
+      id: "TST.I2.SAID",
+      label: "What I said",
+      prompt: "What did you actually say in the recent moment?",
+      type: "TEXT",
+      required: true,
+    },
+    {
+      id: "TST.I2.NEXT",
+      label: "What happened next",
+      prompt: "What happened next?",
+      type: "TEXT",
+      required: true,
+    },
+    {
+      id: "TST.I2.NOTICE",
+      label: "Notice the pattern",
+      prompt: "Do you believe you could get better at it—or is it fixed?",
+      type: "TEXT",
+      required: true,
+    },
+  ];
+
+  const result = applyHabitLabStandard(source);
+  const injected = result.investigations[1].prompts.filter((prompt) =>
+    ["PATTERN_TARGET", "PATTERN_EVIDENCE"].includes(prompt.standardPurpose),
+  );
+  assert.equal(injected.length, 0);
+  for (const id of ["TST.I2.BELIEF", "TST.I2.SAID", "TST.I2.NEXT", "TST.I2.NOTICE"]) {
+    assert.ok(result.investigations[1].prompts.some((prompt) => prompt.id === id));
+  }
+});
+
+test("authored falsification wording prevents a duplicate generic falsification task", () => {
+  const source = baseLab();
+  source.investigations[4].prompts.push({
+    id: "TST.I5.FALSIFY",
+    label: "What evidence would prove your equation is wrong?",
+    prompt: "What evidence would prove your equation is wrong?",
+    type: "TEXT",
+    required: true,
+  });
+  const result = applyHabitLabStandard(source);
+  assert.equal(
+    result.investigations[4].prompts.some((prompt) => prompt.standardPurpose === "FALSIFICATION"),
+    false,
+  );
+  assert.ok(result.investigations[4].prompts.some((prompt) => prompt.id === "TST.I5.FALSIFY"));
+});
+
+test("authored cross-stage repeats are preserved because source repetition can be intentional", () => {
   const source = baseLab();
   source.investigations[0].prompts.push({
     id: "TST.I1.IDENTITY",
@@ -174,12 +235,11 @@ test("exact cross-stage repeats are suppressed while the earlier authored eviden
   const result = applyHabitLabStandard(source);
 
   assert.ok(result.investigations[0].prompts.some((prompt) => prompt.id === "TST.I1.IDENTITY"));
-  assert.equal(result.investigations[1].prompts.some((prompt) => prompt.id === "TST.I2.IDENTITY"), false);
-  assert.ok(result.normalizationNotes.some((note) =>
+  assert.ok(result.investigations[1].prompts.some((prompt) => prompt.id === "TST.I2.IDENTITY"));
+  assert.equal(result.normalizationNotes.some((note) =>
     note.code === "DUPLICATE_PROMPT_SUPPRESSED"
     && note.sourcePromptId === "TST.I2.IDENTITY"
-    && note.retainedPromptId === "TST.I1.IDENTITY"
-  ));
+  ), false);
 });
 
 test("repeated daily experiment prompts are preserved because each calendar day is distinct evidence", () => {
@@ -219,7 +279,7 @@ test("repeated daily experiment prompts are preserved because each calendar day 
   );
 });
 
-test("duplicate prompt blocks disappear with the duplicate prompt so the digital page does not render a dead question", () => {
+test("authored duplicate prompt blocks remain bound to their own source-stage controls", () => {
   const source = baseLab();
   source.investigations[0].prompts.push({
     id: "TST.I1.REPEAT",
@@ -242,13 +302,13 @@ test("duplicate prompt blocks disappear with the duplicate prompt so the digital
 
   const result = applyHabitLabStandard(source);
 
-  assert.equal(result.investigations[1].prompts.some((prompt) => prompt.id === "TST.I2.REPEAT"), false);
-  assert.equal(result.investigations[1].blocks.some((block) => block.promptId === "TST.I2.REPEAT"), false);
+  assert.ok(result.investigations[1].prompts.some((prompt) => prompt.id === "TST.I2.REPEAT"));
+  assert.ok(result.investigations[1].blocks.some((block) => block.promptId === "TST.I2.REPEAT"));
   assert.ok(result.investigations[1].blocks.some((block) => block.type === "HTML"));
 });
 
 
-test("broad reflection prompts are removed when a stronger evidence task already exists in the same stage", () => {
+test("authored reflection prompts remain controls even when stronger evidence tasks share the stage", () => {
   const source = baseLab();
   source.investigations[3].prompts = [
     {
@@ -276,12 +336,12 @@ test("broad reflection prompts are removed when a stronger evidence task already
   const result = applyHabitLabStandard(source);
 
   assert.ok(result.investigations[3].prompts.some((prompt) => prompt.id === "TST.I4.MAP"));
-  assert.equal(result.investigations[3].prompts.some((prompt) => prompt.id === "TST.I4.INSIGHT"), false);
-  assert.equal(result.investigations[3].blocks.some((block) => block.promptId === "TST.I4.INSIGHT"), false);
-  assert.ok(result.normalizationNotes.some((note) =>
+  assert.ok(result.investigations[3].prompts.some((prompt) => prompt.id === "TST.I4.INSIGHT"));
+  assert.ok(result.investigations[3].blocks.some((block) => block.promptId === "TST.I4.INSIGHT"));
+  assert.equal(result.normalizationNotes.some((note) =>
     note.code === "LOW_INFORMATION_PROMPT_SUPPRESSED"
     && note.sourcePromptId === "TST.I4.INSIGHT"
-  ));
+  ), false);
 });
 
 test("a broad prompt is retained when it is the only learner task instead of creating an empty investigation", () => {
