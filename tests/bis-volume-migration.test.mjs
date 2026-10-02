@@ -93,8 +93,14 @@ test("Content Studio exposes a non-publishing whole-volume audit path", async ()
   assert.match(route, /compileUniversalLab/);
   assert.match(route, /SYSTEM_ADMIN/);
   assert.match(route, /editorialReviewLabs/);
+  assert.match(route, /stageRequested/);
+  assert.match(route, /content:lab:\$\{draft\.code\}:1\.0/);
+  assert.match(route, /CONTENT_STUDIO_BUCKET/);
+  assert.match(route, /sourceFormat: "BIS_PACKAGE_JSON"/);
+  assert.match(route, /status: "DRAFT"/);
   assert.match(ui, /Audit a volume/);
-  assert.match(ui, /Run volume audit/);
+  assert.match(ui, /Audit only/);
+  assert.match(ui, /Stage into 1\.0 drafts/);
   assert.match(ui, /Nothing was published/);
   assert.match(ui, /Need strengthening/);
 });

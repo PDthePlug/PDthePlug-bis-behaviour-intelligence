@@ -541,3 +541,18 @@
   .volume-audit-list>article>header{flex-direction:column}
   .content-studio-header-actions{grid-template-columns:1fr}
 }
+
+.volume-audit-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+}
+@media(max-width:980px){
+  .volume-audit-actions{justify-content:stretch}
+  .volume-audit-actions [data-slot="button"]{flex:1}
+}
+@media(max-width:760px){
+  .volume-audit-actions{display:grid;grid-template-columns:1fr}
+  .volume-audit-actions [data-slot="button"]{width:100%}
+}
