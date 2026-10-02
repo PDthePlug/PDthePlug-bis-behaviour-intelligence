@@ -179,3 +179,20 @@ test("Programme experiment status is authored-window aware instead of assuming s
   assert.match(player, /\{experimentRecordedDays\}\/\{experimentTotalDays\} observation days recorded/);
   assert.doesNotMatch(player, /activeModuleRuntime\.events\.length\}\/7 observation days recorded/);
 });
+
+
+test("Today makes unrecorded Investigation 7 evidence the primary learner action", async () => {
+  const [player, css] = await Promise.all([
+    source("app/learning/programme-player.tsx"),
+    source("app/learning/programme-player.css"),
+  ]);
+
+  assert.match(player, /programmeHandoff\.currentDay > 0/);
+  assert.match(player, /!programmeHandoff\.todayEvidenceRecorded/);
+  assert.match(player, /Today’s Lab evidence · Investigation 7/);
+  assert.match(player, /Capture today’s evidence/);
+  assert.match(player, /Tomorrow’s evidence opens tomorrow/);
+  assert.match(player, /an unrecorded past day remains missing evidence/);
+  assert.match(css, /\.prototype-evidence-due\{/);
+  assert.match(css, /grid-column:1\/-1/);
+});
