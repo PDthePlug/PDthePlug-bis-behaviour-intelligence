@@ -26,6 +26,7 @@ import {
   evaluateUniversalComputed,
   experimentCalendarDay,
   universalComputedLeafInputs,
+  universalExperimentEvidenceProgress,
   v2RequiredPromptIds,
 } from "../../../lib/universal-lab-v2.mjs";
 
@@ -318,6 +319,15 @@ async function snapshot(userId: string, code: string) {
     row.code,
     { ...row, value: decode(row.value) },
   ]));
+  const programmeHandoff = experimentDays
+    ? universalExperimentEvidenceProgress(runtime.definition, latest, availableDay)
+    : {
+        experimentStarted: false,
+        currentDay: 0,
+        totalDays: 0,
+        evidenceDaysRecorded: 0,
+        todayEvidenceRecorded: false,
+      };
 
   return {
     definition: runtime.definition,
@@ -335,6 +345,7 @@ async function snapshot(userId: string, code: string) {
     responses: latest,
     computed,
     measurements,
+    programmeHandoff,
     experimentTiming: experimentDays ? {
       startedAt: enrolment?.experimentStartedAt ?? null,
       availableDay,
