@@ -82,3 +82,26 @@ test("legacy Prediction and Volume 3 transfer normalization remain visible after
   assert.match(compiler, /sourceMigration/);
   assert.match(compiler, /normalizationNotes/);
 });
+
+
+test("Content Studio exposes a non-publishing whole-volume audit path", async () => {
+  const [route, ui] = await Promise.all([
+    source("app/api/content-studio/volume-audit/route.ts"),
+    source("app/content-studio/content-studio.tsx"),
+  ]);
+  assert.match(route, /adaptBisVolumeSource/);
+  assert.match(route, /compileUniversalLab/);
+  assert.match(route, /SYSTEM_ADMIN/);
+  assert.match(route, /editorialReviewLabs/);
+  assert.match(ui, /Audit a volume/);
+  assert.match(ui, /Run volume audit/);
+  assert.match(ui, /Nothing was published/);
+  assert.match(ui, /Need strengthening/);
+});
+
+test("shared Lab frame gives legacy live Labs the same canonical stage layer", async () => {
+  const frame = await source("app/lab-investigation-frame.tsx");
+  assert.match(frame, /HABIT_LAB_STAGES/);
+  assert.match(frame, /canonicalStage/);
+  assert.match(frame, /Investigation \$\{step\} · \$\{canonicalStage\.label\}/);
+});
