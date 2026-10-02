@@ -413,3 +413,12 @@
 @media(max-width:700px){
   .universal-experiment-status{grid-template-columns:1fr;gap:8px;padding:16px}
 }
+
+
+.universal-lab-stage-role {
+  margin-top: 10px;
+  max-width: 68ch;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}
