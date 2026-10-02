@@ -107,3 +107,20 @@ test("legacy learning URLs collapse into the Learn surface", async () => {
   assert.match(learning, /redirect\("\/learn"\)/);
   assert.match(legacyHabit, /redirect\("\/learn"\)/);
 });
+
+
+test("Day 3 Lab handoff preserves the exact learner handbook return path", async () => {
+  const [player, labPage, experimentPage, shell] = await Promise.all([
+    source("app/learning/programme-player.tsx"),
+    source("app/habit-lab/page.tsx"),
+    source("app/habit-lab/experiment/page.tsx"),
+    source("app/habit-lab/habit-lab-shell.tsx"),
+  ]);
+
+  assert.match(player, /function labHrefWithReturn\(href: string, returnTo: string\)/);
+  assert.match(player, /const learningReturnTo = `\$\{pathname\}\?section=learn&page=\$\{selected \+ 1\}`/);
+  assert.match(player, /labHrefWithReturn\(moduleDefinition\.labHref, learningReturnTo\)/);
+  assert.match(labPage, /returnTo=\{params\.returnTo\}/);
+  assert.match(experimentPage, /returnTo=\{params\.returnTo\}/);
+  assert.match(shell, /programmeReturnTo=\{safeReturnTo\}/);
+});
