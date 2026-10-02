@@ -717,3 +717,17 @@
   .universal-package-lab .imported-lab-content{padding:24px 20px}
   .universal-package-lab .universal-prompt .prompt-body h2{font-size:24px}
 }
+
+
+/* Reserve the mobile navigation safe area so the canonical Menu control never
+   obscures a Lab prompt, table, baseline control, or completion action. */
+@media(max-width:820px){
+  .canonical-shell .universal-lab-frame{
+    padding-bottom:calc(112px + env(safe-area-inset-bottom));
+    scroll-padding-bottom:calc(112px + env(safe-area-inset-bottom));
+  }
+  .canonical-shell .universal-package-welcome,
+  .canonical-shell .universal-baseline{
+    padding-bottom:calc(112px + env(safe-area-inset-bottom));
+  }
+}
