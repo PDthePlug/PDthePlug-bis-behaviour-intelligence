@@ -422,3 +422,298 @@
   line-height: 1.55;
   color: var(--muted-foreground);
 }
+
+
+/* Universal Lab parity hardening
+   Imported workbook structure is content, never page chrome. */
+.universal-package-welcome{
+  overflow-x:clip;
+  background:var(--cream,#f4f2ed);
+  color:var(--ink,#17313a);
+}
+.universal-package-welcome .universal-welcome-grid{
+  width:min(1180px,100%);
+  grid-template-columns:minmax(0,1.1fr) minmax(300px,.72fr);
+  align-items:center;
+  gap:clamp(28px,5vw,72px);
+  margin:8vh auto 0;
+  padding:clamp(34px,5vw,58px);
+  border-radius:30px;
+  background:var(--ink,#17313a);
+  color:var(--cream,#f8f4eb);
+}
+.universal-welcome-copy{min-width:0}
+.universal-welcome-copy .eyebrow{color:#74b5aa}
+.universal-welcome-copy h1{
+  max-width:11ch;
+  margin:16px 0 20px;
+  color:#fffdf7;
+  font:600 clamp(54px,7vw,96px)/.91 var(--font-serif);
+  letter-spacing:-.055em;
+  overflow-wrap:anywhere;
+  text-wrap:balance;
+}
+.universal-welcome-copy>p:last-of-type{
+  max-width:650px;
+  margin:0;
+  color:#c3cfcc;
+  font-size:17px;
+  line-height:1.68;
+}
+.universal-welcome-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:26px;
+}
+.universal-welcome-meta span{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:8px 11px;
+  border:1px solid #ffffff20;
+  border-radius:999px;
+  background:#ffffff0a;
+  color:#b9c8c4;
+  font-size:11px;
+  line-height:1.2;
+}
+.universal-welcome-meta strong{color:#fff;font-weight:850}
+.universal-package-welcome .universal-start-card{
+  align-self:stretch;
+  align-content:center;
+  color:var(--ink,#17313a);
+  background:#fffdf8;
+  border-top:4px solid var(--lab-accent,#2f8276);
+  box-shadow:0 24px 60px rgb(0 0 0 / 16%);
+}
+.universal-package-welcome .universal-start-card>svg{color:var(--lab-accent,#2f8276)}
+.universal-package-welcome .universal-start-card .eyebrow{
+  margin:0;
+  color:var(--lab-accent,#2f8276);
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.universal-package-welcome .universal-start-card h2{color:var(--ink,#17313a)}
+.universal-package-welcome .universal-start-card p,
+.universal-package-welcome .universal-start-card .consent-row{color:#5e6c68}
+.universal-package-welcome .universal-start-card .consent-row span{color:#42524d}
+.universal-package-welcome .universal-start-card [data-slot="button"]{
+  min-height:48px;
+  white-space:normal;
+  line-height:1.25;
+}
+
+/* One coherent source section = one Habit-style story card. */
+.universal-package-lab .imported-lab-content{
+  display:block;
+  width:100%;
+  min-width:0;
+  padding:clamp(28px,5vw,54px);
+  overflow:hidden;
+  border:1px solid #ded8ca;
+  border-radius:28px;
+  background:#fffaf0;
+  box-shadow:0 20px 60px rgb(16 43 63 / 5%);
+}
+.universal-package-lab .imported-lab-content>*{max-width:760px}
+.universal-package-lab .imported-lab-content>h2,
+.universal-package-lab .imported-lab-content>h3,
+.universal-package-lab .imported-lab-content>h4{
+  margin:0 0 18px;
+}
+.universal-package-lab .imported-lab-content h2{
+  font:600 clamp(30px,4vw,44px)/1.08 var(--font-serif);
+  letter-spacing:-.025em;
+}
+.universal-package-lab .imported-lab-content h3{
+  font:600 clamp(25px,3.5vw,34px)/1.12 var(--font-serif);
+}
+.universal-package-lab .imported-lab-content h4{
+  color:var(--teal,#2f8276);
+  font:850 11px/1.35 var(--font-sans);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.universal-package-lab .imported-lab-content p,
+.universal-package-lab .imported-lab-content li{
+  margin:0 0 16px;
+  color:#273e4e;
+  font:400 16px/1.78 var(--font-serif);
+}
+.universal-package-lab .imported-lab-content p:first-of-type{font-size:19px}
+.universal-package-lab .imported-lab-content p:last-child{margin-bottom:0}
+.universal-package-lab .imported-lab-content .bis-source-pause-kicker{
+  display:inline-flex;
+  margin:6px 0 16px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#f2eadb;
+  color:#8a6330;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.universal-package-lab .imported-lab-content table{
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  border-collapse:collapse;
+  background:#fff;
+  font-family:var(--font-sans);
+  font-size:12px;
+  scrollbar-width:thin;
+}
+.universal-package-lab .imported-lab-content tbody,
+.universal-package-lab .imported-lab-content thead{min-width:560px}
+.universal-package-lab .imported-lab-content th,
+.universal-package-lab .imported-lab-content td{
+  min-width:110px;
+  padding:11px 12px;
+  border:1px solid var(--border,#d9ddda);
+  color:#273e4e;
+  line-height:1.45;
+  text-align:left;
+  vertical-align:top;
+}
+.universal-package-lab .imported-lab-content th{
+  background:#eef3f1;
+  color:#17313a;
+  font-weight:850;
+}
+
+/* Prompts use the same visual grammar as the Habit Lab. */
+.universal-package-lab .universal-prompt{
+  grid-template-columns:54px minmax(0,1fr);
+  overflow:hidden;
+  border:1px solid var(--border,#d9ddda);
+  border-radius:22px;
+  background:var(--paper,#fff);
+}
+.universal-package-lab .universal-prompt .prompt-number,
+.universal-package-lab .prompt-section[data-group] .prompt-number{
+  width:auto;
+  min-width:0;
+  padding:28px 0 0;
+  border-right:1px solid var(--border,#d9ddda);
+  border-radius:0;
+  color:var(--coral,#c9684d);
+  font:700 13px var(--font-serif);
+  white-space:normal;
+}
+.universal-package-lab .universal-prompt .prompt-body{padding:27px}
+.universal-package-lab .universal-prompt .prompt-kicker{
+  margin:0 0 9px;
+  color:var(--teal,#2f8276);
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.universal-package-lab .universal-prompt .prompt-body h2{
+  margin:0;
+  color:var(--ink,#17313a);
+  font:600 clamp(23px,3.5vw,31px)/1.16 var(--font-serif);
+  letter-spacing:-.015em;
+}
+.universal-package-lab .universal-prompt .prompt-body>p{
+  max-width:700px;
+  margin:8px 0 0;
+  color:#66736f;
+  font-size:13px;
+  line-height:1.65;
+}
+.universal-package-lab .universal-choice-list{margin-top:2px}
+.universal-package-lab .universal-choice-list button{
+  min-height:52px;
+  border-radius:14px;
+  background:#fdfcf8;
+  font-size:13px;
+  line-height:1.45;
+}
+.universal-package-lab .universal-choice-list button.selected{
+  border-color:var(--teal,#2f8276);
+  background:#edf5f1;
+  color:#173f35;
+}
+.universal-package-lab .universal-multi-select label{
+  min-height:50px;
+  align-items:center;
+  border-radius:14px;
+  background:#fdfcf8;
+  color:#263c36;
+  font-size:13px;
+  line-height:1.45;
+}
+.universal-package-lab .prompt-controls textarea{
+  min-height:118px;
+  padding:15px 16px;
+  border-radius:14px;
+  background:#fdfcf8;
+  color:#17313a;
+  font-size:15px;
+  line-height:1.55;
+}
+.universal-package-lab .pass-control{
+  margin-top:14px;
+  color:#6e7773;
+  font-size:11px;
+}
+
+/* Imported titles sometimes contain Word artefacts; never let them break the mission header. */
+.universal-lab-mission h1{
+  max-width:16ch;
+  overflow-wrap:anywhere;
+  text-wrap:balance;
+}
+.universal-lab-mission-copy{max-width:820px}
+
+@media(max-width:820px){
+  .universal-package-welcome{padding:18px 14px 92px}
+  .universal-package-welcome .universal-welcome-grid{
+    grid-template-columns:1fr;
+    gap:24px;
+    margin:18px auto 0;
+    padding:32px 22px 24px;
+    border-radius:26px;
+  }
+  .universal-welcome-copy h1{
+    max-width:100%;
+    font-size:clamp(43px,12vw,62px);
+    line-height:.94;
+  }
+  .universal-welcome-copy>p:last-of-type{font-size:16px}
+  .universal-welcome-meta{margin-top:20px}
+  .universal-package-welcome .universal-start-card{padding:25px 22px}
+  .universal-package-lab .imported-lab-content{
+    padding:27px 22px;
+    border-radius:22px;
+    overflow:hidden;
+  }
+  .universal-package-lab .imported-lab-content p,
+  .universal-package-lab .imported-lab-content li{font-size:16px}
+  .universal-package-lab .universal-prompt{grid-template-columns:42px minmax(0,1fr)}
+  .universal-package-lab .universal-prompt .prompt-number,
+  .universal-package-lab .prompt-section[data-group] .prompt-number{
+    padding-top:23px;
+    font-size:12px;
+  }
+  .universal-package-lab .universal-prompt .prompt-body{padding:22px 18px}
+  .universal-package-lab .universal-prompt .prompt-body h2{font-size:26px}
+  .universal-package-lab .universal-choice-list button{font-size:13px}
+  .universal-lab-mission h1{max-width:100%;font-size:44px}
+}
+
+@media(max-width:430px){
+  .universal-package-welcome .universal-welcome-grid{padding:28px 18px 20px}
+  .universal-welcome-copy h1{font-size:42px}
+  .universal-welcome-meta span{font-size:10px}
+  .universal-package-welcome .universal-start-card [data-slot="button"]{width:100%}
+  .universal-package-lab .imported-lab-content{padding:24px 20px}
+  .universal-package-lab .universal-prompt .prompt-body h2{font-size:24px}
+}
