@@ -187,8 +187,7 @@ function UniversalBaseline({
   error: string;
   act: (payload: Record<string, unknown>) => Promise<Snapshot | null>;
 }) {
-  const baseline = snapshot.definition.presentationBaseline;
-  if (!baseline) return null;
+  const baseline = snapshot.definition.presentationBaseline!;
 
   const [values, setValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(
