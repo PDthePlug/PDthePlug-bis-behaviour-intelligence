@@ -297,16 +297,16 @@ test("learner frame shows the canonical nine-stage journey without internal faci
   assert.doesNotMatch(frame, />□ \{output\}</);
 });
 
-test("Lab keeps top-bar context and restores the centre Menu without adding it to Learn", async () => {
+test("learner shell keeps one centred Menu across Learn, Today and Lab", async () => {
   const [shell, css] = await Promise.all([
     source("app/canonical-adaptive-shell.tsx"),
     source("app/canonical-shell.css"),
   ]);
-  assert.match(shell, /className="canonical-topbar-menu"/);
-  assert.match(shell, /stage === "lab"/);
+  assert.doesNotMatch(shell, /className="canonical-topbar-menu"/);
   assert.match(shell, /className="canonical-menu-trigger"/);
-  assert.match(css, /canonical-shell\[data-stage="lab"\] \.canonical-menu-trigger\{display:flex!important\}/);
-  assert.match(css, /canonical-shell:not\(\[data-stage="lab"\]\) \.canonical-menu-trigger\{display:none!important\}/);
+  assert.match(shell, /Open BIS menu · current area/);
+  assert.match(css, /\.canonical-menu-trigger\{display:flex!important\}/);
+  assert.doesNotMatch(css, /canonical-shell:not\(\[data-stage="lab"\]\) \.canonical-menu-trigger/);
 });
 
 test("Volume 3 TEI codes are first-class evidence indicators", async () => {
