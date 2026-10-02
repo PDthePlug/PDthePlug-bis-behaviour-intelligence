@@ -246,3 +246,81 @@ test("duplicate prompt blocks disappear with the duplicate prompt so the digital
   assert.equal(result.investigations[1].blocks.some((block) => block.promptId === "TST.I2.REPEAT"), false);
   assert.ok(result.investigations[1].blocks.some((block) => block.type === "HTML"));
 });
+
+
+test("broad reflection prompts are removed when a stronger evidence task already exists in the same stage", () => {
+  const source = baseLab();
+  source.investigations[3].prompts = [
+    {
+      id: "TST.I4.MAP",
+      label: "Pattern map",
+      prompt: "Map the specific people, places and conditions that shape this pattern.",
+      type: "TEXT",
+      required: true,
+      origin: "SOURCE",
+    },
+    {
+      id: "TST.I4.INSIGHT",
+      label: "Today's Insight",
+      prompt: "Right now I feel like someone who...",
+      type: "TEXT",
+      required: true,
+      origin: "SOURCE",
+    },
+  ];
+  source.investigations[3].blocks = [
+    { type: "PROMPT", promptId: "TST.I4.MAP" },
+    { type: "PROMPT", promptId: "TST.I4.INSIGHT" },
+  ];
+
+  const result = applyHabitLabStandard(source);
+
+  assert.ok(result.investigations[3].prompts.some((prompt) => prompt.id === "TST.I4.MAP"));
+  assert.equal(result.investigations[3].prompts.some((prompt) => prompt.id === "TST.I4.INSIGHT"), false);
+  assert.equal(result.investigations[3].blocks.some((block) => block.promptId === "TST.I4.INSIGHT"), false);
+  assert.ok(result.normalizationNotes.some((note) =>
+    note.code === "LOW_INFORMATION_PROMPT_SUPPRESSED"
+    && note.sourcePromptId === "TST.I4.INSIGHT"
+  ));
+});
+
+test("a broad prompt is retained when it is the only learner task instead of creating an empty investigation", () => {
+  const source = baseLab();
+  source.investigations[3].prompts = [{
+    id: "TST.I4.ONLY",
+    label: "Reflection",
+    prompt: "What did you learn?",
+    type: "TEXT",
+    required: true,
+    origin: "SOURCE",
+  }];
+
+  const result = applyHabitLabStandard(source);
+  assert.ok(result.investigations[3].prompts.some((prompt) => prompt.id === "TST.I4.ONLY"));
+});
+
+test("table-bound prompts are never removed by cross-stage deduplication", () => {
+  const source = baseLab();
+  const repeated = "What happened in this specific situation?";
+  source.investigations[0].prompts.push({
+    id: "TST.I1.EVENT",
+    label: "Event",
+    prompt: repeated,
+    type: "TEXT",
+    required: true,
+  });
+  source.investigations[3].prompts.push({
+    id: "TST.I4.EVENT",
+    label: "Event",
+    prompt: repeated,
+    type: "TEXT",
+    required: true,
+  });
+  source.investigations[3].blocks = [{
+    type: "TABLE",
+    rows: [[{ kind: "PROMPT", promptId: "TST.I4.EVENT" }]],
+  }];
+
+  const result = applyHabitLabStandard(source);
+  assert.ok(result.investigations[3].prompts.some((prompt) => prompt.id === "TST.I4.EVENT"));
+});
