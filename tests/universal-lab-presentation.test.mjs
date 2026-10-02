@@ -534,7 +534,7 @@ test("authored mapping activities are not duplicated by a generic generated Draw
   );
 });
 
-test("workbook section labels become digital hierarchy and paper-only commitment blanks disappear", () => {
+test("workbook section labels keep hierarchy while authored blanks become real controls", () => {
   const sourceFixture = fixture();
   const first = sourceFixture.investigations[0];
   first.blocks = [
@@ -555,18 +555,23 @@ test("workbook section labels become digital hierarchy and paper-only commitment
   ];
 
   const result = prepareUniversalLabPresentation(sourceFixture);
-  const html = result.investigations[0].blocks
+  const investigation = result.investigations[0];
+  const html = investigation.blocks
     .filter((block) => block.type === "HTML")
     .map((block) => block.html)
     .join("");
 
   assert.ok((html.match(/bis-digital-section-heading/g) ?? []).length >= 5);
   assert.match(html, /bis-digital-instruction-panel/);
-  assert.match(html, /bis-digital-commitment/);
-  assert.match(html, /bis-reflection-stem/);
-  assert.doesNotMatch(html, /_{3,}/);
-  assert.match(universalHtmlText(html), /I commit to observing my identity for 7 days/);
-  assert.match(universalHtmlText(html), /BIS sets the seven-day evidence window when Investigation 7 begins/);
+  assert.match(html, /_{3,}/, "authored commitment wording must not be silently rewritten away");
+  assert.ok(
+    investigation.prompts.some((prompt) => /commit to observing my identity for 7 days/i.test(prompt.prompt)),
+    "the commitment sentence must also have a real digital response control",
+  );
+  assert.ok(
+    investigation.prompts.some((prompt) => prompt.label === "Today’s Insight"),
+    "the reflection stem must be an input, not decorative prose",
+  );
 });
 
 test("Universal Lab CSS permanently suppresses the obsolete side-number gutter", async () => {
@@ -611,7 +616,7 @@ test("generic workbook response controls inherit the authored question instead o
   );
 });
 
-test("Contract stage removes paper-only I, Signed and Date blanks from learner presentation", () => {
+test("Contract stage preserves every authored collection field as a learner control", () => {
   const sourceFixture = fixture();
   const base = sourceFixture.investigations[0];
   sourceFixture.investigations = Array.from({ length: 9 }, (_, index) => ({
@@ -637,8 +642,9 @@ test("Contract stage removes paper-only I, Signed and Date blanks from learner p
 
   const result = prepareUniversalLabPresentation(sourceFixture);
   const prompts = result.investigations[5].prompts;
-  assert.equal(prompts.some((prompt) => ["I,", "Signed", "Date"].includes(prompt.label)), false);
-  assert.ok(prompts.some((prompt) => prompt.label === "My restart plan"));
+  for (const label of ["I,", "Signed", "Date", "My restart plan"]) {
+    assert.ok(prompts.some((prompt) => prompt.label === label), `${label} must remain a digital control`);
+  }
 });
 
 
@@ -745,6 +751,13 @@ test("published workbook response stems become real controls even when the inves
   assert.equal(insight.type, "TEXT");
   assert.match(insight.prompt, /Right now I feel like someone who/);
   assert.ok(investigation.prompts.some((prompt) => prompt.label === "Leader I admire"));
+
+  const scaffoldPrompts = investigation.prompts.filter((prompt) => String(prompt.id).includes(".SCAFFOLD."));
+  assert.equal(scaffoldPrompts.length, 3, "the authored 1 / 2 / 3 writing spaces must become three controls");
+  assert.deepEqual(
+    scaffoldPrompts.map((prompt) => prompt.label),
+    ["Leader I admire 1", "Leader I admire 2", "Leader I admire 3"],
+  );
 
   const html = investigation.blocks
     .filter((block) => block.type === "HTML")
