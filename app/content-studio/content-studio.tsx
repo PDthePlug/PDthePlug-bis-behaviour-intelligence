@@ -147,6 +147,9 @@ type VolumeAuditResult = {
   blockedLabs: number;
   editorialReviewLabs: number;
   passLabs: number;
+  stagedLabs: number;
+  stageRequested: boolean;
+  staged: Array<{ code: string; versionId: string; storagePath: string }>;
   labs: Array<{
     code: string;
     title: string;
@@ -163,6 +166,7 @@ type VolumeAuditResult = {
     normalizationNotes: Array<{ message?: string }>;
     investigationCount: number;
     promptCount: number;
+    stageStatus: "NOT_REQUESTED" | "PENDING" | "STAGED" | "FAILED";
   }>;
 };
 
@@ -293,7 +297,7 @@ export function ContentStudio() {
     }
   }
 
-  async function auditVolume() {
+  async function auditVolume(stage = false) {
     if (!volumeAuditFile) {
       setError("Choose the original BIS Volume Word document.");
       return;
@@ -306,7 +310,8 @@ export function ContentStudio() {
       const form = new FormData();
       form.set("file", volumeAuditFile);
       form.set("volume", volumeAuditVolume);
-      form.set("version", volumeAuditVersion.trim() || "source-2026");
+      form.set("version", stage ? "1.0" : (volumeAuditVersion.trim() || "source-2026"));
+      if (stage) form.set("stage", "1");
       const response = await fetch("/api/content-studio/volume-audit", {
         method: "POST",
         body: form,
@@ -314,7 +319,12 @@ export function ContentStudio() {
       const result = await response.json() as VolumeAuditResult & { error?: string };
       if (!response.ok) throw new Error(result.error ?? "The BIS volume could not be audited.");
       setVolumeAuditResult(result);
-      setMessage(`Volume ${result.volume} split into ${result.expectedLabs} Lab drafts. Nothing was published.`);
+      setMessage(
+        result.stageRequested
+          ? `Volume ${result.volume}: ${result.stagedLabs} Lab packages staged into version 1.0 drafts. Nothing was published.`
+          : `Volume ${result.volume} split into ${result.expectedLabs} Lab drafts. Nothing was published.`,
+      );
+      if (result.stageRequested) void load();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "The BIS volume could not be audited.");
     } finally {
@@ -601,10 +611,16 @@ export function ContentStudio() {
               />
               <small>{volumeAuditFile ? volumeAuditFile.name : "Choose the original Volume DOCX"}</small>
             </label>
-            <Button onClick={() => void auditVolume()} disabled={auditingVolume || !volumeAuditFile}>
-              {auditingVolume ? <LoaderCircle className="spin" /> : <ClipboardCheck />}
-              {auditingVolume ? "Auditing volume…" : "Run volume audit"}
-            </Button>
+            <div className="volume-audit-actions">
+              <Button variant="outline" onClick={() => void auditVolume(false)} disabled={auditingVolume || !volumeAuditFile}>
+                {auditingVolume ? <LoaderCircle className="spin" /> : <ClipboardCheck />}
+                {auditingVolume ? "Working…" : "Audit only"}
+              </Button>
+              <Button onClick={() => void auditVolume(true)} disabled={auditingVolume || !volumeAuditFile}>
+                {auditingVolume ? <LoaderCircle className="spin" /> : <Upload />}
+                {auditingVolume ? "Working…" : "Stage into 1.0 drafts"}
+              </Button>
+            </div>
           </div>
 
           {volumeAuditResult ? (
@@ -615,6 +631,7 @@ export function ContentStudio() {
                 <article><strong>{volumeAuditResult.editorialReviewLabs}</strong><span>Need strengthening</span></article>
                 <article><strong>{volumeAuditResult.blockedLabs}</strong><span>Blocked</span></article>
                 <article><strong>{volumeAuditResult.passLabs}</strong><span>Editorial pass</span></article>
+                {volumeAuditResult.stageRequested ? <article><strong>{volumeAuditResult.stagedLabs}</strong><span>Staged to 1.0</span></article> : null}
               </div>
               <div className="volume-audit-list">
                 {volumeAuditResult.labs.map((lab) => (
@@ -625,7 +642,7 @@ export function ContentStudio() {
                         <strong>{lab.title}</strong>
                         <small>Source Product #{lab.sourceProductNumber} · source position {lab.sourcePosition} · {lab.promptCount} captured fields</small>
                       </div>
-                      <b>{lab.editorialStatus}</b>
+                      <b>{lab.stageStatus === "STAGED" ? "STAGED · " : ""}{lab.editorialStatus}</b>
                     </header>
                     {lab.sourceWarnings.length ? (
                       <ul>{lab.sourceWarnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
