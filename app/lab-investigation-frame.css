@@ -589,24 +589,16 @@
 
 /* Prompts use the same visual grammar as the Habit Lab. */
 .universal-package-lab .universal-prompt{
-  grid-template-columns:54px minmax(0,1fr);
+  display:block;
   overflow:hidden;
   border:1px solid var(--border,#d9ddda);
   border-radius:22px;
   background:var(--paper,#fff);
 }
-.universal-package-lab .universal-prompt .prompt-number,
-.universal-package-lab .prompt-section[data-group] .prompt-number{
-  width:auto;
-  min-width:0;
-  padding:28px 0 0;
-  border-right:1px solid var(--border,#d9ddda);
-  border-radius:0;
-  color:var(--coral,#c9684d);
-  font:700 13px var(--font-serif);
-  white-space:normal;
+.universal-package-lab .universal-prompt .prompt-body{
+  width:100%;
+  padding:clamp(24px,4vw,38px);
 }
-.universal-package-lab .universal-prompt .prompt-body{padding:27px}
 .universal-package-lab .universal-prompt .prompt-kicker{
   margin:0 0 9px;
   color:var(--teal,#2f8276);
@@ -697,13 +689,7 @@
   }
   .universal-package-lab .imported-lab-content p,
   .universal-package-lab .imported-lab-content li{font-size:16px}
-  .universal-package-lab .universal-prompt{grid-template-columns:42px minmax(0,1fr)}
-  .universal-package-lab .universal-prompt .prompt-number,
-  .universal-package-lab .prompt-section[data-group] .prompt-number{
-    padding-top:23px;
-    font-size:12px;
-  }
-  .universal-package-lab .universal-prompt .prompt-body{padding:22px 18px}
+  .universal-package-lab .universal-prompt .prompt-body{padding:24px 20px}
   .universal-package-lab .universal-prompt .prompt-body h2{font-size:26px}
   .universal-package-lab .universal-choice-list button{font-size:13px}
   .universal-lab-mission h1{max-width:100%;font-size:44px}
