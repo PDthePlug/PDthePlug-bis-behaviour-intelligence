@@ -307,6 +307,18 @@ async function snapshot(identity: Identity, lab: CoreLabDefinition) {
     totalDays: dateNumber(experiment.plannedEndDate) - dateNumber(experiment.startDate) + 1,
     today: serverToday,
   } : null;
+  const programmeCurrentDay = timing
+    ? Math.max(0, Math.min(timing.totalDays, timing.calendarDay))
+    : 0;
+  const programmeHandoff = {
+    experimentStarted: Boolean(experiment),
+    currentDay: programmeCurrentDay,
+    totalDays: timing?.totalDays ?? 0,
+    evidenceDaysRecorded: new Set(events.map((event) => event.dayNumber)).size,
+    todayEvidenceRecorded:
+      programmeCurrentDay > 0
+      && events.some((event) => event.dayNumber === programmeCurrentDay),
+  };
   return {
     lab: { code: lab.code, slug: lab.slug, version: lab.version, title: lab.title },
     identity: { id: identity.id, email: identity.email, displayName: identity.displayName },
@@ -320,6 +332,7 @@ async function snapshot(identity: Identity, lab: CoreLabDefinition) {
     checkpoints,
     measurements,
     timing,
+    programmeHandoff,
     serverToday,
   };
 }
