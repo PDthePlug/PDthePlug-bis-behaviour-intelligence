@@ -2,6 +2,18 @@
 
 BIS is a private, evidence-first behaviour investigation product. This repository ships Habit Lab 4.5.2, Decision Lab 4.2.1, Money Lab 4.2 and the closed-pilot operations gate.
 
+## Universal Laboratory — source-backed production runtime
+
+BIS now exposes the supplied source-backed catalogue through one governed Universal Lab runtime rather than separate one-off readers:
+
+- 29 source-backed Labs run as dynamic Universal V2 version 1.0 releases alongside the dedicated Habit, Decision and Money production runtimes;
+- the shared learner journey follows the Habit Lab presentation grammar across Hook, Pattern, Revelation, Mapping, Equation, Contract, Experiment, Evidence Review and Profile;
+- imported workbook chrome is normalized out of the learner task flow while source provenance remains attached to the versioned package;
+- duplicated manuscript questions collapse to one interaction and authored checkbox answers become native BIS choice controls;
+- Volume 1 pre-Lab baselines are presented as a separate private starting-point stage rather than leaking into Investigation 1;
+- responsive tables remain contained within the content surface and mobile screens reserve space for the canonical navigation control;
+- Career Lab remains outside the supplied three-volume source corpus and Failure Lab remains pending its author source.
+
 ## Current milestone — Vercel and Supabase production runtime
 
 The application now runs as a standard Next.js 16 deployment on Vercel with Supabase Auth and Postgres:
