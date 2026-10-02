@@ -545,8 +545,10 @@ async function postHandler(request: Request) {
       if (!experiment || experiment.status !== "ACTIVE") throw new Error("The active experiment could not be found.");
       const [preference] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, identity.id)).limit(1);
       const today = todayInZone(preference?.timezone ?? "Africa/Johannesburg");
-      const unlocked = Math.min(7, calendarDay(experiment.startDate, today));
-      if (dayNumber < 1 || dayNumber > 7 || dayNumber > unlocked) throw new Error("That day has not been experienced yet. Future experiment days stay locked.");
+      const currentDay = calendarDay(experiment.startDate, today);
+      if (dayNumber < 1 || dayNumber > 7 || currentDay < 1 || currentDay > 7 || dayNumber !== currentDay) {
+        throw new Error("Only today’s experiment evidence can be recorded. Future days unlock on their calendar day, and missed past days remain missing evidence.");
+      }
       const opportunity = body.opportunity === true;
       const pauseCompleted = opportunity ? body.pauseCompleted === true : false;
       const details = body.details && typeof body.details === "object" ? body.details as Record<string, unknown> : {};
@@ -610,15 +612,18 @@ async function postHandler(request: Request) {
       const [experiment] = await db.select().from(experiments).where(and(eq(experiments.id, experimentId), eq(experiments.userId, identity.id), eq(experiments.labCode, lab.code), eq(experiments.labVersion, lab.version))).limit(1);
       if (!experiment || experiment.status !== "ACTIVE") throw new Error("The active experiment could not be found.");
       const [preference] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, identity.id)).limit(1);
-      if (calendarDay(experiment.startDate, todayInZone(preference?.timezone ?? "Africa/Johannesburg")) < 7) throw new Error("The evidence review opens only after all seven calendar days have been experienced.");
+      const currentDay = calendarDay(experiment.startDate, todayInZone(preference?.timezone ?? "Africa/Johannesburg"));
+      if (currentDay < 7) throw new Error("The evidence review opens only after all seven calendar days have been experienced.");
       const eventRows = await db.select().from(experimentEvents).where(and(eq(experimentEvents.userId, identity.id), eq(experimentEvents.experimentId, experimentId)));
-      if (eventRows.length < 7) throw new Error("Record an opportunity or no opportunity for every experienced day before closing the experiment.");
+      if (currentDay === 7 && !eventRows.some((row) => row.dayNumber === 7)) {
+        throw new Error("Record today’s final observation before closing the experiment. Earlier missed days remain missing evidence.");
+      }
       const now = new Date().toISOString();
       await db.update(experiments).set({ status: "COMPLETED", actualEndDate: now.slice(0, 10), updatedAt: now }).where(eq(experiments.id, experimentId));
       await db.update(labEnrollments).set({ status: "IN_PROGRESS", currentInvestigation: 8, updatedAt: now }).where(eq(labEnrollments.id, enrolment.id));
       await calculate(identity, lab, experimentId, experiment.predictedValue);
-      await audit(identity, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { labCode: lab.code, days: 7 });
-      await pilot(identity, lab, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { days: 7 });
+      await audit(identity, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { labCode: lab.code, daysRecorded: eventRows.length, missingDays: Math.max(0, 7 - eventRows.length) });
+      await pilot(identity, lab, "EXPERIMENT_COMPLETED", "EXPERIMENT", experimentId, { daysRecorded: eventRows.length, missingDays: Math.max(0, 7 - eventRows.length) });
       return Response.json(await snapshot(identity, lab));
     }
 
