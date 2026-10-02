@@ -777,6 +777,41 @@ test("published workbook response stems become real controls even when the inves
 
 
 
+
+test("a workbook field marker before 1 / 2 / 3 becomes the collection label, not a fourth response", () => {
+  const sourceFixture = fixture();
+  const first = sourceFixture.investigations[0];
+  first.prompts = [{
+    id: "LDR.I4.WHERE",
+    label: "Where I lead",
+    prompt: "Where I lead",
+    type: "TEXT",
+    required: true,
+    origin: "SOURCE",
+  }];
+  first.blocks = [
+    { type: "HTML", html: "<h3>INVESTIGATION 1 — THE HOOK</h3>" },
+    { type: "HTML", html: "<p>List the places where you already lead—even without a title.</p>" },
+    { type: "PROMPT", promptId: "LDR.I4.WHERE" },
+    { type: "HTML", html: "<p>1.</p><p>2.</p><p>3.</p>" },
+  ];
+
+  const result = prepareUniversalLabPresentation(sourceFixture);
+  const investigation = result.investigations[0];
+  assert.equal(
+    investigation.prompts.some((prompt) => prompt.id === "LDR.I4.WHERE"),
+    false,
+    "the marker is a heading for the list, not a separate response",
+  );
+  const entries = investigation.prompts.filter((prompt) => String(prompt.id).includes(".SCAFFOLD."));
+  assert.equal(entries.length, 3);
+  assert.deepEqual(entries.map((prompt) => prompt.label), [
+    "Where I lead 1",
+    "Where I lead 2",
+    "Where I lead 3",
+  ]);
+});
+
 test("presentation normalization is idempotent so server and client enforce the same prompt schema", () => {
   const once = prepareUniversalLabPresentation(fixture());
   const twice = prepareUniversalLabPresentation(once);
