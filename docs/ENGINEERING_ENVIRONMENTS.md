@@ -29,13 +29,17 @@ Configure the Vercel Preview environment with a dedicated preview/staging projec
 
 ### Production
 
-Configure the Vercel Production environment explicitly with the BIS Production project URL and its public publishable key. Production is the only environment that may also set:
+Configure the Vercel Production environment explicitly with the BIS Production project URL and its public publishable key.
+
+On Vercel, BIS derives the public production acknowledgement from Vercel's own `VERCEL_ENV=production` system environment at build time. Preview deployments remain fail-closed because `VERCEL_ENV=preview` does not enable the acknowledgement.
+
+For non-Vercel production deployments, explicitly set:
 
 ```text
 NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE=true
 ```
 
-This flag is a public safety acknowledgement, not a credential. Do not configure it for Development, Test, or Preview scopes.
+This value is a public safety acknowledgement, not a credential. Development, Test, and Preview must never resolve the production project.
 
 ## Release verification
 
