@@ -4,6 +4,7 @@ import { stripTypeScriptTypes } from "node:module";
 import test from "node:test";
 
 const source = await readFile(new URL("../lib/supabase/config.ts", import.meta.url), "utf8");
+const nextConfigSource = await readFile(new URL("../next.config.ts", import.meta.url), "utf8");
 const { supabaseBrowserConfig } = await import(
   "data:text/javascript;base64," + Buffer.from(stripTypeScriptTypes(source, { mode: "transform" })).toString("base64")
 );
@@ -62,4 +63,12 @@ test("explicit non-production configuration remains usable without an override",
     url: "https://bis-preview.example",
     publishableKey: "sb_publishable_preview_value",
   }));
+});
+
+
+test("Vercel derives the production acknowledgement only from the production deployment environment", () => {
+  assert.match(nextConfigSource, /VERCEL_ENV === "production"/);
+  assert.match(nextConfigSource, /NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE/);
+  assert.match(nextConfigSource, /: "false"/);
+  assert.doesNotMatch(nextConfigSource, /VERCEL_ENV === "preview"\s*\?\s*"true"/);
 });
