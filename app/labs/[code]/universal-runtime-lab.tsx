@@ -77,7 +77,7 @@ function UniversalPrompt({
     && prompt.group !== "BIS Laboratory Standard"
     && !/^(?:BEI|TEI)-\d{2}\b/i.test(prompt.group)
     && !/\bbaseline\b/i.test(prompt.group)
-    && !/^(?:investigate|evidence challenge|map your evidence|reflection|respond)$/i.test(prompt.group.trim())
+    && !/^(?:investigate|evidence challenge|map your evidence|reflection|respond|think|predict|commit|evidence point|pause reflection|your response)$/i.test(prompt.group.replace(/^[^a-z]+/i, "").trim())
       ? prompt.group
       : null;
   const categorical = prompt.type === "CATEGORICAL" && (prompt.options?.length ?? 0) > 0;

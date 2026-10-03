@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { loadContentTools } from "./lib/load-content-tools.mjs";
-import { prepareUniversalLabPresentation, universalHtmlText } from "../lib/universal-lab-presentation.mjs";
+import { prepareUniversalLabPresentation, universalHtmlText, authoredQuestions } from "../lib/universal-lab-presentation.mjs";
 import { availableLabPrompts, requiredLabPromptIds, validateLabSubmission } from "../lib/lab-interaction-contract.mjs";
 import { universalExperimentEvidenceProgress } from "../lib/universal-lab-v2.mjs";
 import { upgradeUniversalLabV2 } from "../lib/universal-lab-v2.mjs";
@@ -36,6 +36,7 @@ export function auditDefinition(raw, definition) {
     }));
     for (const prompt of investigation.prompts) {
       assert.ok(represented.has(prompt.id), `${prompt.id} must have a rendered control`);
+      if (prompt.type === "TEXT" && !prompt.readOnly) assert.ok(authoredQuestions(prompt.prompt).length <= 1, `${prompt.id} combines independent questions`);
       assert.ok(!baselineIds.has(prompt.id), "Baseline must not repeat inside Investigation 1");
     }
     // Numbered reflection questions and their separate writing lines must not
@@ -47,7 +48,7 @@ export function auditDefinition(raw, definition) {
       const paragraphs = [...block.html.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)];
       const match = universalHtmlText(paragraphs.at(-1)?.[1] ?? "").match(/^(\d+)\.\s+(.+\?)$/);
       if (!match) continue;
-      assert.ok(investigation.prompts.some((prompt) => prompt.prompt === match[2].trim()), `Missing authored reflection: ${match[2]}`);
+      for (const question of authoredQuestions(match[2])) assert.ok(investigation.prompts.some((prompt) => prompt.prompt === question), `Missing authored reflection: ${question}`);
     }
     summary.controls += ids.size;
   }

@@ -8955,6 +8955,1973 @@
           "Source Investigation 2 is \"The Prediction\" while the current digital Habit standard uses \"The Pattern\". Editorial review is required before approval."
         ]
       }
+    },
+    {
+      "kind": "LAB",
+      "schemaVersion": "universal-lab-v1",
+      "runtimeProfile": "UNIVERSAL_V1",
+      "identity": {
+        "code": "PUR",
+        "version": "1.0",
+        "title": "Purpose Lab™",
+        "shortTitle": "Purpose Lab™",
+        "accent": "#2f8276",
+        "focus": "A private behavioural investigation."
+      },
+      "factoryCapabilities": {
+        "baseline": true,
+        "indicatorCodes": [
+          "BEI-01",
+          "BEI-02",
+          "BEI-03",
+          "BEI-04",
+          "BEI-05",
+          "BEI-06",
+          "BEI-07",
+          "BEI-08",
+          "BEI-09",
+          "BEI-10"
+        ],
+        "facilitatorOnlyIndicatorCodes": [],
+        "derivedSignatures": [
+          "Shift: ___ points (BEI-07 - BEI-01)",
+          "Shift: ___ points (BEI-08 - BEI-04)",
+          "Days Completed: ___ / 7 Purpose Actions: ___ / 7",
+          "Adherence Rate | /7"
+        ],
+        "experiment": {
+          "detected": true,
+          "days": 7
+        },
+        "repeatableEvidenceTable": false,
+        "profileSummary": true,
+        "certificate": true,
+        "facilitatorGuide": false,
+        "requiresBehaviourRuntimeV2": true
+      },
+      "investigations": [
+        {
+          "number": 1,
+          "title": "THE HOOK",
+          "mission": "Meet someone who discovered her purpose through a single question.",
+          "phase": "Investigation",
+          "time": "5 minutes",
+          "difficulty": "🟢 Observe",
+          "produces": [
+            "A prediction about discovering purpose"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h4>PURPOSE BASELINE — PRE</h4>\n<p>Before you begin, complete this diagnostic. Be honest. No one will see this but you.</p>\n<p>BEI-02: Purpose Baseline Profile</p>\n<p>When it comes to purpose, how often do you...</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.1PFEZ7E"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.I5C3NY"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.C7OK08"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.1G5GLVA"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.LBW6TU"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.5VTK2O"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.AZK3JW"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.3YNREM"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.67PG0A"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.1IMHDA2"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>BEI-01: Purpose Clarity Index (Pre)</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.F0YMW6"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>This is the 90-minute workshop. Complete this section with your facilitator.</p>\n<h2>📖 Read</h2>\n<p>Episode 1: The Girl Who Wanted to Be That Person</p>\n<p>Meet Nosipho.</p>\n<p>Nosipho is seventeen. She has wanted to be a teacher since Grade 3. That was the year her teacher, Mrs. Mthembu, stayed after school to help her with reading. Nosipho was struggling. She felt stupid. She wanted to give up.</p>\n<p>Mrs. Mthembu sat with her. She did not rush. She did not make Nosipho feel small. She just kept saying: &quot;You can do this. One word at a time.&quot;</p>\n<p>That moment changed everything. Nosipho did not just learn to read. She learned that one person, showing up with patience, can change someone's life.</p>\n<p>From that day, she knew: &quot;I want to be that person for someone else.&quot;</p>\n<p>Now she is seventeen. She tutors younger kids. She volunteers at the crèche. She has applied to university to study teaching. Everyone knows what she wants to do.</p>\n<p>But last week, a family member asked: &quot;Are you sure? Teaching does not pay well. You could do so much more with your life.&quot;</p>\n<p>The question stuck. It burrowed in. She started to doubt. What if she is wrong? What if she is wasting her potential? What if she should be doing something that pays more, that gives her more status?</p>\n<p>She is confused. Her purpose, which felt so clear, now feels fragile.</p>\n<p>She walks past the spaza shop. She sees Myah, Atlehang, and Mama Rose. They are talking. She stops.</p>\n<p>&quot;Nosipho,&quot; Myah says. &quot;You look lost.&quot;</p>\n<p>Nosipho tells them about the question. About the doubt. About the fear.</p>\n<p>Mama Rose listens. Then she says: &quot;Purpose is not a destination. It is a direction.&quot;</p>\n<p>&quot;What does that mean?&quot;</p>\n<p>&quot;It means you keep walking. Even when you cannot see the whole path.&quot;</p>\n<p>Nosipho looks at Mama Rose. &quot;But what if I'm wrong?&quot;</p>\n<p>&quot;Then you learn. And you adjust. And you keep walking.&quot;</p>\n<p>Nosipho does not feel relieved. She feels something else. She feels like she has permission to keep walking—even without knowing where she is going.</p>\n<p>She is seventeen. She found her purpose. She is still learning to trust it.</p>\n<h2>🔎 Evidence Challenge</h2>\n<p>&quot;What gives your life meaning? Write it down. Now ask: 'Where did this come from?'&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.3PF8AB"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.BMC8H1"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>🤔 Predict</h2>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I1.13P9OXH"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>BEI-03: Prediction Calibration Score</p>\n<p>Complete this after Investigation 3.</p>\n<h4>⏸ PAUSE</h4>\n<p>Close the workbook.</p>\n<p>Take 30 seconds.</p>\n<p>Ask yourself:</p>\n<p>&quot;What surprised me most so far?&quot;</p>\n<p>Then continue.</p>"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I1.1PFEZ7E",
+              "label": "Know what gives your life meaning",
+              "prompt": "Know what gives your life meaning",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.I5C3NY",
+              "label": "Feel like your life has direction",
+              "prompt": "Feel like your life has direction",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.C7OK08",
+              "label": "Wake up excited about your day",
+              "prompt": "Wake up excited about your day",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.1G5GLVA",
+              "label": "Know what you stand for",
+              "prompt": "Know what you stand for",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.LBW6TU",
+              "label": "Feel like you are making a difference",
+              "prompt": "Feel like you are making a difference",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.5VTK2O",
+              "label": "Question what you are doing with your life",
+              "prompt": "Question what you are doing with your life",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.AZK3JW",
+              "label": "Have clear values that guide you",
+              "prompt": "Have clear values that guide you",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.3YNREM",
+              "label": "Feel like you are living someone else's life",
+              "prompt": "Feel like you are living someone else's life",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.67PG0A",
+              "label": "Know your \"why",
+              "prompt": "Know your \"why",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.1IMHDA2",
+              "label": "Feel like your life matters",
+              "prompt": "Feel like your life matters",
+              "type": "CATEGORICAL",
+              "options": [
+                "Never",
+                "Rarely",
+                "Sometimes",
+                "Often",
+                "Always"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Baseline",
+              "indicatorCode": "BEI-02",
+              "indicatorLabel": "Purpose Baseline Profile"
+            },
+            {
+              "id": "PUR.I1.F0YMW6",
+              "label": "BEI-01-Pre",
+              "prompt": "On a scale of 1–10, how clear are you about your life's purpose?",
+              "type": "INTEGER",
+              "min": 1,
+              "max": 10,
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-01",
+              "indicatorLabel": "Purpose Clarity Index (Pre)"
+            },
+            {
+              "id": "PUR.I1.3PF8AB",
+              "label": "What gives my life meaning",
+              "prompt": "What gives my life meaning",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-01",
+              "indicatorLabel": "Purpose Clarity Index (Pre)"
+            },
+            {
+              "id": "PUR.I1.BMC8H1",
+              "label": "Where it came from",
+              "prompt": "Where it came from",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-01",
+              "indicatorLabel": "Purpose Clarity Index (Pre)"
+            },
+            {
+              "id": "PUR.I1.13P9OXH",
+              "label": "What do you think Nosipho will do with her doubt?",
+              "prompt": "What do you think Nosipho will do with her doubt?",
+              "type": "CATEGORICAL",
+              "options": [
+                "She will give up on teaching and pursue something more profitable",
+                "She will stay with teaching but always wonder if she made the wrong choice",
+                "She will remember why she started and find new confidence",
+                "She will keep doubting and never decide"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-01",
+              "indicatorLabel": "Purpose Clarity Index (Pre)"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "title": "THE PREDICTION",
+          "mission": "Name your purpose pattern.",
+          "phase": "Investigation",
+          "time": "2 minutes",
+          "difficulty": "🟢 Observe",
+          "produces": [
+            "Your sense of purpose",
+            "What gives your life meaning"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>🤔 Predict</h2>\n<p>&quot;What gives your life meaning? What makes you feel like your life matters?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I2.3PF8AB"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>🔎 Evidence Challenge</h2>\n<p>&quot;Look at your phone. Open your photos. Scroll through the last month. What do your photos reveal about what matters to you?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I2.1VI478P"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>&quot;How clear are you about your purpose right now?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I2.QF1CN5"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>🌱 Today's Insight</h2>\n<p>&quot;Right now I feel like someone who...&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I2.R4CPT9"
+            },
+            {
+              "type": "HTML",
+              "html": "<h4>⏸ PAUSE</h4>\n<p>Close the workbook.</p>\n<p>Take 30 seconds.</p>\n<p>Ask yourself:</p>\n<p>&quot;What surprised me most so far?&quot;</p>\n<p>Then continue.</p>"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I2.3PF8AB",
+              "label": "What gives my life meaning",
+              "prompt": "What gives my life meaning",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I2.1VI478P",
+              "label": "What my photos reveal",
+              "prompt": "What my photos reveal",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I2.QF1CN5",
+              "label": "My purpose clarity",
+              "prompt": "My purpose clarity",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I2.R4CPT9",
+              "label": "🌱 Today's Insight",
+              "prompt": "🌱 Today's Insight",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "title": "THE REVELATION",
+          "mission": "Discover the hidden truth about purpose.",
+          "phase": "Investigation",
+          "time": "3 minutes",
+          "difficulty": "🟡 Analyse",
+          "produces": [
+            "Understanding of purpose as direction, not destination",
+            "Prediction calibration check"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>📖 Read</h2>\n<p>Episode 2: What Nosipho Didn't Trust</p>\n<p>Nosipho found her purpose. She wants to be a teacher. She wants to help others believe in themselves. She has known this since Grade 3.</p>\n<p>But here is what nobody told her: purpose is not a destination. It is a direction.</p>\n<p>She thought she had to know everything about her future. She thought purpose meant having a perfect plan. But purpose is not a plan. It is a direction you keep walking in, even when you cannot see the whole path.</p>\n<p>Mrs. Mthembu did not know she would change Nosipho's life. She just showed up. She just kept teaching. She just kept believing. That was her direction—helping children believe in themselves.</p>\n<p>Nosipho's doubt is not a sign that she is wrong. It is a sign that she is growing. Purpose is not fragile. It is tested. And it is tested because it matters.</p>\n<p>The next day, Nosipho walks back to Mama Rose's kitchen. Myah and Atlehang are there.</p>\n<p>&quot;I've been thinking about what you said,&quot; Nosipho says. &quot;About purpose being a direction.&quot;</p>\n<p>Mama Rose nods.</p>\n<p>&quot;What if I don't know where I'm going?&quot;</p>\n<p>&quot;Then you keep walking. And you pay attention. And you let the direction guide you.&quot;</p>\n<p>Nosipho looks at Myah and Atlehang. They are both nodding.</p>\n<p>&quot;I think I'm still learning to trust it,&quot; Nosipho says.</p>\n<p>&quot;That is the work,&quot; Mama Rose says. &quot;Trusting your own direction.&quot;</p>\n<p>Nosipho is seventeen. She found her purpose. She is still learning to trust it.</p>\n<p>But she is learning.</p>\n<h2>👁️ The Observer</h2>\n<p>&quot;Interesting. Nosipho found her purpose. Then she doubted it.&quot;</p>\n<h2>✅ Were You Correct?</h2>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I3.159JHHP"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I3.1FTNHK7"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>&quot;What assumption did this story challenge?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I3.MFOI6G"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I3.159JHHP",
+              "label": "Was your prediction correct?",
+              "prompt": "Look back at your prediction about Nosipho. — Was your prediction correct?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I3.1FTNHK7",
+              "label": "BEI-03: Prediction Calibration Score",
+              "prompt": "Look back at your prediction about Nosipho. — BEI-03: Prediction Calibration Score",
+              "type": "CATEGORICAL",
+              "options": [
+                "Correct",
+                "Incorrect"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-03"
+            },
+            {
+              "id": "PUR.I3.MFOI6G",
+              "label": "Your answer",
+              "prompt": "Write your answer",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "title": "PURPOSE MAPPING",
+          "mission": "Discover the real structure of purpose in your life, not the story you tell yourself.",
+          "phase": "Investigation",
+          "time": "15 minutes",
+          "difficulty": "🟠 Challenge Yourself",
+          "produces": [
+            "Purpose map",
+            "Values inventory",
+            "Purpose gap"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>🔍 Investigate</h2>\n<p>Step 1: What Gives Your Life Meaning?</p>\n<p>List the things that give your life meaning—people, activities, values, experiences.</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.3PF8AB"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>1.</p>\n<p>2.</p>\n<p>3.</p>\n<p>4.</p>\n<p>5.</p>\n<p>Step 2: Your Values</p>\n<p>What matters most to you? What do you stand for? What would you protect even if it cost you something?</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.G8WKL9"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>1.</p>\n<p>2.</p>\n<p>3.</p>\n<p>4.</p>\n<p>5.</p>\n<p>Step 3: Your Purpose Statement</p>\n<p>Try to write a single sentence that captures your purpose.</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.WS88RZ"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>Step 4: The Gap</p>\n<p>&quot;Where is the gap between your current life and your sense of purpose?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.B26GQ1"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>Step 5: The Cost</p>\n<p>&quot;What does it cost you when you live without purpose?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.16HPBXX"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>Step 6: Purpose in Action</p>\n<p>&quot;When do you feel most alive—most connected to your purpose?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.1J9N23V"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>Step 7: Diagnostic Layer</p>\n<p>&quot;What is one thing you would do differently if you knew you could not fail?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.1BGTK45"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>&quot;Who is someone who has helped you understand your purpose?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.WIFK75"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>&quot;What is one small action you could take today that connects to your purpose?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.VUK5BB"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>&quot;How many days this week did you feel you were living your purpose?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.121WG6X"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>⭐ EVIDENCE POINT</h2>\n<p>This page becomes part of your Behaviour Profile.</p>\n<h2>🌱 Today's Insight</h2>\n<p>&quot;Right now I feel like someone who...&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I4.R4CPT9"
+            },
+            {
+              "type": "HTML",
+              "html": "<h4>⏸ PAUSE</h4>\n<p>Close the workbook.</p>\n<p>Take 30 seconds.</p>\n<p>Ask yourself:</p>\n<p>&quot;What is one thing I now see that I did not see before?&quot;</p>\n<p>Then continue.</p>"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I4.3PF8AB",
+              "label": "What gives my life meaning",
+              "prompt": "What gives my life meaning",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.G8WKL9",
+              "label": "My values",
+              "prompt": "My values",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.WS88RZ",
+              "label": "My purpose statement",
+              "prompt": "My purpose statement",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.B26GQ1",
+              "label": "The purpose gap",
+              "prompt": "The purpose gap",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.16HPBXX",
+              "label": "The cost of no purpose",
+              "prompt": "The cost of no purpose",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.1J9N23V",
+              "label": "When I feel most alive",
+              "prompt": "When I feel most alive",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.1BGTK45",
+              "label": "If I could not fail",
+              "prompt": "If I could not fail",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.WIFK75",
+              "label": "Purpose guide",
+              "prompt": "Purpose guide",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.VUK5BB",
+              "label": "Today's purpose action",
+              "prompt": "Today's purpose action",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.121WG6X",
+              "label": "Days of purpose",
+              "prompt": "Days of purpose",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I4.R4CPT9",
+              "label": "🌱 Today's Insight",
+              "prompt": "🌱 Today's Insight",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "title": "PURPOSE EQUATION",
+          "mission": "Write the formula that explains your purpose pattern.",
+          "phase": "Investigation",
+          "time": "10 minutes",
+          "difficulty": "🔴 Identity Shift",
+          "produces": [
+            "Personal Equation",
+            "Falsification test"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>🧠 Think</h2>\n<p>Your Personal Equation</p>\n<p>Write your purpose pattern as a diagnostic formula:</p>\n<p>Values + Action = Purpose Lived</p>\n<p>Doubt + Inaction = Purpose Lost</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I5.3GFJPX"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>BEI-04: Purpose Confidence Index (Pre)</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I5.SC9BSG"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>&quot;What evidence would prove your equation is wrong?&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I5.MFOI6G"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>⭐ EVIDENCE POINT</h2>\n<p>This page becomes part of your Behaviour Profile.</p>\n<h2>🌱 Today's Insight</h2>\n<p>&quot;Right now I feel like someone who...&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I5.R4CPT9"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>Example Equations:</p>"
+            },
+            {
+              "type": "HTML",
+              "html": "<table><tbody><tr><th>**Pattern**</th><th>**Equation**</th></tr><tr><td>Living your purpose</td><td>Values + Consistent action = Meaning</td></tr><tr><td>Losing your purpose</td><td>Doubt + Inaction = Drift</td></tr><tr><td>Finding your purpose</td><td>Exploration + Attention = Discovery</td></tr><tr><td>Purpose as direction</td><td>Direction + Walking = Progress</td></tr></tbody></table>"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I5.3GFJPX",
+              "label": "My Equation",
+              "prompt": "My Equation",
+              "type": "TEXT",
+              "placeholder": "Write your working equation…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I5.SC9BSG",
+              "label": "BEI-04-Pre",
+              "prompt": "How confident are you that this equation explains your purpose pattern?",
+              "type": "INTEGER",
+              "min": 1,
+              "max": 10,
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-04",
+              "indicatorLabel": "Purpose Confidence Index (Pre)"
+            },
+            {
+              "id": "PUR.I5.MFOI6G",
+              "label": "Your answer",
+              "prompt": "Write your answer",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-04",
+              "indicatorLabel": "Purpose Confidence Index (Pre)"
+            },
+            {
+              "id": "PUR.I5.R4CPT9",
+              "label": "🌱 Today's Insight",
+              "prompt": "🌱 Today's Insight",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-04",
+              "indicatorLabel": "Purpose Confidence Index (Pre)"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "title": "PURPOSE CONTRACT",
+          "mission": "Commit to a 7-day experiment that will test your purpose awareness.",
+          "phase": "Investigation",
+          "time": "10 minutes",
+          "difficulty": "⚖️ Decide",
+          "produces": [
+            "Purpose Contract",
+            "Purpose Index",
+            "Signed commitment"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>🤝 Commit</h2>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.RHALG1"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.ZHNQNP"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>(e.g., act on one value, ask myself &quot;what matters most,&quot; do something that connects to my purpose)</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.187M2S5"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.1C271L1"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.13UM6RX"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>⭐ EVIDENCE POINT</h2>\n<p>This page becomes part of your Behaviour Profile.</p>\n<p>BEI-05: Purpose Index</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.JVS6WR"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>My Commitment Statement</p>\n<p>&quot;I, ________________________________, commit to living with purpose for 7 days, starting on ___________ and ending on ___________. I understand that I will not be perfect. When I drift from my purpose, I will notice it and return — because drift is not a strategy.&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.F7EP01"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.1FLI52D"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>🌱 Today's Insight</h2>\n<p>&quot;Right now I feel like someone who...&quot;</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I6.R4CPT9"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I6.RHALG1",
+              "label": "One purpose action I will take this week",
+              "prompt": "One purpose action I will take this week",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I6.ZHNQNP",
+              "label": "My purpose promise — I will",
+              "prompt": "My purpose promise — I will",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I6.187M2S5",
+              "label": "My witness (who will hold me accountable)",
+              "prompt": "My witness (who will hold me accountable)",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I6.1C271L1",
+              "label": "What I will do if I drift from my purpose (my restart plan)",
+              "prompt": "What I will do if I drift from my purpose (my restart plan)",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I6.13UM6RX",
+              "label": "My failure signal (how I will know if this experiment is not working)",
+              "prompt": "My failure signal (how I will know if this experiment is not working)",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true
+            },
+            {
+              "id": "PUR.I6.JVS6WR",
+              "label": "My purpose most affects",
+              "prompt": "My purpose most affects:",
+              "type": "MULTI_SELECT",
+              "options": [
+                "My decisions",
+                "My relationships",
+                "My career/work",
+                "My happiness",
+                "My resilience",
+                "My contribution to others"
+              ],
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-05",
+              "indicatorLabel": "Purpose Index"
+            },
+            {
+              "id": "PUR.I6.F7EP01",
+              "label": "Signed",
+              "prompt": "Signed",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": false,
+              "indicatorCode": "BEI-05",
+              "indicatorLabel": "Purpose Index"
+            },
+            {
+              "id": "PUR.I6.1FLI52D",
+              "label": "Date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "indicatorCode": "BEI-05",
+              "indicatorLabel": "Purpose Index"
+            },
+            {
+              "id": "PUR.I6.R4CPT9",
+              "label": "🌱 Today's Insight",
+              "prompt": "🌱 Today's Insight",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-05",
+              "indicatorLabel": "Purpose Index"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "title": "7-DAY EXPERIMENT",
+          "mission": "Track your purpose for seven days. Collect evidence.",
+          "phase": "Experiment",
+          "time": "5 minutes (setup)",
+          "difficulty": "📊 Track",
+          "produces": [
+            "7-Day Completion Rate"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>⭐ EVIDENCE POINT</h2>\n<p>This page becomes part of your Behaviour Profile.</p>\n<p>BEI-06: Experiment Adherence Rate</p>\n<p>Instructions: Each day, record ONE moment when you lived your purpose—OR one moment when you drifted. Mark ✓ if you acted, or ✗ if you did not.</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.7F29AD"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1JE7ULH"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.AEBDOY"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1RDR8CV"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1F9LD5V"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.RLBDGJ"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.WJ2TH4"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1SACVIZ"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.12OX539"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1IREHUP"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.9D84TE"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.9CXJ0Z"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1Y20G93"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.15BXFX7"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1C0EKQ4"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1HZY6R3"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.PKKZ5P"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.E0TF7X"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.QEUZIQ"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1509C8N"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.18X3OR7"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1WD46Z7"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.I8FS7K"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.99I93V"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.13K5J65"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.JNKA4X"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.QC5WHE"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.KNGCCJ"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I7.1LDI6EB"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>Continue your journey:</p>\n<p>If you wish to continue your experiment beyond seven days, you can transfer it into a longer Behaviour Journal™.</p>\n<p>This is the 7-day experiment. Complete this section after you leave the workshop.</p>"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I7.7F29AD",
+              "label": "Day 1 date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 1",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1JE7ULH",
+              "label": "Day 1 evidence",
+              "prompt": "Moment I Noticed",
+              "type": "TEXT",
+              "placeholder": "Record one specific moment or observation from today…",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 1",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.AEBDOY",
+              "label": "Day 1 action check",
+              "prompt": "Did I act?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 1",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1RDR8CV",
+              "label": "Day 1 notes",
+              "prompt": "Notes",
+              "type": "TEXT",
+              "placeholder": "Add a short note if it helps explain what happened.",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 1",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1F9LD5V",
+              "label": "Day 2 date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 2",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.RLBDGJ",
+              "label": "Day 2 evidence",
+              "prompt": "Moment I Noticed",
+              "type": "TEXT",
+              "placeholder": "Record one specific moment or observation from today…",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 2",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.WJ2TH4",
+              "label": "Day 2 action check",
+              "prompt": "Did I act?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 2",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1SACVIZ",
+              "label": "Day 2 notes",
+              "prompt": "Notes",
+              "type": "TEXT",
+              "placeholder": "Add a short note if it helps explain what happened.",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 2",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.12OX539",
+              "label": "Day 3 date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 3",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1IREHUP",
+              "label": "Day 3 evidence",
+              "prompt": "Moment I Noticed",
+              "type": "TEXT",
+              "placeholder": "Record one specific moment or observation from today…",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 3",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.9D84TE",
+              "label": "Day 3 action check",
+              "prompt": "Did I act?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 3",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.9CXJ0Z",
+              "label": "Day 3 notes",
+              "prompt": "Notes",
+              "type": "TEXT",
+              "placeholder": "Add a short note if it helps explain what happened.",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 3",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1Y20G93",
+              "label": "Day 4 date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 4",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.15BXFX7",
+              "label": "Day 4 evidence",
+              "prompt": "Moment I Noticed",
+              "type": "TEXT",
+              "placeholder": "Record one specific moment or observation from today…",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 4",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1C0EKQ4",
+              "label": "Day 4 action check",
+              "prompt": "Did I act?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 4",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1HZY6R3",
+              "label": "Day 4 notes",
+              "prompt": "Notes",
+              "type": "TEXT",
+              "placeholder": "Add a short note if it helps explain what happened.",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 4",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.PKKZ5P",
+              "label": "Day 5 date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 5",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.E0TF7X",
+              "label": "Day 5 evidence",
+              "prompt": "Moment I Noticed",
+              "type": "TEXT",
+              "placeholder": "Record one specific moment or observation from today…",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 5",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.QEUZIQ",
+              "label": "Day 5 action check",
+              "prompt": "Did I act?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 5",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1509C8N",
+              "label": "Day 5 notes",
+              "prompt": "Notes",
+              "type": "TEXT",
+              "placeholder": "Add a short note if it helps explain what happened.",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 5",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.18X3OR7",
+              "label": "Day 6 date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 6",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1WD46Z7",
+              "label": "Day 6 evidence",
+              "prompt": "Moment I Noticed",
+              "type": "TEXT",
+              "placeholder": "Record one specific moment or observation from today…",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 6",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.I8FS7K",
+              "label": "Day 6 action check",
+              "prompt": "Did I act?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 6",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.99I93V",
+              "label": "Day 6 notes",
+              "prompt": "Notes",
+              "type": "TEXT",
+              "placeholder": "Add a short note if it helps explain what happened.",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 6",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.13K5J65",
+              "label": "Day 7 date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 7",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.JNKA4X",
+              "label": "Day 7 evidence",
+              "prompt": "Moment I Noticed",
+              "type": "TEXT",
+              "placeholder": "Record one specific moment or observation from today…",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 7",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.QC5WHE",
+              "label": "Day 7 action check",
+              "prompt": "Did I act?",
+              "type": "BOOLEAN",
+              "sensitivity": "P2",
+              "required": true,
+              "group": "Day 7",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.KNGCCJ",
+              "label": "Day 7 notes",
+              "prompt": "Notes",
+              "type": "TEXT",
+              "placeholder": "Add a short note if it helps explain what happened.",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Day 7",
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            },
+            {
+              "id": "PUR.I7.1LDI6EB",
+              "label": "BEI-06: Days Completed",
+              "prompt": "BEI-06: Days Completed",
+              "type": "INTEGER",
+              "min": 0,
+              "max": 7,
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-06",
+              "indicatorLabel": "Experiment Adherence Rate"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "title": "EVIDENCE REVIEW",
+          "mission": "Harvest what you have learned from seven days of living with purpose.",
+          "phase": "Review",
+          "time": "10 minutes",
+          "difficulty": "🌱 Reflect",
+          "produces": [
+            "BEI-07: Purpose Clarity Shift Index",
+            "BEI-08: Purpose Confidence Index (Post)",
+            "Final Reflection"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>⭐ EVIDENCE POINT</h2>\n<p>This page becomes part of your Behaviour Profile.</p>\n<p>BEI-07: Purpose Clarity Shift Index</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.VID62B"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1D748Z9"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>BEI-08: Purpose Confidence Index (Post)</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1UI2N8U"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1D748Z9.2"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>Final Reflection Questions</h2>\n<p>1. Did I live with purpose most days? Why or why not?</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1BTCQBL"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>2. What was the hardest part of the 7 days?</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1K66FRJ"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>3. When did you feel most connected to your purpose—and when did you feel most disconnected?</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1K66FRJ.2"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>4. What surprised you most about purpose in your life?</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1K66FRJ.3"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>5. What evidence convinced you that this pattern exists?</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1K66FRJ.4"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>6. Which belief became harder to defend after this experiment?</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.1K66FRJ.5"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>My Meta-Purpose Skill</h2>\n<p>The meta-purpose skill is the habit of noticing when you are living your purpose—and when you are drifting.</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I8.11QI3TH"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I8.VID62B",
+              "label": "BEI-07-Post",
+              "prompt": "On a scale of 1–10, how clear are you about your life's purpose now?",
+              "type": "INTEGER",
+              "min": 1,
+              "max": 10,
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-07",
+              "indicatorLabel": "Purpose Clarity Shift Index"
+            },
+            {
+              "id": "PUR.I8.1D748Z9",
+              "label": "Shift",
+              "prompt": "Shift",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-07",
+              "indicatorLabel": "Purpose Clarity Shift Index"
+            },
+            {
+              "id": "PUR.I8.1UI2N8U",
+              "label": "BEI-08-Post",
+              "prompt": "How confident are you now that your equation explains your purpose pattern?",
+              "type": "INTEGER",
+              "min": 1,
+              "max": 10,
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.1D748Z9.2",
+              "label": "Shift",
+              "prompt": "Shift",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.1BTCQBL",
+              "label": "Final Reflection Questions",
+              "prompt": "Final Reflection Questions",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.1K66FRJ",
+              "label": "✍️ ___________________________________________________________",
+              "prompt": "✍️ ___________________________________________________________",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.1K66FRJ.2",
+              "label": "✍️ ___________________________________________________________",
+              "prompt": "✍️ ___________________________________________________________",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.1K66FRJ.3",
+              "label": "✍️ ___________________________________________________________",
+              "prompt": "✍️ ___________________________________________________________",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.1K66FRJ.4",
+              "label": "✍️ ___________________________________________________________",
+              "prompt": "✍️ ___________________________________________________________",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.1K66FRJ.5",
+              "label": "✍️ ___________________________________________________________",
+              "prompt": "✍️ ___________________________________________________________",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            },
+            {
+              "id": "PUR.I8.11QI3TH",
+              "label": "My plan to keep the meta-purpose skill alive",
+              "prompt": "My plan to keep the meta-purpose skill alive",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-08",
+              "indicatorLabel": "Purpose Confidence Index (Post)"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "title": "BEHAVIOUR PROFILE",
+          "mission": "Synthesise everything you have discovered into one page.",
+          "phase": "Synthesis",
+          "time": "10 minutes",
+          "difficulty": "🔴 Identity Shift",
+          "produces": [
+            "BEI-09: Identity Shift Indicator",
+            "BEI-10: Behaviour Profile Summary"
+          ],
+          "blocks": [
+            {
+              "type": "HTML",
+              "html": "<h2>⭐ EVIDENCE POINT</h2>\n<p>This page becomes part of your Behaviour Profile.</p>\n<p>BEI-09: Identity Shift Indicator</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.BTZG3I"
+            },
+            {
+              "type": "HTML",
+              "html": "<h4>BEHAVIOUR PROFILE SUMMARY</h4>\n<p>BEI-10: Behaviour Profile Summary</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.TOHPIJ"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.KTACRH"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.WFW8D3"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.12609NT"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.1MQN1O5"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.19XNE2R"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.UQKQC5"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.O3S5RT"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.LVQ661"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.1WQDFWH"
+            },
+            {
+              "type": "HTML",
+              "html": "<p>One Sentence That Describes Me Now</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.1KY2F3X"
+            },
+            {
+              "type": "HTML",
+              "html": "<h2>Letter to My Future Self</h2>\n<p>Write a letter to yourself. Address it to &quot;Future Me.&quot; Tell your future self:</p>\n<p>Who you are right now</p>\n<p>What you learned from living with purpose for 7 days</p>\n<p>What you are proud of</p>\n<p>What you still need to work on</p>\n<p>One purpose principle you want to keep</p>"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.ULXFHF"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.18BRC4H"
+            },
+            {
+              "type": "PROMPT",
+              "promptId": "PUR.I9.1FLI52D"
+            },
+            {
+              "type": "HTML",
+              "html": "<h4>YOUR JOURNEY CONTINUES</h4>\n<p>Continue your investigation with another Lab:</p>"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "PUR.I9.BTZG3I",
+              "label": "I am becoming someone who",
+              "prompt": "✍️ Complete this sentence:",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-09",
+              "indicatorLabel": "Identity Shift Indicator"
+            },
+            {
+              "id": "PUR.I9.TOHPIJ",
+              "label": "What Gives My Life Meaning",
+              "prompt": "What Gives My Life Meaning",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.KTACRH",
+              "label": "My Values",
+              "prompt": "My Values",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.WFW8D3",
+              "label": "My Purpose Statement",
+              "prompt": "My Purpose Statement",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.12609NT",
+              "label": "The Purpose Gap",
+              "prompt": "The Purpose Gap",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.1MQN1O5",
+              "label": "The Cost of No Purpose",
+              "prompt": "The Cost of No Purpose",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.19XNE2R",
+              "label": "When I Feel Most Alive",
+              "prompt": "When I Feel Most Alive",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.UQKQC5",
+              "label": "My Equation",
+              "prompt": "My Equation",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.O3S5RT",
+              "label": "Confidence (Pre → Post)",
+              "prompt": "Confidence (Pre → Post)",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.LVQ661",
+              "label": "Purpose Clarity (Pre → Post)",
+              "prompt": "Purpose Clarity (Pre → Post)",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.1WQDFWH",
+              "label": "Next Purpose to Investigate",
+              "prompt": "Next Purpose to Investigate",
+              "type": "TEXT",
+              "sensitivity": "P2",
+              "required": false,
+              "group": "Behaviour Profile Summary",
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.1KY2F3X",
+              "label": "BEHAVIOUR PROFILE SUMMARY",
+              "prompt": "BEHAVIOUR PROFILE SUMMARY",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": true,
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.ULXFHF",
+              "label": "Letter to My Future Self",
+              "prompt": "Write your letter to Future Me.",
+              "type": "TEXT",
+              "placeholder": "Dear Future Me…",
+              "sensitivity": "P3",
+              "required": true,
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.18BRC4H",
+              "label": "From me, in Grade",
+              "prompt": "From me, in Grade",
+              "type": "TEXT",
+              "placeholder": "Write your answer…",
+              "sensitivity": "P2",
+              "required": false,
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            },
+            {
+              "id": "PUR.I9.1FLI52D",
+              "label": "Date",
+              "prompt": "Date",
+              "type": "DATE",
+              "sensitivity": "P2",
+              "required": false,
+              "indicatorCode": "BEI-10",
+              "indicatorLabel": "Behaviour Profile Summary"
+            }
+          ]
+        }
+      ],
+      "sourceMigration": {
+        "corpus": "BIS volumes supplied by the user",
+        "sourceVolume": 1,
+        "sourcePosition": 11,
+        "canonicalPosition": 11,
+        "sourceProductNumber": 12,
+        "sourceInvestigation2": "The Prediction",
+        "canonicalInvestigation2": "The Pattern",
+        "detectedLearnerCopies": 1,
+        "expectedLearnerCopies": 1,
+        "selectedLearnerCopy": 1,
+        "duplicateCopyPolicy": "FIRST_COMPLETE_LEARNER_COPY",
+        "experimentDays": 7,
+        "transferSubstage": null,
+        "warnings": [
+          "Source Investigation 2 is \"The Prediction\" while the current digital Habit standard uses \"The Pattern\". Editorial review is required before approval."
+        ]
+      }
     }
   ]
 }

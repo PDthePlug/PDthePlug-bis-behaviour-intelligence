@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { loadContentTools } from "../scripts/lib/load-content-tools.mjs";
 import { auditDefinition } from "../scripts/audit-lab-interactions.mjs";
-import { prepareUniversalLabPresentation } from "../lib/universal-lab-presentation.mjs";
+import { prepareUniversalLabPresentation, authoredQuestions } from "../lib/universal-lab-presentation.mjs";
 import { upgradeUniversalLabV2, experimentCalendarDay, universalExperimentEvidenceProgress } from "../lib/universal-lab-v2.mjs";
 import { availableLabPrompts, validateLabSubmission } from "../lib/lab-interaction-contract.mjs";
 
@@ -29,7 +29,7 @@ test("real Leadership source survives the actual compiler and all evidence windo
       "What surprised you most about leadership in your life?",
       "What evidence convinced you that this pattern exists?",
       "Which belief became harder to defend after this experiment?",
-    ]) assert.equal(review.prompts.filter((prompt) => prompt.prompt === question).length, 1, question);
+    ]) for (const part of authoredQuestions(question)) assert.equal(review.prompts.filter((prompt) => prompt.prompt === part).length, 1, part);
     assert.equal(result.investigations[4].prompts.some((prompt) => prompt.standardPurpose === "FALSIFICATION"), false);
   } finally { await tools.dispose(); }
 });
@@ -165,4 +165,42 @@ test("legacy Attention packages reconcile duplicated inline answers, choices and
   assert.equal(result.investigations[0].blocks.filter((block) => block.type === "PROMPT" && block.promptId === phone.id).length, 0);
   assert.equal(result.investigations[0].blocks.filter((block) => block.type === "INLINE" && block.segments.some((part) => part.promptId === phone.id)).length, 1);
   assert.equal(JSON.stringify(prepareUniversalLabPresentation(result)), JSON.stringify(result));
+});
+
+test("Purpose keeps meaning and origin separate and recovers a missing statement-writing step", () => {
+  const result = definition("PUR");
+  const hook = result.investigations[0];
+  for (const question of ["What gives your life meaning?", "Where did this come from?"]) {
+    assert.equal(hook.prompts.filter((prompt) => prompt.prompt === question).length, 1, question);
+  }
+  const legacy = structuredClone(result);
+  legacy.presentationVersion = "bis-lab-presentation-5";
+  const mapping = legacy.investigations[3];
+  const statement = mapping.prompts.find((prompt) => /purpose statement/i.test(prompt.label));
+  mapping.prompts = mapping.prompts.filter((prompt) => prompt.id !== statement.id);
+  mapping.blocks = mapping.blocks.filter((block) => block.type !== "PROMPT" || block.promptId !== statement.id);
+  const heading = mapping.blocks.findIndex((block) => block.type === "HTML" && /Step 3: Your Purpose Statement/.test(block.html));
+  mapping.blocks.splice(heading + 1, 0, { type: "HTML", html: "<p>Try to write a single sentence that captures your purpose.</p>" });
+  const repaired = prepareUniversalLabPresentation(legacy).investigations[3];
+  const recovered = repaired.prompts.find((prompt) => /purpose statement/i.test(prompt.label));
+  assert.ok(recovered);
+  assert.match(recovered.prompt, /single sentence/);
+  assert.ok(repaired.blocks.some((block) => block.type === "PROMPT" && block.promptId === recovered.id));
+});
+
+test("plain confidence question survives an intervening Think heading as one bounded control", () => {
+  const source = structuredClone(authored("ATT"));
+  const investigation = source.investigations[4];
+  investigation.prompts = [{id:"ATT.I5.LEGACY",label:"Your response",prompt:"Your response",type:"TEXT",required:true,group:"🧠 THINK"}];
+  investigation.blocks = [
+    {type:"HTML",html:'<p>"How confident are you that this equation explains your attention pattern?"</p>'},
+    {type:"HTML",html:"<h2>🧠 THINK</h2>"},
+    {type:"PROMPT",promptId:"ATT.I5.LEGACY"},
+  ];
+  const result = prepareUniversalLabPresentation(source).investigations[4];
+  const confidence = result.prompts.find((prompt) => /How confident/.test(prompt.prompt));
+  assert.ok(confidence);
+  assert.equal(confidence.type,"INTEGER");
+  assert.equal(confidence.min,1);assert.equal(confidence.max,10);
+  assert.equal(result.blocks.filter((block)=>block.type==="HTML" && /How confident/.test(block.html)).length,0);
 });
