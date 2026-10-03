@@ -61,14 +61,28 @@ function multiValues(value: string) {
   }
 }
 
+const investigationEvidenceGuidance: Record<number, string> = {
+  1: "Capture your first view before the pattern is explained. You will have evidence to compare later.",
+  2: "Use a recent, specific example so you can see the pattern in real life.",
+  3: "Describe what changed in your understanding and what evidence caused the shift.",
+  4: "Anchor this to one real situation: what happened, what you noticed, and what followed.",
+  5: "State the explanation that best fits your evidence. Keep it specific enough to test.",
+  6: "Make the commitment observable: describe what you will do and the situation in which you will do it.",
+  7: "Record what actually happened in the real-world test, including a valid no-opportunity result where it applies.",
+  8: "Compare what you expected with the evidence you actually collected.",
+  9: "Use your Lab evidence to describe what you learned and what you will carry forward.",
+};
+
 function UniversalPrompt({
   prompt,
+  investigationNumber,
   value,
   passed,
   onValue,
   onPass,
 }: {
   prompt: UniversalLabPrompt;
+  investigationNumber: number;
   value: string;
   passed: boolean;
   onValue: (value: string) => void;
@@ -106,7 +120,7 @@ function UniversalPrompt({
   const interactionHelp = ratingScale
     ? "Choose the number that best matches your experience right now."
     : prompt.type === "TEXT" && prompt.label.length < 110
-      ? "Use your own words. A short, specific answer gives you stronger evidence to compare later."
+      ? investigationEvidenceGuidance[investigationNumber] ?? "Use a short, specific example that will still make sense when you review your evidence later."
       : null;
   const help = authoredHelp ?? interactionHelp;
 
@@ -823,6 +837,7 @@ function UniversalInvestigationForm({
       <UniversalPrompt
         key={prompt.id}
         prompt={prompt}
+        investigationNumber={investigation.number}
         value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
         passed={passed.has(prompt.id)}
         onValue={(value) => updatePromptValue(prompt.id, value)}
