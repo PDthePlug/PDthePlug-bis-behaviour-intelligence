@@ -29,6 +29,7 @@ import {
   experimentCalendarDay,
   universalComputedLeafInputs,
   universalExperimentEvidenceProgress,
+  universalExperimentReviewReady,
 } from "../../../lib/universal-lab-v2.mjs";
 
 function decode(value: string | null) {
@@ -323,7 +324,7 @@ async function snapshot(userId: string, code: string) {
   const reviewInvestigation = runtime.definition.runtimeProfile === "UNIVERSAL_V2"
     ? runtime.definition.experiment?.reviewInvestigation ?? 8
     : 8;
-  const reviewReady = Boolean(experimentDays && availableDay >= experimentDays);
+  const reviewReady = universalExperimentReviewReady(evidenceProgress);
   const labCompleted = enrolment?.status === "COMPLETED";
   const programmeHandoff = {
     ...evidenceProgress,
@@ -367,7 +368,7 @@ async function snapshot(userId: string, code: string) {
       availableDay,
       totalDays: experimentDays,
       today,
-      reviewReady: availableDay >= experimentDays,
+      reviewReady,
     } : null,
   };
 }

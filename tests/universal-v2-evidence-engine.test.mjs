@@ -5,6 +5,7 @@ import {
   evaluateUniversalComputed,
   universalComputedLeafInputs,
   universalExperimentEvidenceProgress,
+  universalExperimentReviewReady,
 } from "../lib/universal-lab-v2.mjs";
 
 const source = (path) => readFile(new URL("../" + path, import.meta.url), "utf8");
@@ -109,6 +110,24 @@ test("Universal experiment progress counts completed calendar-day evidence witho
 
   assert.equal(completedToday.evidenceDaysRecorded, 2);
   assert.equal(completedToday.todayEvidenceRecorded, true);
+});
+
+test("Universal Evidence Review waits for the final observation or the closed calendar window", () => {
+  assert.equal(universalExperimentReviewReady({
+    currentDay: 7,
+    totalDays: 7,
+    todayEvidenceRecorded: false,
+  }), false);
+  assert.equal(universalExperimentReviewReady({
+    currentDay: 7,
+    totalDays: 7,
+    todayEvidenceRecorded: true,
+  }), true);
+  assert.equal(universalExperimentReviewReady({
+    currentDay: 8,
+    totalDays: 7,
+    todayEvidenceRecorded: false,
+  }), true);
 });
 
 test("Universal experiment progress supports authored windows longer than seven days", () => {

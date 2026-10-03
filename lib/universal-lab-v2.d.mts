@@ -86,6 +86,11 @@ export function universalExperimentEvidenceProgress(
   todayEvidenceRecorded: boolean;
   evidenceWindowCount?: number;
 };
+export function universalExperimentReviewReady(progress: {
+  currentDay?: number;
+  totalDays?: number;
+  todayEvidenceRecorded?: boolean;
+} | null | undefined): boolean;
 export function v2RequiredPromptIds(
   definition: { investigations?: unknown[] },
   investigationNumber: number,
