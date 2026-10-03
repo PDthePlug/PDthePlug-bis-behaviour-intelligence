@@ -427,9 +427,17 @@ export function ContentStudio() {
       setError("Use a file smaller than 25 MB.");
       return;
     }
-    if (contentVersion.status !== "DRAFT") {
-      setError("Choose Edit source before replacing a file in this version.");
+    if (!["DRAFT", "VALIDATED", "APPROVED"].includes(contentVersion.status)) {
+      setError("Start the next update before changing published content.");
       return;
+    }
+
+    if (contentVersion.status !== "DRAFT") {
+      const reopened = await act(
+        { action: "reopenVersion", versionId: contentVersion.id },
+        "Content reopened for this update.",
+      );
+      if (!reopened) return;
     }
 
     const key = `${contentVersion.id}:${sourceKey}`;
@@ -808,7 +816,7 @@ export function ContentStudio() {
                 {selected.versions.map((entry) => {
                   const state = versionState(entry);
                   const staleCompilation = entry.compilerStatus === "COMPILED" && !entry.compilerCurrent;
-                  const canEdit = entry.status === "DRAFT";
+                  const canEdit = ["DRAFT", "VALIDATED", "APPROVED"].includes(entry.status);
                   const canPrepare = canEdit || (staleCompilation && ["VALIDATED", "APPROVED"].includes(entry.status));
                   const sourceSlots = selected.kind === "LEARNING_MODULE"
                     ? editionSlots
@@ -1088,9 +1096,7 @@ export function ContentStudio() {
                           </Button>
                         ) : null}
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? (
-                          <Button variant="outline" disabled={busy} onClick={() => void act({ action: "reopenVersion", versionId: entry.id }, "Version reopened. You can replace or add source content.")}>
-                            Edit source
-                          </Button>
+                          <span className="activation-note">Need to change the content? Upload or paste into the edition above and BIS will reopen this update safely.</span>
                         ) : null}
                         {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Published</span> : null}
                         {entry.status === "PUBLISHED" && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open learner view <ChevronRight /></Link></Button> : null}
