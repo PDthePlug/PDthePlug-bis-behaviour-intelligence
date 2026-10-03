@@ -186,8 +186,8 @@ function ProgrammeLabHandoff({
         <p className="prototype-lab-handoff-description">
           {live
             ? isHabit
-              ? "The handbook stays here as your learning reference. Complete Phase A in Habit Lab, begin the seven-day test, then return here as the investigation continues."
-              : "You have reached the practical part of Day 3. Complete Phase A in the Lab, then return to this learning module for the next programme step."
+              ? "Complete the facilitated Lab, begin your seven-day test, then return to the handbook."
+              : "Complete the facilitated Lab, then return here for your next programme step."
             : sourceReady
               ? "This Lab is already part of the BIS programme. Its digital access will appear here when it is enabled for this programme."
               : "This is where today’s learning connects to the practical Lab."}

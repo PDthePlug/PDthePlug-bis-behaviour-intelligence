@@ -95,11 +95,13 @@ export type UniversalLabRenderBlock =
   | { type: "PROMPT"; promptId: string }
   | {
       type: "INLINE";
+      instruction?: string;
       id: string;
       segments: UniversalLabInlineSegment[];
     }
   | {
       type: "TABLE";
+      instruction?: string;
       id: string;
       caption?: string;
       headers: string[];

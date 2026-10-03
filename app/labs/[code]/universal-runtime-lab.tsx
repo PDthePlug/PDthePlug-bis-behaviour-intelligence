@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Check, Eye, FlaskConical, LoaderCircle, LockKeyhole, Search, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, Eye, LoaderCircle, LockKeyhole, Search, ShieldCheck } from "lucide-react";
 import { LabInvestigationFrame } from "@/app/lab-investigation-frame";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -158,8 +158,8 @@ function UniversalPrompt({
                     ))}
                   </div>
                   <div className="universal-rating-anchors">
-                    <span>{integerMin} · lower</span>
-                    <span>{integerMax} · higher</span>
+                    <span>{integerMin} · {/confidence|confident/i.test(`${prompt.label} ${prompt.prompt}`) ? "Not confident" : "Lower"}</span>
+                    <span>{integerMax} · {/confidence|confident/i.test(`${prompt.label} ${prompt.prompt}`) ? "Very confident" : "Higher"}</span>
                   </div>
                 </div>
               ) : prompt.type === "INTEGER" ? (
@@ -366,6 +366,7 @@ function UniversalInlineResponse({
 
   return (
     <section className="universal-inline-response">
+      {block.instruction ? <p className="universal-activity-instruction">{block.instruction}</p> : null}
       <p className="universal-inline-sentence">
         {block.segments.map((segment, index) => {
           if (segment.kind === "TEXT") return <span key={`text-${index}`}>{segment.text}</span>;
@@ -431,6 +432,7 @@ function UniversalEvidenceTable({
 
   return (
     <section className="universal-evidence-table" aria-label={block.caption || "Evidence table"}>
+      {block.instruction ? <p className="universal-activity-instruction">{block.instruction}</p> : null}
       {block.caption ? <h2>{block.caption}</h2> : null}
       <div className="universal-evidence-table-scroll">
         <table>
@@ -590,7 +592,7 @@ function UniversalBaseline({
             <div className="section-title">
               <div>
                 <p className="eyebrow">{baseline.title}</p>
-                <h2>How often do you…</h2>
+                <h2>Your current behaviours</h2>
               </div>
               <Badge>{baseline.items.length} items</Badge>
             </div>
@@ -599,12 +601,12 @@ function UniversalBaseline({
               {baseline.items.map((prompt, index) => (
                 <div key={prompt.id}>
                   <span className="baseline-index">{String(index + 1).padStart(2, "0")}</span>
-                  <label>{prompt.label}</label>
+                  <label id={`baseline-${prompt.id}`}>{prompt.prompt || prompt.label}</label>
                   <Select
                     value={values[prompt.id] ?? ""}
                     onValueChange={(value) => setValues((current) => ({ ...current, [prompt.id]: value }))}
                   >
-                    <SelectTrigger className="baseline-select"><SelectValue placeholder="Choose" /></SelectTrigger>
+                    <SelectTrigger aria-labelledby={`baseline-${prompt.id}`} className="baseline-select"><SelectValue placeholder="Choose" /></SelectTrigger>
                     <SelectContent>
                       {(prompt.options ?? ["Never", "Rarely", "Sometimes", "Often", "Always"]).map((option) => (
                         <SelectItem key={option} value={option}>{option}</SelectItem>
@@ -1251,13 +1253,11 @@ export function UniversalRuntimeLab({
               </div>
             </div>
             <div className="surface-card corelab-start-card universal-start-card">
-              <FlaskConical />
-              <p className="eyebrow">Before you begin</p>
-              <h2>Start with private evidence.</h2>
-              <p>You will move through nine investigations: notice a pattern, form a working explanation, test it in real life, and review what the evidence actually shows. You may pass any question you are not ready to answer.</p>
+              <h2>Before you begin</h2>
+              <p>You can choose “Prefer not to answer” for any question.</p>
               <label className="consent-row">
                 <Checkbox checked={consent} onCheckedChange={(checked) => setConsent(checked === true)} />
-                <span>I understand that my responses are private and will be used to build my evidence record for this Lab.</span>
+                <span>I agree to use my private responses to build my evidence record for this Lab.</span>
               </label>
               {error ? <p className="field-error">{error}</p> : null}
               <Button size="lg" disabled={saving || !consent} onClick={() => void act({ action: "openLab", consent: true })}>

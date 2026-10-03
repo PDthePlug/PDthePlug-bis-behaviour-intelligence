@@ -204,3 +204,43 @@ test("plain confidence question survives an intervening Think heading as one bou
   assert.equal(confidence.min,1);assert.equal(confidence.max,10);
   assert.equal(result.blocks.filter((block)=>block.type==="HTML" && /How confident/.test(block.html)).length,0);
 });
+
+test("supplementary baselines keep all ten meaningful questions and an integer rating", async () => {
+  const { applyDigitalLabBaseline } = await import("../lib/digital-lab-baseline.mjs");
+  for (const code of ["LCH", "GMN", "GRT", "ENT", "NEG", "TEAM", "ETH", "FSF", "OPP", "COM"]) {
+    const raw = { identity: { code }, investigations: [{ number: 1, prompts: [], blocks: [{ type: "HTML", html: "<h2>Read</h2><p>A learner story.</p>" }] }] };
+    const result = prepareUniversalLabPresentation(applyDigitalLabBaseline(raw));
+    const baseline = result.presentationBaseline;
+    assert.equal(baseline.items.length, 10, code);
+    assert.equal(baseline.metric.type, "INTEGER", code);
+    assert.equal(baseline.items[0].id, `${code}.baseline.behaviour.1`);
+    assert.ok(baseline.items.every((prompt) => /how often/i.test(prompt.label) && !/Starting behaviour/.test(prompt.label)));
+    assert.equal(baseline.title, "Starting check-in");
+    const legacy = structuredClone(result);
+    legacy.presentationVersion = "bis-lab-presentation-6";
+    const misplaced = legacy.presentationBaseline.items.shift();
+    legacy.presentationBaseline.items.push(legacy.presentationBaseline.metric);
+    legacy.presentationBaseline.metric = { ...misplaced, label: "Starting behaviour 1" };
+    const repaired = prepareUniversalLabPresentation(legacy).presentationBaseline;
+    assert.equal(repaired.items.length, 10, code);
+    assert.equal(repaired.metric.type, "INTEGER", code);
+    assert.ok(repaired.items.some((prompt) => prompt.id === misplaced.id));
+  }
+});
+
+test("quoted instructions belong to inline activities rather than story paragraphs", () => {
+  const legacy = structuredClone(definition("ATT"));
+  legacy.presentationVersion = "bis-lab-presentation-6";
+  const investigation = legacy.investigations[0];
+  const phone = investigation.prompts.find((prompt) => /today's phone/i.test(prompt.label));
+  investigation.blocks = [
+    { type: "HTML", html: '<p>She gets up.</p><p>"Unlock your phone. Open Screen Time. Write today\'s total so far."</p>' },
+    { type: "INLINE", id: "phone", segments: [{ kind: "TEXT", text: "Today’s phone time: " }, { kind: "PROMPT", promptId: phone.id }] },
+  ];
+  const result = prepareUniversalLabPresentation(legacy).investigations[0];
+  const inline = result.blocks.find((block) => block.type === "INLINE" && block.id === "phone");
+  assert.match(inline.instruction, /^Unlock your phone/);
+  assert.doesNotMatch(inline.instruction, /"/);
+  assert.ok(!result.blocks.some((block) => block.type === "HTML" && /Unlock your phone/.test(block.html)));
+  assert.ok(result.blocks.some((block) => block.type === "HTML" && /She gets up/.test(block.html)));
+});

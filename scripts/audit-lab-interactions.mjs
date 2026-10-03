@@ -18,6 +18,10 @@ function answer(prompt) {
 
 export function auditDefinition(raw, definition) {
   assert.deepEqual(prepareUniversalLabPresentation(definition), definition, "Client normalization must not change the API schema");
+  if (definition.presentationBaseline) {
+    assert.ok(definition.presentationBaseline.items.every((prompt) => !/^Starting behavio[u]?r \d+$/i.test(prompt.label)), "Baseline fields must describe the behaviour");
+    assert.ok(!definition.presentationBaseline.metric || definition.presentationBaseline.metric.type === "INTEGER", "Baseline rating must be an integer scale, never a frequency question");
+  }
   const baselineIds = new Set(availableLabPrompts(definition, 0).map((prompt) => prompt.id));
   const summary = { code: definition.identity.code, baselineItems: definition.presentationBaseline?.items.length ?? 0, controls: 0, days: definition.experiment?.days ?? 0 };
   const responses = {};

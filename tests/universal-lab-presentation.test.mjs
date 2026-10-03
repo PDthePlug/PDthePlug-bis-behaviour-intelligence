@@ -123,7 +123,7 @@ test("Universal runtime uses continuous digital prompt controls without workbook
   assert.doesNotMatch(runtime, /className="prompt-number"/);
   assert.match(runtime, /answer-list universal-choice-list/);
   assert.match(runtime, /prepareUniversalLabPresentation/);
-  assert.match(runtime, /You will move through nine investigations/);
+  assert.match(runtime, /You can choose “Prefer not to answer” for any question/);
   assert.doesNotMatch(runtime, /grounded in the BIS source workbook/i);
   assert.doesNotMatch(runtime, /corrections remain traceable\.<\/p>/i);
 });

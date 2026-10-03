@@ -652,3 +652,11 @@
     justify-self:stretch;
   }
 }
+
+/* Day 3 handover is a compact transition within the learning document. */
+.prototype-player .prototype-lab-handoff{margin:20px 0 16px;padding:16px;border-radius:12px;gap:14px;box-shadow:none;align-items:center;min-height:0}
+.prototype-player .prototype-lab-handoff-copy{gap:7px}
+.prototype-player .prototype-lab-handoff h2{font-size:21px;line-height:1.25;margin:0}
+.prototype-player .prototype-lab-handoff .prototype-lab-handoff-description{font-size:14px;line-height:1.5}
+.prototype-player .prototype-lab-handoff-action{min-height:44px;box-shadow:none;font-size:13px;padding:10px 12px}
+@media(max-width:620px){.prototype-player .prototype-lab-handoff{align-items:stretch}.prototype-player .prototype-lab-handoff h2{font-size:19px}}

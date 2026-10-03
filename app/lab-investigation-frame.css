@@ -2289,3 +2289,17 @@
   .universal-package-lab .universal-collection-row[data-contextual="true"]>.universal-collection-pass{grid-column:1}
   .universal-package-lab .universal-choice-list button{white-space:normal;text-align:left;align-items:center}
 }
+
+/* Entry consent is one compact action, not a second hero. */
+.universal-package-welcome{min-height:0;padding:24px 18px 96px}
+.universal-package-welcome .universal-welcome-grid{max-width:900px;padding:22px;gap:20px;align-items:start;min-height:0}
+.universal-package-welcome .universal-welcome-copy h1{font-size:clamp(30px,4vw,42px);margin:8px 0 12px}
+.universal-package-welcome .universal-welcome-meta{margin-top:14px;gap:6px}
+.universal-package-welcome .universal-start-card{display:grid;gap:10px;align-self:start;align-content:start;min-height:0;padding:16px;border:1px solid #dce4df;box-shadow:none}
+.universal-package-welcome .universal-start-card h2{font-family:var(--font-sans);font-size:18px;margin:0}
+.universal-package-welcome .universal-start-card>p{margin:0;font-size:14px;line-height:1.5}
+.universal-package-welcome .universal-start-card .consent-row{margin:4px 0;min-height:44px;font-size:14px;line-height:1.5}
+.universal-package-lab .universal-activity-instruction{margin:0 0 10px;padding-left:12px;border-left:3px solid #2f8276;font-size:16px;line-height:1.55;font-weight:650;color:#17313a}
+.universal-package-lab .universal-inline-response:has(.universal-activity-instruction){margin-top:18px;padding-top:14px;border-top:1px solid #dfe3df}
+.universal-package-lab .universal-inline-response:has(.universal-activity-instruction) .universal-inline-sentence{font-size:15px}
+@media(max-width:620px){.universal-package-welcome .universal-welcome-grid{grid-template-columns:1fr;padding:16px;gap:16px}}
