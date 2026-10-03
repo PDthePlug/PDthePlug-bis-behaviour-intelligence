@@ -21,6 +21,7 @@ test("question intelligence registers structured questions but excludes free tex
   }, { labCode: "LDR", labVersion: "1.0", versionId: "version-1" });
 
   assert.equal(rows.length, 5);
+  assert.equal(rows.every((row) => row.status === "CANDIDATE"), true);
   assert.equal(rows.find((row) => row.semanticFieldId === "LAB.BASELINE.SCORE")?.evidenceClass, "BASELINE");
   assert.equal(rows.find((row) => row.semanticFieldId === "LAB.I7.ACTION")?.evidenceClass, "OBSERVATION");
   assert.equal(rows.find((row) => row.semanticFieldId === "LAB.I4.CONTEXT")?.aggregatePolicy, "STRUCTURED_ONLY");
