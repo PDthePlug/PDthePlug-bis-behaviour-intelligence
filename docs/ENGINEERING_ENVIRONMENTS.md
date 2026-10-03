@@ -49,4 +49,4 @@ This flag is a public safety acknowledgement, not a credential. Do not configure
 6. optimized production build
 7. Playwright browser tests
 
-GitHub CI and Vercel's `vercel-build` both invoke this contract. A failing stage blocks release; tests must not be disabled or weakened to obtain a green deployment.
+`npm run verify:build` is the deterministic build gate (runtime, lint, TypeScript, acceptance, source audit and optimized build). Vercel runs that gate because its build worker is not the browser-test runner. GitHub CI installs Chromium and runs the complete `npm run verify` contract, including Playwright. A release is not considered verified unless the full GitHub CI contract passes; tests must not be disabled or weakened to obtain a green deployment.
