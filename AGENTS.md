@@ -81,7 +81,9 @@ The visible learner Lab journey follows the canonical nine-stage BIS laboratory 
 8. Evidence Review
 9. Profile
 
-The dedicated Habit, Decision, and Money runtimes and the source-backed Universal Lab architecture may differ internally, but learner-facing behaviour must remain semantically coherent.
+Universal Lab is now the canonical learner runtime for all BIS Labs, including Habit, Decision, and Money.
+
+The former dedicated Habit, Decision, and Money runtimes are transitional compatibility paths only. Do not add new product behaviour to them unless it is required to preserve a safe migration. Once a governed Universal version for one of those Labs is published and live, legacy entry routes must hand off to the Universal runtime while preserving the learner's intended return path. Remove the legacy implementation only after migration parity and rollback safety are proven.
 
 Preserve:
 - stable semantic field IDs;
@@ -165,9 +167,21 @@ Do not introduce automated personality judgments, clinical interpretations, risk
 
 Content Studio is a governed publishing system, not a free-form CMS.
 
-Preserve the lifecycle:
+Preserve the governed lifecycle internally:
 
 source -> version -> compile -> preview -> UAT -> approve -> explicitly publish/activate
+
+The founder/operator experience should not expose every internal gate as manual technical administration. The 34 BIS catalogue shelves already exist and are the starting point. By default Content Studio should:
+
+- let the operator choose the existing BIS title;
+- assign the next safe version automatically;
+- prepare the preview automatically after source content is added;
+- translate compilation into plain editorial feedback;
+- require the operator to inspect the prepared preview and complete the final check;
+- reduce approval to the smallest explicit human confirmation necessary;
+- keep publishing/activation explicit.
+
+Manual version naming, compiler terminology, runtime profile terminology, schema naming, and artifact identifiers belong behind advanced controls rather than in the default path.
 
 Rules:
 - authored source remains traceable;
