@@ -66,3 +66,44 @@ test("known measurement codes are translated into human meaning", () => {
   assert.equal(humanMetricLabel("HAB.BEI06"), "Observed adherence");
   assert.equal(humanMetricLabel("HAB.CONTROL_SHIFT"), "Control shift");
 });
+
+
+test("portfolio keeps only the latest applicable value for a repeated metric code", () => {
+  const labs = buildEvidencePortfolio({
+    enrolments: [{
+      id: "enrol-current",
+      labCode: "HAB",
+      labVersion: "4.5.2",
+      status: "IN_PROGRESS",
+      currentInvestigation: 8,
+      updatedAt: "2026-10-08T12:00:00Z",
+    }],
+    measurements: [
+      {
+        id: "new",
+        enrolmentId: null,
+        labCode: null,
+        code: "HAB.BEI06",
+        value: "75",
+        status: "VALUE",
+        evidenceStrength: "SUFFICIENT_FOR_LAB",
+        formulaVersion: "1.0",
+        calculatedAt: "2026-10-08T12:00:00Z",
+      },
+      {
+        id: "old",
+        enrolmentId: null,
+        labCode: null,
+        code: "HAB.BEI06",
+        value: "40",
+        status: "VALUE",
+        evidenceStrength: "LIMITED",
+        formulaVersion: "1.0",
+        calculatedAt: "2026-09-01T12:00:00Z",
+      },
+    ],
+  });
+
+  assert.equal(labs[0].metrics.length, 1);
+  assert.equal(labs[0].metrics[0].value, "75%");
+});
