@@ -1486,15 +1486,21 @@ function promptSpecFromMarker(marker: string, question: string): ImportedPromptS
       placeholder: undefined,
     };
   }
-  const range = marker.match(/\/\s*(10|7|5)\b/);
-  if (range) {
+  const numericContext = `${question} ${marker}`.replace(/\s+/g, " ").trim();
+  const explicitScale = numericContext.match(/\b(0|1)\s*(?:-|–|—|to)\s*(5|7|10)\b/i);
+  const outOfRange = numericContext.match(/(?:\/|out of\s+)(5|7|10)\b/i);
+  const enumeratedTen = /\b1\s*(?:-|–|—)\s*2\b/.test(numericContext) && /\b10\b/.test(numericContext);
+  const scaleLanguage = /\bscale\b|\brating\b|\bconfidence\b|\bcontrol\b|\bhow (?:much|strongly|confident|sure)\b/i.test(numericContext);
+  if (explicitScale || outOfRange || (enumeratedTen && scaleLanguage)) {
+    const max = explicitScale ? Number(explicitScale[2]) : outOfRange ? Number(outOfRange[1]) : 10;
+    const min = explicitScale ? Number(explicitScale[1]) : max === 10 ? 1 : 0;
     return {
       label,
       type: "INTEGER" as const,
       options: undefined,
       placeholder: undefined,
-      min: range[1] === "10" ? 1 : 0,
-      max: Number(range[1]),
+      min,
+      max,
     };
   }
   if (/^date\s*:/i.test(marker)) {
