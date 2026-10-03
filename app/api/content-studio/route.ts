@@ -19,6 +19,7 @@ import {
   CONTENT_STUDIO_BUCKET,
   safeContentCode,
   safeContentSlug,
+  nextContentVersion,
   sha256Hex,
   validateContentSource,
   type ContentKind,
@@ -233,13 +234,21 @@ async function postHandler(request: Request) {
 
     if (action === "createVersion") {
       const itemId = String(body.itemId ?? "");
-      const version = String(body.version ?? "").trim();
+      const requestedVersion = String(body.version ?? "").trim();
       const schemaVersion = String(body.schemaVersion ?? "1.0").trim() || "1.0";
       const sourceFormat = String(body.sourceFormat ?? "BIS_PACKAGE_JSON") as ContentSourceFormat;
       const releaseNotes = String(body.releaseNotes ?? "").trim();
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
       if (!item || item.status !== "ACTIVE") throw new Error("Choose a BIS title.");
-      if (!validVersion(version)) throw new Error("Use a short version such as 1.0, 2.1 or 4.5.3.");
+      const existingVersions = await db.select({ version: contentLibraryVersions.version, status: contentLibraryVersions.status })
+        .from(contentLibraryVersions)
+        .where(eq(contentLibraryVersions.itemId, itemId));
+      const workingDraft = existingVersions.find((entry) => entry.status === "DRAFT");
+      if (workingDraft && !requestedVersion) {
+        return Response.json(await snapshot());
+      }
+      const version = requestedVersion || nextContentVersion(existingVersions.map((entry) => entry.version));
+      if (!validVersion(version)) throw new Error("BIS could not create a safe version number for this update.");
       if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Use a Word document, PDF, pasted text, HTML, Markdown, BIS JSON or ZIP file.");
       if (releaseNotes.length > 1200) throw new Error("Keep release notes under 1,200 characters.");
       const id = `${itemId}:${version}`;
