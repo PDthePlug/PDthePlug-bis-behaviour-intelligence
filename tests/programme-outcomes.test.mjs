@@ -402,3 +402,15 @@ test("question intelligence registry defaults text and high-sensitivity answers 
   assert.match(migration, /MODEL_ASSISTED/);
   assert.doesNotMatch(migration, /aggregate_policy = 'MODEL_ASSISTED'/);
 });
+
+
+test("programme PDF carries governed question intelligence without private learner wording", async () => {
+  const pdf = await source("lib/programme-report-pdf.ts");
+
+  assert.match(pdf, /Question intelligence/);
+  assert.match(pdf, /What are learners answering consistently\?/);
+  assert.match(pdf, /Private free-text answers are not read or shown/);
+  assert.match(pdf, /patterns\.privacyNote/);
+  assert.match(pdf, /drawQuestionPatterns\(canvas, outcome\)/);
+  assert.doesNotMatch(pdf, /question\.response|question\.rawValue|question\.freeText/);
+});
