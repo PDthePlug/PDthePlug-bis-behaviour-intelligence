@@ -1012,7 +1012,7 @@ export function ContentStudio() {
                                     <span>{previewed.has(key) ? <Check /> : <Eye />}</span>
                                     <div><strong>{slot.label}</strong><small>{previewed.has(key) ? "Preview opened" : "Open and check"}</small></div>
                                     <Button asChild size="sm" variant="outline">
-                                      <Link target="_blank" rel="noreferrer" href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LEARNING_MODULE&code=${encodeURIComponent(selected.code)}&edition=${slot.key}`}>
+                                      <Link target="_blank" rel="noreferrer" href={`/content-studio/preview/${entry.id}?kind=LEARNING_MODULE&code=${encodeURIComponent(selected.code)}&edition=${slot.key}`}>
                                         Preview
                                       </Link>
                                     </Button>
@@ -1024,7 +1024,7 @@ export function ContentStudio() {
                                 <span>{previewed.has("lab:universal") ? <Check /> : <Eye />}</span>
                                 <div><strong>Lab experience</strong><small>{previewed.has("lab:universal") ? "Preview opened" : "Open and check"}</small></div>
                                 <Button asChild size="sm" variant="outline">
-                                  <Link target="_blank" rel="noreferrer" href={`/content-studio/preview/${encodeURIComponent(entry.id)}?kind=LAB&code=${encodeURIComponent(selected.code)}`}>Preview</Link>
+                                  <Link target="_blank" rel="noreferrer" href={`/content-studio/preview/${entry.id}?kind=LAB&code=${encodeURIComponent(selected.code)}`}>Preview</Link>
                                 </Button>
                               </div>
                             )}
