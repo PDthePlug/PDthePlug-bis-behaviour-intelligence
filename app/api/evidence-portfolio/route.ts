@@ -33,6 +33,7 @@ async function portfolioSnapshot() {
       labCode: evidenceRecords.labCode,
       labVersion: evidenceRecords.labVersion,
       investigationId: evidenceRecords.investigationId,
+      sourceObjectId: evidenceRecords.sourceObjectId,
       status: evidenceRecords.status,
       occurredAt: evidenceRecords.occurredAt,
       recordedAt: evidenceRecords.recordedAt,
