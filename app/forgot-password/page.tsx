@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PasswordRecoveryForm } from "./password-recovery-form";
+import "../sign-in/sign-in-cleanup.css";
 
 export const metadata: Metadata = {
   title: "Reset your password",

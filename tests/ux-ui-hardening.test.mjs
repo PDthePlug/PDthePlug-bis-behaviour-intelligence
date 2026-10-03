@@ -118,3 +118,16 @@ test("access failures stay customer-safe and never expose backend error text", a
   assert.match(shell, /does not have access to the programme workspace/);
   assert.doesNotMatch(shell, /payload\.error \|\|/);
 });
+
+test("password recovery routes use the compact responsive authentication story", async () => {
+  const [forgot, reset, cleanup] = await Promise.all([
+    source("app/forgot-password/page.tsx"),
+    source("app/reset-password/page.tsx"),
+    source("app/sign-in/sign-in-cleanup.css"),
+  ]);
+
+  assert.match(forgot, /sign-in\/sign-in-cleanup\.css/);
+  assert.match(reset, /sign-in\/sign-in-cleanup\.css/);
+  assert.match(cleanup, /@media \(max-width: 860px\)/);
+  assert.match(cleanup, /min-height: auto/);
+});

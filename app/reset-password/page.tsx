@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/supabase/require-user";
 import { PasswordRecoveryForm } from "../forgot-password/password-recovery-form";
+import "../sign-in/sign-in-cleanup.css";
 
 export const metadata: Metadata = {
   title: "Choose a new password",
