@@ -29,6 +29,7 @@ import {
   compileUniversalLab,
 } from "../../../lib/content-compiler";
 import type { DeliveryEdition } from "../../../lib/learning-foundation";
+import { auditLabQuestionQuality } from "../../../lib/question-quality.mjs";
 import { adaptLabSource, adaptLearningSource } from "../../../lib/content-source-adapters";
 import {
   artifactFingerprint,
@@ -456,6 +457,8 @@ async function postHandler(request: Request) {
                 status?: "PASS" | "REVIEW" | "BLOCKED";
                 issues?: Array<{ code?: string; severity?: string; message?: string }>;
               };
+              presentationBaseline?: unknown;
+              investigations?: unknown[];
             }
           : null;
         if (preparedLab?.editorialAudit?.status === "BLOCKED") {
@@ -498,6 +501,7 @@ async function postHandler(request: Request) {
               .filter((issue) => issue.severity !== "ERROR")
               .map((issue) => issue.message)
               .filter(Boolean),
+            questionQuality: auditLabQuestionQuality(preparedLab as Record<string, unknown>),
           } : {}),
         };
         await db.update(contentLibraryVersions).set({
