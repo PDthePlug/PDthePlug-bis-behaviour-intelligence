@@ -45,6 +45,8 @@ next-env.d.ts
 /work/
 /playwright-report/
 /test-results/
+/playwright-report-staging/
+/test-results-staging/
 /supabase/.temp/
 /tests/browser/harness/.next/
 /tests/browser/harness/node_modules/
