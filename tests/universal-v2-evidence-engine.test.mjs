@@ -5,6 +5,7 @@ import {
   evaluateUniversalComputed,
   universalComputedLeafInputs,
   universalExperimentEvidenceProgress,
+  universalExperimentReviewReady,
 } from "../lib/universal-lab-v2.mjs";
 
 const source = (path) => readFile(new URL("../" + path, import.meta.url), "utf8");
@@ -136,4 +137,20 @@ test("Universal experiment progress supports authored windows longer than seven 
   assert.equal(progress.totalDays, 30);
   assert.equal(progress.evidenceDaysRecorded, 12);
   assert.equal(progress.todayEvidenceRecorded, true);
+});
+
+
+test("Universal V2 review readiness waits for final-day evidence and accepts valid pass evidence", () => {
+  const definition = {
+    experiment: {
+      investigation: 7,
+      days: 3,
+      scheduledPromptIds: [{ day: 3, promptId: "TST.I7.D3.A" }],
+    },
+    investigations: [{ number: 7, prompts: [{ id: "TST.I7.D3.A", required: true }] }],
+  };
+
+  assert.equal(universalExperimentReviewReady(definition, {}, 3), false);
+  assert.equal(universalExperimentReviewReady(definition, { "TST.I7.D3.A": { status: "PASS" } }, 3), true);
+  assert.equal(universalExperimentReviewReady(definition, {}, 4), true);
 });
