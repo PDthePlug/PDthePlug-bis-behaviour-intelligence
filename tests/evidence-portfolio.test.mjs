@@ -24,9 +24,9 @@ test("evidence portfolio turns the Lab trail into stable learner-facing anchors"
     ],
     measurements: [{
       id: "m1",
-      enrolmentId: "enrol-1",
-      labCode: "HAB",
-      labVersion: "4.5.2",
+      enrolmentId: null,
+      labCode: null,
+      labVersion: null,
       code: "HAB.BEI06",
       value: "60",
       status: "VALUE",
@@ -45,6 +45,7 @@ test("evidence portfolio turns the Lab trail into stable learner-facing anchors"
   assert.equal(labs[0].title, "Habit Lab");
   assert.equal(labs[0].summary.recordedAnchors, 5);
   assert.equal(labs[0].metrics[0].label, "Observed adherence");
+  assert.equal(labs[0].metrics.length, 1);
   assert.equal(labs[0].metrics[0].value, "60");
   assert.equal(labs[0].metrics[0].sourceCount, 2);
   assert.equal(labs[0].anchors.find((anchor) => anchor.id === "EXPERIMENT")?.status, "RECORDED");
