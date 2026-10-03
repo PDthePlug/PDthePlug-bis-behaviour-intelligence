@@ -27,7 +27,7 @@ create table public.question_analysis_registry (
   constraint question_analysis_policy_check
     check (aggregate_policy in ('EXCLUDE','STRUCTURED_ONLY','MODEL_ASSISTED')),
   constraint question_analysis_status_check
-    check (status in ('ACTIVE','RETIRED')),
+    check (status in ('CANDIDATE','ACTIVE','RETIRED')),
   constraint uq_question_analysis_version_field
     unique (version_id, semantic_field_id)
 );
@@ -121,6 +121,7 @@ begin
       and r.lab_version = v_lab_version
       and r.status = 'ACTIVE'
       and r.aggregate_policy = 'STRUCTURED_ONLY'
+      and r.sensitivity <> 'P3'
       and r.answer_model in ('INTEGER','BOOLEAN','CATEGORICAL','MULTI_SELECT')
     order by r.semantic_field_id, r.updated_at desc
   loop
