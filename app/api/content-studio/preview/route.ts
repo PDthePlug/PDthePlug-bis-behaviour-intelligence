@@ -1,3 +1,4 @@
+import { customerSafeErrorResponse } from "../../../../lib/api-error-response";
 import { eq } from "../../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../../db";
 import {
@@ -160,13 +161,7 @@ async function handler(request: Request) {
       payload,
     }, { headers: { "cache-control": "private, no-store" } });
   } catch (error) {
-    if (error instanceof AccessError) {
-      return Response.json({ error: error.message }, { status: error.status });
-    }
-    return Response.json(
-      { error: error instanceof Error ? error.message : "The preview could not be opened." },
-      { status: 400 },
-    );
+    return customerSafeErrorResponse(error, { route: "/api/content-studio/preview", operation: "open" }, "The preview could not be opened. Please try again.", 400);
   }
 }
 

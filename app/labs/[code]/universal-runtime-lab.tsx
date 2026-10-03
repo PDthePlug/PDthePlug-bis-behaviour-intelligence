@@ -17,6 +17,7 @@ import { availableLabPrompts } from "@/lib/lab-interaction-contract.mjs";
 import { validPromptResponse } from "@/lib/evidence-validation.mjs";
 import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentation.mjs";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
+import { EvidenceImages } from "@/components/evidence/evidence-images";
 
 type Snapshot = {
   progressCompatibility?: { baselineAccepted: boolean; completedInvestigations: number[] };
@@ -724,6 +725,7 @@ function UniversalInvestigationForm({
     new Set(investigation.prompts.filter((prompt) => snapshot.responses[prompt.id]?.status === "PASS").map((prompt) => prompt.id)),
   );
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+  const [attachmentBlocked, setAttachmentBlocked] = useState(false);
   const isExperimentInvestigation =
     snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
     && step === snapshot.definition.experiment?.investigation;
@@ -987,6 +989,7 @@ function UniversalInvestigationForm({
       {investigation.blocks?.length
         ? investigation.prompts.filter((prompt) => !blockPromptIds.has(prompt.id)).map(renderPrompt)
         : null}
+      {isExperimentInvestigation && !previewMode && snapshot.enrolment ? <EvidenceImages enrollmentId={snapshot.enrolment.id} labCode={snapshot.definition.identity.code} investigation={step} evidenceFieldId={`${snapshot.definition.identity.code}.I${step}.OBSERVATION.IMAGE`} onBlockedChange={setAttachmentBlocked} /> : null}
       {error ? <p className="field-error">{error}</p> : null}
       {attemptedSubmit && !ready ? (
         <div className="universal-validation-note" role="alert">
@@ -1010,7 +1013,7 @@ function UniversalInvestigationForm({
         <div className="step-footer">
           <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Your responses save privately to this Lab."}</span>
           {step === 9 ? (
-            <Button size="lg" disabled={saving} onClick={() => void (async () => {
+            <Button size="lg" disabled={saving || attachmentBlocked} onClick={() => void (async () => {
               if (experimentWindowClosed) {
                 onAdvance(snapshot, snapshot.definition.experiment?.reviewInvestigation ?? 8);
                 return;
@@ -1022,7 +1025,7 @@ function UniversalInvestigationForm({
               {saving ? "Saving…" : <>Complete Lab <Check /></>}
             </Button>
           ) : (
-            <Button size="lg" disabled={saving} onClick={() => void (async () => {
+            <Button size="lg" disabled={saving || attachmentBlocked} onClick={() => void (async () => {
               if (experimentWindowClosed) {
                 onAdvance(snapshot, snapshot.definition.experiment?.reviewInvestigation ?? 8);
                 return;

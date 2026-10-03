@@ -1,4 +1,5 @@
 import { and, asc, desc, eq } from "../../../db/query";
+import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
@@ -69,13 +70,7 @@ function requireCurrentCompilation(
 }
 
 function errorResponse(error: unknown) {
-  if (error instanceof AccessError) {
-    return Response.json({ error: error.message }, { status: error.status });
-  }
-  return Response.json(
-    { error: error instanceof Error ? error.message : "The content operation could not be completed." },
-    { status: 400 },
-  );
+  return customerSafeErrorResponse(error, { route: "/api/content-studio", operation: "request" }, "The content operation could not be completed. Please try again.", 400);
 }
 
 async function requireSuperUser() {
