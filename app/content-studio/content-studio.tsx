@@ -781,7 +781,11 @@ export function ContentStudio() {
                         : "Add the Lab as a Word document, PDF, pasted text or BIS package."}
                     </p>
                   </div>
-                  <span className="content-auto-version">Next: v{nextContentVersion(selected.versions.map((entry) => entry.version))}</span>
+                  <span className="content-auto-version">
+                    {selected.versions.find((entry) => entry.status === "DRAFT")
+                      ? `Working: v${selected.versions.find((entry) => entry.status === "DRAFT")?.version}`
+                      : `Next: v${nextContentVersion(selected.versions.map((entry) => entry.version))}`}
+                  </span>
                 </div>
                 <div className="version-create-grid version-create-grid-simple">
                   <label className="wide">What changed? <span>(optional)</span><Textarea value={releaseNotes} onChange={(event) => setReleaseNotes(event.target.value)} placeholder="A short note for your own records." /></label>
