@@ -869,6 +869,12 @@ async function postHandler(request: Request) {
         publishedAt: now,
         updatedAt: now,
       }).where(eq(contentLibraryVersions.id, versionId));
+      if (item.kind === "LAB") {
+        await db.update(questionAnalysisRegistry).set({
+          status: "ACTIVE",
+          updatedAt: now,
+        }).where(eq(questionAnalysisRegistry.versionId, versionId));
+      }
       await audit(identity.id, "CONTENT_VERSION_ACTIVATED", "CONTENT_LIBRARY_VERSION", versionId, {
         itemId: item.id,
         kind: item.kind,
