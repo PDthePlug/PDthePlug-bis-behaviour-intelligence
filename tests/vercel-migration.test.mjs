@@ -15,7 +15,8 @@ test("uses the standard Next.js Vercel runtime without retired hosting adapters"
   assert.equal(manifest.scripts.dev, "npm run runtime:check && next dev");
   assert.equal(manifest.scripts.build, "next build");
   assert.equal(manifest.scripts.start, "npm run runtime:check && next start");
-  assert.equal(manifest.scripts["vercel-build"], "npm run verify");
+  assert.equal(manifest.scripts["vercel-build"], "npm run verify:build");
+  assert.equal(manifest.scripts.verify, "npm run verify:build && npm run test:browser");
   assert.doesNotMatch(packageJson, /vinext|wrangler|cloudflare/i);
   assert.match(proxy, /updateSession/);
   assert.doesNotMatch(database, /cloudflare:workers|D1Database/);
