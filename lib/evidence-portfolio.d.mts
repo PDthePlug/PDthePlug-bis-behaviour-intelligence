@@ -15,6 +15,11 @@ export type EvidencePortfolioMetric = {
   evidenceStrength: string;
   formulaVersion: string;
   sourceCount: number;
+  sourceAnchors: Array<{
+    id: string;
+    label: string;
+    count: number;
+  }>;
   calculatedAt: string | null;
 };
 
