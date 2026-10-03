@@ -222,6 +222,32 @@ export const contentActivationUat = sqliteTable(
 );
 
 
+export const questionAnalysisRegistry = sqliteTable(
+  "question_analysis_registry",
+  {
+    id: text("id").primaryKey(),
+    versionId: text("version_id").notNull(),
+    labCode: text("lab_code").notNull(),
+    labVersion: text("lab_version").notNull(),
+    semanticFieldId: text("semantic_field_id").notNull(),
+    questionFamily: text("question_family").notNull(),
+    label: text("label").notNull(),
+    evidenceClass: text("evidence_class").notNull(),
+    answerModel: text("answer_model").notNull(),
+    sensitivity: text("sensitivity").notNull().default("P2"),
+    aggregatePolicy: text("aggregate_policy").notNull().default("EXCLUDE"),
+    status: text("status").notNull().default("CANDIDATE"),
+    createdAt: timestamp(),
+    updatedAt: timestamp(),
+  },
+  (table) => [
+    uniqueIndex("uq_question_analysis_version_field").on(table.versionId, table.semanticFieldId),
+    index("idx_question_analysis_lab").on(table.labCode, table.labVersion, table.status, table.aggregatePolicy),
+    index("idx_question_analysis_family").on(table.questionFamily, table.status),
+  ],
+);
+
+
 export const consentRecords = sqliteTable(
   "consent_records",
   {

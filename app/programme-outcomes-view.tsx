@@ -127,6 +127,26 @@ export type SponsorOutcome = {
       note?: string;
     };
   };
+  questionPatterns?: null | {
+    cohortId: string;
+    suppressed: boolean;
+    participantCount: number;
+    minimumReportableCohortSize: number;
+    minimumReportableCellSize: number;
+    privacyNote: string;
+    questions: Array<{
+      semanticFieldId: string;
+      questionFamily: string;
+      label: string;
+      evidenceClass: string;
+      answerModel: string;
+      respondents: number;
+      coverageRate: number;
+      summary:
+        | { type: "NUMERIC"; average: number }
+        | { type: "CATEGORICAL" | "MULTI_SELECT"; categories: Array<{ value: string; participants: number; shareOfRespondents: number }>; suppressedResponses?: number; suppressedSelections?: number };
+    }>;
+  };
   organisationLearning?: null | {
     cohortId: string;
     suppressed: boolean;
@@ -745,6 +765,21 @@ export function ProgrammeOutcomesView({
     document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function prefillDecisionFromQuestionPattern(
+    question: NonNullable<SponsorOutcome["questionPatterns"]>["questions"][number],
+  ) {
+    const evidence = question.summary.type === "NUMERIC"
+      ? `Group average ${question.summary.average} from ${question.respondents} responses (${question.coverageRate}% coverage).`
+      : `${question.summary.categories
+          .slice(0, 5)
+          .map((category) => `${category.value}: ${category.participants} (${category.shareOfRespondents}%)`)
+          .join(" · ")} · ${question.respondents} responses (${question.coverageRate}% coverage).`;
+    setDecisionSignal("QUESTION_PATTERN");
+    setDecisionTitle(question.label);
+    setDecisionEvidence(evidence);
+    document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function saveDecision() {
     const saved = await act({
       action: "createProgrammeDecision",
@@ -956,6 +991,58 @@ export function ProgrammeOutcomesView({
             </section>
           ) : null}
 
+          {outcome.questionPatterns && !outcome.questionPatterns.suppressed && outcome.questionPatterns.questions.length ? (
+            <section className="outcomes-question-patterns">
+              <div className="outcomes-section-heading">
+                <div>
+                  <p className="eyebrow">Question intelligence</p>
+                  <h2>What are learners answering consistently?</h2>
+                </div>
+                <Layers3 />
+              </div>
+              <p className="question-patterns-intro">
+                This view combines only questions that BIS has registered for structured group analysis. Private free-text answers are not read or shown here, and small answer groups stay hidden.
+              </p>
+              <div className="question-pattern-grid">
+                {outcome.questionPatterns.questions.slice(0, 8).map((question) => (
+                  <article key={question.semanticFieldId} className="surface-card question-pattern-card">
+                    <div className="question-pattern-head">
+                      <span>{question.evidenceClass.toLowerCase().replaceAll("_", " ")}</span>
+                      <small>{question.respondents} responses · {question.coverageRate}% coverage</small>
+                    </div>
+                    <h3>{question.label}</h3>
+                    {question.summary.type === "NUMERIC" ? (
+                      <div className="question-pattern-number">
+                        <strong>{question.summary.average}</strong>
+                        <span>group average</span>
+                      </div>
+                    ) : (
+                      <div className="question-pattern-categories">
+                        {question.summary.categories.slice(0, 5).map((category) => (
+                          <div key={category.value}>
+                            <span>{category.value}</span>
+                            <strong>{category.participants}</strong>
+                            <small>{category.shareOfRespondents}%</small>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {decisionRegister?.canManage ? (
+                      <button
+                        type="button"
+                        className="insight-to-decision"
+                        onClick={() => prefillDecisionFromQuestionPattern(question)}
+                      >
+                        Use in decision
+                      </button>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+              <p className="learning-checks-boundary">{outcome.questionPatterns.privacyNote}</p>
+            </section>
+          ) : null}
+
           <section className="outcome-question-grid">
             <article className="outcome-question-card">
               <div className="outcome-card-title"><Compass /><span>Action</span></div>
@@ -1158,6 +1245,7 @@ export function ProgrammeOutcomesView({
                         <option value="ADAPTATION">Adaptation</option>
                         <option value="EVIDENCE_STRENGTH">How much information we have</option>
                         <option value="LEARNING_JOURNEY">Learning journey</option>
+                        <option value="QUESTION_PATTERN">Structured question pattern</option>
                         <option value="DELIVERY_CONDITION">Programme conditions</option>
                         <option value="OTHER">Other group result</option>
                       </select>

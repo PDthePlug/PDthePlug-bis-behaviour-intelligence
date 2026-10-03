@@ -415,12 +415,13 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, decisions] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_organisational_learning", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_checks", { target_cohort_id: cohortId }),
+      client.rpc("sponsor_cohort_question_patterns", { target_cohort_id: cohortId }),
       db
         .select()
         .from(programmeDecisions)
@@ -432,6 +433,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
     if (learningResult.error) throw new Error(learningResult.error.message);
     if (organisationLearningResult.error) throw new Error(organisationLearningResult.error.message);
     if (learningChecksResult.error) throw new Error(learningChecksResult.error.message);
+    if (questionPatternsResult.error) throw new Error(questionPatternsResult.error.message);
     if (outcomeResult.data) {
       cohorts.push({
         ...outcomeResult.data,
@@ -439,6 +441,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
         learningSummary: learningResult.data ?? null,
         organisationLearning: organisationLearningResult.data ?? null,
         learningChecks: learningChecksResult.data ?? null,
+        questionPatterns: questionPatternsResult.data ?? null,
         decisionRegister: {
           canManage: await canManageProgrammeCohort(identity, roles, cohortId),
           decisions,
@@ -499,7 +502,7 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
     privacyBoundary: {
       facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes", "aggregate formative learning-check support signals"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
-      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness", "aggregate formative learning-check signals", "organisation-authored programme decisions and review outcomes"],
+      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness", "aggregate formative learning-check signals", "governed structured question patterns", "organisation-authored programme decisions and review outcomes"],
       sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },
@@ -781,6 +784,7 @@ async function postHandler(request: Request) {
         "ADAPTATION",
         "EVIDENCE_STRENGTH",
         "LEARNING_JOURNEY",
+        "QUESTION_PATTERN",
         "DELIVERY_CONDITION",
         "OTHER",
       ];

@@ -386,3 +386,62 @@ After changing code:
 4. report files changed, tests run, unresolved issues, and user-visible impact.
 
 When uncertain whether a change affects product meaning, privacy, evidence semantics, or programme architecture, stop and ask for a product decision rather than inventing one.
+
+
+## 18. Minimum Question, Maximum Evidence
+
+BIS should become more intelligent by improving the quality and reuse of evidence, not by asking learners more questions.
+
+Every learner-facing question must have a defined job. A question should contribute to at least one of:
+- a baseline;
+- behavioural context;
+- a prediction;
+- a plan or Behaviour Contract;
+- a real-world observation;
+- an outcome;
+- an interpretation;
+- transfer;
+- a learning check;
+- a human-support signal;
+- an evidence anchor;
+- a governed measure;
+- a learner Evidence Portfolio;
+- an aggregate programme insight.
+
+If a question has no downstream use, review whether it belongs in the experience.
+
+Use the principle:
+
+**Ask once when possible. Reuse the answer. Derive what can safely be derived. Revisit only when change over time is itself the evidence.**
+
+Do not ask learners to manually provide values BIS can calculate reliably from existing evidence, including counts, rates, shifts, completeness, and other deterministic derived measures.
+
+Keep distinct evidence classes distinct:
+- BASELINE
+- CONTEXT
+- PREDICTION
+- PLAN
+- OBSERVATION
+- OUTCOME
+- INTERPRETATION
+- TRANSFER
+- LEARNING_CHECK
+- SUPPORT_SIGNAL
+
+A reflection is not an observed outcome. A prediction is not an observation. A learning check is not behavioural evidence. An AI or model classification is not the learner's original evidence.
+
+Questions that appear to measure the same construct should be linked to a stable question family. Before adding another prompt, determine whether it is:
+- a necessary repeat measurement;
+- a pre/post comparison;
+- a Phase B observation;
+- or an unnecessary duplicate.
+
+Content Studio should increasingly support question-quality review: duplicate families, unused questions, values that should be derived, missing evidence links, and over-questioned investigations.
+
+Original learner evidence must remain immutable/auditable. Any machine-assisted interpretation must be stored or represented separately with its model/version, confidence, evidence anchor, and classification status. Low-confidence interpretation may remain UNCLASSIFIED rather than forcing meaning.
+
+The long-term evidence chain is:
+
+question -> original response -> evidence anchor -> deterministic measure and/or governed interpretation -> learner portfolio -> cohort pattern -> programme decision -> next-cohort comparison.
+
+Never skip the evidence anchor when a downstream claim depends on learner evidence.

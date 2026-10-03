@@ -91,6 +91,30 @@ type Outcome = {
       note?: string;
     };
   };
+  questionPatterns?: null | {
+    suppressed: boolean;
+    participantCount: number;
+    privacyNote: string;
+    questions: Array<{
+      semanticFieldId: string;
+      questionFamily: string;
+      label: string;
+      evidenceClass: string;
+      answerModel: string;
+      respondents: number;
+      coverageRate: number;
+      summary:
+        | { type: "NUMERIC"; average: number }
+        | {
+            type: "CATEGORICAL" | "MULTI_SELECT";
+            categories: Array<{
+              value: string;
+              participants: number;
+              shareOfRespondents: number;
+            }>;
+          };
+    }>;
+  };
   organisationLearning?: null | {
     suppressed: boolean;
     transition: null | {
@@ -1338,6 +1362,89 @@ function drawExperimentLandscape(canvas: ReportCanvas, outcome: Outcome) {
   );
 }
 
+function drawQuestionPatterns(canvas: ReportCanvas, outcome: Outcome) {
+  const patterns = outcome.questionPatterns;
+  if (!patterns || patterns.suppressed || patterns.questions.length === 0) return;
+
+  canvas.page(C.paper);
+  canvas.section(
+    "Question intelligence",
+    "What are learners answering consistently?",
+    "This section combines only questions that BIS has approved for structured group analysis. Private free-text answers are not read or shown, and small answer groups remain hidden."
+  );
+
+  canvas.metricCards(
+    [
+      {
+        label: "Questions reported",
+        value: String(patterns.questions.length),
+        detail: "structured questions",
+        tone: "teal",
+      },
+      {
+        label: "Participants",
+        value: String(patterns.participantCount),
+        detail: "programme group",
+        tone: "teal",
+      },
+    ],
+    2
+  );
+
+  patterns.questions.slice(0, 8).forEach((question) => {
+    const evidenceLabel = question.evidenceClass.toLowerCase().replaceAll("_", " ");
+    const coverage = fixed(question.coverageRate) + "% coverage";
+
+    if (question.summary.type === "NUMERIC") {
+      canvas.callout(
+        question.label,
+        "Group average: " +
+          fixed(question.summary.average, 2) +
+          " · " +
+          String(question.respondents) +
+          " responses · " +
+          coverage +
+          " · " +
+          evidenceLabel,
+        "teal"
+      );
+      return;
+    }
+
+    const categories = question.summary.categories
+      .slice(0, 5)
+      .map(
+        (category) =>
+          category.value +
+          ": " +
+          String(category.participants) +
+          " (" +
+          fixed(category.shareOfRespondents) +
+          "%)"
+      )
+      .join(" · ");
+
+    canvas.callout(
+      question.label,
+      (categories || "No answer group is large enough to display safely.") +
+        " · " +
+        String(question.respondents) +
+        " responses · " +
+        coverage +
+        " · " +
+        evidenceLabel,
+      "teal"
+    );
+  });
+
+  canvas.callout(
+    "Privacy boundary",
+    patterns.privacyNote ||
+      "Only governed structured questions are included. Free-text and high-sensitivity answers remain excluded, and very small answer groups are hidden.",
+    "dark"
+  );
+}
+
 function drawOrganisationalLearning(canvas: ReportCanvas, outcome: Outcome) {
   const learning = outcome.organisationLearning;
   if (!learning || learning.suppressed || !learning.transition || !learning.supportResponse || !learning.adaptation || !learning.comparison) return;
@@ -1584,6 +1691,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
   drawExecutiveSummary(canvas, outcome);
   drawLearningJourney(canvas, outcome);
   drawLearningChecks(canvas, outcome);
+  drawQuestionPatterns(canvas, outcome);
   drawBehaviourEvidence(canvas, outcome);
   drawExperimentLandscape(canvas, outcome);
   drawOrganisationalLearning(canvas, outcome);

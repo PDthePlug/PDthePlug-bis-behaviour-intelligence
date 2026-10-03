@@ -993,3 +993,95 @@
   .outcomes-learning-checks{padding:22px 18px}
   .learning-check-day-grid{grid-template-columns:1fr}
 }
+
+
+.outcomes-question-patterns{
+  display:grid;
+  gap:18px;
+  padding:26px;
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:var(--paper);
+}
+.question-patterns-intro{
+  max-width:860px;
+  margin:-4px 0 0;
+  color:var(--muted-foreground);
+  font-size:13px;
+  line-height:1.65;
+}
+.question-pattern-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.question-pattern-card{
+  display:grid;
+  gap:13px;
+  padding:18px;
+}
+.question-pattern-head{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+}
+.question-pattern-head>span{
+  color:var(--teal);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.065em;
+}
+.question-pattern-head>small{
+  color:var(--muted-foreground);
+  font-size:10px;
+  text-align:right;
+}
+.question-pattern-card h3{
+  margin:0;
+  font:600 20px/1.12 var(--font-serif);
+}
+.question-pattern-number{
+  display:flex;
+  align-items:end;
+  gap:8px;
+  padding-top:8px;
+  border-top:1px solid var(--border);
+}
+.question-pattern-number strong{
+  font:650 34px/1 var(--font-serif);
+}
+.question-pattern-number span{
+  color:var(--muted-foreground);
+  font-size:11px;
+}
+.question-pattern-categories{
+  display:grid;
+  border-top:1px solid var(--border);
+}
+.question-pattern-categories>div{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:10px;
+  align-items:center;
+  padding:9px 0;
+  border-bottom:1px solid var(--border);
+}
+.question-pattern-categories span{
+  overflow-wrap:anywhere;
+  font-size:12px;
+}
+.question-pattern-categories strong{
+  font-size:13px;
+}
+.question-pattern-categories small{
+  min-width:44px;
+  color:var(--muted-foreground);
+  font-size:10px;
+  text-align:right;
+}
+@media(max-width:760px){
+  .outcomes-question-patterns{padding:20px 18px}
+  .question-pattern-grid{grid-template-columns:1fr}
+}

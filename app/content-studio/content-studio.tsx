@@ -93,6 +93,24 @@ type ContentVersion = {
     standardVersion?: string | null;
     editorialStatus?: "PASS" | "REVIEW" | "BLOCKED" | null;
     editorialWarnings?: string[];
+    questionQuality?: {
+      totalPrompts: number;
+      learnerInputs: number;
+      derivedFields: number;
+      reusedInputs: number;
+      duplicateGroups: Array<{
+        fingerprint: string;
+        promptIds: string[];
+        investigations: number[];
+        count: number;
+      }>;
+      denseInvestigations: Array<{
+        investigation: number;
+        learnerInputs: number;
+      }>;
+      reviewItems: string[];
+      principle: string;
+    };
   };
   compiledAt: string | null;
   sourceFiles: ContentSourceFile[];
@@ -889,16 +907,47 @@ export function ContentStudio() {
                           <strong>{entry.compilerStatus === "FAILED" ? "This version needs attention." : entry.compilerReport.summary}</strong>
                           {entry.compilerStatus === "FAILED" ? <small>{entry.compilerReport.summary}</small> : null}
                           {entry.compilerStatus === "COMPILED" && entry.compilerCurrent && selected.kind === "LAB" && entry.compilerReport.runtimeProfile ? (
-                            <div className="content-runtime-proof">
-                              <span>{entry.compilerReport.runtimeProfile === "UNIVERSAL_V2" ? "Behaviour runtime V2" : "Universal Lab V1"}</span>
-                              {(entry.compilerReport.detectedCapabilities ?? []).map((capability) => <span key={capability}>{capability}</span>)}
-                              {entry.compilerReport.indicatorCount ? <span>{entry.compilerReport.indicatorCount} BEIs bound</span> : null}
-                              {entry.compilerReport.calculatedFields ? <span>{entry.compilerReport.calculatedFields} calculated fields</span> : null}
-                              {entry.compilerReport.profileEntries ? <span>{entry.compilerReport.profileEntries} profile entries</span> : null}
-                              {entry.compilerReport.standardVersion ? <span>Habit Lab standard 1.0</span> : null}
-                              {entry.compilerReport.editorialStatus ? <span>Editorial {entry.compilerReport.editorialStatus.toLowerCase()}</span> : null}
+                            <>
+                              <div className="content-runtime-proof">
+                                {entry.compilerReport.experimentDays ? <span>{entry.compilerReport.experimentDays}-day real-world test ready</span> : null}
+                                {entry.compilerReport.indicatorCount ? <span>{entry.compilerReport.indicatorCount} programme measures connected</span> : null}
+                                {entry.compilerReport.calculatedFields ? <span>{entry.compilerReport.calculatedFields} values calculated automatically</span> : null}
+                                {entry.compilerReport.profileEntries ? <span>{entry.compilerReport.profileEntries} profile fields connected</span> : null}
+                                {entry.compilerReport.editorialStatus ? <span>Editorial {entry.compilerReport.editorialStatus.toLowerCase()}</span> : null}
+                              </div>
+                              <details className="content-technical-details">
+                                <summary>Advanced details</summary>
+                                <div className="content-runtime-proof">
+                                  <span>{entry.compilerReport.runtimeProfile === "UNIVERSAL_V2" ? "Universal V2 runtime" : "Universal V1 runtime"}</span>
+                                  {(entry.compilerReport.detectedCapabilities ?? []).map((capability) => <span key={capability}>{capability}</span>)}
+                                  {entry.compilerReport.standardVersion ? <span>Habit Lab standard 1.0</span> : null}
+                                </div>
+                              </details>
+                            </>
+                          ) : null}
+                          {entry.compilerStatus === "COMPILED" && entry.compilerReport.questionQuality ? (
+                            <div className="content-question-quality">
+                              <strong>Question quality</strong>
+                              <p>{entry.compilerReport.questionQuality.principle}</p>
+                              <div className="content-runtime-proof">
+                                <span>{entry.compilerReport.questionQuality.learnerInputs} learner questions</span>
+                                <span>{entry.compilerReport.questionQuality.derivedFields} values not re-asked</span>
+                                <span>{entry.compilerReport.questionQuality.reusedInputs} answers reused downstream</span>
+                              </div>
+                              {entry.compilerReport.questionQuality.reviewItems.length ? (
+                                <>
+                                  <small>Review these before approval:</small>
+                                  <ul>
+                                    {entry.compilerReport.questionQuality.reviewItems.slice(0, 6).map((item) => <li key={item}>{item}</li>)}
+                                  </ul>
+                                  {entry.compilerReport.questionQuality.reviewItems.length > 6 ? <small>+ {entry.compilerReport.questionQuality.reviewItems.length - 6} more review items</small> : null}
+                                </>
+                              ) : (
+                                <small>No repeated wording or unusually dense investigation was detected.</small>
+                              )}
                             </div>
                           ) : null}
+
                           {entry.compilerStatus === "COMPILED" && entry.compilerReport.editorialWarnings?.length ? (
                             <div className="content-editorial-review">
                               <strong>Editorial review before approval</strong>

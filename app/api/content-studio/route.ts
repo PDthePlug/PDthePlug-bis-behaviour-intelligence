@@ -10,6 +10,7 @@ import {
   contentRuntimeActivations,
   contentRuntimeArtifacts,
   contentSourceFiles,
+  questionAnalysisRegistry,
 } from "../../../db/schema";
 import {
   CONTENT_KINDS,
@@ -29,6 +30,8 @@ import {
   compileUniversalLab,
 } from "../../../lib/content-compiler";
 import type { DeliveryEdition } from "../../../lib/learning-foundation";
+import { auditLabQuestionQuality } from "../../../lib/question-quality.mjs";
+import { questionIntelligenceRegistry } from "../../../lib/question-intelligence.mjs";
 import { adaptLabSource, adaptLearningSource } from "../../../lib/content-source-adapters";
 import {
   artifactFingerprint,
@@ -456,6 +459,8 @@ async function postHandler(request: Request) {
                 status?: "PASS" | "REVIEW" | "BLOCKED";
                 issues?: Array<{ code?: string; severity?: string; message?: string }>;
               };
+              presentationBaseline?: unknown;
+              investigations?: unknown[];
             }
           : null;
         if (preparedLab?.editorialAudit?.status === "BLOCKED") {
@@ -469,6 +474,23 @@ async function postHandler(request: Request) {
               : "This Lab does not yet meet the Habit Lab standard.",
           );
         }
+        if (preparedLab) {
+          const registryRows = questionIntelligenceRegistry(
+            preparedLab as Record<string, unknown>,
+            { labCode: item.code, labVersion: version.version, versionId },
+          );
+          await db.delete(questionAnalysisRegistry).where(eq(questionAnalysisRegistry.versionId, versionId));
+          if (registryRows.length) {
+            await db.insert(questionAnalysisRegistry).values(
+              registryRows.map((row) => ({
+                ...row,
+                createdAt: now,
+                updatedAt: now,
+              })),
+            );
+          }
+        }
+
         const report = {
           summary: item.kind === "LEARNING_MODULE"
             ? `Prepared ${compiled.length} learning edition${compiled.length === 1 ? "" : "s"} for preview.`
@@ -498,6 +520,7 @@ async function postHandler(request: Request) {
               .filter((issue) => issue.severity !== "ERROR")
               .map((issue) => issue.message)
               .filter(Boolean),
+            questionQuality: auditLabQuestionQuality(preparedLab as Record<string, unknown>),
           } : {}),
         };
         await db.update(contentLibraryVersions).set({
@@ -846,6 +869,12 @@ async function postHandler(request: Request) {
         publishedAt: now,
         updatedAt: now,
       }).where(eq(contentLibraryVersions.id, versionId));
+      if (item.kind === "LAB") {
+        await db.update(questionAnalysisRegistry).set({
+          status: "ACTIVE",
+          updatedAt: now,
+        }).where(eq(questionAnalysisRegistry.versionId, versionId));
+      }
       await audit(identity.id, "CONTENT_VERSION_ACTIVATED", "CONTENT_LIBRARY_VERSION", versionId, {
         itemId: item.id,
         kind: item.kind,

@@ -139,10 +139,11 @@ test("Content Studio exposes the prepared Lab runtime proof before publishing", 
   assert.match(api, /unboundIndicators/);
   assert.match(api, /experimentDays/);
   assert.match(api, /profileEntries/);
-  assert.match(ui, /Behaviour runtime V2/);
-  assert.match(ui, /BEIs bound/);
-  assert.match(ui, /calculated fields/);
-  assert.match(ui, /profile entries/);
+  assert.match(ui, /real-world test ready/);
+  assert.match(ui, /programme measures connected/);
+  assert.match(ui, /values calculated automatically/);
+  assert.match(ui, /profile fields connected/);
+  assert.match(ui, /Advanced details/);
 });
 
 
@@ -178,4 +179,35 @@ test("Content Studio surfaces the Habit standard and blocks editorially unfinish
   assert.match(ui, /Editorial review before approval/);
   assert.match(compiler, /applyHabitLabStandard/);
   assert.match(compiler, /bis-content-compiler-4/);
+});
+
+
+test("Content Studio audits question quality using the minimum-question evidence rule", async () => {
+  const [api, ui, audit] = await Promise.all([
+    source("app/api/content-studio/route.ts"),
+    source("app/content-studio/content-studio.tsx"),
+    source("lib/question-quality.mjs"),
+  ]);
+
+  assert.match(api, /auditLabQuestionQuality/);
+  assert.match(api, /questionQuality/);
+  assert.match(ui, /Question quality/);
+  assert.match(ui, /learner questions/);
+  assert.match(ui, /values not re-asked/);
+  assert.match(ui, /answers reused downstream/);
+  assert.match(audit, /Ask once when possible\. Reuse the answer\. Derive what can safely be derived\./);
+});
+
+
+test("question intelligence remains a candidate until the exact Lab version passes governed publishing", async () => {
+  const [api, schema, migration] = await Promise.all([
+    source("app/api/content-studio/route.ts"),
+    source("db/schema.ts"),
+    source("supabase/migrations/20261003130000_question_intelligence_registry.sql"),
+  ]);
+
+  assert.match(schema, /questionAnalysisRegistry[\s\S]*status: text\("status"\)\.notNull\(\)\.default\("CANDIDATE"\)/);
+  assert.match(migration, /status text not null default 'CANDIDATE'/);
+  assert.match(api, /if \(item\.kind === "LAB"\) \{[\s\S]*db\.update\(questionAnalysisRegistry\)[\s\S]*status: "ACTIVE"[\s\S]*versionId/);
+  assert.match(api, /Finish the preview checklist and sign off this exact version before publishing/);
 });

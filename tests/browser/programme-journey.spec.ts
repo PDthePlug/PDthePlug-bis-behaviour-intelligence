@@ -10,14 +10,33 @@ const programme: HabitProgramme = {
   ] },
 };
 
-async function learningService(page: Page, recorded = false) {
+async function learningService(page: Page, state: "due" | "recorded" | "review" | "complete" = "due") {
+  const recorded = state !== "due";
   const snapshot = { profile: { displayName: "Browser learner", deliveryEdition: "school", deliveryContext: "school", language: "en", timezone: "Africa/Johannesburg" }, releases: [{ id: "browser-release", labCode: "LDR", contentVersion: "1.0", status: "ACTIVE" }], progress: [], workbookResponses: {} };
   await page.route("**/api/learning**", route => route.fulfill({ json: snapshot }));
   await page.route("**/api/bis", route => route.fulfill({ status: 404, json: {} }));
   await page.route("**/api/runtime-content**", route => route.fulfill({ json: { payload: programme } }));
   await page.route("**/api/universal-lab**", route => route.fulfill({ json: {
-    enrolment: { currentInvestigation: 7, status: "IN_PROGRESS", phaseACompletedAt: "2026-10-02T10:00:00Z", experimentStartedAt: "2026-10-02T10:00:00Z" },
-    measurements: {}, responses: {}, programmeHandoff: { experimentStarted: true, currentDay: 2, totalDays: 7, evidenceDaysRecorded: recorded ? 2 : 1, todayEvidenceRecorded: recorded },
+    enrolment: {
+      currentInvestigation: state === "complete" ? 9 : state === "review" ? 8 : 7,
+      status: state === "complete" ? "COMPLETED" : state === "review" ? "EVIDENCE_REVIEW" : "IN_PROGRESS",
+      phaseACompletedAt: "2026-10-02T10:00:00Z",
+      experimentStartedAt: "2026-10-02T10:00:00Z",
+    },
+    measurements: {},
+    responses: {},
+    programmeHandoff: {
+      experimentStarted: true,
+      currentDay: state === "review" || state === "complete" ? 8 : 2,
+      totalDays: 7,
+      evidenceDaysRecorded: state === "review" || state === "complete" ? 7 : recorded ? 2 : 1,
+      todayEvidenceRecorded: recorded,
+      reviewReady: state === "review",
+      reviewInvestigation: 8,
+      labCompleted: state === "complete",
+      portfolioReady: state === "complete",
+      nextAction: state === "complete" ? "PORTFOLIO" : state === "review" ? "REVIEW" : recorded ? "LEARNING" : "EVIDENCE",
+    },
   } }));
 }
 
@@ -34,14 +53,14 @@ test("Today reminder offers only current evidence and carries the learning locat
 });
 
 test("Today stops asking for an evidence day already recorded", async ({ page }) => {
-  await learningService(page, true);
+  await learningService(page, "recorded");
   await page.goto("/learn?page=1");
   await expect(page.getByText("2/7 observation days recorded.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Capture today’s evidence" })).toHaveCount(0);
 });
 
 test("browser Back restores the previous learning page", async ({ page }) => {
-  await learningService(page, true);
+  await learningService(page, "recorded");
   await page.goto("/learn?section=learn&page=1");
   await expect(page.getByRole("heading", { name: "Day 3 · Leadership", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Complete & continue", exact: true }).click();
@@ -50,4 +69,25 @@ test("browser Back restores the previous learning page", async ({ page }) => {
   await page.goBack();
   await expect(page).toHaveURL(/page=1/);
   await expect(page.getByRole("heading", { name: "Day 3 · Leadership", exact: true })).toBeVisible();
+});
+
+
+test("learning turns a completed Phase B window into an Evidence Review handoff", async ({ page }) => {
+  await learningService(page, "review");
+  await page.goto("/learn?page=2");
+  const review = page.getByRole("status").filter({ hasText: "Phase B complete" });
+  await expect(review.getByRole("heading", { name: "Your real-world test is ready to review." })).toBeVisible();
+  const link = review.getByRole("link", { name: "Review my evidence" });
+  const href = await link.getAttribute("href");
+  const destination = new URL(href!, "http://127.0.0.1:3100");
+  expect(destination.pathname).toBe("/labs/ldr");
+  expect(destination.searchParams.get("step")).toBe("8");
+  await expect(page.getByRole("link", { name: "Capture today’s evidence" })).toHaveCount(0);
+});
+
+test("learning closes the loop with the learner evidence portfolio after Lab completion", async ({ page }) => {
+  await learningService(page, "complete");
+  await page.goto("/learn?page=2");
+  await expect(page.getByRole("heading", { name: "Your evidence record is ready." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "View my evidence portfolio" })).toHaveAttribute("href", "/profile#evidence-portfolio");
 });

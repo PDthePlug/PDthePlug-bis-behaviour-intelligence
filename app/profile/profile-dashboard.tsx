@@ -6,10 +6,45 @@ import { useEffect, useState } from "react";
 import {
   BookOpen,
   Building2,
+  Check,
+  FlaskConical,
   LogOut,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
+
+type EvidencePortfolioSnapshot = {
+  labs: Array<{
+    enrolmentId: string;
+    labCode: string;
+    labVersion: string;
+    title: string;
+    status: string;
+    currentInvestigation: number;
+    completedAt: string | null;
+    anchors: Array<{
+      id: string;
+      label: string;
+      status: "RECORDED" | "WITHDRAWN" | "NOT_YET";
+      evidenceCount: number;
+    }>;
+    metrics: Array<{
+      code: string;
+      label: string;
+      value: string;
+      evidenceStrength: string;
+      sourceCount: number;
+    }>;
+    summary: {
+      recordedAnchors: number;
+      totalAnchors: number;
+      activeEvidenceItems: number;
+      derivedMeasures: number;
+      sourceLinks: number;
+    };
+  }>;
+  privacy?: { note?: string };
+};
 
 type ProfileSnapshot = {
   identity?: {
@@ -43,18 +78,30 @@ export function ProfileDashboard({
   initialIdentity: { email: string; displayName: string };
 }) {
   const [snapshot, setSnapshot] = useState<ProfileSnapshot | null>(null);
+  const [portfolio, setPortfolio] = useState<EvidencePortfolioSnapshot | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
     void (async () => {
       try {
-        const response = await fetch("/api/bis", {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        if (!response.ok) return;
-        const data = (await response.json()) as ProfileSnapshot;
-        if (!controller.signal.aborted) setSnapshot(data);
+        const [profileResponse, portfolioResponse] = await Promise.all([
+          fetch("/api/profile", {
+            cache: "no-store",
+            signal: controller.signal,
+          }),
+          fetch("/api/evidence-portfolio", {
+            cache: "no-store",
+            signal: controller.signal,
+          }),
+        ]);
+        if (profileResponse.ok) {
+          const data = (await profileResponse.json()) as ProfileSnapshot;
+          if (!controller.signal.aborted) setSnapshot(data);
+        }
+        if (portfolioResponse.ok) {
+          const data = (await portfolioResponse.json()) as EvidencePortfolioSnapshot;
+          if (!controller.signal.aborted) setPortfolio(data);
+        }
       } catch {
         // Identity from the authenticated server route is enough to keep Profile useful.
       }
@@ -111,6 +158,72 @@ export function ProfileDashboard({
             <div><dt>Mode</dt><dd>{learningMode}</dd></div>
           </dl>
           <Link className="profile-secondary" href="/habit">Open my learning</Link>
+        </article>
+
+        <article id="evidence-portfolio" className="profile-card profile-evidence-card">
+          <div className="profile-card-icon"><FlaskConical aria-hidden="true" /></div>
+          <div>
+            <p className="profile-label">Evidence</p>
+            <h2>Your evidence portfolio</h2>
+            <p>
+              This connects what you recorded in each Lab to the measures BIS can calculate. Your private answer wording stays inside the Lab.
+            </p>
+          </div>
+
+          {portfolio?.labs.length ? (
+            <div className="profile-evidence-list">
+              {portfolio.labs.map((lab) => (
+                <section className="profile-evidence-lab" key={lab.enrolmentId}>
+                  <div className="profile-evidence-head">
+                    <div>
+                      <strong>{lab.title}</strong>
+                      <span>{lab.status === "COMPLETED" ? "Complete evidence record" : `Investigation ${lab.currentInvestigation} of 9`}</span>
+                    </div>
+                    <span className={lab.status === "COMPLETED" ? "complete" : "active"}>
+                      {lab.status === "COMPLETED" ? <><Check aria-hidden="true" /> Complete</> : "In progress"}
+                    </span>
+                  </div>
+
+                  <div className="profile-anchor-grid" aria-label={`${lab.title} evidence anchors`}>
+                    {lab.anchors.map((anchor) => (
+                      <div className={`profile-anchor ${anchor.status.toLowerCase()}`} key={anchor.id}>
+                        <span>{anchor.label}</span>
+                        <strong>{anchor.status === "RECORDED" ? `${anchor.evidenceCount} recorded` : anchor.status === "WITHDRAWN" ? "Passed" : "Not yet"}</strong>
+                      </div>
+                    ))}
+                  </div>
+
+                  {lab.metrics.length ? (
+                    <dl className="profile-metric-list">
+                      {lab.metrics.slice(0, 6).map((metric) => (
+                        <div key={metric.code}>
+                          <dt>{metric.label}</dt>
+                          <dd>
+                            <strong>{metric.value}</strong>
+                            <span>{metric.sourceCount ? `${metric.sourceCount} evidence source${metric.sourceCount === 1 ? "" : "s"}` : "Derived from your Lab record"}</span>
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : (
+                    <p className="profile-evidence-empty">
+                      Your evidence anchors will appear here as you move through the Lab. Calculated measures appear only when the required evidence exists.
+                    </p>
+                  )}
+
+                  <div className="profile-evidence-summary">
+                    <span>{lab.summary.recordedAnchors}/{lab.summary.totalAnchors} evidence anchors</span>
+                    <span>{lab.summary.activeEvidenceItems} evidence items</span>
+                    <span>{lab.summary.derivedMeasures} calculated measures</span>
+                  </div>
+                </section>
+              ))}
+            </div>
+          ) : (
+            <p className="profile-evidence-empty">
+              No Lab evidence has been recorded yet. Your portfolio builds automatically from the evidence you choose to record.
+            </p>
+          )}
         </article>
 
         {staff ? (

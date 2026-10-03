@@ -257,12 +257,33 @@ async function snapshot(identity: Identity) {
         todayInZone(new Date(), notificationPreference.timezone ?? "Africa/Johannesburg"),
       )
     : null;
+  const reviewReady = Boolean(
+    experiment
+    && (
+      programmeExperimentTiming?.status === "WINDOW_COMPLETE"
+      || experiment.status !== "ACTIVE"
+    )
+  );
+  const labCompleted = enrolment?.status === "COMPLETED";
   const programmeHandoff = {
     experimentStarted: Boolean(experiment),
-    currentDay: programmeExperimentTiming?.calendarDay ?? 0,
+    currentDay: programmeExperimentTiming?.calendarDay ?? programmeExperimentTiming?.elapsed ?? 0,
     totalDays: programmeExperimentTiming?.totalDays ?? 0,
     evidenceDaysRecorded: new Set(events.map((event) => event.dayNumber)).size,
     todayEvidenceRecorded: programmeExperimentTiming?.todayRecorded ?? false,
+    reviewReady,
+    reviewInvestigation: 8,
+    labCompleted,
+    portfolioReady: labCompleted,
+    nextAction: labCompleted
+      ? "PORTFOLIO"
+      : reviewReady
+        ? "REVIEW"
+        : programmeExperimentTiming?.todayRecorded
+          ? "LEARNING"
+          : experiment
+            ? "EVIDENCE"
+            : "LAB",
   };
 
   const memories = await db
