@@ -19,6 +19,20 @@ import { CONTENT_COMPILER_VERSION } from "../../../../lib/content-compiler";
 import { artifactFingerprint, requiredPreviewKeys } from "../../../../lib/content-uat";
 import { requestSupabaseClient } from "../../../../lib/supabase/server";
 
+function normalizeVersionId(value: string | null | undefined) {
+  let current = String(value ?? "").trim();
+  for (let attempt = 0; attempt < 2 && current.includes("%"); attempt += 1) {
+    try {
+      const decoded = decodeURIComponent(current);
+      if (decoded === current) break;
+      current = decoded;
+    } catch {
+      break;
+    }
+  }
+  return current;
+}
+
 function parseJson(value: string | null | undefined, fallback: unknown) {
   if (!value) return fallback;
   try {
@@ -40,7 +54,7 @@ async function handler(request: Request) {
   try {
     const identity = await requireSuperUser();
     const url = new URL(request.url);
-    const versionId = String(url.searchParams.get("versionId") ?? "");
+    const versionId = normalizeVersionId(url.searchParams.get("versionId"));
     const artifactKey = String(url.searchParams.get("artifact") ?? "");
     if (!versionId || !artifactKey) {
       return Response.json({ error: "Choose a compiled version and preview target." }, { status: 400 });
@@ -48,8 +62,8 @@ async function handler(request: Request) {
 
     const db = getDb();
     const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-    if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED"].includes(version.status)) {
-      return Response.json({ error: "Only compiled draft versions can enter Activation UAT." }, { status: 409 });
+    if (!version || version.compilerStatus !== "COMPILED" || !["VALIDATED", "APPROVED", "PUBLISHED"].includes(version.status)) {
+      return Response.json({ error: "This preview is not ready yet. Prepare the content again and reopen the preview." }, { status: 409 });
     }
     if (version.compilerVersion !== CONTENT_COMPILER_VERSION) {
       return Response.json({
