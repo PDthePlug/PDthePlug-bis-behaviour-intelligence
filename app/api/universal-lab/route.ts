@@ -311,7 +311,7 @@ async function snapshot(userId: string, code: string) {
     row.code,
     { ...row, value: decode(row.value) },
   ]));
-  const programmeHandoff = experimentDays
+  const evidenceProgress = experimentDays
     ? universalExperimentEvidenceProgress(runtime.definition, latest, availableDay)
     : {
         experimentStarted: false,
@@ -320,6 +320,27 @@ async function snapshot(userId: string, code: string) {
         evidenceDaysRecorded: 0,
         todayEvidenceRecorded: false,
       };
+  const reviewInvestigation = runtime.definition.runtimeProfile === "UNIVERSAL_V2"
+    ? runtime.definition.experiment?.reviewInvestigation ?? 8
+    : 8;
+  const reviewReady = Boolean(experimentDays && availableDay >= experimentDays);
+  const labCompleted = enrolment?.status === "COMPLETED";
+  const programmeHandoff = {
+    ...evidenceProgress,
+    reviewReady,
+    reviewInvestigation,
+    labCompleted,
+    portfolioReady: labCompleted,
+    nextAction: labCompleted
+      ? "PORTFOLIO"
+      : reviewReady
+        ? "REVIEW"
+        : evidenceProgress.todayEvidenceRecorded
+          ? "LEARNING"
+          : evidenceProgress.currentDay > 0
+            ? "EVIDENCE"
+            : "LAB",
+  };
 
   return {
     definition: runtime.definition,
