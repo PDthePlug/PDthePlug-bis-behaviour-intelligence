@@ -102,7 +102,13 @@ function UniversalPrompt({
 
   const titleId = `prompt-title-${prompt.id}`;
   const helpId = `prompt-help-${prompt.id}`;
-  const help = prompt.prompt !== prompt.label ? prompt.prompt : null;
+  const authoredHelp = prompt.prompt !== prompt.label ? prompt.prompt : null;
+  const interactionHelp = ratingScale
+    ? "Choose the number that best matches your experience right now."
+    : prompt.type === "TEXT" && prompt.label.length < 110
+      ? "Use your own words. A short, specific answer gives you stronger evidence to compare later."
+      : null;
+  const help = authoredHelp ?? interactionHelp;
 
   if (compactField) {
     return (
@@ -316,6 +322,7 @@ function UniversalPromptCollection({
   return (
     <section className="universal-prompt-collection">
       <h2>{heading}</h2>
+      <p className="universal-collection-guidance">Use your own words. Keep each answer specific enough that you can recognise it when you review your evidence later.</p>
       <div className="universal-collection-fields">
         {prompts.map((prompt, index) => {
           const isPassed = passed.has(prompt.id);
