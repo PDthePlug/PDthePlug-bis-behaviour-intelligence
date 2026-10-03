@@ -198,7 +198,9 @@ test("Universal Lab imports rating language as selectable structured scales and 
   assert.match(adapter, /enumeratedTen/);
   assert.match(adapter, /scaleLanguage/);
   assert.match(runtime, /Choose the number that best matches your experience right now/);
-  assert.match(runtime, /A short, specific answer gives you stronger evidence to compare later/);
+  assert.match(runtime, /investigationEvidenceGuidance/);
+  assert.match(runtime, /Use a recent, specific example so you can see the pattern in real life/);
+  assert.match(runtime, /Compare what you expected with the evidence you actually collected/);
   assert.match(runtime, /universal-collection-guidance/);
   assert.match(css, /\.universal-collection-guidance/);
   assert.match(runtime, /universal-rating-options/);
