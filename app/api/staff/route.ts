@@ -784,6 +784,7 @@ async function postHandler(request: Request) {
         "ADAPTATION",
         "EVIDENCE_STRENGTH",
         "LEARNING_JOURNEY",
+        "QUESTION_PATTERN",
         "DELIVERY_CONDITION",
         "OTHER",
       ];
