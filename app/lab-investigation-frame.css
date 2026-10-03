@@ -2038,6 +2038,12 @@
   font:700 clamp(22px,3vw,29px)/1.18 var(--font-sans,system-ui,sans-serif);
   letter-spacing:-.02em;
 }
+.universal-collection-guidance{
+  max-width:650px;
+  margin:-8px 0 18px;
+  color:#6f7d77;
+  font:500 13px/1.55 var(--font-sans,system-ui,sans-serif);
+}
 .universal-collection-fields{display:grid;gap:14px}
 .universal-collection-row{
   display:grid;
