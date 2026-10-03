@@ -150,3 +150,23 @@ test("Decision Lab records Full versus Minimum pauses without rewriting older ev
   assert.match(route, /pauseTypeCoverageComplete \? "VALUE" : "NA"/);
   assert.match(route, /extraOptions \/ fullPauses/);
 });
+
+
+test("legacy Habit Decision and Money entry routes hand off to Universal Lab after governed dynamic activation", async () => {
+  const [routing, decision, money, habit, experiment] = await Promise.all([
+    readFile(new URL("lib/lab-runtime-routing.ts", root), "utf8"),
+    readFile(new URL("app/decision/page.tsx", root), "utf8"),
+    readFile(new URL("app/money/page.tsx", root), "utf8"),
+    readFile(new URL("app/habit-lab/page.tsx", root), "utf8"),
+    readFile(new URL("app/habit-lab/experiment/page.tsx", root), "utf8"),
+  ]);
+
+  assert.match(routing, /runtime_mode/);
+  assert.match(routing, /"DYNAMIC"/);
+  assert.match(routing, /runtime_status/);
+  assert.match(routing, /"LIVE"/);
+  assert.match(decision, /liveUniversalLabHref\("DEC"/);
+  assert.match(money, /liveUniversalLabHref\("MON"/);
+  assert.match(habit, /liveUniversalLabHref\("HAB"/);
+  assert.match(experiment, /liveUniversalLabHref\("HAB", \{ returnTo, step: 7 \}\)/);
+});
