@@ -10,7 +10,7 @@ export type QuestionIntelligenceRegistryRow = {
   answerModel: string;
   sensitivity: string;
   aggregatePolicy: "EXCLUDE" | "STRUCTURED_ONLY";
-  status: "ACTIVE";
+  status: "CANDIDATE";
 };
 
 export function questionIntelligenceRegistry(
