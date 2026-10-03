@@ -236,7 +236,7 @@ export const questionAnalysisRegistry = sqliteTable(
     answerModel: text("answer_model").notNull(),
     sensitivity: text("sensitivity").notNull().default("P2"),
     aggregatePolicy: text("aggregate_policy").notNull().default("EXCLUDE"),
-    status: text("status").notNull().default("ACTIVE"),
+    status: text("status").notNull().default("CANDIDATE"),
     createdAt: timestamp(),
     updatedAt: timestamp(),
   },
