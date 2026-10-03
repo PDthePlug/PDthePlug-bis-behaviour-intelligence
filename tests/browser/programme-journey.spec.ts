@@ -88,6 +88,6 @@ test("learning turns a completed Phase B window into an Evidence Review handoff"
 test("learning closes the loop with the learner evidence portfolio after Lab completion", async ({ page }) => {
   await learningService(page, "complete");
   await page.goto("/learn?page=2");
-  await expect(page.getByRole("heading", { name: "Your evidence trail is ready." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your evidence record is ready." })).toBeVisible();
   await expect(page.getByRole("link", { name: "View my evidence portfolio" })).toHaveAttribute("href", "/profile#evidence-portfolio");
 });
