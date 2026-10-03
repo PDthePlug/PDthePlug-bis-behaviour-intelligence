@@ -414,3 +414,18 @@ test("programme PDF carries governed question intelligence without private learn
   assert.match(pdf, /drawQuestionPatterns\(canvas, outcome\)/);
   assert.doesNotMatch(pdf, /question\.response|question\.rawValue|question\.freeText/);
 });
+
+
+test("programme owners can turn a privacy-safe question pattern into a programme decision", async () => {
+  const [route, view] = await Promise.all([
+    source("app/api/staff/route.ts"),
+    source("app/programme-outcomes-view.tsx"),
+  ]);
+
+  assert.match(route, /"QUESTION_PATTERN"/);
+  assert.match(view, /setDecisionSignal\("QUESTION_PATTERN"\)/);
+  assert.match(view, /prefillDecisionFromQuestionPattern/);
+  assert.match(view, /Structured question pattern/);
+  assert.match(view, /question\.summary\.categories/);
+  assert.doesNotMatch(view, /question\.rawResponse|question\.privateText|question\.learnerText/);
+});
