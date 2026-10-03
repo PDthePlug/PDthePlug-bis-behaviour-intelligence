@@ -103,15 +103,21 @@ test("the complete 34-title BIS catalogue is available for filling from Content 
   }
 });
 
-test("Content Studio presents founder-facing language and supports pasted text", async () => {
-  const [ui, contract] = await Promise.all([
+test("Content Studio presents a shelf-first founder flow and supports pasted text", async () => {
+  const [ui, contract, api] = await Promise.all([
     source("app/content-studio/content-studio.tsx"),
     source("lib/content-studio.ts"),
+    source("app/api/content-studio/route.ts"),
   ]);
   assert.match(ui, /Choose a BIS title and add the content that is ready/);
-  assert.match(ui, /Prepare preview/);
-  assert.match(ui, /Approve for publishing/);
+  assert.match(ui, /BIS keeps the version number for you/);
+  assert.match(ui, /Start adding content/);
+  assert.doesNotMatch(ui, /<label>Version<Input/);
   assert.match(ui, /Paste text/);
+  assert.match(ui, /action: "compileVersion"/);
+  assert.match(ui, /Ready to publish/);
+  assert.match(contract, /nextContentVersion/);
+  assert.match(api, /requestedVersion \|\| nextContentVersion/);
   assert.match(contract, /text\/plain/);
 });
 
@@ -210,4 +216,23 @@ test("question intelligence remains a candidate until the exact Lab version pass
   assert.match(migration, /status text not null default 'CANDIDATE'/);
   assert.match(api, /if \(item\.kind === "LAB"\) \{[\s\S]*db\.update\(questionAnalysisRegistry\)[\s\S]*status: "ACTIVE"[\s\S]*versionId/);
   assert.match(api, /Finish the preview checklist and sign off this exact version before publishing/);
+});
+
+
+test("Content Studio preview tolerates encoded version IDs and keeps the final publish gate explicit", async () => {
+  const [preview, page, runtime, ui] = await Promise.all([
+    source("app/api/content-studio/preview/route.ts"),
+    source("app/content-studio/preview/[versionId]/page.tsx"),
+    source("app/content-studio/preview/[versionId]/runtime/page.tsx"),
+    source("app/content-studio/content-studio.tsx"),
+  ]);
+
+  assert.match(preview, /normalizeVersionId/);
+  assert.match(preview, /decodeURIComponent/);
+  assert.match(page, /decodeURIComponent\(rawVersionId\)/);
+  assert.match(runtime, /decodeURIComponent\(rawVersionId\)/);
+  assert.match(ui, /action: "signOffUat"/);
+  assert.match(ui, /action: "approveVersion"/);
+  assert.match(ui, /action: "activateVersion"/);
+  assert.match(ui, /> Publish</);
 });
