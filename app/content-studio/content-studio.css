@@ -556,3 +556,39 @@
   .volume-audit-actions{display:grid;grid-template-columns:1fr}
   .volume-audit-actions [data-slot="button"]{width:100%}
 }
+
+
+.content-technical-details{
+  margin-top:10px;
+  border-top:1px solid color-mix(in srgb,var(--foreground) 10%,transparent);
+  padding-top:9px;
+}
+.content-technical-details summary{
+  cursor:pointer;
+  color:var(--muted-foreground);
+  font-size:10px;
+  font-weight:800;
+}
+.content-question-quality{
+  display:grid;
+  gap:8px;
+  margin-top:12px;
+  padding:14px 16px;
+  border:1px solid #c8d8d2;
+  border-radius:14px;
+  background:#f5f8f6;
+}
+.content-question-quality>strong{font-size:13px}
+.content-question-quality>p,
+.content-question-quality>small,
+.content-question-quality li{
+  margin:0;
+  color:var(--muted-foreground);
+  font-size:11px;
+  line-height:1.55;
+}
+.content-question-quality ul{
+  margin:2px 0 0;
+  padding-left:18px;
+}
+.content-question-quality li+li{margin-top:5px}
