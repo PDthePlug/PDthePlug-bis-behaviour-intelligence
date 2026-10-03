@@ -765,6 +765,21 @@ export function ProgrammeOutcomesView({
     document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function prefillDecisionFromQuestionPattern(
+    question: NonNullable<SponsorOutcome["questionPatterns"]>["questions"][number],
+  ) {
+    const evidence = question.summary.type === "NUMERIC"
+      ? `Group average ${question.summary.average} from ${question.respondents} responses (${question.coverageRate}% coverage).`
+      : `${question.summary.categories
+          .slice(0, 5)
+          .map((category) => `${category.value}: ${category.participants} (${category.shareOfRespondents}%)`)
+          .join(" · ")} · ${question.respondents} responses (${question.coverageRate}% coverage).`;
+    setDecisionSignal("QUESTION_PATTERN");
+    setDecisionTitle(question.label);
+    setDecisionEvidence(evidence);
+    document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function saveDecision() {
     const saved = await act({
       action: "createProgrammeDecision",
@@ -1012,6 +1027,15 @@ export function ProgrammeOutcomesView({
                         ))}
                       </div>
                     )}
+                    {decisionRegister?.canManage ? (
+                      <button
+                        type="button"
+                        className="insight-to-decision"
+                        onClick={() => prefillDecisionFromQuestionPattern(question)}
+                      >
+                        Use in decision
+                      </button>
+                    ) : null}
                   </article>
                 ))}
               </div>
@@ -1221,6 +1245,7 @@ export function ProgrammeOutcomesView({
                         <option value="ADAPTATION">Adaptation</option>
                         <option value="EVIDENCE_STRENGTH">How much information we have</option>
                         <option value="LEARNING_JOURNEY">Learning journey</option>
+                        <option value="QUESTION_PATTERN">Structured question pattern</option>
                         <option value="DELIVERY_CONDITION">Programme conditions</option>
                         <option value="OTHER">Other group result</option>
                       </select>
