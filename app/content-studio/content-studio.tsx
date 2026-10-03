@@ -38,6 +38,7 @@ import { createClient } from "@/lib/supabase/client";
 import {
   CONTENT_STUDIO_BUCKET,
   sourceFormatFor,
+  nextContentVersion,
   type ContentKind,
 } from "@/lib/content-studio";
 import {
@@ -253,7 +254,6 @@ export function ContentStudio() {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [linkedLabItemId, setLinkedLabItemId] = useState("");
-  const [version, setVersion] = useState("");
   const [releaseNotes, setReleaseNotes] = useState("");
   const [pasteOpen, setPasteOpen] = useState("");
   const [pasteValues, setPasteValues] = useState<Record<string, string>>({});
@@ -401,16 +401,15 @@ export function ContentStudio() {
 
   async function createVersion() {
     if (!selected) return;
+    const suggested = nextContentVersion(selected.versions.map((entry) => entry.version));
     const result = await act({
       action: "createVersion",
       itemId: selected.id,
-      version,
       schemaVersion: selected.kind === "LAB" ? "universal-lab-v1" : "2.0",
       sourceFormat: "BIS_PACKAGE_JSON",
       releaseNotes,
-    }, "Version created. Add whichever content is ready.");
+    }, `Working update v${suggested} is ready. Add the content you have.`);
     if (!result) return;
-    setVersion("");
     setReleaseNotes("");
   }
 
@@ -465,7 +464,13 @@ export function ContentStudio() {
         await client.storage.from(CONTENT_STUDIO_BUCKET).remove([storagePath]);
         return;
       }
-      setMessage(sourceKey === "lab" ? "Lab document added." : `${sourceKey.replace("_", " ")} edition added.`);
+      const prepared = await act(
+        { action: "compileVersion", versionId: contentVersion.id },
+        sourceKey === "lab"
+          ? "Lab added and the learner preview is ready to check."
+          : `${sourceKey.replace("_", " ")} edition added and the learner preview is ready to check.`,
+      );
+      if (!prepared) return;
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "The file could not be uploaded.");
     } finally {
@@ -534,9 +539,13 @@ export function ContentStudio() {
     if (!saved) return;
     const signed = await act(
       { action: "signOffUat", versionId: entry.id },
-      "Final check complete. This version can now be approved for publishing.",
     );
-    if (signed) {
+    if (!signed) return;
+    const approved = await act(
+      { action: "approveVersion", versionId: entry.id },
+      "Ready to publish.",
+    );
+    if (approved) {
       setUatDrafts((drafts) => {
         const next = { ...drafts };
         delete next[entry.id];
@@ -764,18 +773,26 @@ export function ContentStudio() {
               <section className="content-studio-card version-create">
                 <div className="content-studio-section-title">
                   <div>
-                    <p className="eyebrow">New version</p>
-                    <h3>Start an update</h3>
-                    <p>{selected.kind === "LEARNING_MODULE"
-                      ? "Create the version once, then add whichever editions are ready. The other editions can be added later."
-                      : "Create the version, then upload the Lab as a Word document, PDF, pasted text or BIS package."}</p>
+                    <p className="eyebrow">Add content</p>
+                    <h3>{selected.versions.some((entry) => entry.status === "DRAFT") ? "Continue the working update" : "Start the next update"}</h3>
+                    <p>
+                      BIS keeps the version number for you. {selected.kind === "LEARNING_MODULE"
+                        ? "Add whichever learner edition is ready; the others can follow later."
+                        : "Add the Lab as a Word document, PDF, pasted text or BIS package."}
+                    </p>
                   </div>
+                  <span className="content-auto-version">Next: v{nextContentVersion(selected.versions.map((entry) => entry.version))}</span>
                 </div>
                 <div className="version-create-grid version-create-grid-simple">
-                  <label>Version<Input value={version} onChange={(event) => setVersion(event.target.value)} placeholder="1.0" /></label>
                   <label className="wide">What changed? <span>(optional)</span><Textarea value={releaseNotes} onChange={(event) => setReleaseNotes(event.target.value)} placeholder="A short note for your own records." /></label>
                 </div>
-                <Button disabled={saving || !version} onClick={() => void createVersion()}>{saving ? <LoaderCircle className="spin" /> : <Plus />} Create version</Button>
+                <Button
+                  disabled={saving || selected.versions.some((entry) => entry.status === "DRAFT")}
+                  onClick={() => void createVersion()}
+                >
+                  {saving ? <LoaderCircle className="spin" /> : <Plus />}
+                  {selected.versions.some((entry) => entry.status === "DRAFT") ? "Working update already open" : "Start adding content"}
+                </Button>
               </section>
 
               <section className="content-versions">
@@ -1052,12 +1069,12 @@ export function ContentStudio() {
                               ? "Your uploaded edition is ready to preview."
                               : "Your Lab is ready to preview.",
                           )}>
-                            <PackageCheck /> {staleCompilation ? "Re-prepare preview" : "Prepare preview"}
+                            <PackageCheck /> {staleCompilation ? "Prepare again" : "Prepare preview again"}
                           </Button>
                         ) : null}
                         {entry.compilerCurrent && entry.status === "VALIDATED" && finalCheckPassed ? (
-                          <Button disabled={busy} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Approved. You can publish when ready.")}>
-                            <ShieldCheck /> Approve for publishing
+                          <Button disabled={busy} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Ready to publish.")}>
+                            <ShieldCheck /> Finish readying
                           </Button>
                         ) : null}
                         {entry.compilerCurrent && entry.status === "VALIDATED" && !finalCheckPassed ? <span className="activation-note"><Eye /> Preview and complete the final check first.</span> : null}
