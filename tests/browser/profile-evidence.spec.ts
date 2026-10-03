@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 async function profileService(page: Page) {
-  await page.route("**/api/bis", route => route.fulfill({
+  await page.route("**/api/profile", route => route.fulfill({
     json: {
       identity: { email: "browser.learner@example.test", displayName: "Browser Learner" },
       roles: [],
