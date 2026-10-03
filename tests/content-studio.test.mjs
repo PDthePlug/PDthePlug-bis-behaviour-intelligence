@@ -167,7 +167,7 @@ test("stale compiler artifacts cannot be previewed approved or published", async
   assert.match(preview, /version\.compilerVersion !== CONTENT_COMPILER_VERSION/);
   assert.match(preview, /Prepare the version again before reviewing it/);
   assert.match(ui, /Re-prepare required/);
-  assert.match(ui, /Re-prepare preview/);
+  assert.match(ui, /Prepare again/);
   assert.match(ui, /Your uploaded source stays in place/);
 });
 
@@ -234,5 +234,5 @@ test("Content Studio preview tolerates encoded version IDs and keeps the final p
   assert.match(ui, /action: "signOffUat"/);
   assert.match(ui, /action: "approveVersion"/);
   assert.match(ui, /action: "activateVersion"/);
-  assert.match(ui, /> Publish</);
+  assert.match(ui, /<PackageCheck \/> Publish/);
 });
