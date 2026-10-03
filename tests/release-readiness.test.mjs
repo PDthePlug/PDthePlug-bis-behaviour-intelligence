@@ -64,7 +64,9 @@ test("release metadata resolves to the canonical BIS origin", () => {
   assert.doesNotMatch(rootLayout, /chatgpt\.site/);
 });
 
-test("the production build gate always runs the acceptance suite before build", () => {
-  assert.equal(packageJson.scripts["vercel-build"], "npm run lint && npm run test:acceptance && npm run audit:source && next build");
-  assert.equal(packageJson.scripts["test:acceptance"], "node --test tests/*.test.mjs");
+test("the release contract keeps browser verification in CI while Vercel runs the deterministic build gate", () => {
+  assert.equal(packageJson.scripts["vercel-build"], "npm run verify:build");
+  assert.equal(packageJson.scripts["test:acceptance"], "npm run runtime:check && node --test tests/*.test.mjs");
+  assert.equal(packageJson.scripts.verify, "npm run verify:build && npm run test:browser");
+  assert.match(packageJson.scripts["verify:build"], /npm run lint && npm run typecheck && npm run test:acceptance && npm run audit:source && npm run build/);
 });

@@ -18,6 +18,9 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://bis-ci.invalid
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_not_a_credential
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,26 +34,11 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Acceptance
-        run: npm run test:acceptance
-
-      - name: Canonical manuscript interactions
-        run: npm run audit:source
-
-      - name: TypeScript
-        run: npx tsc --noEmit
-
-      - name: Build
-        run: npm run build
-
       - name: Install browser
         run: npx playwright install --with-deps chromium
 
-      - name: Browser acceptance
-        run: npm run test:browser
+      - name: Release verification contract
+        run: npm run verify
 
       - name: Browser evidence
         if: always()

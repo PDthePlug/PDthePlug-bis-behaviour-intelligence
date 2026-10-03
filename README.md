@@ -98,6 +98,11 @@ When there is no active system administrator, the first authenticated learner ac
 
 Requirements: Node.js 22.13 or newer and a Supabase project.
 
+Environment setup and the production-project safety guard are documented in
+[`docs/ENGINEERING_ENVIRONMENTS.md`](docs/ENGINEERING_ENVIRONMENTS.md). The
+application has no implicit backend fallback: every environment must provide
+its own Supabase URL and publishable key.
+
 Copy `.env.example` to `.env.local` and set the project URL and publishable key. No service-role key or database password belongs in the browser environment.
 
 ```bash
