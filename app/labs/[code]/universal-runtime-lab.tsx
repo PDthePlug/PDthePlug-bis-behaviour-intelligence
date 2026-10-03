@@ -98,18 +98,24 @@ function UniversalPrompt({
       `${prompt.label} ${prompt.prompt}`,
     );
 
+  const titleId = `prompt-title-${prompt.id}`;
+  const helpId = `prompt-help-${prompt.id}`;
+  const help = prompt.prompt !== prompt.label ? prompt.prompt : null;
+
   if (compactField) {
     return (
-      <section className={`universal-compact-prompt ${passed ? "passed" : ""}`}>
+      <section data-prompt-id={prompt.id} className={`universal-compact-prompt ${passed ? "passed" : ""}`}>
         <label htmlFor={`compact-${prompt.id}`}>{prompt.label}</label>
         <Input
           id={`compact-${prompt.id}`}
+          aria-describedby={help ? helpId : undefined}
           type={prompt.type === "DATE" ? "date" : "text"}
           disabled={passed}
           value={value}
           placeholder={prompt.type === "DATE" ? undefined : prompt.placeholder ?? prompt.label}
           onChange={(event) => onValue(event.target.value)}
         />
+        {help ? <p id={helpId} className="universal-compact-help">{help}</p> : null}
         <label className="pass-control">
           <Checkbox checked={passed} onCheckedChange={(checked) => onPass(checked === true)} />
           <span>Prefer not to answer</span>
@@ -119,11 +125,11 @@ function UniversalPrompt({
   }
 
   return (
-    <section className={`prompt-section universal-prompt ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
+    <section data-prompt-id={prompt.id} className={`prompt-section universal-prompt ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
       <div className="prompt-body">
         {group ? <p className="prompt-kicker">{group}</p> : null}
-        <h2 className={prompt.label.length > 90 ? "long-prompt-title" : undefined}>{prompt.label}</h2>
-        {prompt.prompt !== prompt.label ? <p>{prompt.prompt}</p> : null}
+        <h2 id={titleId} className={prompt.label.length > 90 ? "long-prompt-title" : undefined}>{prompt.label}</h2>
+        {help ? <p id={helpId}>{help}</p> : null}
         {prompt.readOnly ? (
           <div className="universal-computed-value" aria-live="polite">
             <strong>{value === "" ? "Calculated when the required evidence is available" : value}</strong>
@@ -158,6 +164,9 @@ function UniversalPrompt({
                 </div>
               ) : prompt.type === "INTEGER" ? (
                 <Input
+                  aria-labelledby={titleId}
+                  aria-describedby={help ? helpId : undefined}
+                  step={1}
                   type="number"
                   min={prompt.min}
                   max={prompt.max}
@@ -166,7 +175,7 @@ function UniversalPrompt({
                   onChange={(event) => onValue(event.target.value)}
                 />
               ) : prompt.type === "DATE" ? (
-                <Input type="date" disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} />
+                <Input aria-labelledby={titleId} aria-describedby={help ? helpId : undefined} type="date" disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} />
               ) : booleanChoices ? (
                 <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
                   {["Yes", "No"].map((option) => (
@@ -174,6 +183,7 @@ function UniversalPrompt({
                       type="button"
                       key={option}
                       className={value === option ? "selected" : ""}
+                      aria-pressed={value === option}
                       disabled={passed}
                       onClick={() => onValue(option)}
                     >
@@ -189,6 +199,7 @@ function UniversalPrompt({
                       type="button"
                       key={option}
                       className={value === option ? "selected" : ""}
+                      aria-pressed={value === option}
                       disabled={passed}
                       onClick={() => onValue(option)}
                     >
@@ -215,7 +226,7 @@ function UniversalPrompt({
                   ))}
                 </div>
               ) : (
-                <Textarea rows={3} disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
+                <Textarea aria-labelledby={titleId} aria-describedby={help ? helpId : undefined} rows={3} disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
               )}
             </div>
           </>
@@ -263,7 +274,7 @@ function UniversalEvidenceEpisode({
       {prompts.map((prompt) => {
         const isPassed = passed.has(prompt.id);
         return (
-          <div className={`universal-evidence-episode-field ${isPassed ? "passed" : ""}`} key={prompt.id}>
+          <div data-prompt-id={prompt.id} className={`universal-evidence-episode-field ${isPassed ? "passed" : ""}`} key={prompt.id}>
             <label htmlFor={`episode-${prompt.id}`}>{prompt.label}</label>
             <Textarea
               id={`episode-${prompt.id}`}
@@ -308,13 +319,14 @@ function UniversalPromptCollection({
           const isPassed = passed.has(prompt.id);
           const related = relatedLabels?.[index]?.trim();
           return (
-            <div className={`universal-collection-row ${isPassed ? "passed" : ""}`} key={prompt.id}>
+            <div data-prompt-id={prompt.id} data-contextual={Boolean(related)} className={`universal-collection-row ${isPassed ? "passed" : ""}`} key={prompt.id}>
               <label htmlFor={`collection-${prompt.id}`}>
                 <strong>{index + 1}.</strong>
                 {related ? <span>{related}</span> : null}
               </label>
               <Input
                 id={`collection-${prompt.id}`}
+                aria-label={`${heading} — ${related || `Response ${index + 1}`}`}
                 disabled={isPassed}
                 value={values[prompt.id] ?? ""}
                 onChange={(event) => onValue(prompt.id, event.target.value)}
@@ -364,6 +376,7 @@ function UniversalInlineResponse({
           return (
             <Input
               key={prompt.id}
+              data-prompt-id={prompt.id}
               type={inputType}
               min={prompt.min}
               max={prompt.max}
@@ -445,6 +458,7 @@ function UniversalEvidenceTable({
                           type="button"
                           className={selected ? "selected" : ""}
                           role="radio"
+                          data-prompt-id={prompt.id}
                           aria-checked={selected}
                           aria-label={`${prompt.prompt}: ${cell.value}`}
                           onClick={() => onValue(prompt.id, cell.value)}
@@ -463,7 +477,7 @@ function UniversalEvidenceTable({
                       ? (prompt.options ?? [])
                       : [];
                   return (
-                    <td key={columnIndex} data-label={header} className={`universal-table-response ${isPassed ? "passed" : ""}`}>
+                    <td data-prompt-id={prompt.id} key={columnIndex} data-label={header} className={`universal-table-response ${isPassed ? "passed" : ""}`}>
                       <label className="universal-table-field">
                         <span>{header}</span>
                         {isPassed ? (
@@ -749,12 +763,13 @@ function UniversalInvestigationForm({
     }
     setAttemptedSubmit(true);
     requestAnimationFrame(() => {
-      document.querySelector<HTMLElement>(
-        ".universal-prompt:not(.passed), .universal-prompt-collection, .universal-inline-response",
-      )?.scrollIntoView({
-        block: "center",
-        behavior: "smooth",
-      });
+      const firstMissing = missingRequiredPrompts[0];
+      if (!firstMissing) return;
+      const field = document.querySelector<HTMLElement>(`[data-prompt-id="${CSS.escape(firstMissing.id)}"]`);
+      field?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      const control = field?.matches("input, textarea, button, [role='combobox']")
+        ? field : field?.querySelector<HTMLElement>("input:not([type='hidden']), textarea, button, [role='combobox']");
+      control?.focus({ preventScroll: true });
     });
     return false;
   };

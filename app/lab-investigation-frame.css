@@ -2266,3 +2266,26 @@
   .universal-package-lab .universal-inline-response{padding:8px 0}
   .universal-package-lab .universal-inline-sentence{font-size:16px}
 }
+
+/* Shared Lab interaction states and reflow. Keep the learner navigation intact. */
+.universal-package-lab{--lab-help-color:#52665e;--lab-focus-color:#236b60}
+.universal-package-lab :is(input,textarea,[data-slot="select-trigger"]){font-size:16px;max-width:100%;min-width:0}
+.universal-package-lab .universal-inline-input{font-size:16px!important;height:44px!important}
+:is(.universal-package-lab,.universal-baseline) :is(.pass-control,.universal-collection-pass,.universal-table-pass,.universal-inline-pass-list label){min-height:44px;font-size:13px;line-height:1.45;color:var(--lab-help-color);max-width:100%;width:fit-content}
+:is(.universal-package-lab,.universal-baseline) :is(.pass-control,.universal-collection-pass,.universal-table-pass,.universal-inline-pass-list label)>span{overflow-wrap:anywhere}
+.universal-package-lab .universal-compact-help{grid-column:1/-1;margin:0;color:var(--lab-help-color);font-size:15px;line-height:1.55}
+.universal-package-lab :is(h2,p,label){overflow-wrap:anywhere}
+.universal-package-lab .universal-rating-anchors,.universal-baseline .universal-rating-anchors{font-size:12px;color:#52665e}
+.universal-baseline .universal-rating-options button{min-height:44px}
+.universal-package-lab :is(input,textarea,button,[role="checkbox"],[role="combobox"]):focus-visible,
+.universal-baseline :is(input,button,[role="checkbox"],[role="combobox"]):focus-visible{outline:2px solid #236b60;outline-offset:3px}
+.universal-package-lab .universal-choice-list button:disabled{opacity:.55;cursor:not-allowed}
+.universal-package-lab [data-prompt-id]{scroll-margin-block:110px}
+.universal-package-lab .universal-validation-note>span{font-size:14px;line-height:1.5}
+.universal-package-lab .universal-collection-row[data-contextual="true"]{grid-template-columns:minmax(130px,1fr) minmax(0,2fr);align-items:start}
+.universal-package-lab .universal-collection-row[data-contextual="true"]>label:first-child span{display:block;white-space:normal;overflow:visible;text-overflow:clip}
+@media(max-width:620px){
+  .universal-package-lab .universal-collection-row[data-contextual="true"]{grid-template-columns:1fr;gap:6px}
+  .universal-package-lab .universal-collection-row[data-contextual="true"]>.universal-collection-pass{grid-column:1}
+  .universal-package-lab .universal-choice-list button{white-space:normal;text-align:left;align-items:center}
+}
