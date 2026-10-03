@@ -1208,6 +1208,13 @@ export function UniversalRuntimeLab({
         definition: prepareUniversalLabPresentation(data.definition) as UniversalLabPackage,
       };
       setSnapshot(data);
+      if (
+        String(payload.action ?? "") === "completeLab"
+        && data.enrolment?.status === "COMPLETED"
+        && programmeReturnTo
+      ) {
+        router.replace(programmeReturnTo);
+      }
       return data;
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "The Lab could not save your evidence.");
