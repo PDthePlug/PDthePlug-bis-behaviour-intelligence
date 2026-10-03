@@ -127,6 +127,26 @@ export type SponsorOutcome = {
       note?: string;
     };
   };
+  questionPatterns?: null | {
+    cohortId: string;
+    suppressed: boolean;
+    participantCount: number;
+    minimumReportableCohortSize: number;
+    minimumReportableCellSize: number;
+    privacyNote: string;
+    questions: Array<{
+      semanticFieldId: string;
+      questionFamily: string;
+      label: string;
+      evidenceClass: string;
+      answerModel: string;
+      respondents: number;
+      coverageRate: number;
+      summary:
+        | { type: "NUMERIC"; average: number }
+        | { type: "CATEGORICAL" | "MULTI_SELECT"; categories: Array<{ value: string; participants: number; shareOfRespondents: number }>; suppressedResponses?: number; suppressedSelections?: number };
+    }>;
+  };
   organisationLearning?: null | {
     cohortId: string;
     suppressed: boolean;
@@ -953,6 +973,49 @@ export function ProgrammeOutcomesView({
               <p className="learning-checks-boundary">
                 {outcome.learningChecks.interpretationBoundary?.note ?? "Use these signals as programme-design information, not as proof of mastery or individual performance."}
               </p>
+            </section>
+          ) : null}
+
+          {outcome.questionPatterns && !outcome.questionPatterns.suppressed && outcome.questionPatterns.questions.length ? (
+            <section className="outcomes-question-patterns">
+              <div className="outcomes-section-heading">
+                <div>
+                  <p className="eyebrow">Question intelligence</p>
+                  <h2>What are learners answering consistently?</h2>
+                </div>
+                <Layers3 />
+              </div>
+              <p className="question-patterns-intro">
+                This view combines only questions that BIS has registered for structured group analysis. Private free-text answers are not read or shown here, and small answer groups stay hidden.
+              </p>
+              <div className="question-pattern-grid">
+                {outcome.questionPatterns.questions.slice(0, 8).map((question) => (
+                  <article key={question.semanticFieldId} className="surface-card question-pattern-card">
+                    <div className="question-pattern-head">
+                      <span>{question.evidenceClass.toLowerCase().replaceAll("_", " ")}</span>
+                      <small>{question.respondents} responses · {question.coverageRate}% coverage</small>
+                    </div>
+                    <h3>{question.label}</h3>
+                    {question.summary.type === "NUMERIC" ? (
+                      <div className="question-pattern-number">
+                        <strong>{question.summary.average}</strong>
+                        <span>group average</span>
+                      </div>
+                    ) : (
+                      <div className="question-pattern-categories">
+                        {question.summary.categories.slice(0, 5).map((category) => (
+                          <div key={category.value}>
+                            <span>{category.value}</span>
+                            <strong>{category.participants}</strong>
+                            <small>{category.shareOfRespondents}%</small>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+              <p className="learning-checks-boundary">{outcome.questionPatterns.privacyNote}</p>
             </section>
           ) : null}
 
