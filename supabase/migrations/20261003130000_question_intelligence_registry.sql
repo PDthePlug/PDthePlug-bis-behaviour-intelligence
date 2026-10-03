@@ -15,7 +15,7 @@ create table public.question_analysis_registry (
   answer_model text not null,
   sensitivity text not null default 'P2',
   aggregate_policy text not null default 'EXCLUDE',
-  status text not null default 'ACTIVE',
+  status text not null default 'CANDIDATE',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint question_analysis_evidence_class_check
