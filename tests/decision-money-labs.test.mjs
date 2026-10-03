@@ -161,10 +161,9 @@ test("legacy Habit Decision and Money entry routes hand off to Universal Lab aft
     readFile(new URL("app/habit-lab/experiment/page.tsx", root), "utf8"),
   ]);
 
+  assert.match(routing, /active_bis_lab_runtime/);
   assert.match(routing, /runtime_mode/);
   assert.match(routing, /"DYNAMIC"/);
-  assert.match(routing, /runtime_status/);
-  assert.match(routing, /"LIVE"/);
   assert.match(decision, /liveUniversalLabHref\("DEC"/);
   assert.match(money, /liveUniversalLabHref\("MON"/);
   assert.match(habit, /liveUniversalLabHref\("HAB"/);
