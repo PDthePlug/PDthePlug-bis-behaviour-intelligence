@@ -17,11 +17,50 @@ async function portfolioSnapshot() {
 
   const db = getDb();
   const [enrolments, evidence, measurements, sources, libraryItems] = await Promise.all([
-    db.select().from(labEnrollments).where(eq(labEnrollments.userId, identity.id)).orderBy(desc(labEnrollments.updatedAt)),
-    db.select().from(evidenceRecords).where(eq(evidenceRecords.userId, identity.id)).orderBy(desc(evidenceRecords.recordedAt)),
-    db.select().from(measurementValues).where(eq(measurementValues.userId, identity.id)).orderBy(desc(measurementValues.calculatedAt)),
-    db.select().from(measurementSources).where(eq(measurementSources.userId, identity.id)),
-    db.select().from(contentLibraryItems).where(eq(contentLibraryItems.kind, "LAB")),
+    db.select({
+      id: labEnrollments.id,
+      labCode: labEnrollments.labCode,
+      labVersion: labEnrollments.labVersion,
+      status: labEnrollments.status,
+      currentInvestigation: labEnrollments.currentInvestigation,
+      startedAt: labEnrollments.startedAt,
+      phaseACompletedAt: labEnrollments.phaseACompletedAt,
+      experimentStartedAt: labEnrollments.experimentStartedAt,
+      completedAt: labEnrollments.completedAt,
+      updatedAt: labEnrollments.updatedAt,
+    }).from(labEnrollments).where(eq(labEnrollments.userId, identity.id)).orderBy(desc(labEnrollments.updatedAt)),
+    db.select({
+      labCode: evidenceRecords.labCode,
+      labVersion: evidenceRecords.labVersion,
+      investigationId: evidenceRecords.investigationId,
+      status: evidenceRecords.status,
+      occurredAt: evidenceRecords.occurredAt,
+      recordedAt: evidenceRecords.recordedAt,
+    }).from(evidenceRecords).where(eq(evidenceRecords.userId, identity.id)).orderBy(desc(evidenceRecords.recordedAt)),
+    db.select({
+      id: measurementValues.id,
+      experimentId: measurementValues.experimentId,
+      enrolmentId: measurementValues.enrolmentId,
+      labCode: measurementValues.labCode,
+      labVersion: measurementValues.labVersion,
+      code: measurementValues.code,
+      value: measurementValues.value,
+      status: measurementValues.status,
+      evidenceStrength: measurementValues.evidenceStrength,
+      formulaVersion: measurementValues.formulaVersion,
+      calculatedAt: measurementValues.calculatedAt,
+    }).from(measurementValues).where(eq(measurementValues.userId, identity.id)).orderBy(desc(measurementValues.calculatedAt)),
+    db.select({
+      measurementId: measurementSources.measurementId,
+      sourceObjectType: measurementSources.sourceObjectType,
+      sourceObjectId: measurementSources.sourceObjectId,
+      inputRole: measurementSources.inputRole,
+      createdAt: measurementSources.createdAt,
+    }).from(measurementSources).where(eq(measurementSources.userId, identity.id)),
+    db.select({
+      code: contentLibraryItems.code,
+      title: contentLibraryItems.title,
+    }).from(contentLibraryItems).where(eq(contentLibraryItems.kind, "LAB")),
   ]);
 
   const labTitles = Object.fromEntries([
