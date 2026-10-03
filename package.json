@@ -6,18 +6,21 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "next dev",
-    "content:compile": "node scripts/compile-learning-cartridges.mjs",
+    "runtime:check": "node scripts/check-node-version.mjs",
+    "preinstall": "node scripts/check-node-version.mjs",
+    "dev": "npm run runtime:check && next dev",
+    "content:compile": "npm run runtime:check && node scripts/compile-learning-cartridges.mjs",
     "prebuild": "npm run content:compile",
     "build": "next build",
-    "start": "next start",
-    "vercel-build": "npm run lint && npm run test:acceptance && npm run audit:source && next build",
-    "typecheck": "tsc --noEmit",
+    "start": "npm run runtime:check && next start",
+    "vercel-build": "npm run verify",
+    "verify": "npm run runtime:check && npm run lint && npm run typecheck && npm run test:acceptance && npm run audit:source && npm run build && npm run test:browser",
+    "typecheck": "npm run runtime:check && tsc --noEmit",
     "test": "npm run build && node --test tests/*.test.mjs",
-    "test:acceptance": "node --test tests/*.test.mjs",
-    "audit:source": "node scripts/audit-canonical-sources.mjs",
-    "test:browser": "playwright test",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
+    "test:acceptance": "npm run runtime:check && node --test tests/*.test.mjs",
+    "audit:source": "npm run runtime:check && node scripts/audit-canonical-sources.mjs",
+    "test:browser": "npm run runtime:check && playwright test",
+    "lint": "npm run runtime:check && eslint . --ignore-pattern dist --ignore-pattern .next"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -12,10 +12,10 @@ test("uses the standard Next.js Vercel runtime without retired hosting adapters"
     read("db/index.ts"),
   ]);
   const manifest = JSON.parse(packageJson);
-  assert.equal(manifest.scripts.dev, "next dev");
+  assert.equal(manifest.scripts.dev, "npm run runtime:check && next dev");
   assert.equal(manifest.scripts.build, "next build");
-  assert.equal(manifest.scripts.start, "next start");
-  assert.equal(manifest.scripts["vercel-build"], "npm run lint && npm run test:acceptance && npm run audit:source && next build");
+  assert.equal(manifest.scripts.start, "npm run runtime:check && next start");
+  assert.equal(manifest.scripts["vercel-build"], "npm run verify");
   assert.doesNotMatch(packageJson, /vinext|wrangler|cloudflare/i);
   assert.match(proxy, /updateSession/);
   assert.doesNotMatch(database, /cloudflare:workers|D1Database/);
@@ -47,7 +47,7 @@ test("keeps only public Supabase configuration in deployment examples", async ()
   assert.match(example, /NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY/);
   assert.match(client, /supabaseBrowserConfig/);
   assert.match(config, /swmhsqivqaqwovojbceo\.supabase\.co/);
-  assert.match(config, /sb_publishable_/);
+  assert.doesNotMatch(config, /sb_publishable_[A-Za-z0-9_-]+/);
   assert.doesNotMatch(example, /SERVICE_ROLE|DATABASE_URL|DB_PASSWORD|SECRET/i);
   assert.doesNotMatch(`${client}\n${config}`, /service.role|service_role|database_url|sb_secret_/i);
 });

@@ -65,6 +65,7 @@ test("release metadata resolves to the canonical BIS origin", () => {
 });
 
 test("the production build gate always runs the acceptance suite before build", () => {
-  assert.equal(packageJson.scripts["vercel-build"], "npm run lint && npm run test:acceptance && npm run audit:source && next build");
-  assert.equal(packageJson.scripts["test:acceptance"], "node --test tests/*.test.mjs");
+  assert.equal(packageJson.scripts["vercel-build"], "npm run verify");
+  assert.equal(packageJson.scripts["test:acceptance"], "npm run runtime:check && node --test tests/*.test.mjs");
+  assert.match(packageJson.scripts.verify, /npm run lint && npm run typecheck && npm run test:acceptance && npm run audit:source && npm run build && npm run test:browser/);
 });
