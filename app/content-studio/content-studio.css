@@ -134,6 +134,17 @@
 .content-detail-mark{width:54px;height:54px;display:grid;place-items:center;border:1px solid #ffffff28;border-radius:16px;background:#ffffff0c}
 .content-detail-mark svg{width:26px}
 .content-link-note{display:inline-block;margin-top:15px;padding:7px 10px;border:1px solid #ffffff24;border-radius:999px;color:#d8e3e0;font-size:11px;font-weight:750}
+.content-auto-version{
+  align-self:flex-start;
+  padding:7px 10px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:var(--paper);
+  color:var(--teal);
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
 .version-create{padding:25px}
 .version-create>button{margin-top:18px}
 .content-versions{display:grid;gap:12px}
