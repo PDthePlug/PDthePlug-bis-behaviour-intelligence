@@ -366,3 +366,39 @@ test("decision register never stores learner-level evidence fields", async () =>
   assert.doesNotMatch(migration, /experiment_notes/);
   assert.doesNotMatch(migration, /support_message/);
 });
+
+
+test("question intelligence aggregates only governed structured responses with privacy suppression", async () => {
+  const [route, migration, view] = await Promise.all([
+    source("app/api/staff/route.ts"),
+    source("supabase/migrations/20261003130000_question_intelligence_registry.sql"),
+    source("app/programme-outcomes-view.tsx"),
+  ]);
+
+  assert.match(route, /sponsor_cohort_question_patterns/);
+  assert.match(route, /questionPatterns:/);
+  assert.match(migration, /aggregate_policy = 'STRUCTURED_ONLY'/);
+  assert.match(migration, /answer_model in \('INTEGER','BOOLEAN','CATEGORICAL','MULTI_SELECT'\)/);
+  assert.match(migration, /if v_member_count < 5 then/);
+  assert.match(migration, /participants >= 3/);
+  assert.match(migration, /Free-text and P3 responses are excluded/);
+  assert.match(migration, /private\.can_view_sponsor_cohort/);
+  assert.match(migration, /revoke all on function public\.sponsor_cohort_question_patterns\(text\) from public, anon/i);
+  assert.match(view, /Question intelligence/);
+  assert.match(view, /What are learners answering consistently\?/);
+  assert.match(view, /Private free-text answers are not read or shown here/);
+});
+
+test("question intelligence registry defaults text and high-sensitivity answers out of automatic aggregation", async () => {
+  const [registry, migration] = await Promise.all([
+    source("lib/question-intelligence.mjs"),
+    source("supabase/migrations/20261003130000_question_intelligence_registry.sql"),
+  ]);
+
+  assert.match(registry, /sensitivity === "P3"/);
+  assert.match(registry, /answerModel === "TEXT"/);
+  assert.match(registry, /"EXCLUDE"/);
+  assert.match(registry, /"STRUCTURED_ONLY"/);
+  assert.match(migration, /MODEL_ASSISTED/);
+  assert.doesNotMatch(migration, /aggregate_policy = 'MODEL_ASSISTED'/);
+});
