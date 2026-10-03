@@ -85,7 +85,7 @@ export function ProfileDashboard({
     void (async () => {
       try {
         const [profileResponse, portfolioResponse] = await Promise.all([
-          fetch("/api/bis", {
+          fetch("/api/profile", {
             cache: "no-store",
             signal: controller.signal,
           }),
