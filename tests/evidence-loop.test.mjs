@@ -38,6 +38,7 @@ test("learner portfolio is built from evidence and measurements without returnin
   assert.match(route, /measurementValues/);
   assert.match(route, /measurementSources/);
   assert.doesNotMatch(route, /responses/);
+  assert.doesNotMatch(route, /value:\s*evidenceRecords\.value/);
   assert.match(route, /originalResponsesIncluded: false/);
   assert.match(profile, /Your evidence portfolio/);
   assert.match(profile, /evidence anchors/);
