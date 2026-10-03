@@ -47,3 +47,13 @@ test("active Lab runtimes attach images to stable evidence context", async () =>
   assert.match(migration, /consent_type = 'LEARNER_PRODUCT'/);
   assert.match(migration, /auth\.uid/);
 });
+
+
+test("evidence Storage migration preserves legacy owner access while keeping uploads immutable", async () => {
+  const migration = await read("supabase/migrations/20261003230000_all_lab_private_evidence_context.sql");
+  assert.match(migration, /array_length\(storage\.foldername\(name\), 1\) = 2/);
+  assert.match(migration, /array_length\(storage\.foldername\(name\), 1\) = 5/);
+  assert.match(migration, /create policy bis_evidence_delete/);
+  assert.doesNotMatch(migration, /create policy bis_evidence_update/i);
+  assert.match(migration, /storage\.filename\(name\) ~ '\^\[1-5\]/);
+});
