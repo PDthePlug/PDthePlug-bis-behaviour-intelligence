@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
 import { BIS_PRODUCTION_ORIGIN } from "./lib/auth-redirect";
 
+const productionSupabaseAcknowledgement =
+  process.env.NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE === "true"
+    ? "true"
+    : process.env.VERCEL_ENV === "production"
+      ? "true"
+      : "false";
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE: productionSupabaseAcknowledgement,
+  },
   async redirects() {
     return ["bisportal.online", "bis-behaviour-intelligence.vercel.app"].map((host) => ({
       source: "/:path*",
