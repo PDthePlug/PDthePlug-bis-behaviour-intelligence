@@ -97,6 +97,11 @@ type Runtime = {
     evidenceDaysRecorded: number;
     todayEvidenceRecorded: boolean;
     evidenceWindowCount?: number;
+    reviewReady?: boolean;
+    reviewInvestigation?: number;
+    labCompleted?: boolean;
+    portfolioReady?: boolean;
+    nextAction?: "LAB" | "EVIDENCE" | "LEARNING" | "REVIEW" | "PORTFOLIO";
   };
 };
 
@@ -154,6 +159,11 @@ const currentExperimentDay = (experiment: Runtime["experiment"]) => {
 function labHrefWithReturn(href: string, returnTo: string) {
   const separator = href.includes("?") ? "&" : "?";
   return `${href}${separator}returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+function labHrefWithStep(href: string, step: number) {
+  const separator = href.includes("?") ? "&" : "?";
+  return `${href}${separator}step=${step}`;
 }
 
 function ProgrammeLabHandoff({
@@ -576,6 +586,10 @@ export function ProgrammePlayer({
       (programmeHandoff && programmeHandoff.evidenceDaysRecorded > 0)
       || (activeModuleRuntime?.experiment && activeModuleRuntime.events.length > 0),
     );
+  const labReviewReady = Boolean(programmeHandoff?.reviewReady);
+  const labCompleted = Boolean(
+    programmeHandoff?.labCompleted || activeModuleRuntime?.enrolment?.status === "COMPLETED",
+  );
   const dayThreeIndex = programme?.treatment.pages.findIndex((item) => item.key === "Day 3") ?? -1;
   const labSequenceLocked =
     !readOnlyMode &&
@@ -1277,7 +1291,42 @@ export function ProgrammePlayer({
                 </article>
               ) : null}
 
-              {labExperimentStarted
+              {labCompleted ? (
+                <article className="prototype-card prototype-action-card prototype-experiment-status" role="status">
+                  <Check />
+                  <div>
+                    <p className="prototype-eyebrow">Lab complete</p>
+                    <h3>Your evidence trail is ready.</h3>
+                    <p>
+                      BIS has connected your recorded evidence to the measures it can calculate. Your private wording stays in the Lab; the portfolio shows the evidence structure and derived results.
+                    </p>
+                  </div>
+                  <Link className="prototype-btn soft" href="/profile#evidence-portfolio">
+                    View my evidence portfolio <ArrowRight />
+                  </Link>
+                </article>
+              ) : labReviewReady && moduleLabIsLive ? (
+                <article className="prototype-card prototype-action-card prototype-evidence-due" role="status">
+                  <FlaskConical />
+                  <div>
+                    <p className="prototype-eyebrow">Phase B complete · Evidence Review</p>
+                    <h3>Your real-world test is ready to review.</h3>
+                    <p>
+                      Review what actually happened, compare it with your prediction, complete the post-measures, and close the Lab before the final programme handback.
+                    </p>
+                  </div>
+                  <Link
+                    className="prototype-btn primary"
+                    href={
+                      moduleCode === "HAB"
+                        ? labHrefWithReturn("/habit-lab", learningReturnTo)
+                        : labHrefWithStep(moduleLabHref ?? "/labs", programmeHandoff?.reviewInvestigation ?? 8)
+                    }
+                  >
+                    Review my evidence <ArrowRight />
+                  </Link>
+                </article>
+              ) : labExperimentStarted
                 && moduleLabIsLive
                 && experimentTotalDays > 0
                 && programmeHandoff
@@ -1310,9 +1359,7 @@ export function ProgrammePlayer({
                   <p className="prototype-eyebrow">Real-world test</p>
                   <h3>{experimentRecordedDays}/{programmeHandoff?.evidenceWindowCount ?? experimentTotalDays} {programmeHandoff?.evidenceWindowCount ? "weekly entries" : "observation days"} recorded.</h3>
                   <p>
-                    {programmeHandoff && programmeHandoff.currentDay > programmeHandoff.totalDays
-                      ? "Your experiment window has ended. Review the evidence you recorded; missed days remain missing."
-                      : programmeHandoff?.todayEvidenceRecorded
+                    {programmeHandoff?.todayEvidenceRecorded
                       ? `Experiment Day ${experimentDay ?? programmeHandoff.currentDay} is recorded. Your next evidence window opens on its calendar day.`
                       : "The experiment has its own clock. Only the current calendar day can be recorded."}
                   </p>
