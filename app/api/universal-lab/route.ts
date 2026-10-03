@@ -8,10 +8,6 @@ import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   consentRecords,
-  contentLibraryItems,
-  contentLibraryVersions,
-  contentRuntimeActivations,
-  contentRuntimeArtifacts,
   evidenceRecords,
   labEnrollments,
   learners,
@@ -89,26 +85,26 @@ async function audit(actorId: string, action: string, objectType: string, object
 }
 
 async function activeLab(code: string) {
-  const db = getDb();
-  const [item] = await db.select().from(contentLibraryItems).where(and(
-    eq(contentLibraryItems.kind, "LAB"),
-    eq(contentLibraryItems.code, code),
-    eq(contentLibraryItems.status, "ACTIVE"),
-  )).limit(1);
-  if (!item) throw new Error("This Lab is not active.");
-  const [activation] = await db.select().from(contentRuntimeActivations).where(and(
-    eq(contentRuntimeActivations.itemId, item.id),
-    eq(contentRuntimeActivations.status, "ACTIVE"),
-  )).limit(1);
-  if (!activation || activation.runtimeMode !== "DYNAMIC") throw new Error("This Lab uses a dedicated BIS runtime.");
-  const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, activation.versionId)).limit(1);
-  if (!version || version.runtimeStatus !== "LIVE") throw new Error("The active Lab version is unavailable.");
-  const [artifact] = await db.select().from(contentRuntimeArtifacts).where(and(
-    eq(contentRuntimeArtifacts.versionId, version.id),
-    eq(contentRuntimeArtifacts.artifactKey, "lab:universal"),
-  )).limit(1);
-  if (!artifact) throw new Error("The compiled Lab package is missing.");
-  const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(artifact.storagePath);
+  const { data, error } = await requestSupabaseClient().rpc("active_bis_lab_runtime", { target_code: code });
+  const runtime = (Array.isArray(data) ? data[0] : data) as null | {
+    item_id: string;
+    code: string;
+    slug: string;
+    title: string;
+    route_path: string;
+    version_id: string;
+    version: string;
+    runtime_mode: string;
+    artifact_key: string;
+    storage_path: string;
+    artifact_hash: string;
+    compiler_version: string | null;
+  };
+  if (error || !runtime || runtime.runtime_mode !== "DYNAMIC") {
+    throw new Error("This Lab is not published in the Universal experience yet.");
+  }
+
+  const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(runtime.storage_path);
   if (download.error || !download.data) throw new Error("The Lab package could not be loaded.");
   const definition = prepareUniversalLabPresentation(
     sanitizeRuntimePackage(JSON.parse(await download.data.text())) as UniversalLabPackage,
@@ -120,7 +116,13 @@ async function activeLab(code: string) {
   ) {
     throw new Error("The active Lab package does not match this route.");
   }
-  return { item, version, activation, definition };
+
+  return {
+    item: { id: runtime.item_id, code: runtime.code, slug: runtime.slug, title: runtime.title, routePath: runtime.route_path },
+    version: { id: runtime.version_id, version: runtime.version },
+    activation: { runtimeMode: runtime.runtime_mode },
+    definition,
+  };
 }
 
 function promptRegistry(definition: UniversalLabPackage) {
