@@ -197,3 +197,17 @@ test("Content Studio audits question quality using the minimum-question evidence
   assert.match(ui, /answers reused downstream/);
   assert.match(audit, /Ask once when possible\. Reuse the answer\. Derive what can safely be derived\./);
 });
+
+
+test("question intelligence remains a candidate until the exact Lab version passes governed publishing", async () => {
+  const [api, schema, migration] = await Promise.all([
+    source("app/api/content-studio/route.ts"),
+    source("db/schema.ts"),
+    source("supabase/migrations/20261003130000_question_intelligence_registry.sql"),
+  ]);
+
+  assert.match(schema, /questionAnalysisRegistry[\s\S]*status: text\("status"\)\.notNull\(\)\.default\("CANDIDATE"\)/);
+  assert.match(migration, /status text not null default 'CANDIDATE'/);
+  assert.match(api, /if \(item\.kind === "LAB"\) \{[\s\S]*db\.update\(questionAnalysisRegistry\)[\s\S]*status: "ACTIVE"[\s\S]*versionId/);
+  assert.match(api, /Finish the preview checklist and sign off this exact version before publishing/);
+});
