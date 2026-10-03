@@ -177,7 +177,7 @@ export function ProfileDashboard({
                   <div className="profile-evidence-head">
                     <div>
                       <strong>{lab.title}</strong>
-                      <span>{lab.status === "COMPLETED" ? "Complete evidence trail" : `Investigation ${lab.currentInvestigation} of 9`}</span>
+                      <span>{lab.status === "COMPLETED" ? "Complete evidence record" : `Investigation ${lab.currentInvestigation} of 9`}</span>
                     </div>
                     <span className={lab.status === "COMPLETED" ? "complete" : "active"}>
                       {lab.status === "COMPLETED" ? <><Check aria-hidden="true" /> Complete</> : "In progress"}
