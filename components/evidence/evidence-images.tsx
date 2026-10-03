@@ -26,7 +26,7 @@ async function prepareImage(file: File) {
   } finally { bitmap.close(); }
 }
 
-export function EvidenceImages({ enrollmentId, onBlockedChange }: { enrollmentId: string; onBlockedChange: (blocked: boolean) => void }) {
+export function EvidenceImages({ enrollmentId, labCode, investigation, evidenceFieldId, onBlockedChange }: { enrollmentId: string; labCode: string; investigation: number; evidenceFieldId: string; onBlockedChange: (blocked: boolean) => void }) {
   const [items, setItems] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -55,7 +55,12 @@ export function EvidenceImages({ enrollmentId, onBlockedChange }: { enrollmentId
   async function scope() {
     const { data, error } = await client.auth.getUser();
     if (error || !data.user) throw new Error("Please sign in again to manage your photos.");
-    return `${data.user.id}/${enrollmentId}`;
+    const safeLab = labCode.trim().toUpperCase();
+    const safeField = evidenceFieldId.trim().toUpperCase();
+    if (!/^[A-Z][A-Z0-9_-]{1,11}$/.test(safeLab) || !/^[A-Z0-9][A-Z0-9._-]{1,119}$/.test(safeField) || !Number.isInteger(investigation) || investigation < 1 || investigation > 9) {
+      throw new Error("This evidence attachment does not have a valid Lab context.");
+    }
+    return `${data.user.id}/${enrollmentId}/${safeLab}/I${investigation}/${safeField}`;
   }
   async function list(prefix: string) {
     const { data, error } = await client.storage.from(EVIDENCE_BUCKET).list(prefix, { limit: 10, sortBy: { column: "name", order: "asc" } });
@@ -72,7 +77,7 @@ export function EvidenceImages({ enrollmentId, onBlockedChange }: { enrollmentId
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void refresh(); /* scope is fixed for this keyed enrolment */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enrollmentId]);
+  }, [enrollmentId, labCode, investigation, evidenceFieldId]);
 
   async function upload(file: File) {
     if (lock.current) return;

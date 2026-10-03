@@ -1,3 +1,4 @@
+import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { labCompletionRequirements, labSubmissionDefinition, labStageCompleted } from "../../../lib/lab-progress-compatibility.mjs";
 import { requiredLabPromptIds, validateLabSubmission } from "../../../lib/lab-interaction-contract.mjs";
 import { validPromptResponse } from "../../../lib/evidence-validation.mjs";
@@ -381,7 +382,7 @@ async function getHandler(request: Request) {
   try {
     return Response.json(await snapshot(identity.id, code), { headers: { "cache-control": "private, no-store" } });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "The Lab could not be opened." }, { status: 400 });
+    return customerSafeErrorResponse(error, { route: "/api/universal-lab", operation: "open" }, "The Lab could not be opened. Please try again.");
   }
 }
 
@@ -618,7 +619,7 @@ async function postHandler(request: Request) {
 
     throw new Error("That Lab action is not supported.");
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "The Lab action could not be completed." }, { status: 400 });
+    return customerSafeErrorResponse(error, { route: "/api/universal-lab", operation: "save" }, "The Lab update could not be saved. Check your entries and try again.", 400);
   }
 }
 

@@ -10,6 +10,7 @@ import {
 import { identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { isDeliveryEdition } from "../../../lib/learning-foundation";
+import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 
 const STEP_ID = /^[A-Z][A-Z0-9_-]{1,11}\.[A-Z0-9][A-Z0-9._-]{1,119}$/;
 
@@ -23,10 +24,6 @@ async function learningCode(value: unknown) {
   )).limit(1);
   if (!item) throw new Error("That BIS learning module is not available.");
   return code;
-}
-
-function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Unexpected error";
 }
 
 function decode(value: string | null) {
@@ -132,7 +129,7 @@ async function getHandler(request: Request) {
     const code = await learningCode(new URL(request.url).searchParams.get("lab") ?? "HAB");
     return Response.json(await learningSnapshot(identity.id, code));
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 500 });
+    return customerSafeErrorResponse(error, { route: "/api/learning", operation: "load" }, "The learning record could not be opened. Please try again.");
   }
 }
 
@@ -214,7 +211,7 @@ async function postHandler(request: Request) {
 
     throw new Error("That learning action is not supported.");
   } catch (error) {
-    return Response.json({ error: errorMessage(error) }, { status: 400 });
+    return customerSafeErrorResponse(error, { route: "/api/learning", operation: "save" }, "That learning update could not be saved. Check your entries and try again.", 400);
   }
 }
 

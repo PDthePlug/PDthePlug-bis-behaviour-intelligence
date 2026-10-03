@@ -4,6 +4,7 @@ import {
   identityFrom,
   requireRole,
 } from "../../../../lib/bis-access";
+import { customerSafeErrorResponse } from "../../../../lib/api-error-response";
 import { eq } from "../../../../db/query";
 import { getDb } from "../../../../db";
 import {
@@ -22,13 +23,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function errorResponse(error: unknown) {
-  if (error instanceof AccessError) {
-    return Response.json({ error: error.message }, { status: error.status });
-  }
-  return Response.json(
-    { error: error instanceof Error ? error.message : "The BIS volume could not be audited." },
-    { status: 400 },
-  );
+  return customerSafeErrorResponse(error, { route: "/api/content-studio/volume-audit", operation: "request" }, "The BIS volume could not be audited. Please try again.", 400);
 }
 
 async function requireSuperUser() {
@@ -222,6 +217,7 @@ export async function POST(request: Request) {
         }
         labs.push(labResult);
       } catch (error) {
+        console.error("BIS volume Lab preparation failed", { code: draft.code, error: error instanceof Error ? error.message : String(error) });
         labs.push({
           code: draft.code,
           title: draft.title,
@@ -238,7 +234,7 @@ export async function POST(request: Request) {
           editorialIssues: [{
             code: "COMPILE_BLOCKER",
             severity: "ERROR",
-            message: error instanceof Error ? error.message : "This Lab could not be compiled.",
+            message: "This Lab could not be prepared. Review its source and try again.",
           }],
           normalizationNotes: [],
           investigationCount: 0,
