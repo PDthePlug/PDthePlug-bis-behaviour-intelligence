@@ -41,7 +41,7 @@ export type EvidencePortfolioLab = {
 };
 
 export function humanMetricLabel(code: string): string;
-export function displayMetricValue(value: unknown): string;
+export function displayMetricValue(value: unknown, code?: string): string;
 export function buildEvidencePortfolio(input: {
   enrolments?: Array<Record<string, unknown>>;
   evidence?: Array<Record<string, unknown>>;
