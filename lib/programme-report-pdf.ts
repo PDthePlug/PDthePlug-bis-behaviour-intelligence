@@ -1385,7 +1385,7 @@ function drawQuestionPatterns(canvas: ReportCanvas, outcome: Outcome) {
         label: "Participants",
         value: String(patterns.participantCount),
         detail: "programme group",
-        tone: "plain",
+        tone: "teal",
       },
     ],
     2
@@ -1406,7 +1406,7 @@ function drawQuestionPatterns(canvas: ReportCanvas, outcome: Outcome) {
           coverage +
           " · " +
           evidenceLabel,
-        "plain"
+        "teal"
       );
       return;
     }
@@ -1433,7 +1433,7 @@ function drawQuestionPatterns(canvas: ReportCanvas, outcome: Outcome) {
         coverage +
         " · " +
         evidenceLabel,
-      "plain"
+      "teal"
     );
   });
 
