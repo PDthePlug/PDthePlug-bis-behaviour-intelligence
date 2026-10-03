@@ -405,7 +405,7 @@ export function BISApp({
         {error && <div className="error-banner"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
         {view === "home" && <HomeView state={state} name={displayName} onView={setView} onContinue={() => { setStep(current); setView("lab"); }} />}
         {view === "lab" && <LabRunner state={state} step={step} setStep={setStep} saving={saving} act={act} onView={setView} programmeReturnTo={programmeReturnTo} />}
-        {view === "experiment" && <ExperimentView state={state} saving={saving} act={act} onView={setView} programmeReturnTo={programmeReturnTo} />}
+        {view === "experiment" && <ExperimentView state={state} saving={saving} act={act} onView={setView} programmeReturnTo={programmeReturnTo} onReviewReady={() => { setStep(8); setView("lab"); }} />}
         {view === "evidence" && <EvidenceView state={state} onView={setView} />}
         {view === "companion" && <CompanionView state={state} saving={saving} act={act} />}
         {view === "progress" && <ProgressView state={state} onView={setView} />}
@@ -613,9 +613,9 @@ function LabRunner({ state, step, setStep, saving, act, onView, programmeReturnT
         {step === 4 && <InvestigationFour state={state} saving={saving} act={act} next={() => setStep(5)} />}
         {step === 5 && <InvestigationFive state={state} saving={saving} act={act} next={() => setStep(6)} />}
         {step === 6 && <InvestigationSix state={state} saving={saving} act={act} next={() => { setStep(7); onView("experiment"); }} />}
-        {step === 7 && <ExperimentView state={state} saving={saving} act={act} onView={onView} embedded programmeReturnTo={programmeReturnTo} />}
+        {step === 7 && <ExperimentView state={state} saving={saving} act={act} onView={onView} embedded programmeReturnTo={programmeReturnTo} onReviewReady={() => setStep(8)} />}
         {step === 8 && <InvestigationEight state={state} saving={saving} act={act} next={() => setStep(9)} />}
-        {step === 9 && <InvestigationNine state={state} saving={saving} act={act} onView={onView} />}
+        {step === 9 && <InvestigationNine state={state} saving={saving} act={act} onView={onView} programmeReturnTo={programmeReturnTo} />}
       </LabInvestigationFrame>
     </div>
   );
@@ -735,7 +735,7 @@ function InvestigationSix({ state, saving, act, next }: StepProps) {
   </div><div className="commitment-note"><ShieldCheck /><p>I understand that this experiment is for evidence, not perfection. If I miss a day, I will return without guilt—because guilt is not a strategy.</p></div><StepFooter label="Start seven-day experiment" saving={saving} disabled={!allReady} onSave={async () => { await act({ action: "startExperiment", ...form, impactDomains: domains }); next(); }} /></div>;
 }
 
-function ExperimentView({ state, saving, act, onView, embedded = false, programmeReturnTo }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; embedded?: boolean; programmeReturnTo?: string }) {
+function ExperimentView({ state, saving, act, onView, embedded = false, programmeReturnTo, onReviewReady }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; embedded?: boolean; programmeReturnTo?: string; onReviewReady?: () => void }) {
   const experiment = state.experiment;
   const timing = experiment ? getExperimentTiming(experiment, state.events, todayInTimeZone(state.notificationPreference.timezone)) : null;
   const [selectedDay, setSelectedDay] = useState(() => timing?.calendarDay ?? timing?.availableDay ?? 1);
@@ -790,7 +790,7 @@ function ExperimentView({ state, saving, act, onView, embedded = false, programm
     </section>
     <section className="measurement-strip"><div><span>Opportunities observed</span><strong>{opportunityCount}</strong></div><div><span>Alternative used</span><strong>{replacementCount}</strong></div><div><span>Adherence</span><strong>{adherence === null || adherence === undefined ? "N/A" : `${adherence}%`}</strong></div><div><span>Evidence strength</span><strong>{strengthLabel}</strong></div></section>
     {state.events.length >= 3 && <CheckpointPanel state={state} saving={saving} act={act} />}
-    {canClose && <ExperimentClosure state={state} saving={saving} act={act} />}
+    {canClose && <ExperimentClosure state={state} saving={saving} act={act} onReviewReady={onReviewReady} />}
     {!active && <div className="checkpoint-card complete"><div className="card-icon teal"><Check /></div><div><p className="eyebrow">Evidence review ready</p><h3>{experiment.status === "COMPLETED_INSUFFICIENT" ? "Finished with insufficient evidence." : "Experiment complete."}</h3><p>The record preserves missingness, every parameter version and the inputs behind each calculated value.</p></div><Button variant="outline" onClick={() => onView("evidence")}>Inspect evidence</Button></div>}
   </div>;
 }
@@ -815,12 +815,12 @@ function CheckpointPanel({ state, saving, act }: { state: Snapshot; saving: bool
   return <section className="surface-card checkpoint-form"><div className="section-title"><div><p className="eyebrow">Day 3 checkpoint</p><h3>Calibrate without erasing version 1.</h3></div><RotateCcw /></div><div className="checkpoint-fields"><label>What surprised you?<Textarea value={surprise} onChange={(event) => setSurprise(event.target.value)} /></label><label>How observable is the cue now?<Select value={observability} onValueChange={setObservability}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EASIER">Easier to catch</SelectItem><SelectItem value="AS_EXPECTED">About as expected</SelectItem><SelectItem value="HARDER">Harder to catch</SelectItem></SelectContent></Select></label><label>What supports your equation?<Textarea value={support} onChange={(event) => setSupport(event.target.value)} /></label><label>What challenges it?<Textarea value={challenge} onChange={(event) => setChallenge(event.target.value)} /></label></div><div className="choice-grid two"><ChoiceButton active={decision === "KEEP"} title="Keep version 1" detail="Continue with the current cue and alternative" onClick={() => setDecision("KEEP")} /><ChoiceButton active={decision === "ADJUST"} title="Create version 2" detail="Change the cue or alternative from now on" onClick={() => setDecision("ADJUST")} /></div>{decision === "ADJUST" && <div className="checkpoint-adjust"><label>Updated cue<Input value={targetCondition} onChange={(event) => setTargetCondition(event.target.value)} /></label><label>Updated alternative<Input value={alternativeBehaviour} onChange={(event) => setAlternativeBehaviour(event.target.value)} /></label></div>}<Button size="lg" disabled={saving || !complete} onClick={() => void act({ action: "saveCheckpoint", experimentId: experiment.id, surprise, observability, evidenceSupport: support, evidenceChallenge: challenge, decision, targetCondition, alternativeBehaviour })}>{saving ? "Saving checkpoint…" : "Save checkpoint"}</Button></section>;
 }
 
-function ExperimentClosure({ state, saving, act }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown> }) {
+function ExperimentClosure({ state, saving, act, onReviewReady }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onReviewReady?: () => void }) {
   const experiment = state.experiment!;
   const opportunities = Number(state.measurements["HAB.EXPERIMENT.OPPORTUNITY_COUNT"]?.value ?? 0);
   const sufficient = opportunities >= experiment.minimumEvidenceThreshold;
   const [cue, setCue] = useState(experiment.targetCondition);
-  return <section className="surface-card closure-card"><div className="section-title"><div><p className="eyebrow">End-of-window decision</p><h3>{sufficient ? "Your review has enough lab evidence." : "The evidence is still limited."}</h3><p>{opportunities} eligible opportunit{opportunities === 1 ? "y" : "ies"} observed · minimum {experiment.minimumEvidenceThreshold}</p></div><Badge variant="outline">{sufficient ? "Review ready" : "Insufficient evidence"}</Badge></div>{sufficient ? <div className="closure-actions"><p>Finish the experiment to unlock the evidence review, or extend if another few days would answer a specific question.</p><Button disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "FINISH" })}>Finish and review</Button><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "EXTEND" })}>Extend 3 days</Button></div> : <div className="closure-options"><article><h4>Extend the window</h4><p>Keep the current cue and collect three more days.</p><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "EXTEND" })}>Extend 3 days</Button></article><article><h4>Use a more observable cue</h4><p>Version the cue, then collect three more days.</p><Input value={cue} onChange={(event) => setCue(event.target.value)} /><Button variant="outline" disabled={saving || cue.trim() === experiment.targetCondition} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "ADJUST_CUE", targetCondition: cue })}>Adjust and extend</Button></article><article><h4>Finish honestly</h4><p>Close the experiment with insufficient evidence. N/A values remain N/A.</p><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "FINISH_INSUFFICIENT" })}>Finish with insufficient evidence</Button></article></div>}</section>;
+  return <section className="surface-card closure-card"><div className="section-title"><div><p className="eyebrow">End-of-window decision</p><h3>{sufficient ? "Your review has enough lab evidence." : "The evidence is still limited."}</h3><p>{opportunities} eligible opportunit{opportunities === 1 ? "y" : "ies"} observed · minimum {experiment.minimumEvidenceThreshold}</p></div><Badge variant="outline">{sufficient ? "Review ready" : "Insufficient evidence"}</Badge></div>{sufficient ? <div className="closure-actions"><p>Finish the experiment to unlock the evidence review, or extend if another few days would answer a specific question.</p><Button disabled={saving} onClick={() => void (async () => { const saved = await act({ action: "completeExperiment", experimentId: experiment.id, decision: "FINISH" }); if (saved) onReviewReady?.(); })()}>Finish and review</Button><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "EXTEND" })}>Extend 3 days</Button></div> : <div className="closure-options"><article><h4>Extend the window</h4><p>Keep the current cue and collect three more days.</p><Button variant="outline" disabled={saving} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "EXTEND" })}>Extend 3 days</Button></article><article><h4>Use a more observable cue</h4><p>Version the cue, then collect three more days.</p><Input value={cue} onChange={(event) => setCue(event.target.value)} /><Button variant="outline" disabled={saving || cue.trim() === experiment.targetCondition} onClick={() => void act({ action: "completeExperiment", experimentId: experiment.id, decision: "ADJUST_CUE", targetCondition: cue })}>Adjust and extend</Button></article><article><h4>Finish honestly</h4><p>Close the experiment with insufficient evidence. N/A values remain N/A.</p><Button variant="outline" disabled={saving} onClick={() => void (async () => { const saved = await act({ action: "completeExperiment", experimentId: experiment.id, decision: "FINISH_INSUFFICIENT" }); if (saved) onReviewReady?.(); })()}>Finish with insufficient evidence</Button></article></div>}</section>;
 }
 
 function EmptyExperiment({ onView, embedded }: { onView: (view: View) => void; embedded: boolean }) {
@@ -878,7 +878,7 @@ function InvestigationEight({ state, saving, act, next }: StepProps) {
   </div>;
 }
 
-function InvestigationNine({ state, saving, act, onView }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void }) {
+function InvestigationNine({ state, saving, act, onView, programmeReturnTo }: { state: Snapshot; saving: boolean; act: (payload: Record<string, unknown>) => Promise<unknown>; onView: (view: View) => void; programmeReturnTo?: string }) {
   const [agency, setAgency] = useState(valueOf(state, "HAB.AGENCY.REFLECTION"));
   const [capability, setCapability] = useState(valueOf(state, "HAB.I9.CAPABILITY.TEXT"));
   const [letter, setLetter] = useState(valueOf(state, "HAB.I9.FUTURE_LETTER"));
@@ -897,7 +897,7 @@ function InvestigationNine({ state, saving, act, onView }: { state: Snapshot; sa
       { semanticFieldId: "HAB.I9.CAPABILITY.TEXT", value: capability, investigation: 9 },
       { semanticFieldId: "HAB.I9.FUTURE_LETTER", value: letter, investigation: 9 },
       { semanticFieldId: "HAB.NEXT_PATTERN.TEXT", value: nextPattern, investigation: 9 },
-    ] }); if (remember && state.hypothesis) await act({ action: "remember", statement: state.hypothesis.statement, sourceId: state.hypothesis.id }); onView("evidence"); void updated; }} />
+    ] }); if (remember && state.hypothesis) await act({ action: "remember", statement: state.hypothesis.statement, sourceId: state.hypothesis.id }); if (updated && programmeReturnTo) window.location.assign(programmeReturnTo); else onView("evidence"); }} />
   </div>;
 }
 
