@@ -46,7 +46,7 @@ test("evidence portfolio turns the Lab trail into stable learner-facing anchors"
   assert.equal(labs[0].summary.recordedAnchors, 5);
   assert.equal(labs[0].metrics[0].label, "Observed adherence");
   assert.equal(labs[0].metrics.length, 1);
-  assert.equal(labs[0].metrics[0].value, "60");
+  assert.equal(labs[0].metrics[0].value, "60%");
   assert.equal(labs[0].metrics[0].sourceCount, 2);
   assert.equal(labs[0].anchors.find((anchor) => anchor.id === "EXPERIMENT")?.status, "RECORDED");
 });
