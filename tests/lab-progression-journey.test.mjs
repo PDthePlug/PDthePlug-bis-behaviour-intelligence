@@ -180,8 +180,7 @@ test("Universal Investigation 7 requires only the current calendar day's schedul
 
 test("Universal Lab completion does not resurrect unscheduled Investigation 7 workbook fields", async () => {
   const api = await source("app/api/universal-lab/route.ts");
-  assert.match(
-    api,
-    /runtime\.definition\.runtimeProfile === "UNIVERSAL_V2"[\s\S]*investigation\.number === runtime\.definition\.experiment\?\.investigation/,
-  );
+  const compatibility = await source("lib/lab-progress-compatibility.mjs");
+  assert.match(api, /labCompletionRequirements/);
+  assert.match(compatibility, /stage\.number === definition\.experiment\?\.investigation/);
 });

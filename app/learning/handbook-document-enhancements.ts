@@ -1,4 +1,5 @@
 import { learnerText, type LearnerEdition } from "../../lib/school-language";
+import { authoredQuestions } from "../../lib/universal-lab-presentation.mjs";
 
 type LabCode = string;
 
@@ -43,10 +44,10 @@ function questionPrompts(element: HTMLElement) {
   const numbered = [...rendered.matchAll(/(?:^|\n)\s*\d+[.)]\s*([^\n]*?\?)(?=\s*(?:\n|$))/g)]
     .map((match) => normalise(match[1] ?? ""))
     .filter(Boolean);
-  if (numbered.length > 1) return numbered;
+  if (numbered.length > 1) return numbered.flatMap(prompt => authoredQuestions(prompt));
 
   const plain = normalise(rendered);
-  if (plain.endsWith("?") && plain.length <= 600) return [plain];
+  if (plain.replace(/["“”'‘’]+$/g, "").endsWith("?") && plain.length <= 600) return authoredQuestions(plain);
   return [] as string[];
 }
 
@@ -478,6 +479,41 @@ function labelAuthoredResponses(root: HTMLElement) {
       field.placeholder = prompt.endsWith("?") ? "Write your answer…" : "Write your response…";
     }
   });
+}
+
+/** Keep original bindings and saved answers; additional questions get stable suffixes. */
+function structureAuthoredResponses(root: HTMLElement) {
+  for (const field of root.querySelectorAll<HTMLTextAreaElement>("textarea.response[data-field-id]")) {
+    if (field.closest("table,.checkpoint-answer-panel,.prototype-reference,.prototype-lab-handoff,label")) continue;
+    if (field.dataset.purpose === "FORMAL_LAB_REFERENCE") continue;
+    const prompt = normalise(field.getAttribute("aria-label") || nearestPrompt(field));
+    if (!prompt || genericResponseLabel.test(prompt)) continue;
+    const questions = authoredQuestions(prompt);
+    const parts = questions.length > 1 ? questions : [prompt.replace(/^["“”'‘’]+|["“”'‘’]+$/g, "")];
+    const group = document.createElement("div");
+    group.className = "generated-question-responses authored-response-group";
+    const preceding = field.previousElementSibling;
+    field.before(group);
+    parts.forEach((question, index) => {
+      const control = index === 0 ? field : field.cloneNode(false) as HTMLTextAreaElement;
+      if (index > 0) {
+        control.dataset.fieldId = `${field.dataset.fieldId}.PART.${index + 1}`;
+        control.dataset.sourceKey = `${field.dataset.sourceKey || "authored-response"}-part-${index + 1}`;
+        control.value = "";
+        control.removeAttribute("id");
+      }
+      control.rows = 3;
+      control.setAttribute("aria-label", question);
+      const wrapper = document.createElement("label");
+      wrapper.className = "generated-question-response-row";
+      const title = document.createElement("span");
+      title.textContent = question;
+      wrapper.append(title, control);
+      group.append(wrapper);
+    });
+    // Only consume the exact authored prompt, never nearby narrative or headings.
+    if (preceding?.matches("p") && normalise(preceding.textContent || "") === prompt) preceding.remove();
+  }
 }
 
 function removeUnboundGenericResponses(root: HTMLElement) {
@@ -1264,5 +1300,6 @@ export function enhanceHandbookDocument(
     addInterleavedConceptChecks(root, labCode, pageId, context);
   }
   addMissingCheckpointResponses(root, labCode, pageId);
+  structureAuthoredResponses(root);
   addFacilitatorCues(root, context);
 }

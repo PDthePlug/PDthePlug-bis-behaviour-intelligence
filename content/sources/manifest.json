@@ -1,0 +1,20 @@
+[
+  {
+    "volume": 1,
+    "path": "content/sources/volume-1.docx",
+    "sha256": "4b730fc18fb607e5504a22e6712c2f32a747648ef14d37b5798fa3af85f08e30",
+    "uploadedName": "01-BIS-Volume-1-Learner-s-Workbook-v3.0.docx"
+  },
+  {
+    "volume": 2,
+    "path": "content/sources/volume-2.docx",
+    "sha256": "12962eaa40e6160e3d1de674147ac43d0cb0cd0ebdf99db956adde6865f12076",
+    "uploadedName": "03-BIS-Volume-2-1-.docx"
+  },
+  {
+    "volume": 3,
+    "path": "content/sources/volume-3.docx",
+    "sha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f",
+    "uploadedName": "02-BIS-Volume-3-1-.docx"
+  }
+]

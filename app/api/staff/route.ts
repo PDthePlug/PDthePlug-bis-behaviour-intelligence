@@ -71,13 +71,25 @@ async function staffAudit(
   });
 }
 
+async function facilitatorCohortAccess(identity: Identity) {
+  const assignments = await getDb().select({ scopeId: roleAssignments.scopeId })
+    .from(roleAssignments).where(and(
+      eq(roleAssignments.role, "FACILITATOR"), eq(roleAssignments.status, "ACTIVE"),
+      eq(roleAssignments.scopeType, "COHORT"),
+      or(eq(roleAssignments.userId, identity.id), eq(roleAssignments.principalEmail, identity.email)),
+    ));
+  const primary = eq(pilotCohorts.facilitatorEmail, identity.email);
+  return assignments.length ? or(primary, inArray(pilotCohorts.id, assignments.map(row => row.scopeId))) : primary;
+}
+
 async function assignedCohort(identity: Identity, cohortId: string) {
+  const access = await facilitatorCohortAccess(identity);
   const [cohort] = await getDb()
     .select()
     .from(pilotCohorts)
     .where(and(
       eq(pilotCohorts.id, cohortId),
-      eq(pilotCohorts.facilitatorEmail, identity.email),
+      access,
       eq(pilotCohorts.status, "ACTIVE"),
     ))
     .limit(1);
@@ -283,11 +295,12 @@ async function adminSnapshot() {
 
 async function facilitatorSnapshot(identity: Identity) {
   const db = getDb();
+  const access = await facilitatorCohortAccess(identity);
   const cohorts = await db
     .select()
     .from(pilotCohorts)
     .where(and(
-      eq(pilotCohorts.facilitatorEmail, identity.email),
+      access,
       eq(pilotCohorts.status, "ACTIVE"),
     ))
     .orderBy(asc(pilotCohorts.name));

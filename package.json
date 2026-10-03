@@ -11,10 +11,12 @@
     "prebuild": "npm run content:compile",
     "build": "next build",
     "start": "next start",
-    "vercel-build": "npm run lint && npm run test:acceptance && next build",
+    "vercel-build": "npm run lint && npm run test:acceptance && npm run audit:source && next build",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && node --test tests/*.test.mjs",
     "test:acceptance": "node --test tests/*.test.mjs",
+    "audit:source": "node scripts/audit-canonical-sources.mjs",
+    "test:browser": "playwright test",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
   "dependencies": {
@@ -46,6 +48,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",

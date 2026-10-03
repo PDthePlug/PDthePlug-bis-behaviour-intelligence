@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "tests/browser/harness/.next/**",
+    "tests/browser/harness/next-env.d.ts",
+    "test-results/**",
+    "playwright-report/**",
   ]),
   {
     files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],

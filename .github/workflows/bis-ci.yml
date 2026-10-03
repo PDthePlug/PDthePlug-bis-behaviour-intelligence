@@ -37,8 +37,26 @@ jobs:
       - name: Acceptance
         run: npm run test:acceptance
 
+      - name: Canonical manuscript interactions
+        run: npm run audit:source
+
       - name: TypeScript
         run: npx tsc --noEmit
 
       - name: Build
         run: npm run build
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser acceptance
+        run: npm run test:browser
+
+      - name: Browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-acceptance
+          path: |
+            playwright-report/
+            test-results/

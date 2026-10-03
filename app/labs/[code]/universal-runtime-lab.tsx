@@ -19,6 +19,7 @@ import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentatio
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
 type Snapshot = {
+  progressCompatibility?: { baselineAccepted: boolean; completedInvestigations: number[] };
   definition: UniversalLabPackage;
   version: string;
   identity: { id: string; displayName: string };
@@ -534,6 +535,7 @@ function baselinePrompts(definition: UniversalLabPackage) {
 }
 
 function baselineComplete(snapshot: Snapshot) {
+  if (snapshot.progressCompatibility?.baselineAccepted) return true;
   const required = baselinePrompts(snapshot.definition).filter((prompt) => prompt.required !== false && prompt.readOnly !== true);
   return required.length === 0 || required.every((prompt) => Boolean(snapshot.responses[prompt.id]));
 }
@@ -734,17 +736,19 @@ function UniversalInvestigationForm({
     ? null
     : availableExperimentDay;
   const visiblePrompts = availableLabPrompts(snapshot.definition, step, availableExperimentDay, previewMode);
+  const previouslyCompleted = snapshot.progressCompatibility?.completedInvestigations.includes(step) ?? false;
   const ready = useMemo(
     () => visiblePrompts.every((prompt) => {
-      if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return true;
+      if (previouslyCompleted || prompt.readOnly || !prompt.required || passed.has(prompt.id)) return true;
       const value = values[prompt.id] ?? "";
       return validPromptResponse(prompt, value, "ANSWERED");
     }),
-    [passed, values, visiblePrompts],
+    [passed, values, visiblePrompts, previouslyCompleted],
   );
 
   const items = () => visiblePrompts
     .filter((prompt) => !prompt.readOnly)
+    .filter((prompt) => !previouslyCompleted || passed.has(prompt.id) || Boolean((values[prompt.id] ?? "").trim()))
     .map((prompt) => ({
       semanticFieldId: prompt.id,
       value: values[prompt.id] ?? "",
@@ -752,7 +756,7 @@ function UniversalInvestigationForm({
     }));
 
   const missingRequiredPrompts = visiblePrompts.filter((prompt) => {
-    if (prompt.readOnly || !prompt.required || passed.has(prompt.id)) return false;
+    if (previouslyCompleted || prompt.readOnly || !prompt.required || passed.has(prompt.id)) return false;
     const current = values[prompt.id] ?? "";
     return !validPromptResponse(prompt, current, "ANSWERED");
   });

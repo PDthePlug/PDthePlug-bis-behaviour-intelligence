@@ -43,3 +43,9 @@ next-env.d.ts
 /.npm-cache/
 /outputs/
 /work/
+/playwright-report/
+/test-results/
+/supabase/.temp/
+/tests/browser/harness/.next/
+/tests/browser/harness/node_modules/
+/tests/browser/harness/next-env.d.ts

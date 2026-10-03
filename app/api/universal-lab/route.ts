@@ -1,3 +1,4 @@
+import { labCompletionRequirements, labSubmissionDefinition, labStageCompleted } from "../../../lib/lab-progress-compatibility.mjs";
 import { requiredLabPromptIds, validateLabSubmission } from "../../../lib/lab-interaction-contract.mjs";
 import { validPromptResponse } from "../../../lib/evidence-validation.mjs";
 import { sanitizeRuntimePackage } from "../../../lib/content-html.mjs";
@@ -265,6 +266,13 @@ async function snapshot(userId: string, code: string) {
     eq(labEnrollments.labVersion, runtime.version.version),
   )).limit(1);
 
+  const baselineSaves = enrolment && enrolment.currentInvestigation <= 1
+    ? await db.select().from(auditEvents).where(and(
+        eq(auditEvents.actorId, userId), eq(auditEvents.objectId, enrolment.id),
+        eq(auditEvents.action, "UNIVERSAL_LAB_BASELINE_SAVED"),
+      )).limit(1) : [];
+  const baselineAccepted = Boolean(enrolment && (enrolment.currentInvestigation > 1 || enrolment.status === "COMPLETED" || baselineSaves.length));
+
   const rows = await db.select().from(responses).where(and(
     eq(responses.userId, userId),
     eq(responses.labCode, code),
@@ -328,6 +336,7 @@ async function snapshot(userId: string, code: string) {
       experimentStartedAt: enrolment.experimentStartedAt,
       completedAt: enrolment.completedAt,
     } : null,
+    progressCompatibility: { baselineAccepted, completedInvestigations: enrolment ? runtime.definition.investigations.filter((stage) => stage.number < enrolment.currentInvestigation).map((stage) => stage.number) : [] },
     responses: latest,
     computed,
     measurements,
@@ -384,7 +393,7 @@ async function postHandler(request: Request) {
         updatedAt: now,
       }).onConflictDoUpdate({
         target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
-        set: { status: "IN_PROGRESS", updatedAt: now },
+        set: { updatedAt: now },
       });
       await audit(identity.id, "UNIVERSAL_LAB_OPENED", "LAB_ENROLLMENT", id, { labCode: code, labVersion: runtime.version.version });
       return Response.json(await snapshot(identity.id, code));
@@ -405,11 +414,11 @@ async function postHandler(request: Request) {
       }
       const progress = await snapshot(identity.id, code);
       if (investigation > (progress.enrolment?.currentInvestigation ?? enrolment.currentInvestigation)) throw new Error("Complete the current investigation before moving ahead.");
-      if (investigation > 0 && runtime.definition.presentationBaseline) {
+      if (investigation > 0 && runtime.definition.presentationBaseline && !progress.progressCompatibility.baselineAccepted) {
         validateLabSubmission(runtime.definition, 0, 0, [], progress.responses);
       }
       const items = Array.isArray(body.items) ? body.items : [];
-      if (!items.length || items.length > 60) throw new Error("Save between 1 and 60 responses.");
+      if (items.length > 60 || (!items.length && !labStageCompleted(enrolment, investigation, progress.progressCompatibility.baselineAccepted))) throw new Error("Save between 1 and 60 responses.");
       const availableExperimentDay = runtime.definition.runtimeProfile === "UNIVERSAL_V2" && runtime.definition.experiment
         ? experimentCalendarDay(
             enrolment.experimentStartedAt,
@@ -432,7 +441,7 @@ async function postHandler(request: Request) {
       }
       const existing = progress;
       const validatedItems = validateLabSubmission(
-        runtime.definition, investigation, availableExperimentDay, items, existing.responses,
+        labSubmissionDefinition(runtime.definition, enrolment, investigation, progress.progressCompatibility.baselineAccepted), investigation, availableExperimentDay, items, existing.responses,
       );
       const now = new Date().toISOString();
 
@@ -550,6 +559,8 @@ async function postHandler(request: Request) {
           investigation,
           runtimeProfile: runtime.definition.runtimeProfile,
           nextInvestigation,
+          presentationVersion: runtime.definition.presentationVersion,
+          requiredPromptIds: requiredFor(runtime.definition, investigation, availableExperimentDay),
         },
       );
       return Response.json(await snapshot(identity.id, code));
@@ -564,22 +575,8 @@ async function postHandler(request: Request) {
       ) {
         throw new Error("Complete the real-world experiment before finishing this Lab.");
       }
-      const required = [
-        ...baselinePrompts(runtime.definition)
-          .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
-          .map((prompt) => prompt.id),
-        ...runtime.definition.investigations.flatMap((investigation) =>
-          investigation.prompts
-            .filter((prompt) => prompt.required !== false && prompt.readOnly !== true)
-            .filter(() =>
-              !(
-                runtime.definition.runtimeProfile === "UNIVERSAL_V2"
-                && investigation.number === runtime.definition.experiment?.investigation
-              ),
-            )
-            .map((prompt) => prompt.id),
-        ),
-      ];
+      if (enrolment.currentInvestigation < 9) throw new Error("Complete the current investigation before finishing this Lab.");
+      const required = labCompletionRequirements(runtime.definition, enrolment, current.progressCompatibility.baselineAccepted);
       const registry = promptRegistry(runtime.definition);
       const missing = required.filter((id) => {
         const response = current.responses[id];
