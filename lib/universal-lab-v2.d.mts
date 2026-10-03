@@ -86,6 +86,11 @@ export function universalExperimentEvidenceProgress(
   todayEvidenceRecorded: boolean;
   evidenceWindowCount?: number;
 };
+export function universalExperimentReviewReady(
+  definition: Parameters<typeof universalExperimentEvidenceProgress>[0],
+  responses: Record<string, { status?: string }>,
+  availableExperimentDay?: number,
+): boolean;
 export function v2RequiredPromptIds(
   definition: { investigations?: unknown[] },
   investigationNumber: number,
