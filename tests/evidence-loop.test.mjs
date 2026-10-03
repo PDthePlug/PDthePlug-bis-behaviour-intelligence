@@ -44,3 +44,18 @@ test("learner portfolio is built from evidence and measurements without returnin
   assert.match(profile, /evidence anchors/);
   assert.match(profile, /calculated measures/);
 });
+
+
+test("Profile loads identity and roles without downloading private Lab responses", async () => {
+  const [profileUi, profileRoute] = await Promise.all([
+    source("app/profile/profile-dashboard.tsx"),
+    source("app/api/profile/route.ts"),
+  ]);
+
+  assert.match(profileUi, /fetch\("\/api\/profile"/);
+  assert.doesNotMatch(profileUi, /fetch\("\/api\/bis"/);
+  assert.match(profileRoute, /displayName: learners\.displayName/);
+  assert.match(profileRoute, /deliveryEdition: learners\.deliveryEdition/);
+  assert.match(profileRoute, /getRoles\(identity\)/);
+  assert.doesNotMatch(profileRoute, /responses|evidenceRecords|measurementValues|companionTurns/);
+});
