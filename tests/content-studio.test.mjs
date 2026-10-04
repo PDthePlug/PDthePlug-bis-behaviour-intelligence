@@ -47,7 +47,7 @@ test("new content follows create, edition upload, compile, approve and explicit 
     source("app/api/content-studio/route.ts"),
     source("app/content-studio/content-studio.tsx"),
   ]);
-  for (const action of ["createItem", "createVersion", "attachSource", "compileVersion", "approveVersion", "activateVersion", "reopenVersion"]) {
+  for (const action of ["createItem", "createVersion", "attachSource", "compileVersion", "approveVersion", "activateVersion", "reopenVersion", "unpublishItem"]) {
     assert.ok(api.includes('action === "' + action + '"'));
   }
   assert.match(ui, /action: "createItem"/);
@@ -237,4 +237,24 @@ test("Content Studio preview tolerates encoded version IDs and keeps the final p
   assert.match(ui, /<PackageCheck \/> Publish/);
   assert.match(ui, /\/content-studio\/preview\/\$\{entry\.id\}/);
   assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(entry\.id\)\}/);
+});
+
+
+test("Content Studio can safely re-prepare reviewed drafts and take published content offline", async () => {
+  const [api, ui, migration] = await Promise.all([
+    source("app/api/content-studio/route.ts"),
+    source("app/content-studio/content-studio.tsx"),
+    source("supabase/migrations/20261004033000_content_activation_offline_state.sql"),
+  ]);
+
+  assert.match(api, /\["DRAFT", "VALIDATED", "APPROVED"\]\.includes\(version\.status\)/);
+  assert.match(api, /reason: "prepare-again"/);
+  assert.match(api, /action === "unpublishItem"/);
+  assert.match(api, /status: "INACTIVE"/);
+  assert.match(ui, /Edit this update/);
+  assert.match(ui, /Take offline/);
+  assert.match(ui, /Publishing steps/);
+  assert.match(migration, /'INACTIVE'/);
+  assert.match(migration, /content_runtime_activation_status_check/);
+  assert.match(migration, /content_edition_activations_status_check/);
 });
