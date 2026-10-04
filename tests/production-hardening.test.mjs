@@ -10,7 +10,8 @@ test("application-wide browser security headers protect every route", async () =
   for (const header of ["X-Content-Type-Options", "X-Frame-Options", "Content-Security-Policy", "Referrer-Policy", "Permissions-Policy", "Strict-Transport-Security"]) {
     assert.match(source, new RegExp(header));
   }
-  assert.match(source, /frame-ancestors 'none'/);
+  assert.match(source, /X-Frame-Options", value: "SAMEORIGIN"/);
+  assert.match(source, /frame-ancestors 'self'/);
   assert.match(source, /VERCEL_ENV === "production"/);
 });
 
@@ -56,4 +57,14 @@ test("evidence Storage migration preserves legacy owner access while keeping upl
   assert.match(migration, /create policy bis_evidence_delete/);
   assert.doesNotMatch(migration, /create policy bis_evidence_update/i);
   assert.match(migration, /storage\.filename\(name\) ~ '\^\[1-5\]/);
+});
+
+
+test("Content Studio learner previews remain embeddable only by BIS itself", async () => {
+  const config = await read("next.config.ts");
+  const preview = await read("app/content-studio/preview/[versionId]/preview-workspace.tsx");
+  assert.match(config, /X-Frame-Options", value: "SAMEORIGIN"/);
+  assert.match(config, /frame-ancestors 'self'/);
+  assert.match(preview, /<iframe/);
+  assert.match(preview, /content-studio\/preview/);
 });
