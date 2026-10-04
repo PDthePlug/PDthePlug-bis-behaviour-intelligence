@@ -371,6 +371,27 @@ export function ContentStudio() {
   const workingVersion = selected?.versions.find((entry) => ["DRAFT", "VALIDATED", "APPROVED"].includes(entry.status)) ?? null;
   const liveVersion = selected?.versions.find((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") ?? null;
   const offlinePublishedVersion = selected?.versions.find((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "READY") ?? null;
+  const actionVersion = workingVersion ?? offlinePublishedVersion ?? liveVersion;
+  const actionVersionCanPreview = Boolean(
+    actionVersion
+    && actionVersion.compilerStatus === "COMPILED"
+    && actionVersion.compilerCurrent
+    && actionVersion.artifacts.length,
+  );
+  const actionVersionCanPublish = Boolean(
+    actionVersion
+    && ["VALIDATED", "APPROVED", "PUBLISHED"].includes(actionVersion.status)
+    && actionVersion.runtimeStatus === "READY"
+    && actionVersion.uat?.status === "PASSED",
+  );
+  const actionPreviewHref = actionVersion && selected
+    ? selected.kind === "LAB"
+      ? `/content-studio/preview/${actionVersion.id}?kind=LAB&code=${encodeURIComponent(selected.code)}`
+      : (() => {
+          const edition = actionVersion.artifacts.find((artifact) => artifact.deliveryEdition)?.deliveryEdition ?? "school";
+          return `/content-studio/preview/${actionVersion.id}?kind=LEARNING_MODULE&code=${encodeURIComponent(selected.code)}&edition=${edition}`;
+        })()
+    : null;
 
   function chooseCode(nextCode: string) {
     setSelectedCode(nextCode);
