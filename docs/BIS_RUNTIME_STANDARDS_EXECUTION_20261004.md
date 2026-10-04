@@ -43,6 +43,15 @@ These are fresh results from the recovered candidate; earlier lost-workspace
 results are not used as acceptance evidence. GitHub CI and deployment results
 must be checked separately on the pushed commit.
 
+PR #108 contains this candidate. Its first Vercel preview passed the 553
+acceptance tests and 32 source audits, then failed at prerendering because this
+new branch had no Supabase environment configuration. The existing staging
+public URL/key were copied into three **branch-scoped preview-only** variables:
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and
+`NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE=false`. Production variables and other
+branches were not changed. A documentation commit triggers the corrected preview;
+that deployment and exact-head GitHub CI must be checked before preview claims.
+
 The three canonical Word files were byte-checked against the supplied project
 sources: Volume 1, Volume 2 and Volume 3 are unchanged (101, 134 and 171 tables).
 The source audit exercises the real adapters, compiler, presentation and save
