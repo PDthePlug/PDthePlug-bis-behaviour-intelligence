@@ -73,3 +73,6 @@
   .profile-metric-list div{grid-template-columns:1fr!important;gap:5px}
   .profile-metric-list dd{justify-items:start}
 }
+
+.profile-evidence-guidance { padding: 16px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
+.profile-evidence-guidance p, .profile-metric-list details { font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }

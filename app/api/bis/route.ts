@@ -32,6 +32,8 @@ import {
 import { initialDeliveryEdition } from "../../../lib/learning-foundation";
 import { computeHabitMetrics } from "../../../lib/bis-metrics.mjs";
 
+import { learnerEvidencePortfolio } from "@/lib/learner-evidence";
+import { evidenceCompanion } from "@/lib/evidence-companion.mjs";
 import { getExperimentTiming } from "../../../lib/experiment-timing.mjs";
 import { writeResponseBatches } from "../../../lib/response-write-batches.mjs";
 import { todayInZone, isIsoDate, ratingShift } from "../../../lib/evidence-validation.mjs";
@@ -176,25 +178,28 @@ function buildReminders(
 async function snapshot(identity: Identity) {
   const db = getDb();
   // These authenticated reads are independent; avoid serial network round trips.
-  const [roles, [profile], [consent], enrolment, responseRows, [hypothesis], [experiment],
+  const [roles, [profile], [consent], enrolment, responseRows, hypothesisRows, experimentRows,
     measurements, sourceRows, [storedNotificationPreference], memories, turns, supportRequests] = await Promise.all([
     getRoles(identity),
     db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1),
     db.select().from(consentRecords).where(eq(consentRecords.userId, identity.id)).orderBy(desc(consentRecords.createdAt)).limit(1),
     currentHabitEnrollment(identity.id),
     db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labCode, "HAB"))).orderBy(desc(responses.recordedAt)),
-    db.select().from(hypotheses).where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, "HAB"))).orderBy(desc(hypotheses.createdAt)).limit(1),
-    db.select().from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB"))).orderBy(desc(experiments.createdAt)).limit(1),
-    db.select().from(measurementValues).where(eq(measurementValues.userId, identity.id)),
+    db.select().from(hypotheses).where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, "HAB"))).orderBy(desc(hypotheses.createdAt)),
+    db.select().from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB"))).orderBy(desc(experiments.createdAt)),
+    db.select().from(measurementValues).where(eq(measurementValues.userId, identity.id)).orderBy(desc(measurementValues.calculatedAt)),
     db.select().from(measurementSources).where(eq(measurementSources.userId, identity.id)),
     db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, identity.id)).limit(1),
     db.select().from(memoryItems).where(eq(memoryItems.userId, identity.id)).orderBy(desc(memoryItems.createdAt)),
     db.select().from(companionTurns).where(eq(companionTurns.userId, identity.id)).orderBy(desc(companionTurns.generatedAt)).limit(12),
     db.select({ id: safeguardingCases.id, category: safeguardingCases.category, status: safeguardingCases.status, severity: safeguardingCases.severity, openedAt: safeguardingCases.openedAt, acknowledgedAt: safeguardingCases.acknowledgedAt, resolvedAt: safeguardingCases.resolvedAt, }).from(safeguardingCases).where(and( eq(safeguardingCases.learnerUserId, identity.id), eq(safeguardingCases.sourceType, "LEARNER_REQUEST"), )).orderBy(desc(safeguardingCases.openedAt)),
   ]);
+  const hypothesis = hypothesisRows.find(row => row.labVersion === enrolment?.labVersion);
+  const experiment = experimentRows.find(row => row.labVersion === enrolment?.labVersion);
+  const scopedMeasurements = [...new Map(measurements.filter(row => row.enrolmentId ? row.enrolmentId === enrolment?.id : row.experimentId ? row.experimentId === experiment?.id : row.labCode === "HAB" && row.labVersion === enrolment?.labVersion).reverse().map(row => [row.code, row])).values()];
   const responseMap: Record<string, { value: unknown; status: string; responseId: string; recordedAt: string }> = {};
   for (const row of responseRows) {
-    if (!responseMap[row.semanticFieldId] && row.responseStatus !== "SUPERSEDED") {
+    if (!responseMap[row.semanticFieldId] && row.responseStatus !== "SUPERSEDED" && row.labVersion === enrolment?.labVersion) {
       responseMap[row.semanticFieldId] = {
         value: parseValue(row.value),
         status: row.responseStatus,
@@ -283,7 +288,7 @@ async function snapshot(identity: Identity) {
     parameterVersions,
     programmeHandoff,
     measurements: Object.fromEntries(
-      measurements.map((item) => [
+      scopedMeasurements.map((item) => [
         item.code,
         {
           value: parseValue(item.value),
@@ -449,10 +454,11 @@ async function calculateExperiment(identity: Identity, experimentId: string, pre
         value: jsonValue(value),
         status,
         evidenceStrength,
+        formulaVersion: "habit-evidence:1.1",
       })
       .onConflictDoUpdate({
         target: [measurementValues.userId, measurementValues.experimentId, measurementValues.code],
-        set: { value: jsonValue(value), status, evidenceStrength, calculatedAt: new Date().toISOString() },
+        set: { value: jsonValue(value), status, evidenceStrength, formulaVersion: "habit-evidence:1.1", calculatedAt: new Date().toISOString() },
       });
     await db.delete(measurementSources).where(eq(measurementSources.measurementId, measurementId));
     const sourceValues = rows.flatMap((row) => {
@@ -759,6 +765,12 @@ async function postHandler(request: Request) {
         startDate,
         plannedEndDate,
       });
+      await db.insert(evidenceRecords).values({
+        id: crypto.randomUUID(), userId: identity.id, labCode: "HAB", labVersion: enrolment.labVersion,
+        contentReleaseId: enrolment.contentReleaseId ?? null, investigationId: "HAB.I6", semanticFieldId: "HAB.EXPERIMENT.PREDICTION",
+        sourceObjectType: "EXPERIMENT", sourceObjectId: id, provenance: "SR", valueType: "INTEGER",
+        value: jsonValue(prediction), sensitivity: "P2", status: "ACTIVE", occurredAt: now,
+      });
       await db.insert(experimentParameterVersions).values({
         id: crypto.randomUUID(),
         experimentId: id,
@@ -776,7 +788,7 @@ async function postHandler(request: Request) {
       await saveResponse(identity, { semanticFieldId: "HAB.I6.INSIGHT.TEXT", value: String(body.insight), investigation: 6 });
       await db
         .update(labEnrollments)
-        .set({ status: "EXPERIMENT_ACTIVE", currentInvestigation: 7, experimentStartedAt: now, updatedAt: now })
+        .set({ status: "EXPERIMENT_ACTIVE", currentInvestigation: 7, phaseACompletedAt: now, experimentStartedAt: now, updatedAt: now })
         .where(eq(labEnrollments.id, enrolment.id));
       await audit(identity.id, "EXPERIMENT_STARTED", "EXPERIMENT", id, { prediction, enrolmentVersion: enrolment.labVersion, experienceVersion: LAB_VERSION });
       await pilotEvent(identity.id, "EXPERIMENT_STARTED", "EXPERIMENT", id, { prediction, plannedDays, enrolmentVersion: enrolment.labVersion, experienceVersion: LAB_VERSION });
@@ -803,6 +815,7 @@ async function postHandler(request: Request) {
         throw new Error("Only today’s experiment evidence can be recorded. Future days unlock on their calendar day, and missed past days remain missing evidence.");
       }
       const cueOccurred = body.targetConditionOccurred === true;
+      if (cueOccurred && typeof body.alternativeUsed !== "boolean") throw new Error("Record whether you used the alternative response for this opportunity.");
       const existing = await db
         .select()
         .from(experimentEvents)
@@ -1093,47 +1106,14 @@ async function postHandler(request: Request) {
     if (action === "companion") {
       const message = String(body.message ?? "").trim();
       if (!message) throw new Error("Ask a question about your investigation.");
-      const current = await snapshot(identity);
-      const lower = message.toLowerCase();
-      const cue = current.responses["HAB.CUE.TEXT"]?.value;
-      const reward = current.responses["HAB.REWARD.LESS_OBVIOUS"]?.value;
-      const evidence = current.responses["HAB.EVIDENCE.INITIAL"]?.value;
-      const challenging = current.responses["HAB.EVIDENCE.CHALLENGING"]?.value;
-      let reply = "What part of the pattern would be most useful to look at next: the cue, the reward, the cost, or what happened in the experiment?";
-      let mode = "CLARIFY";
-      let refs: string[] = [];
-      if (lower.includes("cue") || lower.includes("trigger")) {
-        reply = cue
-          ? `You recorded your cue as: “${String(cue)}”. Does that still fit, or has the experiment made it more specific?`
-          : "A cue is what tends to happen immediately before the pattern—such as a time, place, person, feeling, event or situation. What do you notice in your own situation?";
-        mode = cue ? "EVIDENCE_RETRIEVAL" : "CLARIFY";
-        refs = cue ? ["HAB.CUE.TEXT"] : [];
-      } else if (lower.includes("less obvious") || lower.includes("reward")) {
-        reply = reward
-          ? `You described the less-obvious reward as: “${String(reward)}”. That is your report, not a verdict. What evidence would support or challenge it?`
-          : "The obvious reward is usually what you can name quickly. A less-obvious reward is something the behaviour may do underneath—such as relief, escape, control or avoiding discomfort. Before more examples, what do you notice in your own situation?";
-        mode = reward ? "EVIDENCE_REVIEW" : "CLARIFY";
-        refs = reward ? ["HAB.REWARD.LESS_OBVIOUS"] : [];
-      } else if (lower.includes("evidence") || lower.includes("record")) {
-        reply = evidence
-          ? `Your first evidence record says: “${String(evidence)}”. Your experiment currently contains ${current.events.length} recorded day${current.events.length === 1 ? "" : "s"}.`
-          : "Your evidence will appear as you investigate. Start with one specific event, object, screenshot, message or record from the last seven days.";
-        mode = "EVIDENCE_RETRIEVAL";
-        refs = evidence ? ["HAB.EVIDENCE.INITIAL"] : [];
-      } else if (lower.includes("challenge") || lower.includes("wrong") || lower.includes("contradiction")) {
-        reply = challenging
-          ? `You recorded this challenging evidence: “${String(challenging)}”. What exception does it reveal?`
-          : current.hypothesis
-            ? `Your own challenge test is: “${current.hypothesis.falsificationStatement}”. What have you observed that might make the original equation less convincing?`
-            : "A useful explanation needs a way to be challenged. What would you expect to see if your current explanation were incomplete?";
-        mode = "HYPOTHESIS_EXAMINATION";
-        refs = challenging ? ["HAB.EVIDENCE.CHALLENGING"] : [];
-      }
+      const [current, labs] = await Promise.all([snapshot(identity), learnerEvidencePortfolio(identity.id)]);
+      const intelligence = labs.find(lab => lab.enrolmentId === current.enrolment?.id)?.intelligence ?? null;
+      const result = evidenceCompanion(message, { responses: current.responses, events: current.events, intelligence });
       await db.insert(companionTurns).values([
-        { id: crypto.randomUUID(), userId: identity.id, role: "USER", content: message, mode: "USER_MESSAGE" },
-        { id: crypto.randomUUID(), userId: identity.id, role: "ASSISTANT", content: reply, mode, evidenceRefs: JSON.stringify(refs) },
+        { id: crypto.randomUUID(), userId: identity.id, role: "USER", content: message, mode: "USER_MESSAGE", evidenceRefs: "[]", policyVersion: result.interpretation.modelVersion },
+        { id: crypto.randomUUID(), userId: identity.id, role: "ASSISTANT", content: result.reply, mode: result.mode, evidenceRefs: JSON.stringify(result.evidenceRefs), policyVersion: result.interpretation.modelVersion },
       ]);
-      return Response.json({ reply, mode, evidenceRefs: refs });
+      return Response.json(result);
     }
 
     return Response.json({ error: "Unknown action." }, { status: 400 });

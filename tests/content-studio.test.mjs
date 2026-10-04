@@ -110,8 +110,8 @@ test("Content Studio presents a shelf-first founder flow and supports pasted tex
     source("app/api/content-studio/route.ts"),
   ]);
   assert.match(ui, /Choose a BIS title and add the content that is ready/);
-  assert.match(ui, /BIS keeps the version number for you/);
-  assert.match(ui, /Start adding content/);
+  assert.match(api, /requestedVersion \|\| nextContentVersion/);
+  assert.match(ui, /What are you updating/);
   assert.doesNotMatch(ui, /<label>Version<Input/);
   assert.match(ui, /Paste text/);
   assert.match(ui, /action: "compileVersion"/);
@@ -167,7 +167,7 @@ test("stale compiler artifacts cannot be previewed approved or published", async
   assert.match(preview, /version\.compilerVersion !== CONTENT_COMPILER_VERSION/);
   assert.match(preview, /Prepare the version again before reviewing it/);
   assert.match(ui, /Re-prepare required/);
-  assert.match(ui, /Prepare again/);
+  assert.match(ui, /Process again/);
   assert.match(ui, /Your uploaded source stays in place/);
 });
 
@@ -234,7 +234,7 @@ test("Content Studio preview tolerates encoded version IDs and keeps the final p
   assert.match(ui, /action: "signOffUat"/);
   assert.match(ui, /action: "approveVersion"/);
   assert.match(ui, /action: "activateVersion"/);
-  assert.match(ui, /<PackageCheck \/> Publish/);
+  assert.match(ui, /<PackageCheck \/>[\s\S]*"Republish" : "Publish"/);
   assert.match(ui, /\/content-studio\/preview\/\$\{entry\.id\}/);
   assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(entry\.id\)\}/);
 });
@@ -244,7 +244,7 @@ test("Content Studio exposes a simple edit preview publish and unpublish control
   const ui = await source("app/content-studio/content-studio.tsx");
   assert.match(ui, /Edit content/);
   assert.match(ui, />Preview</);
-  assert.match(ui, />Publish</);
+  assert.match(ui, /"Republish" : "Publish"/);
   assert.match(ui, /Unpublish/);
   assert.match(ui, /Currently offline/);
   assert.match(ui, /Published to learners/);
@@ -265,5 +265,5 @@ test("published Content Studio source can seed an editable version and titles ca
   assert.match(api, /action === "unpublishItem"/);
   assert.match(api, /CONTENT_ITEM_UNPUBLISHED/);
   assert.match(api, /status: "SUPERSEDED"/);
-  assert.match(api, /status === "PUBLISHED" && version\.runtimeStatus === "READY"/);
+  assert.match(api, /version\.status !== "PUBLISHED" \|\| version\.runtimeStatus !== "READY"/);
 });

@@ -1,3 +1,4 @@
+import { programmeEvidenceGuidance } from "./evidence-reporting.mjs";
 type Outcome = {
   cohort: {
     id: string;
@@ -871,6 +872,8 @@ function drawExecutiveSummary(canvas: ReportCanvas, outcome: Outcome) {
     4
   );
 
+  const guidance = programmeEvidenceGuidance(outcome);
+  if (guidance) canvas.callout(guidance.title, `${guidance.summary} ${guidance.nextAction}`, "warm");
   canvas.text("KEY FINDINGS", {
     size: 8.5,
     bold: true,

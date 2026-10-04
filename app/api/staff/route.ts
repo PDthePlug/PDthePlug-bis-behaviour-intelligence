@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, inArray, ne, or } from "../../../db/query";
 import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { getDb, withSupabaseRequest } from "../../../db";
+import { structuralSupport } from "@/lib/evidence-reporting.mjs";
 import { scopedStaffExperimentProgress as staffExperimentProgress } from "../../../db/staff-progress";
 import {
   auditEvents,
@@ -157,7 +158,7 @@ async function assignLab(identity: Identity, learner: typeof learners.$inferSele
     });
 }
 
-async function progressRows(userIds: string[], labCode?: string) {
+async function progressRows(userIds: string[], labCode?: string, labVersion?: string) {
   if (userIds.length === 0) return [];
   const db = getDb();
   const learnerRows = await db
@@ -179,12 +180,13 @@ async function progressRows(userIds: string[], labCode?: string) {
       status: labEnrollments.status,
       currentInvestigation: labEnrollments.currentInvestigation,
       startedAt: labEnrollments.startedAt,
+      phaseACompletedAt: labEnrollments.phaseACompletedAt,
       updatedAt: labEnrollments.updatedAt,
       completedAt: labEnrollments.completedAt,
     })
     .from(labEnrollments)
     .where(labCode
-      ? and(inArray(labEnrollments.userId, userIds), eq(labEnrollments.labCode, labCode))
+      ? and(inArray(labEnrollments.userId, userIds), eq(labEnrollments.labCode, labCode), ...(labVersion ? [eq(labEnrollments.labVersion, labVersion)] : []))
       : inArray(labEnrollments.userId, userIds))
     .orderBy(desc(labEnrollments.updatedAt));
   const experimentRows = await db
@@ -199,7 +201,7 @@ async function progressRows(userIds: string[], labCode?: string) {
     })
     .from(staffExperimentProgress)
     .where(labCode
-      ? and(inArray(staffExperimentProgress.userId, userIds), eq(staffExperimentProgress.labCode, labCode))
+      ? and(inArray(staffExperimentProgress.userId, userIds), eq(staffExperimentProgress.labCode, labCode), ...(labVersion ? [eq(staffExperimentProgress.labVersion, labVersion)] : []))
       : inArray(staffExperimentProgress.userId, userIds))
     .orderBy(desc(staffExperimentProgress.createdAt));
   const eventRows = await db
@@ -230,6 +232,7 @@ async function progressRows(userIds: string[], labCode?: string) {
         recordedDays: events.length,
         opportunityCount,
       } : null,
+      supportGuidance: structuralSupport(enrolment, experiment ? { recordedDays: events.length } : null),
       lastActivityAt: lastEventAt ?? enrolment?.updatedAt ?? null,
     };
   });
@@ -310,7 +313,7 @@ async function facilitatorSnapshot(identity: Identity) {
       const cohortUserIds = members
         .filter((member) => member.cohortId === cohort.id)
         .map((member) => member.learnerUserId);
-      const rows = await progressRows([...new Set(cohortUserIds)], cohort.labCode);
+      const rows = await progressRows([...new Set(cohortUserIds)], cohort.labCode, cohort.labVersion);
       return rows.map((row) => ({
         ...row,
         cohortId: cohort.id,
