@@ -110,8 +110,8 @@ test("Content Studio presents a shelf-first founder flow and supports pasted tex
     source("app/api/content-studio/route.ts"),
   ]);
   assert.match(ui, /Choose a BIS title and add the content that is ready/);
-  assert.match(ui, /BIS keeps the version number for you/);
-  assert.match(ui, /Start adding content/);
+  assert.match(ui, /You do not need all three learning editions at once/);
+  assert.match(ui, /Add content/);
   assert.doesNotMatch(ui, /<label>Version<Input/);
   assert.match(ui, /Paste text/);
   assert.match(ui, /action: "compileVersion"/);
