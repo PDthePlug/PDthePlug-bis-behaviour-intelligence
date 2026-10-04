@@ -225,6 +225,7 @@ function formatDate(value: string | null | undefined) {
 
 function versionState(entry: ContentVersion) {
   if (entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") return { label: "Published", tone: "good" };
+  if (entry.status === "PUBLISHED" && entry.runtimeStatus !== "LIVE") return { label: "Offline", tone: "neutral" };
   if (entry.compilerStatus === "COMPILED" && !entry.compilerCurrent) return { label: "Re-prepare required", tone: "bad" };
   if (entry.status === "APPROVED") return { label: "Ready to publish", tone: "good" };
   if (entry.compilerStatus === "COMPILED" && entry.compilerCurrent) return { label: "Ready to review", tone: "good" };
@@ -368,6 +369,12 @@ export function ContentStudio() {
     ?? activeItems.find((item) => item.code === selectedCode)
     ?? activeItems[0]
     ?? null;
+  const workingVersion = selected?.versions.find((entry) => ["DRAFT", "VALIDATED", "APPROVED"].includes(entry.status)) ?? null;
+  const selectedIsLive = Boolean(selected && (
+    selected.activeActivation
+    || selected.activeEditions.length
+    || selected.versions.some((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE")
+  ));
 
   function chooseCode(nextCode: string) {
     setSelectedCode(nextCode);
@@ -778,6 +785,46 @@ export function ContentStudio() {
                 <span className="content-detail-mark">{selected.kind === "LAB" ? <FlaskConical /> : <BookOpen />}</span>
               </header>
 
+              <section className="content-studio-card content-publishing-control">
+                <div className="content-publishing-summary">
+                  <div>
+                    <p className="eyebrow">Publishing</p>
+                    <h3>{selectedIsLive ? "This title is live" : workingVersion ? "Finish this update" : "No update is open"}</h3>
+                    <p>
+                      {selectedIsLive
+                        ? "Learners can open the published version. Start a new update to change it without editing the live record."
+                        : workingVersion
+                          ? "Add or adjust the source, prepare it, preview it, then publish when the final check is complete."
+                          : "Start an update, add the content that is ready, preview it, and publish when you are satisfied."}
+                    </p>
+                  </div>
+                  <span className={selectedIsLive ? "content-live-state live" : "content-live-state"}>
+                    {selectedIsLive ? <><Check /> Live</> : <><LockKeyhole /> Offline</>}
+                  </span>
+                </div>
+                <div className="content-publishing-steps" aria-label="Publishing steps">
+                  <div className={workingVersion ? "active" : ""}><span>1</span><strong>Edit</strong><small>Add or change source</small></div>
+                  <div className={workingVersion?.compilerCurrent ? "active" : ""}><span>2</span><strong>Prepare</strong><small>Build the learner view</small></div>
+                  <div className={workingVersion?.uat?.status === "PASSED" ? "active" : ""}><span>3</span><strong>Preview</strong><small>Complete the final check</small></div>
+                  <div className={selectedIsLive ? "active" : ""}><span>4</span><strong>Publish</strong><small>Make it available</small></div>
+                </div>
+                <div className="content-publishing-actions">
+                  {selectedIsLive && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}><Eye /> Open learner view</Link></Button> : null}
+                  {workingVersion && ["VALIDATED", "APPROVED"].includes(workingVersion.status) ? (
+                    <Button variant="outline" disabled={saving} onClick={() => void act(
+                      { action: "reopenVersion", versionId: workingVersion.id },
+                      "Update reopened. You can edit the source again.",
+                    )}><FileText /> Edit this update</Button>
+                  ) : null}
+                  {selectedIsLive ? (
+                    <Button variant="outline" disabled={saving} onClick={() => void act(
+                      { action: "unpublishItem", itemId: selected.id },
+                      "Taken offline. The published record is preserved.",
+                    )}><LockKeyhole /> Take offline</Button>
+                  ) : null}
+                </div>
+              </section>
+
               <section className="content-studio-card version-create">
                 <div className="content-studio-section-title">
                   <div>
@@ -1096,10 +1143,14 @@ export function ContentStudio() {
                           </Button>
                         ) : null}
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? (
-                          <span className="activation-note">Need to change the content? Upload or paste into the edition above and BIS will reopen this update safely.</span>
+                          <Button variant="outline" disabled={busy} onClick={() => void act(
+                            { action: "reopenVersion", versionId: entry.id },
+                            "Update reopened. You can edit the source again.",
+                          )}><FileText /> Edit this update</Button>
                         ) : null}
                         {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Published</span> : null}
-                        {entry.status === "PUBLISHED" && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open learner view <ChevronRight /></Link></Button> : null}
+                        {entry.status === "PUBLISHED" && entry.runtimeStatus !== "LIVE" ? <span className="activation-note"><LockKeyhole /> Offline</span> : null}
+                        {entry.status === "PUBLISHED" && selected.routePath && entry.runtimeStatus === "LIVE" ? <Button asChild variant="outline"><Link href={selected.routePath}>Open learner view <ChevronRight /></Link></Button> : null}
                       </footer>
                     </article>
                   );
