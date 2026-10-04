@@ -225,6 +225,7 @@ function formatDate(value: string | null | undefined) {
 
 function versionState(entry: ContentVersion) {
   if (entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") return { label: "Published", tone: "good" };
+  if (entry.status === "PUBLISHED" && entry.runtimeStatus === "READY") return { label: "Offline", tone: "neutral" };
   if (entry.compilerStatus === "COMPILED" && !entry.compilerCurrent) return { label: "Re-prepare required", tone: "bad" };
   if (entry.status === "APPROVED") return { label: "Ready to publish", tone: "good" };
   if (entry.compilerStatus === "COMPILED" && entry.compilerCurrent) return { label: "Ready to review", tone: "good" };
@@ -1214,28 +1215,19 @@ export function ContentStudio() {
                           <Button disabled={busy || !hasAnySource} onClick={() => void act(
                             { action: "compileVersion", versionId: entry.id },
                             selected.kind === "LEARNING_MODULE"
-                              ? "Your uploaded edition is ready to preview."
-                              : "Your Lab is ready to preview.",
+                              ? "Content processed. Preview it before publishing."
+                              : "Lab processed. Preview it before publishing.",
                           )}>
-                            <PackageCheck /> {staleCompilation ? "Prepare again" : "Prepare preview again"}
-                          </Button>
-                        ) : null}
-                        {entry.compilerCurrent && entry.status === "VALIDATED" && finalCheckPassed ? (
-                          <Button disabled={busy} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Ready to publish.")}>
-                            <ShieldCheck /> Finish readying
-                          </Button>
-                        ) : null}
-                        {entry.compilerCurrent && entry.status === "VALIDATED" && !finalCheckPassed ? <span className="activation-note"><Eye /> Preview and complete the final check first.</span> : null}
-                        {entry.compilerCurrent && entry.status === "APPROVED" && finalCheckPassed ? (
-                          <Button disabled={busy} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, selected.kind === "LEARNING_MODULE" ? "Published the editions included in this version." : "Lab published.")}>
-                            <PackageCheck /> Publish
+                            <RefreshCw /> {entry.compilerStatus === "COMPILED" ? "Process again" : "Process content"}
                           </Button>
                         ) : null}
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? (
-                          <span className="activation-note">Need to change the content? Upload or paste into the edition above and BIS will reopen this update safely.</span>
+                          <Button variant="outline" disabled={busy} onClick={() => void editVersion(entry)}>
+                            <FileText /> Edit this update
+                          </Button>
                         ) : null}
-                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Published</span> : null}
-                        {entry.status === "PUBLISHED" && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open learner view <ChevronRight /></Link></Button> : null}
+                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Published to learners</span> : null}
+                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "READY" ? <span className="activation-note">Offline — use Republish above when ready.</span> : null}
                       </footer>
                     </article>
                   );
