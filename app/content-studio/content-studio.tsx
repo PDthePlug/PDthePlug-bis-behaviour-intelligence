@@ -381,9 +381,14 @@ export function ContentStudio() {
   );
   const actionVersionCanPublish = Boolean(
     actionVersion
-    && ["VALIDATED", "APPROVED", "PUBLISHED"].includes(actionVersion.status)
-    && actionVersion.runtimeStatus === "READY"
-    && actionVersion.uat?.status === "PASSED",
+    && (
+      (actionVersion.status === "PUBLISHED" && actionVersion.runtimeStatus === "READY")
+      || (
+        ["VALIDATED", "APPROVED"].includes(actionVersion.status)
+        && actionVersion.runtimeStatus === "READY"
+        && actionVersion.uat?.status === "PASSED"
+      )
+    ),
   );
   const actionPreviewHref = actionVersion && selected
     ? selected.kind === "LAB"
@@ -463,6 +468,10 @@ export function ContentStudio() {
   }
 
   async function publishVersion(entry: ContentVersion) {
+    if (entry.status === "PUBLISHED" && entry.runtimeStatus === "READY") {
+      await act({ action: "republishVersion", versionId: entry.id }, "Published again.");
+      return;
+    }
     if (entry.uat?.status !== "PASSED") {
       setError("Preview this version and complete the final check before publishing.");
       return;
@@ -473,11 +482,9 @@ export function ContentStudio() {
     }
     await act(
       { action: "activateVersion", versionId: entry.id },
-      entry.status === "PUBLISHED"
-        ? "Published again."
-        : selected?.kind === "LEARNING_MODULE"
-          ? "Published the learner edition."
-          : "Lab published.",
+      selected?.kind === "LEARNING_MODULE"
+        ? "Published the learner edition."
+        : "Lab published.",
     );
   }
 
