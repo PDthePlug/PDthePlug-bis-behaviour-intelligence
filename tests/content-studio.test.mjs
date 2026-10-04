@@ -167,7 +167,7 @@ test("stale compiler artifacts cannot be previewed approved or published", async
   assert.match(preview, /version\.compilerVersion !== CONTENT_COMPILER_VERSION/);
   assert.match(preview, /Prepare the version again before reviewing it/);
   assert.match(ui, /Re-prepare required/);
-  assert.match(ui, /Prepare again/);
+  assert.match(ui, /Process again/);
   assert.match(ui, /Your uploaded source stays in place/);
 });
 
