@@ -252,6 +252,15 @@ async function postHandler(request: Request) {
       if (!validVersion(version)) throw new Error("BIS could not create a safe version number for this update.");
       if (!CONTENT_SOURCE_FORMATS.includes(sourceFormat)) throw new Error("Use a Word document, PDF, pasted text, HTML, Markdown, BIS JSON or ZIP file.");
       if (releaseNotes.length > 1200) throw new Error("Keep release notes under 1,200 characters.");
+      let sourceVersion: typeof contentLibraryVersions.$inferSelect | null = null;
+      if (copyFromVersionId) {
+        [sourceVersion] = await db.select().from(contentLibraryVersions)
+          .where(and(eq(contentLibraryVersions.id, copyFromVersionId), eq(contentLibraryVersions.itemId, itemId)))
+          .limit(1);
+        if (!sourceVersion || sourceVersion.status !== "PUBLISHED") {
+          throw new Error("Choose the currently published version to start an editable update.");
+        }
+      }
       const id = `${itemId}:${version}`;
       await db.insert(contentLibraryVersions).values({
         id,
@@ -269,13 +278,7 @@ async function postHandler(request: Request) {
         updatedAt: new Date().toISOString(),
       });
       let copiedSourceKeys: string[] = [];
-      if (copyFromVersionId) {
-        const [sourceVersion] = await db.select().from(contentLibraryVersions)
-          .where(and(eq(contentLibraryVersions.id, copyFromVersionId), eq(contentLibraryVersions.itemId, itemId)))
-          .limit(1);
-        if (!sourceVersion || sourceVersion.status !== "PUBLISHED") {
-          throw new Error("Choose the currently published version to start an editable update.");
-        }
+      if (copyFromVersionId && sourceVersion) {
         const previousSources = await db.select().from(contentSourceFiles)
           .where(eq(contentSourceFiles.versionId, copyFromVersionId));
         if (previousSources.length) {
