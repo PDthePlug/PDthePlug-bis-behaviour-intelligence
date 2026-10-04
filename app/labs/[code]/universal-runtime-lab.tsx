@@ -110,9 +110,7 @@ function UniversalPrompt({
     && Number.isFinite(integerMax)
     && integerMax > integerMin
     && integerMax - integerMin <= 10
-    && /confidence|control|rating|agency|deliberate|clarity|certainty|awareness|how much|how strongly/i.test(
-      `${prompt.label} ${prompt.prompt}`,
-    );
+    && (prompt.controlRole === "RATING" || /confidence|control|rating|agency|deliberate|clarity|certainty|awareness|how much|how strongly/i.test(`${prompt.label} ${prompt.prompt}`));
 
   const titleId = `prompt-title-${prompt.id}`;
   const helpId = `prompt-help-${prompt.id}`;
@@ -505,7 +503,9 @@ function UniversalEvidenceTable({
                     <td data-prompt-id={prompt.id} key={columnIndex} data-label={header} className={`universal-table-response ${isPassed ? "passed" : ""}`}>
                       <label className="universal-table-field">
                         <span>{header}</span>
-                        {isPassed ? (
+                        {prompt.readOnly ? (
+                          <span className="universal-computed-value">{values[prompt.id] || "Waiting for the source evidence"}</span>
+                        ) : isPassed ? (
                           <small>Passed</small>
                         ) : prompt.type === "DATE" ? (
                           <Input
@@ -514,6 +514,14 @@ function UniversalEvidenceTable({
                             onChange={(event) => onValue(prompt.id, event.target.value)}
                             aria-label={prompt.prompt}
                           />
+                        ) : prompt.type === "INTEGER" && prompt.controlRole === "RATING" ? (
+                          <span className="universal-rating-options" role="group" aria-label={prompt.prompt}>
+                            {Array.from({ length: Number(prompt.max) - Number(prompt.min) + 1 }, (_, index) => Number(prompt.min) + index).map((option) => (
+                              <button type="button" key={option} aria-pressed={values[prompt.id] === String(option)} className={values[prompt.id] === String(option) ? "selected" : ""} onClick={() => onValue(prompt.id, String(option))}>{option}</button>
+                            ))}
+                          </span>
+                        ) : prompt.type === "INTEGER" ? (
+                          <Input type="number" min={prompt.min} max={prompt.max} step={1} value={values[prompt.id] ?? ""} onChange={(event) => onValue(prompt.id, event.target.value)} aria-label={prompt.prompt} />
                         ) : categoricalOptions.length ? (
                           <Select disabled={isPassed} value={values[prompt.id] ?? ""} onValueChange={(value) => onValue(prompt.id, value)}>
                             <SelectTrigger aria-label={prompt.prompt}><SelectValue placeholder="Choose" /></SelectTrigger>
@@ -533,10 +541,10 @@ function UniversalEvidenceTable({
                           />
                         )}
                       </label>
-                      <label className="universal-table-pass">
+                      {!prompt.readOnly ? <label className="universal-table-pass">
                         <Checkbox checked={isPassed} onCheckedChange={(checked) => onPass(prompt.id, checked === true)} />
                         <span>Prefer not to answer</span>
-                      </label>
+                      </label> : null}
                     </td>
                   );
                 })}
@@ -890,7 +898,7 @@ function UniversalInvestigationForm({
             key={block.id || `table-${index}`}
             block={block}
             promptById={promptById}
-            values={values}
+            values={{ ...values, ...Object.fromEntries(visiblePrompts.filter((prompt) => prompt.readOnly).map((prompt) => [prompt.id, valueOf(snapshot, prompt.id)])) }}
             passed={passed}
             onValue={updatePromptValue}
             onPass={updatePromptPass}

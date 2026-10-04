@@ -33,6 +33,7 @@ import { initialDeliveryEdition } from "../../../lib/learning-foundation";
 import { computeHabitMetrics } from "../../../lib/bis-metrics.mjs";
 
 import { getExperimentTiming } from "../../../lib/experiment-timing.mjs";
+import { writeResponseBatches } from "../../../lib/response-write-batches.mjs";
 import { todayInZone, isIsoDate, ratingShift } from "../../../lib/evidence-validation.mjs";
 
 import type { Identity } from "../../../lib/bis-access";
@@ -174,20 +175,23 @@ function buildReminders(
 
 async function snapshot(identity: Identity) {
   const db = getDb();
-  const roles = await getRoles(identity);
-  const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
-  const [consent] = await db
-    .select()
-    .from(consentRecords)
-    .where(eq(consentRecords.userId, identity.id))
-    .orderBy(desc(consentRecords.createdAt))
-    .limit(1);
-  const enrolment = await currentHabitEnrollment(identity.id);
-  const responseRows = await db
-    .select()
-    .from(responses)
-    .where(and(eq(responses.userId, identity.id), eq(responses.labCode, "HAB")))
-    .orderBy(desc(responses.recordedAt));
+  // These authenticated reads are independent; avoid serial network round trips.
+  const [roles, [profile], [consent], enrolment, responseRows, [hypothesis], [experiment],
+    measurements, sourceRows, [storedNotificationPreference], memories, turns, supportRequests] = await Promise.all([
+    getRoles(identity),
+    db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1),
+    db.select().from(consentRecords).where(eq(consentRecords.userId, identity.id)).orderBy(desc(consentRecords.createdAt)).limit(1),
+    currentHabitEnrollment(identity.id),
+    db.select().from(responses).where(and(eq(responses.userId, identity.id), eq(responses.labCode, "HAB"))).orderBy(desc(responses.recordedAt)),
+    db.select().from(hypotheses).where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, "HAB"))).orderBy(desc(hypotheses.createdAt)).limit(1),
+    db.select().from(experiments).where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB"))).orderBy(desc(experiments.createdAt)).limit(1),
+    db.select().from(measurementValues).where(eq(measurementValues.userId, identity.id)),
+    db.select().from(measurementSources).where(eq(measurementSources.userId, identity.id)),
+    db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, identity.id)).limit(1),
+    db.select().from(memoryItems).where(eq(memoryItems.userId, identity.id)).orderBy(desc(memoryItems.createdAt)),
+    db.select().from(companionTurns).where(eq(companionTurns.userId, identity.id)).orderBy(desc(companionTurns.generatedAt)).limit(12),
+    db.select({ id: safeguardingCases.id, category: safeguardingCases.category, status: safeguardingCases.status, severity: safeguardingCases.severity, openedAt: safeguardingCases.openedAt, acknowledgedAt: safeguardingCases.acknowledgedAt, resolvedAt: safeguardingCases.resolvedAt, }).from(safeguardingCases).where(and( eq(safeguardingCases.learnerUserId, identity.id), eq(safeguardingCases.sourceType, "LEARNER_REQUEST"), )).orderBy(desc(safeguardingCases.openedAt)),
+  ]);
   const responseMap: Record<string, { value: unknown; status: string; responseId: string; recordedAt: string }> = {};
   for (const row of responseRows) {
     if (!responseMap[row.semanticFieldId] && row.responseStatus !== "SUPERSEDED") {
@@ -199,18 +203,6 @@ async function snapshot(identity: Identity) {
       };
     }
   }
-  const [hypothesis] = await db
-    .select()
-    .from(hypotheses)
-    .where(and(eq(hypotheses.userId, identity.id), eq(hypotheses.labCode, "HAB")))
-    .orderBy(desc(hypotheses.createdAt))
-    .limit(1);
-  const [experiment] = await db
-    .select()
-    .from(experiments)
-    .where(and(eq(experiments.userId, identity.id), eq(experiments.labCode, "HAB")))
-    .orderBy(desc(experiments.createdAt))
-    .limit(1);
   const events = experiment
     ? await db
         .select()
@@ -232,19 +224,6 @@ async function snapshot(identity: Identity) {
         .where(and(eq(experimentParameterVersions.userId, identity.id), eq(experimentParameterVersions.experimentId, experiment.id)))
         .orderBy(experimentParameterVersions.version)
     : [];
-  const measurements = await db
-    .select()
-    .from(measurementValues)
-    .where(eq(measurementValues.userId, identity.id));
-  const sourceRows = await db
-    .select()
-    .from(measurementSources)
-    .where(eq(measurementSources.userId, identity.id));
-  const [storedNotificationPreference] = await db
-    .select()
-    .from(notificationPreferences)
-    .where(eq(notificationPreferences.userId, identity.id))
-    .limit(1);
   const notificationPreference = storedNotificationPreference ?? {
     userId: identity.id,
     ...defaultNotificationPreference,
@@ -286,33 +265,6 @@ async function snapshot(identity: Identity) {
             : "LAB",
   };
 
-  const memories = await db
-    .select()
-    .from(memoryItems)
-    .where(eq(memoryItems.userId, identity.id))
-    .orderBy(desc(memoryItems.createdAt));
-  const turns = await db
-    .select()
-    .from(companionTurns)
-    .where(eq(companionTurns.userId, identity.id))
-    .orderBy(desc(companionTurns.generatedAt))
-    .limit(12);
-  const supportRequests = await db
-    .select({
-      id: safeguardingCases.id,
-      category: safeguardingCases.category,
-      status: safeguardingCases.status,
-      severity: safeguardingCases.severity,
-      openedAt: safeguardingCases.openedAt,
-      acknowledgedAt: safeguardingCases.acknowledgedAt,
-      resolvedAt: safeguardingCases.resolvedAt,
-    })
-    .from(safeguardingCases)
-    .where(and(
-      eq(safeguardingCases.learnerUserId, identity.id),
-      eq(safeguardingCases.sourceType, "LEARNER_REQUEST"),
-    ))
-    .orderBy(desc(safeguardingCases.openedAt));
 
   return {
     identity,
@@ -390,16 +342,14 @@ async function saveResponse(
       if (typeof value !== "number" || !Number.isInteger(value) || (frequency ? value < 0 : (ratingShift(value, value) === null || (certainty && value > 5)))) throw new Error("Choose a valid rating.");
     }
   }
-  const enrolment = await currentHabitEnrollment(identity.id);
+  const [enrolment, [profile], [previous]] = await Promise.all([
+    currentHabitEnrollment(identity.id),
+    db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1),
+    db.select().from(responses)
+      .where(and(eq(responses.userId, identity.id), eq(responses.labCode, "HAB"), eq(responses.semanticFieldId, payload.semanticFieldId)))
+      .orderBy(desc(responses.recordedAt)).limit(1),
+  ]);
   if (!enrolment) throw new Error("Your Habit Lab enrolment could not be found.");
-  const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
-
-  const [previous] = await db
-    .select()
-    .from(responses)
-    .where(and(eq(responses.userId, identity.id), eq(responses.labCode, "HAB"), eq(responses.semanticFieldId, payload.semanticFieldId)))
-    .orderBy(desc(responses.recordedAt))
-    .limit(1);
 
   const responseId = crypto.randomUUID();
   if (previous && previous.responseStatus !== "SUPERSEDED") {
@@ -681,9 +631,8 @@ async function postHandler(request: Request) {
     if (action === "saveResponses") {
       const items = Array.isArray(body.items) ? body.items : [];
       if (items.length === 0 || items.length > 30) throw new Error("Provide between 1 and 30 evidence responses.");
-      for (const item of items) {
-        if (!item || typeof item !== "object") throw new Error("One of the evidence responses is invalid.");
-        const value = item as Record<string, unknown>;
+      if (items.some((item) => !item || typeof item !== "object")) throw new Error("One of the evidence responses is invalid.");
+      await writeResponseBatches(items as Record<string, unknown>[], async (value) => {
         await saveResponse(identity, {
           semanticFieldId: String(value.semanticFieldId ?? ""),
           value: value.value,
@@ -691,7 +640,7 @@ async function postHandler(request: Request) {
           investigation: Number(value.investigation ?? 0),
           occurredAt: typeof value.occurredAt === "string" ? value.occurredAt : undefined,
         });
-      }
+      });
       const finalFields = Object.entries(fieldRegistry).filter(([, field]) => field.investigation === 9).map(([id]) => id);
       const touchesFinal = items.some((item) => item && typeof item === "object" && finalFields.includes(String((item as Record<string, unknown>).semanticFieldId)));
       if (touchesFinal) {

@@ -184,7 +184,7 @@ test("Content Studio surfaces the Habit standard and blocks editorially unfinish
   assert.match(ui, /Habit Lab standard 1\.0/);
   assert.match(ui, /Editorial review before approval/);
   assert.match(compiler, /applyHabitLabStandard/);
-  assert.match(compiler, /bis-content-compiler-4/);
+  assert.match(compiler, /bis-content-compiler-5/);
 });
 
 
@@ -237,4 +237,33 @@ test("Content Studio preview tolerates encoded version IDs and keeps the final p
   assert.match(ui, /<PackageCheck \/> Publish/);
   assert.match(ui, /\/content-studio\/preview\/\$\{entry\.id\}/);
   assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(entry\.id\)\}/);
+});
+
+
+test("Content Studio exposes a simple edit preview publish and unpublish control surface", async () => {
+  const ui = await source("app/content-studio/content-studio.tsx");
+  assert.match(ui, /Edit content/);
+  assert.match(ui, />Preview</);
+  assert.match(ui, />Publish</);
+  assert.match(ui, /Unpublish/);
+  assert.match(ui, /Currently offline/);
+  assert.match(ui, /Published to learners/);
+});
+
+test("prepared Content Studio versions can be processed again without a draft-state dead end", async () => {
+  const api = await source("app/api/content-studio/route.ts");
+  assert.match(api, /\["DRAFT", "VALIDATED", "APPROVED"\]\.includes\(version\.status\)/);
+  assert.match(api, /reason: "PREPARE_AGAIN"/);
+  assert.match(api, /CONTENT_VERSION_REOPENED/);
+  assert.doesNotMatch(api, /version\.status !== "DRAFT"\) throw new Error\("Choose an editable draft version\."/);
+});
+
+test("published Content Studio source can seed an editable version and titles can be taken offline", async () => {
+  const api = await source("app/api/content-studio/route.ts");
+  assert.match(api, /copyFromVersionId/);
+  assert.match(api, /copiedSourceKeys/);
+  assert.match(api, /action === "unpublishItem"/);
+  assert.match(api, /CONTENT_ITEM_UNPUBLISHED/);
+  assert.match(api, /status: "SUPERSEDED"/);
+  assert.match(api, /status === "PUBLISHED" && version\.runtimeStatus === "READY"/);
 });

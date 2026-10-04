@@ -151,7 +151,7 @@ async function syncUniversalComputedMeasurements(
 
   const leafInputsFor = (semanticFieldId: string) =>
     computedIds.has(semanticFieldId)
-      ? universalComputedLeafInputs(definition, semanticFieldId)
+      ? universalComputedLeafInputs(definition, semanticFieldId, responseValues(responseSnapshot))
       : [semanticFieldId];
 
   const persistMeasurement = async (
@@ -225,20 +225,17 @@ async function syncUniversalComputedMeasurements(
     }
   };
 
-  for (const field of definition.computedFields ?? []) {
-    await persistMeasurement(
-      field.id,
-      computed[field.id],
-      "universal-lab-v2:computed",
-      field.inputs,
-    );
-  }
-
+  // Each plan owns a distinct measurement code; its row and source writes remain ordered.
+  const plans = (definition.computedFields ?? []).map((field) => ({
+    code: field.id,
+    value: computed[field.id],
+    formulaVersion: "universal-lab-v2:computed:presentation-8",
+    inputs: [field.id],
+  }));
   const resolvedValue = (semanticFieldId: string) =>
     Object.prototype.hasOwnProperty.call(computed, semanticFieldId)
       ? computed[semanticFieldId]
       : responseSnapshot[semanticFieldId]?.value;
-
   for (const indicator of definition.indicatorRegistry ?? []) {
     if (indicator.status === "NOT_COLLECTED") continue;
     const value = indicator.primaryPromptId
@@ -249,26 +246,41 @@ async function syncUniversalComputedMeasurements(
             .filter(([, entryValue]) => entryValue !== null && entryValue !== undefined && entryValue !== "");
           return entries.length ? Object.fromEntries(entries) : null;
         })();
-    await persistMeasurement(
-      `${definition.identity.code}.${indicator.code.replace("-", "")}`,
+    plans.push({
+      code: `${definition.identity.code}.${indicator.code.replace("-", "")}`,
       value,
-      "universal-lab-v2:bei",
-      indicator.promptIds,
-    );
+      formulaVersion: "universal-lab-v2:bei",
+      inputs: indicator.promptIds,
+    });
   }
+  let cursor = 0;
+  const writes = await Promise.allSettled(Array.from({ length: Math.min(4, plans.length) }, async () => {
+    while (cursor < plans.length) {
+      const plan = plans[cursor++];
+      await persistMeasurement(plan.code, plan.value, plan.formulaVersion, plan.inputs);
+    }
+  }));
+  const failed = writes.find((result) => result.status === "rejected");
+  if (failed?.status === "rejected") throw failed.reason;
 }
 
-async function snapshot(userId: string, code: string) {
+async function snapshot(userId: string, code: string, resolvedRuntime?: Awaited<ReturnType<typeof activeLab>>) {
   const db = getDb();
-  const runtime = await activeLab(code);
-  const [profile] = await db.select().from(learners).where(eq(learners.userId, userId)).limit(1);
+  const runtime = resolvedRuntime ?? await activeLab(code);
+  const [[profile], [enrolment], rows] = await Promise.all([
+    db.select().from(learners).where(eq(learners.userId, userId)).limit(1),
+    db.select().from(labEnrollments).where(and(
+      eq(labEnrollments.userId, userId),
+      eq(labEnrollments.labCode, code),
+      eq(labEnrollments.labVersion, runtime.version.version),
+    )).limit(1),
+    db.select().from(responses).where(and(
+      eq(responses.userId, userId),
+      eq(responses.labCode, code),
+      eq(responses.labVersion, runtime.version.version),
+    )).orderBy(desc(responses.recordedAt)),
+  ]);
   if (!profile) throw new Error("Complete learner setup before opening this Lab.");
-
-  const [enrolment] = await db.select().from(labEnrollments).where(and(
-    eq(labEnrollments.userId, userId),
-    eq(labEnrollments.labCode, code),
-    eq(labEnrollments.labVersion, runtime.version.version),
-  )).limit(1);
 
   const baselineSaves = enrolment && enrolment.currentInvestigation <= 1
     ? await db.select().from(auditEvents).where(and(
@@ -276,12 +288,6 @@ async function snapshot(userId: string, code: string) {
         eq(auditEvents.action, "UNIVERSAL_LAB_BASELINE_SAVED"),
       )).limit(1) : [];
   const baselineAccepted = Boolean(enrolment && (enrolment.currentInvestigation > 1 || enrolment.status === "COMPLETED" || baselineSaves.length));
-
-  const rows = await db.select().from(responses).where(and(
-    eq(responses.userId, userId),
-    eq(responses.labCode, code),
-    eq(responses.labVersion, runtime.version.version),
-  )).orderBy(desc(responses.recordedAt));
 
   const latest: Record<string, { value: unknown; status: string; recordedAt: string; responseId: string }> = {};
   for (const row of rows) {
@@ -379,7 +385,8 @@ async function snapshot(userId: string, code: string) {
 async function getHandler(request: Request) {
   const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
-  const code = String(new URL(request.url).searchParams.get("lab") ?? "").toUpperCase();
+  const params = new URL(request.url).searchParams;
+  const code = String(params.get("lab") ?? params.get("labCode") ?? "").toUpperCase();
   if (!/^[A-Z][A-Z0-9_-]{1,11}$/.test(code)) return Response.json({ error: "Choose a valid Lab code." }, { status: 400 });
   try {
     return Response.json(await snapshot(identity.id, code), { headers: { "cache-control": "private, no-store" } });
@@ -421,7 +428,7 @@ async function postHandler(request: Request) {
         set: { updatedAt: now },
       });
       await audit(identity.id, "UNIVERSAL_LAB_OPENED", "LAB_ENROLLMENT", id, { labCode: code, labVersion: runtime.version.version });
-      return Response.json(await snapshot(identity.id, code));
+      return Response.json(await snapshot(identity.id, code, runtime));
     }
 
     const [enrolment] = await db.select().from(labEnrollments).where(and(
@@ -437,7 +444,7 @@ async function postHandler(request: Request) {
       if (!Number.isInteger(investigation) || investigation < 0 || investigation > 9 || (investigation === 0 && !baselineSave)) {
         throw new Error("Choose a valid investigation.");
       }
-      const progress = await snapshot(identity.id, code);
+      const progress = await snapshot(identity.id, code, runtime);
       if (investigation > (progress.enrolment?.currentInvestigation ?? enrolment.currentInvestigation)) throw new Error("Complete the current investigation before moving ahead.");
       if (investigation > 0 && runtime.definition.presentationBaseline && !progress.progressCompatibility.baselineAccepted) {
         validateLabSubmission(runtime.definition, 0, 0, [], progress.responses);
@@ -470,66 +477,72 @@ async function postHandler(request: Request) {
       );
       const now = new Date().toISOString();
 
-      for (const item of validatedItems) {
-        const { semanticFieldId, prompt, responseStatus, value } = item;
-        const encoded = JSON.stringify(value ?? "");
-        if (encoded.length > 20_000) throw new Error(`${prompt.label}: response is too long.`);
+      // Fields are distinct after validation. Preserve each field's ordered history
+      // while bounding independent writes; settle the batch before reporting failure.
+      for (let offset = 0; offset < validatedItems.length; offset += 4) {
+        const batch = await Promise.allSettled(validatedItems.slice(offset, offset + 4).map(async (item) => {
+          const { semanticFieldId, prompt, responseStatus, value } = item;
+          const encoded = JSON.stringify(value ?? "");
+          if (encoded.length > 20_000) throw new Error(`${prompt.label}: response is too long.`);
 
-        const existing = await db.select().from(responses).where(and(
-          eq(responses.userId, identity.id),
-          eq(responses.labCode, code),
-          eq(responses.labVersion, runtime.version.version),
-          eq(responses.semanticFieldId, semanticFieldId),
-        )).orderBy(desc(responses.recordedAt));
-        const previous = existing.find((row) => row.responseStatus !== "SUPERSEDED");
-        if (previous && previous.value === encoded && previous.responseStatus === responseStatus) continue;
+          const existing = await db.select().from(responses).where(and(
+            eq(responses.userId, identity.id),
+            eq(responses.labCode, code),
+            eq(responses.labVersion, runtime.version.version),
+            eq(responses.semanticFieldId, semanticFieldId),
+          )).orderBy(desc(responses.recordedAt));
+          const previous = existing.find((row) => row.responseStatus !== "SUPERSEDED");
+          if (previous && previous.value === encoded && previous.responseStatus === responseStatus) return;
 
-        const id = crypto.randomUUID();
-        if (previous) {
-          await db.update(evidenceRecords)
-            .set({ status: "SUPERSEDED" })
-            .where(eq(evidenceRecords.sourceObjectId, previous.id));
-        }
-        await db.insert(responses).values({
-          id,
-          userId: identity.id,
-          promptId: `UNIVERSAL:${investigation}:${semanticFieldId}`,
-          semanticFieldId,
-          labCode: code,
-          labVersion: runtime.version.version,
-          contentReleaseId: null,
-          deliveryEdition: profile.deliveryEdition,
-          promptVersion: runtime.version.version,
-          privacyClass: prompt.sensitivity ?? "P2",
-          provenance: "SR",
-          value: encoded,
-          responseStatus,
-          occurredAt: now,
-          recordedAt: now,
-          supersedesResponseId: previous?.id ?? null,
-        });
-        if (previous) await db.update(responses).set({ responseStatus: "SUPERSEDED" }).where(eq(responses.id, previous.id));
-        await db.insert(evidenceRecords).values({
-          id: crypto.randomUUID(),
-          userId: identity.id,
-          labCode: code,
-          labVersion: runtime.version.version,
-          contentReleaseId: null,
-          investigationId: investigation === 0 ? `${code}.BASELINE` : `${code}.I${investigation}`,
-          semanticFieldId,
-          sourceObjectType: "RESPONSE",
-          sourceObjectId: id,
-          provenance: "SR",
-          valueType: prompt.type ?? "TEXT",
-          value: responseStatus === "PASS" ? null : encoded,
-          status: responseStatus === "PASS" ? "WITHDRAWN" : "ACTIVE",
-          sensitivity: prompt.sensitivity ?? "P2",
-          occurredAt: now,
-          recordedAt: now,
-        });
+          const id = crypto.randomUUID();
+          if (previous) {
+            await db.update(evidenceRecords)
+              .set({ status: "SUPERSEDED" })
+              .where(eq(evidenceRecords.sourceObjectId, previous.id));
+          }
+          await db.insert(responses).values({
+            id,
+            userId: identity.id,
+            promptId: `UNIVERSAL:${investigation}:${semanticFieldId}`,
+            semanticFieldId,
+            labCode: code,
+            labVersion: runtime.version.version,
+            contentReleaseId: null,
+            deliveryEdition: profile.deliveryEdition,
+            promptVersion: runtime.version.version,
+            privacyClass: prompt.sensitivity ?? "P2",
+            provenance: "SR",
+            value: encoded,
+            responseStatus,
+            occurredAt: now,
+            recordedAt: now,
+            supersedesResponseId: previous?.id ?? null,
+          });
+          if (previous) await db.update(responses).set({ responseStatus: "SUPERSEDED" }).where(eq(responses.id, previous.id));
+          await db.insert(evidenceRecords).values({
+            id: crypto.randomUUID(),
+            userId: identity.id,
+            labCode: code,
+            labVersion: runtime.version.version,
+            contentReleaseId: null,
+            investigationId: investigation === 0 ? `${code}.BASELINE` : `${code}.I${investigation}`,
+            semanticFieldId,
+            sourceObjectType: "RESPONSE",
+            sourceObjectId: id,
+            provenance: "SR",
+            valueType: prompt.type ?? "TEXT",
+            value: responseStatus === "PASS" ? null : encoded,
+            status: responseStatus === "PASS" ? "WITHDRAWN" : "ACTIVE",
+            sensitivity: prompt.sensitivity ?? "P2",
+            occurredAt: now,
+            recordedAt: now,
+          });
+        }));
+        const failed = batch.find((result) => result.status === "rejected");
+        if (failed?.status === "rejected") throw failed.reason;
       }
 
-      const afterResponses = await snapshot(identity.id, code);
+      const afterResponses = await snapshot(identity.id, code, runtime);
       await syncUniversalComputedMeasurements(
         identity.id,
         enrolment,
@@ -559,7 +572,7 @@ async function postHandler(request: Request) {
         && runtime.definition.experiment
         && investigation === runtime.definition.experiment.investigation
       ) {
-        const afterSave = await snapshot(identity.id, code);
+        const afterSave = await snapshot(identity.id, code, runtime);
         const timing = afterSave.experimentTiming;
         const todayIds = requiredFor(
           runtime.definition,
@@ -588,11 +601,11 @@ async function postHandler(request: Request) {
           requiredPromptIds: requiredFor(runtime.definition, investigation, availableExperimentDay),
         },
       );
-      return Response.json(await snapshot(identity.id, code));
+      return Response.json(await snapshot(identity.id, code, runtime));
     }
 
     if (action === "completeLab") {
-      const current = await snapshot(identity.id, code);
+      const current = await snapshot(identity.id, code, runtime);
       if (
         runtime.definition.runtimeProfile === "UNIVERSAL_V2"
         && runtime.definition.experiment
@@ -616,7 +629,7 @@ async function postHandler(request: Request) {
         updatedAt: now,
       }).where(eq(labEnrollments.id, enrolment.id));
       await audit(identity.id, "UNIVERSAL_LAB_COMPLETED", "LAB_ENROLLMENT", enrolment.id, { labCode: code, labVersion: runtime.version.version });
-      return Response.json(await snapshot(identity.id, code));
+      return Response.json(await snapshot(identity.id, code, runtime));
     }
 
     throw new Error("That Lab action is not supported.");

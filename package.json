@@ -20,6 +20,7 @@
     "test:acceptance": "npm run runtime:check && node --test tests/*.test.mjs",
     "audit:source": "npm run runtime:check && node scripts/audit-canonical-sources.mjs",
     "test:browser": "npm run runtime:check && playwright test",
+    "test:staging": "npm run runtime:check && playwright test --config=playwright.staging.config.ts",
     "lint": "npm run runtime:check && eslint . --ignore-pattern dist --ignore-pattern .next",
     "verify:build": "npm run runtime:check && npm run lint && npm run typecheck && npm run test:acceptance && npm run audit:source && npm run build"
   },
