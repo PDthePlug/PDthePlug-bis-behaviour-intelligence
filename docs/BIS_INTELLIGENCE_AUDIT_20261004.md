@@ -30,7 +30,17 @@ The added guidance is deterministic. It does not infer personality, motivation, 
 
 ## Verification record
 
-Final results are recorded after signed-in staging verification. The synthetic demo contains twenty learners, one administrator and one facilitator. The demo's original response records remain auditable.
+- `npm run verify` passed: lint, TypeScript, the acceptance suite, canonical-source audit, optimized build and 42 fixture browser checks at 360px, 430px and 1280px.
+- Twenty normally authenticated synthetic learners read their own real application portfolio. All twenty had the expected current-version anchors, bounded guidance and no private response wording in the projection. Repeated reads for the first and last learner restored the same projection.
+- Companion evidence retrieval and structural summary each saved a user/assistant pair. A fresh application snapshot restored both replies; citations contained actual response IDs and the guidance version was recorded separately from original responses.
+- A normal learner session could not read another learner's response rows.
+- The actual facilitator API returned twenty assigned learners, version-scoped structural guidance and no synthetic private evidence wording. The administrator's sponsor API returned a twenty-participant aggregate with zero real-world observations.
+- The four aggregate RPCs passed positive access, other-version contamination, small-cell suppression, wrong-role and revoked-role checks. All temporary changes rolled back. An absent staging acknowledgement was separately refused.
+- Independent staging integrity reads confirmed 300 current demo responses, 299 active evidence records, one withdrawn record, twenty active cohort members, four new Companion turns and zero temporary other-version enrolments or experiments.
+
+- Four signed-in staging journeys passed: learner authentication and role denial, administrator catalogue access, responsive learner surfaces, and portfolio guidance, re-entry and its existing-Lab handoff.
+- The prepared facilitator's actual participant screen passed at 360px, 430px and 1280px, including the selected learner's next useful moves, overflow checks and console/network diagnostics.
+- The final programme PDF exported through the normally authenticated sponsor API. All nine pages were visually reviewed; the cover opens correctly, the summary explicitly awaits observation, and private learner wording is absent. The report describes twenty synthetic learners and zero started experiments, without an effectiveness claim.
 
 ## Release limits
 
@@ -44,7 +54,7 @@ School, emerging-adult and workplace outcomes must not be equated solely because
 
 ## Data and rollback
 
-The append-only migration changes four private aggregate function bodies and introduces a versioned structural staff projection. Public RPC wrappers, role gates and small-cell suppression remain in place. The prior staff projection helper remains available for a deliberate rollback.
+The migration filename matches the applied staging ledger version `20261004020252`. The append-only migration changes four private aggregate function bodies and introduces a versioned structural staff projection. Public RPC wrappers, role gates and small-cell suppression remain in place. The prior staff projection helper remains available for a deliberate rollback.
 
 The staging SQL regression uses prepared synthetic identities and rolls back its temporary other-version records, small-group membership changes and role revocation. It refuses an absent or mismatched staging project acknowledgement. Do not run it against production.
 
