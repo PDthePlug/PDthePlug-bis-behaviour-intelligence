@@ -265,5 +265,6 @@ test("published Content Studio source can seed an editable version and titles ca
   assert.match(api, /action === "unpublishItem"/);
   assert.match(api, /CONTENT_ITEM_UNPUBLISHED/);
   assert.match(api, /status: "SUPERSEDED"/);
-  assert.match(api, /status === "PUBLISHED" && version\.runtimeStatus === "READY"/);
+  assert.match(api, /action === "republishVersion"/);
+  assert.match(api, /CONTENT_VERSION_REPUBLISHED/);
 });
