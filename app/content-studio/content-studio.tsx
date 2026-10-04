@@ -845,33 +845,102 @@ export function ContentStudio() {
                 <span className="content-detail-mark">{selected.kind === "LAB" ? <FlaskConical /> : <BookOpen />}</span>
               </header>
 
-              <section className="content-studio-card version-create">
+              <section className="content-studio-card content-publish-panel">
                 <div className="content-studio-section-title">
                   <div>
-                    <p className="eyebrow">Add content</p>
-                    <h3>{selected.versions.some((entry) => entry.status === "DRAFT") ? "Continue the working update" : "Start the next update"}</h3>
+                    <p className="eyebrow">Current status</p>
+                    <h3>
+                      {liveVersion
+                        ? "Published to learners"
+                        : workingVersion
+                          ? `Working update v${workingVersion.version}`
+                          : offlinePublishedVersion
+                            ? "Currently offline"
+                            : "No content version yet"}
+                    </h3>
                     <p>
-                      BIS keeps the version number for you. {selected.kind === "LEARNING_MODULE"
-                        ? "Add whichever learner edition is ready; the others can follow later."
-                        : "Add the Lab as a Word document, PDF, pasted text or BIS package."}
+                      {liveVersion
+                        ? "Learners can open this title now. Edit creates a safe working update without changing the live version."
+                        : workingVersion
+                          ? workingVersion.status === "DRAFT"
+                            ? "Edit the source, then prepare and preview it before publishing."
+                            : "Preview the prepared version, complete the final check, then publish."
+                          : offlinePublishedVersion
+                            ? "The reviewed version is preserved. You can republish it or start an editable update."
+                            : "Start by adding the authored content you want BIS to prepare."}
                     </p>
                   </div>
                   <span className="content-auto-version">
-                    {selected.versions.find((entry) => entry.status === "DRAFT")
-                      ? `Working: v${selected.versions.find((entry) => entry.status === "DRAFT")?.version}`
-                      : `Next: v${nextContentVersion(selected.versions.map((entry) => entry.version))}`}
+                    {liveVersion
+                      ? `Live: v${liveVersion.version}`
+                      : workingVersion
+                        ? `Working: v${workingVersion.version}`
+                        : offlinePublishedVersion
+                          ? `Offline: v${offlinePublishedVersion.version}`
+                          : `Next: v${nextContentVersion(selected.versions.map((entry) => entry.version))}`}
                   </span>
                 </div>
-                <div className="version-create-grid version-create-grid-simple">
-                  <label className="wide">What changed? <span>(optional)</span><Textarea value={releaseNotes} onChange={(event) => setReleaseNotes(event.target.value)} placeholder="A short note for your own records." /></label>
+
+                <div className="content-primary-actions" aria-label="Content actions">
+                  {actionVersion ? (
+                    <Button
+                      variant={workingVersion?.status === "DRAFT" ? "outline" : "default"}
+                      disabled={saving || workingVersion?.status === "DRAFT"}
+                      onClick={() => void editVersion(actionVersion)}
+                    >
+                      <FileText />
+                      {workingVersion?.status === "DRAFT" ? "Editing" : "Edit content"}
+                    </Button>
+                  ) : (
+                    <Button disabled={saving} onClick={() => void createVersion()}>
+                      <Plus /> Add content
+                    </Button>
+                  )}
+
+                  {actionPreviewHref && actionVersionCanPreview ? (
+                    <Button asChild variant="outline">
+                      <Link target="_blank" rel="noreferrer" href={actionPreviewHref}>
+                        <Eye /> Preview
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" disabled><Eye /> Preview</Button>
+                  )}
+
+                  <Button
+                    disabled={saving || !actionVersion || !actionVersionCanPublish}
+                    onClick={() => actionVersion && void publishVersion(actionVersion)}
+                  >
+                    <PackageCheck />
+                    {offlinePublishedVersion && actionVersion?.id === offlinePublishedVersion.id ? "Republish" : "Publish"}
+                  </Button>
+
+                  {liveVersion ? (
+                    <Button variant="outline" disabled={saving} onClick={() => void unpublishSelected()}>
+                      <LockKeyhole /> Unpublish
+                    </Button>
+                  ) : null}
+
+                  {selected.routePath && liveVersion ? (
+                    <Button asChild variant="ghost">
+                      <Link href={selected.routePath}>Open learner view <ChevronRight /></Link>
+                    </Button>
+                  ) : null}
                 </div>
-                <Button
-                  disabled={saving || selected.versions.some((entry) => entry.status === "DRAFT")}
-                  onClick={() => void createVersion()}
-                >
-                  {saving ? <LoaderCircle className="spin" /> : <Plus />}
-                  {selected.versions.some((entry) => entry.status === "DRAFT") ? "Working update already open" : "Start adding content"}
-                </Button>
+
+                {!actionVersionCanPublish && actionVersion ? (
+                  <p className="content-action-help">
+                    {actionVersion.status === "DRAFT"
+                      ? "Prepare this update before previewing or publishing."
+                      : actionVersion.uat?.status !== "PASSED"
+                        ? "Preview it and complete the final check before publishing."
+                        : actionVersion.runtimeStatus !== "READY" && actionVersion.runtimeStatus !== "LIVE"
+                          ? "This version still needs preparation before it can go live."
+                          : actionVersion.runtimeStatus === "LIVE"
+                            ? "This version is already published."
+                            : "Finish the current review before publishing."}
+                  </p>
+                ) : null}
               </section>
 
               <section className="content-versions">
