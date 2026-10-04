@@ -4,7 +4,10 @@ export default defineConfig({
   testDir: "./tests/browser",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
-  workers: 2,
+  // The complete nine-investigation journey exercises more than one hundred
+  // controls. Running viewport copies concurrently can starve the dev server
+  // and turn a passing journey into a test-timeout failure on small runners.
+  workers: 1,
   timeout: 90_000,
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
