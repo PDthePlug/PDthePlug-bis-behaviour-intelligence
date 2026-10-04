@@ -368,6 +368,9 @@ export function ContentStudio() {
     ?? activeItems.find((item) => item.code === selectedCode)
     ?? activeItems[0]
     ?? null;
+  const workingVersion = selected?.versions.find((entry) => ["DRAFT", "VALIDATED", "APPROVED"].includes(entry.status)) ?? null;
+  const liveVersion = selected?.versions.find((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") ?? null;
+  const offlinePublishedVersion = selected?.versions.find((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "READY") ?? null;
 
   function chooseCode(nextCode: string) {
     setSelectedCode(nextCode);
@@ -399,18 +402,61 @@ export function ContentStudio() {
     setCreateOpen(false);
   }
 
-  async function createVersion() {
+  async function createVersion(copyFromVersionId?: string) {
     if (!selected) return;
     const suggested = nextContentVersion(selected.versions.map((entry) => entry.version));
     const result = await act({
       action: "createVersion",
       itemId: selected.id,
+      copyFromVersionId,
       schemaVersion: selected.kind === "LAB" ? "universal-lab-v1" : "2.0",
       sourceFormat: "BIS_PACKAGE_JSON",
       releaseNotes,
-    }, `Working update v${suggested} is ready. Add the content you have.`);
+    }, copyFromVersionId
+      ? `Editable update v${suggested} is ready with the current source carried forward.`
+      : `Working update v${suggested} is ready. Add the content you have.`);
     if (!result) return;
     setReleaseNotes("");
+  }
+
+  async function editVersion(entry: ContentVersion) {
+    if (entry.status === "DRAFT") return;
+    if (["VALIDATED", "APPROVED"].includes(entry.status)) {
+      await act({ action: "reopenVersion", versionId: entry.id }, "This update is editable again.");
+      return;
+    }
+    if (entry.status === "PUBLISHED") {
+      if (workingVersion) {
+        setMessage(`Working update v${workingVersion.version} is already open.`);
+        return;
+      }
+      await createVersion(entry.id);
+    }
+  }
+
+  async function unpublishSelected() {
+    if (!selected || !liveVersion) return;
+    if (!window.confirm(`Take ${selected.title} offline for learners? You can republish the reviewed version later.`)) return;
+    await act({ action: "unpublishItem", itemId: selected.id }, "Taken offline. The published version is preserved and can be republished.");
+  }
+
+  async function publishVersion(entry: ContentVersion) {
+    if (entry.uat?.status !== "PASSED") {
+      setError("Preview this version and complete the final check before publishing.");
+      return;
+    }
+    if (entry.status === "VALIDATED") {
+      const approved = await act({ action: "approveVersion", versionId: entry.id });
+      if (!approved) return;
+    }
+    await act(
+      { action: "activateVersion", versionId: entry.id },
+      entry.status === "PUBLISHED"
+        ? "Published again."
+        : selected?.kind === "LEARNING_MODULE"
+          ? "Published the learner edition."
+          : "Lab published.",
+    );
   }
 
   async function uploadSource(
