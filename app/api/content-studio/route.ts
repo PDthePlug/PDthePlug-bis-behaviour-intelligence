@@ -235,6 +235,7 @@ async function postHandler(request: Request) {
     if (action === "createVersion") {
       const itemId = String(body.itemId ?? "");
       const requestedVersion = String(body.version ?? "").trim();
+      const copyFromVersionId = String(body.copyFromVersionId ?? "").trim() || null;
       const schemaVersion = String(body.schemaVersion ?? "1.0").trim() || "1.0";
       const sourceFormat = String(body.sourceFormat ?? "BIS_PACKAGE_JSON") as ContentSourceFormat;
       const releaseNotes = String(body.releaseNotes ?? "").trim();
@@ -267,7 +268,43 @@ async function postHandler(request: Request) {
         createdBy: identity.id,
         updatedAt: new Date().toISOString(),
       });
-      await audit(identity.id, "CONTENT_VERSION_CREATED", "CONTENT_LIBRARY_VERSION", id, { itemId, version, sourceFormat });
+      let copiedSourceKeys: string[] = [];
+      if (copyFromVersionId) {
+        const [sourceVersion] = await db.select().from(contentLibraryVersions)
+          .where(and(eq(contentLibraryVersions.id, copyFromVersionId), eq(contentLibraryVersions.itemId, itemId)))
+          .limit(1);
+        if (!sourceVersion || sourceVersion.status !== "PUBLISHED") {
+          throw new Error("Choose the currently published version to start an editable update.");
+        }
+        const previousSources = await db.select().from(contentSourceFiles)
+          .where(eq(contentSourceFiles.versionId, copyFromVersionId));
+        if (previousSources.length) {
+          await db.insert(contentSourceFiles).values(previousSources.map((source) => ({
+            id: `${id}:source:${source.sourceKey}`,
+            versionId: id,
+            itemId,
+            sourceKey: source.sourceKey,
+            deliveryEdition: source.deliveryEdition,
+            sourceFormat: source.sourceFormat,
+            fileName: source.fileName,
+            storagePath: source.storagePath,
+            sourceHash: source.sourceHash,
+            sourceBytes: source.sourceBytes,
+            mimeType: source.mimeType,
+            createdBy: identity.id,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          })));
+          copiedSourceKeys = previousSources.map((source) => source.sourceKey);
+        }
+      }
+      await audit(identity.id, "CONTENT_VERSION_CREATED", "CONTENT_LIBRARY_VERSION", id, {
+        itemId,
+        version,
+        sourceFormat,
+        copiedFromVersionId: copyFromVersionId,
+        copiedSourceKeys,
+      });
       return Response.json(await snapshot(), { status: 201 });
     }
 
