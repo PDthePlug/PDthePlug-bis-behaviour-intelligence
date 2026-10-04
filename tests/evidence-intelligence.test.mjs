@@ -3,7 +3,7 @@ import test from "node:test";
 import { buildEvidencePortfolio } from "../lib/evidence-portfolio.mjs";
 import { evidenceCompanion } from "../lib/evidence-companion.mjs";
 import { programmeEvidenceGuidance, structuralSupport } from "../lib/evidence-reporting.mjs";
-import { computeHabitMetrics } from "../lib/bis-metrics.mjs";
+import { computeHabitMetrics, validateHabitObservation } from "../lib/bis-metrics.mjs";
 
 const enrolment = { id: "en", labCode: "HAB", labVersion: "4.5.2", status: "IN_PROGRESS", currentInvestigation: 3 };
 const record = (id, investigationId, status = "ACTIVE", labVersion = "4.5.2") => ({ id: `anchor-${id}`, labCode: "HAB", labVersion, investigationId, sourceObjectType: "RESPONSE", sourceObjectId: id, status, value: "PRIVATE WORDING" });
@@ -66,4 +66,12 @@ test("missing predictions do not create prediction accuracy", () => {
   const metrics = computeHabitMetrics([{ eligibleOpportunity: true, alternativeUsed: true }], null);
   assert.equal(metrics.adherence, 100);
   assert.equal(metrics.predictionAccuracy, null);
+});
+
+test("no opportunity requires an explicit observation rather than a missing answer", () => {
+  assert.throws(() => validateHabitObservation(undefined, undefined), /whether the target condition occurred/);
+  assert.throws(() => validateHabitObservation(null, true), /whether the target condition occurred/);
+  assert.throws(() => validateHabitObservation(true, null), /whether you used the alternative/);
+  assert.deepEqual(validateHabitObservation(false, undefined), { targetConditionOccurred: false, alternativeUsed: null });
+  assert.deepEqual(validateHabitObservation(true, false), { targetConditionOccurred: true, alternativeUsed: false });
 });

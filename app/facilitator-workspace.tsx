@@ -45,6 +45,7 @@ type ProgressRow = {
     opportunityCount: number;
   };
   lastActivityAt: string | null;
+  supportGuidance?: string;
 };
 
 type Cohort = {
@@ -109,8 +110,8 @@ function programmeStepLabel(value: string) {
 function position(learner: ProgressRow) {
   const step = learner.enrolment?.currentInvestigation ?? 0;
   if (learner.enrolment?.status === "COMPLETED") return "Completed";
-  if (step >= 8) return "Ready for review";
-  if (step >= 6 && !learner.experiment) return "Ready to start experiment";
+  if (step >= 8) return "Evidence review stage";
+  if (step >= 6 && !learner.experiment) return "Preparing the experiment";
   if (learner.experiment && (learner.experiment.recordedDays ?? 0) === 0) return "First observation pending";
   if (learner.experiment && (learner.experiment.opportunityCount ?? 0) === 0 && (learner.experiment.recordedDays ?? 0) >= 2) return "No real-world opportunity yet";
   if (step >= 6) return "Experiment in progress";
@@ -131,7 +132,7 @@ function evidencePosition(learner: ProgressRow) {
   if (!experiment) return "No experiment evidence yet";
   const opportunities = experiment.opportunityCount ?? 0;
   const threshold = experiment.minimumEvidenceThreshold ?? 3;
-  if (opportunities >= threshold) return "Enough evidence for review";
+  if (opportunities >= threshold) return "Observation threshold reached";
   if (opportunities > 0) return "Evidence building";
   if ((experiment.recordedDays ?? 0) > 0) return "Observing · no matching situation yet";
   return "First observation pending";
@@ -145,12 +146,13 @@ function observedStrengths(learner: ProgressRow) {
   if (experiment) strengths.push("Moved from planning into action");
   if ((experiment?.recordedDays ?? 0) >= 3) strengths.push("Consistent observation");
   if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push("Repeated real-world testing");
-  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Evidence ready");
+  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Evidence ready for a coverage check");
   if (learner.enrolment?.status === "COMPLETED") strengths.push("Completed the learning cycle");
   return strengths.slice(0, 4);
 }
 
 function supportFocus(learner: ProgressRow) {
+  if (learner.supportGuidance) return [learner.supportGuidance];
   const focus: string[] = [];
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
@@ -178,6 +180,7 @@ function ParticipantCard({ learner }: { learner: ProgressRow }) {
         <div><dt>Opportunities</dt><dd>{learner.experiment?.opportunityCount ?? 0}</dd></div>
         <div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div>
       </dl>
+      {learner.supportGuidance && <p className="participant-attribute-note">{learner.supportGuidance}</p>}
     </article>
   );
 }

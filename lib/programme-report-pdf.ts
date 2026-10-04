@@ -267,10 +267,6 @@ class ReportCanvas {
   current: Page = { commands: [] };
   y = PAGE_H - MARGIN;
 
-  constructor() {
-    this.page(C.paper);
-  }
-
   page(fill: Color = C.paper, cover = false) {
     if (this.current.commands.length) this.pages.push(this.current);
     this.current = { commands: [], cover };
@@ -595,8 +591,8 @@ function executiveFindings(outcome: Outcome) {
     kicker: "Support",
     title:
       (metrics.support.supportRequestRate ?? 0) >= 20
-        ? "Human support demand is material"
-        : "Human support demand is currently limited",
+        ? "Recorded support requests are substantial"
+        : "Recorded support requests are currently limited",
     body:
       String(metrics.support.participantsRequestingHelp) +
       " learners asked for help (" +

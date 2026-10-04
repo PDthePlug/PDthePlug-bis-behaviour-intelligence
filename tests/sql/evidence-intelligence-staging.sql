@@ -11,7 +11,7 @@ declare
   after_result jsonb;
   baselines jsonb := '{}'::jsonb;
 begin
-  if current_setting('bis.test.project_ref', true) <> 'lbmhkddrkhtmkcvfmumd' then raise exception 'Staging only'; end if;
+  if current_setting('bis.test.project_ref', true) is distinct from 'lbmhkddrkhtmkcvfmumd' then raise exception 'Staging only'; end if;
   select id::text into admin_id from auth.users where email='bis.demo.admin@bis.invalid' and raw_user_meta_data->>'fixture_run'='BIS-DEMO-20261004';
   select id::text into learner_id from auth.users where email='bis.demo.02@bis.invalid' and raw_user_meta_data->>'fixture_run'='BIS-DEMO-20261004';
   select id into fixture_cohort_id from public.pilot_cohorts where name='BIS Synthetic Demo — 20 learner scenarios' and lab_version='4.5.2';

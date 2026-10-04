@@ -30,7 +30,7 @@ import {
   responseScale,
 } from "../../../lib/habit-lab";
 import { initialDeliveryEdition } from "../../../lib/learning-foundation";
-import { computeHabitMetrics } from "../../../lib/bis-metrics.mjs";
+import { computeHabitMetrics, validateHabitObservation } from "../../../lib/bis-metrics.mjs";
 
 import { learnerEvidencePortfolio } from "@/lib/learner-evidence";
 import { evidenceCompanion } from "@/lib/evidence-companion.mjs";
@@ -814,8 +814,7 @@ async function postHandler(request: Request) {
       if (timing.calendarDay === null || dayNumber !== timing.calendarDay) {
         throw new Error("Only today’s experiment evidence can be recorded. Future days unlock on their calendar day, and missed past days remain missing evidence.");
       }
-      const cueOccurred = body.targetConditionOccurred === true;
-      if (cueOccurred && typeof body.alternativeUsed !== "boolean") throw new Error("Record whether you used the alternative response for this opportunity.");
+      const { targetConditionOccurred: cueOccurred } = validateHabitObservation(body.targetConditionOccurred, body.alternativeUsed);
       const existing = await db
         .select()
         .from(experimentEvents)
