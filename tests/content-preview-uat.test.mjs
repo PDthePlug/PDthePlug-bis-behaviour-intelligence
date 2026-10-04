@@ -66,8 +66,9 @@ test("preview mode never writes learner workbook or Lab evidence", async () => {
 
 test("publish control appears only after the final check has passed", async () => {
   const studio = await source("app/content-studio/content-studio.tsx");
-  assert.match(studio, /entry\.status === "APPROVED" && finalCheckPassed/);
-  assert.match(studio, /Preview and complete the final check first/);
+  assert.match(studio, /const actionVersionCanPublish = Boolean/);
+  assert.match(studio, /actionVersion\.uat\?\.status === "PASSED"/);
+  assert.match(studio, /Preview this version and complete the final check before publishing/);
   assert.match(studio, /action: "signOffUat"/);
   assert.match(studio, /action: "activateVersion"/);
 });
