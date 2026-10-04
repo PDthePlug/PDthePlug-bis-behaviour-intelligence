@@ -29,16 +29,18 @@ test("Phase B exposes a deterministic handback from experiment to review to port
 });
 
 test("learner portfolio is built from evidence and measurements without returning private response wording", async () => {
-  const [route, profile] = await Promise.all([
+  const [route, profile, loader] = await Promise.all([
     source("app/api/evidence-portfolio/route.ts"),
     source("app/profile/profile-dashboard.tsx"),
+    source("lib/learner-evidence.ts"),
   ]);
 
-  assert.match(route, /evidenceRecords/);
-  assert.match(route, /measurementValues/);
-  assert.match(route, /measurementSources/);
+  assert.match(route, /learnerEvidencePortfolio\(identity\.id\)/);
+  assert.match(loader, /evidenceRecords/);
+  assert.match(loader, /measurementValues/);
+  assert.match(loader, /measurementSources/);
   assert.doesNotMatch(route, /responses/);
-  assert.doesNotMatch(route, /value:\s*evidenceRecords\.value/);
+  assert.doesNotMatch(loader, /value:\s*evidenceRecords\.value/);
   assert.match(route, /originalResponsesIncluded: false/);
   assert.match(profile, /Your evidence portfolio/);
   assert.match(profile, /evidence anchors/);

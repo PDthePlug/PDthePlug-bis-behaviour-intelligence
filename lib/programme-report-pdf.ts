@@ -1,3 +1,4 @@
+import { programmeEvidenceGuidance } from "./evidence-reporting.mjs";
 type Outcome = {
   cohort: {
     id: string;
@@ -265,10 +266,6 @@ class ReportCanvas {
   pages: Page[] = [];
   current: Page = { commands: [] };
   y = PAGE_H - MARGIN;
-
-  constructor() {
-    this.page(C.paper);
-  }
 
   page(fill: Color = C.paper, cover = false) {
     if (this.current.commands.length) this.pages.push(this.current);
@@ -594,8 +591,8 @@ function executiveFindings(outcome: Outcome) {
     kicker: "Support",
     title:
       (metrics.support.supportRequestRate ?? 0) >= 20
-        ? "Human support demand is material"
-        : "Human support demand is currently limited",
+        ? "Recorded support requests are substantial"
+        : "Recorded support requests are currently limited",
     body:
       String(metrics.support.participantsRequestingHelp) +
       " learners asked for help (" +
@@ -871,6 +868,8 @@ function drawExecutiveSummary(canvas: ReportCanvas, outcome: Outcome) {
     4
   );
 
+  const guidance = programmeEvidenceGuidance(outcome);
+  if (guidance) canvas.callout(guidance.title, `${guidance.summary} ${guidance.nextAction}`, "warm");
   canvas.text("KEY FINDINGS", {
     size: 8.5,
     bold: true,

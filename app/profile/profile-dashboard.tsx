@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { PortfolioIntelligence } from "@/lib/evidence-portfolio.mjs";
 import { InstallCard } from "@/components/pwa/install-card";
 import { useEffect, useState } from "react";
 import {
@@ -22,6 +23,7 @@ type EvidencePortfolioSnapshot = {
     status: string;
     currentInvestigation: number;
     completedAt: string | null;
+    intelligence?: PortfolioIntelligence;
     anchors: Array<{
       id: string;
       label: string;
@@ -34,6 +36,9 @@ type EvidencePortfolioSnapshot = {
       value: string;
       evidenceStrength: string;
       sourceCount: number;
+      provenanceStatus?: string;
+      formulaVersion?: string;
+      sourceAnchors?: Array<{label: string; count: number}>;
     }>;
     summary: {
       recordedAnchors: number;
@@ -78,6 +83,7 @@ export function ProfileDashboard({
   initialIdentity: { email: string; displayName: string };
 }) {
   const [snapshot, setSnapshot] = useState<ProfileSnapshot | null>(null);
+  const [portfolioError, setPortfolioError] = useState(false);
   const [portfolio, setPortfolio] = useState<EvidencePortfolioSnapshot | null>(null);
 
   useEffect(() => {
@@ -101,8 +107,9 @@ export function ProfileDashboard({
         if (portfolioResponse.ok) {
           const data = (await portfolioResponse.json()) as EvidencePortfolioSnapshot;
           if (!controller.signal.aborted) setPortfolio(data);
-        }
+        } else if (!controller.signal.aborted) setPortfolioError(true);
       } catch {
+        if (!controller.signal.aborted) setPortfolioError(true);
         // Identity from the authenticated server route is enough to keep Profile useful.
       }
     })();
@@ -177,13 +184,19 @@ export function ProfileDashboard({
                   <div className="profile-evidence-head">
                     <div>
                       <strong>{lab.title}</strong>
-                      <span>{lab.status === "COMPLETED" ? "Complete evidence record" : `Investigation ${lab.currentInvestigation} of 9`}</span>
+                      <span>{lab.status === "COMPLETED" ? "Lab completed" : `Investigation ${lab.currentInvestigation} of 9`}</span>
                     </div>
                     <span className={lab.status === "COMPLETED" ? "complete" : "active"}>
                       {lab.status === "COMPLETED" ? <><Check aria-hidden="true" /> Complete</> : "In progress"}
                     </span>
                   </div>
 
+                  {lab.intelligence && <div className="profile-evidence-guidance">
+                    <h3>What your evidence supports</h3>
+                    <p>{lab.intelligence.summary}</p><p>{lab.intelligence.nextAction.reason}</p>
+                    <Link className="profile-secondary" href={(({ HAB: "/habit-lab", DEC: "/decision", MON: "/money" } as Record<string, string>)[lab.labCode] ?? `/labs/${lab.labCode}?step=${Math.max(1, lab.intelligence.nextAction.investigation)}`)}>{lab.intelligence.nextAction.label}</Link>
+                    <p>{lab.intelligence.boundary}</p>
+                  </div>}
                   <div className="profile-anchor-grid" aria-label={`${lab.title} evidence anchors`}>
                     {lab.anchors.map((anchor) => (
                       <div className={`profile-anchor ${anchor.status.toLowerCase()}`} key={anchor.id}>
@@ -195,12 +208,15 @@ export function ProfileDashboard({
 
                   {lab.metrics.length ? (
                     <dl className="profile-metric-list">
-                      {lab.metrics.slice(0, 6).map((metric) => (
+                      {lab.metrics.map((metric) => (
                         <div key={metric.code}>
                           <dt>{metric.label}</dt>
                           <dd>
-                            <strong>{metric.value}</strong>
-                            <span>{metric.sourceCount ? `${metric.sourceCount} evidence source${metric.sourceCount === 1 ? "" : "s"}` : "Derived from your Lab record"}</span>
+                            <strong>{metric.provenanceStatus === "UNVERIFIED" ? "Awaiting evidence-link review" : metric.value}</strong>
+                            <span>{metric.sourceCount ? `${metric.sourceCount} evidence source${metric.sourceCount === 1 ? "" : "s"}` : "Evidence links need review"}</span>
+                            {metric.provenanceStatus === "UNVERIFIED" && <span>Incomplete or stale evidence links leave this conclusion open.</span>}
+                            {metric.sourceAnchors?.map(anchor => <span key={anchor.label}>{anchor.label}: {anchor.count} source links</span>)}
+                            <details><summary>Calculation details</summary><p>Observation coverage: {metric.evidenceStrength === "SUFFICIENT_FOR_LAB" ? "Enough for this Lab comparison" : metric.evidenceStrength === "LIMITED" ? "Limited" : "Not established"}</p><p>Calculation reference: {metric.formulaVersion ?? "Not available"}</p></details>
                           </dd>
                         </div>
                       ))}
@@ -221,7 +237,7 @@ export function ProfileDashboard({
             </div>
           ) : (
             <p className="profile-evidence-empty">
-              No Lab evidence has been recorded yet. Your portfolio builds automatically from the evidence you choose to record.
+              {portfolioError ? "Your portfolio could not be loaded. Refresh to try again; saved evidence remains unchanged." : !portfolio ? "Opening your evidence portfolio…" : "No Lab evidence has been recorded yet. Your portfolio builds automatically from the evidence you choose to record."}
             </p>
           )}
         </article>
