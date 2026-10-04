@@ -225,6 +225,7 @@ function formatDate(value: string | null | undefined) {
 
 function versionState(entry: ContentVersion) {
   if (entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") return { label: "Published", tone: "good" };
+  if (entry.status === "PUBLISHED" && entry.runtimeStatus === "READY") return { label: "Offline", tone: "neutral" };
   if (entry.compilerStatus === "COMPILED" && !entry.compilerCurrent) return { label: "Re-prepare required", tone: "bad" };
   if (entry.status === "APPROVED") return { label: "Ready to publish", tone: "good" };
   if (entry.compilerStatus === "COMPILED" && entry.compilerCurrent) return { label: "Ready to review", tone: "good" };
@@ -368,6 +369,35 @@ export function ContentStudio() {
     ?? activeItems.find((item) => item.code === selectedCode)
     ?? activeItems[0]
     ?? null;
+  const workingVersion = selected?.versions.find((entry) => ["DRAFT", "VALIDATED", "APPROVED"].includes(entry.status)) ?? null;
+  const liveVersion = selected?.versions.find((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE") ?? null;
+  const offlinePublishedVersion = selected?.versions.find((entry) => entry.status === "PUBLISHED" && entry.runtimeStatus === "READY") ?? null;
+  const actionVersion = workingVersion ?? offlinePublishedVersion ?? liveVersion;
+  const actionVersionCanPreview = Boolean(
+    actionVersion
+    && actionVersion.compilerStatus === "COMPILED"
+    && actionVersion.compilerCurrent
+    && actionVersion.artifacts.length,
+  );
+  const actionVersionCanPublish = Boolean(
+    actionVersion
+    && (
+      (actionVersion.status === "PUBLISHED" && actionVersion.runtimeStatus === "READY")
+      || (
+        ["VALIDATED", "APPROVED"].includes(actionVersion.status)
+        && actionVersion.runtimeStatus === "READY"
+        && actionVersion.uat?.status === "PASSED"
+      )
+    ),
+  );
+  const actionPreviewHref = actionVersion && selected
+    ? selected.kind === "LAB"
+      ? `/content-studio/preview/${actionVersion.id}?kind=LAB&code=${encodeURIComponent(selected.code)}`
+      : (() => {
+          const edition = actionVersion.artifacts.find((artifact) => artifact.deliveryEdition)?.deliveryEdition ?? "school";
+          return `/content-studio/preview/${actionVersion.id}?kind=LEARNING_MODULE&code=${encodeURIComponent(selected.code)}&edition=${edition}`;
+        })()
+    : null;
 
   function chooseCode(nextCode: string) {
     setSelectedCode(nextCode);
@@ -399,18 +429,63 @@ export function ContentStudio() {
     setCreateOpen(false);
   }
 
-  async function createVersion() {
+  async function createVersion(copyFromVersionId?: string) {
     if (!selected) return;
     const suggested = nextContentVersion(selected.versions.map((entry) => entry.version));
     const result = await act({
       action: "createVersion",
       itemId: selected.id,
+      copyFromVersionId,
       schemaVersion: selected.kind === "LAB" ? "universal-lab-v1" : "2.0",
       sourceFormat: "BIS_PACKAGE_JSON",
       releaseNotes,
-    }, `Working update v${suggested} is ready. Add the content you have.`);
+    }, copyFromVersionId
+      ? `Editable update v${suggested} is ready with the current source carried forward.`
+      : `Working update v${suggested} is ready. Add the content you have.`);
     if (!result) return;
     setReleaseNotes("");
+  }
+
+  async function editVersion(entry: ContentVersion) {
+    if (entry.status === "DRAFT") return;
+    if (["VALIDATED", "APPROVED"].includes(entry.status)) {
+      await act({ action: "reopenVersion", versionId: entry.id }, "This update is editable again.");
+      return;
+    }
+    if (entry.status === "PUBLISHED") {
+      if (workingVersion) {
+        setMessage(`Working update v${workingVersion.version} is already open.`);
+        return;
+      }
+      await createVersion(entry.id);
+    }
+  }
+
+  async function unpublishSelected() {
+    if (!selected || !liveVersion) return;
+    if (!window.confirm(`Take ${selected.title} offline for learners? You can republish the reviewed version later.`)) return;
+    await act({ action: "unpublishItem", itemId: selected.id }, "Taken offline. The published version is preserved and can be republished.");
+  }
+
+  async function publishVersion(entry: ContentVersion) {
+    if (entry.status === "PUBLISHED" && entry.runtimeStatus === "READY") {
+      await act({ action: "republishVersion", versionId: entry.id }, "Published again.");
+      return;
+    }
+    if (entry.uat?.status !== "PASSED") {
+      setError("Preview this version and complete the final check before publishing.");
+      return;
+    }
+    if (entry.status === "VALIDATED") {
+      const approved = await act({ action: "approveVersion", versionId: entry.id });
+      if (!approved) return;
+    }
+    await act(
+      { action: "activateVersion", versionId: entry.id },
+      selected?.kind === "LEARNING_MODULE"
+        ? "Published the learner edition."
+        : "Lab published.",
+    );
   }
 
   async function uploadSource(
@@ -778,33 +853,102 @@ export function ContentStudio() {
                 <span className="content-detail-mark">{selected.kind === "LAB" ? <FlaskConical /> : <BookOpen />}</span>
               </header>
 
-              <section className="content-studio-card version-create">
+              <section className="content-studio-card content-publish-panel">
                 <div className="content-studio-section-title">
                   <div>
-                    <p className="eyebrow">Add content</p>
-                    <h3>{selected.versions.some((entry) => entry.status === "DRAFT") ? "Continue the working update" : "Start the next update"}</h3>
+                    <p className="eyebrow">Current status</p>
+                    <h3>
+                      {liveVersion
+                        ? "Published to learners"
+                        : workingVersion
+                          ? `Working update v${workingVersion.version}`
+                          : offlinePublishedVersion
+                            ? "Currently offline"
+                            : "No content version yet"}
+                    </h3>
                     <p>
-                      BIS keeps the version number for you. {selected.kind === "LEARNING_MODULE"
-                        ? "Add whichever learner edition is ready; the others can follow later."
-                        : "Add the Lab as a Word document, PDF, pasted text or BIS package."}
+                      {liveVersion
+                        ? "Learners can open this title now. Edit creates a safe working update without changing the live version."
+                        : workingVersion
+                          ? workingVersion.status === "DRAFT"
+                            ? "Edit the source, then prepare and preview it before publishing."
+                            : "Preview the prepared version, complete the final check, then publish."
+                          : offlinePublishedVersion
+                            ? "The reviewed version is preserved. You can republish it or start an editable update."
+                            : "Start by adding the authored content you want BIS to prepare."}
                     </p>
                   </div>
                   <span className="content-auto-version">
-                    {selected.versions.find((entry) => entry.status === "DRAFT")
-                      ? `Working: v${selected.versions.find((entry) => entry.status === "DRAFT")?.version}`
-                      : `Next: v${nextContentVersion(selected.versions.map((entry) => entry.version))}`}
+                    {liveVersion
+                      ? `Live: v${liveVersion.version}`
+                      : workingVersion
+                        ? `Working: v${workingVersion.version}`
+                        : offlinePublishedVersion
+                          ? `Offline: v${offlinePublishedVersion.version}`
+                          : `Next: v${nextContentVersion(selected.versions.map((entry) => entry.version))}`}
                   </span>
                 </div>
-                <div className="version-create-grid version-create-grid-simple">
-                  <label className="wide">What changed? <span>(optional)</span><Textarea value={releaseNotes} onChange={(event) => setReleaseNotes(event.target.value)} placeholder="A short note for your own records." /></label>
+
+                <div className="content-primary-actions" aria-label="Content actions">
+                  {actionVersion ? (
+                    <Button
+                      variant={workingVersion?.status === "DRAFT" ? "outline" : "default"}
+                      disabled={saving || workingVersion?.status === "DRAFT"}
+                      onClick={() => void editVersion(actionVersion)}
+                    >
+                      <FileText />
+                      {workingVersion?.status === "DRAFT" ? "Editing" : "Edit content"}
+                    </Button>
+                  ) : (
+                    <Button disabled={saving} onClick={() => void createVersion()}>
+                      <Plus /> Add content
+                    </Button>
+                  )}
+
+                  {actionPreviewHref && actionVersionCanPreview ? (
+                    <Button asChild variant="outline">
+                      <Link target="_blank" rel="noreferrer" href={actionPreviewHref}>
+                        <Eye /> Preview
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" disabled><Eye /> Preview</Button>
+                  )}
+
+                  <Button
+                    disabled={saving || !actionVersion || !actionVersionCanPublish}
+                    onClick={() => actionVersion && void publishVersion(actionVersion)}
+                  >
+                    <PackageCheck />
+                    {offlinePublishedVersion && actionVersion?.id === offlinePublishedVersion.id ? "Republish" : "Publish"}
+                  </Button>
+
+                  {liveVersion ? (
+                    <Button variant="outline" disabled={saving} onClick={() => void unpublishSelected()}>
+                      <LockKeyhole /> Unpublish
+                    </Button>
+                  ) : null}
+
+                  {selected.routePath && liveVersion ? (
+                    <Button asChild variant="ghost">
+                      <Link href={selected.routePath}>Open learner view <ChevronRight /></Link>
+                    </Button>
+                  ) : null}
                 </div>
-                <Button
-                  disabled={saving || selected.versions.some((entry) => entry.status === "DRAFT")}
-                  onClick={() => void createVersion()}
-                >
-                  {saving ? <LoaderCircle className="spin" /> : <Plus />}
-                  {selected.versions.some((entry) => entry.status === "DRAFT") ? "Working update already open" : "Start adding content"}
-                </Button>
+
+                {!actionVersionCanPublish && actionVersion ? (
+                  <p className="content-action-help">
+                    {actionVersion.status === "DRAFT"
+                      ? "Prepare this update before previewing or publishing."
+                      : actionVersion.uat?.status !== "PASSED"
+                        ? "Preview it and complete the final check before publishing."
+                        : actionVersion.runtimeStatus !== "READY" && actionVersion.runtimeStatus !== "LIVE"
+                          ? "This version still needs preparation before it can go live."
+                          : actionVersion.runtimeStatus === "LIVE"
+                            ? "This version is already published."
+                            : "Finish the current review before publishing."}
+                  </p>
+                ) : null}
               </section>
 
               <section className="content-versions">
@@ -1078,28 +1222,19 @@ export function ContentStudio() {
                           <Button disabled={busy || !hasAnySource} onClick={() => void act(
                             { action: "compileVersion", versionId: entry.id },
                             selected.kind === "LEARNING_MODULE"
-                              ? "Your uploaded edition is ready to preview."
-                              : "Your Lab is ready to preview.",
+                              ? "Content processed. Preview it before publishing."
+                              : "Lab processed. Preview it before publishing.",
                           )}>
-                            <PackageCheck /> {staleCompilation ? "Prepare again" : "Prepare preview again"}
-                          </Button>
-                        ) : null}
-                        {entry.compilerCurrent && entry.status === "VALIDATED" && finalCheckPassed ? (
-                          <Button disabled={busy} onClick={() => void act({ action: "approveVersion", versionId: entry.id }, "Ready to publish.")}>
-                            <ShieldCheck /> Finish readying
-                          </Button>
-                        ) : null}
-                        {entry.compilerCurrent && entry.status === "VALIDATED" && !finalCheckPassed ? <span className="activation-note"><Eye /> Preview and complete the final check first.</span> : null}
-                        {entry.compilerCurrent && entry.status === "APPROVED" && finalCheckPassed ? (
-                          <Button disabled={busy} onClick={() => void act({ action: "activateVersion", versionId: entry.id }, selected.kind === "LEARNING_MODULE" ? "Published the editions included in this version." : "Lab published.")}>
-                            <PackageCheck /> Publish
+                            <RefreshCw /> {entry.compilerStatus === "COMPILED" ? "Process again" : "Process content"}
                           </Button>
                         ) : null}
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? (
-                          <span className="activation-note">Need to change the content? Upload or paste into the edition above and BIS will reopen this update safely.</span>
+                          <Button variant="outline" disabled={busy} onClick={() => void editVersion(entry)}>
+                            <FileText /> Edit this update
+                          </Button>
                         ) : null}
-                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Published</span> : null}
-                        {entry.status === "PUBLISHED" && selected.routePath ? <Button asChild variant="outline"><Link href={selected.routePath}>Open learner view <ChevronRight /></Link></Button> : null}
+                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "LIVE" ? <span className="activation-note live"><Check /> Published to learners</span> : null}
+                        {entry.status === "PUBLISHED" && entry.runtimeStatus === "READY" ? <span className="activation-note">Offline — use Republish above when ready.</span> : null}
                       </footer>
                     </article>
                   );

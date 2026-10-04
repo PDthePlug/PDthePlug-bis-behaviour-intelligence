@@ -603,3 +603,37 @@
   padding-left:18px;
 }
 .content-question-quality li+li{margin-top:5px}
+
+
+.content-publish-panel{
+  display:grid;
+  gap:18px;
+  padding:24px;
+}
+.content-primary-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  align-items:center;
+}
+.content-primary-actions [data-slot="button"]{
+  min-height:44px;
+}
+.content-action-help{
+  margin:0;
+  padding:12px 14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#f7f7f4;
+  color:var(--muted-foreground);
+  font-size:12px;
+  line-height:1.5;
+}
+@media(max-width:760px){
+  .content-publish-panel{padding:18px}
+  .content-primary-actions{display:grid;grid-template-columns:1fr 1fr}
+  .content-primary-actions [data-slot="button"]{width:100%}
+}
+@media(max-width:430px){
+  .content-primary-actions{grid-template-columns:1fr}
+}
