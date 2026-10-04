@@ -10,7 +10,7 @@ import {
 } from "../../../db/schema";
 import { identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
-import { CONTENT_STUDIO_BUCKET } from "../../../lib/content-studio";
+import { CONTENT_STUDIO_BUCKET, sha256Hex } from "../../../lib/content-studio";
 import { isDeliveryEdition } from "../../../lib/learning-foundation";
 import { gunzipSync } from "node:zlib";
 
@@ -142,7 +142,9 @@ async function loadHandler(request: Request) {
   if (download.error || !download.data) {
     return Response.json({ error: "The runtime artifact could not be loaded." }, { status: 500 });
   }
-  const payload = sanitizeRuntimePackage(JSON.parse(await download.data.text()));
+  const bytes = new Uint8Array(await download.data.arrayBuffer());
+  if (await sha256Hex(bytes) !== artifact.artifactHash) return Response.json({ error: "The published content could not be verified." }, { status: 409 });
+  const payload = sanitizeRuntimePackage(JSON.parse(new TextDecoder().decode(bytes)));
   return Response.json({
     item: {
       id: item.id,

@@ -75,7 +75,9 @@ async function portfolioSnapshot() {
 
   const metricLabels: Record<string, string> = {};
   const client = requestSupabaseClient();
-  const { data: artifactPointers } = await client.rpc("bis_portfolio_lab_artifacts");
+  const [artifactResult, photoResult] = await Promise.all([client.rpc("bis_portfolio_lab_artifacts"), client.rpc("bis_portfolio_attachment_counts")]);
+  if (artifactResult.error || photoResult.error) return Response.json({ error: "Your evidence portfolio could not be loaded." }, { status: 503 });
+  const artifactPointers = artifactResult.data;
   const pointers = (artifactPointers ?? []) as Array<{ enrolment_id: string; storage_path: string; artifact_hash: string }>;
   for (let offset = 0; offset < pointers.length; offset += 4) {
     await Promise.all(pointers.slice(offset, offset + 4).map(async (pointer) => {
@@ -96,6 +98,7 @@ async function portfolioSnapshot() {
 
   const labs = buildEvidencePortfolio({
     enrolments,
+    attachments: (photoResult.data ?? []).map((row: { enrolment_id: string; investigation: number; photo_count: number }) => ({ enrolmentId: row.enrolment_id, investigation: row.investigation, photoCount: row.photo_count })),
     evidence,
     measurements,
     measurementSources: sources,

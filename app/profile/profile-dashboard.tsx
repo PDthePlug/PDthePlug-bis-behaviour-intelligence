@@ -39,6 +39,7 @@ type EvidencePortfolioSnapshot = {
       recordedAnchors: number;
       totalAnchors: number;
       activeEvidenceItems: number;
+      photos?: number;
       derivedMeasures: number;
       sourceLinks: number;
     };
@@ -213,7 +214,7 @@ export function ProfileDashboard({
 
                   <div className="profile-evidence-summary">
                     <span>{lab.summary.recordedAnchors}/{lab.summary.totalAnchors} evidence anchors</span>
-                    <span>{lab.summary.activeEvidenceItems} evidence items</span>
+                    <span>{lab.summary.activeEvidenceItems} evidence items</span><span>{lab.summary.photos ?? 0} photos</span>
                     <span>{lab.summary.derivedMeasures} calculated measures</span>
                   </div>
                 </section>

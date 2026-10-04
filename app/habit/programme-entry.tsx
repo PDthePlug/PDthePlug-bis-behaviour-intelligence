@@ -98,7 +98,7 @@ export function ProgrammeEntry({
     setError("");
     setFacilitatorContext(null);
     try {
-      const response = await fetch("/api/bis", { cache: "no-store" });
+      const response = await fetch("/api/bis?scope=profile", { cache: "no-store" });
       const data = await response.json() as EntrySnapshot & { error?: string };
       if (!response.ok) throw new Error(data.error || "Your BIS learning environment could not be opened.");
 
@@ -158,7 +158,7 @@ export function ProgrammeEntry({
     const controller = new AbortController();
     void (async () => {
       try {
-        const response = await fetch("/api/bis", { cache: "no-store", signal: controller.signal });
+        const response = await fetch("/api/bis?scope=profile", { cache: "no-store", signal: controller.signal });
         const data = await response.json() as EntrySnapshot & { error?: string };
         if (!response.ok) throw new Error(data.error || "Your BIS learning environment could not be opened.");
 
@@ -274,7 +274,7 @@ export function ProgrammeEntry({
           <div className="privacy-copy"><ShieldCheck /><p><strong>Private by design:</strong> your learning answers, Lab work and experiment entries are kept separate. Facilitators only see what their role allows.</p></div>
           <label className="consent-row"><Checkbox checked={consent} onCheckedChange={(value) => setConsent(value === true)} /><span>I understand what BIS collects, why it is used, who may see it in my selected mode, and that safeguarding or legal duties may limit confidentiality.</span></label>
           {error && <p className="field-error">{error}</p>}
-          <Button className="w-full" size="lg" disabled={saving || !ageBand || !consent} onClick={() => void act({ action: "setup", ageBand, mode, consent })}>{saving ? "Preparing BIS…" : <>Start BIS <ArrowRight /></>}</Button>
+          <Button className="w-full" size="lg" disabled={saving || !ageBand || !consent} onClick={() => void act({ action: "setup", labCode: moduleCode, ageBand, mode, consent })}>{saving ? "Preparing BIS…" : <>Start BIS <ArrowRight /></>}</Button>
           <p className="signed-in-note">Signed in as {snapshot.identity?.email ?? initialIdentity.email}</p>
           {hasStaffAccess && <p className="signed-in-note"><Link href="/workspace">Open staff workspace</Link></p>}
         </div>

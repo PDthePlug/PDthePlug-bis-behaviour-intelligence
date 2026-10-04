@@ -119,7 +119,7 @@ test("Day 3 Lab handoff preserves the exact learner handbook return path", async
 
   assert.match(player, /function labHrefWithReturn\(href: string, returnTo: string\)/);
   assert.match(player, /const learningReturnTo = `\$\{pathname\}\?section=learn&page=\$\{selected \+ 1\}`/);
-  assert.match(player, /const resolvedLabHref = moduleDefinition\?\.labHref \?\? universalLabHref/);
+  assert.match(player, /const resolvedLabHref = universalLabHref \?\? moduleDefinition\?\.labHref/);
   assert.match(player, /labHrefWithReturn\(resolvedLabHref, learningReturnTo\)/);
   assert.match(labPage, /optionalSafeReturnPath\(params\.returnTo\)/);
   assert.match(labPage, /liveUniversalLabHref\("HAB", \{ returnTo \}\)/);
@@ -166,10 +166,10 @@ test("Lab entry routes preserve the programme return path even when sign-in is r
 test("Programme Player discovers active source-backed Universal Labs without bespoke catalogue wiring", async () => {
   const player = await source("app/learning/programme-player.tsx");
 
-  assert.match(player, /\/api\/universal-lab\?lab=/);
-  assert.match(player, /programmeHandoff: universal\.programmeHandoff/);
-  assert.match(player, /const universalLabHref = moduleRuntime\?\.programmeHandoff/);
-  assert.match(player, /const resolvedLabHref = moduleDefinition\?\.labHref \?\? universalLabHref/);
+  assert.match(await source("lib/learning-lab-runtime.mjs"), /\/api\/universal-lab\?lab=/);
+  assert.match(player, /loadLearningLabRuntime\(moduleCode/);
+  assert.match(player, /const universalLabHref = moduleRuntime\?\.runtimeMode === "DYNAMIC"/);
+  assert.match(player, /const resolvedLabHref = universalLabHref \?\? moduleDefinition\?\.labHref/);
   assert.match(player, /labHrefWithReturn\(resolvedLabHref, learningReturnTo\)/);
 });
 

@@ -20,7 +20,7 @@ export function RoleRouter() {
     const controller = new AbortController();
     void (async () => {
       try {
-        const response = await fetch("/api/bis", {
+        const response = await fetch("/api/profile", {
           cache: "no-store",
           signal: controller.signal,
         });

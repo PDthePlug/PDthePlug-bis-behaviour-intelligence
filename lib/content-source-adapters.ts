@@ -1,3 +1,4 @@
+import { readDocxTable } from "./docx-table.mjs";
 import { inflateRawSync, inflateSync } from "node:zlib";
 import type { ContentSourceFormat } from "./content-studio";
 import type { DeliveryEdition } from "./learning-foundation";
@@ -149,6 +150,7 @@ type SourceBlock = {
   html: string;
   heading: boolean;
   tableRows?: string[][];
+  complexTable?: boolean;
   answerColumn?: number;
   responseColumns?: Array<{
     index: number;
@@ -383,7 +385,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
             return "<tr>" + row.map((cell, cellIndex) => {
               const label = header[cellIndex] ?? "";
               const spec = block.responseColumns?.find((candidate) => candidate.index === cellIndex);
-              if (spec) {
+              if (spec && (spec.type === "CATEGORICAL" || !cell.replace(/[_—–.\s-]+/g, ""))) {
                 const prompt = rowLabel + " — " + label;
                 const control = spec.type === "CATEGORICAL"
                   ? handbookChoice(nextSourceKey(prompt), prompt, spec.options ?? [])
@@ -409,7 +411,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
             const rowLabel = row[0] || "Workbook response";
             return "<tr>" + row.map((cell, cellIndex) => {
               const label = header[cellIndex] ?? "";
-              if (cellIndex === block.answerColumn) {
+              if (cellIndex === block.answerColumn && !cell.replace(/[_—–.\s-]+/g, "")) {
                 const prompt = rowLabel + " — " + label;
                 return '<td data-label="' + escapeHtml(label) + '">' + handbookTextarea(nextSourceKey(prompt), prompt) + "</td>";
               }
@@ -420,6 +422,8 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         );
         continue;
       }
+
+      if (block.kind === "table") { html.push(handbookBlockHtml(block)); continue; }
 
       const questions = block.heading ? [] : handbookQuestionPrompts(block.lines?.join("\n") || block.text);
       if (questions.length) {
@@ -927,28 +931,11 @@ function docxParagraph(block: string): SourceBlock | null {
 }
 
 function docxTable(block: string): SourceBlock | null {
-  const tableRows = [...block.matchAll(/<w:tr\b[\s\S]*?<\/w:tr>/g)].map((row) =>
-    [...row[0].matchAll(/<w:tc\b[\s\S]*?<\/w:tc>/g)].map((cell) =>
-      [...cell[0].matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>/g)]
-        .map((match) => decodeXml(match[1]))
-        .join("")
-        .replace(/\s+/g, " ")
-        .trim(),
-    ),
-  ).filter((row) => row.some(Boolean));
+  const { tableRows, complex, html } = readDocxTable(block);
   if (!tableRows.length) return null;
-  const htmlRows = tableRows.map((row, index) => {
-    const tag = index === 0 ? "th" : "td";
-    return "<tr>" + row.map((cell) => "<" + tag + ">" + escapeHtml(cell) + "</" + tag + ">").join("") + "</tr>";
-  });
-  return {
-    text: tableRows.map((row) => row.join(" | ")).join(" \n "),
-    heading: false,
-    html: "<table><tbody>" + htmlRows.join("") + "</tbody></table>",
-    tableRows,
-    responseColumns: inferTableResponseColumns(tableRows),
-    kind: "table",
-  };
+  return { text: tableRows.map(row => row.join(" | ")).join(" \n "), heading: false,
+    html, tableRows, complexTable: complex,
+    responseColumns: complex ? [] : inferTableResponseColumns(tableRows), kind: "table" };
 }
 
 function docxBlocks(bytes: Uint8Array) {
@@ -1559,7 +1546,7 @@ function promptsFromTable(
   renderBlocks: ImportedRenderBlock[],
 ) {
   const rows = block.tableRows;
-  if (!rows || rows.length < 2) return false;
+  if (!rows || rows.length < 2 || block.complexTable) return false;
   const headers = rows[0].map((cell) => cleanAuthoredText(cell).replace(/\*\*/g, ""));
   const joined = headers.join(" | ").toLowerCase();
 

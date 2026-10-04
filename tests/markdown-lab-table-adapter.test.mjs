@@ -160,6 +160,7 @@ test("Markdown Lab imports reconstruct serialized authored tables before manufac
     const adapterPath = join(temp, "content-source-adapters.mjs");
     const capabilitiesPath = join(temp, "lab-factory-capabilities.mjs");
     await writeFile(adapterPath, compiled, "utf8");
+    await writeFile(join(temp, "docx-table.mjs"), await source("lib/docx-table.mjs"), "utf8");
     await writeFile(capabilitiesPath, await source("lib/lab-factory-capabilities.mjs"), "utf8");
 
     const adapter = await import(pathToFileURL(adapterPath).href + "?v=" + Date.now());
@@ -225,6 +226,7 @@ test("Leadership-style daily trackers are manufactured as calendar-ready evidenc
     const adapterPath = join(temp, "content-source-adapters.mjs");
     const capabilitiesPath = join(temp, "lab-factory-capabilities.mjs");
     await writeFile(adapterPath, compiled, "utf8");
+    await writeFile(join(temp, "docx-table.mjs"), await source("lib/docx-table.mjs"), "utf8");
     await writeFile(capabilitiesPath, await source("lib/lab-factory-capabilities.mjs"), "utf8");
 
     const adapter = await import(pathToFileURL(adapterPath).href + "?v=" + Date.now());

@@ -32,6 +32,7 @@ type ProgressRow = {
     status: string;
     currentInvestigation: number;
     startedAt: string;
+    experimentStartedAt?: string | null;
     updatedAt: string;
     completedAt: string | null;
   };
@@ -110,7 +111,7 @@ function position(learner: ProgressRow) {
   const step = learner.enrolment?.currentInvestigation ?? 0;
   if (learner.enrolment?.status === "COMPLETED") return "Completed";
   if (step >= 8) return "Ready for review";
-  if (step >= 6 && !learner.experiment) return "Ready to start experiment";
+  if (step >= 6 && !learner.experiment && !learner.enrolment?.experimentStartedAt) return "Ready to start experiment";
   if (learner.experiment && (learner.experiment.recordedDays ?? 0) === 0) return "First observation pending";
   if (learner.experiment && (learner.experiment.opportunityCount ?? 0) === 0 && (learner.experiment.recordedDays ?? 0) >= 2) return "No real-world opportunity yet";
   if (step >= 6) return "Experiment in progress";
@@ -121,14 +122,14 @@ function position(learner: ProgressRow) {
 
 function needsAttention(learner: ProgressRow) {
   const step = learner.enrolment?.currentInvestigation ?? 0;
-  if (step >= 6 && !learner.experiment) return true;
+  if (step >= 6 && !learner.experiment && !learner.enrolment?.experimentStartedAt) return true;
   if (learner.experiment && (learner.experiment.recordedDays ?? 0) >= 2 && (learner.experiment.opportunityCount ?? 0) === 0) return true;
   return false;
 }
 
 function evidencePosition(learner: ProgressRow) {
   const experiment = learner.experiment;
-  if (!experiment) return "No experiment evidence yet";
+  if (!experiment) return learner.enrolment?.experimentStartedAt ? "Experiment started · evidence counts not available" : "No experiment evidence yet";
   const opportunities = experiment.opportunityCount ?? 0;
   const threshold = experiment.minimumEvidenceThreshold ?? 3;
   if (opportunities >= threshold) return "Enough evidence for review";
@@ -142,7 +143,7 @@ function observedStrengths(learner: ProgressRow) {
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
   if (step >= 4) strengths.push("Learning momentum");
-  if (experiment) strengths.push("Moved from planning into action");
+  if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Moved from planning into action");
   if ((experiment?.recordedDays ?? 0) >= 3) strengths.push("Consistent observation");
   if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push("Repeated real-world testing");
   if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Evidence ready");
@@ -174,8 +175,8 @@ function ParticipantCard({ learner }: { learner: ProgressRow }) {
       <div className="ops-progress-line"><span style={{ width: String(progress) + "%" }} /></div>
       <dl>
         <div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div>
-        <div><dt>Recorded days</dt><dd>{learner.experiment?.recordedDays ?? 0}</dd></div>
-        <div><dt>Opportunities</dt><dd>{learner.experiment?.opportunityCount ?? 0}</dd></div>
+        <div><dt>Recorded days</dt><dd>{learner.experiment?.recordedDays ?? "Not available"}</dd></div>
+        <div><dt>Opportunities</dt><dd>{learner.experiment?.opportunityCount ?? "Not available"}</dd></div>
         <div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div>
       </dl>
     </article>
@@ -237,7 +238,7 @@ export function FacilitatorWorkspace({
   }
 
   const completed = participants.filter((item) => item.enrolment?.status === "COMPLETED").length;
-  const experiments = participants.filter((item) => item.experiment).length;
+  const experiments = participants.filter((item) => item.experiment || item.enrolment?.experimentStartedAt).length;
   const reviewReady = participants.filter((item) => (item.enrolment?.currentInvestigation ?? 0) >= 8).length;
   const attention = participants.filter(needsAttention);
   const learningChecks = cohort.learningChecks ?? null;
@@ -258,7 +259,7 @@ export function FacilitatorWorkspace({
   };
 
   const opportunities = {
-    none: participants.filter((item) => (item.experiment?.opportunityCount ?? 0) === 0).length,
+    none: participants.filter((item) => item.experiment?.opportunityCount === 0).length,
     one: participants.filter((item) => (item.experiment?.opportunityCount ?? 0) === 1).length,
     two: participants.filter((item) => (item.experiment?.opportunityCount ?? 0) === 2).length,
     threePlus: participants.filter((item) => (item.experiment?.opportunityCount ?? 0) >= 3).length,
@@ -388,8 +389,8 @@ export function FacilitatorWorkspace({
               </div>
               <section className="ops-metrics participant-detail-metrics">
                 <article><ClipboardCheck /><span>Investigation</span><strong>{selected.enrolment?.currentInvestigation ?? 0}/9</strong></article>
-                <article><Activity /><span>Recorded days</span><strong>{selected.experiment?.recordedDays ?? 0}</strong></article>
-                <article><Users /><span>Opportunities</span><strong>{selected.experiment?.opportunityCount ?? 0}</strong></article>
+                <article><Activity /><span>Recorded days</span><strong>{selected.experiment?.recordedDays ?? "Not available"}</strong></article>
+                <article><Users /><span>Opportunities</span><strong>{selected.experiment?.opportunityCount ?? "Not available"}</strong></article>
                 <article><Activity /><span>Last activity</span><strong className="metric-date">{formatDate(selected.lastActivityAt)}</strong></article>
               </section>
             </section>
@@ -405,10 +406,10 @@ export function FacilitatorWorkspace({
               <article className="surface-card participant-signal-card">
                 <p className="eyebrow">Evidence position</p>
                 <h3>{evidencePosition(selected)}</h3>
-                <div className="participant-signal-track">
+                {selected.experiment ? <><div className="participant-signal-track">
                   <span style={{ width: `${Math.min(100, ((selected.experiment?.opportunityCount ?? 0) / Math.max(1, selected.experiment?.minimumEvidenceThreshold ?? 3)) * 100)}%` }} />
                 </div>
-                <small>{selected.experiment?.opportunityCount ?? 0} of {selected.experiment?.minimumEvidenceThreshold ?? 3} minimum real-world opportunities</small>
+                <small>{selected.experiment?.opportunityCount ?? "Not available"} of {selected.experiment?.minimumEvidenceThreshold ?? 3} minimum real-world opportunities</small></> : <small>Evidence counts are not available for this view.</small>}
               </article>
             </section>
 
@@ -503,7 +504,7 @@ export function FacilitatorWorkspace({
           <section className="ops-metrics">
             <article><ClipboardCheck /><span>Completed</span><strong>{completed}</strong></article>
             <article><Activity /><span>Review stage</span><strong>{reviewReady}</strong></article>
-            <article><Users /><span>Experiments active</span><strong>{participants.filter((item) => item.experiment?.status === "ACTIVE").length}</strong></article>
+            <article><Users /><span>Experiments active</span><strong>{participants.filter((item) => item.experiment?.status === "ACTIVE" || Boolean(item.enrolment?.experimentStartedAt && item.enrolment.status !== "COMPLETED")).length}</strong></article>
             <article><ShieldAlert /><span>More opportunity needed</span><strong>{participants.filter((item) => item.experiment && (item.experiment.opportunityCount ?? 0) < (item.experiment.minimumEvidenceThreshold ?? 3)).length}</strong></article>
           </section>
           <section className="surface-card ops-section">

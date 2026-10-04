@@ -6,6 +6,7 @@ type LabCode = string;
 
 export type HandbookKnownValue = {
   labels: string[];
+  exact?: boolean;
   value: string;
   source?: string;
 };
@@ -662,7 +663,8 @@ function createTableResponse(
   return field;
 }
 
-function makeBlankLearnerTableCellsEditable(table: HTMLTableElement, labCode: LabCode, pageId: string) {
+function makeBlankLearnerTableCellsEditable(table: HTMLTableElement, labCode: LabCode, pageId: string, usedFieldIds: Set<string>) {
+  if (table.querySelector("[rowspan],[colspan]")) return;
   if (table.closest(".prototype-reference,.checkpoint-answer-panel")) return;
   const headerCells = [...table.querySelectorAll<HTMLTableCellElement>("thead th")];
   const firstRow = table.rows[0];
@@ -692,20 +694,42 @@ function makeBlankLearnerTableCellsEditable(table: HTMLTableElement, labCode: La
       const prompt = `${rowLabel} — ${header}`;
       const multiline = /\b(?:notes?|reflection|evidence|observation|explain|why|how)\b/i.test(header);
       cell.textContent = "";
-      cell.append(createTableResponse(
+      const control = createTableResponse(
         labCode,
         pageId,
         prompt,
-        `${header}|${rowLabel}|${rowIndex + 1}|${columnIndex}`,
+        `${header}|${rowLabel}|${rowIndex + 1 + Number(table.dataset.legacyHeaderRowOffset ?? 0)}|${columnIndex}`,
         multiline,
-      ));
+      );
+      const originalId = control.dataset.fieldId!;
+      if (usedFieldIds.has(originalId)) {
+        const token = hashPrompt(`${originalId}|${table.dataset.informationGroup}`);
+        control.dataset.fieldId = `${labCode}.WB.AUTO.TABLE.${token}`;
+        control.dataset.sourceKey = `table-cell-${token.toLowerCase()}`;
+      }
+      usedFieldIds.add(control.dataset.fieldId!);
+      cell.append(control);
     }
   });
 }
 
 function enhanceTables(root: HTMLElement, labCode: LabCode, pageId: string) {
-  root.querySelectorAll<HTMLTableElement>("table").forEach((table) => {
-    makeBlankLearnerTableCellsEditable(table, labCode, pageId);
+  const usedFieldIds = new Set([...root.querySelectorAll<HTMLElement>("[data-field-id]")].map(field => field.dataset.fieldId!));
+  root.querySelectorAll<HTMLTableElement>("table").forEach((table, index) => {
+    const simple = !table.querySelector("[rowspan],[colspan]");
+    if (simple && !table.tHead && table.rows[0]?.querySelector("th")) {
+      const head = table.createTHead(); head.append(table.rows[0]);
+      table.dataset.legacyHeaderRowOffset = "1";
+    }
+    table.dataset.informationGroup = table.dataset.informationGroup || `${pageId}.TABLE.${index + 1}`;
+    const headers = [...(table.tHead?.rows[0]?.cells ?? [])].map(cell => normalise(cell.textContent ?? ""));
+    if (simple && headers.length) for (const body of table.tBodies) for (const row of body.rows) {
+      [...row.cells].forEach((cell, column) => { cell.dataset.label = headers[column] || ""; });
+      row.dataset.informationGroup = `${table.dataset.informationGroup}.ROW.${row.sectionRowIndex + 1}`;
+    }
+    makeBlankLearnerTableCellsEditable(table, labCode, pageId, usedFieldIds);
+    table.classList.toggle("handbook-stacked-table", simple && headers.length > 0);
+    table.querySelectorAll<HTMLElement>("[data-field-id]").forEach(field => { field.dataset.responseGroup = field.closest("tr")?.dataset.informationGroup || table.dataset.informationGroup; });
     const hasLabels = Boolean(table.querySelector("td[data-label],th[data-label]"));
     table.classList.toggle("handbook-data-table", hasLabels);
     table.classList.toggle("handbook-scroll-table", !hasLabels);
@@ -737,7 +761,7 @@ function findKnownValue(text: string, context: HandbookEnhancementContext) {
   return context.knownValues?.find((entry) =>
     entry.labels.some((label) => {
       const key = normalise(label).toLowerCase();
-      return normal.startsWith(key) || normal.includes(`${key}:`);
+      return entry.exact ? normal.replace(/[:_—–.\s]+$/g, "") === key : normal.startsWith(key) || normal.includes(`${key}:`);
     }),
   );
 }
@@ -761,6 +785,15 @@ function renderKnownValue(element: HTMLElement, value: HandbookKnownValue) {
 
 function applyKnownValues(root: HTMLElement, context: HandbookEnhancementContext) {
   if (!context.knownValues?.length) return;
+  root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input[data-field-id],textarea[data-field-id]").forEach(field => {
+    if (field.dataset.purpose === "FORMAL_LAB_REFERENCE") return;
+    const known = findKnownValue(field.getAttribute("aria-label") || "", context);
+    if (!known?.exact) return;
+    const output = document.createElement("output");
+    output.className = "handbook-system-value"; output.dataset.sourceFieldId = field.dataset.fieldId;
+    output.setAttribute("aria-label", field.getAttribute("aria-label") || known.labels[0]); output.textContent = known.value;
+    field.replaceWith(output);
+  });
   root.querySelectorAll<HTMLElement>("p,li").forEach((element) => {
     if (element.classList.contains("handbook-system-value") || element.querySelector("[data-field-id]")) return;
     const text = normalise(element.textContent ?? "");
@@ -786,7 +819,7 @@ function applyKnownTableValues(root: HTMLElement, context: HandbookEnhancementCo
 
     const replaceable =
       !currentValue ||
-      /^[_\s/%0-9.–—-]+$/.test(currentValue) ||
+      /^[_\s.–—-]+$/.test(currentValue) ||
       /^(?:n\/a|not recorded)$/i.test(currentValue);
     if (!replaceable) return;
 
@@ -1294,9 +1327,9 @@ export function enhanceHandbookDocument(
   labelAuthoredResponses(root);
   removeUnboundGenericResponses(root);
   upgradePrintableCheckboxes(root, pageId);
-  enhanceTables(root, labCode, pageId);
   applyKnownValues(root, context);
   applyKnownTableValues(root, context);
+  enhanceTables(root, labCode, pageId);
   replacePaperIdentityFields(root, context, labCode, pageId);
   hardenReferenceOnlyLabContent(root, context);
   convertSimplePaperBlanks(root, labCode, pageId);

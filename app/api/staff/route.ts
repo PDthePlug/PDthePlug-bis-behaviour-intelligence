@@ -4,6 +4,7 @@ import { getDb, withSupabaseRequest } from "../../../db";
 import { scopedStaffExperimentProgress as staffExperimentProgress } from "../../../db/staff-progress";
 import {
   auditEvents,
+  contentLibraryItems, contentLibraryVersions, contentRuntimeActivations, contentRuntimeArtifacts,
   cohortMembers,
   facilitatorNotes,
   labAssignments,
@@ -31,7 +32,7 @@ import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { LAB_VERSION } from "../../../lib/habit-lab";
 import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib/programme-report-pdf";
 
-const SUPPORTED_LAB_VERSIONS = [LAB_VERSION] as const;
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function errorResponse(error: unknown) {
@@ -102,62 +103,50 @@ async function learnerByEmail(email: string) {
   return learner;
 }
 
-async function assignLab(identity: Identity, learner: typeof learners.$inferSelect, labVersion: string) {
-  if (!SUPPORTED_LAB_VERSIONS.includes(labVersion as typeof LAB_VERSION)) {
-    throw new Error("Only a canonical supported Habit Lab version can be assigned.");
-  }
+async function publishedLabs() {
   const db = getDb();
-  const now = new Date().toISOString();
-  const [existingEnrolment] = await db
-    .select()
-    .from(labEnrollments)
-    .where(and(eq(labEnrollments.userId, learner.userId), eq(labEnrollments.labCode, "HAB")))
-    .orderBy(desc(labEnrollments.updatedAt))
-    .limit(1);
-  await db
-    .update(labAssignments)
-    .set({ status: "REVOKED", revokedAt: now })
-    .where(and(
-      eq(labAssignments.learnerUserId, learner.userId),
-      eq(labAssignments.labCode, "HAB"),
-      eq(labAssignments.status, "ACTIVE"),
-    ));
-  await db
-    .insert(labAssignments)
-    .values({
-      id: crypto.randomUUID(),
-      learnerUserId: learner.userId,
-      learnerEmail: normalizeEmail(learner.email),
-      labCode: "HAB",
-      labVersion,
-      assignedBy: identity.id,
-    })
-    .onConflictDoUpdate({
-      target: [labAssignments.learnerUserId, labAssignments.labCode, labAssignments.labVersion],
-      set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null },
-    });
-  await db
-    .insert(labEnrollments)
-    .values({
-      id: crypto.randomUUID(),
-      userId: learner.userId,
-      labCode: "HAB",
-      labVersion,
-      status: existingEnrolment?.status ?? "IN_PROGRESS",
-      currentInvestigation: existingEnrolment?.currentInvestigation ?? 0,
-      startedAt: existingEnrolment?.startedAt ?? now,
-      phaseACompletedAt: existingEnrolment?.phaseACompletedAt ?? null,
-      experimentStartedAt: existingEnrolment?.experimentStartedAt ?? null,
-      completedAt: existingEnrolment?.completedAt ?? null,
-      updatedAt: now,
-    })
-    .onConflictDoUpdate({
-      target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
-      set: { updatedAt: now },
-    });
+  const [items, versions, activations] = await Promise.all([
+    db.select().from(contentLibraryItems).where(and(eq(contentLibraryItems.kind, "LAB"), eq(contentLibraryItems.status, "ACTIVE"))),
+    db.select().from(contentLibraryVersions).where(and(eq(contentLibraryVersions.status, "PUBLISHED"), eq(contentLibraryVersions.runtimeStatus, "LIVE"))),
+    db.select().from(contentRuntimeActivations).where(eq(contentRuntimeActivations.status, "ACTIVE")),
+  ]);
+  return activations.flatMap(activation => {
+    const item = items.find(item => item.id === activation.itemId);
+    const version = versions.find(version => version.id === activation.versionId && version.itemId === item?.id);
+    return item && version ? [{ code: item.code, title: item.title, version: version.version, runtimeMode: activation.runtimeMode }] : [];
+  });
 }
 
-async function progressRows(userIds: string[], labCode?: string) {
+async function requirePublishedLab(labCode: string, labVersion: string, allowPrevious = false) {
+  const live = (await publishedLabs()).find(lab => lab.code === labCode && lab.version === labVersion);
+  if (live) return live;
+  if (allowPrevious && (await publishedLabs()).some(lab => lab.code === labCode)) {
+    const db = getDb();
+    const [item] = await db.select().from(contentLibraryItems).where(and(eq(contentLibraryItems.kind, "LAB"), eq(contentLibraryItems.code, labCode))).limit(1);
+    if (item) {
+      const [version] = await db.select().from(contentLibraryVersions).where(and(eq(contentLibraryVersions.itemId, item.id), eq(contentLibraryVersions.version, labVersion), eq(contentLibraryVersions.status, "PUBLISHED"), inArray(contentLibraryVersions.runtimeStatus, ["LIVE", "READY"]))).limit(1);
+      if (version) {
+        const [activation] = await db.select().from(contentRuntimeActivations).where(eq(contentRuntimeActivations.versionId, version.id)).orderBy(desc(contentRuntimeActivations.activatedAt)).limit(1);
+        const [artifact] = await db.select().from(contentRuntimeArtifacts).where(and(eq(contentRuntimeArtifacts.versionId, version.id), eq(contentRuntimeArtifacts.artifactKey, "lab:universal"))).limit(1);
+        if (activation && (activation.runtimeMode === "DYNAMIC" && artifact || activation.runtimeMode === "STATIC" && ["HAB","DEC","MON"].includes(labCode))) return { code: labCode, title: item.title, version: labVersion, runtimeMode: activation.runtimeMode };
+      }
+    }
+  }
+  throw new Error("Choose a published Lab available to this programme.");
+}
+
+async function assignLab(identity: Identity, learner: typeof learners.$inferSelect, labCode: string, labVersion: string, allowPrevious = false) {
+  const published = await requirePublishedLab(labCode, labVersion, allowPrevious);
+  const db = getDb(); const now = new Date().toISOString();
+  const existing = await db.select().from(labEnrollments).where(and(eq(labEnrollments.userId, learner.userId), eq(labEnrollments.labCode, labCode), ne(labEnrollments.status, "WITHDRAWN")));
+  if (existing.some(row => row.labVersion !== labVersion)) throw new Error("This learner has work in another Lab version. Complete the governed migration before reassigning.");
+  await db.update(labAssignments).set({ status: "REVOKED", revokedAt: now }).where(and(eq(labAssignments.learnerUserId, learner.userId), eq(labAssignments.labCode, labCode), eq(labAssignments.status, "ACTIVE")));
+  await db.insert(labAssignments).values({ id: crypto.randomUUID(), learnerUserId: learner.userId, learnerEmail: normalizeEmail(learner.email), labCode, labVersion, assignedBy: identity.id }).onConflictDoUpdate({ target: [labAssignments.learnerUserId, labAssignments.labCode, labAssignments.labVersion], set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null } });
+  // Universal creates the enrolment when the learner acknowledges its privacy boundary.
+  if (published.runtimeMode === "STATIC") await db.insert(labEnrollments).values({ id: crypto.randomUUID(), userId: learner.userId, labCode, labVersion, status: "IN_PROGRESS", currentInvestigation: 0, startedAt: now, updatedAt: now }).onConflictDoNothing({ target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion] });
+}
+
+async function progressRows(userIds: string[], labCode?: string, labVersion?: string) {
   if (userIds.length === 0) return [];
   const db = getDb();
   const learnerRows = await db
@@ -176,20 +165,23 @@ async function progressRows(userIds: string[], labCode?: string) {
       id: labEnrollments.id,
       userId: labEnrollments.userId,
       labVersion: labEnrollments.labVersion,
+      labCode: labEnrollments.labCode,
       status: labEnrollments.status,
       currentInvestigation: labEnrollments.currentInvestigation,
       startedAt: labEnrollments.startedAt,
+      experimentStartedAt: labEnrollments.experimentStartedAt,
       updatedAt: labEnrollments.updatedAt,
       completedAt: labEnrollments.completedAt,
     })
     .from(labEnrollments)
     .where(labCode
-      ? and(inArray(labEnrollments.userId, userIds), eq(labEnrollments.labCode, labCode))
+      ? and(inArray(labEnrollments.userId, userIds), eq(labEnrollments.labCode, labCode), ...(labVersion ? [eq(labEnrollments.labVersion, labVersion)] : []))
       : inArray(labEnrollments.userId, userIds))
     .orderBy(desc(labEnrollments.updatedAt));
   const experimentRows = await db
     .select({
       id: staffExperimentProgress.id,
+      labCode: staffExperimentProgress.labCode,
       userId: staffExperimentProgress.userId,
       status: staffExperimentProgress.status,
       startDate: staffExperimentProgress.startDate,
@@ -212,9 +204,13 @@ async function progressRows(userIds: string[], labCode?: string) {
     .from(staffExperimentEventProgress)
     .where(inArray(staffExperimentEventProgress.userId, userIds));
 
+  const versions = await requestSupabaseClient().rpc("staff_experiment_versions");
+  if (versions.error) throw new Error("Progress versions could not be checked.");
+  const experimentVersions = new Map<string, string>((versions.data ?? []).map((row: { id: string; lab_version: string }) => [row.id, row.lab_version] as [string, string]));
+
   return learnerRows.map((learner) => {
     const enrolment = enrolments.find((item) => item.userId === learner.userId);
-    const experiment = experimentRows.find((item) => item.userId === learner.userId);
+    const experiment = experimentRows.find((item) => item.userId === learner.userId && item.labCode === (labCode ?? enrolment?.labCode) && experimentVersions.get(item.id) === enrolment?.labVersion);
     const events = experiment ? eventRows.filter((event) => event.experimentId === experiment.id) : [];
     const opportunityCount = events.filter((event) => event.eligibleOpportunity).length;
     const lastEventAt = events.map((event) => event.recordedAt).sort().at(-1);
@@ -263,7 +259,8 @@ async function adminSnapshot() {
     .where(ne(safeguardingCases.status, "RESOLVED"));
   const opportunityBands = { none: 0, one: 0, two: 0, threePlus: 0 };
   for (const learner of progress) {
-    const opportunities = learner.experiment?.opportunityCount ?? 0;
+    const opportunities = learner.experiment?.opportunityCount;
+    if (opportunities === undefined) continue;
     if (opportunities === 0) opportunityBands.none += 1;
     else if (opportunities === 1) opportunityBands.one += 1;
     else if (opportunities === 2) opportunityBands.two += 1;
@@ -273,7 +270,7 @@ async function adminSnapshot() {
     metrics: {
       learners: progress.length,
       completed: progress.filter((item) => item.enrolment?.status === "COMPLETED").length,
-      experimentActive: progress.filter((item) => item.experiment?.status === "ACTIVE").length,
+      experimentActive: progress.filter((item) => item.experiment?.status === "ACTIVE" || Boolean(item.enrolment?.experimentStartedAt && item.enrolment.status !== "COMPLETED")).length,
       openSafeguardingCases: openCaseRows.length,
       opportunityBands,
     },
@@ -284,7 +281,8 @@ async function adminSnapshot() {
       memberCount: members.filter((member) => member.cohortId === cohort.id && member.status === "ACTIVE").length,
     })),
     labAssignments: labRows,
-    supportedLabVersions: SUPPORTED_LAB_VERSIONS,
+    publishedLabs: await publishedLabs(),
+    supportedLabVersions: (await publishedLabs()).filter(lab => lab.code === "HAB").map(lab => lab.version),
   };
 }
 
@@ -310,7 +308,7 @@ async function facilitatorSnapshot(identity: Identity) {
       const cohortUserIds = members
         .filter((member) => member.cohortId === cohort.id)
         .map((member) => member.learnerUserId);
-      const rows = await progressRows([...new Set(cohortUserIds)], cohort.labCode);
+      const rows = await progressRows([...new Set(cohortUserIds)], cohort.labCode, cohort.labVersion);
       return rows.map((row) => ({
         ...row,
         cohortId: cohort.id,
@@ -410,19 +408,21 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, decisions] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_organisational_learning", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_checks", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_question_patterns", { target_cohort_id: cohortId }),
+      client.rpc("sponsor_cohort_evidence_flow", { target_cohort_id: cohortId }),
       db
         .select()
         .from(programmeDecisions)
         .where(eq(programmeDecisions.cohortId, cohortId))
         .orderBy(desc(programmeDecisions.createdAt)),
     ]);
+    if (flowResult.error) throw new Error(flowResult.error.message);
     if (outcomeResult.error) throw new Error(outcomeResult.error.message);
     if (deeperResult.error) throw new Error(deeperResult.error.message);
     if (learningResult.error) throw new Error(learningResult.error.message);
@@ -432,6 +432,9 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
     if (outcomeResult.data) {
       cohorts.push({
         ...outcomeResult.data,
+        evidenceFlow: flowResult.data,
+        participantCount: flowResult.data?.participantCount ?? outcomeResult.data.participantCount,
+        suppressed: Boolean(outcomeResult.data.suppressed || flowResult.data?.suppressed),
         deepAnalysis: deeperResult.data ?? null,
         learningSummary: learningResult.data ?? null,
         organisationLearning: organisationLearningResult.data ?? null,
@@ -636,10 +639,11 @@ async function postHandler(request: Request) {
       requireRole(roles, "SYSTEM_ADMIN");
       const name = String(body.name ?? "").trim();
       const facilitatorEmail = normalizeEmail(String(body.facilitatorEmail ?? ""));
-      const labVersion = String(body.labVersion ?? LAB_VERSION);
+      const labVersion = String(body.labVersion ?? "");
+      const labCode = String(body.labCode ?? "HAB").toUpperCase();
       if (name.length < 3 || name.length > 100) throw new Error("Use a cohort name between 3 and 100 characters.");
       if (!EMAIL_PATTERN.test(facilitatorEmail)) throw new Error("Enter a valid facilitator email.");
-      if (!SUPPORTED_LAB_VERSIONS.includes(labVersion as typeof LAB_VERSION)) throw new Error("Choose a supported canonical lab version.");
+      await requirePublishedLab(labCode, labVersion);
       const [facilitatorRole] = await db
         .select({ id: roleAssignments.id })
         .from(roleAssignments)
@@ -654,6 +658,7 @@ async function postHandler(request: Request) {
       await db.insert(pilotCohorts).values({
         id,
         name,
+        labCode,
         labVersion,
         facilitatorEmail,
         startsOn: String(body.startsOn ?? "") || null,
@@ -670,6 +675,7 @@ async function postHandler(request: Request) {
       const [cohort] = await db.select().from(pilotCohorts).where(eq(pilotCohorts.id, cohortId)).limit(1);
       if (!cohort || cohort.status !== "ACTIVE") throw new Error("Choose an active pilot cohort.");
       const learner = await learnerByEmail(String(body.learnerEmail ?? ""));
+      await assignLab(identity, learner, cohort.labCode, cohort.labVersion, true);
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
       await db
@@ -685,7 +691,7 @@ async function postHandler(request: Request) {
           target: [cohortMembers.cohortId, cohortMembers.learnerUserId],
           set: { status: "ACTIVE", addedBy: identity.id, joinedAt: now, removedAt: null },
         });
-      await assignLab(identity, learner, cohort.labVersion);
+
       await staffAudit(identity, "COHORT_MEMBER_ADDED", "PILOT_COHORT", cohortId, { learnerUserId: learner.userId, labVersion: cohort.labVersion });
       return Response.json(await staffSnapshot(identity, roles), { status: 201 });
     }
@@ -694,8 +700,9 @@ async function postHandler(request: Request) {
       requireRole(roles, "SYSTEM_ADMIN");
       const learner = await learnerByEmail(String(body.learnerEmail ?? ""));
       const labVersion = String(body.labVersion ?? "");
-      await assignLab(identity, learner, labVersion);
-      await staffAudit(identity, "LAB_VERSION_ASSIGNED", "LEARNER", learner.userId, { labCode: "HAB", labVersion });
+      const labCode = String(body.labCode ?? "HAB").toUpperCase();
+      await assignLab(identity, learner, labCode, labVersion);
+      await staffAudit(identity, "LAB_VERSION_ASSIGNED", "LEARNER", learner.userId, { labCode, labVersion });
       return Response.json(await staffSnapshot(identity, roles));
     }
 

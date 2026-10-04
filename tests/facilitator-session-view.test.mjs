@@ -56,7 +56,7 @@ test("facilitator progress is scoped to each cohort Lab and carries edition cont
 
   assert.match(staff, /deliveryEdition: learners\.deliveryEdition/);
   assert.match(staff, /cohorts\.map\(async \(cohort\)/);
-  assert.match(staff, /progressRows\(\[\.\.\.new Set\(cohortUserIds\)\], cohort\.labCode\)/);
+  assert.match(staff, /progressRows\(\[\.\.\.new Set\(cohortUserIds\)\], cohort\.labCode, cohort\.labVersion\)/);
   assert.match(staff, /cohortId: cohort\.id/);
   assert.match(staff, /labCode: cohort\.labCode/);
   assert.doesNotMatch(staff, /progressRows\(\[\.\.\.new Set\(members\.map\([^)]*\)\)\], "HAB"\)/);

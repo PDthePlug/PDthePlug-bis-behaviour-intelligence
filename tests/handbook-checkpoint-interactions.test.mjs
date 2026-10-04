@@ -128,10 +128,10 @@ test("digital hardening removes orphan controls and upgrades paper-era interacti
 test("system-known values are module-scoped and do not reuse Habit evidence in other Labs", async () => {
   const player = await source("app/learning/programme-player.tsx");
 
-  assert.match(player, /\["DEC", "MON"\]\.includes\(moduleCode\)/);
-  assert.match(player, /\/api\/labs\?lab=/);
-  assert.match(player, /moduleLive = moduleCode === "HAB" \? live : moduleRuntimeResult/);
-  assert.match(player, /const activeModuleRuntime = moduleCode === "HAB" \? runtime : moduleRuntime/);
+  assert.match(player, /loadLearningLabRuntime\(moduleCode, fetch, controller\.signal\)/);
+  assert.match(await source("lib/learning-lab-runtime.mjs"), /\/api\/labs\?lab=/);
+  assert.match(player, /moduleLive = moduleRuntimeResult/);
+  assert.match(player, /const activeModuleRuntime = moduleRuntime/);
   assert.match(player, /EXPERIMENT\.OPPORTUNITY_COUNT/);
   assert.match(player, /Observation days completed/);
   assert.match(player, /From your Lab/);
@@ -197,7 +197,7 @@ test("planned Labs keep post-Day-3 handbook pages as honest reference material",
 test("shared learner shell uses the active module Lab rather than leaking Habit state", async () => {
   const player = await source("app/learning/programme-player.tsx");
 
-  assert.match(player, /const activeModuleRuntime = moduleCode === "HAB" \? runtime : moduleRuntime/);
+  assert.match(player, /const activeModuleRuntime = moduleRuntime/);
   assert.match(player, /programmeHandoff\?\.experimentStarted/);
   assert.match(player, /experimentRecordedDays/);
   assert.doesNotMatch(player, /moduleCode === "HAB" && runtime\.experiment/);

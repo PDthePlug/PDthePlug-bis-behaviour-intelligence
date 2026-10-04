@@ -1,4 +1,5 @@
 "use client";
+import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
 
 import { useMemo, useState } from "react";
 import {
@@ -30,6 +31,7 @@ export type SponsorOutcome = {
   participantCount: number;
   suppressed: boolean;
   minimumReportableCohortSize: number;
+  evidenceFlow?: ProgrammeEvidenceFlow | null;
   metrics: null | {
     completionContext: { completed: number; completionRate: number | null };
     action: {
@@ -755,7 +757,8 @@ export function ProgrammeOutcomesView({
     );
   }
 
-  const metrics = outcome.metrics;
+  const flow = outcome.evidenceFlow;
+  const metrics = flow?.runtimeMode === "DYNAMIC" ? null : outcome.metrics;
   const decisionRegister = outcome.decisionRegister;
 
   function prefillDecisionFromInsight(insight: { kicker: string; title: string; body: string }) {
@@ -855,7 +858,19 @@ export function ProgrammeOutcomesView({
         </section>
       ) : null}
 
-      {outcome.suppressed || !metrics ? (
+      {flow && !flow.suppressed && !outcome.suppressed ? <section className="outcomes-evidence-flow">
+        <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>
+        <div className="journey-activity-strip">
+          <Metric label="Responses recorded" value={flow.totals?.recordedResponses ?? "Hidden for privacy"} />
+          <Metric label="Measures with source evidence" value={flow.totals?.anchoredMeasures ?? "Hidden for privacy"} />
+          <Metric label="Started real-world test" value={flow.totals?.startedExperiment ?? "Hidden for privacy"} />
+          <Metric label="Completed Lab" value={flow.totals?.completed ?? "Hidden for privacy"} />
+        </div>
+        <div className="journey-days">{flow.stages.map(stage => <article key={stage.investigation}><span>{EVIDENCE_STAGE_LABELS[stage.investigation]}</span><strong>{stage.suppressed ? "Hidden" : stage.participants}</strong><small>learners · {stage.suppressed ? "small group" : `${stage.responses} responses`}</small></article>)}</div>
+        <p>{flow.privacyNote}</p>
+      </section> : null}
+
+      {outcome.suppressed || flow?.suppressed || (!metrics && flow?.runtimeMode !== "DYNAMIC") ? (
         <section className="outcomes-suppressed">
           <LockKeyhole />
           <p className="eyebrow">Small group privacy</p>
@@ -1043,6 +1058,7 @@ export function ProgrammeOutcomesView({
             </section>
           ) : null}
 
+          {metrics ? <>
           <section className="outcome-question-grid">
             <article className="outcome-question-card">
               <div className="outcome-card-title"><Compass /><span>Action</span></div>
@@ -1175,6 +1191,7 @@ export function ProgrammeOutcomesView({
             </section>
           ) : null}
 
+          </> : null}
           {decisionRegister ? (
             <section id="programme-decision-register" className="programme-decision-register">
               <div className="outcomes-section-heading">
@@ -1297,6 +1314,7 @@ export function ProgrammeOutcomesView({
             </section>
           ) : null}
 
+          {metrics ? <>
           <section className="outcomes-actions">
             <div className="outcomes-section-heading">
               <div>
@@ -1418,7 +1436,8 @@ export function ProgrammeOutcomesView({
                 </section>
               </div>
             </details>
-          ) : null}
+          ) : null}          </> : null}
+
         </>
       )}
 

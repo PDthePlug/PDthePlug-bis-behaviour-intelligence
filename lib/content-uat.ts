@@ -5,7 +5,7 @@ export const CONTENT_UAT_CHECKS = [
   {
     id: "authored_content",
     label: "The content looks right",
-    detail: "Check the wording, order, headings, examples and any media against your source.",
+    detail: "Check wording, order, headings, examples, table relationships and media against your source.",
   },
   {
     id: "navigation",
@@ -15,7 +15,7 @@ export const CONTENT_UAT_CHECKS = [
   {
     id: "inputs_privacy",
     label: "Questions and privacy wording are right",
-    detail: "Check that every question has the right answer space and privacy wording.",
+    detail: "Check each question, its response group, calculated evidence and privacy wording.",
   },
   {
     id: "responsive",
