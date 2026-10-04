@@ -110,8 +110,8 @@ test("Content Studio presents a shelf-first founder flow and supports pasted tex
     source("app/api/content-studio/route.ts"),
   ]);
   assert.match(ui, /Choose a BIS title and add the content that is ready/);
-  assert.match(ui, /BIS keeps the version number for you/);
-  assert.match(ui, /Start adding content/);
+  assert.match(ui, /Next: v\$\{nextContentVersion/);
+  assert.match(ui, /<Plus \/> Add content/);
   assert.doesNotMatch(ui, /<label>Version<Input/);
   assert.match(ui, /Paste text/);
   assert.match(ui, /action: "compileVersion"/);
@@ -167,8 +167,8 @@ test("stale compiler artifacts cannot be previewed approved or published", async
   assert.match(preview, /version\.compilerVersion !== CONTENT_COMPILER_VERSION/);
   assert.match(preview, /Prepare the version again before reviewing it/);
   assert.match(ui, /Re-prepare required/);
-  assert.match(ui, /Prepare again/);
-  assert.match(ui, /Your uploaded source stays in place/);
+  assert.match(ui, /Re-prepare required/);
+  assert.match(api, /reason: "PREPARE_AGAIN"/);
 });
 
 
@@ -234,17 +234,18 @@ test("Content Studio preview tolerates encoded version IDs and keeps the final p
   assert.match(ui, /action: "signOffUat"/);
   assert.match(ui, /action: "approveVersion"/);
   assert.match(ui, /action: "activateVersion"/);
-  assert.match(ui, /<PackageCheck \/> Publish/);
-  assert.match(ui, /\/content-studio\/preview\/\$\{entry\.id\}/);
-  assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(entry\.id\)\}/);
+  assert.match(ui, /<PackageCheck \/>/);
+  assert.match(ui, /actionPreviewHref/);
+  assert.match(ui, /\/content-studio\/preview\/\$\{actionVersion\.id\}/);
+  assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(actionVersion\.id\)\}/);
 });
 
 
 test("Content Studio exposes a simple edit preview publish and unpublish control surface", async () => {
   const ui = await source("app/content-studio/content-studio.tsx");
   assert.match(ui, /Edit content/);
-  assert.match(ui, />Preview</);
-  assert.match(ui, />Publish</);
+  assert.match(ui, /<Eye \/> Preview/);
+  assert.match(ui, /"Republish" : "Publish"/);
   assert.match(ui, /Unpublish/);
   assert.match(ui, /Currently offline/);
   assert.match(ui, /Published to learners/);
