@@ -121,8 +121,12 @@ test("Day 3 Lab handoff preserves the exact learner handbook return path", async
   assert.match(player, /const learningReturnTo = `\$\{pathname\}\?section=learn&page=\$\{selected \+ 1\}`/);
   assert.match(player, /const resolvedLabHref = moduleDefinition\?\.labHref \?\? universalLabHref/);
   assert.match(player, /labHrefWithReturn\(resolvedLabHref, learningReturnTo\)/);
-  assert.match(labPage, /returnTo=\{params\.returnTo\}/);
-  assert.match(experimentPage, /returnTo=\{params\.returnTo\}/);
+  assert.match(labPage, /optionalSafeReturnPath\(params\.returnTo\)/);
+  assert.match(labPage, /liveUniversalLabHref\("HAB", \{ returnTo \}\)/);
+  assert.match(labPage, /returnTo=\{returnTo\}/);
+  assert.match(experimentPage, /optionalSafeReturnPath\(params\.returnTo\)/);
+  assert.match(experimentPage, /liveUniversalLabHref\("HAB", \{ returnTo, step: 7 \}\)/);
+  assert.match(experimentPage, /returnTo=\{returnTo\}/);
   assert.match(shell, /programmeReturnTo=\{safeReturnTo\}/);
 });
 

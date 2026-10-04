@@ -103,15 +103,21 @@ test("the complete 34-title BIS catalogue is available for filling from Content 
   }
 });
 
-test("Content Studio presents founder-facing language and supports pasted text", async () => {
-  const [ui, contract] = await Promise.all([
+test("Content Studio presents a shelf-first founder flow and supports pasted text", async () => {
+  const [ui, contract, api] = await Promise.all([
     source("app/content-studio/content-studio.tsx"),
     source("lib/content-studio.ts"),
+    source("app/api/content-studio/route.ts"),
   ]);
   assert.match(ui, /Choose a BIS title and add the content that is ready/);
-  assert.match(ui, /Prepare preview/);
-  assert.match(ui, /Approve for publishing/);
+  assert.match(ui, /BIS keeps the version number for you/);
+  assert.match(ui, /Start adding content/);
+  assert.doesNotMatch(ui, /<label>Version<Input/);
   assert.match(ui, /Paste text/);
+  assert.match(ui, /action: "compileVersion"/);
+  assert.match(ui, /Ready to publish/);
+  assert.match(contract, /nextContentVersion/);
+  assert.match(api, /requestedVersion \|\| nextContentVersion/);
   assert.match(contract, /text\/plain/);
 });
 
@@ -161,7 +167,7 @@ test("stale compiler artifacts cannot be previewed approved or published", async
   assert.match(preview, /version\.compilerVersion !== CONTENT_COMPILER_VERSION/);
   assert.match(preview, /Prepare the version again before reviewing it/);
   assert.match(ui, /Re-prepare required/);
-  assert.match(ui, /Re-prepare preview/);
+  assert.match(ui, /Prepare again/);
   assert.match(ui, /Your uploaded source stays in place/);
 });
 
@@ -178,7 +184,7 @@ test("Content Studio surfaces the Habit standard and blocks editorially unfinish
   assert.match(ui, /Habit Lab standard 1\.0/);
   assert.match(ui, /Editorial review before approval/);
   assert.match(compiler, /applyHabitLabStandard/);
-  assert.match(compiler, /bis-content-compiler-4/);
+  assert.match(compiler, /bis-content-compiler-5/);
 });
 
 
@@ -210,4 +216,55 @@ test("question intelligence remains a candidate until the exact Lab version pass
   assert.match(migration, /status text not null default 'CANDIDATE'/);
   assert.match(api, /if \(item\.kind === "LAB"\) \{[\s\S]*db\.update\(questionAnalysisRegistry\)[\s\S]*status: "ACTIVE"[\s\S]*versionId/);
   assert.match(api, /Finish the preview checklist and sign off this exact version before publishing/);
+});
+
+
+test("Content Studio preview tolerates encoded version IDs and keeps the final publish gate explicit", async () => {
+  const [preview, page, runtime, ui] = await Promise.all([
+    source("app/api/content-studio/preview/route.ts"),
+    source("app/content-studio/preview/[versionId]/page.tsx"),
+    source("app/content-studio/preview/[versionId]/runtime/page.tsx"),
+    source("app/content-studio/content-studio.tsx"),
+  ]);
+
+  assert.match(preview, /normalizeVersionId/);
+  assert.match(preview, /decodeURIComponent/);
+  assert.match(page, /decodeURIComponent\(rawVersionId\)/);
+  assert.match(runtime, /decodeURIComponent\(rawVersionId\)/);
+  assert.match(ui, /action: "signOffUat"/);
+  assert.match(ui, /action: "approveVersion"/);
+  assert.match(ui, /action: "activateVersion"/);
+  assert.match(ui, /<PackageCheck \/> Publish/);
+  assert.match(ui, /\/content-studio\/preview\/\$\{entry\.id\}/);
+  assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(entry\.id\)\}/);
+});
+
+
+test("Content Studio exposes a simple edit preview publish and unpublish control surface", async () => {
+  const ui = await source("app/content-studio/content-studio.tsx");
+  assert.match(ui, /Edit content/);
+  assert.match(ui, />Preview</);
+  assert.match(ui, />Publish</);
+  assert.match(ui, /Unpublish/);
+  assert.match(ui, /Currently offline/);
+  assert.match(ui, /Published to learners/);
+});
+
+test("prepared Content Studio versions can be processed again without a draft-state dead end", async () => {
+  const api = await source("app/api/content-studio/route.ts");
+  assert.match(api, /\["DRAFT", "VALIDATED", "APPROVED"\]\.includes\(version\.status\)/);
+  assert.match(api, /reason: "PREPARE_AGAIN"/);
+  assert.match(api, /CONTENT_VERSION_REOPENED/);
+  assert.doesNotMatch(api, /version\.status !== "DRAFT"\) throw new Error\("Choose an editable draft version\."/);
+});
+
+test("published Content Studio source can seed an editable version and titles can be taken offline", async () => {
+  const api = await source("app/api/content-studio/route.ts");
+  assert.match(api, /copyFromVersionId/);
+  assert.match(api, /copiedSourceKeys/);
+  assert.match(api, /action === "unpublishItem"/);
+  assert.match(api, /CONTENT_ITEM_UNPUBLISHED/);
+  assert.match(api, /status: "SUPERSEDED"/);
+  assert.match(api, /action === "republishVersion"/);
+  assert.match(api, /CONTENT_VERSION_REPUBLISHED/);
 });

@@ -17,7 +17,9 @@ export default async function ContentPreviewPage({
   params: Promise<{ versionId: string }>;
   searchParams: Promise<{ kind?: string; code?: string; edition?: string }>;
 }) {
-  const { versionId } = await params;
+  const { versionId: rawVersionId } = await params;
+  let versionId = rawVersionId;
+  try { versionId = decodeURIComponent(rawVersionId); } catch {}
   const query = await searchParams;
   await requireUser(`/content-studio/preview/${versionId}`);
 

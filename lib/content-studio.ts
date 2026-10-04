@@ -36,6 +36,33 @@ export function sourceFormatFor(fileName: string, mimeType = ""): ContentSourceF
   return null;
 }
 
+export function nextContentVersion(existingVersions: string[]) {
+  const parsed = existingVersions
+    .map((value) => {
+      const match = String(value).trim().match(/^(\d+)(?:\.(\d+))?(?:\.(\d+))?$/);
+      if (!match) return null;
+      return {
+        raw: value,
+        parts: [Number(match[1]), Number(match[2] ?? 0), Number(match[3] ?? 0)],
+        depth: match[3] !== undefined ? 3 : match[2] !== undefined ? 2 : 1,
+      };
+    })
+    .filter((value): value is { raw: string; parts: number[]; depth: number } => Boolean(value))
+    .sort((a, b) => {
+      for (let index = 0; index < 3; index += 1) {
+        const delta = (b.parts[index] ?? 0) - (a.parts[index] ?? 0);
+        if (delta) return delta;
+      }
+      return b.depth - a.depth;
+    });
+
+  if (!parsed.length) return "1.0";
+  const latest = parsed[0];
+  if (latest.depth >= 3) return `${latest.parts[0]}.${latest.parts[1]}.${latest.parts[2] + 1}`;
+  if (latest.depth === 2) return `${latest.parts[0]}.${latest.parts[1] + 1}`;
+  return `${latest.parts[0] + 1}.0`;
+}
+
 export function safeContentCode(value: string) {
   return value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 12);
 }

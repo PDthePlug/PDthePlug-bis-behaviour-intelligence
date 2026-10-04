@@ -7,6 +7,7 @@ export type UniversalComputedOperation =
   | "COUNT_PRESENT"
   | "MAX"
   | "COPY"
+  | "COLLECTION"
   | "PAIR";
 
 export type UniversalComputedField = {
@@ -15,6 +16,7 @@ export type UniversalComputedField = {
   investigation: number;
   operation: UniversalComputedOperation;
   inputs: string[];
+  legacyInputs?: string[];
   precision?: number;
 };
 
@@ -55,6 +57,7 @@ export type UniversalV2Additions = {
 };
 
 export function upgradeUniversalLabV2<T extends Record<string, unknown>>(source: T): T & UniversalV2Additions;
+export function validateUniversalCalculations(definition: Record<string, unknown>): void;
 export function evaluateUniversalComputed(
   definition: { computedFields?: UniversalComputedField[] },
   responseValues: Record<string, unknown>,
@@ -62,6 +65,7 @@ export function evaluateUniversalComputed(
 export function universalComputedLeafInputs(
   definition: { computedFields?: UniversalComputedField[] },
   computationId: string,
+  responseValues?: Record<string, unknown>,
 ): string[];
 export function experimentCalendarDay(startedAt: string | null | undefined, todayIso: string, totalDays: number, timeZone?: string): number;
 export function universalExperimentEvidenceProgress(

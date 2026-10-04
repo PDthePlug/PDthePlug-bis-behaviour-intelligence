@@ -81,7 +81,9 @@ The visible learner Lab journey follows the canonical nine-stage BIS laboratory 
 8. Evidence Review
 9. Profile
 
-The dedicated Habit, Decision, and Money runtimes and the source-backed Universal Lab architecture may differ internally, but learner-facing behaviour must remain semantically coherent.
+Universal Lab is now the canonical learner runtime for all BIS Labs, including Habit, Decision, and Money.
+
+The former dedicated Habit, Decision, and Money runtimes are transitional compatibility paths only. Do not add new product behaviour to them unless it is required to preserve a safe migration. Once a governed Universal version for one of those Labs is published and live, legacy entry routes must hand off to the Universal runtime while preserving the learner's intended return path. Remove the legacy implementation only after migration parity and rollback safety are proven.
 
 Preserve:
 - stable semantic field IDs;
@@ -165,9 +167,21 @@ Do not introduce automated personality judgments, clinical interpretations, risk
 
 Content Studio is a governed publishing system, not a free-form CMS.
 
-Preserve the lifecycle:
+Preserve the governed lifecycle internally:
 
 source -> version -> compile -> preview -> UAT -> approve -> explicitly publish/activate
+
+The founder/operator experience should not expose every internal gate as manual technical administration. The 34 BIS catalogue shelves already exist and are the starting point. By default Content Studio should:
+
+- let the operator choose the existing BIS title;
+- assign the next safe version automatically;
+- prepare the preview automatically after source content is added;
+- translate compilation into plain editorial feedback;
+- require the operator to inspect the prepared preview and complete the final check;
+- reduce approval to the smallest explicit human confirmation necessary;
+- keep publishing/activation explicit.
+
+Manual version naming, compiler terminology, runtime profile terminology, schema naming, and artifact identifiers belong behind advanced controls rather than in the default path.
 
 Rules:
 - authored source remains traceable;
@@ -445,3 +459,13 @@ The long-term evidence chain is:
 question -> original response -> evidence anchor -> deterministic measure and/or governed interpretation -> learner portfolio -> cohort pattern -> programme decision -> next-cohort comparison.
 
 Never skip the evidence anchor when a downstream claim depends on learner evidence.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

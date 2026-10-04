@@ -12,8 +12,9 @@ import {
   type UniversalProfileEntry,
 } from "./universal-lab-v2.mjs";
 import { sha256Hex } from "./content-studio";
+import { prepareUniversalLabPresentation } from "./universal-lab-presentation.mjs";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-4";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-5";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -76,6 +77,7 @@ export type UniversalLabPrompt = {
   options?: string[];
   min?: number;
   max?: number;
+  controlRole?: "RATING";
   group?: string;
   origin?: "SOURCE" | "BIS_STANDARD";
   standardPurpose?: string;
@@ -466,6 +468,7 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
     options,
     min,
     max,
+    controlRole: value.controlRole === "RATING" ? "RATING" : undefined,
     group: text(value.group) || undefined,
     readOnly: value.readOnly === true || undefined,
     scheduleDay: Number.isInteger(value.scheduleDay) ? Number(value.scheduleDay) : undefined,
@@ -647,6 +650,9 @@ export async function compileUniversalLab(
       profile,
     } : {}),
   };
+  // Validate the final learner graph, including collection expansion and aliases.
+  // The immutable artifact retains the authored package; presentation is reapplied at runtime.
+  prepareUniversalLabPresentation(runtimePackage);
   const content = JSON.stringify(runtimePackage);
   const encoded = new TextEncoder().encode(content);
   return {

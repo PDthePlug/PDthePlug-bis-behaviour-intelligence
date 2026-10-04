@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 type Kind = "LEARNING_MODULE" | "LAB";
 type Edition = "school" | "emerging_adult" | "workplace";
 
-const editions: Array<{ id: Edition; label: string }> = [
-  { id: "school", label: "School" },
-  { id: "emerging_adult", label: "Emerging Adult" },
-  { id: "workplace", label: "Workplace" },
-];
+const editionLabels: Record<Edition, string> = {
+  school: "School",
+  emerging_adult: "Emerging Adult",
+  workplace: "Workplace",
+};
 
 export function ContentPreviewWorkspace({
   versionId,
@@ -25,7 +25,7 @@ export function ContentPreviewWorkspace({
   code: string;
   initialEdition: Edition;
 }) {
-  const [edition, setEdition] = useState<Edition>(initialEdition);
+  const edition = initialEdition;
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
 
   const src = useMemo(() => {
@@ -47,16 +47,7 @@ export function ContentPreviewWorkspace({
 
         {kind === "LEARNING_MODULE" ? (
           <div className="uat-preview-editions" aria-label="Learning edition preview">
-            {editions.map((item) => (
-              <button
-                type="button"
-                key={item.id}
-                className={edition === item.id ? "active" : ""}
-                onClick={() => setEdition(item.id)}
-              >
-                {item.label}
-              </button>
-            ))}
+            <strong>{editionLabels[edition]} edition</strong>
           </div>
         ) : null}
 

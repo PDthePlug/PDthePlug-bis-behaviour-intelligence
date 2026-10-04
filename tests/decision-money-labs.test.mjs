@@ -150,3 +150,44 @@ test("Decision Lab records Full versus Minimum pauses without rewriting older ev
   assert.match(route, /pauseTypeCoverageComplete \? "VALUE" : "NA"/);
   assert.match(route, /extraOptions \/ fullPauses/);
 });
+
+
+test("legacy Habit Decision and Money entry routes hand off to Universal Lab after governed dynamic activation", async () => {
+  const [routing, decision, money, habit, experiment] = await Promise.all([
+    readFile(new URL("lib/lab-runtime-routing.ts", root), "utf8"),
+    readFile(new URL("app/decision/page.tsx", root), "utf8"),
+    readFile(new URL("app/money/page.tsx", root), "utf8"),
+    readFile(new URL("app/habit-lab/page.tsx", root), "utf8"),
+    readFile(new URL("app/habit-lab/experiment/page.tsx", root), "utf8"),
+  ]);
+
+  assert.match(routing, /active_bis_lab_runtime/);
+  assert.match(routing, /runtime_mode/);
+  assert.match(routing, /"DYNAMIC"/);
+  assert.match(decision, /liveUniversalLabHref\("DEC"/);
+  assert.match(money, /liveUniversalLabHref\("MON"/);
+  assert.match(habit, /liveUniversalLabHref\("HAB"/);
+  assert.match(experiment, /liveUniversalLabHref\("HAB", \{ returnTo, step: 7 \}\)/);
+});
+
+
+test("authenticated learners resolve only published active Universal Lab runtime pointers", async () => {
+  const [migration, universalApi, routing] = await Promise.all([
+    readFile(new URL("supabase/migrations/20261003234500_active_universal_lab_runtime.sql", root), "utf8"),
+    readFile(new URL("app/api/universal-lab/route.ts", root), "utf8"),
+    readFile(new URL("lib/lab-runtime-routing.ts", root), "utf8"),
+  ]);
+
+  assert.match(migration, /security definer/i);
+  assert.match(migration, /auth\.uid\(\) is not null/);
+  assert.match(migration, /a\.status = 'ACTIVE'/);
+  assert.match(migration, /a\.runtime_mode = 'DYNAMIC'/);
+  assert.match(migration, /v\.status = 'PUBLISHED'/);
+  assert.match(migration, /v\.runtime_status = 'LIVE'/);
+  assert.match(migration, /r\.artifact_key = 'lab:universal'/);
+  assert.match(migration, /revoke all on function public\.active_bis_lab_runtime\(text\) from public, anon/i);
+  assert.match(migration, /grant execute on function public\.active_bis_lab_runtime\(text\) to authenticated/i);
+  assert.match(universalApi, /rpc\("active_bis_lab_runtime"/);
+  assert.match(routing, /rpc\("active_bis_lab_runtime"/);
+  assert.doesNotMatch(universalApi, /contentRuntimeActivations/);
+});

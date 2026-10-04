@@ -61,14 +61,28 @@ function multiValues(value: string) {
   }
 }
 
+const investigationEvidenceGuidance: Record<number, string> = {
+  1: "Capture your first view before the pattern is explained. You will have evidence to compare later.",
+  2: "Use a recent, specific example so you can see the pattern in real life.",
+  3: "Describe what changed in your understanding and what evidence caused the shift.",
+  4: "Anchor this to one real situation: what happened, what you noticed, and what followed.",
+  5: "State the explanation that best fits your evidence. Keep it specific enough to test.",
+  6: "Make the commitment observable: describe what you will do and the situation in which you will do it.",
+  7: "Record what actually happened in the real-world test, including a valid no-opportunity result where it applies.",
+  8: "Compare what you expected with the evidence you actually collected.",
+  9: "Use your Lab evidence to describe what you learned and what you will carry forward.",
+};
+
 function UniversalPrompt({
   prompt,
+  investigationNumber,
   value,
   passed,
   onValue,
   onPass,
 }: {
   prompt: UniversalLabPrompt;
+  investigationNumber: number;
   value: string;
   passed: boolean;
   onValue: (value: string) => void;
@@ -96,13 +110,17 @@ function UniversalPrompt({
     && Number.isFinite(integerMax)
     && integerMax > integerMin
     && integerMax - integerMin <= 10
-    && /confidence|control|rating|agency|deliberate|clarity|certainty|awareness|how much|how strongly/i.test(
-      `${prompt.label} ${prompt.prompt}`,
-    );
+    && (prompt.controlRole === "RATING" || /confidence|control|rating|agency|deliberate|clarity|certainty|awareness|how much|how strongly/i.test(`${prompt.label} ${prompt.prompt}`));
 
   const titleId = `prompt-title-${prompt.id}`;
   const helpId = `prompt-help-${prompt.id}`;
-  const help = prompt.prompt !== prompt.label ? prompt.prompt : null;
+  const authoredHelp = prompt.prompt !== prompt.label ? prompt.prompt : null;
+  const interactionHelp = ratingScale
+    ? "Choose the number that best matches your experience right now."
+    : prompt.type === "TEXT" && prompt.label.length < 110
+      ? investigationEvidenceGuidance[investigationNumber] ?? "Use a short, specific example that will still make sense when you review your evidence later."
+      : null;
+  const help = authoredHelp ?? interactionHelp;
 
   if (compactField) {
     return (
@@ -316,6 +334,7 @@ function UniversalPromptCollection({
   return (
     <section className="universal-prompt-collection">
       <h2>{heading}</h2>
+      <p className="universal-collection-guidance">Use your own words. Keep each answer specific enough that you can recognise it when you review your evidence later.</p>
       <div className="universal-collection-fields">
         {prompts.map((prompt, index) => {
           const isPassed = passed.has(prompt.id);
@@ -484,7 +503,9 @@ function UniversalEvidenceTable({
                     <td data-prompt-id={prompt.id} key={columnIndex} data-label={header} className={`universal-table-response ${isPassed ? "passed" : ""}`}>
                       <label className="universal-table-field">
                         <span>{header}</span>
-                        {isPassed ? (
+                        {prompt.readOnly ? (
+                          <span className="universal-computed-value">{values[prompt.id] || "Waiting for the source evidence"}</span>
+                        ) : isPassed ? (
                           <small>Passed</small>
                         ) : prompt.type === "DATE" ? (
                           <Input
@@ -493,6 +514,14 @@ function UniversalEvidenceTable({
                             onChange={(event) => onValue(prompt.id, event.target.value)}
                             aria-label={prompt.prompt}
                           />
+                        ) : prompt.type === "INTEGER" && prompt.controlRole === "RATING" ? (
+                          <span className="universal-rating-options" role="group" aria-label={prompt.prompt}>
+                            {Array.from({ length: Number(prompt.max) - Number(prompt.min) + 1 }, (_, index) => Number(prompt.min) + index).map((option) => (
+                              <button type="button" key={option} aria-pressed={values[prompt.id] === String(option)} className={values[prompt.id] === String(option) ? "selected" : ""} onClick={() => onValue(prompt.id, String(option))}>{option}</button>
+                            ))}
+                          </span>
+                        ) : prompt.type === "INTEGER" ? (
+                          <Input type="number" min={prompt.min} max={prompt.max} step={1} value={values[prompt.id] ?? ""} onChange={(event) => onValue(prompt.id, event.target.value)} aria-label={prompt.prompt} />
                         ) : categoricalOptions.length ? (
                           <Select disabled={isPassed} value={values[prompt.id] ?? ""} onValueChange={(value) => onValue(prompt.id, value)}>
                             <SelectTrigger aria-label={prompt.prompt}><SelectValue placeholder="Choose" /></SelectTrigger>
@@ -512,10 +541,10 @@ function UniversalEvidenceTable({
                           />
                         )}
                       </label>
-                      <label className="universal-table-pass">
+                      {!prompt.readOnly ? <label className="universal-table-pass">
                         <Checkbox checked={isPassed} onCheckedChange={(checked) => onPass(prompt.id, checked === true)} />
                         <span>Prefer not to answer</span>
-                      </label>
+                      </label> : null}
                     </td>
                   );
                 })}
@@ -816,6 +845,7 @@ function UniversalInvestigationForm({
       <UniversalPrompt
         key={prompt.id}
         prompt={prompt}
+        investigationNumber={investigation.number}
         value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
         passed={passed.has(prompt.id)}
         onValue={(value) => updatePromptValue(prompt.id, value)}
@@ -868,7 +898,7 @@ function UniversalInvestigationForm({
             key={block.id || `table-${index}`}
             block={block}
             promptById={promptById}
-            values={values}
+            values={{ ...values, ...Object.fromEntries(visiblePrompts.filter((prompt) => prompt.readOnly).map((prompt) => [prompt.id, valueOf(snapshot, prompt.id)])) }}
             passed={passed}
             onValue={updatePromptValue}
             onPass={updatePromptPass}

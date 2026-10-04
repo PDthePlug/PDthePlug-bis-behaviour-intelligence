@@ -184,3 +184,24 @@ test("digital implementation metadata is manufactured rather than demanded from 
   assert.match(runtime, /makeBlankLearnerTableCellsEditable/);
   assert.ok(runtime.includes("[-–—]{3,}"));
 });
+
+
+test("Universal Lab imports rating language as selectable structured scales and supplies sparse-question guidance", async () => {
+  const [adapter, runtime, css] = await Promise.all([
+    source("lib/content-source-adapters.ts"),
+    source("app/labs/[code]/universal-runtime-lab.tsx"),
+    source("app/lab-investigation-frame.css"),
+  ]);
+
+  assert.match(adapter, /explicitScale/);
+  assert.match(adapter, /outOfRange/);
+  assert.match(adapter, /enumeratedTen/);
+  assert.match(adapter, /scaleLanguage/);
+  assert.match(runtime, /Choose the number that best matches your experience right now/);
+  assert.match(runtime, /investigationEvidenceGuidance/);
+  assert.match(runtime, /Use a recent, specific example so you can see the pattern in real life/);
+  assert.match(runtime, /Compare what you expected with the evidence you actually collected/);
+  assert.match(runtime, /universal-collection-guidance/);
+  assert.match(css, /\.universal-collection-guidance/);
+  assert.match(runtime, /universal-rating-options/);
+});
