@@ -1,0 +1,617 @@
+{
+  "repository": "PDthePlug/PDthePlug-bis-behaviour-intelligence",
+  "startingMain": "e560eca36f2d0b293628746ff20f11ab81b79808",
+  "purpose": "Observed remote branch heads for recovery; unique ancestry alone is not a missing-feature or merge recommendation. Original PR heads have independent preserved/20261004-pr-N refs.",
+  "heads": [
+    {
+      "branch": "origin",
+      "sha": "e560eca36f2d0b293628746ff20f11ab81b79808",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "bis-commercial-0.1",
+      "sha": "9f6b02ad88e504d2d7bfeae36568c1ad435b6243",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "chore/lab-integrity-clean-ci-20261002",
+      "sha": "2f660f11fa1a87f980a694050dd666f0b49230e1",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "codex/build-staging-e2e-release-suite",
+      "sha": "ee2d238736cbf4f1376b6b6852b61eefb1726f56",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "codex/execute-acceptance-tests-and-mutations",
+      "sha": "2654d409edf1f1d58b8728affbd076f9fd409acc",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "codex/implement-p1-security-hardening-tasks",
+      "sha": "05d6fcacbe11dfc05946d24e5065fc460e4f96aa",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "codex/perform-full-ux/ui-acceptance-pass",
+      "sha": "6c6f1808823b9036f7899480c3dccb3bf59413d2",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "codex/perform-post-integration-functional-hardening",
+      "sha": "68b7e830a50730f7880dcc8763391a35b65f323a",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "codex/production-hardening-20261003",
+      "sha": "af7e610bcad9ed2cac04c81d681a4175043f5aa9",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feat/admin-onboarding-20261001",
+      "sha": "ce3224b5e8c33e74727eb2915e0e300ef2c04a12",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feat/ea-workplace-session-architecture-20261001",
+      "sha": "456d5c2eca64efbe69254cc236c82386e87564e4",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feat/facilitator-run-sheet-completion-20261001",
+      "sha": "951a037f2e75390b3ffe0dca27ca748f56ba6105",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feat/facilitator-session-view-20261001",
+      "sha": "719754abfb67ecc94588eff97f67db5d9e8681a9",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feat/facilitator-shared-learner-experience-20261001",
+      "sha": "775e47d06a355d0995fec34502372487d12bdcff",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feat/school-session-architecture-20260930",
+      "sha": "a7be77ff65229620d2f4953f49c81329d66160dd",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/bis-32-module-catalogue",
+      "sha": "40331733db28a82dda78d8ccb048c10588b9cc71",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/bis-34-module-catalogue",
+      "sha": "ad93357929070390b6f06e848efd36afe15b8bd4",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/bis-demo-evidence-certification-20261004",
+      "sha": "263a232522d4086e1e8e34771e9910d189cbcbdc",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/bis-evidence-intelligence-20261004",
+      "sha": "024257c705d669b1e4669fd6dd0217797447d4a9",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/bis-evidence-intelligence-loop",
+      "sha": "cf4e6f4fb76e8d41984810c4ac49233427907e1a",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/bis-volume-draft-staging-20261002",
+      "sha": "df427eaf88842304ccedb51c5c4fe8de90a92134",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/bis-volume-migration-20261002",
+      "sha": "5c575243225cdfbe2e4671a1303de58102ebd489",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/content-studio-live-recovery-20261004",
+      "sha": "220f72661445decdc0e4623f9072b8f9c761b0e8",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/content-studio-production-recovery-20261004",
+      "sha": "d5612fda27fcc725651919b4dfc4c643dcad1853",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/google-sign-in",
+      "sha": "5d1527c2c86ac3a8686469d87b95d34fe9eab90f",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/habit-programme-player",
+      "sha": "593db269c38c5d164fe15c4d45a64459664e3637",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/habit-programme-player-backup",
+      "sha": "f47be0a47b9895520db694e64d1a0f2aaf6cfb6f",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/habit-programme-player-stage",
+      "sha": "f47be0a47b9895520db694e64d1a0f2aaf6cfb6f",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/habit-programme-player-transfer",
+      "sha": "f47be0a47b9895520db694e64d1a0f2aaf6cfb6f",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/habit-programme-player-working",
+      "sha": "f47be0a47b9895520db694e64d1a0f2aaf6cfb6f",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/professional-report-engine-v2",
+      "sha": "9aac262f6740ea6841284e8e9d709fe78b8fabb0",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/programme-outcomes-deeper-analysis",
+      "sha": "035a71115dd545c0fa8feb77f24ab3e09d2cd6e7",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/programme-outcomes-sponsor-view",
+      "sha": "c956ec41665b2d74449176e7c91f297ae2824092",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/programme-owned-app",
+      "sha": "2a0ec322cc16625a5caa4ccf90fe31ceead39f17",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/prototype-learning-shell",
+      "sha": "f480c674d52e2a6dcc4d37e027bb7f51be77e35a",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/rc01-human-uat-cleanup",
+      "sha": "27b12f7119c045f9232d1655307c1dba8e526824",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/rc01-learning-library-tightening",
+      "sha": "d9afd8e1022a9231bd2a6e3c38f9fdfde9748df1",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/risk-lab-factory-proof-20261001",
+      "sha": "9f0ca569892250172ff3fb38ae7026c827a4fd46",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/role-routed-workspaces-demo-reporting",
+      "sha": "9b8265979b43732a29ee24eea61e08720c925fb7",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/session-density-audit",
+      "sha": "990ae59cca93ecd296315e20b13bb23b0ec48e51",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/universal-lab-canonical-20261002",
+      "sha": "f9e0b31aca1753e33584414a2fa0955162405aff",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/universal-lab-content-studio-20261003",
+      "sha": "07e68703011ded537fcba0ec952b2f8a07262235",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/universal-lab-v2-risk-20261001",
+      "sha": "14317abcda8c34cd38ef83568bc336fce352477e",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/universal-v2-bei-registry-20261001",
+      "sha": "f6b9591c54e4673783d7f083738e5d7d3ff1315d",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/universal-v2-evidence-engine-20261001",
+      "sha": "8ee42cfa65e461b903b84e8fafd15588c92e6b3f",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/ux-hardening-01-canonical-shell",
+      "sha": "ec7f7f27d9aca8764e5f2c8252dad6f4502f2b16",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/ux-hardening-02-learner-readability",
+      "sha": "3330fbae540b398a37e39b3f017a635a09174bef",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/ux-hardening-03-facilitator-audit-workspace",
+      "sha": "f455762d4816b47237e72460bf0aedcbb3b758c8",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/ux-hardening-04-multi-lab-shell-parity",
+      "sha": "8b518e0815cc54fb393790f9cc0ff953cdb23e13",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/ux-hardening-05-release-readiness",
+      "sha": "ac5cab9bd50a11df6be869cc855c2ef70d2e58f9",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/volume1-all-handbook-readers",
+      "sha": "92d76c23758d44c57807a39fdf392691fd0c07d7",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "feature/volume1-library-completion",
+      "sha": "53cac65e2a2d16e8f66e8c8bf211783e93dea30a",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "feature/workspace-language-experience-hardening",
+      "sha": "66662d7a6bcac78de7155b51438d9ce51ce45731",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/auth-confirmation-reliability",
+      "sha": "f9c5a958c6353ebbe973357e9654ecfa0d342f6c",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/bis-factory-admin-hardening-20261001",
+      "sha": "7898709d8eaac036b4de4bb954604589092a2255",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/content-studio-compiler-freshness-20261001",
+      "sha": "89b20d64324c9d17c662f3c0c04e4f707173a6d2",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/content-studio-founder-flow",
+      "sha": "70e4a9d72a5e46d65c8bec3367650f9af5a83a51",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/content-studio-live-recovery-20261004",
+      "sha": "018d33e4d37d2e6898588450a9a49a4e7876ea21",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/content-studio-production-recovery-20261004",
+      "sha": "30309b9e90087cdb2bd9d6ed0e0d4dfb887861c4",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/content-studio-release-contract-20261004",
+      "sha": "43623ec5cb77e609bd008531e78e600bf63ab8c8",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/content-studio-release-gate-20261004",
+      "sha": "ed4c25564ed1a1c406e6c095f7d415297adf83cb",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/decision-layout-unified-lab-handoff-20261001",
+      "sha": "4da4524872496bc20ff31a01f33440ea9b506840",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/handbook-checkpoint-responses",
+      "sha": "27cbc65b817f5be2bb662f8aeb684b96f18e8f44",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/handbook-checkpoints-on-next",
+      "sha": "5812f58a1ff68d0f223d52596762deba8da048ed",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/handbook-checkpoints-self-heal",
+      "sha": "e66aa14301193db354410d6e77f79d4515d0a8a0",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/handbook-document-compiler",
+      "sha": "de8f81c49facce04e434d43cf62b90083bd602bc",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/handbook-risk-uat",
+      "sha": "dbca3df10c89caf0bdb7fb05a5a52318bb456a96",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/handbooks-save-layout-20260921",
+      "sha": "426306c1079f8577eca478b2959de9cacea5c79c",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/lab-document-reader-v4-20261002",
+      "sha": "ba80bcea4b5510490e321c7b4b214caaebc32848",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/lab-input-integrity-menu-20261002",
+      "sha": "3b413da24a7a85df97cdf4d07f9f924d3416a4d3",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/lab-interaction-integrity-20261002",
+      "sha": "a2caa6c25fd020c853ad2e6964f514687599a312",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/lab-interaction-integrity-20261002-repair",
+      "sha": "50df2d351e9f322a719a4481781f669b49619c8a",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/lab-progression-day3-contract",
+      "sha": "6989955c3ad2646fc17a691d7b2b25f14dbf6544",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/lab-semantic-integrity-20261002",
+      "sha": "213c2d095b14a40a034ad613d2e61f52103c24c1",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/markdown-lab-table-factory-20261001",
+      "sha": "0736e8b7f394ebba41d00ced8fad0f3d5619c00d",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/risk-handbook-uat",
+      "sha": "770ee20f45f586d3baa1abbd75655ad4de35f1f8",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/risk-lab-document-compiler",
+      "sha": "6b38ef6fa571061d28c77135e9e9f05279173b2f",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/risk-lab-field-parsing-final",
+      "sha": "d328e254c9a1e90307c1b700fa80f7cf2c4adf52",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "fix/signup-admin-bootstrap",
+      "sha": "12cd00e1ed006764ed804bc37d6f3488e9e09a5c",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/universal-lab-baseline-parity-20261002",
+      "sha": "9b0bb6817da094cf9829125f3a7003a22e0f2a6b",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/universal-lab-habit-parity-20261002",
+      "sha": "8b69a088116245dfc19fdfc8b0bd170bdb057678",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/universal-lab-presentation-system-v2-20261002",
+      "sha": "88a58c68999803da19428b32243d2353b26e0866",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/universal-lab-runtime-standardization-20261002",
+      "sha": "fe71b15d814952c9bcf9a7e000ffe513530b27ac",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/universal-lab-source-semantic-cleanup-20261002",
+      "sha": "212353d16b7003e089c9733e027b8dbde89405dd",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/universal-lab-table-semantics-v3-20261002",
+      "sha": "409829b2194288f024dc9a9f313244e161342c38",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "fix/vercel-production-supabase-ack",
+      "sha": "50dcf7a6c1655cf2bdf2d352b2a1b589aa99143c",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "hardening/adult-workplace-language-standard",
+      "sha": "2bfca5a3786aa8f9c710710e31d03d36166de1f4",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hardening/customer-language-security",
+      "sha": "af2af70ff916fa716e918298dbdaeae0f8f28869",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hardening/learner-module-integrity",
+      "sha": "a4d6f55e13f05dd70d13c6576b6a5bd0ece009e6",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hardening/organisational-learning-v1",
+      "sha": "df64ee2f2ee4811f79b58b0fe891e108e15a9208",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hardening/programme-decision-register",
+      "sha": "6b18bf16477ee1c8e6cba663b13e7503fced2df8",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hardening/school-language-standard",
+      "sha": "84e3b5b5d7a7b8fa84b18a6bca48b21313865967",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hardening/standard-day3-lab-handoff",
+      "sha": "386a0301961ea60b3e4ec61be3352c027163cb40",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hardening/ux-ui-20260924",
+      "sha": "a03c6ee8e325ffc8587da486bd7ef25a7c9c3b80",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hotfix/34-catalogue-acceptance-cleanup",
+      "sha": "f65cbb79191b391241a7341f85ba3d1516f95be1",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "hotfix/catalogue-34-release-gate",
+      "sha": "09c9f2bead6a55045d0125d375bcd885188bd753",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "hotfix/learner-programme-catalogue-access-20260930",
+      "sha": "be97d0ca3a81b5001cd862331489077d2b085e4a",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hotfix/safe-access-errors",
+      "sha": "88c03cf16b2421c937d867dfe006349241e96494",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "hotfix/server-static-handbook-runtime",
+      "sha": "7cd2b633e83f596562ba7054e5693ac02bd8e1f2",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "implementation/bis-full-scope-20261004",
+      "sha": "4e8bca5d68585acd58db279d79f8d203e5b0ac84",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "implementation/bis-runtime-standards-20261004",
+      "sha": "865c3322eae6b207fde3d1288ce97512b25f6d64",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "main",
+      "sha": "e560eca36f2d0b293628746ff20f11ab81b79808",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "milestone/content-compiler-runtime-activation-v1",
+      "sha": "32cb0a1e131fb3057993bbb7fc622cf0997b9192",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "milestone/content-preview-activation-uat",
+      "sha": "d8d6918192d4a25e1bf60225cbc718052094fac5",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "milestone/super-user-content-studio-v1",
+      "sha": "3a26c67edc8fa87c8a8822a9b65ae92752d6e2f0",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "milestone/universal-lab-experience-v1",
+      "sha": "5c550b71e6ea6144dcdf6088731a82c00c37d785",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "qa/full-page-review-20260930",
+      "sha": "389264ff5a49c78e6f57bf2b3adc5873b86db66c",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "qa/launch-hardening-20260929",
+      "sha": "186110273d14889c2969a1c06271437ffc310a15",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "release/bisportal-production-domain",
+      "sha": "dc239057bf916bea5e5abb02687c12efbe37c7c8",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "release/rc01-signed-in-uat-operational-pilot",
+      "sha": "8d83de111b1ebd9ac9e3e2a571303352996f2274",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "release/volume1-five-handbook-readers",
+      "sha": "267067c078b693dcee9f0a7e6313e8e8d10ab089",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "release/volume1-five-handbook-readers-final",
+      "sha": "267067c078b693dcee9f0a7e6313e8e8d10ab089",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "release/volume1-five-handbook-readers-final-2",
+      "sha": "267067c078b693dcee9f0a7e6313e8e8d10ab089",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "release/volume1-five-handbook-readers-temp",
+      "sha": "267067c078b693dcee9f0a7e6313e8e8d10ab089",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "retry/vercel-production-34-catalogue",
+      "sha": "8c98ae79a03ad4c40c32da5907efe28147657377",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "retry/vercel-production-34-catalogue-2",
+      "sha": "b2f2eee52595d04db7d3a71cf2222ee478f57c2e",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "retry/vercel-production-role-routed-reporting",
+      "sha": "1724cbfb7cbe0a78bf8e4c2172475f93811e9e46",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "ux/handbook-presentation-20260930",
+      "sha": "eca4af2661730615d1dc8cd00d7256d72d3ee5b7",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "vercel-migration",
+      "sha": "46c00076a93af9ecc26455447940143525ca8954",
+      "containedInStartingMain": true
+    },
+    {
+      "branch": "vercel-production-launch",
+      "sha": "c7dcf458c6bf0d5162f7ff7c2867794204082d4d",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "vercel-release-gate",
+      "sha": "b39b5a2562ead3a1fe305619e2f41bcd6880dcd6",
+      "containedInStartingMain": false
+    },
+    {
+      "branch": "vercel/install-and-configure-vercel-w-99rqia",
+      "sha": "708543a8eb0c557169261d8cc7c8efaf8311a993",
+      "containedInStartingMain": false
+    }
+  ]
+}

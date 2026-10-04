@@ -453,6 +453,8 @@ export const staffExperimentProgress = sqliteTable("staff_experiment_progress", 
   actualEndDate: text("actual_end_date"),
   minimumEvidenceThreshold: integer("minimum_evidence_threshold").notNull(),
   createdAt: timestamp(),
+  labCode: text("lab_code").notNull(),
+  labVersion: text("lab_version").notNull(),
 });
 
 export const experimentEvents = sqliteTable(

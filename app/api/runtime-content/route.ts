@@ -70,6 +70,7 @@ async function loadHandler(request: Request) {
       eq(contentRuntimeActivations.status, "ACTIVE"),
     )).limit(1);
     if (!activation) {
+      if (kind === "LEARNING_MODULE" && url.searchParams.get("resolve") === "optional") return Response.json({ availability: "UNPUBLISHED", payload: null }, { headers: { "cache-control": "private, no-store" } });
       return Response.json({
         error: kind === "LEARNING_MODULE"
           ? "This learning edition is not published yet."

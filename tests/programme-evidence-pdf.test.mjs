@@ -6,6 +6,7 @@ import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import ts from 'typescript';
 const dir=await mkdtemp(join(tmpdir(),'bis-report-proof-'));
+await writeFile(join(dir,'evidence-reporting.mjs'),await readFile(new URL('../lib/evidence-reporting.mjs',import.meta.url)));
 for(const name of ['programme-evidence-flow','programme-report-pdf']){
  const src=await readFile(new URL(`../lib/${name}.ts`,import.meta.url),'utf8');
  const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./programme-evidence-flow"','"./programme-evidence-flow.mjs"');

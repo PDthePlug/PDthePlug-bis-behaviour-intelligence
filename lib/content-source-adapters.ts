@@ -246,13 +246,19 @@ function handbookFieldCue(value: string) {
   if (!text) return false;
   if (/^(answers?|question|equation|frame|session|time|mode|difficulty|today you will|you will need|experiment position)\s*:?$/i.test(text)) return false;
   if (/^["“]I,\s*_{3}.*commit to/i.test(text)) return false;
+  if (/^my (?:minimum )?risk check\b.*:\s*$/i.test(text)) return false;
   if (/^📌\s*carry forward/i.test(text) || /^📖|^💭|^✍️|^✅|^🏠|^📂|^🔎|^⚡|^🔬|^🎯|^🧪|^📊|^🤝/u.test(text)) return false;
   if (/_{3,}/.test(text) || /\.{5,}/.test(text)) return true;
-  if (/^(?:my|what i|what they|what the|who i|where i|how i|why i|one thing|the .* i|original|revised|effective from|signed|date|from me|observation|interpretation|risk context|intended protection position|actual protection position|protection gap|protective action|observed protection state|action relationship|protection coverage relationship|trade-off \/ constraint)\b.*:\s*$/i.test(text)) return true;
+  if (/^(?:my|what i|what they|i will count|what the|who i|where i|how i|why i|one thing|the .* i|original|revised|effective from|signed|date|from me|observation|interpretation|risk context|intended protection position|actual protection position|protection gap|protective action|observed protection state|action relationship|protection coverage relationship|trade-off \/ constraint)\b.*:\s*$/i.test(text)) return true;
   if (/^(confidence|my rating|shift|observation days completed|missing \/ unrecorded days|eligible target opportunities observed|checks initiated|risk check initiation rate|full checks completed|full risk check completion rate|minimum checks completed|opportunity coverage|completed risk checks|usable events for prediction testing|protection criterion occurred in these events|observed protection criterion rate|predicted protection criterion rate|difference|protection criterion prediction accuracy)\s*:/i.test(text)) return true;
   if (/^(the protection pattern i want to investigate|why i chose this one|my intended protection position|my recurring protective opportunity|my protective action|my observable protection criterion|i will count the protection criterion as occurred when|my working risk equation|my target condition|my check-in person|my restart plan|my revision signal|what i noticed|what i collected|who i asked|what they said|where i will keep my tracker|what i can now do|who i showed|the most important thing learned)\s*:/i.test(text)) return true;
   if (/^(risk context|intended protection position|actual protection position at start|protection gap|action relationship|protective action implemented\?|protection coverage relationship|protective action tested|family of protection|observable protection criterion|what actually happened so far|trade-off observed\?|constraint observed\?|what surprised you)\s*:\s*_{2,}/i.test(text)) return true;
   return false;
+}
+
+function handbookImperativePrompt(value: string) {
+  const text = value.replace(/\s+/g, " ").trim();
+  return /^(?:write down|record)\b.{4,500}[.!]?$/i.test(text) ? text : "";
 }
 
 function handbookShortControl(sourceKey: string, label: string, raw = label) {
@@ -268,8 +274,9 @@ function handbookShortControl(sourceKey: string, label: string, raw = label) {
     return "<input type=\"date\" " + attrs.join(" ") + " />";
   }
   const range = raw.match(/\/\s*(10|7|100)\b/);
-  if (range || /\bconfidence\b|\bmy rating\b/i.test(label) || /(?:rate|accuracy|difference|shift)\s*:/i.test(label) || /%\s*$/.test(raw)) {
-    const max = range ? Number(range[1]) : /\bconfidence\b|\bmy rating\b/i.test(label) ? 10 : 100;
+  const sevenDayCount = /\b(?:days? completed|missing|eligible .*opportunit|opportunity coverage|checks initiated|checks completed|completed risk checks|minimum checks|usable events|occurred in these events)\b/i.test(label);
+  if (range || sevenDayCount || /\bconfidence\b|\bmy rating\b/i.test(label) || /(?:rate|accuracy|difference|shift)\s*:/i.test(label) || /%\s*$/.test(raw)) {
+    const max = range ? Number(range[1]) : sevenDayCount ? 7 : /\bconfidence\b|\bmy rating\b/i.test(label) ? 10 : 100;
     const min = max === 10 ? 1 : 0;
     return "<input type=\"number\" min=\"" + min + "\" max=\"" + max + "\" " + attrs.join(" ") + " />";
   }
@@ -444,7 +451,11 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         }
 
         const nextText = blocks[index + 1]?.text.replace(/\s+/g, " ").trim() || "";
-        const hasAuthoredFieldImmediatelyAfter = questions.length === 1 && handbookFieldCue(nextText);
+        const secondNextText = blocks[index + 2]?.text.replace(/\s+/g, " ").trim() || "";
+        const hasAuthoredFieldImmediatelyAfter = questions.length === 1 && (
+          handbookFieldCue(nextText)
+          || (/^1\s*[–—-]\s*2\b/.test(nextText) && handbookFieldCue(secondNextText))
+        );
         if (!hasAuthoredFieldImmediatelyAfter) {
           for (const question of questions) {
             const sourceKey = nextSourceKey(question);
@@ -455,6 +466,19 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
             }
           }
         }
+        continue;
+      }
+
+      const imperative = block.heading ? "" : handbookImperativePrompt(text);
+      if (imperative) {
+        html.push(handbookBlockHtml(block));
+        html.push(handbookTextarea(nextSourceKey(imperative), imperative));
+        continue;
+      }
+
+      if (/^Dear Future Me,?$/i.test(text)) {
+        html.push(handbookBlockHtml(block));
+        html.push(handbookTextarea(nextSourceKey("Letter to My Future Self"), "Letter to My Future Self"));
         continue;
       }
 

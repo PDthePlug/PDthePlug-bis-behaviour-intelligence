@@ -1,14 +1,17 @@
 import { expect, type Page, type TestInfo } from "@playwright/test";
 
-export type Role = "learner" | "admin";
+export type Role = "learner" | "admin" | "facilitator";
 
 export async function signIn(page: Page, role: Role) {
-  const prefix = role === "learner" ? "BIS_STAGING_LEARNER" : "BIS_STAGING_ADMIN";
+  const prefix = role === "learner" ? "BIS_STAGING_LEARNER" : role === "admin" ? "BIS_STAGING_ADMIN" : "BIS_STAGING_FACILITATOR";
   const environment = await page.request.get("/api/staging-certification/environment");
   expect(environment.ok(), "The deployed backend identity must be available before sign-in").toBe(true);
   const identity = await environment.json();
   expect(identity.projectRef, "Refusing to submit credentials to a non-staging application").toBe("lbmhkddrkhtmkcvfmumd");
   expect(identity.stagingCertificationAllowed).toBe(true);
+  for (const suffix of ["EMAIL", "PASSWORD"]) {
+    expect(process.env[`${prefix}_${suffix}`], `${prefix}_${suffix} is required for this signed-in journey`).toBeTruthy();
+  }
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(process.env[`${prefix}_EMAIL`]!);
   await page.getByLabel("Password").fill(process.env[`${prefix}_PASSWORD`]!);
