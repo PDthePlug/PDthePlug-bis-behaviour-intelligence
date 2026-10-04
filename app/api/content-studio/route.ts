@@ -401,7 +401,30 @@ async function postHandler(request: Request) {
     if (action === "compileVersion") {
       const versionId = String(body.versionId ?? "");
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-      if (!version || version.status !== "DRAFT") throw new Error("Choose an editable draft version.");
+      if (!version || !["DRAFT", "VALIDATED", "APPROVED"].includes(version.status)) {
+        throw new Error("Choose the working update you want BIS to prepare.");
+      }
+      if (version.status !== "DRAFT") {
+        const now = new Date().toISOString();
+        await db.update(contentLibraryVersions).set({
+          status: "DRAFT",
+          compilerStatus: "NOT_COMPILED",
+          compilerReport: "{}",
+          compilerVersion: null,
+          compiledAt: null,
+          compiledBy: null,
+          validationStatus: "PENDING",
+          runtimeStatus: "REQUIRES_ADAPTER",
+          validationReport: "{}",
+          approvedAt: null,
+          approvedBy: null,
+          updatedAt: now,
+        }).where(eq(contentLibraryVersions.id, versionId));
+        await resetUat(versionId, identity.id);
+        await audit(identity.id, "CONTENT_VERSION_REOPENED", "CONTENT_LIBRARY_VERSION", versionId, {
+          reason: "PREPARE_AGAIN",
+        });
+      }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
       if (!item || item.status !== "ACTIVE") throw new Error("That BIS title is not available.");
       const sources = await db.select().from(contentSourceFiles).where(eq(contentSourceFiles.versionId, versionId));
@@ -786,7 +809,10 @@ async function postHandler(request: Request) {
       const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
       if (!version) throw new Error("That content version was not found.");
       requireCurrentCompilation(version);
-      if (version.status !== "APPROVED" || version.compilerStatus !== "COMPILED" || version.runtimeStatus !== "READY") {
+      const publishableStatus =
+        version.status === "APPROVED"
+        || (version.status === "PUBLISHED" && version.runtimeStatus === "READY");
+      if (!publishableStatus || version.compilerStatus !== "COMPILED" || version.runtimeStatus !== "READY") {
         throw new Error("Prepare, review and approve this version before publishing.");
       }
       const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
@@ -926,6 +952,60 @@ async function postHandler(request: Request) {
         uatReviewedBy: uat.reviewedBy,
         uatReviewedAt: uat.reviewedAt,
         artifactFingerprint: fingerprint,
+      });
+      return Response.json(await snapshot());
+    }
+
+    if (action === "unpublishItem") {
+      const itemId = String(body.itemId ?? "");
+      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
+      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title could not be found.");
+      const now = new Date().toISOString();
+      const affectedVersions = new Set<string>();
+
+      if (item.kind === "LEARNING_MODULE") {
+        const activeEditions = await db.select().from(contentEditionActivations).where(and(
+          eq(contentEditionActivations.itemId, itemId),
+          eq(contentEditionActivations.status, "ACTIVE"),
+        ));
+        for (const activation of activeEditions) {
+          affectedVersions.add(activation.versionId);
+          await db.update(contentEditionActivations).set({
+            status: "SUPERSEDED",
+            deactivatedAt: now,
+          }).where(eq(contentEditionActivations.id, activation.id));
+        }
+        const publishedReleases = await db.select().from(contentReleases).where(and(
+          eq(contentReleases.labCode, item.code),
+          eq(contentReleases.status, "PUBLISHED"),
+        ));
+        for (const release of publishedReleases) {
+          await db.update(contentReleases).set({ status: "CONTROLLED" }).where(eq(contentReleases.id, release.id));
+        }
+      } else {
+        const activeRows = await db.select().from(contentRuntimeActivations).where(and(
+          eq(contentRuntimeActivations.itemId, itemId),
+          eq(contentRuntimeActivations.status, "ACTIVE"),
+        ));
+        for (const activation of activeRows) {
+          affectedVersions.add(activation.versionId);
+          await db.update(contentRuntimeActivations).set({
+            status: "SUPERSEDED",
+            deactivatedAt: now,
+          }).where(eq(contentRuntimeActivations.id, activation.id));
+        }
+      }
+
+      for (const versionId of affectedVersions) {
+        await db.update(contentLibraryVersions).set({
+          runtimeStatus: "READY",
+          updatedAt: now,
+        }).where(eq(contentLibraryVersions.id, versionId));
+      }
+
+      await audit(identity.id, "CONTENT_ITEM_UNPUBLISHED", "CONTENT_LIBRARY_ITEM", itemId, {
+        kind: item.kind,
+        affectedVersions: [...affectedVersions],
       });
       return Response.json(await snapshot());
     }
