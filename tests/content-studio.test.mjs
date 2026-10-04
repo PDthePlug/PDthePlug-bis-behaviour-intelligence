@@ -244,7 +244,7 @@ test("Content Studio exposes a simple edit preview publish and unpublish control
   const ui = await source("app/content-studio/content-studio.tsx");
   assert.match(ui, /Edit content/);
   assert.match(ui, />Preview</);
-  assert.match(ui, />Publish</);
+  assert.match(ui, /Republish" : "Publish"/);
   assert.match(ui, /Unpublish/);
   assert.match(ui, /Currently offline/);
   assert.match(ui, /Published to learners/);
