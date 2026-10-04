@@ -1043,7 +1043,7 @@ async function postHandler(request: Request) {
         for (const activation of activeEditions) {
           affectedVersions.add(activation.versionId);
           await db.update(contentEditionActivations).set({
-            status: "SUPERSEDED",
+            status: "INACTIVE",
             deactivatedAt: now,
           }).where(eq(contentEditionActivations.id, activation.id));
         }
@@ -1062,7 +1062,7 @@ async function postHandler(request: Request) {
         for (const activation of activeRows) {
           affectedVersions.add(activation.versionId);
           await db.update(contentRuntimeActivations).set({
-            status: "SUPERSEDED",
+            status: "INACTIVE",
             deactivatedAt: now,
           }).where(eq(contentRuntimeActivations.id, activation.id));
         }

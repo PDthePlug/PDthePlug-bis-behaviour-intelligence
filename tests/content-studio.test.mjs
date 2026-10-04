@@ -110,8 +110,8 @@ test("Content Studio presents a shelf-first founder flow and supports pasted tex
     source("app/api/content-studio/route.ts"),
   ]);
   assert.match(ui, /Choose a BIS title and add the content that is ready/);
-  assert.match(ui, /BIS keeps the version number for you/);
-  assert.match(ui, /Start adding content/);
+  assert.match(ui, /Current status/);
+  assert.match(ui, /Add content/);
   assert.doesNotMatch(ui, /<label>Version<Input/);
   assert.match(ui, /Paste text/);
   assert.match(ui, /action: "compileVersion"/);
@@ -167,7 +167,7 @@ test("stale compiler artifacts cannot be previewed approved or published", async
   assert.match(preview, /version\.compilerVersion !== CONTENT_COMPILER_VERSION/);
   assert.match(preview, /Prepare the version again before reviewing it/);
   assert.match(ui, /Re-prepare required/);
-  assert.match(ui, /Prepare again/);
+  assert.match(ui, /Process again/);
   assert.match(ui, /Your uploaded source stays in place/);
 });
 
@@ -234,7 +234,8 @@ test("Content Studio preview tolerates encoded version IDs and keeps the final p
   assert.match(ui, /action: "signOffUat"/);
   assert.match(ui, /action: "approveVersion"/);
   assert.match(ui, /action: "activateVersion"/);
-  assert.match(ui, /<PackageCheck \/> Publish/);
+  assert.match(ui, /actionVersionCanPublish/);
+  assert.match(ui, /actionVersion\.uat\?\.status === "PASSED"/);
   assert.match(ui, /\/content-studio\/preview\/\$\{entry\.id\}/);
   assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(entry\.id\)\}/);
 });
@@ -244,7 +245,7 @@ test("Content Studio exposes a simple edit preview publish and unpublish control
   const ui = await source("app/content-studio/content-studio.tsx");
   assert.match(ui, /Edit content/);
   assert.match(ui, />Preview</);
-  assert.match(ui, />Publish</);
+  assert.match(ui, /"Publish"/);
   assert.match(ui, /Unpublish/);
   assert.match(ui, /Currently offline/);
   assert.match(ui, /Published to learners/);
@@ -264,7 +265,9 @@ test("published Content Studio source can seed an editable version and titles ca
   assert.match(api, /copiedSourceKeys/);
   assert.match(api, /action === "unpublishItem"/);
   assert.match(api, /CONTENT_ITEM_UNPUBLISHED/);
-  assert.match(api, /status: "SUPERSEDED"/);
+  assert.match(api, /status: "INACTIVE"/);
+  const offlineMigration = await source("supabase/migrations/20261004033000_content_activation_offline_state.sql");
+  assert.match(offlineMigration, /'INACTIVE'/);
   assert.match(api, /action === "republishVersion"/);
   assert.match(api, /CONTENT_VERSION_REPUBLISHED/);
 });
