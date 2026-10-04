@@ -54,3 +54,48 @@ Check the existing environment before asking the owner to change anything. It ne
 - Optional controlled test inbox access for genuine invitation/verification/recovery delivery. Do not infer it from auto-confirmed accounts.
 
 Current Codex Cloud supports direct environment variables and destination-bound network secrets; the latter expose placeholders to programs and substitute the credential for allowed HTTPS destinations. Existing legacy environment settings may behave differently. Verify access in a fresh task after any saved-environment update. Official reference: https://learn.chatgpt.com/docs/environments/cloud-environments
+
+
+## Follow-up after the blocked Codex run (4 October 2026)
+
+The owner returned a Codex report for local commit `6c1e950c7b5d2e7b5836dd983639c50e9cb84152`. It reports a passing local `npm run verify`, a one-worker browser configuration change, and a live-suite preflight failure caused by missing protected credentials. It reports no account creation, no staging/production data mutations, and no production release. These are returned-task claims, not independent verification of that unpublished commit. GitHub was checked: it does not currently have that commit, and PR #106 still had head `32508731dc14b70257cef4e6a85178335d5f4005` at the check. Recover and inspect the actual diff before accepting its changes or test claims.
+
+### Recover the existing work
+
+1. Preserve the original task's local commit and execution report. Do not reset its branch or discard the work to start again.
+2. Restore an authenticated GitHub connection with write access to this repository. Fetch the PR #106 branch and rebase the unpublished commit onto its current head, resolving only actual conflicts and preserving both reports and commissioning instructions. Do not force-push over remote work.
+3. Review the browser-worker change against `AGENTS.md`: resource scheduling may be adjusted, but keep the 90-second test timeout, all viewport projects, all assertions and the full verification contract. Re-run verification after integrating the diff.
+4. If repository write access cannot be restored, export the original commit through Codex's downloadable diff/patch artifact and return that artifact. A commit SHA or `make_pr` title/body alone is not a recoverable code handoff. Check the artifact contains no secrets before returning it.
+
+### Repair the saved environment before another acceptance run
+
+Configure the existing environment through its protected settings, not through chat or source files. Required external access is:
+
+- An authorized staging-only Auth Admin credential/service connection for `lbmhkddrkhtmkcvfmumd.supabase.co`. For a new provisioning runner, use `BIS_STAGING_AUTH_ADMIN_KEY` as its private input contract; this name is proposed for implementation and is not consumed by the current staging suite. A destination-bound network secret may supply this credential in outbound HTTPS requests. Verify the actual client uses the environment's proxy; do not require a raw credential in a local file when proxy substitution is configured.
+- Authenticated GitHub repository write access, plus task-phase access to the exact staging host and dependency/browser hosts.
+- The existing staging public configuration and installed browser dependencies.
+
+Test these connections without creating users or printing returned user data. Save and republish the changed environment and verify it in a fresh task, while retaining/exporting the original task's unpublished work first. Existing tasks retain their own state; changing the saved environment is not proof that the old task acquired its new access.
+
+### Provision first, then run authenticated acceptance
+
+Pre-existing learner/staff passwords are **not** an additional owner-supplied prerequisite when authorized provisioning access is available. Generating those credentials is part of this assignment.
+
+Implement or recover an executable, idempotent provisioning step before Playwright's authenticated global setup. Keep its target strictly restricted to the authorized staging project and dedicated synthetic identities; preserve unrelated users, avoid duplicates on retry, and report partial setup safely. Do not reuse the disabled temporary Edge Function or bypass an approval rejection. Use the normal authorized Auth Admin API and canonical application role/cohort setup, then prove login with normal sessions.
+
+Create protected, ignored credential storage inside the task (directory mode 0700, credential file mode 0600), rather than requiring the owner to supply an already populated synthetic-account store. If credentials need to survive outside this task, use an explicitly configured private secret store and return only its reference. Keep screenshots, traces and logs free of passwords, cookies and tokens.
+
+The existing suite requires these generated values:
+
+- `BIS_STAGING_LEARNER_EMAIL`
+- `BIS_STAGING_LEARNER_PASSWORD`
+- `BIS_STAGING_ADMIN_EMAIL`
+- `BIS_STAGING_ADMIN_PASSWORD`
+
+Have the provisioning runner supply them to the test process without printing or committing them, and extend role fixtures to cover all 24 accounts. Do not run the authenticated suite first and treat its missing generated credentials as proof that the owner must create accounts manually.
+
+A controlled inbox is required for **email-delivery acceptance**, not for provisioning auto-confirmed synthetic accounts or running other authenticated journeys. Continue all account, role, lifecycle, privacy, upload, reporting and calendar tests without it; mark invitation/verification/recovery delivery blocked separately until controlled inbox access is configured. Never send test messages to real third parties or claim delivery from auto-confirmation.
+
+Return the pushed/recoverable diff, exact tested commit, account/cohort/version references without credentials, R01–R13 evidence, remaining email/human/source-owner decisions, and restoration results. Full product acceptance and production release remain pending until the original commissioning gates are satisfied.
+
+References: https://learn.chatgpt.com/docs/environments/cloud-environments and https://supabase.com/docs/reference/javascript/auth-admin-createuser
