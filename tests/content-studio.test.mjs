@@ -111,7 +111,7 @@ test("Content Studio presents a shelf-first founder flow and supports pasted tex
   ]);
   assert.match(ui, /Choose a BIS title and add the content that is ready/);
   assert.match(ui, /Next: v\$\{nextContentVersion/);
-  assert.match(ui, /Start adding content/);
+  assert.match(ui, /<Plus \/> Add content/);
   assert.doesNotMatch(ui, /<label>Version<Input/);
   assert.match(ui, /Paste text/);
   assert.match(ui, /action: "compileVersion"/);
