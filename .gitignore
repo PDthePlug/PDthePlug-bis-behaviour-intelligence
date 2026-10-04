@@ -49,3 +49,5 @@ next-env.d.ts
 /tests/browser/harness/.next/
 /tests/browser/harness/node_modules/
 /tests/browser/harness/next-env.d.ts
+playwright-report-staging/
+test-results-staging/

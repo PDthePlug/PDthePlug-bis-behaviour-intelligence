@@ -1,5 +1,14 @@
 import { expect, test } from "@playwright/test";
 
+test("learning timing in table cells stays separate from the Lab handoff", async ({ page }) => {
+  await page.goto("/timing");
+  const learning = page.getByRole("region", { name: "Learning session" });
+  await expect(learning.locator("[data-source-timing]")).toHaveText("TIME: 45 minutes");
+  await expect(learning.locator("[data-source-timing]")).toHaveAttribute("data-source-timing", "90 minutes");
+  await expect(learning.getByText("The facilitated Lab takes 90 minutes.", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Lab handoff" })).toHaveText("TIME: 90 minutes");
+});
+
 test("learning questions have separate visible labels and preserve original answers", async ({ page }, info) => {
   await page.goto("/learning");
   const original = page.getByRole("textbox", { name: "What gives your life meaning?", exact: true });

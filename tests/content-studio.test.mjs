@@ -184,7 +184,7 @@ test("Content Studio surfaces the Habit standard and blocks editorially unfinish
   assert.match(ui, /Habit Lab standard 1\.0/);
   assert.match(ui, /Editorial review before approval/);
   assert.match(compiler, /applyHabitLabStandard/);
-  assert.match(compiler, /bis-content-compiler-4/);
+  assert.match(compiler, /bis-content-compiler-5/);
 });
 
 

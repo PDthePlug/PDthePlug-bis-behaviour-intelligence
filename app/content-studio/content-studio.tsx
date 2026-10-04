@@ -967,7 +967,7 @@ export function ContentStudio() {
                                 <>
                                   <small>Review these before approval:</small>
                                   <ul>
-                                    {entry.compilerReport.questionQuality.reviewItems.slice(0, 6).map((item) => <li key={item}>{item}</li>)}
+                                    {entry.compilerReport.questionQuality.reviewItems.slice(0, 6).map((item, index) => <li key={`${index}-${item}`}>{item}</li>)}
                                   </ul>
                                   {entry.compilerReport.questionQuality.reviewItems.length > 6 ? <small>+ {entry.compilerReport.questionQuality.reviewItems.length - 6} more review items</small> : null}
                                 </>
@@ -982,7 +982,7 @@ export function ContentStudio() {
                               <strong>Editorial review before approval</strong>
                               <p>The Lab can be previewed, but these source questions should be strengthened before it is treated as finished.</p>
                               <ul>
-                                {entry.compilerReport.editorialWarnings.slice(0, 8).map((warning) => <li key={warning}>{warning}</li>)}
+                                {entry.compilerReport.editorialWarnings.slice(0, 8).map((warning, index) => <li key={`${index}-${warning}`}>{warning}</li>)}
                               </ul>
                               {entry.compilerReport.editorialWarnings.length > 8 ? <small>+ {entry.compilerReport.editorialWarnings.length - 8} more review items</small> : null}
                             </div>

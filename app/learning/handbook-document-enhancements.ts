@@ -1,5 +1,6 @@
 import { learnerText, type LearnerEdition } from "../../lib/school-language";
 import { authoredQuestions } from "../../lib/universal-lab-presentation.mjs";
+import { BIS_LEARNING_SESSION_MINUTES } from "../../lib/session-design";
 
 type LabCode = string;
 
@@ -1279,6 +1280,16 @@ export function enhanceHandbookDocument(
   pageId: string,
   context: HandbookEnhancementContext = {},
 ) {
+  if (!context.referenceOnly && context.programmeDay && context.programmeDay !== 3) {
+    root.querySelectorAll<HTMLElement>("p,div,span").forEach((element) => {
+      if (!/^TIME:\s*90\s*minutes\.?$/i.test(normalise(element.textContent ?? ""))) return;
+      const parent = element.parentElement;
+      if (parent && parent !== root && parent.matches("p,div,span")
+        && /^TIME:\s*90\s*minutes\.?$/i.test(normalise(parent.textContent ?? ""))) return;
+      element.dataset.sourceTiming = "90 minutes";
+      element.textContent = `TIME: ${BIS_LEARNING_SESSION_MINUTES} minutes`;
+    });
+  }
   cleanOrphanedResponseControls(root);
   labelAuthoredResponses(root);
   removeUnboundGenericResponses(root);
