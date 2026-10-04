@@ -64,10 +64,11 @@ test("preview mode never writes learner workbook or Lab evidence", async () => {
   assert.match(lab, /test answers are not saved/);
 });
 
-test("publish control appears only after the final check has passed", async () => {
+test("publish control remains gated by the completed final check", async () => {
   const studio = await source("app/content-studio/content-studio.tsx");
-  assert.match(studio, /entry\.status === "APPROVED" && finalCheckPassed/);
-  assert.match(studio, /Preview and complete the final check first/);
+  assert.match(studio, /actionVersion\.uat\?\.status === "PASSED"/);
+  assert.match(studio, /Preview this version and complete the final check before publishing/);
   assert.match(studio, /action: "signOffUat"/);
   assert.match(studio, /action: "activateVersion"/);
+  assert.match(studio, /disabled=\{saving \|\| !actionVersion \|\| !actionVersionCanPublish\}/);
 });
