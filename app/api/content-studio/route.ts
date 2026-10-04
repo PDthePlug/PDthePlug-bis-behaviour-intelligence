@@ -7,7 +7,6 @@ import {
   contentEditionActivations,
   contentLibraryItems,
   contentLibraryVersions,
-  contentReleases,
   contentRuntimeActivations,
   contentRuntimeArtifacts,
   contentSourceFiles,
@@ -38,6 +37,7 @@ import { adaptLabSource, adaptLearningSource } from "../../../lib/content-source
 import {
   artifactFingerprint,
   checklistComplete,
+  editorialReviewComplete,
   normalizeUatChecklist,
   previewCoverageComplete,
 } from "../../../lib/content-uat";
@@ -149,6 +149,13 @@ async function snapshot() {
   }));
   const mappedItems = items.map((item) => ({
     ...item,
+    rollbackAvailable: (() => {
+      const history = item.kind === "LAB" ? activations : editionActivations;
+      const current = history.find((row) => row.itemId === item.id && row.status === "ACTIVE");
+      if (!current) return false;
+      const currentRows = history.filter((row) => row.itemId === item.id && row.status === "ACTIVE" && row.versionId === current.versionId);
+      return currentRows.every((row) => history.some((prior) => prior.id === row.supersedesActivationId && prior.status === "SUPERSEDED"));
+    })(),
     activeActivation: activations.find((activation) => activation.itemId === item.id && activation.status === "ACTIVE") ?? null,
     activeEditions: editionActivations
       .filter((activation) => activation.itemId === item.id && activation.status === "ACTIVE")
@@ -673,16 +680,13 @@ async function postHandler(request: Request) {
       }
       const [approvalItem] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
       const approvalReport = parseJson(version.compilerReport, {}) as { editorialStatus?: string; editorialWarnings?: string[] };
-      if (approvalItem?.kind === "LAB" && approvalReport.editorialStatus !== "PASS") {
-        const detail = approvalReport.editorialWarnings?.[0];
-        throw new Error(detail
-          ? `Strengthen the Lab source before approval. ${detail}`
-          : "Strengthen the Lab source before approval. The editorial review must pass.");
-      }
       const [review] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
       if (!review || review.status !== "PASSED") {
         throw new Error("Complete the final preview check before approving this version.");
       }
+      if (approvalItem?.kind === "LAB" && (!approvalReport.editorialStatus || !editorialReviewComplete(
+        approvalReport, normalizeUatChecklist(parseJson(review.checklist, {})), review.notes,
+      ))) throw new Error("Review the preparation notes against the source and record why the repeated questions are needed before approving.");
       const now = new Date().toISOString();
       await db.update(contentLibraryVersions).set({
         status: "APPROVED",
@@ -792,6 +796,10 @@ async function postHandler(request: Request) {
           : "Preview the Lab before signing off.");
       }
       if (!checklistComplete(checklist)) throw new Error("Complete every item in the final check before marking it ready.");
+      const editorialReport = parseJson(version.compilerReport, {}) as { editorialStatus?: string; editorialWarnings?: string[] };
+      if (item.kind === "LAB" && !editorialReviewComplete(editorialReport, checklist, uat.notes)) {
+        throw new Error("Review the preparation notes and record your decision before completing the final check.");
+      }
       const now = new Date().toISOString();
       await db.update(contentActivationUat).set({
         status: "PASSED",
@@ -807,318 +815,23 @@ async function postHandler(request: Request) {
       return Response.json(await snapshot());
     }
 
-    if (action === "activateVersion") {
+    if (action === "activateVersion" || action === "republishVersion" || action === "unpublishItem" || action === "rollbackActivation") {
       const versionId = String(body.versionId ?? "");
-      const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-      if (!version) throw new Error("That content version was not found.");
-      requireCurrentCompilation(version);
-      if (version.status !== "APPROVED" || version.compilerStatus !== "COMPILED" || version.runtimeStatus !== "READY") {
-        throw new Error("Prepare, review and approve this version before publishing.");
+      let itemId = String(body.itemId ?? "");
+      if (action === "activateVersion" || action === "republishVersion") {
+        const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
+        if (!version) throw new Error("That content version was not found.");
+        itemId = version.itemId;
       }
-      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title is not available.");
-      const artifacts = await db.select().from(contentRuntimeArtifacts).where(eq(contentRuntimeArtifacts.versionId, versionId));
-      const [uat] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);
-      const fingerprint = await artifactFingerprint(artifacts);
-      const uatPreviewed = parseJson(uat?.previewedArtifacts, []) as string[];
-      const uatChecklist = normalizeUatChecklist(parseJson(uat?.checklist, {}));
-      if (
-        !uat ||
-        uat.status !== "PASSED" ||
-        uat.artifactFingerprint !== fingerprint ||
-        !previewCoverageComplete(
-          item.kind as ContentKind,
-          uatPreviewed,
-          artifacts.map((artifact) => artifact.artifactKey),
-        ) ||
-        !checklistComplete(uatChecklist)
-      ) {
-        throw new Error("Finish the preview checklist and sign off this exact version before publishing.");
-      }
-      if (item.kind === "LEARNING_MODULE") {
-        const editions = artifacts.map((artifact) => artifact.deliveryEdition).filter(Boolean);
-        if (!editions.length) throw new Error("Prepare at least one learning edition before publishing.");
-      } else if (!artifacts.some((artifact) => artifact.artifactKey === "lab:universal")) {
-        throw new Error("The prepared Lab preview is missing. Prepare this version again.");
-      }
-
-      const now = new Date().toISOString();
-      const supersededVersions: string[] = [];
-      const publishedEditions: DeliveryEdition[] = [];
-
-      if (item.kind === "LEARNING_MODULE") {
-        const learningArtifacts = artifacts.filter(
-          (artifact) => artifact.deliveryEdition && LEARNING_EDITION_KEYS.includes(artifact.deliveryEdition as DeliveryEdition),
-        );
-        for (const artifact of learningArtifacts) {
-          const edition = artifact.deliveryEdition as DeliveryEdition;
-          const [previousEdition] = await db.select().from(contentEditionActivations).where(and(
-            eq(contentEditionActivations.itemId, item.id),
-            eq(contentEditionActivations.deliveryEdition, edition),
-            eq(contentEditionActivations.status, "ACTIVE"),
-          )).limit(1);
-
-          if (previousEdition) {
-            await db.update(contentEditionActivations).set({
-              status: "SUPERSEDED",
-              deactivatedAt: now,
-            }).where(eq(contentEditionActivations.id, previousEdition.id));
-            supersededVersions.push(previousEdition.versionId);
-          }
-
-          await db.insert(contentEditionActivations).values({
-            id: crypto.randomUUID(),
-            itemId: item.id,
-            deliveryEdition: edition,
-            versionId,
-            status: "ACTIVE",
-            activatedBy: identity.id,
-            supersedesActivationId: previousEdition?.id ?? null,
-          });
-
-          const existingPublished = await db.select().from(contentReleases).where(and(
-            eq(contentReleases.labCode, item.code),
-            eq(contentReleases.deliveryEdition, edition),
-            eq(contentReleases.status, "PUBLISHED"),
-          ));
-          for (const release of existingPublished) {
-            await db.update(contentReleases).set({ status: "CONTROLLED" }).where(eq(contentReleases.id, release.id));
-          }
-
-          const releaseId = `${item.code}:${edition}:${version.version}:${artifact.artifactHash.slice(0, 8)}`;
-          await db.insert(contentReleases).values({
-            id: releaseId,
-            handbookId: `${item.slug}-content-studio`,
-            labCode: item.code,
-            deliveryEdition: edition,
-            contentVersion: version.version,
-            runtimeVersion: "programme-player-3",
-            schemaVersion: version.schemaVersion,
-            releaseHash: artifact.artifactHash,
-            status: "PUBLISHED",
-            releasedAt: now,
-          }).onConflictDoUpdate({
-            target: [contentReleases.labCode, contentReleases.deliveryEdition, contentReleases.contentVersion, contentReleases.releaseHash],
-            set: { status: "PUBLISHED", releasedAt: now },
-          });
-          publishedEditions.push(edition);
-        }
-      } else {
-        const activeRows = await db.select().from(contentRuntimeActivations).where(and(
-          eq(contentRuntimeActivations.itemId, item.id),
-          eq(contentRuntimeActivations.status, "ACTIVE"),
-        ));
-        const previous = activeRows[0] ?? null;
-        if (previous) {
-          await db.update(contentRuntimeActivations).set({
-            status: "SUPERSEDED",
-            deactivatedAt: now,
-          }).where(eq(contentRuntimeActivations.id, previous.id));
-          supersededVersions.push(previous.versionId);
-        }
-
-        await db.insert(contentRuntimeActivations).values({
-          id: crypto.randomUUID(),
-          itemId: item.id,
-          versionId,
-          runtimeMode: "DYNAMIC",
-          status: "ACTIVE",
-          activatedBy: identity.id,
-          supersedesActivationId: previous?.id ?? null,
-        });
-      }
-
-      const routePath = item.kind === "LEARNING_MODULE" ? `/handbooks/${item.code.toLowerCase()}` : `/labs/${item.code.toLowerCase()}`;
-      await db.update(contentLibraryItems).set({ routePath, updatedAt: now }).where(eq(contentLibraryItems.id, item.id));
-      await db.update(contentLibraryVersions).set({
-        status: "PUBLISHED",
-        runtimeStatus: "LIVE",
-        publishedAt: now,
-        updatedAt: now,
-      }).where(eq(contentLibraryVersions.id, versionId));
-      if (item.kind === "LAB") {
-        await db.update(questionAnalysisRegistry).set({
-          status: "ACTIVE",
-          updatedAt: now,
-        }).where(eq(questionAnalysisRegistry.versionId, versionId));
-      }
-      await audit(identity.id, "CONTENT_VERSION_ACTIVATED", "CONTENT_LIBRARY_VERSION", versionId, {
-        itemId: item.id,
-        kind: item.kind,
-        routePath,
-        editions: item.kind === "LEARNING_MODULE" ? publishedEditions : [],
-        supersedes: supersededVersions,
-        uatId: uat.id,
-        uatReviewedBy: uat.reviewedBy,
-        uatReviewedAt: uat.reviewedAt,
-        artifactFingerprint: fingerprint,
+      const transition = {
+        activateVersion: "PUBLISH", republishVersion: "REPUBLISH",
+        unpublishItem: "UNPUBLISH", rollbackActivation: "ROLLBACK",
+      }[action];
+      const { error } = await requestSupabaseClient().rpc("bis_transition_content", {
+        p_action: transition, p_item_id: itemId, p_version_id: versionId || null,
+        p_compiler_version: CONTENT_COMPILER_VERSION,
       });
-      return Response.json(await snapshot());
-    }
-
-    if (action === "republishVersion") {
-      const versionId = String(body.versionId ?? "");
-      const [version] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, versionId)).limit(1);
-      if (!version || version.status !== "PUBLISHED" || version.runtimeStatus !== "READY") {
-        throw new Error("Choose a previously published version that is currently offline.");
-      }
-      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, version.itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title is not available.");
-      const now = new Date().toISOString();
-
-      if (item.kind === "LEARNING_MODULE") {
-        const historical = await db.select().from(contentEditionActivations).where(eq(contentEditionActivations.versionId, versionId));
-        if (!historical.length) throw new Error("This version does not have a previous learner publication to restore.");
-        const activeElsewhere = await db.select().from(contentEditionActivations).where(and(
-          eq(contentEditionActivations.itemId, item.id),
-          eq(contentEditionActivations.status, "ACTIVE"),
-        ));
-        for (const activation of activeElsewhere) {
-          await db.update(contentEditionActivations).set({
-            status: "SUPERSEDED",
-            deactivatedAt: now,
-          }).where(eq(contentEditionActivations.id, activation.id));
-        }
-        for (const activation of historical) {
-          await db.update(contentEditionActivations).set({
-            status: "ACTIVE",
-            deactivatedAt: null,
-          }).where(eq(contentEditionActivations.id, activation.id));
-        }
-        const releases = await db.select().from(contentReleases).where(and(
-          eq(contentReleases.labCode, item.code),
-          eq(contentReleases.contentVersion, version.version),
-        ));
-        for (const release of releases) {
-          await db.update(contentReleases).set({
-            status: "PUBLISHED",
-            releasedAt: now,
-          }).where(eq(contentReleases.id, release.id));
-        }
-      } else {
-        const history = await db.select().from(contentRuntimeActivations)
-          .where(and(eq(contentRuntimeActivations.itemId, item.id), eq(contentRuntimeActivations.versionId, versionId)))
-          .orderBy(desc(contentRuntimeActivations.activatedAt));
-        const restore = history[0];
-        if (!restore) throw new Error("This Lab version does not have a previous learner publication to restore.");
-        const activeElsewhere = await db.select().from(contentRuntimeActivations).where(and(
-          eq(contentRuntimeActivations.itemId, item.id),
-          eq(contentRuntimeActivations.status, "ACTIVE"),
-        ));
-        for (const activation of activeElsewhere) {
-          await db.update(contentRuntimeActivations).set({
-            status: "SUPERSEDED",
-            deactivatedAt: now,
-          }).where(eq(contentRuntimeActivations.id, activation.id));
-        }
-        await db.update(contentRuntimeActivations).set({
-          status: "ACTIVE",
-          deactivatedAt: null,
-        }).where(eq(contentRuntimeActivations.id, restore.id));
-      }
-
-      await db.update(contentLibraryVersions).set({
-        runtimeStatus: "LIVE",
-        updatedAt: now,
-      }).where(eq(contentLibraryVersions.id, versionId));
-      await audit(identity.id, "CONTENT_VERSION_REPUBLISHED", "CONTENT_LIBRARY_VERSION", versionId, {
-        itemId: item.id,
-        kind: item.kind,
-      });
-      return Response.json(await snapshot());
-    }
-
-    if (action === "unpublishItem") {
-      const itemId = String(body.itemId ?? "");
-      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
-      if (!item || item.status !== "ACTIVE") throw new Error("That BIS title could not be found.");
-      const now = new Date().toISOString();
-      const affectedVersions = new Set<string>();
-
-      if (item.kind === "LEARNING_MODULE") {
-        const activeEditions = await db.select().from(contentEditionActivations).where(and(
-          eq(contentEditionActivations.itemId, itemId),
-          eq(contentEditionActivations.status, "ACTIVE"),
-        ));
-        for (const activation of activeEditions) {
-          affectedVersions.add(activation.versionId);
-          await db.update(contentEditionActivations).set({
-            status: "SUPERSEDED",
-            deactivatedAt: now,
-          }).where(eq(contentEditionActivations.id, activation.id));
-        }
-        const publishedReleases = await db.select().from(contentReleases).where(and(
-          eq(contentReleases.labCode, item.code),
-          eq(contentReleases.status, "PUBLISHED"),
-        ));
-        for (const release of publishedReleases) {
-          await db.update(contentReleases).set({ status: "CONTROLLED" }).where(eq(contentReleases.id, release.id));
-        }
-      } else {
-        const activeRows = await db.select().from(contentRuntimeActivations).where(and(
-          eq(contentRuntimeActivations.itemId, itemId),
-          eq(contentRuntimeActivations.status, "ACTIVE"),
-        ));
-        for (const activation of activeRows) {
-          affectedVersions.add(activation.versionId);
-          await db.update(contentRuntimeActivations).set({
-            status: "SUPERSEDED",
-            deactivatedAt: now,
-          }).where(eq(contentRuntimeActivations.id, activation.id));
-        }
-      }
-
-      for (const versionId of affectedVersions) {
-        await db.update(contentLibraryVersions).set({
-          runtimeStatus: "READY",
-          updatedAt: now,
-        }).where(eq(contentLibraryVersions.id, versionId));
-      }
-
-      await audit(identity.id, "CONTENT_ITEM_UNPUBLISHED", "CONTENT_LIBRARY_ITEM", itemId, {
-        kind: item.kind,
-        affectedVersions: [...affectedVersions],
-      });
-      return Response.json(await snapshot());
-    }
-
-    if (action === "rollbackActivation") {
-      const itemId = String(body.itemId ?? "");
-      const [item] = await db.select().from(contentLibraryItems).where(eq(contentLibraryItems.id, itemId)).limit(1);
-      if (!item) throw new Error("That BIS title could not be found.");
-      const activationRows = await db.select().from(contentRuntimeActivations).where(eq(contentRuntimeActivations.itemId, itemId)).orderBy(desc(contentRuntimeActivations.activatedAt));
-      const current = activationRows.find((activation) => activation.status === "ACTIVE");
-      const previous = activationRows.find((activation) => activation.status === "SUPERSEDED");
-      if (!current || !previous) throw new Error("There is no previous runtime version available for rollback.");
-      const [currentVersion] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, current.versionId)).limit(1);
-      const [previousVersion] = await db.select().from(contentLibraryVersions).where(eq(contentLibraryVersions.id, previous.versionId)).limit(1);
-      if (!currentVersion || !previousVersion) throw new Error("Rollback version records are incomplete.");
-      const now = new Date().toISOString();
-      await db.update(contentRuntimeActivations).set({ status: "ROLLED_BACK", deactivatedAt: now }).where(eq(contentRuntimeActivations.id, current.id));
-      await db.update(contentRuntimeActivations).set({ status: "ACTIVE", deactivatedAt: null }).where(eq(contentRuntimeActivations.id, previous.id));
-      await db.update(contentLibraryVersions).set({ runtimeStatus: "READY", updatedAt: now }).where(eq(contentLibraryVersions.id, currentVersion.id));
-      await db.update(contentLibraryVersions).set({ runtimeStatus: "LIVE", status: "PUBLISHED", publishedAt: now, updatedAt: now }).where(eq(contentLibraryVersions.id, previousVersion.id));
-
-      if (item.kind === "LEARNING_MODULE") {
-        const currentReleases = await db.select().from(contentReleases).where(and(
-          eq(contentReleases.labCode, item.code),
-          eq(contentReleases.contentVersion, currentVersion.version),
-        ));
-        for (const release of currentReleases) {
-          if (release.status === "PUBLISHED") await db.update(contentReleases).set({ status: "CONTROLLED" }).where(eq(contentReleases.id, release.id));
-        }
-        const previousReleases = await db.select().from(contentReleases).where(and(
-          eq(contentReleases.labCode, item.code),
-          eq(contentReleases.contentVersion, previousVersion.version),
-        ));
-        for (const release of previousReleases) {
-          await db.update(contentReleases).set({ status: "PUBLISHED", releasedAt: now }).where(eq(contentReleases.id, release.id));
-        }
-      }
-      await audit(identity.id, "CONTENT_RUNTIME_ROLLED_BACK", "CONTENT_LIBRARY_ITEM", itemId, {
-        fromVersion: currentVersion.version,
-        toVersion: previousVersion.version,
-      });
+      if (error) throw error;
       return Response.json(await snapshot());
     }
 

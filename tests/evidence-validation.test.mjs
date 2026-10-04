@@ -52,6 +52,7 @@ test("dynamic responses respect typed controls, required fields and the right to
 test("legacy Investigation 7 typed values normalize to canonical evidence values", () => {
   const booleanPrompt = { type: "BOOLEAN", required: true };
   assert.equal(normalizePromptResponseValue(booleanPrompt, "No i did not"), "No");
+  assert.equal(normalizePromptResponseValue(booleanPrompt, "I did not"), "No");
   assert.equal(normalizePromptResponseValue(booleanPrompt, "Yes, I did"), "Yes");
   assert.equal(normalizePromptResponseValue(booleanPrompt, "maybe"), "maybe");
   assert.equal(validPromptResponse(booleanPrompt, normalizePromptResponseValue(booleanPrompt, "No i did not")), true);
@@ -59,4 +60,14 @@ test("legacy Investigation 7 typed values normalize to canonical evidence values
   const datePrompt = { type: "DATE", required: false };
   assert.equal(normalizePromptResponseValue(datePrompt, "02/10/2026"), "2026-10-02");
   assert.equal(validPromptResponse(datePrompt, normalizePromptResponseValue(datePrompt, "02/10/2026")), true);
+});
+
+test("no-opportunity observations remain distinct and only valid for eligible action checks", () => {
+  const action = { type: "BOOLEAN", allowNoOpportunity: true };
+  for (const value of ["No opportunity", "no-opportunity today"]) {
+    assert.equal(normalizePromptResponseValue(action, value), "No opportunity");
+    assert.equal(validPromptResponse(action, normalizePromptResponseValue(action, value)), true);
+  }
+  assert.equal(validPromptResponse({ type: "BOOLEAN" }, "No opportunity"), false);
+  assert.equal(normalizePromptResponseValue({ type: "BOOLEAN" }, "No opportunity"), "No opportunity");
 });

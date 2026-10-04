@@ -34,7 +34,7 @@ export const CONTENT_UAT_CHECKS = [
   },
 ] as const;
 
-export type ContentUatCheckId = (typeof CONTENT_UAT_CHECKS)[number]["id"];
+export type ContentUatCheckId = (typeof CONTENT_UAT_CHECKS)[number]["id"] | "editorial_review";
 export type ContentUatChecklist = Partial<Record<ContentUatCheckId, boolean>>;
 
 export function requiredPreviewKeys(kind: ContentKind, availableArtifactKeys?: string[]) {
@@ -50,12 +50,23 @@ export function normalizeUatChecklist(value: unknown): ContentUatChecklist {
     ? value as Record<string, unknown>
     : {};
   return Object.fromEntries(
-    CONTENT_UAT_CHECKS.map((check) => [check.id, source[check.id] === true]),
+    [...CONTENT_UAT_CHECKS.map((check) => [check.id, source[check.id] === true]),
+      ["editorial_review", source.editorial_review === true]],
   ) as ContentUatChecklist;
 }
 
 export function checklistComplete(value: ContentUatChecklist) {
   return CONTENT_UAT_CHECKS.every((check) => value[check.id] === true);
+}
+
+export function editorialReviewComplete(
+  report: { editorialStatus?: string | null; editorialWarnings?: string[] },
+  checklist: ContentUatChecklist,
+  notes: string,
+) {
+  if (report.editorialStatus === "PASS" || !report.editorialStatus) return true;
+  return report.editorialStatus === "REVIEW"
+    && checklist.editorial_review === true && notes.trim().length >= 20;
 }
 
 export function previewCoverageComplete(

@@ -23,6 +23,7 @@ export default defineConfig({
     { name: "desktop", use: { viewport: { width: 1280, height: 900 } } },
   ],
   webServer: {
+    env: { NEXT_PUBLIC_SUPABASE_URL: "https://bis-harness.invalid", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_harness_not_a_credential" },
     command: "npx next dev tests/browser/harness --hostname 127.0.0.1 --port 3100",
     url: "http://127.0.0.1:3100/labs/ldr",
     reuseExistingServer: !process.env.CI,

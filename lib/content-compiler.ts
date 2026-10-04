@@ -14,7 +14,7 @@ import {
 import { sha256Hex } from "./content-studio";
 import { prepareUniversalLabPresentation } from "./universal-lab-presentation.mjs";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-5";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-6";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -66,6 +66,7 @@ export type UniversalLabPrompt = {
   prompt: string;
   type?: "TEXT" | "INTEGER" | "BOOLEAN" | "CATEGORICAL" | "MULTI_SELECT" | "DATE";
   readOnly?: boolean;
+  allowNoOpportunity?: boolean;
   scheduleDay?: number;
   scheduleEndDay?: number;
   computed?: UniversalComputedField;
@@ -471,6 +472,7 @@ function validatePrompt(prompt: unknown, code: string, investigation: number): U
     controlRole: value.controlRole === "RATING" ? "RATING" : undefined,
     group: text(value.group) || undefined,
     readOnly: value.readOnly === true || undefined,
+    allowNoOpportunity: value.allowNoOpportunity === true || undefined,
     scheduleDay: Number.isInteger(value.scheduleDay) ? Number(value.scheduleDay) : undefined,
     scheduleEndDay: Number.isInteger(value.scheduleEndDay) ? Number(value.scheduleEndDay) : undefined,
     computed: object(value.computed) as UniversalComputedField | undefined,

@@ -1,26 +1,25 @@
 import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { labCompletionRequirements, labSubmissionDefinition, labStageCompleted } from "../../../lib/lab-progress-compatibility.mjs";
 import { requiredLabPromptIds, validateLabSubmission } from "../../../lib/lab-interaction-contract.mjs";
-import { validPromptResponse } from "../../../lib/evidence-validation.mjs";
+import { labClockInstant } from "../../../lib/lab-clock.mjs";
+import { todayInZone, validPromptResponse } from "../../../lib/evidence-validation.mjs";
 import { sanitizeRuntimePackage } from "../../../lib/content-html.mjs";
 import { and, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
   auditEvents,
   consentRecords,
-  evidenceRecords,
   labEnrollments,
   learners,
-  measurementSources,
   measurementValues,
   responses,
 } from "../../../db/schema";
 import { identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
-import { CONTENT_STUDIO_BUCKET } from "../../../lib/content-studio";
+import { CONTENT_STUDIO_BUCKET, sha256Hex } from "../../../lib/content-studio";
 import type { UniversalLabPackage, UniversalLabPrompt } from "../../../lib/content-compiler";
 import { investigationUnlockedAfterSave } from "../../../lib/lab-lifecycle-contract";
-import { prepareUniversalLabPresentation } from "../../../lib/universal-lab-presentation.mjs";
+import { prepareUniversalLabPresentation, UNIVERSAL_LAB_PRESENTATION_VERSION } from "../../../lib/universal-lab-presentation.mjs";
 import {
   evaluateUniversalComputed,
   experimentCalendarDay,
@@ -35,21 +34,6 @@ function decode(value: string | null) {
     return JSON.parse(value);
   } catch {
     return value;
-  }
-}
-
-function todayInZone(timeZone = "Africa/Johannesburg") {
-  try {
-    const parts = new Intl.DateTimeFormat("en-CA", {
-      timeZone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).formatToParts(new Date());
-    const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-    return `${value.year}-${value.month}-${value.day}`;
-  } catch {
-    return new Date().toISOString().slice(0, 10);
   }
 }
 
@@ -85,7 +69,7 @@ async function audit(actorId: string, action: string, objectType: string, object
 }
 
 async function activeLab(code: string) {
-  const { data, error } = await requestSupabaseClient().rpc("active_bis_lab_runtime", { target_code: code });
+  const { data, error } = await requestSupabaseClient().rpc("learner_bis_lab_runtime", { target_code: code });
   const runtime = (Array.isArray(data) ? data[0] : data) as null | {
     item_id: string;
     code: string;
@@ -106,8 +90,10 @@ async function activeLab(code: string) {
 
   const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(runtime.storage_path);
   if (download.error || !download.data) throw new Error("The Lab package could not be loaded.");
+  const packageBytes = new Uint8Array(await download.data.arrayBuffer());
+  if (await sha256Hex(packageBytes) !== runtime.artifact_hash) throw new Error("The published Lab package could not be verified. Please contact support.");
   const definition = prepareUniversalLabPresentation(
-    sanitizeRuntimePackage(JSON.parse(await download.data.text())) as UniversalLabPackage,
+    sanitizeRuntimePackage(JSON.parse(new TextDecoder().decode(packageBytes))) as UniversalLabPackage,
   ) as UniversalLabPackage;
   if (
     definition.kind !== "LAB"
@@ -137,99 +123,20 @@ function promptRegistry(definition: UniversalLabPackage) {
 }
 
 async function syncUniversalComputedMeasurements(
-  userId: string,
   enrolment: { id: string },
   definition: UniversalLabPackage,
-  labVersion: string,
-  responseSnapshot: Record<string, { value: unknown; responseId?: string }>,
+  responseSnapshot: Record<string, { value: unknown; responseId?: string; status: string }>,
 ) {
   if (definition.runtimeProfile !== "UNIVERSAL_V2") return;
-  const db = getDb();
   const computed = evaluateUniversalComputed(definition, responseValues(responseSnapshot));
-  const now = new Date().toISOString();
   const computedIds = new Set((definition.computedFields ?? []).map((field) => field.id));
-
-  const leafInputsFor = (semanticFieldId: string) =>
-    computedIds.has(semanticFieldId)
-      ? universalComputedLeafInputs(definition, semanticFieldId, responseValues(responseSnapshot))
-      : [semanticFieldId];
-
-  const persistMeasurement = async (
-    code: string,
-    value: unknown,
-    formulaVersion: string,
-    semanticInputs: string[],
-  ) => {
-    const leafInputs = [...new Set(semanticInputs.flatMap(leafInputsFor))];
-    const sourceRows = leafInputs.flatMap((semanticFieldId) => {
-      const response = responseSnapshot[semanticFieldId];
-      if (!response?.responseId) return [];
-      return [{
-        semanticFieldId,
-        responseId: response.responseId,
-        value: response.value,
-      }];
-    });
-    const status = value === null || value === undefined ? "NA" : "VALUE";
-    const evidenceStrength = status === "NA"
-      ? "NONE"
-      : sourceRows.length >= 2
-        ? "SUFFICIENT_FOR_LAB"
-        : "LIMITED";
-
-    const [existing] = await db.select({ id: measurementValues.id }).from(measurementValues).where(and(
-      eq(measurementValues.userId, userId),
-      eq(measurementValues.enrolmentId, enrolment.id),
-      eq(measurementValues.code, code),
-    )).limit(1);
-    const measurementId = existing?.id ?? crypto.randomUUID();
-
-    await db.insert(measurementValues).values({
-      id: measurementId,
-      userId,
-      experimentId: null,
-      enrolmentId: enrolment.id,
-      labCode: definition.identity.code,
-      labVersion,
-      code,
-      value: JSON.stringify(value ?? null),
-      status,
-      evidenceStrength,
-      formulaVersion,
-      calculatedAt: now,
-    }).onConflictDoUpdate({
-      target: [measurementValues.userId, measurementValues.enrolmentId, measurementValues.code],
-      set: {
-        value: JSON.stringify(value ?? null),
-        status,
-        evidenceStrength,
-        labCode: definition.identity.code,
-        labVersion,
-        formulaVersion,
-        calculatedAt: now,
-      },
-    });
-
-    await db.delete(measurementSources).where(eq(measurementSources.measurementId, measurementId));
-    if (sourceRows.length) {
-      await db.insert(measurementSources).values(sourceRows.map((source) => ({
-        id: crypto.randomUUID(),
-        measurementId,
-        userId,
-        sourceObjectType: "RESPONSE",
-        sourceObjectId: source.responseId,
-        inputRole: source.semanticFieldId,
-        inputValue: JSON.stringify(source.value ?? null),
-        createdAt: now,
-      })));
-    }
-  };
-
-  // Each plan owns a distinct measurement code; its row and source writes remain ordered.
+  const leafInputsFor = (id: string) => computedIds.has(id)
+    ? universalComputedLeafInputs(definition, id, responseValues(responseSnapshot)) : [id];
+  // The complete calculated snapshot and its source links commit in one transaction.
   const plans = (definition.computedFields ?? []).map((field) => ({
     code: field.id,
     value: computed[field.id],
-    formulaVersion: "universal-lab-v2:computed:presentation-8",
+    formulaVersion: `universal-lab-v2:computed:${definition.presentationVersion ?? UNIVERSAL_LAB_PRESENTATION_VERSION}`,
     inputs: [field.id],
   }));
   const resolvedValue = (semanticFieldId: string) =>
@@ -253,15 +160,21 @@ async function syncUniversalComputedMeasurements(
       inputs: indicator.promptIds,
     });
   }
-  let cursor = 0;
-  const writes = await Promise.allSettled(Array.from({ length: Math.min(4, plans.length) }, async () => {
-    while (cursor < plans.length) {
-      const plan = plans[cursor++];
-      await persistMeasurement(plan.code, plan.value, plan.formulaVersion, plan.inputs);
-    }
-  }));
-  const failed = writes.find((result) => result.status === "rejected");
-  if (failed?.status === "rejected") throw failed.reason;
+  const { error } = await requestSupabaseClient().rpc("bis_sync_universal_measurements", {
+    target_enrolment: enrolment.id,
+    plans: plans.map((plan) => ({
+      code: plan.code,
+      value: JSON.stringify(plan.value ?? null),
+      formulaVersion: plan.formulaVersion,
+      sources: [...new Set(plan.inputs.flatMap(leafInputsFor))].flatMap((semanticFieldId) => {
+        const response = responseSnapshot[semanticFieldId];
+        return response?.responseId && response.status === "ANSWERED" && response.value !== "" && response.value !== null
+          ? [{ semanticFieldId, responseId: response.responseId, value: JSON.stringify(response.value ?? null) }] : [];
+      }),
+    })),
+  });
+  if (error) throw new Error(error.message);
+
 }
 
 async function snapshot(userId: string, code: string, resolvedRuntime?: Awaited<ReturnType<typeof activeLab>>) {
@@ -301,7 +214,7 @@ async function snapshot(userId: string, code: string, resolvedRuntime?: Awaited<
   }
 
   const timeZone = profile.timezone || "Africa/Johannesburg";
-  const today = todayInZone(timeZone);
+  const today = todayInZone(labClockInstant(profile.email), timeZone);
   const experimentDays = runtime.definition.runtimeProfile === "UNIVERSAL_V2"
     ? Number(runtime.definition.experiment?.days ?? 0)
     : 0;
@@ -407,13 +320,13 @@ async function postHandler(request: Request) {
     const [profile] = await db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1);
     if (!profile) throw new Error("Complete learner setup before opening this Lab.");
 
-    const [consent] = await db.select().from(consentRecords).where(eq(consentRecords.userId, identity.id)).orderBy(desc(consentRecords.createdAt)).limit(1);
+    const [consent] = await db.select().from(consentRecords).where(and(eq(consentRecords.userId, identity.id), eq(consentRecords.consentType, "LEARNER_PRODUCT"))).orderBy(desc(consentRecords.createdAt)).limit(1);
     if (consent?.status !== "GRANTED") throw new Error("This investigation is paused because product consent is not active.");
 
     if (action === "openLab") {
       if (body.consent !== true) throw new Error("Acknowledge the private evidence notice before opening the Lab.");
       const id = crypto.randomUUID();
-      const now = new Date().toISOString();
+      const now = labClockInstant(profile.email).toISOString();
       await db.insert(labEnrollments).values({
         id,
         userId: identity.id,
@@ -454,7 +367,7 @@ async function postHandler(request: Request) {
       const availableExperimentDay = runtime.definition.runtimeProfile === "UNIVERSAL_V2" && runtime.definition.experiment
         ? experimentCalendarDay(
             enrolment.experimentStartedAt,
-            todayInZone(profile.timezone || "Africa/Johannesburg"),
+            todayInZone(labClockInstant(profile.email), profile.timezone || "Africa/Johannesburg"),
             runtime.definition.experiment.days,
             profile.timezone || "Africa/Johannesburg",
           )
@@ -477,77 +390,20 @@ async function postHandler(request: Request) {
       );
       const now = new Date().toISOString();
 
-      // Fields are distinct after validation. Preserve each field's ordered history
-      // while bounding independent writes; settle the batch before reporting failure.
-      for (let offset = 0; offset < validatedItems.length; offset += 4) {
-        const batch = await Promise.allSettled(validatedItems.slice(offset, offset + 4).map(async (item) => {
-          const { semanticFieldId, prompt, responseStatus, value } = item;
-          const encoded = JSON.stringify(value ?? "");
-          if (encoded.length > 20_000) throw new Error(`${prompt.label}: response is too long.`);
-
-          const existing = await db.select().from(responses).where(and(
-            eq(responses.userId, identity.id),
-            eq(responses.labCode, code),
-            eq(responses.labVersion, runtime.version.version),
-            eq(responses.semanticFieldId, semanticFieldId),
-          )).orderBy(desc(responses.recordedAt));
-          const previous = existing.find((row) => row.responseStatus !== "SUPERSEDED");
-          if (previous && previous.value === encoded && previous.responseStatus === responseStatus) return;
-
-          const id = crypto.randomUUID();
-          if (previous) {
-            await db.update(evidenceRecords)
-              .set({ status: "SUPERSEDED" })
-              .where(eq(evidenceRecords.sourceObjectId, previous.id));
-          }
-          await db.insert(responses).values({
-            id,
-            userId: identity.id,
-            promptId: `UNIVERSAL:${investigation}:${semanticFieldId}`,
-            semanticFieldId,
-            labCode: code,
-            labVersion: runtime.version.version,
-            contentReleaseId: null,
-            deliveryEdition: profile.deliveryEdition,
-            promptVersion: runtime.version.version,
-            privacyClass: prompt.sensitivity ?? "P2",
-            provenance: "SR",
-            value: encoded,
-            responseStatus,
-            occurredAt: now,
-            recordedAt: now,
-            supersedesResponseId: previous?.id ?? null,
-          });
-          if (previous) await db.update(responses).set({ responseStatus: "SUPERSEDED" }).where(eq(responses.id, previous.id));
-          await db.insert(evidenceRecords).values({
-            id: crypto.randomUUID(),
-            userId: identity.id,
-            labCode: code,
-            labVersion: runtime.version.version,
-            contentReleaseId: null,
-            investigationId: investigation === 0 ? `${code}.BASELINE` : `${code}.I${investigation}`,
-            semanticFieldId,
-            sourceObjectType: "RESPONSE",
-            sourceObjectId: id,
-            provenance: "SR",
-            valueType: prompt.type ?? "TEXT",
-            value: responseStatus === "PASS" ? null : encoded,
-            status: responseStatus === "PASS" ? "WITHDRAWN" : "ACTIVE",
-            sensitivity: prompt.sensitivity ?? "P2",
-            occurredAt: now,
-            recordedAt: now,
-          });
-        }));
-        const failed = batch.find((result) => result.status === "rejected");
-        if (failed?.status === "rejected") throw failed.reason;
-      }
+      const { error: saveError } = await requestSupabaseClient().rpc("bis_save_universal_responses", {
+        target_enrolment: enrolment.id,
+        investigation,
+        items: validatedItems.map(({ semanticFieldId, prompt, responseStatus, value }) => ({
+          semanticFieldId, responseStatus, value: JSON.stringify(value ?? ""),
+          sensitivity: prompt.sensitivity ?? "P2", type: prompt.type ?? "TEXT",
+        })),
+      });
+      if (saveError) throw new Error(saveError.message);
 
       const afterResponses = await snapshot(identity.id, code, runtime);
       await syncUniversalComputedMeasurements(
-        identity.id,
         enrolment,
         runtime.definition,
-        runtime.version.version,
         afterResponses.responses,
       );
 
@@ -564,8 +420,8 @@ async function postHandler(request: Request) {
         && runtime.definition.experiment
         && investigation === runtime.definition.experiment.startAfterInvestigation
       ) {
-        enrolmentUpdate.phaseACompletedAt = enrolment.phaseACompletedAt ?? now;
-        enrolmentUpdate.experimentStartedAt = enrolment.experimentStartedAt ?? now;
+        enrolmentUpdate.phaseACompletedAt = enrolment.phaseACompletedAt ?? labClockInstant(profile.email).toISOString();
+        enrolmentUpdate.experimentStartedAt = enrolment.experimentStartedAt ?? labClockInstant(profile.email).toISOString();
         nextInvestigation = runtime.definition.experiment.investigation;
       } else if (
         runtime.definition.runtimeProfile === "UNIVERSAL_V2"

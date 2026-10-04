@@ -143,3 +143,19 @@ test("day-one evidence returns to the exact learning location", async ({ page })
   await page.getByRole("button", { name: "Save today’s evidence & return" }).click();
   await expect(page).toHaveURL("/learn?module=LDR&page=day-3");
 });
+
+test("a no-opportunity day is recorded distinctly and restores after refresh", async ({ page }) => {
+  const api = await service(page, 7);
+  await page.goto("/labs/ldr?step=7");
+  const action = availableLabPrompts(definition, 7, 1).find(prompt => prompt.type === "BOOLEAN" && prompt.allowNoOpportunity);
+  expect(action).toBeTruthy();
+  await expect(page.locator(".universal-daily-entry")).toBeVisible();
+  await passAll(page);
+  const field = page.locator(`[data-prompt-id="${action!.id}"]`);
+  await field.getByRole("checkbox", { name: /Prefer not to answer/ }).uncheck();
+  await field.getByRole("button", { name: "No opportunity", exact: true }).click();
+  await page.getByRole("button", { name: "Save today’s evidence", exact: true }).click();
+  await expect.poll(() => api.responses[action!.id]?.value).toBe("No opportunity");
+  await page.reload();
+  await expect(page.locator(`[data-prompt-id="${action!.id}"]`).getByRole("button", { name: "No opportunity", exact: true })).toHaveAttribute("aria-pressed", "true");
+});

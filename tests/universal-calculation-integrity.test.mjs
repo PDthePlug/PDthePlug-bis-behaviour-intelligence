@@ -75,3 +75,17 @@ test("invalid calculation graphs fail before publication", () => {
     [{ id: "output", operation: "COPY", inputs: ["input"] }, { id: "output", operation: "COPY", inputs: ["input"] }],
   ]) assert.throws(() => validateUniversalCalculations({ ...base, computedFields: fields }));
 });
+
+test("authored certainty scales retain separate cue and reward evidence with selectable 1-to-5 controls", () => {
+  const definition = lab("HAB");
+  const scales = definition.investigations[3].prompts.filter((prompt) => /how certain/i.test(prompt.prompt));
+  assert.equal(scales.length, 2);
+  assert.equal(new Set(scales.map((prompt) => prompt.id)).size, 2);
+  assert.equal(new Set(scales.map((prompt) => prompt.group)).size, 2);
+  for (const prompt of scales) {
+    assert.equal(prompt.type, "INTEGER");
+    assert.equal(prompt.min, 1);
+    assert.equal(prompt.max, 5);
+    assert.equal(prompt.controlRole, "RATING");
+  }
+});
