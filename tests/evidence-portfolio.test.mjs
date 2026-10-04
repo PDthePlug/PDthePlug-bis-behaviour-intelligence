@@ -107,3 +107,13 @@ test("portfolio keeps only the latest applicable value for a repeated metric cod
   assert.equal(labs[0].metrics.length, 1);
   assert.equal(labs[0].metrics[0].value, "75%");
 });
+
+test("Universal measures use the enrolled source label and do not turn counts into percentages", () => {
+  const result=buildEvidencePortfolio({
+    enrolments:[{id:"risk-enrolment",labCode:"RSK",labVersion:"1.0"}],
+    measurements:[{id:"risk-days",enrolmentId:"risk-enrolment",code:"RSK.BEI06",value:"4",status:"VALUE",formulaVersion:"universal-lab-v2:bei"}],
+    metricLabels:{"risk-enrolment:RSK.BEI06":"Observation days completed"},
+  });
+  assert.equal(result[0].metrics[0].label,"Observation days completed");
+  assert.equal(result[0].metrics[0].value,"4");
+});

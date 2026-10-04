@@ -9,6 +9,10 @@ import {
 } from "@/db/schema";
 import { identityFrom } from "@/lib/bis-access";
 import { buildEvidencePortfolio } from "@/lib/evidence-portfolio.mjs";
+import { requestSupabaseClient } from "@/lib/supabase/server";
+import { CONTENT_STUDIO_BUCKET, sha256Hex } from "@/lib/content-studio";
+import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentation.mjs";
+import type { UniversalLabPackage } from "@/lib/content-compiler";
 import { BIS_MODULES } from "@/lib/bis-catalogue";
 
 async function portfolioSnapshot() {
@@ -69,12 +73,34 @@ async function portfolioSnapshot() {
     ...libraryItems.map((item) => [item.code, item.title] as const),
   ]);
 
+  const metricLabels: Record<string, string> = {};
+  const client = requestSupabaseClient();
+  const { data: artifactPointers } = await client.rpc("bis_portfolio_lab_artifacts");
+  const pointers = (artifactPointers ?? []) as Array<{ enrolment_id: string; storage_path: string; artifact_hash: string }>;
+  for (let offset = 0; offset < pointers.length; offset += 4) {
+    await Promise.all(pointers.slice(offset, offset + 4).map(async (pointer) => {
+      const { data } = await client.storage.from(CONTENT_STUDIO_BUCKET).download(pointer.storage_path);
+      if (!data || await sha256Hex(new Uint8Array(await data.arrayBuffer())) !== pointer.artifact_hash) return;
+      try {
+        const definition = prepareUniversalLabPresentation(JSON.parse(await data.text())) as UniversalLabPackage;
+        const clean = (label: string) => label.replace(/\b(?:BEI|TEI)[- ]?\d+(?:[- ](?:PRE|POST))?\s*[:·—-]?\s*/gi, "").trim();
+        for (const field of definition.computedFields ?? []) metricLabels[`${pointer.enrolment_id}:${field.id}`] = clean(field.label);
+        for (const indicator of definition.indicatorRegistry ?? []) {
+          metricLabels[`${pointer.enrolment_id}:${definition.identity.code}.${indicator.code.replace("-", "")}`] = clean(indicator.label);
+        }
+      } catch {
+        // Unavailable metadata never becomes an invented behavioural interpretation.
+      }
+    }));
+  }
+
   const labs = buildEvidencePortfolio({
     enrolments,
     evidence,
     measurements,
     measurementSources: sources,
     labTitles,
+    metricLabels,
   });
 
   return Response.json({

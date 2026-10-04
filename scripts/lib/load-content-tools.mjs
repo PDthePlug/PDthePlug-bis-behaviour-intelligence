@@ -8,7 +8,7 @@ import ts from "typescript";
 export async function loadContentTools() {
   const root = new URL("../../", import.meta.url);
   const temp = await mkdtemp(join(tmpdir(), "bis-source-integrity-"));
-  for (const name of ["learning-foundation", "content-studio", "content-source-adapters", "content-compiler"]) {
+  for (const name of ["learning-foundation", "content-studio", "content-source-adapters", "content-compiler", "content-uat"]) {
     let source = await readFile(new URL(`lib/${name}.ts`, root), "utf8");
     if (name === "content-source-adapters") {
       const manifest = await readFile(new URL("lib/bis-volume-migration-manifest.json", root), "utf8");
@@ -27,5 +27,6 @@ export async function loadContentTools() {
   }
   const adapter = await import(pathToFileURL(join(temp, "content-source-adapters.mjs")).href);
   const compiler = await import(pathToFileURL(join(temp, "content-compiler.mjs")).href);
-  return { ...adapter, ...compiler, dispose: () => rm(temp, { recursive: true, force: true }) };
+  const uat = await import(pathToFileURL(join(temp, "content-uat.mjs")).href);
+  return { ...adapter, ...compiler, ...uat, dispose: () => rm(temp, { recursive: true, force: true }) };
 }

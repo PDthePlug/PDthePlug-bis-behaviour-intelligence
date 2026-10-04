@@ -43,6 +43,7 @@ import {
 } from "@/lib/content-studio";
 import {
   CONTENT_UAT_CHECKS,
+  editorialReviewComplete,
   requiredPreviewKeys,
   type ContentUatChecklist,
 } from "@/lib/content-uat";
@@ -132,6 +133,7 @@ type ContentVersion = {
 };
 
 type ContentItem = {
+  rollbackAvailable?: boolean;
   id: string;
   kind: ContentKind;
   code: string;
@@ -465,6 +467,12 @@ export function ContentStudio() {
     if (!selected || !liveVersion) return;
     if (!window.confirm(`Take ${selected.title} offline for learners? You can republish the reviewed version later.`)) return;
     await act({ action: "unpublishItem", itemId: selected.id }, "Taken offline. The published version is preserved and can be republished.");
+  }
+
+  async function rollbackSelected() {
+    if (!selected?.rollbackAvailable) return;
+    if (!window.confirm(`Restore the previous published version of ${selected.title}?`)) return;
+    await act({ action: "rollbackActivation", itemId: selected.id }, "Previous published version restored.");
   }
 
   async function publishVersion(entry: ContentVersion) {
@@ -929,6 +937,12 @@ export function ContentStudio() {
                     </Button>
                   ) : null}
 
+                  {liveVersion && selected.rollbackAvailable ? (
+                    <Button variant="outline" disabled={saving} onClick={() => void rollbackSelected()}>
+                      Restore previous version
+                    </Button>
+                  ) : null}
+
                   {selected.routePath && liveVersion ? (
                     <Button asChild variant="ghost">
                       <Link href={selected.routePath}>Open learner view <ChevronRight /></Link>
@@ -972,7 +986,9 @@ export function ContentStudio() {
                   const previewed = new Set(entry.uat?.previewedArtifacts ?? []);
                   const allPreviewed = previewKeys.length > 0 && previewKeys.every((key) => previewed.has(key));
                   const review = uatDraft(entry);
-                  const allChecks = CONTENT_UAT_CHECKS.every((check) => review.checklist[check.id] === true);
+                  const needsEditorialReview = entry.compilerReport.editorialStatus === "REVIEW";
+                  const allChecks = CONTENT_UAT_CHECKS.every((check) => review.checklist[check.id] === true)
+                    && editorialReviewComplete(entry.compilerReport, review.checklist, review.notes);
                   const finalCheckPassed = entry.uat?.status === "PASSED";
 
                   return (
@@ -1093,7 +1109,7 @@ export function ContentStudio() {
                                 <div className="content-runtime-proof">
                                   <span>{entry.compilerReport.runtimeProfile === "UNIVERSAL_V2" ? "Universal V2 runtime" : "Universal V1 runtime"}</span>
                                   {(entry.compilerReport.detectedCapabilities ?? []).map((capability) => <span key={capability}>{capability}</span>)}
-                                  {entry.compilerReport.standardVersion ? <span>Habit Lab standard 1.0</span> : null}
+                                  {entry.compilerReport.standardVersion ? <span>BIS laboratory sequence checked</span> : null}
                                 </div>
                               </details>
                             </>
@@ -1123,8 +1139,8 @@ export function ContentStudio() {
 
                           {entry.compilerStatus === "COMPILED" && entry.compilerReport.editorialWarnings?.length ? (
                             <div className="content-editorial-review">
-                              <strong>Editorial review before approval</strong>
-                              <p>The Lab can be previewed, but these source questions should be strengthened before it is treated as finished.</p>
+                              <strong>Preparation notes to check</strong>
+                              <p>Check these items against the source. If a question repeats to measure change, record that reason in the final check. Correct any unnecessary repetition before publishing.</p>
                               <ul>
                                 {entry.compilerReport.editorialWarnings.slice(0, 8).map((warning, index) => <li key={`${index}-${warning}`}>{warning}</li>)}
                               </ul>
@@ -1185,10 +1201,17 @@ export function ContentStudio() {
                                 <span><strong>{check.label}</strong><small>{check.detail}</small></span>
                               </label>
                             ))}
+                            {needsEditorialReview ? (
+                              <label>
+                                <Checkbox checked={review.checklist.editorial_review === true} disabled={finalCheckPassed}
+                                  onCheckedChange={(value) => updateUatCheck(entry, "editorial_review", value === true)} />
+                                <span><strong>I have checked the preparation notes</strong><small>Confirm the repeated questions are intentional and explain their evidence purpose below.</small></span>
+                              </label>
+                            ) : null}
                           </div>
 
                           <label className="content-uat-notes">
-                            Notes <span>(optional)</span>
+                            Notes <span>{needsEditorialReview ? "(required for the preparation review)" : "(optional)"}</span>
                             <Textarea
                               value={review.notes}
                               disabled={finalCheckPassed}

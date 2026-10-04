@@ -29,11 +29,13 @@ test("Universal V2 calculation provenance resolves back to learner evidence leav
 
 test("Universal Lab responses enter the shared evidence registry", async () => {
   const route = await source("app/api/universal-lab/route.ts");
-  assert.match(route, /evidenceRecords/);
-  assert.match(route, /sourceObjectType: "RESPONSE"/);
-  assert.match(route, /provenance: "SR"/);
-  assert.match(route, /status: responseStatus === "PASS" \? "WITHDRAWN" : "ACTIVE"/);
-  assert.match(route, /status: "SUPERSEDED"/);
+  const transaction = await source("supabase/migrations/20261004120033_atomic_universal_evidence_writes.sql");
+  assert.match(route, /rpc\("bis_save_universal_responses"/);
+  assert.match(transaction, /insert into public\.evidence_records/);
+  assert.match(transaction, /'RESPONSE',response_id,'SR'/);
+  assert.match(transaction, /response_state='PASS' then 'WITHDRAWN' else 'ACTIVE'/);
+  assert.match(transaction, /response_status='SUPERSEDED'/);
+
 });
 
 test("Universal V2 derived values persist as enrolment-scoped measurements with source provenance", async () => {
@@ -45,14 +47,14 @@ test("Universal V2 derived values persist as enrolment-scoped measurements with 
 
   assert.match(route, /syncUniversalComputedMeasurements/);
   assert.match(route, /measurementValues/);
-  assert.match(route, /measurementSources/);
+  assert.match(route, /rpc\("bis_sync_universal_measurements"/);
   assert.match(route, /universalComputedLeafInputs/);
   assert.match(route, /formulaVersion/);
   assert.match(route, /universal-lab-v2:computed/);
   assert.match(route, /universal-lab-v2:bei/);
   assert.match(route, /indicatorRegistry/);
   assert.match(route, /indicator\.code\.replace\("-", ""\)/);
-  assert.match(route, /sourceObjectType: "RESPONSE"/);
+  assert.match(route, /responseId: response.responseId/);
   assert.match(schema, /enrolmentId: text\("enrolment_id"\)/);
   assert.match(schema, /uq_measurement_user_enrolment_code/);
   assert.match(migration, /add column if not exists enrolment_id text/);

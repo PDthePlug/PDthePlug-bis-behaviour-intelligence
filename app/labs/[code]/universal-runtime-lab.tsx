@@ -198,7 +198,7 @@ function UniversalPrompt({
                 <Input aria-labelledby={titleId} aria-describedby={help ? helpId : undefined} type="date" disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} />
               ) : booleanChoices ? (
                 <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
-                  {["Yes", "No"].map((option) => (
+                  {(prompt.allowNoOpportunity ? ["Yes", "No", "No opportunity"] : ["Yes", "No"]).map((option) => (
                     <button
                       type="button"
                       key={option}
@@ -495,7 +495,7 @@ function UniversalEvidenceTable({
 
                   const isPassed = passed.has(prompt.id);
                   const categoricalOptions = prompt.type === "BOOLEAN"
-                    ? ["Yes", "No"]
+                    ? (prompt.allowNoOpportunity ? ["Yes", "No", "No opportunity"] : ["Yes", "No"])
                     : prompt.type === "CATEGORICAL"
                       ? (prompt.options ?? [])
                       : [];

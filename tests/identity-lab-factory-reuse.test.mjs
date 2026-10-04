@@ -277,7 +277,7 @@ test("Identity Lab proves the shared factory can represent a second source-backe
   assert.equal(capabilities.requiresBehaviourRuntimeV2, true);
 });
 
-test("Identity keeps the authored Pattern-stage evidence without replacing source repetition or reflection", () => {
+test("Identity keeps the authored Pattern-stage evidence while adding the required repeated-pattern observation without replacing source reflection", () => {
   const result = applyHabitLabStandard(identityPackage());
   const pattern = result.investigations.find((item) => item.number === 2);
 
@@ -285,8 +285,8 @@ test("Identity keeps the authored Pattern-stage evidence without replacing sourc
   for (const id of ["IDN.I2.BECOMING", "IDN.I2.INFLUENCE", "IDN.I2.INSIGHT"]) {
     assert.ok(pattern.prompts.some((prompt) => prompt.id === id), `${id} must remain source-authoritative`);
   }
-  assert.equal(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_TARGET"), false);
-  assert.equal(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_EVIDENCE"), false);
+  assert.equal(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_TARGET"), true);
+  assert.equal(pattern.prompts.some((prompt) => prompt.standardPurpose === "PATTERN_EVIDENCE"), true);
   assert.equal(result.normalizationNotes.some((note) =>
     note.sourcePromptId === "IDN.I2.BECOMING" || note.sourcePromptId === "IDN.I2.INSIGHT"
   ), false);

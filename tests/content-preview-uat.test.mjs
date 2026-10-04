@@ -22,7 +22,7 @@ test("sign-off remains bound to the exact prepared artifact fingerprint", async 
   ]);
   assert.match(contract, /artifactFingerprint/);
   assert.match(api, /uat\.artifactFingerprint !== fingerprint/);
-  assert.match(api, /Finish the preview checklist and sign off this exact version before publishing/);
+  assert.match(await source("supabase/migrations/20261004111602_atomic_content_publication.sql"), /Finish the preview checklist and sign off this exact version before publishing/);
   assert.match(api, /resetUat\(versionId, identity\.id\)/);
 });
 

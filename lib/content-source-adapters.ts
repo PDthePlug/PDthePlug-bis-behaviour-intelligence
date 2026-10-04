@@ -1444,6 +1444,7 @@ function looksLikeAnswerMarker(value: string) {
   if (/^["“]I,\s*_{3}/i.test(text)) return false;
   if (/^✍️\s*Complete this sentence\s*:?$/iu.test(text)) return false;
   if (/^✍️/u.test(text) || looksLikeBlank(text) || /☐/.test(text)) return true;
+  if (/^1\s+2\s+3\s+4\s+5(?:\s+6\s+7\s+8\s+9\s+10)?$/.test(text)) return true;
   if (/^(signed|date|from me, in grade)\s*:/i.test(text)) return true;
   if (/^(bei-\d+[^:]*:).*(?:___|\/\s*\d+)/i.test(text)) return true;
   return false;
@@ -1490,10 +1491,11 @@ function promptSpecFromMarker(marker: string, question: string): ImportedPromptS
   const explicitScale = numericContext.match(/\b(0|1)\s*(?:-|–|—|to)\s*(5|7|10)\b/i);
   const outOfRange = numericContext.match(/(?:\/|out of\s+)(5|7|10)\b/i);
   const enumeratedTen = /\b1\s*(?:-|–|—)\s*2\b/.test(numericContext) && /\b10\b/.test(numericContext);
-  const scaleLanguage = /\bscale\b|\brating\b|\bconfidence\b|\bcontrol\b|\bhow (?:much|strongly|confident|sure)\b/i.test(numericContext);
-  if (explicitScale || outOfRange || (enumeratedTen && scaleLanguage)) {
-    const max = explicitScale ? Number(explicitScale[2]) : outOfRange ? Number(outOfRange[1]) : 10;
-    const min = explicitScale ? Number(explicitScale[1]) : max === 10 ? 1 : 0;
+  const enumeratedScale = marker.trim().match(/^1\s+2\s+3\s+4\s+5(\s+6\s+7\s+8\s+9\s+10)?$/);
+  const scaleLanguage = /\bscale\b|\brating\b|\bconfidence\b|\bcontrol\b|\bhow (?:much|strongly|confident|sure|certain)\b/i.test(numericContext);
+  if (explicitScale || outOfRange || ((enumeratedTen || enumeratedScale) && scaleLanguage)) {
+    const max = explicitScale ? Number(explicitScale[2]) : outOfRange ? Number(outOfRange[1]) : enumeratedScale ? (enumeratedScale[1] ? 10 : 5) : 10;
+    const min = explicitScale ? Number(explicitScale[1]) : enumeratedScale || max === 10 ? 1 : 0;
     return {
       label,
       type: "INTEGER" as const,
@@ -1886,6 +1888,23 @@ function labBodyToRuntime(
       continue;
     }
 
+    // Word may put the question, numeric scale and anchors in one paragraph.
+    // Preserve each activity's context so equal wording is not merged across
+    // different constructs (for example cue certainty and reward certainty).
+    const inlineRating = text.match(/^(.*?)\?\s+1\s+2\s+3\s+4\s+5(\s+6\s+7\s+8\s+9\s+10)?(?:\s+(.*))?$/);
+    if (inlineRating && /how (?:certain|confident|sure)|scale|rating/i.test(inlineRating[1])) {
+      flushHtml();
+      const question = cleanAuthoredText(inlineRating[1]) + "?";
+      const context = [...body.slice(0, index)].reverse().find((candidate) => candidate.heading || /^Step\s+\d+/i.test(candidate.text.trim()))?.text;
+      addPrompt(prompts, renderBlocks, code, investigation, {
+        label: question, prompt: question, type: "INTEGER", min: 1,
+        max: inlineRating[2] ? 10 : 5, sensitivity: "P2", required: true,
+        ...(context ? { group: cleanAuthoredText(context) } : {}),
+      });
+      if (inlineRating[3]) renderBlocks.push({ type: "HTML", html: "<p>" + escapeHtml(inlineRating[3]) + "</p>" });
+      continue;
+    }
+
     // Sentence blanks carry both the answer location and the authored suffix.
     // Keep them intact for the inline-control compiler rather than consuming
     // the sentence as the preceding paragraph's answer marker.
@@ -2024,6 +2043,9 @@ function labBodyToRuntime(
       } else if (markers.length === 1) {
         const marker = markers[0].text;
         const spec = promptSpecFromMarker(marker, promptLead);
+        const scaleContext = spec.type === "INTEGER" && /^1\s+2\s+3\s+4\s+5/.test(marker.trim())
+          ? [...body.slice(0, index)].reverse().find((candidate) => candidate.heading || /^Step\s+\d+/i.test(candidate.text.trim()))?.text
+          : undefined;
         addPrompt(prompts, renderBlocks, code, investigation, {
           label: spec.label || promptLead,
           prompt: promptLead,
@@ -2034,6 +2056,7 @@ function labBodyToRuntime(
           placeholder: spec.placeholder,
           sensitivity: /future self|identity|health|relationship/i.test(promptLead) ? "P3" : "P2",
           required: true,
+          ...(scaleContext ? { group: cleanAuthoredText(scaleContext) } : {}),
         });
       } else {
         for (const marker of markers) {

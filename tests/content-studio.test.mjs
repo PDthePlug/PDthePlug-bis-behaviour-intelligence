@@ -172,19 +172,19 @@ test("stale compiler artifacts cannot be previewed approved or published", async
 });
 
 
-test("Content Studio surfaces the Habit standard and blocks editorially unfinished Labs from approval", async () => {
+test("Content Studio records editorial decisions and still blocks structural Lab defects", async () => {
   const [api, ui, compiler] = await Promise.all([
     source("app/api/content-studio/route.ts"),
     source("app/content-studio/content-studio.tsx"),
     source("lib/content-compiler.ts"),
   ]);
   assert.match(api, /editorialStatus/);
-  assert.match(api, /Strengthen the Lab source before approval/);
+  assert.match(api, /editorialReviewComplete/);
   assert.match(api, /editorialAudit\?\.status === "BLOCKED"/);
-  assert.match(ui, /Habit Lab standard 1\.0/);
-  assert.match(ui, /Editorial review before approval/);
+  assert.match(ui, /BIS laboratory sequence checked/);
+  assert.match(ui, /Preparation notes to check/);
   assert.match(compiler, /applyHabitLabStandard/);
-  assert.match(compiler, /bis-content-compiler-5/);
+  assert.match(compiler, /bis-content-compiler-6/);
 });
 
 
@@ -206,16 +206,16 @@ test("Content Studio audits question quality using the minimum-question evidence
 
 
 test("question intelligence remains a candidate until the exact Lab version passes governed publishing", async () => {
-  const [api, schema, migration] = await Promise.all([
-    source("app/api/content-studio/route.ts"),
+  const [schema, migration] = await Promise.all([
     source("db/schema.ts"),
     source("supabase/migrations/20261003130000_question_intelligence_registry.sql"),
   ]);
 
   assert.match(schema, /questionAnalysisRegistry[\s\S]*status: text\("status"\)\.notNull\(\)\.default\("CANDIDATE"\)/);
   assert.match(migration, /status text not null default 'CANDIDATE'/);
-  assert.match(api, /if \(item\.kind === "LAB"\) \{[\s\S]*db\.update\(questionAnalysisRegistry\)[\s\S]*status: "ACTIVE"[\s\S]*versionId/);
-  assert.match(api, /Finish the preview checklist and sign off this exact version before publishing/);
+  const publication = await source("supabase/migrations/20261004111602_atomic_content_publication.sql");
+  assert.match(publication, /update public\.question_analysis_registry set status='ACTIVE'[\s\S]*version_id=v_version\.id/);
+  assert.match(await source("supabase/migrations/20261004111602_atomic_content_publication.sql"), /Finish the preview checklist and sign off this exact version before publishing/);
 });
 
 
@@ -263,8 +263,10 @@ test("published Content Studio source can seed an editable version and titles ca
   assert.match(api, /copyFromVersionId/);
   assert.match(api, /copiedSourceKeys/);
   assert.match(api, /action === "unpublishItem"/);
-  assert.match(api, /CONTENT_ITEM_UNPUBLISHED/);
-  assert.match(api, /status: "SUPERSEDED"/);
+  const lifecycle = await source("supabase/migrations/20261004111602_atomic_content_publication.sql");
+  assert.match(api, /bis_transition_content/);
+  assert.match(lifecycle, /CONTENT_ITEM_UNPUBLISHED/);
+  assert.match(lifecycle, /status='INACTIVE'/);
   assert.match(api, /action === "republishVersion"/);
-  assert.match(api, /CONTENT_VERSION_REPUBLISHED/);
+  assert.match(lifecycle, /CONTENT_VERSION_REPUBLISHED/);
 });

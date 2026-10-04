@@ -25,7 +25,7 @@ export type UniversalEditorialIssue = {
 };
 
 export type UniversalNormalizationNote = {
-  code: "TRANSFER_SUBSTAGE_FOLDED";
+  code: "TRANSFER_SUBSTAGE_FOLDED" | "PREDICTION_PATTERN_MIGRATED";
   sourceInvestigation: number;
   targetInvestigation: number;
   message: string;

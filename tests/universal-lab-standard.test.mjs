@@ -151,6 +151,12 @@ test("Investigation 2 receives a pattern target and recent evidence anchor when 
   assert.ok(purposes.includes("PATTERN_TARGET"));
   assert.ok(purposes.includes("PATTERN_EVIDENCE"));
   assert.equal(result.investigations[1].standardStage?.key, "PATTERN");
+  assert.equal(result.investigations[1].title, "The Prediction");
+  assert.ok(result.normalizationNotes.some((note) => note.code === "PREDICTION_PATTERN_MIGRATED"));
+  assert.equal(result.editorialAudit.issues.some((issue) => issue.code === "LEGACY_PREDICTION_STAGE"), false);
+  const incomplete = structuredClone(result);
+  incomplete.investigations[1].prompts = incomplete.investigations[1].prompts.filter((prompt) => prompt.standardPurpose !== "PATTERN_EVIDENCE");
+  assert.ok(auditUniversalLabEditorialQuality(incomplete).issues.some((issue) => issue.code === "LEGACY_PREDICTION_STAGE"));
 });
 
 

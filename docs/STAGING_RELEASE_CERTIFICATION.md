@@ -35,3 +35,9 @@ Full certification of calendar-day evidence, no-opportunity handling, uploads an
 ## Release evidence checklist
 
 Attach the Playwright HTML report and record: commit SHA; staging project reference; accounts' roles (not credentials); active catalogue row and runtime version; enrolment ID; semantic fields changed; evidence attachment ID/path; denied wrong-user request; Content Studio shelf/version/source checksum; previous and temporary activations; rollback result; viewport results; console/network failures; and every skipped or failed check. A skipped controlled-mutation test is a certification blocker, not a pass.
+
+## Dedicated synthetic calendar simulation
+
+For a locally running development server only, `BIS_STAGING_CERTIFICATION_CLOCK_ISO` can advance the Lab calendar for dedicated `fullscope-YYYYMMDD-NN@bis-staging.example.invalid` (or `learner-NN`) accounts on the exact recognised staging backend. Production builds, other projects and ordinary accounts always use the real clock. No request header or browser input can change it. Restart the local development process with an explicitly recorded ISO instant per simulated day. This validates calendar gates; it is not seven elapsed real-world days or an outcome study. Raw response recording timestamps remain actual recording time.
+
+See [the takeover requirement ledger](BIS_FULL_SCOPE_TAKEOVER_20261004.md) for the current local proof, account-provisioning block, applied staging migrations and remaining release gates.

@@ -15,7 +15,7 @@ export async function liveUniversalLabHref(
   if (!/^[A-Z][A-Z0-9_-]{1,11}$/.test(labCode)) return null;
 
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("active_bis_lab_runtime", { target_code: labCode });
+  const { data, error } = await supabase.rpc("learner_bis_lab_runtime", { target_code: labCode });
   const runtime = (Array.isArray(data) ? data[0] : data) as ActiveLabRuntime | null;
   if (error || !runtime || runtime.runtime_mode !== "DYNAMIC") return null;
 
