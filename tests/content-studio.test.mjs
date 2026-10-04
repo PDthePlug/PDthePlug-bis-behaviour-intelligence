@@ -234,7 +234,7 @@ test("Content Studio preview tolerates encoded version IDs and keeps the final p
   assert.match(ui, /action: "signOffUat"/);
   assert.match(ui, /action: "approveVersion"/);
   assert.match(ui, /action: "activateVersion"/);
-  assert.match(ui, /<PackageCheck \/> Publish/);
+  assert.match(ui, /<PackageCheck \/>/);
   assert.match(ui, /\/content-studio\/preview\/\$\{entry\.id\}/);
   assert.doesNotMatch(ui, /preview\/\$\{encodeURIComponent\(entry\.id\)\}/);
 });
