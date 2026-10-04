@@ -6,7 +6,7 @@ import { PGlite } from "@electric-sql/pglite";
 
 const db = new PGlite();
 const root = new URL("../supabase/migrations/", import.meta.url);
-const tables = ["learners","lab_enrollments","content_library_items","content_library_versions","content_runtime_artifacts","content_runtime_activations","content_edition_activations","content_activation_uat","content_releases","question_analysis_registry","audit_events"];
+const tables = ["learners","lab_enrollments","lab_assignments","content_library_items","content_library_versions","content_runtime_artifacts","content_runtime_activations","content_edition_activations","content_activation_uat","content_releases","question_analysis_registry","audit_events"];
 const migrations = ["20260909000000_bis_production.sql","20260914090000_bis_learning_foundation.sql","20260924153000_bis_content_studio.sql","20260924183000_bis_content_compiler_runtime.sql","20260925093000_content_studio_founder_flow.sql","20260924221500_bis_content_preview_activation_uat.sql","20261003130000_question_intelligence_registry.sql"];
 await db.exec(`create role anon; create role authenticated; create schema auth; create schema private; create table auth.users(id uuid primary key);
  create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('test.user_id',true),'')::uuid $$;
@@ -36,6 +36,7 @@ await db.exec(await readFile(new URL("20261004033000_content_activation_offline_
 await db.exec(await readFile(new URL("20261004111602_atomic_content_publication.sql",root),"utf8"));
 await db.exec(await readFile(new URL("20261003234500_active_universal_lab_runtime.sql",root),"utf8"));
 await db.exec(await readFile(new URL("20261004112609_universal_enrolment_continuity.sql",root),"utf8"));
+await db.exec(await readFile(new URL("20261004154823_preserve_static_enrolment_handoff.sql",root),"utf8"));
 test.after(()=>db.close());
 test.beforeEach(async()=>{
   await db.exec(`reset role; truncate ${tables.map(t=>`public.${t}`).join(",")} cascade; set test.user_id='00000000-0000-0000-0000-000000000001'; set test.staff_role='SYSTEM_ADMIN'; set role authenticated;`);
@@ -116,4 +117,23 @@ test("stale compiler identity and unresolved editorial decisions cannot publish"
   await assert.rejects(transition("PUBLISH","v1"),/preparation notes/);
   await db.query("update content_activation_uat set checklist=(checklist::jsonb || '{\"editorial_review\":true}'::jsonb)::text,notes='The repeated questions measure change against the initial baseline.' where version_id='v1'");
   await transition("PUBLISH","v1");
+});
+
+test('static compatibility preserves an existing enrolment and an offline title blocks every version',async()=>{
+ await item();await version('v1');await transition('PUBLISH','v1');
+ await db.query("update content_runtime_activations set runtime_mode='STATIC' where status='ACTIVE'");
+ await db.query("insert into learners(user_id,email,display_name,age_band) values('00000000-0000-0000-0000-000000000001','specimen@example.invalid','Specimen','ADULT')");
+ await db.query("insert into lab_enrollments(id,user_id,lab_code,lab_version,current_investigation) values('pinned','00000000-0000-0000-0000-000000000001','HAB','v1',7)");
+ await version('v2');await transition('PUBLISH','v2');
+ let result=(await db.query("select * from learner_bis_lab_runtime('HAB')")).rows;
+ assert.equal(result[0].version,'v1');assert.equal(result[0].runtime_mode,'STATIC');assert.equal((await rows('lab_enrollments'))[0].current_investigation,7);
+ await transition('UNPUBLISH');assert.deepEqual((await db.query("select * from learner_bis_lab_runtime('HAB')")).rows,[]);
+});
+test('an active assignment pins its published version until learner privacy acknowledgement creates an enrolment',async()=>{
+ await item();await version('v1');await transition('PUBLISH','v1');
+ await db.query("insert into learners(user_id,email,display_name,age_band) values('00000000-0000-0000-0000-000000000001','specimen@example.invalid','Specimen','ADULT')");
+ await db.query("insert into lab_assignments(id,learner_user_id,learner_email,lab_code,lab_version,assigned_by) values('assigned','00000000-0000-0000-0000-000000000001','specimen@example.invalid','HAB','v1','staff')");
+ await version('v2');await transition('PUBLISH','v2');
+ assert.equal((await db.query("select * from learner_bis_lab_runtime('HAB')")).rows[0].version,'v1');assert.deepEqual(await rows('lab_enrollments'),[]);
+ await db.exec("set test.user_id='00000000-0000-0000-0000-000000000002';");assert.equal((await db.query("select * from learner_bis_lab_runtime('HAB')")).rows[0].version,'v2');
 });

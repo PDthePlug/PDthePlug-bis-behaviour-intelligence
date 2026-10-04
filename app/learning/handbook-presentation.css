@@ -130,3 +130,13 @@
   .prototype-player .prototype-document :is(h1,h2,h3,h4) {break-after: avoid;}
   .prototype-player .prototype-document tr {break-inside: avoid;}
 }
+
+@media (max-width: 700px) {
+  .prototype-document table.handbook-stacked-table { display: block; width: 100%; min-width: 0; }
+  .prototype-document .handbook-stacked-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .prototype-document .handbook-stacked-table tbody, .prototype-document .handbook-stacked-table tr { display: block; width: 100%; }
+  .prototype-document .handbook-stacked-table tr { border-bottom: 1px solid var(--border, #ddd); }
+  .prototype-document .handbook-stacked-table td { display: block; width: 100%; min-width: 0; box-sizing: border-box; }
+  .prototype-document .handbook-stacked-table td::before { content: attr(data-label); display: block; font-weight: 600; margin-bottom: .4rem; }
+  .prototype-document .handbook-stacked-table textarea, .prototype-document .handbook-stacked-table input { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
+}

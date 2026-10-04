@@ -4,6 +4,7 @@ export type EvidencePortfolioAnchor = {
   description: string;
   status: "RECORDED" | "WITHDRAWN" | "NOT_YET";
   evidenceCount: number;
+  photoCount: number;
   firstRecordedAt: string | null;
   lastRecordedAt: string | null;
 };
@@ -37,6 +38,7 @@ export type EvidencePortfolioLab = {
   anchors: EvidencePortfolioAnchor[];
   metrics: EvidencePortfolioMetric[];
   summary: {
+    photos: number;
     recordedAnchors: number;
     totalAnchors: number;
     activeEvidenceItems: number;
@@ -52,6 +54,7 @@ export function buildEvidencePortfolio(input: {
   evidence?: Array<Record<string, unknown>>;
   measurements?: Array<Record<string, unknown>>;
   measurementSources?: Array<Record<string, unknown>>;
+  attachments?: Array<{ enrolmentId: string; investigation: number; photoCount: number }>;
   labTitles?: Record<string, string>;
   metricLabels?: Record<string, string>;
 }): EvidencePortfolioLab[];

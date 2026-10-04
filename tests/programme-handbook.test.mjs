@@ -102,7 +102,7 @@ test("programme handoff opens focused Habit routes and preserves programme conti
     readFile(new URL("../app/habit-lab/focused-learner-menu.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/programmes/[asset]/route.ts", import.meta.url), "utf8"),
   ]);
-  assert.match(playerSource, /const resolvedLabHref = moduleDefinition\?\.labHref \?\? universalLabHref/);
+  assert.match(playerSource, /const resolvedLabHref = universalLabHref \?\? moduleDefinition\?\.labHref/);
   assert.match(playerSource, /labHrefWithReturn\(resolvedLabHref, learningReturnTo\)/);
   assert.match(playerSource, /labHrefWithReturn\("\/habit-lab\/experiment", learningReturnTo\)/);
   assert.match(rootSource, /view === "lab"[\s\S]*redirect\("\/habit-lab"\)/);
@@ -112,7 +112,8 @@ test("programme handoff opens focused Habit routes and preserves programme conti
   assert.match(labShellSource, /HabitRouteBridge target=\{view\} hideReturnLink/);
   assert.match(menuSource, /href="\/habit"/);
   assert.match(menuSource, /href="\/learn"/);
-  assert.match(playerSource, /\/handbooks\/v1\/\$\{slug\}-\$\{edition\}\.json\.gz\.b64/);
+  assert.match(playerSource, /\/api\/runtime-content\?kind=LEARNING_MODULE/);
+  assert.doesNotMatch(playerSource, /fetch\(`\/handbooks/);
   assert.match(assetRouteSource, /habit-school\.json\.gz\.b64/);
   assert.match(assetRouteSource, /habit-emerging_adult\.json\.gz\.b64/);
   assert.match(assetRouteSource, /habit-workplace\.json\.gz\.b64/);

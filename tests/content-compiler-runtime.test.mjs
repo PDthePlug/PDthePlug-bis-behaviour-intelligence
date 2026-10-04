@@ -180,7 +180,7 @@ test("digital implementation metadata is manufactured rather than demanded from 
   assert.match(compiler, /digitalLabHandoffBoundary/);
   assert.match(compiler, /ensureDigitalLabHandoff/);
   assert.match(adapter, /inferTableResponseColumns/);
-  assert.match(adapter, /responseColumns: inferTableResponseColumns\(tableRows\)/);
+  assert.match(adapter, /responseColumns: complex \? \[\] : inferTableResponseColumns\(tableRows\)/);
   assert.match(runtime, /makeBlankLearnerTableCellsEditable/);
   assert.ok(runtime.includes("[-–—]{3,}"));
 });

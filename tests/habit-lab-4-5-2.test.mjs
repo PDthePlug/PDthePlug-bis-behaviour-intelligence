@@ -63,8 +63,9 @@ test("preserves 4.5.1 learner continuity while writing new evidence as 4.5.2", a
   assert.match(route, /experienceVersion: LAB_VERSION/);
   assert.match(route, /labVersion: LAB_VERSION/);
   assert.match(route, /where\(eq\(labEnrollments\.id, enrolment\.id\)\)/);
-  assert.match(staff, /status: existingEnrolment\?\.status \?\? "IN_PROGRESS"/);
-  assert.match(staff, /currentInvestigation: existingEnrolment\?\.currentInvestigation \?\? 0/);
+  assert.match(staff, /existing\.some\(row => row\.labVersion !== labVersion\)/);
+  assert.match(staff, /onConflictDoNothing/);
+  assert.doesNotMatch(staff, /existingEnrolment\?\.currentInvestigation/);
 
   assert.match(schema, /default\("4\.5\.1"\)/);
   assert.doesNotMatch(schema, /4\.5\.2/);

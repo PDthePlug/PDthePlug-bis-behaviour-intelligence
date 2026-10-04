@@ -16,7 +16,7 @@ test("every live learning module renders a Day 3 Lab handover from catalogue sta
   const player = await source("app/learning/programme-player.tsx");
 
   assert.match(player, /BIS_MODULE_TEMPLATE\.handoffProgrammeDay/);
-  assert.match(player, /moduleDefinition\?\.labStatus === "live"/);
+  assert.match(player, /moduleRuntime\?\.runtimeMode && resolvedLabHref/);
   assert.match(player, /ProgrammeLabHandoff/);
   assert.match(player, /DAY 3 · LAB HANDOVER/);
   assert.match(player, /legacyDayThreeBoundary/);

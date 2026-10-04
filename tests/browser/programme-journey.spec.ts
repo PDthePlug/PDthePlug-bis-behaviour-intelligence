@@ -14,7 +14,8 @@ async function learningService(page: Page, state: "due" | "recorded" | "review" 
   const recorded = state !== "due";
   const snapshot = { profile: { displayName: "Browser learner", deliveryEdition: "school", deliveryContext: "school", language: "en", timezone: "Africa/Johannesburg" }, releases: [{ id: "browser-release", labCode: "LDR", contentVersion: "1.0", status: "ACTIVE" }], progress: [], workbookResponses: {} };
   await page.route("**/api/learning**", route => route.fulfill({ json: snapshot }));
-  await page.route("**/api/bis", route => route.fulfill({ status: 404, json: {} }));
+  await page.route("**/api/lab-runtime**", route => route.fulfill({ json: { runtimeMode: "DYNAMIC", version: "1.0", roles: [] } }));
+  await page.route("**/api/profile", route => route.fulfill({ status: 404, json: {} }));
   await page.route("**/api/runtime-content**", route => route.fulfill({ json: { payload: programme } }));
   await page.route("**/api/universal-lab**", route => route.fulfill({ json: {
     enrolment: {

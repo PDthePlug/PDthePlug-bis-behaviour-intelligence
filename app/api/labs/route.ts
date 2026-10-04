@@ -1,3 +1,4 @@
+import { legacyLabGuard } from "../../../lib/legacy-lab-guard";
 import { and, desc, eq, or } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
@@ -347,6 +348,7 @@ async function getHandler(request: Request) {
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   const lab = requestedLab(request);
   if (!lab) return Response.json({ error: "Choose Decision Lab or Money Lab." }, { status: 400 });
+  const guarded = await legacyLabGuard(lab.code, lab.version); if (guarded) return guarded;
   try {
     return Response.json(await snapshot(identity, lab));
   } catch (error) {
@@ -361,6 +363,7 @@ async function postHandler(request: Request) {
     const body = await request.json() as Record<string, unknown>;
     const lab = requestedLab(request, body);
     if (!lab) throw new Error("Choose Decision Lab or Money Lab.");
+    const guarded = await legacyLabGuard(lab.code, lab.version); if (guarded) return guarded;
     const action = String(body.action ?? "");
     const db = getDb();
     await ensureCanWrite(identity);

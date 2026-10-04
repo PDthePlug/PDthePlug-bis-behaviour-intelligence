@@ -1019,7 +1019,7 @@ function UniversalInvestigationForm({
       {investigation.blocks?.length
         ? investigation.prompts.filter((prompt) => !blockPromptIds.has(prompt.id)).map(renderPrompt)
         : null}
-      {isExperimentInvestigation && !previewMode && snapshot.enrolment ? <EvidenceImages enrollmentId={snapshot.enrolment.id} labCode={snapshot.definition.identity.code} investigation={step} evidenceFieldId={`${snapshot.definition.identity.code}.I${step}.OBSERVATION.IMAGE`} onBlockedChange={setAttachmentBlocked} /> : null}
+      {isExperimentInvestigation && !previewMode && snapshot.enrolment ? <EvidenceImages key={`${snapshot.enrolment.id}:${step}`} enrollmentId={snapshot.enrolment.id} labCode={snapshot.definition.identity.code} investigation={step} evidenceFieldId={`${snapshot.definition.identity.code}.I${step}.OBSERVATION.IMAGE`} onBlockedChange={setAttachmentBlocked} /> : null}
       {error ? <p className="field-error">{error}</p> : null}
       {attemptedSubmit && !ready ? (
         <div className="universal-validation-note" role="alert">
@@ -1331,7 +1331,7 @@ export function UniversalRuntimeLab({
       onSelect={goToStep}
     >
       <UniversalInvestigationForm
-        key={`${snapshot.version}:${step}:${snapshot.enrolment.status}:${snapshot.responses[investigation.prompts[0]?.id ?? ""]?.recordedAt ?? ""}`}
+        key={`${snapshot.enrolment.id}:${snapshot.version}:${step}:${snapshot.enrolment.status}:${snapshot.responses[investigation.prompts[0]?.id ?? ""]?.recordedAt ?? ""}`}
         snapshot={snapshot}
         investigation={investigation}
         step={step}

@@ -1,3 +1,4 @@
+import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "./programme-evidence-flow";
 type Outcome = {
   cohort: {
     id: string;
@@ -10,6 +11,7 @@ type Outcome = {
   participantCount: number;
   suppressed: boolean;
   minimumReportableCohortSize: number;
+  evidenceFlow?: ProgrammeEvidenceFlow | null;
   metrics: null | {
     completionContext: { completed: number; completionRate: number | null };
     action: {
@@ -763,7 +765,7 @@ function drawCover(canvas: ReportCanvas, outcome: Outcome, generatedAt: Date) {
   );
 
   canvas.y = 456;
-  const metrics = outcome.metrics;
+  const metrics = outcome.evidenceFlow?.runtimeMode === "DYNAMIC" ? null : outcome.metrics;
   const coverCards = metrics
     ? [
         { label: "Learners", value: String(outcome.participantCount), detail: "programme group", tone: "plain" as const },
@@ -1672,7 +1674,7 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
   const canvas = new ReportCanvas();
   drawCover(canvas, outcome, generatedAt);
 
-  if (outcome.suppressed || !outcome.metrics) {
+  if (outcome.suppressed || outcome.evidenceFlow?.suppressed || (!outcome.metrics && outcome.evidenceFlow?.runtimeMode !== "DYNAMIC")) {
     canvas.page(C.paper);
     canvas.section(
       "Privacy threshold",
@@ -1688,6 +1690,20 @@ export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Da
     return canvas.finish();
   }
 
+  if (outcome.evidenceFlow?.runtimeMode === "DYNAMIC") {
+    const flow = outcome.evidenceFlow;
+    canvas.page(C.paper); canvas.section("Recorded evidence", "From learner evidence to programme results");
+    canvas.metricCards([
+      { label: "Responses recorded", value: String(flow.totals?.recordedResponses ?? "Hidden"), detail: "source-linked", tone: "plain" },
+      { label: "Measures with source evidence", value: String(flow.totals?.anchoredMeasures ?? "Hidden"), detail: "calculated", tone: "plain" },
+      { label: "Started real-world test", value: String(flow.totals?.startedExperiment ?? "Hidden"), detail: "learners", tone: "plain" },
+      { label: "Completed Lab", value: String(flow.totals?.completed ?? "Hidden"), detail: "learners", tone: "plain" },
+    ], 2);
+    for (const stage of flow.stages) canvas.callout(EVIDENCE_STAGE_LABELS[stage.investigation], stage.suppressed ? "Small group hidden for privacy." : `${stage.participants} learners; ${stage.responses} recorded responses.`, "teal");
+    canvas.callout("Evidence boundary", flow.privacyNote ?? "Counts describe recorded evidence, not behaviour scores or proof of change.", "warm");
+    drawLearningJourney(canvas, outcome); drawLearningChecks(canvas, outcome); drawQuestionPatterns(canvas, outcome); drawProgrammeDecisionRegister(canvas, outcome);
+    return canvas.finish();
+  }
   drawExecutiveSummary(canvas, outcome);
   drawLearningJourney(canvas, outcome);
   drawLearningChecks(canvas, outcome);

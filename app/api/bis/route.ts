@@ -1,3 +1,5 @@
+import { legacyLabGuard } from "../../../lib/legacy-lab-guard";
+import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { and, desc, eq } from "../../../db/query";
 import { getDb, withSupabaseRequest } from "../../../db";
 import {
@@ -171,6 +173,15 @@ function buildReminders(
     reminders.push({ id: "review-ready", title: "Your evidence review is ready", detail: "Continue to Investigation 8 to compare your prediction with what happened.", priority: "INFO" });
   }
   return reminders;
+}
+
+async function accountSnapshot(identity: Identity) {
+  const db = getDb();
+  const [roles, [profile], [consent]] = await Promise.all([
+    getRoles(identity), db.select().from(learners).where(eq(learners.userId, identity.id)).limit(1),
+    db.select().from(consentRecords).where(and(eq(consentRecords.userId, identity.id), eq(consentRecords.consentType, "LEARNER_PRODUCT"))).orderBy(desc(consentRecords.createdAt)).limit(1),
+  ]);
+  return { identity, roles, profile: profile ?? null, consent: consent ?? null };
 }
 
 async function snapshot(identity: Identity) {
@@ -488,10 +499,12 @@ async function calculateExperiment(identity: Identity, experimentId: string, pre
   }
 }
 
-async function getHandler() {
+async function getHandler(request: Request) {
   const identity = await identityFrom();
   if (!identity) return Response.json({ error: "Sign in is required." }, { status: 401 });
   try {
+    if (new URL(request.url).searchParams.get("scope") === "profile") return Response.json(await accountSnapshot(identity), { headers: { "cache-control": "private, no-store" } });
+    const guarded = await legacyLabGuard("HAB", LAB_VERSION); if (guarded) return guarded;
     return Response.json(await snapshot(identity));
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
@@ -505,6 +518,8 @@ async function postHandler(request: Request) {
   try {
     const body = (await request.json()) as Record<string, unknown>;
     const action = String(body.action ?? "");
+    const accountAction = ["setup", "restoreConsent", "withdrawConsent", "requestSupport", "updateNotificationPreferences", "remember", "retireMemory"].includes(action);
+    if (!accountAction) { const guarded = await legacyLabGuard("HAB", LAB_VERSION); if (guarded) return guarded; }
     const db = getDb();
 
     if (action === "setup") {
@@ -543,16 +558,14 @@ async function postHandler(request: Request) {
         eq(contentReleases.deliveryEdition, profile.deliveryEdition),
         eq(contentReleases.status, "PUBLISHED"),
       )).orderBy(desc(contentReleases.createdAt)).limit(1) : [];
-      await db
-        .insert(labEnrollments)
-        .values({ id: crypto.randomUUID(), userId: identity.id, labCode: "HAB", labVersion: LAB_VERSION, contentReleaseId: release?.id ?? null })
-        .onConflictDoUpdate({
-          target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion],
-          set: { contentReleaseId: release?.id ?? null, status: "IN_PROGRESS", updatedAt: now },
-        });
+      const governed = await requestSupabaseClient().rpc("learner_bis_lab_runtime", { target_code: "HAB" });
+      if (governed.error) throw new Error("Lab availability could not be checked.");
+      if ((!body.labCode || body.labCode === "HAB") && governed.data?.[0]?.runtime_mode === "STATIC") {
+        await db.insert(labEnrollments).values({ id: crypto.randomUUID(), userId: identity.id, labCode: "HAB", labVersion: governed.data[0].version, contentReleaseId: release?.id ?? null }).onConflictDoNothing({ target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion] });
+      }
       await audit(identity.id, "CONSENT_CHANGED", "CONSENT_RECORD", consentId, { status: "GRANTED" });
       await pilotEvent(identity.id, "ONBOARDING_COMPLETED", "CONSENT_RECORD", consentId, { mode, ageBand, experienceVersion: LAB_VERSION });
-      return Response.json(await snapshot(identity), { status: 201 });
+      return Response.json(await accountSnapshot(identity), { status: 201 });
     }
 
     if (action === "restoreConsent") {
@@ -572,7 +585,7 @@ async function postHandler(request: Request) {
       await db.update(learners).set({ status: "ACTIVE", updatedAt: now }).where(eq(learners.userId, identity.id));
       await audit(identity.id, "CONSENT_CHANGED", "CONSENT_RECORD", consentId, { status: "GRANTED", restored: true });
       await pilotEvent(identity.id, "CONSENT_RESTORED", "CONSENT_RECORD", consentId);
-      return Response.json(await snapshot(identity));
+      return Response.json(await accountSnapshot(identity));
     }
 
     const [currentConsent] = await db
@@ -1144,7 +1157,7 @@ async function postHandler(request: Request) {
 
 export async function GET(request: Request) {
   void request;
-  return withSupabaseRequest(() => getHandler());
+  return withSupabaseRequest(() => getHandler(request));
 }
 
 export async function POST(request: Request) {

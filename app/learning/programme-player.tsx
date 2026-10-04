@@ -23,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
+import { loadLearningLabRuntime, universalLearningKnownValues } from "../../lib/learning-lab-runtime.mjs";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
 import { enhanceHandbookDocument, type HandbookKnownValue } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
@@ -65,6 +66,8 @@ type LearningSnapshot = {
   >;
 };
 type Runtime = {
+  runtimeMode?: "STATIC" | "DYNAMIC";
+  definition?: unknown;
   roles?: string[];
   enrolment: null | {
     currentInvestigation: number;
@@ -287,23 +290,8 @@ async function loadProgramme(edition: Edition, code: string): Promise<HabitProgr
     return result.payload;
   }
 
-  const slug = ({ HAB: "habit", DEC: "decision", MON: "money", IDN: "identity", ATT: "attention" } as Record<string, string>)[code];
-  if (!slug) {
-    const detail = await dynamic.json().catch(() => null) as { error?: string } | null;
-    throw new Error(detail?.error || "The active learning module could not be loaded.");
-  }
-
-  const response = await fetch(`/handbooks/v1/${slug}-${edition}.json.gz.b64`, {
-    cache: "force-cache",
-  });
-  if (!response.ok) throw new Error("The complete handbook material could not be loaded.");
-  if (!("DecompressionStream" in globalThis)) {
-    throw new Error("This browser cannot open the compressed programme material.");
-  }
-  const binary = atob((await response.text()).trim());
-  const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
-  const stream = new Blob([bytes.buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
-  return JSON.parse(await new Response(stream).text()) as HabitProgramme;
+  const detail = await dynamic.json().catch(() => null) as { error?: string } | null;
+  throw new Error(detail?.error || "The active learning module could not be loaded.");
 }
 
 export function ProgrammePlayer({
@@ -427,40 +415,11 @@ export function ProgrammePlayer({
           };
           moduleLive = moduleCode === "HAB" ? live : null;
         } else {
-          const moduleRuntimePromise = ["DEC", "MON"].includes(moduleCode)
-            ? fetch(`/api/labs?lab=${encodeURIComponent(moduleCode)}`, {
-                cache: "no-store",
-                signal: controller.signal,
-              })
-                .then(async (response) => response.ok ? await response.json() as Runtime : null)
-                .catch(() => null)
-            : moduleCode !== "HAB"
-              ? fetch(`/api/universal-lab?lab=${encodeURIComponent(moduleCode)}`, {
-                  cache: "no-store",
-                  signal: controller.signal,
-                })
-                  .then(async (response) => {
-                    if (!response.ok) return null;
-                    const universal = await response.json() as {
-                      enrolment?: Runtime["enrolment"];
-                      measurements?: Runtime["measurements"];
-                      responses?: Runtime["responses"];
-                      programmeHandoff?: Runtime["programmeHandoff"];
-                    };
-                    return {
-                      ...emptyRuntime(),
-                      enrolment: universal.enrolment ?? null,
-                      measurements: universal.measurements ?? {},
-                      responses: universal.responses ?? {},
-                      programmeHandoff: universal.programmeHandoff,
-                    } satisfies Runtime;
-                  })
-                  .catch(() => null)
-              : Promise.resolve<Runtime | null>(null);
+          const moduleRuntimePromise = loadLearningLabRuntime(moduleCode, fetch, controller.signal) as Promise<Runtime | null>;
 
           const [learningResponse, runtimeResponse, moduleRuntimeResult] = await Promise.all([
             fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
-            fetch("/api/bis", { cache: "no-store", signal: controller.signal }),
+            fetch("/api/profile", { cache: "no-store", signal: controller.signal }),
             moduleRuntimePromise,
           ]);
           learning = (await learningResponse.json()) as LearningSnapshot & { error?: string };
@@ -471,7 +430,7 @@ export function ProgrammePlayer({
           live = runtimeResponse.ok
             ? await runtimeResponse.json() as Runtime
             : emptyRuntime();
-          moduleLive = moduleCode === "HAB" ? live : moduleRuntimeResult;
+          moduleLive = moduleRuntimeResult;
           loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode);
         }
 
@@ -542,13 +501,12 @@ export function ProgrammePlayer({
     [facilitatorMode, page, programme],
   );
   const moduleDefinition = BIS_MODULES.find((item) => item.code === moduleCode) ?? null;
-  const universalLabHref = moduleRuntime?.programmeHandoff
+  const universalLabHref = moduleRuntime?.runtimeMode === "DYNAMIC"
     ? `/labs/${moduleCode.toLowerCase()}`
     : null;
-  const resolvedLabHref = moduleDefinition?.labHref ?? universalLabHref;
+  const resolvedLabHref = universalLabHref ?? moduleDefinition?.labHref;
   const moduleLabIsLive = Boolean(
-    (moduleDefinition?.labStatus === "live" && moduleDefinition.labHref)
-    || universalLabHref,
+    moduleRuntime?.runtimeMode && resolvedLabHref,
   );
   const completed = useMemo(
     () =>
@@ -564,7 +522,7 @@ export function ProgrammePlayer({
       ),
     [snapshot, release, moduleCode],
   );
-  const activeModuleRuntime = moduleCode === "HAB" ? runtime : moduleRuntime;
+  const activeModuleRuntime = moduleRuntime;
   const programmeHandoff = activeModuleRuntime?.programmeHandoff;
   const experimentDay =
     programmeHandoff?.currentDay
@@ -599,6 +557,7 @@ export function ProgrammePlayer({
   const knownValues = useMemo<HandbookKnownValue[]>(() => {
     const source = activeModuleRuntime;
     if (!source) return [];
+    if (source.runtimeMode === "DYNAMIC") return universalLearningKnownValues(source);
 
     const values: HandbookKnownValue[] = [];
     const add = (labels: string[], value: number | string | null, suffix = "", note = "From your Lab") => {

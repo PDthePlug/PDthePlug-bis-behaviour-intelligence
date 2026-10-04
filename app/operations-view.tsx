@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Activity,
   Check,
@@ -28,10 +28,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { LAB_VERSION } from "@/lib/habit-lab";
-import { coreLabs } from "@/lib/core-labs";
 import { ProgrammeOutcomesView, type SponsorSnapshot } from "./programme-outcomes-view";
 import { FacilitatorWorkspace } from "./facilitator-workspace";
+
+type PublishedLab = { code: string; title: string; version: string; runtimeMode: string };
 
 type ProgressRow = {
   userId: string;
@@ -48,6 +48,7 @@ type ProgressRow = {
     status: string;
     currentInvestigation: number;
     startedAt: string;
+    experimentStartedAt?: string | null;
     updatedAt: string;
     completedAt: string | null;
   };
@@ -129,6 +130,7 @@ type StaffSnapshot = {
     cohorts: Cohort[];
     labAssignments: Array<{ id: string; learnerEmail: string; labVersion: string; status: string; assignedAt: string }>;
     supportedLabVersions: string[];
+    publishedLabs: PublishedLab[];
   };
   facilitator: null | {
     cohorts: Cohort[];
@@ -151,7 +153,7 @@ function formatDate(value: string | null | undefined) {
 
 function ProgressStatus({ learner }: { learner: ProgressRow }) {
   const experiment = learner.experiment;
-  return <article className="ops-learner-card"><div className="ops-learner-head"><div><strong>{learner.displayName}</strong><span>{learner.email}</span></div><Badge variant="outline">{label(learner.enrolment?.status ?? learner.status)}</Badge></div><div className="ops-progress-line"><span style={{ width: `${Math.min(100, ((learner.enrolment?.currentInvestigation ?? 0) / 9) * 100)}%` }} /></div><dl><div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div><div><dt>Recorded days</dt><dd>{experiment?.recordedDays ?? 0}</dd></div><div><dt>Opportunities</dt><dd>{experiment?.opportunityCount ?? 0}</dd></div><div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div></dl></article>;
+  return <article className="ops-learner-card"><div className="ops-learner-head"><div><strong>{learner.displayName}</strong><span>{learner.email}</span></div><Badge variant="outline">{label(learner.enrolment?.status ?? learner.status)}</Badge></div><div className="ops-progress-line"><span style={{ width: `${Math.min(100, ((learner.enrolment?.currentInvestigation ?? 0) / 9) * 100)}%` }} /></div><dl><div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div><div><dt>Recorded days</dt><dd>{experiment?.recordedDays ?? "Not available"}</dd></div><div><dt>Opportunities</dt><dd>{experiment?.opportunityCount ?? "Not available"}</dd></div><div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div></dl></article>;
 }
 
 export function OperationsView({ initialRoles, perspective = "facilitator" }: { initialRoles: string[]; perspective?: "facilitator" | "outcomes" | "admin" }) {
@@ -160,26 +162,37 @@ export function OperationsView({ initialRoles, perspective = "facilitator" }: { 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    void load();
-  }, []);
-
-  async function load() {
-    setLoading(true);
+  const requestSequence = useRef(0);
+  const writing = useRef(false);
+  const [updatedAt, setUpdatedAt] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const load = useCallback(async (initial = false) => {
+    if (writing.current) return;
+    const sequence = ++requestSequence.current;
+    if (initial) setLoading(true); else setRefreshing(true);
     setError("");
     try {
       const response = await fetch("/api/staff", { cache: "no-store" });
       const payload = await response.json();
+      if (sequence !== requestSequence.current) return;
+      if (response.status === 401 || response.status === 403) setData(null);
       if (!response.ok) throw new Error(payload.error ?? "The operations workspace could not open.");
-      setData(payload);
+      setData(payload); setUpdatedAt(new Date().toLocaleTimeString("en-ZA"));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The operations workspace could not open.");
+      if (sequence === requestSequence.current) setError(cause instanceof Error ? cause.message : "The operations workspace could not open.");
     } finally {
-      setLoading(false);
+      if (sequence === requestSequence.current) { setLoading(false); setRefreshing(false); }
     }
-  }
+  }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => void load(true), 0);
+    const focus = () => void load();
+    window.addEventListener("focus", focus);
+    return () => { clearTimeout(timer); window.removeEventListener("focus", focus); };
+  }, [load]);
 
   async function act(payload: Record<string, unknown>) {
+    writing.current = true; ++requestSequence.current; setRefreshing(false);
     setSaving(true);
     setError("");
     try {
@@ -189,14 +202,15 @@ export function OperationsView({ initialRoles, perspective = "facilitator" }: { 
         body: JSON.stringify(payload),
       });
       const result = await response.json();
+      if (response.status === 401 || response.status === 403) setData(null);
       if (!response.ok) throw new Error(result.error ?? "That change could not be saved.");
-      setData(result);
+      setData(result); setUpdatedAt(new Date().toLocaleTimeString("en-ZA"));
       return true;
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "That change could not be saved.");
       return false;
     } finally {
-      setSaving(false);
+      writing.current = false; setSaving(false);
     }
   }
 
@@ -212,9 +226,11 @@ export function OperationsView({ initialRoles, perspective = "facilitator" }: { 
   if (perspective === "admin" && !canAdminister) return <RoleLocked title="Administration" detail="Administrator access is required." />;
   if (perspective === "facilitator" && !canFacilitate) return <RoleLocked title="Facilitator View" detail="A facilitator or safeguarding role is required to open learner support operations." />;
 
+  const refreshControl = <div className="ops-refresh-row"><span>Updated {updatedAt || "just now"}</span><Button variant="outline" disabled={saving || refreshing} onClick={() => void load()}>{refreshing ? "Refreshing…" : "Refresh results"}</Button></div>;
+
   if (perspective === "outcomes") {
     return (
-      <div className="page-wrap operations-view sponsor-perspective">
+      <div className="page-wrap operations-view sponsor-perspective">{refreshControl}
         {error && <div className="error-banner ops-error"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
         {data.sponsor ? (
           <ProgrammeOutcomesView data={data.sponsor} saving={saving} act={act} />
@@ -230,7 +246,7 @@ export function OperationsView({ initialRoles, perspective = "facilitator" }: { 
   }
 
   return (
-    <div className={`page-wrap operations-view ${perspective}-perspective`}>
+    <div className={`page-wrap operations-view ${perspective}-perspective`}>{refreshControl}
       {error ? <div className="error-banner ops-error"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div> : null}
 
       {perspective === "facilitator" ? (
@@ -259,7 +275,7 @@ export function OperationsView({ initialRoles, perspective = "facilitator" }: { 
               </div>
               <UserCog />
             </summary>
-            <AuditPanel />
+            <AuditPanel labs={data.admin?.publishedLabs ?? []} />
           </details>
         </>
       )}
@@ -271,13 +287,8 @@ function RoleLocked({ title, detail }: { title: string; detail: string }) {
   return <div className="page-wrap operations-view"><div className="ops-empty surface-card"><LockKeyhole /><p className="eyebrow">Role protected</p><h2>{title} is not available.</h2><p>{detail}</p></div></div>;
 }
 
-function AuditPanel() {
-  const labs = [
-    { code: "HAB", title: "Habit Lab™", version: LAB_VERSION, measure: "Habit behaviour", range: "BEI-01–10" },
-    { code: "DEC", title: coreLabs.DEC.title, version: coreLabs.DEC.version, measure: "Decision behaviour", range: "BEI-01–10" },
-    { code: "MON", title: coreLabs.MON.title, version: coreLabs.MON.version, measure: "Spending behaviour", range: "BEI-01–10" },
-  ];
-  return <div className="audit-view"><section className="audit-index"><article><Database /><span>Active Labs</span><strong>03</strong></article><article><ClipboardCheck /><span>Measures</span><strong>30</strong></article><article><Sigma /><span>Calculation rules</span><strong>1.0</strong></article><article><Tags /><span>Privacy levels</span><strong>P1–P3</strong></article></section><section id="evidence-registry" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">What BIS measures</p><h2>What each Lab measures</h2><p>Each Lab keeps its own questions, version and results separate.</p></div><Database /></div><div className="audit-registry" role="table" aria-label="What BIS measures"><div role="row"><strong>Code</strong><strong>Lab</strong><strong>Version</strong><strong>What it measures</strong><strong>Measures</strong></div>{labs.map((lab) => <div role="row" key={lab.code}><span>{lab.code}</span><strong>{lab.title}</strong><span>{lab.version}</span><span>{lab.measure}</span><span>{lab.range}</span></div>)}</div></section><section id="calculation-trace" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">How a result is produced</p><h2>From an observation to a result</h2></div><GitBranch /></div><div className="audit-flow"><div><small>01 · Recorded</small><strong>Learner response or observed event</strong><p>Saved with when it happened and where the information came from.</p></div><div><small>02 · Matched</small><strong>Relevant BIS measure</strong><p>Linked to the BIS measure it belongs to.</p></div><div><small>03 · Calculate</small><strong>Calculation rule</strong><p>The calculation and any missing information can be checked.</p></div><div><small>04 · Present</small><strong>Learner result</strong><p>Results describe what was observed; they do not label the person.</p></div></div></section><section id="formula-versions" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Calculation rules</p><h2>How the visible numbers are calculated</h2></div><Sigma /></div><div className="formula-registry"><div><strong>Adherence rate</strong><code>completed responses ÷ matching real-world situations × 100</code><span>v1.0</span></div><div><strong>Prediction accuracy</strong><code>100 − |predicted rate − actual rate|</code><span>v1.0</span></div><div><strong>Pre/post shift</strong><code>post rating − pre rating</code><span>v1.0</span></div><div><strong>Zero opportunities</strong><code>record N/A, never 0</code><span>v1.0</span></div></div></section><section id="provenance-map" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Where a result came from</p><h2>Every result keeps its source</h2></div><GitBranch /></div><div className="provenance-map"><article><span className="provenance-tag said">You said</span><p>Learner wording.</p></article><article><span className="provenance-tag observed">You observed</span><p>A real-world observation.</p></article><article><span className="provenance-tag calculated">BIS calculated</span><p>A BIS calculation based on recorded inputs.</p></article><article><span className="provenance-tag hypothesis">Working explanation</span><p>A working explanation that can be checked against what happens.</p></article></div></section><section id="privacy-classification" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Privacy levels</p><h2>More sensitive information gets tighter handling</h2></div><LockKeyhole /></div><div className="privacy-classes"><article><strong>P1</strong><div><h3>Programme activity</h3><p>Story choices, completion state, and non-sensitive progress activity.</p></div></article><article><strong>P2</strong><div><h3>Personal reflection</h3><p>Patterns, equations, costs, and experiment interpretations.</p></div></article><article><strong>P3</strong><div><h3>Highly personal reflection</h3><p>Emotion, relationships, affected people, and future-self letters.</p></div></article></div><div className="audit-boundary"><ShieldAlert /><p>Staff views show only what each role needs. Private learner wording is not included in programme reporting.</p></div></section></div>;
+function AuditPanel({ labs }: { labs: PublishedLab[] }) {
+  return <div className="audit-view"><section className="audit-index"><article><Database /><span>Active Labs</span><strong>{labs.length}</strong></article><article><ClipboardCheck /><span>Measures</span><strong>Source-defined</strong></article><article><Sigma /><span>Calculation rules</span><strong>Source-defined</strong></article><article><Tags /><span>Privacy levels</span><strong>P1–P3</strong></article></section><section id="evidence-registry" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">What BIS measures</p><h2>What each Lab measures</h2><p>Each Lab keeps its own questions, version and results separate.</p></div><Database /></div><div className="audit-registry" role="table" aria-label="What BIS measures"><div role="row"><strong>Code</strong><strong>Lab</strong><strong>Version</strong><strong>What it measures</strong><strong>Measures</strong></div>{labs.map((lab) => <div role="row" key={lab.code}><span>{lab.code}</span><strong>{lab.title}</strong><span>{lab.version}</span><span>Source-defined</span><span>Source-defined</span></div>)}</div></section><section id="calculation-trace" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">How a result is produced</p><h2>From an observation to a result</h2></div><GitBranch /></div><div className="audit-flow"><div><small>01 · Recorded</small><strong>Learner response or observed event</strong><p>Saved with when it happened and where the information came from.</p></div><div><small>02 · Matched</small><strong>Relevant BIS measure</strong><p>Linked to the BIS measure it belongs to.</p></div><div><small>03 · Calculate</small><strong>Calculation rule</strong><p>The calculation and any missing information can be checked.</p></div><div><small>04 · Present</small><strong>Learner result</strong><p>Results describe what was observed; they do not label the person.</p></div></div></section><section id="formula-versions" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Calculation rules</p><h2>How the visible numbers are calculated</h2></div><Sigma /></div><div className="formula-registry"><p>Each published Lab defines its own calculations. Results use its saved source evidence; missing opportunities remain unavailable.</p></div></section><section id="provenance-map" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Where a result came from</p><h2>Every result keeps its source</h2></div><GitBranch /></div><div className="provenance-map"><article><span className="provenance-tag said">You said</span><p>Learner wording.</p></article><article><span className="provenance-tag observed">You observed</span><p>A real-world observation.</p></article><article><span className="provenance-tag calculated">BIS calculated</span><p>A BIS calculation based on recorded inputs.</p></article><article><span className="provenance-tag hypothesis">Working explanation</span><p>A working explanation that can be checked against what happens.</p></article></div></section><section id="privacy-classification" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Privacy levels</p><h2>More sensitive information gets tighter handling</h2></div><LockKeyhole /></div><div className="privacy-classes"><article><strong>P1</strong><div><h3>Programme activity</h3><p>Story choices, completion state, and non-sensitive progress activity.</p></div></article><article><strong>P2</strong><div><h3>Personal reflection</h3><p>Patterns, equations, costs, and experiment interpretations.</p></div></article><article><strong>P3</strong><div><h3>Highly personal reflection</h3><p>Emotion, relationships, affected people, and future-self letters.</p></div></article></div><div className="audit-boundary"><ShieldAlert /><p>Staff views show only what each role needs. Private learner wording is not included in programme reporting.</p></div></section></div>;
 }
 
 function AdminPanel({ data, identity, saving, act }: { data: NonNullable<StaffSnapshot["admin"]>; identity: StaffSnapshot["identity"]; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {
@@ -289,10 +300,13 @@ function AdminPanel({ data, identity, saving, act }: { data: NonNullable<StaffSn
   const [cohortId, setCohortId] = useState(data.cohorts[0]?.id ?? "");
   const [learnerEmail, setLearnerEmail] = useState(data.learners[0]?.email ?? "");
   const [versionLearnerEmail, setVersionLearnerEmail] = useState(data.learners[0]?.email ?? "");
-  const [labVersion, setLabVersion] = useState(data.supportedLabVersions[0] ?? "4.5.2");
+  const [labKey, setLabKey] = useState(data.publishedLabs[0] ? `${data.publishedLabs[0].code}:${data.publishedLabs[0].version}` : "");
+  const chosenLab = data.publishedLabs.find(lab => `${lab.code}:${lab.version}` === labKey);
+  const labCode = chosenLab?.code ?? "";
+  const labVersion = chosenLab?.version ?? "";
   const activeRoles = data.roleAssignments.filter((assignment) => assignment.status === "ACTIVE");
 
-  return <div className="ops-stack"><section className="ops-metrics"><article><UserCog /><span>Learners in BIS</span><strong>{data.metrics.learners}</strong></article><article><ClipboardCheck /><span>Labs completed</span><strong>{data.metrics.completed}</strong></article><article><Activity /><span>Real-world tests running</span><strong>{data.metrics.experimentActive}</strong></article><article><ShieldAlert /><span>Open support cases</span><strong>{data.metrics.openSafeguardingCases}</strong><small>Group count only</small></article></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Access</p><h2>Manage access</h2><p>Choose what each person can access.</p></div><UserCog /></div><div className="ops-form-row"><Input type="email" value={roleEmail} onChange={(event) => setRoleEmail(event.target.value)} placeholder="staff@example.org" /><Select value={role} onValueChange={setRole}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR">Facilitator</SelectItem><SelectItem value="SAFEGUARDING_OFFICER">Safeguarding officer</SelectItem><SelectItem value="SPONSOR_VIEWER">Programme results · view only</SelectItem><SelectItem value="PROGRAMME_OWNER">Programme lead · decisions</SelectItem><SelectItem value="SYSTEM_ADMIN">BIS administrator</SelectItem></SelectContent></Select>{(role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? <Select value={roleCohortId} onValueChange={setRoleCohortId}><SelectTrigger><SelectValue placeholder="Programme" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select> : null}<Button disabled={saving || !roleEmail || ((role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") && !roleCohortId)} onClick={() => void act({ action: "assignRole", email: roleEmail, role, cohortId: (role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? roleCohortId : undefined })}><UserPlus /> Give access</Button></div><div className="ops-role-list">{activeRoles.map((assignment) => <div key={assignment.id}><span><strong>{assignment.principalEmail}</strong><small>{label(assignment.role)}{assignment.scopeType === "COHORT" ? ` · group ${data.cohorts.find((cohort) => cohort.id === assignment.scopeId)?.name ?? assignment.scopeId}` : ""} · assigned {formatDate(assignment.assignedAt)}</small></span><Button variant="outline" size="sm" disabled={saving} onClick={() => void act({ action: "revokeRole", assignmentId: assignment.id })}>Remove access</Button></div>)}</div></section><section className="ops-two-column"><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Programmes</p><h2>Create a group</h2></div><Users /></div><div className="ops-form-stack"><label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Habit Lab pilot · Group A" /></label><label>Assigned facilitator<Input type="email" value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} /></label><label>Habit Lab version<Select value={labVersion} onValueChange={setLabVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{data.supportedLabVersions.map((version) => <SelectItem key={version} value={version}>Habit Lab {version}</SelectItem>)}</SelectContent></Select></label><Button disabled={saving || !cohortName || !facilitatorEmail} onClick={async () => { if (await act({ action: "createCohort", name: cohortName, facilitatorEmail, labVersion })) setCohortName(""); }}><Plus /> Create group</Button></div><div className="ops-cohort-list">{data.cohorts.map((cohort) => <div key={cohort.id}><span><strong>{cohort.name}</strong><small>{cohort.facilitatorEmail} · {cohort.memberCount ?? 0} learners</small></span><Badge variant="outline">v{cohort.labVersion}</Badge></div>)}</div></div><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Learners</p><h2>Add a learner</h2></div><UserPlus /></div><div className="ops-form-stack"><label>Active group<Select value={cohortId} onValueChange={setCohortId}><SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select></label><label>Learner email<Input type="email" value={learnerEmail} onChange={(event) => setLearnerEmail(event.target.value)} placeholder="learner@example.org" /></label><Button disabled={saving || !cohortId || !learnerEmail} onClick={() => void act({ action: "addCohortMember", cohortId, learnerEmail })}>Add learner</Button></div><div className="ops-divider" /><div className="ops-form-stack"><p className="ops-helper">Give a learner a Habit Lab version without adding them to a group.</p><label>Learner email<Input type="email" value={versionLearnerEmail} onChange={(event) => setVersionLearnerEmail(event.target.value)} /></label><Button variant="outline" disabled={saving || !versionLearnerEmail} onClick={() => void act({ action: "assignLabVersion", learnerEmail: versionLearnerEmail, labVersion })}>Assign Habit Lab {labVersion}</Button></div></div></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2><p>Shows how often learners had a real chance to test the behaviour.</p></div><Activity /></div><div className="opportunity-bands"><div><span>No opportunity</span><strong>{data.metrics.opportunityBands.none}</strong></div><div><span>One</span><strong>{data.metrics.opportunityBands.one}</strong></div><div><span>Two</span><strong>{data.metrics.opportunityBands.two}</strong></div><div><span>Three or more</span><strong>{data.metrics.opportunityBands.threePlus}</strong></div></div></section><section><div className="ops-section-heading"><div><p className="eyebrow">Learners</p><h2>Learner progress</h2></div><Badge variant="outline">Private responses hidden</Badge></div><div className="ops-learner-grid">{data.learners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div></section></div>;
+  return <div className="ops-stack"><section className="ops-metrics"><article><UserCog /><span>Learners in BIS</span><strong>{data.metrics.learners}</strong></article><article><ClipboardCheck /><span>Labs completed</span><strong>{data.metrics.completed}</strong></article><article><Activity /><span>Real-world tests running</span><strong>{data.metrics.experimentActive}</strong></article><article><ShieldAlert /><span>Open support cases</span><strong>{data.metrics.openSafeguardingCases}</strong><small>Group count only</small></article></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Access</p><h2>Manage access</h2><p>Choose what each person can access.</p></div><UserCog /></div><div className="ops-form-row"><Input type="email" value={roleEmail} onChange={(event) => setRoleEmail(event.target.value)} placeholder="staff@example.org" /><Select value={role} onValueChange={setRole}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR">Facilitator</SelectItem><SelectItem value="SAFEGUARDING_OFFICER">Safeguarding officer</SelectItem><SelectItem value="SPONSOR_VIEWER">Programme results · view only</SelectItem><SelectItem value="PROGRAMME_OWNER">Programme lead · decisions</SelectItem><SelectItem value="SYSTEM_ADMIN">BIS administrator</SelectItem></SelectContent></Select>{(role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? <Select value={roleCohortId} onValueChange={setRoleCohortId}><SelectTrigger><SelectValue placeholder="Programme" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select> : null}<Button disabled={saving || !roleEmail || ((role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") && !roleCohortId)} onClick={() => void act({ action: "assignRole", email: roleEmail, role, cohortId: (role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? roleCohortId : undefined })}><UserPlus /> Give access</Button></div><div className="ops-role-list">{activeRoles.map((assignment) => <div key={assignment.id}><span><strong>{assignment.principalEmail}</strong><small>{label(assignment.role)}{assignment.scopeType === "COHORT" ? ` · group ${data.cohorts.find((cohort) => cohort.id === assignment.scopeId)?.name ?? assignment.scopeId}` : ""} · assigned {formatDate(assignment.assignedAt)}</small></span><Button variant="outline" size="sm" disabled={saving} onClick={() => void act({ action: "revokeRole", assignmentId: assignment.id })}>Remove access</Button></div>)}</div></section><section className="ops-two-column"><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Programmes</p><h2>Create a group</h2></div><Users /></div><div className="ops-form-stack"><label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Programme · Group A" /></label><label>Assigned facilitator<Input type="email" value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} /></label><label>Published Lab<Select value={labKey} onValueChange={setLabKey}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{data.publishedLabs.map(lab => <SelectItem key={`${lab.code}:${lab.version}`} value={`${lab.code}:${lab.version}`}>{lab.title} {lab.version}</SelectItem>)}</SelectContent></Select></label><Button disabled={saving || !cohortName || !facilitatorEmail || !chosenLab} onClick={async () => { if (await act({ action: "createCohort", name: cohortName, facilitatorEmail, labCode, labVersion })) setCohortName(""); }}><Plus /> Create group</Button></div><div className="ops-cohort-list">{data.cohorts.map((cohort) => <div key={cohort.id}><span><strong>{cohort.name}</strong><small>{cohort.facilitatorEmail} · {cohort.memberCount ?? 0} learners</small></span><Badge variant="outline">v{cohort.labVersion}</Badge></div>)}</div></div><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Learners</p><h2>Add a learner</h2></div><UserPlus /></div><div className="ops-form-stack"><label>Active group<Select value={cohortId} onValueChange={setCohortId}><SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select></label><label>Learner email<Input type="email" value={learnerEmail} onChange={(event) => setLearnerEmail(event.target.value)} placeholder="learner@example.org" /></label><Button disabled={saving || !cohortId || !learnerEmail} onClick={() => void act({ action: "addCohortMember", cohortId, learnerEmail })}>Add learner</Button></div><div className="ops-divider" /><div className="ops-form-stack"><p className="ops-helper">Give a learner a published Lab version without adding them to a group.</p><label>Learner email<Input type="email" value={versionLearnerEmail} onChange={(event) => setVersionLearnerEmail(event.target.value)} /></label><Button variant="outline" disabled={saving || !versionLearnerEmail || !chosenLab} onClick={() => void act({ action: "assignLabVersion", learnerEmail: versionLearnerEmail, labCode, labVersion })}>Assign {chosenLab?.title ?? "Lab"} {labVersion}</Button></div></div></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2><p>Shows how often learners had a real chance to test the behaviour.</p></div><Activity /></div><div className="opportunity-bands"><div><span>No opportunity</span><strong>{data.metrics.opportunityBands.none}</strong></div><div><span>One</span><strong>{data.metrics.opportunityBands.one}</strong></div><div><span>Two</span><strong>{data.metrics.opportunityBands.two}</strong></div><div><span>Three or more</span><strong>{data.metrics.opportunityBands.threePlus}</strong></div></div></section><section><div className="ops-section-heading"><div><p className="eyebrow">Learners</p><h2>Learner progress</h2></div><Badge variant="outline">Private responses hidden</Badge></div><div className="ops-learner-grid">{data.learners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div></section></div>;
 }
 
 function SafeguardingPanel({ data, saving, act }: { data: NonNullable<StaffSnapshot["safeguarding"]>; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {
