@@ -254,6 +254,7 @@ test("Content Studio can safely re-prepare reviewed drafts and take published co
   assert.match(ui, /Edit this update/);
   assert.match(ui, /Take offline/);
   assert.match(ui, /Publishing steps/);
+  assert.match(ui, /Start the next update/);
   assert.match(migration, /'INACTIVE'/);
   assert.match(migration, /content_runtime_activation_status_check/);
   assert.match(migration, /content_edition_activations_status_check/);
