@@ -1,5 +1,6 @@
 import "./styles.css";
 import "../../../../app/brand.css";
+import "../../../../app/personalization.css";
 import "../../../../app/learning/programme-player.css";
 import "../../../../app/habit-lab/focused-runtime.css";
 import "../../../../app/responsive-readiness.css";
@@ -9,6 +10,8 @@ import "../../../../app/learner-readability.css";
 import "../../../../app/lab-investigation-frame.css";
 import "../../../../app/learner-document-system.css";
 import "../../../../app/profile/profile.css";
+import "../../../../app/settings/settings.css";
+import "../../../../app/portfolio/portfolio.css";
 import { HarnessShell } from "./harness-shell";
 import "../../../../app/evidence-engine.css";
 
