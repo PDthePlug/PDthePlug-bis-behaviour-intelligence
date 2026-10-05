@@ -1341,39 +1341,39 @@ export function ProgrammePlayer({
             </Link>
           </section>
         ) : (
-          <section className="prototype-page prototype-reader">
+          <section className="prototype-page prototype-reader learner-document-stage">
             <Link className="prototype-back-link" href={facilitatorMode && facilitatorContext ? facilitatorContext.returnTo : previewMode ? "/content-studio" : "/learn"}>
               {facilitatorMode ? <><ArrowLeft /> Back to facilitator</> : <><ArrowLeft /> Exit reader</>}
             </Link>
 
-            <div className="prototype-learning-document">
-            <div className="prototype-reader-hero prototype-reader-hero-compact">
-              <div className="prototype-reader-compact-head">
+            <div className="prototype-learning-document learner-document">
+            <div className="prototype-reader-hero prototype-reader-hero-compact learner-document-header">
+              <div className="prototype-reader-compact-head learner-document-heading-row">
                 <div>
-                  <p className="prototype-eyebrow">
+                  <p className="prototype-eyebrow learner-document-eyebrow">
                     {page.programmeDay ? `Day ${page.programmeDay} of 10` : page.key}
                   </p>
-                  <h1>{page.label}</h1>
-                  <p className="prototype-reader-purpose">
+                  <h1 className="learner-document-title">{page.label}</h1>
+                  <p className="prototype-reader-purpose learner-document-purpose">
                     {sessionDesign?.dayPurpose ?? page.experimentPosition ?? programme.subtitle}
                   </p>
                 </div>
-                <strong aria-label={facilitatorMode ? "Facilitator view" : `${progressPercent}% complete`}>
+                <strong className="learner-document-status-pill" aria-label={facilitatorMode ? "Facilitator view" : `${progressPercent}% complete`}>
                   {facilitatorMode ? "VIEW" : `${progressPercent}%`}
                 </strong>
               </div>
               {sessionDesign ? (
-                <div className="prototype-reader-outcomes" aria-label="Learning outcome">
+                <div className="prototype-reader-outcomes learner-document-outcomes" aria-label="Learning outcome">
                   <strong>You will be able to</strong>
                   <span>{sessionDesign.learnerOutcome}</span>
                 </div>
               ) : null}
-              <div className="prototype-reader-meta">
+              <div className="prototype-reader-meta learner-document-meta">
                 {sessionDesign ? <span>{sessionDesign.minutes} minutes</span> : null}
                 {page.experimentPosition ? <span>{page.experimentPosition}</span> : null}
               </div>
               {!facilitatorMode ? (
-                <div className="prototype-progress-track light" aria-label={`${progressPercent}% complete`}>
+                <div className="prototype-progress-track light learner-document-progress" aria-label={`${progressPercent}% complete`}>
                   <i style={{ width: `${progressPercent}%` }} />
                 </div>
               ) : null}
@@ -1406,7 +1406,7 @@ export function ProgrammePlayer({
               </div>
             </details>
 
-            <div className="prototype-save-state" aria-live="polite">
+            <div className="prototype-save-state learner-document-status" aria-live="polite">
               {facilitatorMode
                 ? "Facilitator view · learner responses are private and are not shown or saved here"
                 : previewMode
@@ -1443,7 +1443,7 @@ export function ProgrammePlayer({
             ) : null}
 
             <fieldset className="workbook-fields" disabled={completing || (labSequenceLocked && selected > dayThreeIndex)}>
-            <article key={page.id} ref={documentRef} className="prototype-document" onInput={onDocumentInput} onChange={onDocumentInput}>
+            <article key={page.id} ref={documentRef} className="prototype-document learner-document-body" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
                   <div dangerouslySetInnerHTML={{ __html: dayThree.intro }} />
@@ -1521,7 +1521,7 @@ export function ProgrammePlayer({
               </p>
             ) : null}
 
-            <footer className="prototype-reader-footer">
+            <footer className="prototype-reader-footer learner-document-footer">
               <button
                 type="button"
                 onClick={() => goToProgrammePage(selected - 1)}
