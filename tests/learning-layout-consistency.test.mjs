@@ -65,3 +65,43 @@ test("Decision layout normalisation remains module-scoped", async () => {
   assert.match(block, /labCode !== "DEC"/);
   assert.doesNotMatch(block, /HAB|MON|IDN|ATT/);
 });
+
+
+test("Content Studio handbooks preserve publication structure instead of flattening markdown", async () => {
+  const [adapter, enhancement] = await Promise.all([
+    source("lib/content-source-adapters.ts"),
+    source("app/learning/handbook-document-enhancements.ts"),
+  ]);
+
+  for (const contract of [
+    "standardMarkdownTableAt",
+    "markdownPseudoTableAt",
+    "markdownBoxAt",
+    "markdownListAt",
+    "markdownHeadingLike",
+  ]) {
+    assert.match(adapter, new RegExp("function " + contract));
+  }
+  assert.match(adapter, /handbook-section-rule/);
+  assert.match(adapter, /handbook-source-callout/);
+  assert.match(adapter, /Icon Meaning/);
+  assert.match(adapter, /Icon Level Meaning/);
+
+  assert.match(enhancement, /function normaliseCompiledHandbookStructure/);
+  assert.match(enhancement, /handbook-restored-legend/);
+  assert.match(enhancement, /handbook-restored-list/);
+  assert.match(enhancement, /normaliseCompiledHandbookStructure\(root\)/);
+});
+
+test("all learning modules use one document normaliser rather than Lab-specific layout repair", async () => {
+  const enhancement = await source("app/learning/handbook-document-enhancements.ts");
+  const start = enhancement.indexOf("function normaliseCompiledHandbookStructure");
+  const end = enhancement.indexOf("function hideEditorialProductionMetadata", start);
+  const block = enhancement.slice(start, end);
+
+  assert.ok(start >= 0 && end > start);
+  assert.doesNotMatch(block, /labCode\s*!==/);
+  assert.match(block, /root\.dataset\.handbookLayout = "unified-document"/);
+  assert.match(block, /restoreLegendTable\("Icon Meaning", 2\)/);
+  assert.match(block, /restoreLegendTable\("Icon Level Meaning", 3\)/);
+});

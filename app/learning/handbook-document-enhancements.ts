@@ -1145,6 +1145,119 @@ function hardenReferenceOnlyLabContent(root: HTMLElement, context: HandbookEnhan
   });
 }
 
+
+function replaceElementTag(element: HTMLElement, tagName: "h2" | "h3" | "hr") {
+  const replacement = document.createElement(tagName);
+  if (tagName !== "hr") {
+    for (const attribute of [...element.attributes]) replacement.setAttribute(attribute.name, attribute.value);
+    while (element.firstChild) replacement.append(element.firstChild);
+  }
+  element.replaceWith(replacement);
+  return replacement;
+}
+
+function normaliseCompiledHandbookStructure(root: HTMLElement) {
+  root.dataset.handbookLayout = "unified-document";
+
+  root.querySelectorAll<HTMLElement>("p,div").forEach((element) => {
+    if (element.children.length > 0 && element.tagName !== "P") return;
+    const text = normalise(element.textContent ?? "");
+    if (!text) return;
+
+    if (/^(?:---|\*\*\*|___)$/.test(text)) {
+      replaceElementTag(element, "hr").classList.add("handbook-section-rule");
+      return;
+    }
+
+    const headingLike =
+      (text.length <= 130 && /[A-Z]/.test(text) && text === text.toUpperCase() && !/[.!?]$/.test(text))
+      || /^(?:how to use this book|learning levels|your 10-day map|before you begin\b|a note on\b|quick check\b|activity\s+\d+\b)/i.test(text);
+    if (headingLike && !element.closest("table,.handbook-callout,.prototype-reference")) {
+      replaceElementTag(element, /^DAY\s+\d+\s+OF\s+10$/i.test(text) ? "h2" : "h3");
+      return;
+    }
+
+    const pipeCount = (text.match(/\|/g) ?? []).length;
+    if (pipeCount >= 3 || /[┌┐└┘│─]/u.test(text)) {
+      const lines = (element.innerText || element.textContent || "")
+        .replace(/[┌┐└┘│─]+/gu, " ")
+        .replace(/\|+/g, "\n")
+        .split("\n")
+        .map((line) => normalise(line))
+        .filter(Boolean);
+      if (lines.length) {
+        element.textContent = "";
+        element.classList.add("authored-lines", "handbook-callout", "handbook-source-callout");
+        lines.forEach((line, index) => {
+          if (index) element.append(document.createElement("br"));
+          element.append(document.createTextNode(line));
+        });
+      }
+      return;
+    }
+
+    const bullets = text.split(/\s+[•·]\s+/u).map((item) => item.trim()).filter(Boolean);
+    if (bullets.length >= 3) {
+      const list = document.createElement("ul");
+      list.className = "handbook-restored-list";
+      bullets.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.append(li);
+      });
+      element.replaceWith(list);
+    }
+  });
+
+  const restoreLegendTable = (headingText: string, columns: 2 | 3) => {
+    const heading = [...root.querySelectorAll<HTMLElement>("p,h2,h3,h4")]
+      .find((element) => normalise(element.textContent ?? "").toLowerCase() === headingText.toLowerCase());
+    if (!heading || heading.closest("table")) return;
+
+    const rows: string[][] = [];
+    let cursor = heading.nextElementSibling as HTMLElement | null;
+    while (cursor && rows.length < 16) {
+      if (cursor.matches("table,h1") || /^DAY\s+\d+\s+OF\s+10$/i.test(normalise(cursor.textContent ?? ""))) break;
+      const value = normalise(cursor.textContent ?? "");
+      if (!value) { cursor = cursor.nextElementSibling as HTMLElement | null; continue; }
+      const match = columns === 2
+        ? value.match(/^(\S+)\s+(.+)$/u)
+        : value.match(/^(\S+)\s+(\S+)\s+(.+)$/u);
+      if (!match || !/^(?:📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌|🤔|🧠|🎭|🌱|🔍|⚖️)/u.test(match[1])) break;
+      rows.push(columns === 2 ? [match[1], match[2]] : [match[1], match[2], match[3]]);
+      const next = cursor.nextElementSibling as HTMLElement | null;
+      cursor.remove();
+      cursor = next;
+    }
+    if (rows.length < 2) return;
+
+    const table = document.createElement("table");
+    table.className = "handbook-table handbook-restored-legend";
+    const headers = columns === 2 ? ["Icon", "Meaning"] : ["Icon", "Level", "Meaning"];
+    const thead = table.createTHead();
+    const headRow = thead.insertRow();
+    headers.forEach((header) => {
+      const th = document.createElement("th");
+      th.scope = "col";
+      th.textContent = header;
+      headRow.append(th);
+    });
+    const tbody = table.createTBody();
+    rows.forEach((row) => {
+      const tr = tbody.insertRow();
+      row.forEach((value, column) => {
+        const td = tr.insertCell();
+        td.dataset.label = headers[column];
+        td.textContent = value;
+      });
+    });
+    heading.replaceWith(table);
+  };
+
+  restoreLegendTable("Icon Meaning", 2);
+  restoreLegendTable("Icon Level Meaning", 3);
+}
+
 function hideEditorialProductionMetadata(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>("p,div").forEach((element) => {
     if (element.children.length > 0 && !element.matches("p")) return;
@@ -1323,6 +1436,7 @@ export function enhanceHandbookDocument(
       element.textContent = `TIME: ${BIS_LEARNING_SESSION_MINUTES} minutes`;
     });
   }
+  normaliseCompiledHandbookStructure(root);
   cleanOrphanedResponseControls(root);
   labelAuthoredResponses(root);
   removeUnboundGenericResponses(root);
