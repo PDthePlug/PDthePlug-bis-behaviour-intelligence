@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ProgrammeOutcomesView, type SponsorSnapshot } from "./programme-outcomes-view";
+import { AssessmentGovernance } from "./assessment-governance";
 import { FacilitatorWorkspace } from "./facilitator-workspace";
 
 type PublishedLab = { code: string; title: string; version: string; runtimeMode: string };
@@ -82,6 +83,9 @@ type Cohort = {
   labCode: string;
   labVersion: string;
   facilitatorEmail: string;
+  programmeFormat?: string;
+  labCodes?: string[];
+  pendingCount?: number;
   status: string;
   startsOn: string | null;
   endsOn: string | null;
@@ -157,7 +161,7 @@ function ProgressStatus({ learner }: { learner: ProgressRow }) {
   return <article className="ops-learner-card"><div className="ops-learner-head"><div><strong>{learner.displayName}</strong><span>{learner.email}</span></div><Badge variant="outline">{label(learner.enrolment?.status ?? learner.status)}</Badge></div><div className="ops-progress-line"><span style={{ width: `${Math.min(100, ((learner.enrolment?.currentInvestigation ?? 0) / 9) * 100)}%` }} /></div><dl><div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div><div><dt>Recorded days</dt><dd>{experiment?.recordedDays ?? "Not available"}</dd></div><div><dt>Opportunities</dt><dd>{experiment?.opportunityCount ?? "Not available"}</dd></div><div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div></dl>{learner.supportGuidance && <p className="ops-support-guidance">{learner.supportGuidance}</p>}</article>;
 }
 
-export function OperationsView({ initialRoles, perspective = "facilitator" }: { initialRoles: string[]; perspective?: "facilitator" | "outcomes" | "admin" }) {
+export function OperationsView({ initialRoles, perspective = "facilitator", section = "all", onSectionChange, cohortId, onCohortChange }: { initialRoles: string[]; perspective?: "facilitator" | "outcomes" | "admin"; section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void }) {
   const [data, setData] = useState<StaffSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -234,7 +238,7 @@ export function OperationsView({ initialRoles, perspective = "facilitator" }: { 
       <div className="page-wrap operations-view sponsor-perspective">{refreshControl}
         {error && <div className="error-banner ops-error"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
         {data.sponsor ? (
-          <ProgrammeOutcomesView data={data.sponsor} saving={saving} act={act} />
+          <ProgrammeOutcomesView data={data.sponsor} saving={saving} act={act} section={section} onSectionChange={onSectionChange} cohortId={cohortId} onCohortChange={onCohortChange} />
         ) : (
           <div className="ops-empty surface-card">
             <LockKeyhole />
@@ -264,11 +268,11 @@ export function OperationsView({ initialRoles, perspective = "facilitator" }: { 
             <div><p className="eyebrow">BIS</p><h1>Administration</h1></div>
           </div>
           {data.admin ? (
-            <AdminPanel data={data.admin} identity={data.identity} saving={saving} act={act} />
+            section === "assessment" ? <AssessmentGovernance /> : <AdminPanel data={data.admin} identity={data.identity} saving={saving} act={act} section={section} />
           ) : (
             <RoleLocked title="Administration" detail="Administrator access is required." />
           )}
-          <details className="surface-card admin-disclosure advanced-system-checks">
+          <details hidden={section !== "all" && section !== "overview"} className="surface-card admin-disclosure advanced-system-checks">
             <summary>
               <div>
                 <p className="eyebrow">Advanced system checks</p>
@@ -292,22 +296,235 @@ function AuditPanel({ labs }: { labs: PublishedLab[] }) {
   return <div className="audit-view"><section className="audit-index"><article><Database /><span>Active Labs</span><strong>{labs.length}</strong></article><article><ClipboardCheck /><span>Measures</span><strong>Source-defined</strong></article><article><Sigma /><span>Calculation rules</span><strong>Source-defined</strong></article><article><Tags /><span>Privacy levels</span><strong>P1–P3</strong></article></section><section id="evidence-registry" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">What BIS measures</p><h2>What each Lab measures</h2><p>Each Lab keeps its own questions, version and results separate.</p></div><Database /></div><div className="audit-registry" role="table" aria-label="What BIS measures"><div role="row"><strong>Code</strong><strong>Lab</strong><strong>Version</strong><strong>What it measures</strong><strong>Measures</strong></div>{labs.map((lab) => <div role="row" key={lab.code}><span>{lab.code}</span><strong>{lab.title}</strong><span>{lab.version}</span><span>Source-defined</span><span>Source-defined</span></div>)}</div></section><section id="calculation-trace" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">How a result is produced</p><h2>From an observation to a result</h2></div><GitBranch /></div><div className="audit-flow"><div><small>01 · Recorded</small><strong>Learner response or observed event</strong><p>Saved with when it happened and where the information came from.</p></div><div><small>02 · Matched</small><strong>Relevant BIS measure</strong><p>Linked to the BIS measure it belongs to.</p></div><div><small>03 · Calculate</small><strong>Calculation rule</strong><p>The calculation and any missing information can be checked.</p></div><div><small>04 · Present</small><strong>Learner result</strong><p>Results describe what was observed; they do not label the person.</p></div></div></section><section id="formula-versions" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Calculation rules</p><h2>How the visible numbers are calculated</h2></div><Sigma /></div><div className="formula-registry"><p>Each published Lab defines its own calculations. Results use its saved source evidence; missing opportunities remain unavailable.</p></div></section><section id="provenance-map" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Where a result came from</p><h2>Every result keeps its source</h2></div><GitBranch /></div><div className="provenance-map"><article><span className="provenance-tag said">You said</span><p>Learner wording.</p></article><article><span className="provenance-tag observed">You observed</span><p>A real-world observation.</p></article><article><span className="provenance-tag calculated">BIS calculated</span><p>A BIS calculation based on recorded inputs.</p></article><article><span className="provenance-tag hypothesis">Working explanation</span><p>A working explanation that can be checked against what happens.</p></article></div></section><section id="privacy-classification" className="surface-card audit-section"><div className="audit-section-title"><div><p className="eyebrow">Privacy levels</p><h2>More sensitive information gets tighter handling</h2></div><LockKeyhole /></div><div className="privacy-classes"><article><strong>P1</strong><div><h3>Programme activity</h3><p>Story choices, completion state, and non-sensitive progress activity.</p></div></article><article><strong>P2</strong><div><h3>Personal reflection</h3><p>Patterns, equations, costs, and experiment interpretations.</p></div></article><article><strong>P3</strong><div><h3>Highly personal reflection</h3><p>Emotion, relationships, affected people, and future-self letters.</p></div></article></div><div className="audit-boundary"><ShieldAlert /><p>Staff views show only what each role needs. Private learner wording is not included in programme reporting.</p></div></section></div>;
 }
 
-function AdminPanel({ data, identity, saving, act }: { data: NonNullable<StaffSnapshot["admin"]>; identity: StaffSnapshot["identity"]; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {
+function AdminPanel({ data, identity, saving, act, section = "all" }: { data: NonNullable<StaffSnapshot["admin"]>; identity: StaffSnapshot["identity"]; section?: string; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {
   const [roleEmail, setRoleEmail] = useState(identity.email);
   const [role, setRole] = useState("FACILITATOR");
   const [roleCohortId, setRoleCohortId] = useState(data.cohorts[0]?.id ?? "");
+  const [editingAssignmentId, setEditingAssignmentId] = useState("");
   const [cohortName, setCohortName] = useState("");
   const [facilitatorEmail, setFacilitatorEmail] = useState(identity.email);
+  const [programmeFormat, setProgrammeFormat] = useState("SINGLE_LAB");
+  const [programmeLabs, setProgrammeLabs] = useState<string[]>([data.publishedLabs[0]?.code ?? ""]);
+  const [labToAdd, setLabToAdd] = useState(data.publishedLabs[0]?.code ?? "");
+  const [participantEmails, setParticipantEmails] = useState("");
   const [cohortId, setCohortId] = useState(data.cohorts[0]?.id ?? "");
-  const [learnerEmail, setLearnerEmail] = useState(data.learners[0]?.email ?? "");
-  const [versionLearnerEmail, setVersionLearnerEmail] = useState(data.learners[0]?.email ?? "");
-  const [labKey, setLabKey] = useState(data.publishedLabs[0] ? `${data.publishedLabs[0].code}:${data.publishedLabs[0].version}` : "");
-  const chosenLab = data.publishedLabs.find(lab => `${lab.code}:${lab.version}` === labKey);
-  const labCode = chosenLab?.code ?? "";
-  const labVersion = chosenLab?.version ?? "";
+  const [moreParticipantEmails, setMoreParticipantEmails] = useState("");
+  const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
   const activeRoles = data.roleAssignments.filter((assignment) => assignment.status === "ACTIVE");
+  const scopedRole = role === "FACILITATOR" || role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
 
-  return <div className="ops-stack"><section className="ops-metrics"><article><UserCog /><span>Learners in BIS</span><strong>{data.metrics.learners}</strong></article><article><ClipboardCheck /><span>Labs completed</span><strong>{data.metrics.completed}</strong></article><article><Activity /><span>Real-world tests running</span><strong>{data.metrics.experimentActive}</strong></article><article><ShieldAlert /><span>Open support cases</span><strong>{data.metrics.openSafeguardingCases}</strong><small>Group count only</small></article></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Access</p><h2>Manage access</h2><p>Choose what each person can access.</p></div><UserCog /></div><div className="ops-form-row"><Input type="email" value={roleEmail} onChange={(event) => setRoleEmail(event.target.value)} placeholder="staff@example.org" /><Select value={role} onValueChange={setRole}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FACILITATOR">Facilitator</SelectItem><SelectItem value="SAFEGUARDING_OFFICER">Safeguarding officer</SelectItem><SelectItem value="SPONSOR_VIEWER">Programme results · view only</SelectItem><SelectItem value="PROGRAMME_OWNER">Programme lead · decisions</SelectItem><SelectItem value="SYSTEM_ADMIN">BIS administrator</SelectItem></SelectContent></Select>{(role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? <Select value={roleCohortId} onValueChange={setRoleCohortId}><SelectTrigger><SelectValue placeholder="Programme" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select> : null}<Button disabled={saving || !roleEmail || ((role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") && !roleCohortId)} onClick={() => void act({ action: "assignRole", email: roleEmail, role, cohortId: (role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER") ? roleCohortId : undefined })}><UserPlus /> Give access</Button></div><div className="ops-role-list">{activeRoles.map((assignment) => <div key={assignment.id}><span><strong>{assignment.principalEmail}</strong><small>{label(assignment.role)}{assignment.scopeType === "COHORT" ? ` · group ${data.cohorts.find((cohort) => cohort.id === assignment.scopeId)?.name ?? assignment.scopeId}` : ""} · assigned {formatDate(assignment.assignedAt)}</small></span><Button variant="outline" size="sm" disabled={saving} onClick={() => void act({ action: "revokeRole", assignmentId: assignment.id })}>Remove access</Button></div>)}</div></section><section className="ops-two-column"><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Programmes</p><h2>Create a group</h2></div><Users /></div><div className="ops-form-stack"><label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Programme · Group A" /></label><label>Assigned facilitator<Input type="email" value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} /></label><label>Published Lab<Select value={labKey} onValueChange={setLabKey}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{data.publishedLabs.map(lab => <SelectItem key={`${lab.code}:${lab.version}`} value={`${lab.code}:${lab.version}`}>{lab.title} {lab.version}</SelectItem>)}</SelectContent></Select></label><Button disabled={saving || !cohortName || !facilitatorEmail || !chosenLab} onClick={async () => { if (await act({ action: "createCohort", name: cohortName, facilitatorEmail, labCode, labVersion })) setCohortName(""); }}><Plus /> Create group</Button></div><div className="ops-cohort-list">{data.cohorts.map((cohort) => <div key={cohort.id}><span><strong>{cohort.name}</strong><small>{cohort.facilitatorEmail} · {cohort.memberCount ?? 0} learners</small></span><Badge variant="outline">v{cohort.labVersion}</Badge></div>)}</div></div><div className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Learners</p><h2>Add a learner</h2></div><UserPlus /></div><div className="ops-form-stack"><label>Active group<Select value={cohortId} onValueChange={setCohortId}><SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger><SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent></Select></label><label>Learner email<Input type="email" value={learnerEmail} onChange={(event) => setLearnerEmail(event.target.value)} placeholder="learner@example.org" /></label><Button disabled={saving || !cohortId || !learnerEmail} onClick={() => void act({ action: "addCohortMember", cohortId, learnerEmail })}>Add learner</Button></div><div className="ops-divider" /><div className="ops-form-stack"><p className="ops-helper">Give a learner a published Lab version without adding them to a group.</p><label>Learner email<Input type="email" value={versionLearnerEmail} onChange={(event) => setVersionLearnerEmail(event.target.value)} /></label><Button variant="outline" disabled={saving || !versionLearnerEmail || !chosenLab} onClick={() => void act({ action: "assignLabVersion", learnerEmail: versionLearnerEmail, labCode, labVersion })}>Assign {chosenLab?.title ?? "Lab"} {labVersion}</Button></div></div></section><section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2><p>Shows how often learners had a real chance to test the behaviour.</p></div><Activity /></div><div className="opportunity-bands"><div><span>No opportunity</span><strong>{data.metrics.opportunityBands.none}</strong></div><div><span>One</span><strong>{data.metrics.opportunityBands.one}</strong></div><div><span>Two</span><strong>{data.metrics.opportunityBands.two}</strong></div><div><span>Three or more</span><strong>{data.metrics.opportunityBands.threePlus}</strong></div></div></section><section><div className="ops-section-heading"><div><p className="eyebrow">Learners</p><h2>Learner progress</h2></div><Badge variant="outline">Private responses hidden</Badge></div><div className="ops-learner-grid">{data.learners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div></section></div>;
+  function editAssignment(assignment: RoleAssignment) {
+    setEditingAssignmentId(assignment.id);
+    setRoleEmail(assignment.principalEmail);
+    setRole(assignment.role);
+    setRoleCohortId(assignment.scopeType === "COHORT" ? assignment.scopeId : data.cohorts[0]?.id ?? "");
+  }
+
+  function cancelAccessEdit() {
+    setEditingAssignmentId("");
+    setRoleEmail(identity.email);
+    setRole("FACILITATOR");
+    setRoleCohortId(data.cohorts[0]?.id ?? "");
+  }
+
+  async function saveAccess() {
+    const ok = await act({
+      action: editingAssignmentId ? "updateRoleAssignment" : "assignRole",
+      assignmentId: editingAssignmentId || undefined,
+      email: roleEmail,
+      role,
+      cohortId: scopedRole ? roleCohortId : undefined,
+    });
+    if (ok) cancelAccessEdit();
+  }
+
+  function addProgrammeLab() {
+    if (!labToAdd) return;
+    if (programmeFormat === "SINGLE_LAB") {
+      setProgrammeLabs([labToAdd]);
+      return;
+    }
+    setProgrammeLabs((current) => current.includes(labToAdd) ? current : [...current, labToAdd]);
+  }
+
+  function removeProgrammeLab(code: string) {
+    setProgrammeLabs((current) => current.filter((item) => item !== code));
+  }
+
+  function changeProgrammeFormat(value: string) {
+    setProgrammeFormat(value);
+    if (value === "SINGLE_LAB" && programmeLabs.length > 1) setProgrammeLabs([programmeLabs[0]]);
+  }
+
+  async function createGroup() {
+    const ok = await act({
+      action: "createCohort",
+      name: cohortName,
+      facilitatorEmail,
+      programmeFormat,
+      labCodes: programmeLabs,
+      labCode: programmeLabs[0],
+      labVersion: data.publishedLabs.find(lab => lab.code === programmeLabs[0])?.version,
+      participantEmails,
+      labPlan: programmeLabs.map(code => { const lab = data.publishedLabs.find(lab => lab.code === code); return {code, version: lab?.version}; }),
+      requestKey,
+    });
+    if (!ok) return;
+    setRequestKey(crypto.randomUUID());
+    setCohortName("");
+    setParticipantEmails("");
+  }
+
+  return (
+    <div className="ops-stack">
+      <section hidden={section !== "all" && section !== "overview"} className="ops-metrics">
+        <article><UserCog /><span>Learners in BIS</span><strong>{data.metrics.learners}</strong></article>
+        <article><ClipboardCheck /><span>Labs completed</span><strong>{data.metrics.completed}</strong></article>
+        <article><Activity /><span>Real-world tests running</span><strong>{data.metrics.experimentActive}</strong></article>
+        <article><ShieldAlert /><span>Open support cases</span><strong>{data.metrics.openSafeguardingCases}</strong><small>Group count only</small></article>
+      </section>
+
+      <section hidden={section !== "all" && section !== "access"} className="surface-card ops-section">
+        <div className="section-title">
+          <div><p className="eyebrow">Access</p><h2>{editingAssignmentId ? "Edit access" : "Manage access"}</h2><p>Choose the role and, where relevant, the programme group.</p></div>
+          <UserCog />
+        </div>
+        <div className="ops-form-row">
+          <Input aria-label="Staff email" type="email" value={roleEmail} onChange={(event) => setRoleEmail(event.target.value)} placeholder="staff@example.org" />
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="FACILITATOR">Facilitator</SelectItem>
+              <SelectItem value="SAFEGUARDING_OFFICER">Safeguarding officer</SelectItem>
+              <SelectItem value="SPONSOR_VIEWER">Programme results · view only</SelectItem>
+              <SelectItem value="PROGRAMME_OWNER">Programme lead · decisions</SelectItem>
+              <SelectItem value="SYSTEM_ADMIN">BIS administrator</SelectItem>
+            </SelectContent>
+          </Select>
+          {scopedRole ? (
+            <Select value={roleCohortId} onValueChange={setRoleCohortId}>
+              <SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger>
+              <SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent>
+            </Select>
+          ) : null}
+          <Button disabled={saving || !roleEmail || (scopedRole && !roleCohortId)} onClick={() => void saveAccess()}>
+            <UserPlus /> {editingAssignmentId ? "Save access" : "Give access"}
+          </Button>
+          {editingAssignmentId ? <Button variant="outline" disabled={saving} onClick={cancelAccessEdit}>Cancel</Button> : null}
+        </div>
+        <div className="ops-role-list">
+          {activeRoles.map((assignment) => (
+            <div key={assignment.id}>
+              <span>
+                <strong>{assignment.principalEmail}</strong>
+                <small>{label(assignment.role)}{assignment.scopeType === "COHORT" ? ` · group ${data.cohorts.find((cohort) => cohort.id === assignment.scopeId)?.name ?? assignment.scopeId}` : ""} · assigned {formatDate(assignment.assignedAt)}</small>
+              </span>
+              <span className="ops-inline-actions">
+                <Button variant="outline" size="sm" disabled={saving} onClick={() => editAssignment(assignment)}>Edit</Button>
+                <Button variant="outline" size="sm" disabled={saving} onClick={() => void act({ action: "revokeRole", assignmentId: assignment.id })}>Remove access</Button>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section hidden={section !== "all" && section !== "groups"} className="ops-two-column">
+        <div className="surface-card ops-section">
+          <div className="section-title">
+            <div><p className="eyebrow">Programmes</p><h2>Create a group</h2><p>Set up the facilitator, Labs and participant list together.</p></div>
+            <Users />
+          </div>
+          <div className="ops-form-stack">
+            <label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Programme · Group A" /></label>
+            <label>Facilitator email<Input type="email" value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} /></label>
+            <label>Programme format
+              <Select value={programmeFormat} onValueChange={changeProgrammeFormat}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SINGLE_LAB">Single Lab</SelectItem>
+                  <SelectItem value="PILOT">Pilot</SelectItem>
+                  <SelectItem value="SIX_CYCLE">Six-Lab cycle</SelectItem>
+                  <SelectItem value="CUSTOM">Custom programme</SelectItem>
+                </SelectContent>
+              </Select>
+            </label>
+            <label>Labs
+              <div className="ops-form-row">
+                <Select value={labToAdd} onValueChange={setLabToAdd}>
+                  <SelectTrigger><SelectValue placeholder="Choose a Lab" /></SelectTrigger>
+                  <SelectContent>{data.publishedLabs.map((lab) => <SelectItem key={lab.code} value={lab.code}>{lab.code} · {lab.title}</SelectItem>)}</SelectContent>
+                </Select>
+                <Button type="button" variant="outline" onClick={addProgrammeLab}>Add Lab</Button>
+              </div>
+            </label>
+            <div className="ops-role-list">
+              {programmeLabs.map((code) => {
+                const lab = data.publishedLabs.find((item) => item.code === code);
+                return (
+                  <div key={code}>
+                    <span><strong>{lab?.title ?? code}</strong><small>{code}{Boolean(lab) ? " · available now" : " · unavailable"}</small></span>
+                    <Button type="button" variant="outline" size="sm" disabled={programmeLabs.length === 1} onClick={() => removeProgrammeLab(code)}>Remove</Button>
+                  </div>
+                );
+              })}
+            </div>
+            <label>Participant emails <span>(optional)</span>
+              <Textarea value={participantEmails} onChange={(event) => setParticipantEmails(event.target.value)} placeholder={"one@email.org\nanother@email.org\nthird@email.org"} />
+            </label>
+            <Button disabled={saving || !cohortName || !facilitatorEmail || programmeLabs.length === 0} onClick={() => void createGroup()}><Plus /> Create group</Button>
+          </div>
+          <div className="ops-cohort-list">
+            {data.cohorts.map((cohort) => (
+              <div key={cohort.id}>
+                <span>
+                  <strong>{cohort.name}</strong>
+                  <small>{cohort.facilitatorEmail || "Facilitator not assigned"} · {cohort.memberCount ?? 0} active{cohort.pendingCount ? ` · ${cohort.pendingCount} awaiting sign-in` : ""}</small>
+                  <small>{label(cohort.programmeFormat ?? "SINGLE_LAB")} · {(cohort.labCodes ?? [cohort.labCode]).join(", ")}</small>
+                </span>
+                <Badge variant="outline">{(cohort.labCodes ?? [cohort.labCode]).length} Lab{(cohort.labCodes ?? [cohort.labCode]).length === 1 ? "" : "s"}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="surface-card ops-section">
+          <div className="section-title">
+            <div><p className="eyebrow">Participants</p><h2>Add people to a group</h2><p>Paste several email addresses at once. People who have not signed in yet will join automatically when they set up BIS.</p></div>
+            <UserPlus />
+          </div>
+          <div className="ops-form-stack">
+            <label>Programme group
+              <Select value={cohortId} onValueChange={setCohortId}>
+                <SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger>
+                <SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </label>
+            <label>Participant emails
+              <Textarea value={moreParticipantEmails} onChange={(event) => setMoreParticipantEmails(event.target.value)} placeholder={"learner1@example.org\nlearner2@example.org"} />
+            </label>
+            <Button disabled={saving || !cohortId || !moreParticipantEmails.trim()} onClick={async () => {
+              if (await act({ action: "addCohortParticipants", cohortId, participantEmails: moreParticipantEmails })) setMoreParticipantEmails("");
+            }}>Add participants</Button>
+          </div>
+        </div>
+      </section>
+
+      <section hidden={section !== "all" && section !== "overview"} className="surface-card ops-section">
+        <div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2><p>Shows how often learners had a real chance to test the behaviour.</p></div><Activity /></div>
+        <div className="opportunity-bands">
+          <div><span>No opportunity</span><strong>{data.metrics.opportunityBands.none}</strong></div>
+          <div><span>One</span><strong>{data.metrics.opportunityBands.one}</strong></div>
+          <div><span>Two</span><strong>{data.metrics.opportunityBands.two}</strong></div>
+          <div><span>Three or more</span><strong>{data.metrics.opportunityBands.threePlus}</strong></div>
+        </div>
+      </section>
+
+      <section hidden={section !== "all" && section !== "overview"}>
+        <div className="ops-section-heading"><div><p className="eyebrow">Learners</p><h2>Learner progress</h2></div><Badge variant="outline">Private responses hidden</Badge></div>
+        <div className="ops-learner-grid">{data.learners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div>
+      </section>
+    </div>
+  );
 }
 
 function SafeguardingPanel({ data, saving, act }: { data: NonNullable<StaffSnapshot["safeguarding"]>; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {

@@ -268,6 +268,7 @@ class ReportCanvas {
   pages: Page[] = [];
   current: Page = { commands: [] };
   y = PAGE_H - MARGIN;
+  constructor(private readonly illustrative = false) {}
 
   page(fill: Color = C.paper, cover = false) {
     if (this.current.commands.length) this.pages.push(this.current);
@@ -280,6 +281,9 @@ class ReportCanvas {
     if (this.current.commands.length) this.pages.push(this.current);
     const total = this.pages.length;
     this.pages.forEach((page, index) => {
+      if (this.illustrative) {
+        page.commands.push(this.textCmd(48, 44, "ILLUSTRATIVE SIMULATION - FICTIONAL DATA - NOT MEASURED PROGRAMME RESULTS", 7, true, C.terracotta));
+      }
       if (page.cover) return;
       page.commands.push(rgb(C.line, true));
       page.commands.push("0.6 w 48 33 m 547 33 l S");
@@ -1669,8 +1673,8 @@ function drawActionPlan(canvas: ReportCanvas, outcome: Outcome) {
   );
 }
 
-export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date()) {
-  const canvas = new ReportCanvas();
+export function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date(), options: { illustrative?: boolean } = {}) {
+  const canvas = new ReportCanvas(options.illustrative === true);
   drawCover(canvas, outcome, generatedAt);
 
   if (outcome.suppressed || outcome.evidenceFlow?.suppressed || (!outcome.metrics && outcome.evidenceFlow?.runtimeMode !== "DYNAMIC")) {

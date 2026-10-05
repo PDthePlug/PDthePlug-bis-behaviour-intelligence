@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {PGlite} from '@electric-sql/pglite';
+const db=new PGlite(),root=new URL('../supabase/migrations/',import.meta.url);
+await db.exec(`create role anon;create role authenticated;create schema private;
+create function private.current_app_user_id() returns text language sql as $$select nullif(current_setting('test.owner',true),'')$$;
+grant usage on schema private to authenticated;grant execute on function private.current_app_user_id() to authenticated;
+create table learners(user_id text primary key);create table experiments(id text primary key);
+create table responses(id text primary key,user_id text,value text,response_status text);
+create function private.assessment_record_immutable() returns trigger language plpgsql as $$begin raise exception 'Append-only history';end$$;`);
+const base=await readFile(new URL('20260909000000_bis_production.sql',root),'utf8');
+for(const table of ['measurement_values','measurement_sources'])await db.exec(base.match(new RegExp(`create table public\\.${table} \\([\\s\\S]*?\\n\\);`,'i'))[0]);
+await db.exec(await readFile(new URL('20261001103000_universal_lab_measurement_scope.sql',root),'utf8'));
+await db.exec(await readFile(new URL('20261005122458_longitudinal_measurement_snapshots.sql',root),'utf8'));
+await db.exec(`insert into learners values('learner'),('other');insert into responses values('r1','learner','1','ANSWERED'),('r2','learner','2','ANSWERED');
+set test.owner='learner';grant select,insert,update,delete on measurement_values,measurement_sources to authenticated;alter table measurement_values enable row level security;alter table measurement_sources enable row level security;create policy own on measurement_values for all to authenticated using(user_id=private.current_app_user_id()) with check(user_id=private.current_app_user_id());create policy own on measurement_sources for all to authenticated using(user_id=private.current_app_user_id()) with check(user_id=private.current_app_user_id());set role authenticated;`);
+test.after(()=>db.close());
+const history=async()=>(await db.query('select * from measurement_history order by recorded_at')).rows;
+test('atomic recalculation captures the final exact sources, deduplicates retries and retains old calculations',async()=>{
+ await db.exec(`begin;insert into measurement_values(id,user_id,enrolment_id,lab_code,lab_version,code,value,status,evidence_strength) values('m','learner','enrolment','SYS','1','SYS.MEASURE','1','VALUE','LIMITED');insert into measurement_sources(id,measurement_id,user_id,source_object_type,source_object_id,input_role,input_value) values('s1','m','learner','RESPONSE','r1','FIELD','1');commit;`);
+ let snapshots=await history();assert.equal(snapshots.length,1);assert.equal(snapshots[0].source_state,'VERIFIED_AT_CAPTURE');assert.equal(snapshots[0].source_snapshot[0].id,'r1');
+ await db.exec(`begin;update measurement_values set value='2',calculated_at=clock_timestamp() where id='m';delete from measurement_sources where measurement_id='m';insert into measurement_sources(id,measurement_id,user_id,source_object_type,source_object_id,input_role,input_value) values('s2','m','learner','RESPONSE','r2','FIELD','2');commit;`);
+ snapshots=await history();assert.equal(snapshots.length,2);assert.equal(snapshots[0].value,'1');assert.equal(snapshots[0].source_snapshot[0].id,'r1');assert.equal(snapshots[1].value,'2');assert.equal(snapshots[1].source_snapshot[0].id,'r2');
+ await db.exec("update measurement_values set calculated_at=clock_timestamp() where id='m'");assert.equal((await history()).length,2);
+ await assert.rejects(db.exec("update measurement_history set value='99'"),/permission denied/);
+ await db.exec("set test.owner='other'");assert.deepEqual(await history(),[]);await db.exec("set test.owner='learner'");
+});
+test('missing sources remain unanchored and failed transactions create no false snapshot',async()=>{
+ await db.exec(`insert into measurement_values(id,user_id,enrolment_id,code,value,status,evidence_strength) values('missing','learner','enrolment','MISSING','null','NA','NONE');`);
+ assert.equal((await history()).find(h=>h.measurement_id==='missing').source_state,'UNANCHORED');const before=await history();
+ await db.exec('begin');await db.exec("update measurement_values set value='3' where id='m'");await db.exec('rollback');assert.deepEqual(await history(),before);
+});

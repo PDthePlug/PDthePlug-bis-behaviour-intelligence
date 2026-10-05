@@ -13,9 +13,9 @@ test("sponsor access is a first-class cohort-scoped staff role", async () => {
 
   assert.match(access, /"SPONSOR_VIEWER"/);
   assert.match(access, /"PROGRAMME_OWNER"/);
-  assert.match(route, /role === "SPONSOR_VIEWER" \|\| role === "PROGRAMME_OWNER"/);
-  assert.match(route, /scopeType = organisationRole \? "COHORT" : "GLOBAL"/);
-  assert.match(route, /Choose an active programme group for organisation reporting/);
+  assert.match(route, /role === "FACILITATOR" \|\| role === "SPONSOR_VIEWER" \|\| role === "PROGRAMME_OWNER"/);
+  assert.match(route, /scopeType: "GLOBAL" \| "COHORT" = cohortScoped \? "COHORT" : "GLOBAL"/);
+  assert.match(route, /Choose an active programme group for this access/);
   assert.match(route, /SPONSOR_VIEWER/);
 });
 
@@ -120,7 +120,7 @@ test("deeper analysis is an explicit expandable organisation layer", async () =>
     source("app/programme-outcomes-view.css"),
   ]);
 
-  assert.match(view, /<details className="outcomes-deeper-analysis">/);
+  assert.match(view, /<details hidden=\{section !== "all" && section !== "evidence"\} className="outcomes-deeper-analysis">/);
   assert.match(view, /What were people exploring\?/);
   assert.match(view, /What people explored/);
   assert.match(view, /What to look at next/);

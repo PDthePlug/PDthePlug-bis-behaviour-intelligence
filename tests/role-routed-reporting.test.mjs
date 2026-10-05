@@ -30,7 +30,7 @@ test("staff workspace defaults directly to a permitted perspective", async () =>
   assert.match(shell, /return "admin"/);
   assert.match(shell, /defaultPerspective\(session\.roles\)/);
   assert.match(shell, /requestedPerspective/);
-  assert.match(shell, /params\.set\("view", next\)/);
+  assert.match(shell, /params\.set\("view", view\)/);
 });
 
 test("programme PDF export requires organisation reporting or system administration", async () => {

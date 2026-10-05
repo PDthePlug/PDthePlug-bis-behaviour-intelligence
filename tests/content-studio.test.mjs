@@ -89,7 +89,8 @@ test("future content has stable module and Lab package contracts", async () => {
 
 test("Administration exposes the Content Studio only to administrators", async () => {
   const shell = await source("app/workspace/staff-workspace-shell.tsx");
-  assert.match(shell, /adminAvailable \? <Link className="staff-workspace-learner-link" href="\/content-studio">Content Studio<\/Link> : null/);
+  assert.match(shell, /adminAvailable \? \[{label:"Administration",items:/);
+  assert.match(shell, /label:"Content Studio"[\s\S]*href:"\/content-studio"/);
 });
 
 

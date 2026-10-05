@@ -18,7 +18,7 @@ test("staff entry resolves roles automatically without a second open-workspace g
   assert.match(shell, /fetch\("\/api\/staff"/);
   assert.match(shell, /setSession\(/);
   assert.match(shell, /defaultPerspective\(session\.roles\)/);
-  assert.match(shell, /params\.set\("view", next\)/);
+  assert.match(shell, /params\.set\("view", view\)/);
   assert.match(shell, /router\.push\(/);
   assert.doesNotMatch(shell, /Open workspace/);
   assert.doesNotMatch(shell, /Open staff workspace/);
@@ -30,9 +30,9 @@ test("workspace navigation exists only for roles that can use each surface", asy
   assert.match(shell, /roles\.includes\("FACILITATOR"\)/);
   assert.match(shell, /roles\.includes\("SPONSOR_VIEWER"\) \|\| roles\.includes\("PROGRAMME_OWNER"\) \|\| roles\.includes\("SYSTEM_ADMIN"\)/);
   assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
-  assert.match(shell, /facilitatorAvailable \? \(/);
-  assert.match(shell, /outcomesAvailable \? \(/);
-  assert.match(shell, /adminAvailable \? \(/);
+  assert.match(shell, /facilitatorAvailable \? \[{label:/);
+  assert.match(shell, /outcomesAvailable \? \[{label:/);
+  assert.match(shell, /adminAvailable \? \[{label:/);
   assert.match(shell, /Programme results/);
   assert.match(shell, /Administration/);
   assert.doesNotMatch(shell, /Audit View/);
@@ -49,9 +49,11 @@ test("manual hide and inactivity use a privacy cover rather than re-authenticati
 
 test("facilitator workspace keeps four operational views and opens learning through the shared learner experience", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
-  for (const label of ["Group", "Learners", "Support", "Review"]) {
-    assert.match(facilitator, new RegExp(">" + label + "<"));
-  }
+  const shell = await source("app/workspace/staff-workspace-shell.tsx");
+  for (const label of ["Group", "Learners", "Support", "Review"]) assert.ok(shell.includes(`"${label}"`));
+  assert.match(shell, /<WorkspaceMenu groups=\{menuGroups\}/);
+  assert.doesNotMatch(facilitator, /facilitator-subnav/);
+  assert.doesNotMatch(shell, /staff-workspace-switcher/);
   assert.doesNotMatch(facilitator, />Session<\/button>/);
   assert.match(facilitator, /Learner experience/);
   assert.match(facilitator, /type FacilitatorSection = "cohort" \| "participants" \| "support" \| "review"/);
@@ -146,4 +148,47 @@ test("programme owner opens Programme results without gaining administration", a
   assert.match(shell, /roles\.includes\("PROGRAMME_OWNER"\)/);
   assert.match(shell, /return "outcomes"/);
   assert.match(shell, /roles\.includes\("SYSTEM_ADMIN"\)/);
+});
+
+
+test("administration supports scoped facilitators editable access and one-pass programme onboarding", async () => {
+  const [view, route, schema, migration] = await Promise.all([
+    source("app/operations-view.tsx"),
+    source("app/api/staff/route.ts"),
+    source("db/schema.ts"),
+    source("supabase/migrations/20261001123500_programme_onboarding.sql"),
+  ]);
+
+  assert.match(view, /Edit access/);
+  assert.match(view, /updateRoleAssignment/);
+  assert.match(view, /role === "FACILITATOR" \|\| role === "SPONSOR_VIEWER" \|\| role === "PROGRAMME_OWNER"/);
+  assert.match(view, /Create a group/);
+  assert.match(view, /Programme format/);
+  assert.match(view, /Participant emails/);
+  assert.match(view, /addCohortParticipants/);
+
+  assert.match(route, /bis_create_programme_group/);
+  assert.match(route, /labPlan/);
+  assert.match(route, /bis_add_programme_participants/);
+  assert.match(route, /scopeType: "GLOBAL" \| "COHORT"/);
+  assert.match(route, /role === "FACILITATOR"/);
+  assert.match(route, /cohortParticipantInvites/);
+
+  assert.match(schema, /programmeFormat: text\("programme_format"\)/);
+  assert.match(schema, /labCodes: text\("lab_codes"\)/);
+  assert.match(schema, /cohortParticipantInvites/);
+
+  assert.match(migration, /alter column facilitator_email drop not null/);
+  assert.match(migration, /create table if not exists public\.cohort_participant_invites/);
+  assert.match(migration, /r\.scope_type = 'COHORT'/);
+});
+
+test("pending participant emails are claimed automatically when the learner completes setup", async () => {
+  const route = await source("app/api/bis/route.ts");
+  assert.match(route, /rpc\("bis_claim_programme_invites"\)/);
+  const worker=await source("supabase/migrations/20261005151940_workspace_consolidation_integrity.sql");
+  assert.match(worker, /lower\(q.email\)=private.current_email\(\)/);
+  assert.match(worker, /claimed_user_id=uid/);
+  assert.match(worker, /status='CLAIMED'/);
+  assert.match(worker, /insert into public.cohort_members/);
 });

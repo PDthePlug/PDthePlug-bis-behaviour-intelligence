@@ -8,6 +8,7 @@ import "./habit-lab/focused-runtime.css";
 import "./responsive-readiness.css";
 import "./learning/handbook-presentation.css";
 import "./learner-document-system.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const metadataBase = new URL(BIS_PRODUCTION_ORIGIN);
 
@@ -59,7 +60,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en-ZA">
-      <body className="antialiased"><PwaProvider>{children}</PwaProvider></body>
+      <body className="antialiased">
+        <PwaProvider>{children}</PwaProvider>
+        {process.env.VERCEL === "1" ? <Analytics /> : null}
+      </body>
     </html>
   );
 }

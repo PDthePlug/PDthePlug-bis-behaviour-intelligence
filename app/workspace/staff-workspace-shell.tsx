@@ -3,15 +3,21 @@
 import { BisMark } from "@/components/brand/bis-mark";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Activity,
+  BookOpen,
+  ClipboardCheck,
+  Users,
+  ShieldAlert,
+  UserRound,
   Eye,
   EyeOff,
   LayoutDashboard,
   Settings2,
 } from "lucide-react";
+import { WorkspaceMenu, type WorkspaceDestination } from "@/components/workspace-menu";
 import { OperationsView } from "../operations-view";
 
 type Perspective = "facilitator" | "outcomes" | "admin";
@@ -44,9 +50,9 @@ export function StaffWorkspaceShell() {
   const [hidden, setHidden] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -159,15 +165,43 @@ export function StaffWorkspaceShell() {
           ? "admin"
           : defaultPerspective(session.roles);
 
-  function openPerspective(next: Perspective) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("view", next);
-    params.delete("section");
-    params.delete("learner");
-    params.delete("group");
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const allowedSections = perspective === "facilitator" ? ["cohort","participants","support","review"] : perspective === "outcomes" ? ["overview","learning","evidence","decisions","reports"] : ["overview","groups","access","assessment"];
+  const section = allowedSections.includes(searchParams.get("section") ?? "") ? searchParams.get("section")! : allowedSections[0];
+  function changeContext(patch: {section?: string; group?: string}) {
+    const params = new URLSearchParams(searchParams.toString()); params.set("view",perspective);
+    if(patch.section) params.set("section",patch.section); if(patch.group) params.set("group",patch.group);
+    router.push(`${pathname}?${params}`,{scroll:false});
   }
+  function destination(view: Perspective, task: string, label: string, detail: string, icon: WorkspaceDestination["icon"]): WorkspaceDestination {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", view); params.set("section", task); params.delete("learner");
+    if(view !== perspective) params.delete("group");
+    return {id:`${view}:${task}`,label,detail,icon,href:`${pathname}?${params}`,active:perspective===view && (section??(view==="facilitator"?"cohort":"overview"))===task};
+  }
+  const menuGroups = [
+    ...(facilitatorAvailable ? [{label:"Facilitator operations",items:[
+      destination("facilitator","cohort","Group","Plan the class and see who needs attention",Users),
+      destination("facilitator","participants","Learners","Follow each learner’s progress",UserRound),
+      destination("facilitator","support","Support","Record follow-up and refer concerns",ShieldAlert),
+      destination("facilitator","review","Review","Review shared evidence and give feedback",ClipboardCheck),
+    ]}] : []),
+    ...(outcomesAvailable ? [{label:"Programme results",items:[
+      destination("outcomes","overview","Results overview","Programme coverage and the evidence chain",Activity),
+      destination("outcomes","learning","Learning journey","Learning checks and question patterns",BookOpen),
+      destination("outcomes","evidence","Evidence & outcomes","Explore accumulated group evidence",ClipboardCheck),
+      destination("outcomes","decisions","Programme decisions","Turn group patterns into actions",Settings2),
+      destination("outcomes","reports","Reports","Cohort and institutional assessment reports",LayoutDashboard),
+    ]}] : []),
+    ...(adminAvailable ? [{label:"Administration",items:[
+      destination("admin","overview","Operations overview","Programme activity and priorities",LayoutDashboard),
+      destination("admin","groups","Groups & enrolment","Create groups and assign learners",Users),
+      destination("admin","access","People & access","Give or remove role-based access",UserRound),
+      destination("admin","assessment","Assessment governance","Map curriculum evidence and enable authored rubrics",ClipboardCheck),
+      {id:"commercial",label:"Commercial workspace",detail:"Partnerships, opportunities and follow-up",href:"/commercial",icon:LayoutDashboard},
+      {id:"content",label:"Content Studio",detail:"Prepare, review and publish programme content",href:"/content-studio",icon:BookOpen},
+    ]}] : []),
+    {label:"Your account",items:[{id:"profile",label:"Profile",detail:"Account and sign out",href:"/profile",icon:UserRound},{id:"learner",label:"Learner experience",detail:"Open the learning workspace",href:"/habit",icon:BookOpen}]},
+  ];
 
   return (
     <div className="staff-workspace-shell">
@@ -178,54 +212,17 @@ export function StaffWorkspaceShell() {
         </Link>
         <div className="staff-workspace-actions">
           <span className="staff-workspace-identity">{session.identity.email}</span>
-          <Link className="staff-workspace-learner-link" href="/profile">Profile</Link>
-          <Link className="staff-workspace-learner-link" href="/habit">Learner experience</Link>
-          {adminAvailable ? <Link className="staff-workspace-learner-link" href="/content-studio">Content Studio</Link> : null}
           <button type="button" className="staff-workspace-hide" onClick={() => setHidden(true)}>
             <EyeOff aria-hidden="true" /> Hide
           </button>
         </div>
       </header>
 
-      <nav className="staff-workspace-switcher" aria-label="Staff workspace views">
-        {facilitatorAvailable ? (
-          <button
-            type="button"
-            className={perspective === "facilitator" ? "active" : ""}
-            onClick={() => openPerspective("facilitator")}
-            aria-current={perspective === "facilitator" ? "page" : undefined}
-          >
-            <LayoutDashboard aria-hidden="true" />
-            <span><strong>{session.roles.includes("FACILITATOR") ? "Facilitator" : "Safeguarding"}</strong></span>
-          </button>
-        ) : null}
-        {outcomesAvailable ? (
-          <button
-            type="button"
-            className={perspective === "outcomes" ? "active" : ""}
-            onClick={() => openPerspective("outcomes")}
-            aria-current={perspective === "outcomes" ? "page" : undefined}
-          >
-            <Activity aria-hidden="true" />
-            <span><strong>Programme results</strong></span>
-          </button>
-        ) : null}
-        {adminAvailable ? (
-          <button
-            type="button"
-            className={perspective === "admin" ? "active" : ""}
-            onClick={() => openPerspective("admin")}
-            aria-current={perspective === "admin" ? "page" : undefined}
-          >
-            <Settings2 aria-hidden="true" />
-            <span><strong>Administration</strong></span>
-          </button>
-        ) : null}
-      </nav>
-
-      <main className="staff-workspace-main">
-        <OperationsView initialRoles={session.roles} perspective={perspective} />
+      <a className="canonical-skip" href="#staff-task">Skip to current task</a>
+      <main id="staff-task" tabIndex={-1} className="staff-workspace-main">
+        <OperationsView initialRoles={session.roles} perspective={perspective} section={section} onSectionChange={section=>changeContext({section})} cohortId={searchParams.get("group")??undefined} onCohortChange={group=>changeContext({group})} />
       </main>
+      <WorkspaceMenu groups={menuGroups} label="Staff workspace menu" />
     </div>
   );
 }

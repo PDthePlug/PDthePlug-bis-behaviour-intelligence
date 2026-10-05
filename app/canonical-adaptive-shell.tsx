@@ -15,17 +15,19 @@ import {
 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-type ShellStage = "today" | "learn" | "lab" | "experiment" | "profile";
+type ShellStage = "today" | "learn" | "lab" | "experiment" | "portfolio" | "profile";
 
 const stageLabels: Record<ShellStage, string> = {
   today: "Today",
   learn: "Learn",
   lab: "Lab",
   experiment: "Experiment",
+  portfolio: "Evidence Portfolio",
   profile: "Profile",
 };
 
 function resolveStage(pathname: string, section: string | null): ShellStage {
+  if (pathname.startsWith("/portfolio")) return "portfolio";
   if (pathname.startsWith("/profile")) return "profile";
   if (pathname.startsWith("/learn") || pathname.startsWith("/handbooks/")) return "learn";
   if (pathname.startsWith("/labs")) return "lab";
@@ -79,6 +81,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         href: experimentHref,
         icon: CalendarDays,
       },
+      {id:"portfolio" as const,label:"Evidence Portfolio",detail:"Your evidence and development over time",href:"/portfolio",icon:BookOpen},
       {
         id: "profile" as const,
         label: "Profile",
@@ -221,4 +224,3 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
     </div>
   );
 }
-
