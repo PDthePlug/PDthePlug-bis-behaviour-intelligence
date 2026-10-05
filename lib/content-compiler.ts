@@ -14,7 +14,7 @@ import {
 import { sha256Hex } from "./content-studio";
 import { prepareUniversalLabPresentation } from "./universal-lab-presentation.mjs";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-7";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-8";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
