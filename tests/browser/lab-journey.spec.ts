@@ -165,14 +165,14 @@ test("Lab investigation renders through the shared learner-document surface", as
   await service(page, 2);
   await page.goto("/labs/ldr?step=1");
 
-  const document = page.locator(".learner-document");
-  await expect(document).toBeVisible();
-  await expect(document.locator(".learner-document-header")).toBeVisible();
-  await expect(document.locator(".learner-document-title")).toBeVisible();
-  await expect(document.locator(".learner-document-purpose")).toBeVisible();
-  await expect(document.locator(".learner-document-body")).toBeVisible();
+  const surface = page.locator(".learner-document");
+  await expect(surface).toBeVisible();
+  await expect(surface.locator(".learner-document-header")).toBeVisible();
+  await expect(surface.locator(".learner-document-title")).toBeVisible();
+  await expect(surface.locator(".learner-document-purpose")).toBeVisible();
+  await expect(surface.locator(".learner-document-body")).toBeVisible();
 
-  const geometry = await document.evaluate((element) => {
+  const geometry = await surface.evaluate((element) => {
     const style = getComputedStyle(element);
     return {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
