@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Profile · BIS",
-  description: "Your BIS profile, account access and sign-out controls.",
+  description: "Your BIS identity, experience, personal settings and account access.",
 };
 
 export default async function ProfilePage() {
