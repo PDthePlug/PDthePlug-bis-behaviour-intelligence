@@ -91,7 +91,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
       {
         id: "profile" as const,
         label: "Profile",
-        detail: "Identity, settings and sign out",
+        detail: "Account and sign out",
         href: "/profile",
         icon: UserRound,
       },
