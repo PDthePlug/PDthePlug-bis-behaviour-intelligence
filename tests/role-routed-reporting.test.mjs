@@ -46,15 +46,15 @@ test("programme PDF export requires organisation reporting or system administrat
 
 test("programme PDF renderer is a structured institutional report and excludes private learner fields", async () => {
   const pdf = await source("lib/programme-report-pdf.ts");
-  assert.match(pdf, /%PDF-1\.4/);
+  assert.match(pdf, /import PDFDocument from "pdfkit"/);
   assert.match(pdf, /Executive summary/);
   assert.match(pdf, /KEY FINDINGS/);
   assert.match(pdf, /Learning journey/);
   assert.match(pdf, /Behaviour in practice/);
-  assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
+  assert.match(pdf, /buildProgrammeReport/);
   assert.match(pdf, /How much information we have/);
   assert.match(pdf, /Human support/);
-  assert.match(pdf, /Experiment landscape/);
+  assert.match(pdf, /Progress and programme context/);
   assert.match(pdf, /Action plan/);
   assert.match(pdf, /What remains private/);
   for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "hypothesis"]) {
@@ -66,7 +66,7 @@ test("programme outcomes expose a factual summary and PDF action", async () => {
   const view = await source("app/programme-outcomes-view.tsx");
   assert.match(view, /What stands out/);
   assert.match(view, /What the group evidence is telling us/);
-  assert.match(view, /Group averages can hide what happened for individuals/);
+  assert.match(view, /What supports this finding/);
   assert.match(view, /Download PDF/);
   assert.match(view, /report=pdf&cohortId=/);
 });

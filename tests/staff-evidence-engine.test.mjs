@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 const db=new PGlite();
 const migrations=new URL('../supabase/migrations/',import.meta.url);
-await db.exec(`create role anon; create role authenticated; create schema auth; create schema private; create table auth.users(id uuid primary key);
+await db.exec(`set timezone='UTC'; create role anon; create role authenticated; create schema auth; create schema private; create table auth.users(id uuid primary key);
 create function auth.uid() returns uuid language sql as $$select nullif(current_setting('test.auth',true),'')::uuid$$;
 create function private.current_app_user_id() returns text language plpgsql security definer set search_path='' as $$begin return (select user_id from public.learners where user_id=nullif(current_setting('test.owner',true),''));end$$;
 create function private.current_email() returns text language sql as $$select nullif(current_setting('test.email',true),'')$$;

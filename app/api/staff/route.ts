@@ -415,7 +415,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, decisions] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, assessmentResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
@@ -423,12 +423,14 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       client.rpc("sponsor_cohort_learning_checks", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_question_patterns", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_evidence_flow", { target_cohort_id: cohortId }),
+      client.rpc("bis_assessment_report", { p_cohort: cohortId }),
       db
         .select()
         .from(programmeDecisions)
         .where(eq(programmeDecisions.cohortId, cohortId))
         .orderBy(desc(programmeDecisions.createdAt)),
     ]);
+    if (assessmentResult.error) throw new Error("Assessment reporting could not be loaded.");
     if (flowResult.error) throw new Error(flowResult.error.message);
     if (outcomeResult.error) throw new Error(outcomeResult.error.message);
     if (deeperResult.error) throw new Error(deeperResult.error.message);
@@ -440,6 +442,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       cohorts.push({
         ...outcomeResult.data,
         evidenceFlow: flowResult.data,
+        assessmentSummary: (assessmentResult.data as import("../../../lib/evidence-engine").AssessmentReport | null)?.cohorts.find(item => item.id === cohortId) ?? null,
         participantCount: flowResult.data?.participantCount ?? outcomeResult.data.participantCount,
         suppressed: Boolean(outcomeResult.data.suppressed || flowResult.data?.suppressed),
         deepAnalysis: deeperResult.data ?? null,
@@ -538,7 +541,7 @@ async function getHandler(request: Request) {
       const outcome = snapshot.cohorts.find((item) => item.cohort?.id === cohortId);
       if (!outcome) throw new AccessError("This programme report is not available to your account.", 403);
 
-      const pdf = renderProgrammeOutcomePdf(outcome);
+      const pdf = await renderProgrammeOutcomePdf(outcome);
       const filename = programmeReportFilename(outcome.cohort.name);
       await staffAudit(identity, "PROGRAMME_REPORT_EXPORTED", "PILOT_COHORT", cohortId, {
         format: "PDF",
