@@ -1348,7 +1348,7 @@ function markdownBlocks(markdown: string) {
       continue;
     }
 
-    if (/^\s{0,3}(?:(?:-{3,})|(?:\*{3,})|(?:_{3,}))\s*$/.test(line)) {
+    if (/^\s{0,3}(?:(?:-{3,})|(?:\*{3,}))\s*$/.test(line)) {
       flush();
       blocks.push({
         text: "section break",
