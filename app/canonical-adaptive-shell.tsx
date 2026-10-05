@@ -103,6 +103,9 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
     const local = loadLocalPersonalisation();
     if (local) applyPersonalisation(local);
 
+    // Settings owns its profile fetch so it cannot be overwritten by a slower shell request.
+    if (pathname.startsWith("/settings")) return;
+
     const controller = new AbortController();
     void fetch("/api/profile", { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
@@ -128,7 +131,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
       });
 
     return () => controller.abort();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
