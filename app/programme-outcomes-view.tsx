@@ -1,8 +1,9 @@
 "use client";
+import { AssessmentReports } from "./assessment-reports";
 import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
 
 import { programmeEvidenceGuidance } from "@/lib/evidence-reporting.mjs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
   ClipboardCheck,
@@ -729,10 +730,12 @@ export function ProgrammeOutcomesView({
   data,
   saving = false,
   act = async () => false,
+  section = "all", onSectionChange, cohortId, onCohortChange,
 }: {
   data: SponsorSnapshot;
   saving?: boolean;
   act?: StaffAction;
+  section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void;
 }) {
   const [selectedId, setSelectedId] = useState(data.cohorts[0]?.cohort.id ?? "");
   const [decisionSignal, setDecisionSignal] = useState("PROGRAMME_TRANSITION");
@@ -743,9 +746,16 @@ export function ProgrammeOutcomesView({
   const [decisionOwner, setDecisionOwner] = useState("");
   const [decisionReviewOn, setDecisionReviewOn] = useState("");
   const outcome = useMemo(
-    () => data.cohorts.find((item) => item.cohort.id === selectedId) ?? data.cohorts[0] ?? null,
-    [data.cohorts, selectedId],
+    () => data.cohorts.find((item) => item.cohort.id === (cohortId ?? selectedId)) ?? data.cohorts[0] ?? null,
+    [data.cohorts, selectedId, cohortId],
   );
+
+  const [focusDecision,setFocusDecision] = useState(false);
+  useEffect(()=>{
+    if(!focusDecision || (section !== "decisions" && section !== "all")) return;
+    const frame=requestAnimationFrame(()=>{const target=document.getElementById("programme-decision-register");target?.scrollIntoView({behavior:"smooth",block:"start"});target?.focus({preventScroll:true});setFocusDecision(false);});
+    return()=>cancelAnimationFrame(frame);
+  },[focusDecision,section]);
 
   if (!outcome) {
     return (
@@ -766,7 +776,7 @@ export function ProgrammeOutcomesView({
     setDecisionSignal(programmeDecisionSignal(insight.kicker));
     setDecisionTitle(insight.title);
     setDecisionEvidence(insight.body);
-    document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    onSectionChange?.("decisions"); setFocusDecision(true);
   }
 
   function prefillDecisionFromQuestionPattern(
@@ -781,7 +791,7 @@ export function ProgrammeOutcomesView({
     setDecisionSignal("QUESTION_PATTERN");
     setDecisionTitle(question.label);
     setDecisionEvidence(evidence);
-    document.getElementById("programme-decision-register")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    onSectionChange?.("decisions"); setFocusDecision(true);
   }
 
   async function saveDecision() {
@@ -809,7 +819,7 @@ export function ProgrammeOutcomesView({
       <section className="outcomes-hero">
         <div>
           <p className="eyebrow">Programme</p>
-          <h1>Results</h1>
+          <h1>{({overview:"Results",learning:"Learning journey",evidence:"Evidence & outcomes",decisions:"Programme decisions",reports:"Reports"} as Record<string,string>)[section] ?? "Results"}</h1>
         </div>
         <div className="outcomes-hero-actions">
           <div className="outcomes-cohort-picker">
@@ -817,7 +827,7 @@ export function ProgrammeOutcomesView({
             <select
               id="sponsor-cohort"
               value={outcome.cohort.id}
-              onChange={(event) => setSelectedId(event.target.value)}
+              onChange={(event) => {setSelectedId(event.target.value);onCohortChange?.(event.target.value);}}
             >
               {data.cohorts.map((item) => (
                 <option value={item.cohort.id} key={item.cohort.id}>
@@ -833,7 +843,7 @@ export function ProgrammeOutcomesView({
         </div>
       </section>
 
-      <section className="outcomes-context">
+      <section hidden={section !== "all" && section !== "overview"} className="outcomes-context">
         <Metric label="Learners" value={outcome.participantCount} />
         <Metric
           label="Completion"
@@ -843,7 +853,7 @@ export function ProgrammeOutcomesView({
       </section>
 
       {metrics ? (
-        <section className="outcomes-insights">
+        <section hidden={section !== "all" && section !== "overview"} className="outcomes-insights">
           <div className="outcomes-section-heading">
             <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
             <Lightbulb />
@@ -859,7 +869,7 @@ export function ProgrammeOutcomesView({
         </section>
       ) : null}
 
-      {flow && !flow.suppressed && !outcome.suppressed ? <section className="outcomes-evidence-flow">
+      {flow && !flow.suppressed && !outcome.suppressed ? <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-evidence-flow">
         <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>
         <div className="journey-activity-strip">
           <Metric label="Responses recorded" value={flow.totals?.recordedResponses ?? "Hidden for privacy"} />
@@ -884,7 +894,7 @@ export function ProgrammeOutcomesView({
       ) : (
         <>
           {outcome.learningSummary?.learningJourney ? (
-            <section className="outcomes-learning-journey">
+            <section hidden={section !== "all" && section !== "learning"} className="outcomes-learning-journey">
               <div className="outcomes-section-heading">
                 <div>
                   <p className="eyebrow">Learning journey</p>
@@ -966,7 +976,7 @@ export function ProgrammeOutcomesView({
           ) : null}
 
           {outcome.learningChecks && !outcome.learningChecks.suppressed ? (
-            <section className="outcomes-learning-checks">
+            <section hidden={section !== "all" && section !== "learning"} className="outcomes-learning-checks">
               <div className="outcomes-section-heading">
                 <div>
                   <p className="eyebrow">In-session learning checks</p>
@@ -1008,7 +1018,7 @@ export function ProgrammeOutcomesView({
           ) : null}
 
           {outcome.questionPatterns && !outcome.questionPatterns.suppressed && outcome.questionPatterns.questions.length ? (
-            <section className="outcomes-question-patterns">
+            <section hidden={section !== "all" && section !== "learning"} className="outcomes-question-patterns">
               <div className="outcomes-section-heading">
                 <div>
                   <p className="eyebrow">Question intelligence</p>
@@ -1060,7 +1070,7 @@ export function ProgrammeOutcomesView({
           ) : null}
 
           {metrics ? <>
-          <section className="outcome-question-grid">
+          <section hidden={section !== "all" && section !== "evidence"} className="outcome-question-grid">
             <article className="outcome-question-card">
               <div className="outcome-card-title"><Compass /><span>Action</span></div>
               <h2>Are people moving from preparation into action?</h2>
@@ -1144,7 +1154,7 @@ export function ProgrammeOutcomesView({
 
 
           {outcome.organisationLearning && !outcome.organisationLearning.suppressed ? (
-            <section className="outcomes-organisational-learning">
+            <section hidden={section !== "all" && section !== "decisions"} className="outcomes-organisational-learning">
               <div className="outcomes-section-heading">
                 <div>
                   <p className="eyebrow">What the programme can learn</p>
@@ -1194,7 +1204,7 @@ export function ProgrammeOutcomesView({
 
           </> : null}
           {decisionRegister ? (
-            <section id="programme-decision-register" className="programme-decision-register">
+            <section tabIndex={-1} hidden={section !== "all" && section !== "decisions"} id="programme-decision-register" className="programme-decision-register">
               <div className="outcomes-section-heading">
                 <div>
                   <p className="eyebrow">Programme decisions</p>
@@ -1316,7 +1326,7 @@ export function ProgrammeOutcomesView({
           ) : null}
 
           {metrics ? <>
-          <section className="outcomes-actions">
+          <section hidden={section !== "all" && section !== "decisions"} className="outcomes-actions">
             <div className="outcomes-section-heading">
               <div>
                 <p className="eyebrow">Worth exploring</p>
@@ -1336,7 +1346,7 @@ export function ProgrammeOutcomesView({
           </section>
 
           {outcome.deepAnalysis && !outcome.deepAnalysis.suppressed && outcome.deepAnalysis.experimentLandscape ? (
-            <details className="outcomes-deeper-analysis">
+            <details hidden={section !== "all" && section !== "evidence"} className="outcomes-deeper-analysis">
               <summary>
                 <div className="deeper-summary-icon"><Layers3 /></div>
                 <div>
@@ -1441,6 +1451,8 @@ export function ProgrammeOutcomesView({
 
         </>
       )}
+
+      {section === "reports" ? <AssessmentReports key={outcome.cohort.id} cohortId={outcome.cohort.id} /> : null}
 
       <details className="outcomes-privacy-disclosure">
         <summary><ShieldCheck /><span>Privacy and reporting boundaries</span><ChevronDown /></summary>

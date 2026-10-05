@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
  import { BIS_MODULES } from "@/lib/bis-catalogue";
+import { FacilitatorClassOperations } from "./facilitator-class-operations";
+import { FacilitatorAssessment } from "./facilitator-assessment";
 import type { DeliveryEdition } from "@/lib/learning-foundation";
 
 type ProgressRow = {
@@ -240,7 +242,6 @@ export function FacilitatorWorkspace({
     return <div className="ops-empty surface-card"><Users /><h2>No group assigned.</h2><p>A BIS administrator can assign you to a programme group.</p></div>;
   }
 
-  const completed = participants.filter((item) => item.enrolment?.status === "COMPLETED").length;
   const experiments = participants.filter((item) => item.experiment || item.enrolment?.experimentStartedAt).length;
   const reviewReady = participants.filter((item) => (item.enrolment?.currentInvestigation ?? 0) >= 8).length;
   const attention = participants.filter(needsAttention);
@@ -286,13 +287,6 @@ export function FacilitatorWorkspace({
         ) : null}
       </div>
 
-      <nav className="facilitator-subnav" aria-label="Facilitator workspace">
-        <button type="button" className={section === "cohort" ? "active" : ""} onClick={() => navigateWorkspace({ section: "cohort", learner: null })}>Group</button>
-        <button type="button" className={section === "participants" ? "active" : ""} onClick={() => navigateWorkspace({ section: "participants", learner: null })}>Learners</button>
-        <button type="button" className={section === "support" ? "active" : ""} onClick={() => navigateWorkspace({ section: "support", learner: null })}>Support</button>
-        <button type="button" className={section === "review" ? "active" : ""} onClick={() => navigateWorkspace({ section: "review", learner: null })}>Review</button>
-      </nav>
-
       {section === "cohort" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
@@ -307,6 +301,7 @@ export function FacilitatorWorkspace({
               </Link>
             </div>
           </section>
+          <FacilitatorClassOperations key={cohort.id} cohortId={cohort.id} participants={participants} />
           <section className="ops-metrics">
             <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
             <article><Activity /><span>Experiments started</span><strong>{experiments}</strong></article>
@@ -504,24 +499,7 @@ export function FacilitatorWorkspace({
 
       {section === "review" ? (
         <div className="ops-stack">
-          <section className="ops-metrics">
-            <article><ClipboardCheck /><span>Completed</span><strong>{completed}</strong></article>
-            <article><Activity /><span>Review stage</span><strong>{reviewReady}</strong></article>
-            <article><Users /><span>Experiments active</span><strong>{participants.filter((item) => item.experiment?.status === "ACTIVE" || Boolean(item.enrolment?.experimentStartedAt && item.enrolment.status !== "COMPLETED")).length}</strong></article>
-            <article><ShieldAlert /><span>More opportunity needed</span><strong>{participants.filter((item) => item.experiment && (item.experiment.opportunityCount ?? 0) < (item.experiment.minimumEvidenceThreshold ?? 3)).length}</strong></article>
-          </section>
-          <section className="surface-card ops-section">
-            <div className="section-title"><div><p className="eyebrow">Readiness</p><h2>Who is ready for the next conversation?</h2><p>Use evidence windows and real opportunities to plan the conversation. Do not rank learners.</p></div><ClipboardCheck /></div>
-            <div className="review-participant-list">
-              {participants.map((learner) => {
-                const count = learner.experiment?.opportunityCount ?? 0;
-                const threshold = learner.experiment?.minimumEvidenceThreshold ?? 3;
-                const stage = learner.enrolment?.currentInvestigation ?? 0;
-                const readiness = stage >= 8 && count >= threshold ? "Ready for evidence review" : stage >= 8 ? "Review stage · more real-world evidence useful" : learner.experiment ? "Experiment still building" : "Not yet at review stage";
-                return <button key={learner.userId} type="button" onClick={() => navigateWorkspace({ section: "participants", learner: learner.userId })}><span><strong>{learner.displayName}</strong><small>{position(learner)}</small></span><Badge variant="outline">{readiness}</Badge></button>;
-              })}
-            </div>
-          </section>
+          <FacilitatorAssessment key={cohort.id} cohortId={cohort.id} />
         </div>
       ) : null}
     </div>

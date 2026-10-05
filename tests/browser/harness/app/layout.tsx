@@ -9,8 +9,9 @@ import "../../../../app/learner-readability.css";
 import "../../../../app/lab-investigation-frame.css";
 import "../../../../app/learner-document-system.css";
 import "../../../../app/profile/profile.css";
-import { CanonicalAdaptiveShell } from "../../../../app/canonical-adaptive-shell";
+import { HarnessShell } from "./harness-shell";
+import "../../../../app/evidence-engine.css";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <html lang="en"><body className="antialiased"><CanonicalAdaptiveShell>{children}</CanonicalAdaptiveShell></body></html>;
+  return <html lang="en"><body className="antialiased"><HarnessShell>{children}</HarnessShell></body></html>;
 }

@@ -29,8 +29,9 @@ test("customer-facing staff language explains intent without internal role jargo
   assert.match(operations, /Group count only/);
   assert.match(outcomes, /Usable responses/);
   assert.match(outcomes, /Responses recorded/);
-  assert.match(facilitator, />Group<\/button>/);
-  assert.match(facilitator, />Learners<\/button>/);
+  assert.match(shell, /destination\("facilitator","cohort","Group"/);
+  assert.match(shell, /destination\("facilitator","participants","Learners"/);
+  assert.doesNotMatch(facilitator, /facilitator-subnav/);
   assert.doesNotMatch(signIn, /Authentication verifies your identity/);
 });
 
@@ -66,7 +67,7 @@ test("staff views and facilitator tasks participate in browser history", async (
     source("app/workspace/staff-workspace-shell.tsx"),
     source("app/facilitator-workspace.tsx"),
   ]);
-  assert.match(shell, /params\.set\("view", next\)/);
+  assert.match(shell, /params\.set\("view", view\)/);
   assert.match(shell, /router\.push\(/);
   assert.match(facilitator, /params\.set\("section", patch\.section\)/);
   assert.match(facilitator, /params\.set\("learner", patch\.learner\)/);

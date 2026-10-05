@@ -679,6 +679,9 @@ export const pilotCohorts = sqliteTable(
     name: text("name").notNull(),
     labCode: text("lab_code").notNull().default("HAB"),
     labVersion: text("lab_version").notNull().default("4.5.1"),
+    programmeFormat: text("programme_format").notNull().default("SINGLE_LAB"),
+    labCodes: text("lab_codes").notNull().default('["HAB"]'),
+    labPlan: text("lab_plan").notNull().default("[]"),
     facilitatorEmail: text("facilitator_email").notNull(),
     status: text("status").notNull().default("ACTIVE"),
     startsOn: text("starts_on"),
@@ -737,6 +740,25 @@ export const cohortMembers = sqliteTable(
     uniqueIndex("uq_cohort_learner").on(table.cohortId, table.learnerUserId),
     index("idx_cohort_member_learner_status").on(table.learnerUserId, table.status),
     index("idx_cohort_member_cohort_status").on(table.cohortId, table.status),
+  ],
+);
+
+export const cohortParticipantInvites = sqliteTable(
+  "cohort_participant_invites",
+  {
+    id: text("id").primaryKey(),
+    cohortId: text("cohort_id").notNull(),
+    email: text("email").notNull(),
+    status: text("status").notNull().default("PENDING"),
+    invitedBy: text("invited_by").notNull(),
+    claimedUserId: text("claimed_user_id"),
+    createdAt: timestamp(),
+    claimedAt: text("claimed_at"),
+  },
+  (table) => [
+    uniqueIndex("uq_cohort_participant_invite").on(table.cohortId, table.email),
+    index("idx_cohort_participant_invite_email_status").on(table.email, table.status),
+    index("idx_cohort_participant_invite_cohort_status").on(table.cohortId, table.status),
   ],
 );
 

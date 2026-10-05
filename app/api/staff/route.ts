@@ -7,6 +7,7 @@ import {
   auditEvents,
   contentLibraryItems, contentLibraryVersions, contentRuntimeActivations, contentRuntimeArtifacts,
   cohortMembers,
+  cohortParticipantInvites,
   facilitatorNotes,
   labAssignments,
   labEnrollments,
@@ -255,6 +256,7 @@ async function adminSnapshot() {
   const members = await db
     .select({ cohortId: cohortMembers.cohortId, status: cohortMembers.status })
     .from(cohortMembers);
+  const invites = await db.select().from(cohortParticipantInvites);
   const labRows = await db.select().from(labAssignments).orderBy(desc(labAssignments.assignedAt));
   const openCaseRows = await db
     .select({ id: safeguardingCases.id })
@@ -281,6 +283,8 @@ async function adminSnapshot() {
     roleAssignments: assignments,
     cohorts: cohorts.map((cohort) => ({
       ...cohort,
+      labCodes: JSON.parse(cohort.labCodes || "[]"),
+      pendingCount: invites.filter(invite => invite.cohortId === cohort.id && invite.status === "PENDING").length,
       memberCount: members.filter((member) => member.cohortId === cohort.id && member.status === "ACTIVE").length,
     })),
     labAssignments: labRows,
@@ -569,141 +573,55 @@ async function postHandler(request: Request) {
     const roles = await getRoles(identity);
     requireAnyRole(roles, [...STAFF_ROLES]);
 
-    if (action === "assignRole") {
+    if (action === "assignRole" || action === "updateRoleAssignment") {
       requireRole(roles, "SYSTEM_ADMIN");
       const principalEmail = normalizeEmail(String(body.email ?? ""));
       const role = String(body.role ?? "") as StaffRole;
       if (!EMAIL_PATTERN.test(principalEmail)) throw new Error("Enter a valid staff email address.");
       if (!STAFF_ROLES.includes(role)) throw new Error("Choose a supported staff role.");
 
-      const organisationRole = role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
-      const scopeType = organisationRole ? "COHORT" : "GLOBAL";
-      const scopeId = organisationRole ? String(body.cohortId ?? "") : "GLOBAL";
-      if (organisationRole) {
+      const cohortScoped = role === "FACILITATOR" || role === "SPONSOR_VIEWER" || role === "PROGRAMME_OWNER";
+      const scopeType: "GLOBAL" | "COHORT" = cohortScoped ? "COHORT" : "GLOBAL";
+      const scopeId = scopeType === "COHORT" ? String(body.cohortId ?? "") : "GLOBAL";
+      if (cohortScoped) {
         const [cohort] = await db
           .select({ id: pilotCohorts.id })
           .from(pilotCohorts)
           .where(and(eq(pilotCohorts.id, scopeId), eq(pilotCohorts.status, "ACTIVE")))
           .limit(1);
-        if (!cohort) throw new Error("Choose an active programme group for organisation reporting.");
+        if (!cohort) throw new Error("Choose an active programme group for this access.");
       }
 
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      await db
-        .insert(roleAssignments)
-        .values({ id, principalEmail, role, scopeType, scopeId, assignedBy: identity.id })
-        .onConflictDoUpdate({
-          target: [roleAssignments.principalEmail, roleAssignments.role, roleAssignments.scopeType, roleAssignments.scopeId],
-          set: { status: "ACTIVE", assignedBy: identity.id, assignedAt: now, revokedAt: null },
-        });
-      const [assignment] = await db
-        .select({ id: roleAssignments.id })
-        .from(roleAssignments)
-        .where(and(
-          eq(roleAssignments.principalEmail, principalEmail),
-          eq(roleAssignments.role, role),
-          eq(roleAssignments.scopeType, scopeType),
-          eq(roleAssignments.scopeId, scopeId),
-        ))
-        .limit(1);
-      await staffAudit(identity, "STAFF_ROLE_ASSIGNED", "ROLE_ASSIGNMENT", assignment?.id ?? id, {
-        role,
-        principalEmail,
-        scopeType,
-        scopeId,
-      });
+      const result = await requestSupabaseClient().rpc("bis_change_staff_access", {payload:{action,email:principalEmail,role,cohortId:scopeId,assignmentId:body.assignmentId}});
+      if (result.error) throw new Error(result.error.message);
       return Response.json(await staffSnapshot(identity, await getRoles(identity)), { status: 201 });
     }
 
     if (action === "revokeRole") {
       requireRole(roles, "SYSTEM_ADMIN");
-      const assignmentId = String(body.assignmentId ?? "");
-      const [assignment] = await db
-        .select()
-        .from(roleAssignments)
-        .where(eq(roleAssignments.id, assignmentId))
-        .limit(1);
-      if (!assignment || assignment.status !== "ACTIVE") throw new Error("That active role assignment was not found.");
-      if (assignment.role === "SYSTEM_ADMIN") {
-        const admins = await db
-          .select({ id: roleAssignments.id })
-          .from(roleAssignments)
-          .where(and(eq(roleAssignments.role, "SYSTEM_ADMIN"), eq(roleAssignments.status, "ACTIVE")));
-        if (admins.length <= 1) throw new Error("The final system administrator cannot be revoked.");
-      }
-      const now = new Date().toISOString();
-      await db.update(roleAssignments).set({ status: "REVOKED", revokedAt: now }).where(eq(roleAssignments.id, assignmentId));
-      await staffAudit(identity, "STAFF_ROLE_REVOKED", "ROLE_ASSIGNMENT", assignmentId, { role: assignment.role, principalEmail: assignment.principalEmail });
+      const result = await requestSupabaseClient().rpc("bis_change_staff_access", {payload:{action,assignmentId:body.assignmentId}});
+      if (result.error) throw new Error(result.error.message);
       return Response.json(await staffSnapshot(identity, await getRoles(identity)));
     }
 
-    if (action === "createCohort") {
+    if (action === "createCohort" || action === "addCohortParticipants" || action === "addCohortMember") {
       requireRole(roles, "SYSTEM_ADMIN");
-      const name = String(body.name ?? "").trim();
-      const facilitatorEmail = normalizeEmail(String(body.facilitatorEmail ?? ""));
-      const labVersion = String(body.labVersion ?? "");
-      const labCode = String(body.labCode ?? "HAB").toUpperCase();
-      if (name.length < 3 || name.length > 100) throw new Error("Use a cohort name between 3 and 100 characters.");
-      if (!EMAIL_PATTERN.test(facilitatorEmail)) throw new Error("Enter a valid facilitator email.");
-      await requirePublishedLab(labCode, labVersion);
-      const [facilitatorRole] = await db
-        .select({ id: roleAssignments.id })
-        .from(roleAssignments)
-        .where(and(
-          eq(roleAssignments.principalEmail, facilitatorEmail),
-          eq(roleAssignments.role, "FACILITATOR"),
-          eq(roleAssignments.status, "ACTIVE"),
-        ))
-        .limit(1);
-      if (!facilitatorRole) throw new Error("Assign the facilitator role to this email before creating the cohort.");
-      const id = crypto.randomUUID();
-      await db.insert(pilotCohorts).values({
-        id,
-        name,
-        labCode,
-        labVersion,
-        facilitatorEmail,
-        startsOn: String(body.startsOn ?? "") || null,
-        endsOn: String(body.endsOn ?? "") || null,
-        createdBy: identity.id,
-      });
-      await staffAudit(identity, "PILOT_COHORT_CREATED", "PILOT_COHORT", id, { labVersion, facilitatorEmail });
-      return Response.json(await staffSnapshot(identity, roles), { status: 201 });
-    }
-
-    if (action === "addCohortMember") {
-      requireRole(roles, "SYSTEM_ADMIN");
-      const cohortId = String(body.cohortId ?? "");
-      const [cohort] = await db.select().from(pilotCohorts).where(eq(pilotCohorts.id, cohortId)).limit(1);
-      if (!cohort || cohort.status !== "ACTIVE") throw new Error("Choose an active pilot cohort.");
-      const learner = await learnerByEmail(String(body.learnerEmail ?? ""));
-      await assignLab(identity, learner, cohort.labCode, cohort.labVersion, true);
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      await db
-        .insert(cohortMembers)
-        .values({
-          id,
-          cohortId,
-          learnerUserId: learner.userId,
-          learnerEmail: normalizeEmail(learner.email),
-          addedBy: identity.id,
-        })
-        .onConflictDoUpdate({
-          target: [cohortMembers.cohortId, cohortMembers.learnerUserId],
-          set: { status: "ACTIVE", addedBy: identity.id, joinedAt: now, removedAt: null },
-        });
-
-      await staffAudit(identity, "COHORT_MEMBER_ADDED", "PILOT_COHORT", cohortId, { learnerUserId: learner.userId, labVersion: cohort.labVersion });
-      return Response.json(await staffSnapshot(identity, roles), { status: 201 });
+      const rawEmails = Array.isArray(body.participantEmails) ? body.participantEmails.map(String).join("\n") : String(body.participantEmails ?? body.learnerEmail ?? "");
+      const emails = [...new Set(rawEmails.split(/[\s,;]+/).map(normalizeEmail).filter(Boolean))];
+      if (emails.length > 250 || emails.some(email => !EMAIL_PATTERN.test(email))) throw new Error("Use up to 250 valid participant emails.");
+      const labPlan = Array.isArray(body.labPlan) ? body.labPlan : [{code:String(body.labCode ?? ""),version:String(body.labVersion ?? "")}];
+      const result = action === "createCohort"
+        ? await requestSupabaseClient().rpc("bis_create_programme_group", {payload:{id:String(body.requestKey ?? crypto.randomUUID()),name:body.name,facilitatorEmail:body.facilitatorEmail,programmeFormat:body.programmeFormat ?? "SINGLE_LAB",labPlan,emails}})
+        : await requestSupabaseClient().rpc("bis_add_programme_participants", {target_cohort:String(body.cohortId ?? ""),emails});
+      if (result.error) throw new Error(result.error.message);
+      return Response.json(await staffSnapshot(identity, roles), {status: action === "createCohort" ? 201 : 200});
     }
 
     if (action === "assignLabVersion") {
       requireRole(roles, "SYSTEM_ADMIN");
       const learner = await learnerByEmail(String(body.learnerEmail ?? ""));
       const labVersion = String(body.labVersion ?? "");
-      const labCode = String(body.labCode ?? "HAB").toUpperCase();
+      const labCode = String(body.labCode ?? "").toUpperCase();
       await assignLab(identity, learner, labCode, labVersion);
       await staffAudit(identity, "LAB_VERSION_ASSIGNED", "LEARNER", learner.userId, { labCode, labVersion });
       return Response.json(await staffSnapshot(identity, roles));

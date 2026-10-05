@@ -174,10 +174,11 @@ export function ProfileDashboard({
             <p className="profile-label">Evidence</p>
             <h2>Your evidence portfolio</h2>
             <p>
-              This connects what you recorded in each Lab to the measures BIS can calculate. Your private answer wording stays inside the Lab.
+              This connects your recorded evidence and the measures BIS can calculate. Your private answer wording stays inside the Lab. Open your full portfolio to revisit original responses, revisions and facilitator reviews.
             </p>
           </div>
 
+          <Link className="profile-secondary" href="/portfolio">Open my Evidence Portfolio</Link>
           {portfolio?.labs.length ? (
             <div className="profile-evidence-list">
               {portfolio.labs.map((lab) => (
@@ -274,4 +275,3 @@ export function ProfileDashboard({
     </main>
   );
 }
-

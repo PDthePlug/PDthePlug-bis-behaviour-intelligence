@@ -1,0 +1,322 @@
+[
+  {
+    "labCode": "SYS",
+    "title": "Systems Thinking™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Systems Thinking™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "SYS.TEI09.C1",
+        "label": "Identifies structure beneath event"
+      },
+      {
+        "id": "SYS.TEI09.C2",
+        "label": "Identifies interconnections"
+      },
+      {
+        "id": "SYS.TEI09.C3",
+        "label": "Identifies feedback loops"
+      },
+      {
+        "id": "SYS.TEI09.C4",
+        "label": "Identifies leverage point"
+      },
+      {
+        "id": "SYS.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "LTT",
+    "title": "Long-Term Thinking™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Long-Term Thinking™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "LTT.TEI09.C1",
+        "label": "Calculates compounding cost accurately"
+      },
+      {
+        "id": "LTT.TEI09.C2",
+        "label": "Identifies opportunity cost"
+      },
+      {
+        "id": "LTT.TEI09.C3",
+        "label": "Identifies second-order consequences"
+      },
+      {
+        "id": "LTT.TEI09.C4",
+        "label": "Articulates real cost"
+      },
+      {
+        "id": "LTT.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "ECO",
+    "title": "Economics for Humans™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Economics for Humans™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "ECO.TEI09.C1",
+        "label": "Identifies economic pattern"
+      },
+      {
+        "id": "ECO.TEI09.C2",
+        "label": "Identifies human behaviour beneath pattern"
+      },
+      {
+        "id": "ECO.TEI09.C3",
+        "label": "Identifies incentives"
+      },
+      {
+        "id": "ECO.TEI09.C4",
+        "label": "Identifies system"
+      },
+      {
+        "id": "ECO.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "CUS",
+    "title": "Customer Thinking™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Customer Thinking™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "CUS.TEI09.C1",
+        "label": "Identifies customer need"
+      },
+      {
+        "id": "CUS.TEI09.C2",
+        "label": "Identifies gap between product and need"
+      },
+      {
+        "id": "CUS.TEI09.C3",
+        "label": "Identifies what creators missed"
+      },
+      {
+        "id": "CUS.TEI09.C4",
+        "label": "Articulates real value"
+      },
+      {
+        "id": "CUS.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "INN",
+    "title": "Innovation Thinking™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Innovation Thinking™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "INN.TEI09.C1",
+        "label": "Identifies the missing element"
+      },
+      {
+        "id": "INN.TEI09.C2",
+        "label": "Identifies what an innovator would do differently"
+      },
+      {
+        "id": "INN.TEI09.C3",
+        "label": "Identifies the innovation process"
+      },
+      {
+        "id": "INN.TEI09.C4",
+        "label": "Articulates the iteration cycle"
+      },
+      {
+        "id": "INN.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "AST",
+    "title": "Asset Thinking™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Asset Thinking™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "AST.TEI09.C1",
+        "label": "Identifies missing assets"
+      },
+      {
+        "id": "AST.TEI09.C2",
+        "label": "Identifies liabilities being built"
+      },
+      {
+        "id": "AST.TEI09.C3",
+        "label": "Articulates what would change"
+      },
+      {
+        "id": "AST.TEI09.C4",
+        "label": "Identifies leverage point"
+      },
+      {
+        "id": "AST.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "FIN",
+    "title": "Financial Philosophy™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Financial Philosophy™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "FIN.TEI09.C1",
+        "label": "Identifies the difference"
+      },
+      {
+        "id": "FIN.TEI09.C2",
+        "label": "Identifies the philosophy of each person"
+      },
+      {
+        "id": "FIN.TEI09.C3",
+        "label": "Articulates what would change"
+      },
+      {
+        "id": "FIN.TEI09.C4",
+        "label": "Quality of reasoning"
+      },
+      {
+        "id": "FIN.TEI09.C5",
+        "label": "Depth of insight"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "PEF",
+    "title": "Personal Effectiveness™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Personal Effectiveness™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "PEF.TEI09.C1",
+        "label": "Identifies the difference"
+      },
+      {
+        "id": "PEF.TEI09.C2",
+        "label": "Identifies energy wastage"
+      },
+      {
+        "id": "PEF.TEI09.C3",
+        "label": "Identifies what needs to change"
+      },
+      {
+        "id": "PEF.TEI09.C4",
+        "label": "Articulates the effectiveness gap"
+      },
+      {
+        "id": "PEF.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "TRS",
+    "title": "Transferable Skills™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Transferable Skills™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "TRS.TEI09.C1",
+        "label": "Identifies transferable skills"
+      },
+      {
+        "id": "TRS.TEI09.C2",
+        "label": "Identifies the real problem"
+      },
+      {
+        "id": "TRS.TEI09.C3",
+        "label": "Provides helpful perspective"
+      },
+      {
+        "id": "TRS.TEI09.C4",
+        "label": "Articulates the adaptability needed"
+      },
+      {
+        "id": "TRS.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  },
+  {
+    "labCode": "MTL",
+    "title": "Meta-Learning™ Lab · Transfer Test",
+    "task": "TEI-09 Transfer Test",
+    "source": "BIS Volume 3 · Meta-Learning™ Lab · TEI-09 Transfer Test Score",
+    "scaleMin": 1,
+    "scaleMax": 5,
+    "authoredTotal": true,
+    "criteria": [
+      {
+        "id": "MTL.TEI09.C1",
+        "label": "Provides helpful learning advice"
+      },
+      {
+        "id": "MTL.TEI09.C2",
+        "label": "Recommends a learning system"
+      },
+      {
+        "id": "MTL.TEI09.C3",
+        "label": "Addresses overwhelm effectively"
+      },
+      {
+        "id": "MTL.TEI09.C4",
+        "label": "Articulates meta-learning principles"
+      },
+      {
+        "id": "MTL.TEI09.C5",
+        "label": "Quality of reasoning"
+      }
+    ],
+    "sourceSha256": "9cad6739060db3a64de791f15633f54f4b97f028f540a83f663ad0263026bb6f"
+  }
+]

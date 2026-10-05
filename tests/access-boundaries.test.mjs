@@ -19,9 +19,11 @@ test("every restricted mutation has a server-side role gate", async () => {
   const route = await readFile(new URL("app/api/staff/route.ts", root), "utf8");
   const gates = {
     assignRole: "SYSTEM_ADMIN",
+    updateRoleAssignment: "SYSTEM_ADMIN",
     revokeRole: "SYSTEM_ADMIN",
     createCohort: "SYSTEM_ADMIN",
     addCohortMember: "SYSTEM_ADMIN",
+    addCohortParticipants: "SYSTEM_ADMIN",
     assignLabVersion: "SYSTEM_ADMIN",
     addFacilitatorNote: "FACILITATOR",
     openSafeguardingCase: "FACILITATOR",
@@ -32,11 +34,13 @@ test("every restricted mutation has a server-side role gate", async () => {
   for (const [action, role] of Object.entries(gates)) {
     assert.match(
       route,
-      new RegExp(`action === "${action}"\\) \\{\\s+requireRole\\(roles, "${role}"\\)`),
+      new RegExp(`action === "${action}"(?:[^)]*)\\) \\{\\s+requireRole\\(roles, "${role}"\\)`),
       `${action} must require ${role}`,
     );
   }
-  assert.match(route, /The final system administrator cannot be revoked/);
+  const atomicAccess = await readFile(new URL("supabase/migrations/20261005160300_staff_access_transactions.sql", root), "utf8");
+  assert.match(atomicAccess, /The final system administrator cannot be revoked/);
+  assert.match(route, /bis_change_staff_access/);
   assert.match(route, /safeguarding: hasRole\(roles, "SAFEGUARDING_OFFICER"\)/);
 });
 

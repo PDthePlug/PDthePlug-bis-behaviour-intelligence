@@ -569,6 +569,8 @@ async function postHandler(request: Request) {
       if ((!body.labCode || body.labCode === "HAB") && governed.data?.[0]?.runtime_mode === "STATIC") {
         await db.insert(labEnrollments).values({ id: crypto.randomUUID(), userId: identity.id, labCode: "HAB", labVersion: governed.data[0].version, contentReleaseId: release?.id ?? null }).onConflictDoNothing({ target: [labEnrollments.userId, labEnrollments.labCode, labEnrollments.labVersion] });
       }
+      const claimed = await requestSupabaseClient().rpc("bis_claim_programme_invites");
+      if (claimed.error) throw new Error("Your programme group could not be connected. Please try again.");
       await audit(identity.id, "CONSENT_CHANGED", "CONSENT_RECORD", consentId, { status: "GRANTED" });
       await pilotEvent(identity.id, "ONBOARDING_COMPLETED", "CONSENT_RECORD", consentId, { mode, ageBand, experienceVersion: LAB_VERSION });
       return Response.json(await accountSnapshot(identity), { status: 201 });
