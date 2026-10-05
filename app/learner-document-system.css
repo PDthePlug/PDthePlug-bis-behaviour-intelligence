@@ -1,0 +1,305 @@
+/* ==========================================================================
+   BIS Unified Learner Document System
+   Shared visual contract for Learn and Lab reading/investigation documents.
+
+   This layer owns publication surface, heading hierarchy, purpose/outcome/meta
+   treatment, progress, document status, endpoint actions and responsive shell.
+   Route-specific styles continue to own workflow-specific controls and authored
+   content structures. No authored workbook text is transformed here.
+   ========================================================================== */
+
+:root{
+  --learner-document-accent:#2f8276;
+  --learner-document-ink:#18333b;
+  --learner-document-copy:#354844;
+  --learner-document-muted:#5e6965;
+  --learner-document-border:#dfe4df;
+  --learner-document-soft-border:#e2e6e3;
+  --learner-document-paper:#fff;
+  --learner-document-soft:#f7f9f7;
+  --learner-document-chip:#fafbf9;
+  --learner-document-radius:22px;
+  --learner-document-inline:clamp(28px,5vw,62px);
+}
+
+.canonical-shell .learner-document-stage{
+  width:min(920px,calc(100% - 44px));
+  min-width:0;
+  margin-inline:auto;
+}
+
+.canonical-shell .learner-document{
+  width:100%;
+  min-width:0;
+  overflow:hidden;
+  border:1px solid var(--learner-document-border);
+  border-radius:var(--learner-document-radius);
+  background:var(--learner-document-paper);
+  color:var(--learner-document-copy);
+  box-shadow:0 18px 54px rgb(24 45 38 / 6%);
+}
+
+.canonical-shell .learner-document-header{
+  margin:0;
+  padding:clamp(30px,5vw,52px) var(--learner-document-inline) 28px;
+  border:0;
+  border-bottom:1px solid var(--learner-document-soft-border);
+  border-radius:0;
+  background:var(--learner-document-paper);
+  color:var(--learner-document-ink);
+  box-shadow:none;
+}
+
+.canonical-shell .learner-document-heading-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:22px;
+  align-items:start;
+}
+
+.canonical-shell .learner-document-heading{
+  min-width:0;
+  max-width:760px;
+}
+
+.canonical-shell .learner-document-eyebrow{
+  margin:0 0 10px;
+  color:var(--learner-document-accent);
+  font:850 10px/1.3 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.canonical-shell .learner-document-title{
+  max-width:18ch;
+  margin:0;
+  color:var(--learner-document-ink);
+  font:650 clamp(38px,5vw,52px)/1.02 var(--font-serif);
+  letter-spacing:-.04em;
+  text-wrap:balance;
+}
+
+.canonical-shell .learner-document-purpose{
+  max-width:690px;
+  margin:14px 0 0!important;
+  color:var(--learner-document-muted)!important;
+  font:400 16px/1.68 var(--font-sans,system-ui,sans-serif)!important;
+}
+
+.canonical-shell .learner-document-status-pill{
+  min-width:54px;
+  padding:7px 10px;
+  border:1px solid #d7ddd9;
+  border-radius:999px;
+  background:#fff;
+  color:#31463f;
+  font:750 11px/1.2 var(--font-sans,system-ui,sans-serif);
+  text-align:center;
+}
+
+.canonical-shell .learner-document-outcomes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:22px 0 0;
+}
+
+.canonical-shell .learner-document-outcomes>strong{
+  flex-basis:100%;
+  margin-bottom:2px;
+  color:#65716c;
+  font:850 9px/1.3 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+
+.canonical-shell .learner-document-outcomes>span{
+  padding:7px 10px;
+  border:1px solid #dce2de;
+  border-radius:999px;
+  background:var(--learner-document-chip);
+  color:#334943;
+  font:750 11px/1.3 var(--font-sans,system-ui,sans-serif);
+}
+
+.canonical-shell .learner-document-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:20px;
+}
+
+.canonical-shell .learner-document-meta :is(span,[data-slot="badge"]){
+  min-height:30px;
+  display:inline-flex;
+  align-items:center;
+  padding:0 11px;
+  border:1px solid #d7ddd9;
+  border-radius:999px;
+  background:#fff;
+  color:#31463f;
+  font:650 11px/1.2 var(--font-sans,system-ui,sans-serif);
+}
+
+.canonical-shell .learner-document-progress{
+  height:4px;
+  margin:20px 0 0;
+  overflow:hidden;
+  border-radius:999px;
+  background:#edf1ee;
+}
+
+.canonical-shell .learner-document-progress>i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:var(--learner-document-accent);
+}
+
+.canonical-shell .learner-document-body{
+  min-width:0;
+  color:var(--learner-document-copy);
+}
+
+.canonical-shell .learner-document-status{
+  min-height:34px;
+  margin:0;
+  padding:9px var(--learner-document-inline) 11px;
+  border-bottom:1px solid #eef0ee;
+  color:#74807b;
+  font:500 10px/1.45 var(--font-sans,system-ui,sans-serif);
+  text-align:left;
+}
+
+.canonical-shell .learner-document-status button{
+  margin-left:8px;
+  border:0;
+  background:transparent;
+  color:var(--learner-document-accent);
+  font:800 10px/1.45 var(--font-sans,system-ui,sans-serif);
+}
+
+.canonical-shell .learner-document-footer{
+  display:grid;
+  grid-template-columns:auto minmax(240px,1fr);
+  gap:14px;
+  align-items:center;
+  margin:0;
+  padding:24px var(--learner-document-inline) 30px;
+  border-top:1px solid var(--learner-document-border);
+  background:#fff;
+}
+
+.canonical-shell .learner-document-footer button{
+  min-height:48px;
+  border-radius:11px;
+  font-size:12px;
+}
+
+.canonical-shell .learner-document-footer button.primary,
+.canonical-shell .learner-document-footer [data-document-primary="true"]{
+  justify-self:end;
+  width:min(100%,420px);
+  min-height:52px;
+  justify-content:center;
+  border-color:var(--learner-document-ink);
+  background:var(--learner-document-ink);
+  color:#fff;
+  font-size:14px;
+}
+
+/* Preserve information relationships. Dense authored tables may scroll inside
+   the document on narrow screens, but rows/columns are not converted into
+   unrelated cards. */
+.canonical-shell .learner-document :is(.handbook-table-scroll,.universal-evidence-table-scroll,.canonical-table-wrap){
+  max-width:100%;
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  scrollbar-width:thin;
+}
+
+/* Focus treatment is shared, while each runtime retains its own field semantics. */
+.canonical-shell .learner-document :is(textarea.response,input.response,select.response):focus,
+.canonical-shell .learner-document .prompt-controls :is(textarea,input):focus{
+  outline:none;
+  border-color:var(--learner-document-accent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--learner-document-accent) 10%,transparent);
+}
+
+/* Lab route progress keeps its workflow position but inherits the document
+   accent so Learn and Lab read as the same product family. */
+.canonical-shell .learner-document-route-progress [data-slot="progress-indicator"]{
+  background:var(--learner-document-accent);
+}
+
+@media(max-width:820px){
+  :root{--learner-document-inline:20px}
+
+  .canonical-shell .learner-document-stage{
+    width:calc(100% - 18px);
+  }
+
+  .canonical-shell .learner-document{
+    border-radius:16px;
+  }
+
+  .canonical-shell .learner-document-header{
+    padding-top:26px;
+    padding-bottom:24px;
+  }
+
+  .canonical-shell .learner-document-title{
+    max-width:none;
+    font-size:36px;
+  }
+
+  .canonical-shell .learner-document-purpose{
+    font-size:15px!important;
+  }
+
+  .canonical-shell .learner-document-heading-row{
+    gap:12px;
+  }
+
+  .canonical-shell .learner-document-status-pill{
+    min-width:50px;
+    padding:6px 8px;
+    font-size:10px;
+  }
+
+  .canonical-shell .learner-document-footer{
+    display:flex;
+    flex-direction:column-reverse;
+    align-items:stretch;
+    padding-top:22px;
+    padding-bottom:28px;
+  }
+
+  .canonical-shell .learner-document-footer button,
+  .canonical-shell .learner-document-footer button.primary,
+  .canonical-shell .learner-document-footer [data-document-primary="true"]{
+    width:100%;
+    justify-self:stretch;
+    justify-content:center;
+  }
+}
+
+@media(max-width:430px){
+  :root{--learner-document-inline:18px}
+
+  .canonical-shell .learner-document-title{
+    font-size:34px;
+  }
+
+  .canonical-shell .learner-document-outcomes>span{
+    width:100%;
+    border-radius:12px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .canonical-shell .learner-document *,
+  .canonical-shell .learner-document-route-progress *{
+    scroll-behavior:auto!important;
+  }
+}
