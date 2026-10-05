@@ -363,6 +363,8 @@ function AdminPanel({ data, identity, saving, act, section = "all" }: { data: No
       facilitatorEmail,
       programmeFormat,
       labCodes: programmeLabs,
+      labCode: programmeLabs[0],
+      labVersion: data.publishedLabs.find(lab => lab.code === programmeLabs[0])?.version,
       participantEmails,
       labPlan: programmeLabs.map(code => { const lab = data.publishedLabs.find(lab => lab.code === code); return {code, version: lab?.version}; }),
       requestKey,
@@ -433,7 +435,7 @@ function AdminPanel({ data, identity, saving, act, section = "all" }: { data: No
             <Users />
           </div>
           <div className="ops-form-stack">
-            <label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Leap9 · Group A" /></label>
+            <label>Group name<Input value={cohortName} onChange={(event) => setCohortName(event.target.value)} placeholder="Programme · Group A" /></label>
             <label>Facilitator email<Input type="email" value={facilitatorEmail} onChange={(event) => setFacilitatorEmail(event.target.value)} /></label>
             <label>Programme format
               <Select value={programmeFormat} onValueChange={changeProgrammeFormat}>
