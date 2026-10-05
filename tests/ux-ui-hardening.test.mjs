@@ -52,7 +52,9 @@ test("PR #111 evidence certification is the canonical demo contract", async () =
   assert.match(seed, /PR #111/);
   assert.doesNotMatch(seed, /LEAP9-DEMO-HAB-20/);
   assert.doesNotMatch(seed, /leap9\.demo\./);
-  assert.match(audit, /Twenty normally authenticated synthetic learners/i);\n  assert.match(audit, /facilitator API returned twenty assigned learners/i);\n  assert.match(audit, /administrator.*twenty-participant aggregate/i);
+  assert.match(audit, /Twenty normally authenticated synthetic learners/i);
+  assert.match(audit, /facilitator API returned twenty assigned learners/i);
+  assert.match(audit, /administrator.*twenty-participant aggregate/i);
   assert.match(audit, /not evidence of student behaviour change or programme effectiveness/i);
   assert.match(contract, /PR #111.*supersedes.*PR #32/is);
   assert.match(contract, /Historical enrolments and evidence are not rewritten or deleted/);
