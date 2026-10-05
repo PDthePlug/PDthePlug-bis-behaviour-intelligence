@@ -308,14 +308,14 @@ test("pasted Markdown learning source preserves publication semantics before Pro
     const welcome = programme.treatment.pages.find((page) => page.key === "Welcome").html;
     const day1 = programme.treatment.pages.find((page) => page.key === "Day 1").html;
 
-    assert.match(welcome, /<h3>HOW TO USE THIS BOOK<\\/h3>/);
+    assert.match(welcome, /<h3>HOW TO USE THIS BOOK<\/h3>/);
     assert.match(welcome, /<table class="handbook-table">/);
-    assert.match(welcome, /<th scope="col">Icon<\\/th>/);
-    assert.match(welcome, /<ul><li>First safety rule<\\/li>/);
+    assert.match(welcome, /<th scope="col">Icon<\/th>/);
+    assert.match(welcome, /<ul><li>First safety rule<\/li>/);
     assert.match(welcome, /handbook-section-rule/);
     assert.match(day1, /handbook-source-callout/);
     assert.doesNotMatch(day1, /[┌┐└┘│]/u);
-    assert.match(day1, /<h3>📖 What Is a Risk\\?<\\/h3>/u);
+    assert.match(day1, /<h3>📖 What Is a Risk\\?<\/h3>/u);
   } finally {
     await rm(temp, { recursive: true, force: true });
   }
