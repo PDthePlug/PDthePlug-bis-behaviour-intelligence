@@ -131,3 +131,22 @@ test("password recovery routes use the compact responsive authentication story",
   assert.match(cleanup, /@media \(max-width: 860px\)/);
   assert.match(cleanup, /min-height: auto/);
 });
+
+
+test("Learn and Lab use one learner-document visual grammar", async () => {
+  const [player, playerCss, handbookCss, labCss] = await Promise.all([
+    source("app/learning/programme-player.tsx"),
+    source("app/learning/programme-player.css"),
+    source("app/learning/handbook-presentation.css"),
+    source("app/lab-investigation-frame.css"),
+  ]);
+
+  assert.match(player, /prototype-learning-document/);
+  assert.match(player, /sessionDesign\?\.dayPurpose/);
+  assert.match(player, /sessionDesign\.learnerOutcome/);
+  assert.match(playerCss, /BIS Unified Learner Document System/);
+  assert.match(playerCss, /font:650 clamp\(38px,5vw,52px\)\/1\.02 var\(--font-serif\)/);
+  assert.match(labCss, /font:650 clamp\(38px,5vw,52px\)\/1\.02 var\(--font-serif\)/);
+  assert.match(handbookCss, /Preserve table relationships on phones/);
+  assert.doesNotMatch(handbookCss, /handbook-stacked-table tbody[^\n]*display:\s*block/);
+});
