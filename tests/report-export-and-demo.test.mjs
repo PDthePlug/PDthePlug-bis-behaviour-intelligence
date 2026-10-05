@@ -35,31 +35,37 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(pdf, /PROGRAMME RESULTS  \|/);
 });
 
-test("demo cohort is explicitly synthetic, isolated and reproducible", async () => {
-  const seed = await source("scripts/seed-bis-reporting-demo.sql");
+test("canonical PR #111 demo is explicitly synthetic, isolated and reproducible", async () => {
+  const [audit, execution, contract, retiredSeed] = await Promise.all([
+    source("docs/BIS_INTELLIGENCE_AUDIT_20261004.md"),
+    source("docs/BIS_DEMO_EXECUTION_20261004.md"),
+    source("docs/BIS_CANONICAL_DEMO_20261005.md"),
+    source("scripts/seed-bis-reporting-demo.sql"),
+  ]);
 
-  assert.match(seed, /LEAP9-DEMO-HAB-20/);
-  assert.match(seed, /'Leap9'/);
-  assert.match(seed, /for i in 1\.\.20 loop/);
-  assert.match(seed, /leap9\.demo\./);
-  assert.match(seed, /@bis\.invalid/);
-  assert.match(seed, /DEMO-HAB-/);
-  assert.match(seed, /Thando Mokoena/);
-  assert.match(seed, /Lwazi Nxumalo/);
-  assert.match(seed, /Synthetic demonstration support request/);
-  assert.doesNotMatch(seed, /insert into auth\.users/i);
-  assert.match(seed, /on conflict/);
+  assert.match(execution, /20 learner, one SYSTEM_ADMIN and one FACILITATOR account/i);
+  assert.match(execution, /BIS Staging/);
+  assert.match(execution, /Production was not accessed or altered/);
+  assert.match(execution, /300 current responses across 20 learners/);
+  assert.match(audit, /not evidence of student behaviour change or programme effectiveness/i);
+  assert.match(contract, /PR #111.*supersedes.*PR #32/is);
+  assert.match(retiredSeed, /RETIRED: PR #32-era Leap9 production demo seed/);
+  assert.match(retiredSeed, /intentionally fails closed/);
+  assert.doesNotMatch(retiredSeed, /insert into auth\.users/i);
 });
 
-test("demo cohort exercises mixed outcomes instead of a perfect success story", async () => {
-  const seed = await source("scripts/seed-bis-reporting-demo.sql");
+test("canonical demo preserves mixed and incomplete evidence instead of a perfect success story", async () => {
+  const [audit, execution] = await Promise.all([
+    source("docs/BIS_INTELLIGENCE_AUDIT_20261004.md"),
+    source("docs/BIS_DEMO_EXECUTION_20261004.md"),
+  ]);
 
-  assert.match(seed, /when i <= 16 then/);
-  assert.match(seed, /when i = 15 then 1/);
-  assert.match(seed, /else 0/);
-  assert.match(seed, /when i=10 then case when d=1 then true else false end/);
-  assert.match(seed, /array\[2,5,9,13,17\]/);
-  assert.match(seed, /LEARNER_REQUEST/);
+  assert.match(audit, /zero real-world observations/);
+  assert.match(audit, /no completed seven-day real-world observation cycle/);
+  assert.match(audit, /not improvement/);
+  assert.match(execution, /one optional question deliberately passed/);
+  assert.match(execution, /Complete Phase A.*unverified/i);
+  assert.match(execution, /Do not infer behaviour change/i);
 });
 
 test("organisation report summaries adapt to the evidence rather than forcing positive language", async () => {
