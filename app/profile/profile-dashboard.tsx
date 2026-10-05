@@ -1,56 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import type { PortfolioIntelligence } from "@/lib/evidence-portfolio.mjs";
 import { InstallCard } from "@/components/pwa/install-card";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
+  BriefcaseBusiness,
   Building2,
-  Check,
+  ChevronRight,
   FlaskConical,
+  GraduationCap,
   LogOut,
-  ShieldCheck,
+  Palette,
+  Settings,
+  Sparkles,
   UserRound,
 } from "lucide-react";
-
-type EvidencePortfolioSnapshot = {
-  labs: Array<{
-    enrolmentId: string;
-    labCode: string;
-    labVersion: string;
-    title: string;
-    status: string;
-    currentInvestigation: number;
-    completedAt: string | null;
-    intelligence?: PortfolioIntelligence;
-    anchors: Array<{
-      id: string;
-      label: string;
-      status: "RECORDED" | "WITHDRAWN" | "NOT_YET";
-      evidenceCount: number;
-    }>;
-    metrics: Array<{
-      code: string;
-      label: string;
-      value: string;
-      evidenceStrength: string;
-      sourceCount: number;
-      provenanceStatus?: string;
-      formulaVersion?: string;
-      sourceAnchors?: Array<{label: string; count: number}>;
-    }>;
-    summary: {
-      recordedAnchors: number;
-      totalAnchors: number;
-      activeEvidenceItems: number;
-      photos?: number;
-      derivedMeasures: number;
-      sourceLinks: number;
-    };
-  }>;
-  privacy?: { note?: string };
-};
 
 type ProfileSnapshot = {
   identity?: {
@@ -66,16 +31,31 @@ type ProfileSnapshot = {
   };
 };
 
-const editionLabels: Record<string, string> = {
-  school: "School Edition",
-  emerging_adult: "Emerging Adult Edition",
-  workplace: "Workplace Edition",
-};
+const editionLabels = {
+  school: "School",
+  emerging_adult: "Emerging Adult",
+  workplace: "Workplace",
+} as const;
+
+const editionIcons = {
+  school: GraduationCap,
+  emerging_adult: Sparkles,
+  workplace: BriefcaseBusiness,
+} as const;
 
 function hasStaffRole(roles: string[]) {
   return roles.some((role) =>
     ["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER", "PROGRAMME_OWNER"].includes(role),
   );
+}
+
+function initials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "BIS";
 }
 
 export function ProfileDashboard({
@@ -84,36 +64,19 @@ export function ProfileDashboard({
   initialIdentity: { email: string; displayName: string };
 }) {
   const [snapshot, setSnapshot] = useState<ProfileSnapshot | null>(null);
-  const [portfolioError, setPortfolioError] = useState(false);
-  const [portfolio, setPortfolio] = useState<EvidencePortfolioSnapshot | null>(null);
+  const [profileError, setProfileError] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
-    void (async () => {
-      try {
-        const [profileResponse, portfolioResponse] = await Promise.all([
-          fetch("/api/profile", {
-            cache: "no-store",
-            signal: controller.signal,
-          }),
-          fetch("/api/evidence-portfolio", {
-            cache: "no-store",
-            signal: controller.signal,
-          }),
-        ]);
-        if (profileResponse.ok) {
-          const data = (await profileResponse.json()) as ProfileSnapshot;
-          if (!controller.signal.aborted) setSnapshot(data);
-        }
-        if (portfolioResponse.ok) {
-          const data = (await portfolioResponse.json()) as EvidencePortfolioSnapshot;
-          if (!controller.signal.aborted) setPortfolio(data);
-        } else if (!controller.signal.aborted) setPortfolioError(true);
-      } catch {
-        if (!controller.signal.aborted) setPortfolioError(true);
-        // Identity from the authenticated server route is enough to keep Profile useful.
-      }
-    })();
+    void fetch("/api/profile", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Profile could not be loaded.");
+        const data = (await response.json()) as ProfileSnapshot;
+        if (!controller.signal.aborted) setSnapshot(data);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setProfileError(true);
+      });
     return () => controller.abort();
   }, []);
 
@@ -124,153 +87,107 @@ export function ProfileDashboard({
     initialIdentity.displayName;
   const roles = snapshot?.roles ?? [];
   const staff = hasStaffRole(roles);
-  const edition = snapshot?.profile?.deliveryEdition
-    ? editionLabels[snapshot.profile.deliveryEdition] ?? snapshot.profile.deliveryEdition
-    : "Not set yet";
+  const editionKey = snapshot?.profile?.deliveryEdition ?? "school";
+  const edition = editionLabels[editionKey];
+  const ExperienceIcon = editionIcons[editionKey];
   const learningMode =
     snapshot?.profile?.mode === "FACILITATED"
       ? "Facilitated programme"
       : snapshot?.profile?.mode === "INDEPENDENT"
         ? "Independent"
-        : "Not set yet";
+        : "Programme access";
+  const avatar = useMemo(() => initials(displayName), [displayName]);
 
   return (
     <main className="profile-page">
-      <section className="profile-hero">
-        <p className="eyebrow">Profile</p>
-        <h1>{displayName}</h1>
-        <p>Your BIS profile, learning access and account settings.</p>
+      <section className="profile-identity">
+        <div className="profile-avatar" aria-hidden="true">{avatar}</div>
+        <div>
+          <p className="eyebrow">My BIS</p>
+          <h1>{displayName}</h1>
+          <p>{edition} experience · {learningMode}</p>
+        </div>
       </section>
 
-      <section className="profile-grid">
-        <article className="profile-card">
-          <div className="profile-card-icon"><UserRound aria-hidden="true" /></div>
-          <div>
-            <p className="profile-label">Account</p>
-            <h2>Your account</h2>
-          </div>
-          <dl>
-            <div><dt>Name</dt><dd>{displayName}</dd></div>
-            <div><dt>Email</dt><dd>{email}</dd></div>
-          </dl>
-        </article>
+      {profileError ? (
+        <p className="profile-notice" role="status">Some profile details could not be refreshed. Your account remains available.</p>
+      ) : null}
 
-        <article className="profile-card">
-          <div className="profile-card-icon"><BookOpen aria-hidden="true" /></div>
-          <div>
-            <p className="profile-label">Learning</p>
-            <h2>Your programme setup</h2>
-          </div>
-          <dl>
-            <div><dt>Edition</dt><dd>{edition}</dd></div>
-            <div><dt>Mode</dt><dd>{learningMode}</dd></div>
-          </dl>
-          <Link className="profile-secondary" href="/habit">Open my learning</Link>
-        </article>
+      <section className="profile-section" aria-labelledby="profile-my-bis">
+        <h2 id="profile-my-bis">My BIS</h2>
+        <div className="profile-list">
+          <Link href="/settings#experience" className="profile-row">
+            <span className="profile-row-icon"><ExperienceIcon aria-hidden="true" /></span>
+            <span className="profile-row-copy">
+              <strong>My experience</strong>
+              <small>{edition} · Change the context BIS uses for examples and scenarios.</small>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
 
-        <article id="evidence-portfolio" className="profile-card profile-evidence-card">
-          <div className="profile-card-icon"><FlaskConical aria-hidden="true" /></div>
-          <div>
-            <p className="profile-label">Evidence</p>
-            <h2>Your evidence portfolio</h2>
-            <p>
-              This connects your recorded evidence and the measures BIS can calculate. Your private answer wording stays inside the Lab. Open your full portfolio to revisit original responses, revisions and facilitator reviews.
-            </p>
-          </div>
+          <Link href="/settings" className="profile-row">
+            <span className="profile-row-icon"><Settings aria-hidden="true" /></span>
+            <span className="profile-row-copy">
+              <strong>Settings</strong>
+              <small>Appearance, accent colour, text size and reading width.</small>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
 
-          <Link className="profile-secondary" href="/portfolio">Open my Evidence Portfolio</Link>
-          {portfolio?.labs.length ? (
-            <div className="profile-evidence-list">
-              {portfolio.labs.map((lab) => (
-                <section className="profile-evidence-lab" key={lab.enrolmentId}>
-                  <div className="profile-evidence-head">
-                    <div>
-                      <strong>{lab.title}</strong>
-                      <span>{lab.status === "COMPLETED" ? "Lab completed" : `Investigation ${lab.currentInvestigation} of 9`}</span>
-                    </div>
-                    <span className={lab.status === "COMPLETED" ? "complete" : "active"}>
-                      {lab.status === "COMPLETED" ? <><Check aria-hidden="true" /> Complete</> : "In progress"}
-                    </span>
-                  </div>
+          <Link href="/portfolio" className="profile-row">
+            <span className="profile-row-icon"><FlaskConical aria-hidden="true" /></span>
+            <span className="profile-row-copy">
+              <strong>Evidence Portfolio</strong>
+              <small>Your evidence, reflections, revisions and facilitator reviews have their own home.</small>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
 
-                  {lab.intelligence && <div className="profile-evidence-guidance">
-                    <h3>What your evidence supports</h3>
-                    <p>{lab.intelligence.summary}</p><p>{lab.intelligence.nextAction.reason}</p>
-                    <Link className="profile-secondary" href={(({ HAB: "/habit-lab", DEC: "/decision", MON: "/money" } as Record<string, string>)[lab.labCode] ?? `/labs/${lab.labCode}?step=${Math.max(1, lab.intelligence.nextAction.investigation)}`)}>{lab.intelligence.nextAction.label}</Link>
-                    <p>{lab.intelligence.boundary}</p>
-                  </div>}
-                  <div className="profile-anchor-grid" aria-label={`${lab.title} evidence anchors`}>
-                    {lab.anchors.map((anchor) => (
-                      <div className={`profile-anchor ${anchor.status.toLowerCase()}`} key={anchor.id}>
-                        <span>{anchor.label}</span>
-                        <strong>{anchor.status === "RECORDED" ? `${anchor.evidenceCount} recorded` : anchor.status === "WITHDRAWN" ? "Passed" : "Not yet"}</strong>
-                      </div>
-                    ))}
-                  </div>
+          <Link href="/learn" className="profile-row">
+            <span className="profile-row-icon"><BookOpen aria-hidden="true" /></span>
+            <span className="profile-row-copy">
+              <strong>Learning</strong>
+              <small>Return to your handbooks and current programme journey.</small>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
 
-                  {lab.metrics.length ? (
-                    <dl className="profile-metric-list">
-                      {lab.metrics.map((metric) => (
-                        <div key={metric.code}>
-                          <dt>{metric.label}</dt>
-                          <dd>
-                            <strong>{metric.provenanceStatus === "UNVERIFIED" ? "Awaiting evidence-link review" : metric.value}</strong>
-                            <span>{metric.sourceCount ? `${metric.sourceCount} evidence source${metric.sourceCount === 1 ? "" : "s"}` : "Evidence links need review"}</span>
-                            {metric.provenanceStatus === "UNVERIFIED" && <span>Incomplete or stale evidence links leave this conclusion open.</span>}
-                            {metric.sourceAnchors?.map(anchor => <span key={anchor.label}>{anchor.label}: {anchor.count} source links</span>)}
-                            <details><summary>Calculation details</summary><p>Observation coverage: {metric.evidenceStrength === "SUFFICIENT_FOR_LAB" ? "Enough for this Lab comparison" : metric.evidenceStrength === "LIMITED" ? "Limited" : "Not established"}</p><p>Calculation reference: {metric.formulaVersion ?? "Not available"}</p></details>
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : (
-                    <p className="profile-evidence-empty">
-                      Your evidence anchors will appear here as you move through the Lab. Calculated measures appear only when the required evidence exists.
-                    </p>
-                  )}
-
-                  <div className="profile-evidence-summary">
-                    <span>{lab.summary.recordedAnchors}/{lab.summary.totalAnchors} evidence anchors</span>
-                    <span>{lab.summary.activeEvidenceItems} evidence items</span><span>{lab.summary.photos ?? 0} photos</span>
-                    <span>{lab.summary.derivedMeasures} calculated measures</span>
-                  </div>
-                </section>
-              ))}
-            </div>
-          ) : (
-            <p className="profile-evidence-empty">
-              {portfolioError ? "Your portfolio could not be loaded. Refresh to try again; saved evidence remains unchanged." : !portfolio ? "Opening your evidence portfolio…" : "No Lab evidence has been recorded yet. Your portfolio builds automatically from the evidence you choose to record."}
-            </p>
-          )}
-        </article>
-
-        {staff ? (
-          <article className="profile-card profile-access-card">
-            <div className="profile-card-icon"><ShieldCheck aria-hidden="true" /></div>
-            <div>
-              <p className="profile-label">Programme team</p>
-              <h2>Programme workspace</h2>
-            </div>
-            <Link className="profile-secondary" href="/workspace">
-              <Building2 aria-hidden="true" /> Open programme workspace
+      {staff ? (
+        <section className="profile-section" aria-labelledby="profile-programme-team">
+          <h2 id="profile-programme-team">Programme team</h2>
+          <div className="profile-list">
+            <Link href="/workspace" className="profile-row">
+              <span className="profile-row-icon"><Building2 aria-hidden="true" /></span>
+              <span className="profile-row-copy">
+                <strong>Programme workspace</strong>
+                <small>Open the role-specific workspace available to your account.</small>
+              </span>
+              <ChevronRight aria-hidden="true" />
             </Link>
-          </article>
-        ) : null}
-
-        <InstallCard />
-
-        <article className="profile-card profile-signout-card">
-          <div>
-            <p className="profile-label">Account action</p>
-            <h2>Sign out or switch account</h2>
-            <p>Sign out when you are finished, or when you need to enter BIS with another account.</p>
           </div>
-          <form action="/auth/signout" method="post">
-            <button type="submit" className="profile-signout">
-              <LogOut aria-hidden="true" /> Sign out
-            </button>
-          </form>
-        </article>
+        </section>
+      ) : null}
+
+      <section className="profile-section" aria-labelledby="profile-account">
+        <h2 id="profile-account">Account</h2>
+        <div className="profile-account-card">
+          <div><span>Name</span><strong>{displayName}</strong></div>
+          <div><span>Email</span><strong>{email}</strong></div>
+        </div>
+        <InstallCard />
+        <form action="/auth/signout" method="post">
+          <button type="submit" className="profile-signout">
+            <LogOut aria-hidden="true" />
+            Sign out or switch account
+          </button>
+        </form>
+      </section>
+
+      <section className="profile-principle" aria-label="Personalisation note">
+        <Palette aria-hidden="true" />
+        <p><strong>Your presentation can change. Your evidence does not.</strong> Appearance and life-context settings never delete or rewrite the evidence you have already recorded.</p>
       </section>
     </main>
   );
