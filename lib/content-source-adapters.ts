@@ -1294,19 +1294,19 @@ function markdownBlocks(markdown: string) {
   };
 
   for (let index = 0; index < lines.length; index += 1) {
-    const standardTable = standardMarkdownTableAt(lines, index);
-    if (standardTable) {
-      flush();
-      blocks.push(standardTable.block);
-      index = standardTable.end - 1;
-      continue;
-    }
-
     const serializedTable = serializedMarkdownTable(lines, index);
     if (serializedTable) {
       flush();
       blocks.push(serializedTable.block);
       index = serializedTable.end - 1;
+      continue;
+    }
+
+    const standardTable = standardMarkdownTableAt(lines, index);
+    if (standardTable) {
+      flush();
+      blocks.push(standardTable.block);
+      index = standardTable.end - 1;
       continue;
     }
 
