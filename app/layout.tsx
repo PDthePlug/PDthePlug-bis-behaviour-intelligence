@@ -7,6 +7,7 @@ import "./learning/programme-player.css";
 import "./habit-lab/focused-runtime.css";
 import "./responsive-readiness.css";
 import "./learning/handbook-presentation.css";
+import "./learner-document-system.css";
 
 const metadataBase = new URL(BIS_PRODUCTION_ORIGIN);
 
