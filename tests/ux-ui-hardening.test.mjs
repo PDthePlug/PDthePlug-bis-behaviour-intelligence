@@ -133,20 +133,38 @@ test("password recovery routes use the compact responsive authentication story",
 });
 
 
-test("Learn and Lab use one learner-document visual grammar", async () => {
-  const [player, playerCss, handbookCss, labCss] = await Promise.all([
+test("Learn and Lab use one governed learner-document system", async () => {
+  const [layout, player, labFrame, sharedCss, handbookCss, contract] = await Promise.all([
+    source("app/layout.tsx"),
     source("app/learning/programme-player.tsx"),
-    source("app/learning/programme-player.css"),
+    source("app/lab-investigation-frame.tsx"),
+    source("app/learner-document-system.css"),
     source("app/learning/handbook-presentation.css"),
-    source("app/lab-investigation-frame.css"),
+    source("docs/UNIFIED_LEARNER_DOCUMENT_SYSTEM.md"),
   ]);
 
-  assert.match(player, /prototype-learning-document/);
+  assert.match(layout, /learner-document-system\.css/);
+  for (const token of [
+    "learner-document-stage",
+    "learner-document",
+    "learner-document-header",
+    "learner-document-title",
+    "learner-document-purpose",
+    "learner-document-outcomes",
+    "learner-document-meta",
+    "learner-document-body",
+  ]) {
+    assert.match(player, new RegExp(token), `ProgrammePlayer must use ${token}`);
+    assert.match(labFrame, new RegExp(token), `Lab frame must use ${token}`);
+  }
   assert.match(player, /sessionDesign\?\.dayPurpose/);
   assert.match(player, /sessionDesign\.learnerOutcome/);
-  assert.match(playerCss, /BIS Unified Learner Document System/);
-  assert.match(playerCss, /font:650 clamp\(38px,5vw,52px\)\/1\.02 var\(--font-serif\)/);
-  assert.match(labCss, /font:650 clamp\(38px,5vw,52px\)\/1\.02 var\(--font-serif\)/);
+  assert.match(labFrame, /investigation\.mission/);
+  assert.match(labFrame, /investigation\.produces/);
+  assert.match(sharedCss, /BIS Unified Learner Document System/);
+  assert.match(sharedCss, /--learner-document-accent/);
+  assert.match(sharedCss, /font:650 clamp\(38px,5vw,52px\)\/1\.02 var\(--font-serif\)/);
+  assert.match(contract, /must not rewrite, shorten, reorder, reinterpret/);
   assert.match(handbookCss, /Preserve table relationships on phones/);
   assert.doesNotMatch(handbookCss, /handbook-stacked-table tbody[^\n]*display:\s*block/);
 });
