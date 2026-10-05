@@ -38,11 +38,11 @@ test('completion stops before posting progress when the flush fails',async()=>{
 });
 
 
-test('reader navigation keeps previous task in browser history and makes exit explicit', async()=>{
+test('reader navigation keeps previous task in browser history without an Exit reader link', async()=>{
  const s=await readFile(new URL('../app/learning/programme-player.tsx',import.meta.url),'utf8');
  assert.match(s,/useSearchParams/);
  assert.match(s,/params\.set\("page", String\(next \+ 1\)\)/);
  assert.match(s,/router\.push\(/);
- assert.match(s,/<ArrowLeft \/> Exit reader/);
+ assert.doesNotMatch(s,/Exit reader/);
  assert.match(s,/onClick=\{\(\) => goToProgrammePage\(selected - 1\)\}/);
 });

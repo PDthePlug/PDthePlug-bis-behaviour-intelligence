@@ -35,12 +35,12 @@ test("customer-facing staff language explains intent without internal role jargo
   assert.doesNotMatch(signIn, /Authentication verifies your identity/);
 });
 
-test("reader back navigation is task-aware and leaving is explicit", async () => {
+test("reader previous-task navigation preserves page history", async () => {
   const player = await source("app/learning/programme-player.tsx");
   assert.match(player, /useSearchParams/);
   assert.match(player, /params\.set\("page", String\(next \+ 1\)\)/);
   assert.match(player, /goToProgrammePage\(selected - 1\)/);
-  assert.match(player, /<ArrowLeft \/> Exit reader/);
+  assert.doesNotMatch(player, /Exit reader/);
 });
 
 test("PR #111 evidence certification is the canonical demo contract", async () => {

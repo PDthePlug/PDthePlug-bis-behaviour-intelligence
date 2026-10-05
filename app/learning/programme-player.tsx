@@ -1342,9 +1342,32 @@ export function ProgrammePlayer({
           </section>
         ) : (
           <section className="prototype-page prototype-reader learner-document-stage">
-            <Link className="prototype-back-link" href={facilitatorMode && facilitatorContext ? facilitatorContext.returnTo : previewMode ? "/content-studio" : "/learn"}>
-              {facilitatorMode ? <><ArrowLeft /> Back to facilitator</> : <><ArrowLeft /> Exit reader</>}
-            </Link>
+            <details className="prototype-programme-map" open={mapOpen} onToggle={(event) => setMapOpen(event.currentTarget.open)}>
+              <summary>
+                <span>
+                  <LibraryBig /> Programme map
+                </span>
+                <strong>{page.key} · {page.label}</strong>
+              </summary>
+              <div>
+                {programme.treatment.pages.map((item, index) => (
+                  <button
+                    type="button"
+                    key={item.id}
+                    disabled={completing}
+                    className={`${index === selected ? "current" : ""} ${completed.has(item.id) ? "complete" : ""}`}
+                    onClick={() => goToProgrammePage(index)}
+                  >
+                    <span>{completed.has(item.id) ? <Check /> : pageNumber(item)}</span>
+                    <div>
+                      <strong>{item.key}</strong>
+                      <small>{item.label}</small>
+                    </div>
+                    {item.experimentPosition ? <em>{item.experimentPosition}</em> : null}
+                  </button>
+                ))}
+              </div>
+            </details>
 
             <div className="prototype-learning-document learner-document">
             <div className="prototype-reader-hero prototype-reader-hero-compact learner-document-header">
@@ -1378,33 +1401,6 @@ export function ProgrammePlayer({
                 </div>
               ) : null}
             </div>
-
-            <details className="prototype-programme-map" open={mapOpen} onToggle={(event) => setMapOpen(event.currentTarget.open)}>
-              <summary>
-                <span>
-                  <LibraryBig /> Programme map
-                </span>
-                <strong>{page.key} · {page.label}</strong>
-              </summary>
-              <div>
-                {programme.treatment.pages.map((item, index) => (
-                  <button
-                    type="button"
-                    key={item.id}
-                    disabled={completing}
-                    className={`${index === selected ? "current" : ""} ${completed.has(item.id) ? "complete" : ""}`}
-                    onClick={() => goToProgrammePage(index)}
-                  >
-                    <span>{completed.has(item.id) ? <Check /> : pageNumber(item)}</span>
-                    <div>
-                      <strong>{item.key}</strong>
-                      <small>{item.label}</small>
-                    </div>
-                    {item.experimentPosition ? <em>{item.experimentPosition}</em> : null}
-                  </button>
-                ))}
-              </div>
-            </details>
 
             <div className="prototype-save-state learner-document-status" aria-live="polite">
               {facilitatorMode

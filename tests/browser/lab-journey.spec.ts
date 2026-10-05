@@ -183,5 +183,7 @@ test("Lab investigation renders through the shared learner-document surface", as
   expect(geometry.overflow).toBeLessThanOrEqual(1);
   expect(geometry.background).toBe("rgb(255, 255, 255)");
   expect(Number.parseFloat(geometry.radius)).toBe(0);
+  const navigation = page.locator(".universal-investigation-nav button.current");
+  expect(await navigation.evaluate((element) => Number.parseFloat(getComputedStyle(element).borderRadius))).toBeGreaterThan(0);
   await page.screenshot({ path: info.outputPath("workbook-canvas-lab.png"), fullPage: true });
 });
