@@ -1,6 +1,12 @@
 "use client";
 
 import { BisMark } from "@/components/brand/bis-mark";
+import {
+  applyPersonalisation,
+  loadLocalPersonalisation,
+  normalisePersonalisation,
+  savePersonalisation,
+} from "@/lib/learner-personalization";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -28,7 +34,7 @@ const stageLabels: Record<ShellStage, string> = {
 
 function resolveStage(pathname: string, section: string | null): ShellStage {
   if (pathname.startsWith("/portfolio")) return "portfolio";
-  if (pathname.startsWith("/profile")) return "profile";
+  if (pathname.startsWith("/profile") || pathname.startsWith("/settings")) return "profile";
   if (pathname.startsWith("/learn") || pathname.startsWith("/handbooks/")) return "learn";
   if (pathname.startsWith("/labs")) return "lab";
   if (pathname.startsWith("/habit-lab/experiment")) return "experiment";
@@ -85,13 +91,44 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
       {
         id: "profile" as const,
         label: "Profile",
-        detail: "Account and sign out",
+        detail: "Identity, settings and sign out",
         href: "/profile",
         icon: UserRound,
       },
     ],
     [experimentHref],
   );
+
+  useEffect(() => {
+    const local = loadLocalPersonalisation();
+    if (local) applyPersonalisation(local);
+
+    const controller = new AbortController();
+    void fetch("/api/profile", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) return;
+        const payload = (await response.json()) as {
+          profile?: null | {
+            appearancePreference?: string;
+            accentPreference?: string;
+            textSizePreference?: string;
+            readingWidthPreference?: string;
+          };
+        };
+        if (!payload.profile || controller.signal.aborted) return;
+        savePersonalisation(normalisePersonalisation({
+          appearance: payload.profile.appearancePreference as never,
+          accent: payload.profile.accentPreference as never,
+          textSize: payload.profile.textSizePreference as never,
+          readingWidth: payload.profile.readingWidthPreference as never,
+        }));
+      })
+      .catch(() => {
+        // Local preferences remain available if the profile request is temporarily unavailable.
+      });
+
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
