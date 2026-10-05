@@ -267,7 +267,7 @@ export function SettingsPanel() {
             {readingWidths.map((item) => {
               const active = personalisation.readingWidth === item.value;
               return (
-                <button className={"settings-choice" + (active ? " active" : "")} type="button" key={item.value} aria-pressed={active} onClick={() => changePersonalisation("readingWidth", item.value)}>
+                <button className={"settings-choice text-choice" + (active ? " active" : "")} type="button" key={item.value} aria-pressed={active} onClick={() => changePersonalisation("readingWidth", item.value)}>
                   <span><strong>{item.label}</strong><small>{item.detail}</small></span>
                   {active ? <Check aria-hidden="true" /> : null}
                 </button>
