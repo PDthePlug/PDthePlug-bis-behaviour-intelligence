@@ -315,7 +315,7 @@ test("pasted Markdown learning source preserves publication semantics before Pro
     assert.match(welcome, /handbook-section-rule/);
     assert.match(day1, /handbook-source-callout/);
     assert.doesNotMatch(day1, /[┌┐└┘│]/u);
-    assert.match(day1, /<h3>📖 What Is a Risk\\?<\/h3>/u);
+    assert.match(day1, /<h3>📖 What Is a Risk\?<\/h3>/u);
   } finally {
     await rm(temp, { recursive: true, force: true });
   }
