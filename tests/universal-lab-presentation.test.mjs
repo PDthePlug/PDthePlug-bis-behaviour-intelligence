@@ -292,7 +292,7 @@ test("produced outputs are not repeated inside imported source prose", () => {
 
 test("learner frame shows the canonical nine-stage journey without internal facilitation instructions", async () => {
   const frame = await source("app/lab-investigation-frame.tsx");
-  assert.match(frame, /<h1>{canonicalTitle}<\/h1>/);
+  assert.match(frame, /<h1 className="learner-document-title">\{canonicalTitle\}<\/h1>/);
   assert.doesNotMatch(frame, /canonicalStage\?\.role/);
   assert.doesNotMatch(frame, />□ \{output\}</);
 });
@@ -476,8 +476,8 @@ test("each investigation is one Learn-style document instead of a stack of cards
     source("app/lab-investigation-frame.tsx"),
     source("app/lab-investigation-frame.css"),
   ]);
-  assert.match(frame, /className="universal-lab-document"/);
-  assert.match(frame, /className="universal-lab-document-body"/);
+  assert.match(frame, /className="universal-lab-document learner-document"/);
+  assert.match(frame, /className="universal-lab-document-body learner-document-body"/);
   assert.match(frame, /id="lab-investigation-start"/);
   assert.match(css, /BIS Laboratory Reader v4/);
   assert.match(css, /\.universal-lab-document\{/);
