@@ -149,3 +149,12 @@ test('class operations preserve revisions and deny unrelated facilitators and le
  await actor('other-f','other-facilitator@local.invalid');await assert.rejects(rpc('bis_record_attendance',[id,'learner','PRESENT',revised]),/your held class/);assert.deepEqual(await query('select * from facilitator_sessions'),[]);
  await actor();await assert.rejects(rpc('bis_save_class_session',['group',1,'2026-10-05','HELD','',null]),/Assigned class/);assert.deepEqual(await query('select * from session_attendance'),[]);
 });
+test('historical response backfill preserves original values, times, privacy and revisions without duplicating existing anchors',async()=>{
+ await db.exec("reset role;insert into responses(id,user_id,prompt_id,semantic_field_id,lab_code,lab_version,value,response_status,privacy_class,occurred_at) values('retained-private','learner','old-import','SYS.RETAINED.PRIVATE','SYS','v1','\"Private original\"','ANSWERED','P3','2021-01-02T00:00:00Z'),('retained-passed','learner','old-import','SYS.RETAINED.PASS','SYS','v1',null,'PASS','P2','2021-01-03T00:00:00Z')");
+ const migration=await readFile(new URL('20261005161500_historical_response_anchors.sql',migrations),'utf8');await db.exec(migration);await db.exec(migration);
+ const original=await query("select * from evidence_records where source_object_type='RESPONSE' and source_object_id='response'");assert.equal(original.length,1);assert.equal(original[0].id,'evidence');
+ const records=await query("select * from evidence_records where id like 'RETAINED_RESPONSE:retained-%' order by id");assert.equal(records.length,2);
+ const privateRecord=records.find(r=>r.source_object_id==='retained-private');assert.equal(privateRecord.value,'\"Private original\"');assert.equal(privateRecord.sensitivity,'P3');assert.equal(new Date(privateRecord.occurred_at).toISOString().slice(0,10),'2021-01-02');assert.equal(privateRecord.enrolment_id,'enrolment');
+ const passed=records.find(r=>r.source_object_id==='retained-passed');assert.equal(passed.status,'WITHDRAWN');assert.equal(passed.value,null);
+ await actor('facilitator','facilitator@local.invalid');assert.equal((await query("select * from evidence_records where id like 'RETAINED_RESPONSE:%'")).length,0);
+});

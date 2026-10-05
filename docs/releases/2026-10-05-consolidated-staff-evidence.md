@@ -35,6 +35,9 @@ Production already contains the commercial schema and original seeds. Do not rea
 6. `20261001123500_programme_onboarding.sql`
 7. `20261005151940_workspace_consolidation_integrity.sql`
 8. `20261005160300_staff_access_transactions.sql`
+9. `20261005161500_historical_response_anchors.sql`
+
+The production preflight also found 264 older imported responses without portfolio anchors. The ninth migration preserves each retained original value, timestamp, privacy classification and revision status. It leaves investigation attribution explicitly historical rather than guessing an authored task.
 
 Production customer records are not QA fixtures. Schema prerequisites and structural historical backfills are controlled release operations; functional database mutation tests run only in Staging and roll back. No email, WhatsApp or other outreach is sent by commercial activity logging.
 
