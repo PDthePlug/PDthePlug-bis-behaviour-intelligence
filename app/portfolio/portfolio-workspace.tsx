@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEvidenceData, EvidenceState } from "../evidence-engine-client";
 import { CalculationHistory } from "./calculation-history";
 import { AssessmentHistory } from "../facilitator-assessment";
@@ -90,21 +90,19 @@ export function PortfolioWorkspace() {
 
   const activeGroup = groups.find((candidate) => candidate.id === group)?.id ?? groups[0]?.id ?? "";
 
-  const labGroups = useMemo(() => {
-    const grouped = new Map<string, EvidenceRecord[]>();
-    for (const record of records) {
-      const existing = grouped.get(record.lab_code) ?? [];
-      existing.push(record);
-      grouped.set(record.lab_code, existing);
-    }
-    return Array.from(grouped.entries()).map(([code, labRecords]) => ({
-      code,
-      title: labTitle(code),
-      records: labRecords,
-      latest: labRecords[0]?.occurred_at ?? "",
-      activeCount: labRecords.filter((record) => record.status === "ACTIVE").length,
-    }));
-  }, [records]);
+  const groupedRecords = new Map<string, EvidenceRecord[]>();
+  for (const record of records) {
+    const existing = groupedRecords.get(record.lab_code) ?? [];
+    existing.push(record);
+    groupedRecords.set(record.lab_code, existing);
+  }
+  const labGroups = Array.from(groupedRecords.entries()).map(([code, labRecords]) => ({
+    code,
+    title: labTitle(code),
+    records: labRecords,
+    latest: labRecords[0]?.occurred_at ?? "",
+    activeCount: labRecords.filter((record) => record.status === "ACTIVE").length,
+  }));
 
   function resetSelection() {
     setSelected([]);
