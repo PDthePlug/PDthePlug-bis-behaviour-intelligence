@@ -31,9 +31,9 @@ type ProfileSnapshot = {
 };
 
 const editionLabels = {
-  school: "School",
-  emerging_adult: "Emerging Adult",
-  workplace: "Workplace",
+  school: "School Edition",
+  emerging_adult: "Emerging Adult Edition",
+  workplace: "Workplace Edition",
 } as const;
 
 const editionIcons = {
@@ -137,7 +137,7 @@ export function ProfileDashboard({
             <span className="profile-row-icon"><FlaskConical aria-hidden="true" /></span>
             <span className="profile-row-copy">
               <strong>Evidence Portfolio</strong>
-              <small>Your evidence, reflections, revisions and facilitator reviews have their own home.</small>
+              <small>Your evidence portfolio has its own home for evidence, reflections, revisions and facilitator reviews.</small>
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>
@@ -160,7 +160,7 @@ export function ProfileDashboard({
             <Link href="/workspace" className="profile-row">
               <span className="profile-row-icon"><Building2 aria-hidden="true" /></span>
               <span className="profile-row-copy">
-                <strong>Programme workspace</strong>
+                <strong>Open programme workspace</strong>
                 <small>Open the role-specific workspace available to your account.</small>
               </span>
               <ChevronRight aria-hidden="true" />
