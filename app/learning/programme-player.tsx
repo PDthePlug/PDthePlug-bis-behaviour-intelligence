@@ -282,12 +282,13 @@ function splitDayThree(page: ProgrammePage) {
 
 async function loadProgramme(edition: Edition, code: string): Promise<HabitProgramme> {
   const dynamic = await fetch(
-    `/api/runtime-content?kind=LEARNING_MODULE&code=${encodeURIComponent(code)}&edition=${edition}`,
+    `/api/runtime-content?kind=LEARNING_MODULE&code=${encodeURIComponent(code)}&edition=${edition}&resolve=optional`,
     { cache: "no-store" },
   );
   if (dynamic.ok) {
-    const result = await dynamic.json() as { payload: HabitProgramme };
-    return result.payload;
+    const result = await dynamic.json() as { payload?: HabitProgramme | null; availability?: string };
+    if (result.payload) return result.payload;
+    if (result.availability !== "UNPUBLISHED") throw new Error("The active learning module could not be loaded.");
   }
 
   const detail = await dynamic.json().catch(() => null) as { error?: string } | null;

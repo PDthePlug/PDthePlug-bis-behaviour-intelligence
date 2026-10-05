@@ -1,6 +1,7 @@
 "use client";
 import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
 
+import { programmeEvidenceGuidance } from "@/lib/evidence-reporting.mjs";
 import { useMemo, useState } from "react";
 import {
   ChevronDown,
@@ -848,7 +849,7 @@ export function ProgrammeOutcomesView({
             <Lightbulb />
           </div>
           <div className="outcomes-insight-grid">
-            {[...learningNarratives(outcome), ...outcomeInsights(outcome)].slice(0, 6).map((insight) => (
+            {[...(programmeEvidenceGuidance(outcome) ? [{ title: programmeEvidenceGuidance(outcome)!.title, body: `${programmeEvidenceGuidance(outcome)!.summary} ${programmeEvidenceGuidance(outcome)!.nextAction}` }] : []), ...outcomeInsights(outcome), ...learningNarratives(outcome)].slice(0, 6).map((insight) => (
               <article key={insight.title}>
                 <h3>{insight.title}</h3>
                 <p>{insight.body}</p>

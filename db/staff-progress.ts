@@ -10,4 +10,5 @@ export const scopedStaffExperimentProgress = sqliteTable("staff_experiment_progr
   minimumEvidenceThreshold: integer("minimum_evidence_threshold").notNull(),
   createdAt: text("created_at").notNull(),
   labCode: text("lab_code").notNull(),
+  labVersion: text("lab_version").notNull(),
 });

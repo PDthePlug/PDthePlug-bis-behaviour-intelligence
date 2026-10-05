@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, inArray, ne, or } from "../../../db/query";
 import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { getDb, withSupabaseRequest } from "../../../db";
+import { structuralSupport } from "@/lib/evidence-reporting.mjs";
 import { scopedStaffExperimentProgress as staffExperimentProgress } from "../../../db/staff-progress";
 import {
   auditEvents,
@@ -170,6 +171,7 @@ async function progressRows(userIds: string[], labCode?: string, labVersion?: st
       currentInvestigation: labEnrollments.currentInvestigation,
       startedAt: labEnrollments.startedAt,
       experimentStartedAt: labEnrollments.experimentStartedAt,
+      phaseACompletedAt: labEnrollments.phaseACompletedAt,
       updatedAt: labEnrollments.updatedAt,
       completedAt: labEnrollments.completedAt,
     })
@@ -191,7 +193,7 @@ async function progressRows(userIds: string[], labCode?: string, labVersion?: st
     })
     .from(staffExperimentProgress)
     .where(labCode
-      ? and(inArray(staffExperimentProgress.userId, userIds), eq(staffExperimentProgress.labCode, labCode))
+      ? and(inArray(staffExperimentProgress.userId, userIds), eq(staffExperimentProgress.labCode, labCode), ...(labVersion ? [eq(staffExperimentProgress.labVersion, labVersion)] : []))
       : inArray(staffExperimentProgress.userId, userIds))
     .orderBy(desc(staffExperimentProgress.createdAt));
   const eventRows = await db
@@ -226,6 +228,7 @@ async function progressRows(userIds: string[], labCode?: string, labVersion?: st
         recordedDays: events.length,
         opportunityCount,
       } : null,
+      supportGuidance: structuralSupport(enrolment, experiment ? { recordedDays: events.length } : null),
       lastActivityAt: lastEventAt ?? enrolment?.updatedAt ?? null,
     };
   });
