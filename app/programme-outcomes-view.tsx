@@ -2,7 +2,9 @@
 import { AssessmentReports } from "./assessment-reports";
 import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
 
-import { programmeEvidenceGuidance } from "@/lib/evidence-reporting.mjs";
+import { buildProgrammeReport } from "@/lib/programme-intelligence.mjs";
+import { ProgrammeReportGraphic } from "./programme-report-graphics";
+import "./programme-intelligence.css";
 import { useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
@@ -34,6 +36,7 @@ export type SponsorOutcome = {
   suppressed: boolean;
   minimumReportableCohortSize: number;
   evidenceFlow?: ProgrammeEvidenceFlow | null;
+  assessmentSummary?: import("@/lib/evidence-engine").AssessmentReport["cohorts"][number] | null;
   metrics: null | {
     completionContext: { completed: number; completionRate: number | null };
     action: {
@@ -283,340 +286,19 @@ type SystemOpportunity = {
   level: "INVESTIGATE" | "WATCH" | "CONTEXT";
 };
 
-function ratio(part: number, whole: number) {
-  return whole > 0 ? (part / whole) * 100 : 0;
-}
-
 function systemOpportunities(outcome: SponsorOutcome): SystemOpportunity[] {
-  const metrics = outcome.metrics;
-
-  const landscape = outcome.deepAnalysis?.experimentLandscape;
-  if (!metrics) return [];
-
-  const signals: SystemOpportunity[] = [];
-  const reached = metrics.action.reachedExperimentStage;
-  const started = metrics.action.startedExperiment;
-  const readyNotStarted = metrics.action.readyButNotStarted;
-  const activationGap = ratio(readyNotStarted, reached);
-
-  if (reached >= 3 && readyNotStarted >= 2 && activationGap >= 25) {
-    signals.push({
-      id: "activation-friction",
-      title: "People reached the test but did not start",
-      evidence: `${readyNotStarted} of ${reached} learners who reached the experiment stage had not started yet.`,
-      question: "Check whether timing, instructions, workload, support, or access to a suitable situation is making it harder to begin.",
-      level: "INVESTIGATE",
-    });
-  }
-
-  const insufficient = metrics.evidence.notEnoughYet;
-  const insufficientRate = ratio(insufficient, started);
-  if (started >= 3 && insufficientRate >= 40) {
-    signals.push({
-      id: "opportunity-scarcity",
-      title: "Not enough chances to test the behaviour",
-      evidence: `${insufficient} of ${started} people who started still do not have enough real-world observations.`,
-      question: "Check whether the situations being tested happen often enough during the programme, or whether the experiment needs an easier minimum version.",
-      level: "INVESTIGATE",
-    });
-  }
-
-  const predictionGap = metrics.prediction.averagePredictionGap;
-  if (predictionGap !== null && predictionGap >= 20) {
-    signals.push({
-      id: "prediction-gap",
-      title: "What people expected and what happened are far apart",
-      evidence: `The group's average difference between expectation and observed behaviour is ${predictionGap} percentage points.`,
-      question: "Check whether people are over- or under-estimating what they can control, whether the alternative is realistic, or whether conditions around them are affecting what happens.",
-      level: "WATCH",
-    });
-  }
-
-  const repeat = metrics.change.repeatOpportunityParticipants;
-  const repeatRate = ratio(repeat, started);
-  if (started >= 3 && repeatRate < 50) {
-    signals.push({
-      id: "repeat-exposure",
-      title: "Too few repeat situations",
-      evidence: `Only ${repeat} of ${started} people who started saw at least two comparable situations.`,
-      question: "Before drawing a conclusion about change, consider a longer observation window or experiments built around situations that happen more often.",
-      level: "WATCH",
-    });
-  }
-
-  const helpRate = metrics.support.supportRequestRate ?? 0;
-  if (metrics.support.participantsRequestingHelp >= 2 && helpRate >= 20) {
-    signals.push({
-      id: "support-demand",
-      title: "People are asking for help",
-      evidence: `${metrics.support.participantsRequestingHelp} learners requested human help (${helpRate}% of the group).`,
-      question: "Look for moments that may need clearer facilitation, more regular check-ins, or an easier way to ask for help.",
-      level: "INVESTIGATE",
-    });
-  }
-
-  if (landscape && landscape.participantsStarted >= 3) {
-    const untaggedRate = ratio(landscape.participantsWithoutStructuredThemes, landscape.participantsStarted);
-    if (untaggedRate >= 30) {
-      signals.push({
-        id: "context-coverage",
-        title: "We need clearer context",
-        evidence: `${landscape.participantsWithoutStructuredThemes} of ${landscape.participantsStarted} people who started do not yet have a broad area attached to their experiment.`,
-        question: "Make the experiment setup clearer so the organisation can understand where behaviour is being tested without asking people to share private wording.",
-        level: "CONTEXT",
-      });
-    }
-  }
-
-  if (signals.length === 0) {
-    signals.push({
-      id: "no-threshold-signal",
-      title: "Nothing stands out strongly yet",
-      evidence: "The current group patterns have not crossed any review threshold.",
-      question: "Keep collecting observations. This does not prove that there is no gap; it means the current group picture is not pointing strongly to one yet.",
-      level: "CONTEXT",
-    });
-  }
-
-  return signals;
-}
-
-function outcomeInsights(outcome: SponsorOutcome) {
-  const metrics = outcome.metrics;
-  if (!metrics) return [] as Array<{ title: string; body: string }>;
-  const insights: Array<{ title: string; body: string }> = [];
-  const starters = metrics.experiment.participantsStarted;
-  const enough = metrics.evidence.sufficient;
-  const attemptRate = metrics.action.experimentAttemptRate;
-  if (attemptRate !== null) {
-    const actionTitle =
-      attemptRate >= 70
-        ? "Most learners moved into action"
-        : attemptRate >= 40
-          ? "A substantial share moved into action"
-          : attemptRate > 0
-            ? "Some learners moved into action"
-            : "The real-world experiment has not started yet";
-    insights.push({
-      title: actionTitle,
-      body: String(attemptRate) + "% of the group started a real-world experiment. " + String(metrics.action.readyButNotStarted) + " reached the experiment stage but had not started yet.",
-    });
-  }
-  if (starters > 0) {
-    const evidenceShare = ratio(enough, starters);
-    insights.push({
-      title:
-        evidenceShare >= 70
-          ? "Most people who started now have enough observations"
-          : evidenceShare >= 40
-            ? "Some people have enough observations; others still need more"
-            : "More real-world observations are still needed",
-      body: String(enough) + " of " + String(starters) + " people who started have enough real-world situations for a more reliable group picture. " + String(metrics.evidence.notEnoughYet) + " still need more observations.",
-    });
-  }
-  if (metrics.prediction.averagePredictionGap !== null) {
-    const groupDifference = metrics.prediction.averagePredictedRate !== null && metrics.prediction.averageActualRate !== null
-      ? Math.abs(metrics.prediction.averagePredictedRate - metrics.prediction.averageActualRate).toFixed(1)
-      : null;
-    insights.push({
-      title: "Group averages can hide what happened for individuals",
-      body: groupDifference === null
-        ? "Across learners, expectations were on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened."
-        : "The group averages are only " + groupDifference + " points apart, but each person's expectation was on average " + String(metrics.prediction.averagePredictionGap) + " points away from what actually happened.",
-    });
-  }
-  if (metrics.support.participantsRequestingHelp > 0) {
-    insights.push({
-      title: "Human support is part of the programme",
-      body: String(metrics.support.participantsRequestingHelp) + " learners requested help (" + String(metrics.support.supportRequestRate ?? 0) + "% of the group). This may show where the programme needs more support; it is not a failure score.",
-    });
-  }
-  const themes = outcome.deepAnalysis?.experimentLandscape?.themes ?? [];
-  if (themes.length > 0) {
-    insights.push({
-      title: "Behaviour is being tested in recognisable life contexts",
-      body: "The most common areas large enough to show safely are " + themes.slice(0, 3).map((theme) => theme.label + " (" + String(theme.participants) + ")").join(", ") + ". Learners can appear in more than one area.",
-    });
-  }
-  return insights.slice(0, 5);
-}
-
-function learningNarratives(outcome: SponsorOutcome) {
-  const journey = outcome.learningSummary?.learningJourney;
-  if (!journey) return [] as Array<{ title: string; body: string }>;
-  const items: Array<{ title: string; body: string }> = [];
-
-  const activeDays = journey.days.filter((day) => day.reached > 0);
-  const first = activeDays[0];
-  const furthest = [...activeDays].reverse().find((day) => day.reached > 0);
-  if (first && furthest) {
-    const retained = ratio(furthest.reached, first.reached);
-    items.push({
-      title:
-        retained >= 80
-          ? "Participation remains strong across the learning journey"
-          : retained >= 60
-            ? "Participation is thinning as the programme progresses"
-            : "Participation falls sharply across the learning journey",
-      body: `${first.reached} learners reached Day ${first.day}; ${furthest.reached} reached Day ${furthest.day}. ${journey.activity.participantsWithStructuredResponses} learners have contributed usable learning responses along the way.`,
-    });
-  }
-
-  const topThemes = journey.baselineThemes.slice(0, 3);
-  if (topThemes.length) {
-    items.push({
-      title: "Some challenges are recurring across the group",
-      body: topThemes
-        .map((theme) => `${theme.label}: ${theme.frequentCount} of ${theme.respondents} reported it often or always`)
-        .join(". ") + ".",
-    });
-  }
-
-  for (const shift of journey.skillShifts) {
-    const direction = shift.averageShift > 0 ? "increased" : shift.averageShift < 0 ? "decreased" : "stayed level";
-    items.push({
-      title: `${shift.label} ${direction}`,
-      body: `Across ${shift.pairedParticipants} learners with both check-ins, the group average moved from ${shift.averagePre} to ${shift.averagePost} (${shift.averageShift > 0 ? "+" : ""}${shift.averageShift}).`,
-    });
-  }
-
-  return items.slice(0, 4);
-}
-
-function themeRecommendation(area: string) {
-  switch (area) {
-    case "Follow-through":
-      return "Explore smaller commitments, visible follow-up points and clearer ownership of next actions.";
-    case "Focus":
-      return "Explore where distraction is entering the environment and whether focused work needs stronger boundaries.";
-    case "Routine":
-      return "Explore whether routines depend too heavily on motivation instead of predictable cues and practical structure.";
-    case "Impulse control":
-      return "Explore pause points before high-impulse decisions and make the preferred alternative easier to choose.";
-    case "Self-regulation":
-      return "Explore short pause, reset and recovery practices for moments of pressure.";
-    case "Persistence":
-      return "Explore minimum viable actions and support after an early setback rather than relying on motivation alone.";
-    case "Automatic behaviour":
-      return "Explore the situations that repeatedly trigger automatic action and whether the environment can make alternatives easier.";
-    default:
-      return "Explore the conditions around this pattern and test a practical support response.";
-  }
+  return buildProgrammeReport(outcome).insights.map(insight => ({
+    id: insight.id, title: insight.title, evidence: insight.observation,
+    question: insight.action, level: "CONTEXT" as const,
+  }));
 }
 
 function programmeDesignInsights(outcome: SponsorOutcome) {
-  const learning = outcome.organisationLearning;
-  const metrics = outcome.metrics;
-  if (!learning || learning.suppressed || !learning.transition || !learning.supportResponse || !learning.adaptation || !learning.comparison) {
-    return [] as Array<{ kicker: string; title: string; body: string }>;
-  }
-
-  const transition = learning.transition;
-  const stages = [
-    { label: "entered the programme", value: transition.participants },
-    { label: "became active in the learning journey", value: transition.activeInLearning },
-    { label: "reached the real-world test", value: transition.reachedExperimentStage },
-    { label: "started the real-world test", value: transition.startedExperiment },
-    { label: "encountered a repeat situation", value: transition.repeatSituationParticipants },
-  ];
-  const gaps = stages.slice(1).map((stage, index) => ({
-    from: stages[index],
-    to: stage,
-    loss: Math.max(0, stages[index].value - stage.value),
-  }));
-  const largestGap = gaps.sort((a, b) => b.loss - a.loss)[0];
-
-  const cards: Array<{ kicker: string; title: string; body: string }> = [];
-  if (largestGap && largestGap.loss > 0) {
-    cards.push({
-      kicker: "Where participation drops",
-      title: `The biggest visible drop happens before learners ${largestGap.to.label}.`,
-      body: `${largestGap.from.value} learners ${largestGap.from.label}; ${largestGap.to.value} ${largestGap.to.label}. That is a ${largestGap.loss}-person drop worth investigating before changing programme content.`,
-    });
-  } else {
-    cards.push({
-      kicker: "Where participation drops",
-      title: "No major drop stands out yet.",
-      body: "The current journey does not show one clear drop point. Keep collecting results before changing the programme around an assumed problem.",
-    });
-  }
-
-  const support = learning.supportResponse;
-  cards.push({
-    kicker: "Support follow-up",
-    title:
-      support.requests === 0
-        ? "No support requests are recorded yet."
-        : support.acknowledged === 0
-          ? "Learners asked for help, but a response is not yet recorded in BIS."
-          : "Support requests and recorded follow-up can now be viewed together.",
-    body:
-      support.requests === 0
-        ? "There are no learner support requests to review for this group yet."
-        : `${support.requests} support request${support.requests === 1 ? "" : "s"} are recorded; ${support.acknowledged} acknowledgement${support.acknowledged === 1 ? "" : "s"} and ${support.resolved} resolution${support.resolved === 1 ? "" : "s"} are recorded. If a response is not recorded in BIS, that does not mean support did not happen; it only means BIS cannot confirm it.`,
-  });
-
-  const adaptation = learning.adaptation;
-  cards.push({
-    kicker: "Adaptation",
-    title:
-      adaptation.checkpointParticipants === 0
-        ? "We do not yet have enough check-in information to see how learners adjusted."
-        : adaptation.adjustedParticipants > 0
-          ? "Some learners changed their approach after reviewing what happened."
-          : "Learners who reached the checkpoint kept their original plan.",
-    body:
-      adaptation.checkpointParticipants === 0
-        ? "No Day 3 adjustment decisions have been recorded for this group yet. BIS leaves the question open instead of treating missing information as failure."
-        : `${adaptation.checkpointParticipants} learner${adaptation.checkpointParticipants === 1 ? "" : "s"} reached the Day 3 check-in; ${adaptation.adjustedParticipants} adjusted the experiment and ${adaptation.keptPlanParticipants} kept the plan.`,
-  });
-
-  const repeat = transition.repeatSituationParticipants;
-  const sufficient = metrics?.evidence.sufficient ?? 0;
-  cards.push({
-    kicker: "How confident can we be?",
-    title:
-      repeat >= Math.ceil(transition.startedExperiment * 0.6) && sufficient >= Math.ceil(transition.startedExperiment * 0.6)
-        ? "The programme now has a useful base of repeated real-world observations."
-        : "Programme decisions should stay cautious while repeated observations build.",
-    body: `${repeat} of ${transition.startedExperiment} experiment starters encountered at least two comparable situations, and ${sufficient} have enough observations for a more reliable group picture.`,
-  });
-
-  cards.push({
-    kicker: "For the next programme",
-    title: learning.comparison.baselineOnly
-      ? "This group gives you a starting point for the next programme."
-      : "There is now another similar group available for comparison.",
-    body: learning.comparison.baselineOnly
-      ? "Keep these findings as the starting point. When the next similar group completes the programme, check whether the pattern changed after the team made a deliberate programme change."
-      : `${learning.comparison.comparableCohorts} other active similar group${learning.comparison.comparableCohorts === 1 ? "" : "s"} can support a comparison. A comparison can show whether the pattern changed, but it does not prove what caused the change.`,
-  });
-
-  return cards;
+  return buildProgrammeReport(outcome).insights.map(item => ({ kicker: item.domain === "support" ? "Support follow-up" : item.id === "adaptation" ? "Adaptation" : item.id === "next-programme" ? "For the next programme" : item.domain === "behaviour" ? "How confident can we be?" : "Programme evidence", title: item.title, body: `${item.observation} ${item.action} ${item.boundary}` }));
 }
 
 function organisationActions(outcome: SponsorOutcome) {
-  const journey = outcome.learningSummary?.learningJourney;
-  const actions = systemOpportunities(outcome).slice(0, 3).map((item) => ({
-    title: item.title,
-    body: item.question,
-    source: "Programme evidence",
-  }));
-  if (journey) {
-    for (const theme of journey.baselineThemes.slice(0, 3)) {
-      actions.push({
-        title: `Explore ${theme.area.toLowerCase()}`,
-        body: themeRecommendation(theme.area),
-        source: `${theme.frequentCount} of ${theme.respondents} reported ${theme.label.toLowerCase()} often or always`,
-      });
-    }
-  }
-  const seen = new Set<string>();
-  return actions.filter((item) => {
-    if (seen.has(item.title)) return false;
-    seen.add(item.title);
-    return true;
-  }).slice(0, 6);
+  return buildProgrammeReport(outcome).insights.map(item => ({ title: item.title, body: item.action, source: item.observation }));
 }
 
 type StaffAction = (payload: Record<string, unknown>) => Promise<boolean>;
@@ -720,7 +402,7 @@ function Metric({
   return (
     <div className="outcome-metric">
       <span>{label}</span>
-      <strong>{value}</strong>
+      <strong className={typeof value === "string" && !/^[\d.+%-]+$/.test(value) ? "outcome-metric-status" : undefined}>{value}</strong>
       {detail ? <small>{detail}</small> : null}
     </div>
   );
@@ -771,6 +453,7 @@ export function ProgrammeOutcomesView({
   const flow = outcome.evidenceFlow;
   const metrics = flow?.runtimeMode === "DYNAMIC" ? null : outcome.metrics;
   const decisionRegister = outcome.decisionRegister;
+  const report = buildProgrammeReport(outcome);
 
   function prefillDecisionFromInsight(insight: { kicker: string; title: string; body: string }) {
     setDecisionSignal(programmeDecisionSignal(insight.kicker));
@@ -847,24 +530,30 @@ export function ProgrammeOutcomesView({
         <Metric label="Learners" value={outcome.participantCount} />
         <Metric
           label="Completion"
-          value={metrics ? percent(metrics.completionContext.completionRate) : "Hidden for privacy"}
+          value={metrics ? percent(metrics.completionContext.completionRate) : flow?.totals?.completed === null || flow?.totals?.completed === undefined ? "Unavailable" : `${flow.totals.completed} completed`}
           detail="Across this programme"
         />
       </section>
 
-      {metrics ? (
+      {report.status === "AVAILABLE" ? (
         <section hidden={section !== "all" && section !== "overview"} className="outcomes-insights">
           <div className="outcomes-section-heading">
             <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
             <Lightbulb />
           </div>
           <div className="outcomes-insight-grid">
-            {[...(programmeEvidenceGuidance(outcome) ? [{ title: programmeEvidenceGuidance(outcome)!.title, body: `${programmeEvidenceGuidance(outcome)!.summary} ${programmeEvidenceGuidance(outcome)!.nextAction}` }] : []), ...outcomeInsights(outcome), ...learningNarratives(outcome)].slice(0, 6).map((insight) => (
-              <article key={insight.title}>
-                <h3>{insight.title}</h3>
-                <p>{insight.body}</p>
-              </article>
-            ))}
+            {report.insights.map(insight => <article key={insight.id}>
+              <h3>{insight.title}</h3><p>{insight.observation}</p><p>{insight.interpretation}</p>
+              <p className="programme-insight-action"><strong>Suggested next step</strong><br />{insight.action}</p>
+              <details className="programme-insight-evidence"><summary>What supports this finding?</summary>
+                <p>{insight.context}</p><p>{insight.evidence.basis}{insight.evidence.sample === null ? "" : ` · ${insight.evidence.sample} contributing records or participants, as described above`}</p><p>{insight.boundary}</p>
+              </details>
+            </article>)}
+          </div>
+          <div className="programme-intelligence-section">
+            <h2>Progress and programme context</h2>
+            {report.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
+            <p>{report.boundary}</p>
           </div>
         </section>
       ) : null}
@@ -881,7 +570,7 @@ export function ProgrammeOutcomesView({
         <p>{flow.privacyNote}</p>
       </section> : null}
 
-      {outcome.suppressed || flow?.suppressed || (!metrics && flow?.runtimeMode !== "DYNAMIC") ? (
+      {report.status === "SUPPRESSED" ? (
         <section className="outcomes-suppressed">
           <LockKeyhole />
           <p className="eyebrow">Small group privacy</p>

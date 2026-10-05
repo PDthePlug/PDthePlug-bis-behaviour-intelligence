@@ -79,7 +79,7 @@ test("no opportunity requires an explicit observation rather than a missing answ
 
 test("a Universal experiment handoff is not described as an unstarted legacy experiment", () => {
   const support = structuralSupport({ ...enrolment, experimentStartedAt: "2026-10-05" }, null);
-  assert.match(support, /active experiment calendar/);
+  assert.match(support, /experiment dates and access/);
   assert.match(support, /counts are not available/);
   assert.doesNotMatch(support, /completion of.*Phase A|planned test/);
 });

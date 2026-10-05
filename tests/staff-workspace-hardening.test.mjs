@@ -131,9 +131,9 @@ test("learner-only profiles do not advertise staff access", async () => {
 test("participant insight labels stay behavioural rather than personality based", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
   for (const strength of [
-    "Learning momentum",
-    "Moved from planning into action",
-    "Consistent observation",
+    "Reached the mapping activity",
+    "Experiment start recorded",
+    "observation days recorded",
     "Repeated real-world testing",
     "Evidence ready",
   ]) {

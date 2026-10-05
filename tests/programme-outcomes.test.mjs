@@ -132,20 +132,14 @@ test("deeper analysis is an explicit expandable organisation layer", async () =>
 test("system opportunity signals remain evidence-based review questions rather than causal claims", async () => {
   const view = await source("app/programme-outcomes-view.tsx");
 
-  for (const signal of [
-    "People reached the test but did not start",
-    "Not enough chances to test the behaviour",
-    "What people expected and what happened are far apart",
-    "Too few repeat situations",
-    "People are asking for help",
-    "We need clearer context",
-  ]) {
-    assert.match(view, new RegExp(signal));
-  }
-
+  const model = await source("lib/programme-intelligence.mjs");
+  assert.match(view, /buildProgrammeReport/);
+  assert.match(model, /A recorded start is not proof/);
+  assert.match(model, /This is the average of individual differences/);
+  assert.match(model, /sourceRefs/);
   assert.match(view, /These patterns point to useful questions/);
   assert.match(view, /they do not prove why it happened/);
-  assert.match(view, /does not prove that there is no gap/);
+
 });
 
 test("deeper analysis preserves independent small-cell suppression", async () => {
@@ -281,15 +275,15 @@ test("organisation learning adds programme-design questions without exposing lea
 });
 
 test("programme-design insight treats missing response and adaptation records as unknown, not failure", async () => {
-  const view = await source("app/programme-outcomes-view.tsx");
+  const view = await source("lib/programme-intelligence.mjs");
   assert.match(view, /If a response is not recorded in BIS, that does not mean support did not happen/);
   assert.match(view, /BIS leaves the question open instead of treating missing information as failure/);
-  assert.match(view, /not proof of why a result happened/);
+  assert.match(view, /does not establish what caused a change/);
 });
 
 test("organisation learning preserves causal restraint and baseline comparison language", async () => {
   const [view, migration] = await Promise.all([
-    source("app/programme-outcomes-view.tsx"),
+    source("lib/programme-intelligence.mjs"),
     source("supabase/migrations/20260925205000_programme_design_organisational_learning.sql"),
   ]);
   assert.match(view, /starting point for the next programme/);
@@ -302,10 +296,12 @@ test("organisation learning preserves causal restraint and baseline comparison l
 test("programme PDF carries the organisational learning layer", async () => {
   const pdf = await source("lib/programme-report-pdf.ts");
   assert.match(pdf, /What the programme can learn/);
-  assert.match(pdf, /What should the team learn from this programme\?/);
-  assert.match(pdf, /Support follow-up/);
-  assert.match(pdf, /Learning for the next programme/);
-  assert.match(pdf, /If a response is not recorded in BIS, that does not mean support did not happen/);
+  const model = await source("lib/programme-intelligence.mjs");
+  assert.match(pdf, /buildProgrammeReport/);
+  assert.match(model, /Support requests and recorded follow-up/);
+  assert.match(model, /starting point for the next programme/);
+  assert.match(model, /If a response is not recorded in BIS, that does not mean support did not happen/);
+
 });
 
 
@@ -338,8 +334,8 @@ test("programme decision register connects evidence to a next-cycle organisation
   assert.match(migration, /PROGRAMME_OWNER/);
 
   assert.match(pdf, /Programme decisions/);
-  assert.match(pdf, /Interpretation boundary/);
-  assert.match(pdf, /does not prove that the programme change caused the result/);
+  assert.match(pdf, /Interpretation limit/);
+  assert.match(pdf, /does not prove newly acquired or lasting capability/);
 });
 
 test("programme owner is writable while sponsor viewer remains read only", async () => {
@@ -407,12 +403,12 @@ test("question intelligence registry defaults text and high-sensitivity answers 
 test("programme PDF carries governed question intelligence without private learner wording", async () => {
   const pdf = await source("lib/programme-report-pdf.ts");
 
-  assert.match(pdf, /Question intelligence/);
-  assert.match(pdf, /What are learners answering consistently\?/);
-  assert.match(pdf, /Private free-text answers are not read or shown/);
-  assert.match(pdf, /patterns\.privacyNote/);
-  assert.match(pdf, /drawQuestionPatterns\(canvas, outcome\)/);
-  assert.doesNotMatch(pdf, /question\.response|question\.rawValue|question\.freeText/);
+  const model = await source("lib/programme-intelligence.mjs");
+  assert.match(pdf, /buildProgrammeReport/);
+  assert.match(model, /Structured answers only/);
+  assert.match(model, /CATEGORICAL.*MULTI_SELECT/);
+  assert.doesNotMatch(model, /question\.response|question\.rawValue|question\.freeText/);
+
 });
 
 

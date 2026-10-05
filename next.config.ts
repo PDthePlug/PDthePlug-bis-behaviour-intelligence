@@ -49,6 +49,8 @@ const nextConfig: NextConfig = {
     }];
   },
   outputFileTracingIncludes: {
+    "/api/staff": ["./assets/report-fonts/**/*"],
+    "/experience/leap9/report": ["./assets/report-fonts/**/*"],
     "/programmes/[asset]": ["./public/programmes/chunks/**/*"],
   },
 };

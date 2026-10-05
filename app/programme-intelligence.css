@@ -1,0 +1,43 @@
+.programme-report-graphic { margin: 0; padding: 22px 0; border-top: 1px solid #dce2e4; min-width: 0; }
+.programme-report-graphic h3 { margin: 0 0 8px; font-size: 1.1rem; }
+.programme-report-graphic p { margin: 0 0 18px; color: #4c5966; line-height: 1.55; max-width: 80ch; }
+.programme-report-bars { display: grid; gap: 14px; }
+.programme-report-bar-row { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(100px, 2fr) minmax(70px, auto); align-items: center; gap: 16px; font-size: .88rem; }
+.programme-report-bar-row strong { text-align: right; font-variant-numeric: tabular-nums; }
+.programme-report-bar-tracks { display: grid; gap: 4px; }
+.programme-report-bar-tracks > div { background: #eaf0f4; height: 9px; overflow: hidden; border-radius: 3px; }
+.programme-report-bar-tracks i { display: block; height: 100%; background: #315d82; }
+.programme-report-bar-secondary i { background: #91aec4; }
+.programme-report-graphic details { margin-top: 18px; font-size: .88rem; }
+.programme-report-graphic summary { cursor: pointer; padding: 10px 0; }
+.programme-report-table { max-width: 100%; overflow-x: auto; }
+.programme-report-table table { width: 100%; border-collapse: collapse; text-align: left; }
+.programme-report-table caption { text-align: left; padding: 10px 0; }
+.programme-report-table th, .programme-report-table td { padding: 10px; border-bottom: 1px solid #dce2e4; vertical-align: top; }
+.programme-intelligence-section { min-width: 0; padding: 24px; background: #fff; border: 1px solid #dce2e4; border-radius: 12px; }
+.programme-intelligence-section > p { line-height: 1.6; color: #4c5966; }
+.programme-insight-action { margin-top: 14px; padding-top: 12px; border-top: 1px solid #dce2e4; }
+.programme-insight-evidence { margin-top: 14px; }
+.programme-insight-evidence summary { cursor: pointer; padding: 8px 0; }
+.programme-insight-evidence p { font-size: .88rem; }
+.facilitator-action-list { display: grid; gap: 18px; list-style: none; margin: 20px 0; padding: 0; }
+.facilitator-action-list li { border-top: 1px solid #dce2e4; padding-top: 16px; }
+.facilitator-action-list p { margin: 7px 0; line-height: 1.5; }
+@media (max-width: 600px) {
+  .programme-report-bar-row { grid-template-columns: minmax(0, 1fr) auto; gap: 7px 12px; }
+  .programme-report-bar-tracks { grid-row: 2; grid-column: 1 / -1; }
+  .programme-report-bar-row > span { overflow-wrap: anywhere; }
+  .programme-report-bar-row strong { font-size: .8rem; }
+  .programme-intelligence-section { padding: 18px; }
+}
+
+/* Text availability states need body-sized type, not a large numeric display. */
+.programme-outcomes .outcome-metric > strong.outcome-metric-status,
+.staff-workspace-shell .staff-workspace-main .programme-outcomes .outcome-metric > strong.outcome-metric-status {
+  font-family: var(--font-sans, sans-serif); font-size: 14px; line-height: 1.4; letter-spacing: 0; overflow-wrap: normal;
+}
+@media (max-width: 700px) {
+  .programme-outcomes .journey-activity-strip,
+  .staff-workspace-shell .staff-workspace-main .programme-outcomes .journey-activity-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .programme-outcomes .journey-days { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

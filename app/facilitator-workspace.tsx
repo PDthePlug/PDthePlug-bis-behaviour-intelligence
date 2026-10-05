@@ -17,6 +17,9 @@ import { Textarea } from "@/components/ui/textarea";
  import { BIS_MODULES } from "@/lib/bis-catalogue";
 import { FacilitatorClassOperations } from "./facilitator-class-operations";
 import { FacilitatorAssessment } from "./facilitator-assessment";
+import { buildFacilitatorBrief } from "@/lib/programme-intelligence.mjs";
+import { ProgrammeReportGraphic } from "./programme-report-graphics";
+import "./programme-intelligence.css";
 import type { DeliveryEdition } from "@/lib/learning-foundation";
 
 type ProgressRow = {
@@ -145,9 +148,9 @@ function observedStrengths(learner: ProgressRow) {
   const strengths: string[] = [];
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
-  if (step >= 4) strengths.push("Learning momentum");
-  if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Moved from planning into action");
-  if ((experiment?.recordedDays ?? 0) >= 3) strengths.push("Consistent observation");
+  if (step >= 4) strengths.push("Reached the mapping activity");
+  if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Experiment start recorded");
+  if ((experiment?.recordedDays ?? 0) >= 3) strengths.push(`${experiment!.recordedDays} observation days recorded`);
   if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push("Repeated real-world testing");
   if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Evidence ready for a coverage check");
   if (learner.enrolment?.status === "COMPLETED") strengths.push("Completed the learning cycle");
@@ -245,6 +248,7 @@ export function FacilitatorWorkspace({
   const experiments = participants.filter((item) => item.experiment || item.enrolment?.experimentStartedAt).length;
   const reviewReady = participants.filter((item) => (item.enrolment?.currentInvestigation ?? 0) >= 8).length;
   const attention = participants.filter(needsAttention);
+  const brief = buildFacilitatorBrief(participants);
   const learningChecks = cohort.learningChecks ?? null;
   const participantNotes = selected ? data.notes.filter((item) => item.learnerUserId === selected.userId) : [];
   const participantReferrals = selected ? data.referrals.filter((item) => item.learnerUserId === selected.userId) : [];
@@ -300,6 +304,15 @@ export function FacilitatorWorkspace({
                 <BookOpen /> Learner experience
               </Link>
             </div>
+          </section>
+          <section className="programme-intelligence-section">
+            <p className="eyebrow">Your next session</p><h2>Where a check-in could help</h2>
+            <p>These suggestions use recorded progress and observation counts. Ask participants what support would be useful; the records do not explain their reasons.</p>
+            {brief.actions.length ? <ul className="facilitator-action-list">{brief.actions.map(item => <li key={item.userId}>
+              <strong>{item.displayName}</strong><p>{item.observation}</p><p><strong>Suggested check-in:</strong> {item.action}</p>
+              <Button variant="outline" onClick={() => navigateWorkspace({ section: "participants", learner: item.userId })}>Open participant · {item.displayName}</Button>
+            </li>)}</ul> : <p>No check-in suggestion is indicated by the available progress records. This does not mean that nobody needs support.</p>}
+            <ProgrammeReportGraphic chart={brief.chart} />
           </section>
           <FacilitatorClassOperations key={cohort.id} cohortId={cohort.id} participants={participants} />
           <section className="ops-metrics">

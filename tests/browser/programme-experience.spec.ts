@@ -60,13 +60,19 @@ test('report is a labelled fixed simulation without visitor responses', async ({
   const response = await request.get('/experience/leap9/report');
   expect(response.status()).toBe(200);
   expect(response.headers()['content-type']).toBe('application/pdf');
-  const body = (await response.body()).toString('latin1');
-  expect(body).toContain('%PDF-1.4');
-  expect(body).toContain('ILLUSTRATIVE SIMULATION');
-  const pages = body.match(/\/Type \/Page\b/g) ?? [];
-  expect(body.match(/ILLUSTRATIVE SIMULATION/g)?.length).toBe(pages.length);
+  const bytes = await response.body();
+  expect(bytes.subarray(0,4).toString()).toBe('%PDF');
+  const {getDocument} = await import('pdfjs-dist/legacy/build/pdf.mjs');
+  const pdf = await getDocument({data:new Uint8Array(bytes)}).promise;
+  let body = '';
+  for (let index=1; index<=pdf.numPages; index++) {
+    const content=await (await pdf.getPage(index)).getTextContent();
+    const text=content.items.filter(item=>'str' in item).map(item=>item.str).join(' ');
+    expect(text).toContain('ILLUSTRATIVE SIMULATION'); body += text;
+  }
   expect(body).not.toContain('Naledi');
   expect(body).not.toContain('Starting with one field');
+  await pdf.cleanup();
 });
 
 test('storage failure leaves the experience usable and explains persistence', async ({ page }) => {

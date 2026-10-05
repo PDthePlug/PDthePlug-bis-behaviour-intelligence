@@ -17,22 +17,16 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(route, /searchParams\.get\("report"\)/);
   assert.match(route, /content-type": "application\/pdf"/);
   assert.match(route, /PROGRAMME_REPORT_EXPORTED/);
-  assert.match(pdf, /%PDF-1\.4/);
-  assert.match(pdf, /canvas\.textAt\(MARGIN, 714, "Programme"/);
-  assert.match(pdf, /canvas\.textAt\(MARGIN, 676, "Results Report"/);
+  assert.match(pdf, /import PDFDocument from "pdfkit"/);
+  assert.match(pdf, /buildProgrammeReport/);
   assert.match(pdf, /Executive summary/);
   assert.match(pdf, /KEY FINDINGS/);
   assert.match(pdf, /Learning journey/);
-  assert.match(pdf, /DAY-BY-DAY PROGRESSION/);
-  assert.match(pdf, /RECURRING CHALLENGES/);
-  assert.match(pdf, /GROUP SHIFTS/);
   assert.match(pdf, /Behaviour in practice/);
-  assert.match(pdf, /EXPECTATION VS OBSERVED BEHAVIOUR/);
   assert.match(pdf, /How much information we have/);
-  assert.match(pdf, /Experiment landscape/);
   assert.match(pdf, /Action plan/);
   assert.match(pdf, /REPORTING NOTES/);
-  assert.match(pdf, /PROGRAMME RESULTS  \|/);
+
 });
 
 test("canonical PR #111 demo is explicitly synthetic, isolated and reproducible", async () => {
@@ -69,35 +63,23 @@ test("canonical demo preserves mixed and incomplete evidence instead of a perfec
   assert.match(execution, /Do not infer behaviour change/i);
 });
 
-test("organisation report summaries adapt to the evidence rather than forcing positive language", async () => {
-  const view = await source("app/programme-outcomes-view.tsx");
-
-  assert.match(view, /Participation falls sharply across the learning journey/);
-  assert.match(view, /Participation is thinning as the programme progresses/);
-  assert.match(view, /Participation remains strong across the learning journey/);
-  assert.match(view, /Some people have enough observations; others still need more/);
-  assert.match(view, /More real-world observations are still needed/);
-  assert.match(view, /Some learners moved into action/);
+test("organisation report summaries use exact descriptive findings without arbitrary performance thresholds", async () => {
+  const [view,model] = await Promise.all([source("app/programme-outcomes-view.tsx"),source("lib/programme-intelligence.mjs")]);
+  assert.match(view, /buildProgrammeReport/);
+  assert.match(model, /No real-world testing is recorded yet/);
+  assert.match(model, /Unavailable information is not zero participation/);
+  assert.doesNotMatch(model, /attemptRate >=|retained >=|useful base/);
 });
 
 
 test("PDF engine includes reusable professional report primitives", async () => {
   const pdf = await source("lib/programme-report-pdf.ts");
 
-  for (const primitive of [
-    "metricCards(",
-    "twoColumnCards(",
-    "horizontalBars(",
-    "stackedBar(",
-    "callout(",
-    "section(",
-  ]) {
-    assert.match(pdf, new RegExp(primitive.replace(/[()]/g, "\\$&")));
-  }
-
-  assert.match(pdf, /Times-Bold/);
-  assert.match(pdf, /BEHAVIOUR INTELLIGENCE SERIES/);
+  for (const primitive of ["measure(", "paragraph(", "chart(", "table(", "section("]) assert.ok(pdf.includes(primitive));
+  assert.match(pdf, /DejaVuSerif-Bold/);
+  assert.match(pdf, /Behaviour Intelligence Series/);
   assert.match(pdf, /GROUP-LEVEL REPORT/);
   assert.match(pdf, /What the programme results are showing/);
   assert.match(pdf, /What may be worth exploring next/);
+
 });
