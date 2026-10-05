@@ -210,3 +210,113 @@ test("real BIS handbook grammar compiles from Word into the 13-position Programm
     await rm(temp, { recursive: true, force: true });
   }
 });
+
+
+test("pasted Markdown learning source preserves publication semantics before Programme Player rendering", async () => {
+  const tsSource = await source("lib/content-source-adapters.ts");
+  const compiled = ts.transpileModule(tsSource, {
+    compilerOptions: {
+      target: ts.ScriptTarget.ES2022,
+      module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.Bundler,
+      verbatimModuleSyntax: false,
+    },
+  }).outputText;
+
+  const temp = await mkdtemp(join(tmpdir(), "bis-markdown-handbook-adapter-"));
+  try {
+    const modulePath = join(temp, "content-source-adapters.mjs");
+    await writeFile(modulePath, compiled, "utf8");
+    await writeFile(join(temp, "docx-table.mjs"), await source("lib/docx-table.mjs"), "utf8");
+    await writeFile(join(temp, "lab-factory-capabilities.mjs"), await source("lib/lab-factory-capabilities.mjs"), "utf8");
+    const adapter = await import(pathToFileURL(modulePath).href + "?v=" + Date.now());
+
+    const body = [
+      "# RISK LAB™",
+      "School Edition",
+      "The Risk Investigation Handbook",
+      "",
+      "# WELCOME",
+      "HOW TO USE THIS BOOK",
+      "",
+      "Icon | Meaning",
+      "--- | ---",
+      "📖 | Read this",
+      "✍️ | Activity — do this",
+      "",
+      "- First safety rule",
+      "- Second safety rule",
+      "- Third safety rule",
+      "",
+      "---",
+      "",
+      "# DAY 1 OF 10",
+      "Concept Studio 1 — Seeing Protection",
+      "",
+      "┌────────────────────────",
+      "| SESSION: Concept Studio 1 |",
+      "| TIME: 90 minutes |",
+      "| MODE: Facilitated |",
+      "└────────────────────────",
+      "",
+      "📖 What Is a Risk?",
+      "A risk is a possibility under uncertainty.",
+      "",
+      "# DAY 2 OF 10",
+      "Concept Studio 2 — Thinking Like an Investigator",
+      "Day two body.",
+      "# DAY 3 OF 10",
+      "Risk Lab — Phase A",
+      "Day three body.",
+      "# DAY 4 OF 10",
+      "Concept Studio 3",
+      "Day four body.",
+      "# DAY 5 OF 10",
+      "Evidence Studio",
+      "Day five body.",
+      "# WEEKEND",
+      "Field Experiment",
+      "Weekend body.",
+      "# DAY 6 OF 10",
+      "Experiment Clinic",
+      "Day six body.",
+      "# DAY 7 OF 10",
+      "Final Field Application",
+      "Day seven body.",
+      "# DAY 8 OF 10",
+      "Evidence Review",
+      "Day eight body.",
+      "# DAY 9 OF 10",
+      "Transfer & Meta-Risk",
+      "Day nine body.",
+      "# DAY 10 OF 10",
+      "Integration & Next Bridge",
+      "Day ten body.",
+      "# RISK INVESTIGATION CERTIFICATE",
+      "This certifies that",
+    ].join("\\n");
+
+    const output = await adapter.adaptLearningSource(
+      new TextEncoder().encode(body),
+      "MARKDOWN",
+      "RSK",
+      "2.0",
+      "school",
+      { title: "Risk Lab™ Learning Module", slug: "risk" },
+    );
+    const programme = JSON.parse(new TextDecoder().decode(output));
+    const welcome = programme.treatment.pages.find((page) => page.key === "Welcome").html;
+    const day1 = programme.treatment.pages.find((page) => page.key === "Day 1").html;
+
+    assert.match(welcome, /<h3>HOW TO USE THIS BOOK<\\/h3>/);
+    assert.match(welcome, /<table class="handbook-table">/);
+    assert.match(welcome, /<th scope="col">Icon<\\/th>/);
+    assert.match(welcome, /<ul><li>First safety rule<\\/li>/);
+    assert.match(welcome, /handbook-section-rule/);
+    assert.match(day1, /handbook-source-callout/);
+    assert.doesNotMatch(day1, /[┌┐└┘│]/u);
+    assert.match(day1, /<h3>📖 What Is a Risk\\?<\\/h3>/u);
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
