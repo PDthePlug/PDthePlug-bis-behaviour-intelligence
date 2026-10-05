@@ -660,3 +660,304 @@
 .prototype-player .prototype-lab-handoff .prototype-lab-handoff-description{font-size:14px;line-height:1.5}
 .prototype-player .prototype-lab-handoff-action{min-height:44px;box-shadow:none;font-size:13px;padding:10px 12px}
 @media(max-width:620px){.prototype-player .prototype-lab-handoff{align-items:stretch}.prototype-player .prototype-lab-handoff h2{font-size:19px}}
+
+
+/* =====================================================================
+   BIS Unified Learner Document System
+   Learn now uses the same document grammar as the Universal Lab reader:
+   white publication surface, serif document title, compact outcome/meta
+   chips, restrained navigation, embedded controls and one clear endpoint.
+   Authored handbook meaning and field bindings are unchanged.
+   ===================================================================== */
+.prototype-reader{
+  width:min(920px,calc(100% - 44px));
+  padding-top:34px;
+}
+.prototype-learning-document{
+  width:100%;
+  overflow:hidden;
+  border:1px solid #dfe4df;
+  border-radius:22px;
+  background:#fff;
+  box-shadow:0 18px 54px rgb(24 45 38 / 6%);
+}
+.prototype-learning-document .prototype-reader-hero{
+  margin:0;
+  padding:clamp(30px,5vw,52px) clamp(28px,5vw,62px) 28px;
+  border:0;
+  border-bottom:1px solid #e1e5e2;
+  border-radius:0;
+  background:#fff;
+  color:#18333b;
+  box-shadow:none;
+}
+.prototype-reader-compact-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:22px;
+  align-items:start;
+}
+.prototype-learning-document .prototype-reader-hero .prototype-eyebrow{
+  margin:0 0 10px;
+  color:#2f8276;
+  font-size:10px;
+  font-weight:850;
+  line-height:1.3;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.prototype-learning-document .prototype-reader-hero h1{
+  max-width:18ch;
+  margin:0;
+  color:#18333b;
+  font:650 clamp(38px,5vw,52px)/1.02 var(--font-serif);
+  letter-spacing:-.04em;
+  text-wrap:balance;
+}
+.prototype-reader-compact-head>strong{
+  min-width:54px;
+  padding:7px 10px;
+  border:1px solid #d7ddd9;
+  border-radius:999px;
+  background:#fff;
+  color:#31463f;
+  font-size:11px;
+  line-height:1.2;
+  text-align:center;
+}
+.prototype-reader-purpose{
+  max-width:690px;
+  margin:14px 0 0!important;
+  color:#5e6965!important;
+  font-size:16px!important;
+  font-weight:400;
+  line-height:1.68!important;
+}
+.prototype-reader-outcomes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:22px 0 0;
+}
+.prototype-reader-outcomes>strong{
+  flex-basis:100%;
+  margin-bottom:2px;
+  color:#65716c;
+  font-size:9px;
+  font-weight:850;
+  line-height:1.3;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+.prototype-reader-outcomes>span{
+  padding:7px 10px;
+  border:1px solid #dce2de;
+  border-radius:999px;
+  background:#fafbf9;
+  color:#334943;
+  font-size:11px;
+  font-weight:750;
+  line-height:1.3;
+}
+.prototype-reader-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:20px;
+}
+.prototype-reader-meta>span{
+  min-height:30px;
+  display:inline-flex;
+  align-items:center;
+  padding:0 11px;
+  border:1px solid #d7ddd9;
+  border-radius:999px;
+  background:#fff;
+  color:#31463f;
+  font-size:11px;
+  font-weight:650;
+}
+.prototype-learning-document .prototype-progress-track.light{
+  height:4px;
+  margin:20px 0 0;
+  background:#edf1ee;
+}
+.prototype-learning-document .prototype-progress-track.light i{
+  background:#2f8276;
+}
+.prototype-learning-document .prototype-programme-map{
+  margin:0;
+  border:0;
+  border-bottom:1px solid #e2e6e3;
+  border-radius:0;
+  background:#fff;
+  overflow:hidden;
+}
+.prototype-learning-document .prototype-programme-map>summary{
+  min-height:48px;
+  padding:12px clamp(20px,5vw,62px);
+}
+.prototype-learning-document .prototype-programme-map>summary span{
+  color:#46625a;
+  font-size:10px;
+}
+.prototype-learning-document .prototype-programme-map>summary>strong{
+  color:#6f7a75;
+  font-size:10px;
+}
+.prototype-learning-document .prototype-programme-map>div{
+  padding:10px clamp(20px,5vw,62px) 16px;
+  border-top:1px solid #eef0ee;
+}
+.prototype-learning-document .prototype-programme-map button{
+  background:#f7f9f7;
+}
+.prototype-learning-document .prototype-save-state{
+  min-height:34px;
+  margin:0;
+  padding:9px clamp(20px,5vw,62px) 11px;
+  border-bottom:1px solid #eef0ee;
+  color:#74807b;
+  font-size:10px;
+  line-height:1.45;
+  text-align:left;
+}
+.prototype-learning-document .prototype-save-state button{
+  margin-left:8px;
+  border:0;
+  background:transparent;
+  color:var(--p-accent);
+  font-weight:800;
+}
+.prototype-learning-document .workbook-fields{
+  min-inline-size:0;
+  margin:0;
+  padding:0;
+  border:0;
+}
+.prototype-learning-document .prototype-document{
+  margin:0;
+  padding:30px clamp(28px,5vw,62px) clamp(34px,5vw,58px);
+  border:0;
+  border-radius:0;
+  background:#fff;
+  box-shadow:none;
+}
+.prototype-learning-document .prototype-sequence-notice,
+.prototype-learning-document>.facilitator-inline-cue,
+.prototype-learning-document>.handbook-next,
+.prototype-learning-document>.prototype-error{
+  margin-right:clamp(28px,5vw,62px);
+  margin-left:clamp(28px,5vw,62px);
+}
+.prototype-learning-document .prototype-reader-footer{
+  display:grid;
+  grid-template-columns:auto minmax(240px,1fr);
+  gap:14px;
+  align-items:center;
+  margin:0;
+  padding:24px clamp(28px,5vw,62px) 30px;
+  border-top:1px solid #dfe4e1;
+  background:#fff;
+}
+.prototype-learning-document .prototype-reader-footer button{
+  min-height:48px;
+  border-radius:11px;
+  font-size:12px;
+}
+.prototype-learning-document .prototype-reader-footer button:not(.primary){
+  border-color:transparent;
+  background:transparent;
+  color:#52625c;
+}
+.prototype-learning-document .prototype-reader-footer button.primary{
+  justify-self:end;
+  width:min(100%,420px);
+  min-height:52px;
+  justify-content:center;
+  background:#183b43;
+  border-color:#183b43;
+  color:#fff;
+  font-size:14px;
+}
+.prototype-learning-document .prototype-lab-handoff{
+  border-radius:16px;
+  box-shadow:none;
+}
+.prototype-learning-document .decision-handbook-meta-heading{
+  display:none;
+}
+
+@media(max-width:820px){
+  .prototype-reader{
+    width:calc(100% - 18px);
+    padding:18px 0 calc(112px + env(safe-area-inset-bottom));
+  }
+  .prototype-learning-document{
+    border-radius:16px;
+  }
+  .prototype-learning-document .prototype-reader-hero{
+    padding:26px 20px 24px;
+  }
+  .prototype-learning-document .prototype-reader-hero h1{
+    max-width:none;
+    font-size:36px;
+  }
+  .prototype-reader-purpose{
+    font-size:15px!important;
+  }
+  .prototype-reader-compact-head{
+    gap:12px;
+  }
+  .prototype-reader-compact-head>strong{
+    min-width:50px;
+    padding:6px 8px;
+    font-size:10px;
+  }
+  .prototype-learning-document .prototype-programme-map>summary,
+  .prototype-learning-document .prototype-save-state{
+    padding-left:20px;
+    padding-right:20px;
+  }
+  .prototype-learning-document .prototype-programme-map>div{
+    padding-left:20px;
+    padding-right:20px;
+  }
+  .prototype-learning-document .prototype-document{
+    padding:25px 20px 34px;
+  }
+  .prototype-learning-document .prototype-sequence-notice,
+  .prototype-learning-document>.facilitator-inline-cue,
+  .prototype-learning-document>.handbook-next,
+  .prototype-learning-document>.prototype-error{
+    margin-right:20px;
+    margin-left:20px;
+  }
+  .prototype-learning-document .prototype-reader-footer{
+    display:flex;
+    flex-direction:column-reverse;
+    align-items:stretch;
+    padding:22px 20px 28px;
+  }
+  .prototype-learning-document .prototype-reader-footer button,
+  .prototype-learning-document .prototype-reader-footer button.primary{
+    width:100%;
+    justify-self:stretch;
+    justify-content:center;
+  }
+}
+@media(max-width:430px){
+  .prototype-learning-document .prototype-reader-hero,
+  .prototype-learning-document .prototype-document,
+  .prototype-learning-document .prototype-reader-footer{
+    padding-left:18px;
+    padding-right:18px;
+  }
+  .prototype-learning-document .prototype-reader-hero h1{
+    font-size:34px;
+  }
+  .prototype-reader-outcomes>span{
+    width:100%;
+    border-radius:12px;
+  }
+}

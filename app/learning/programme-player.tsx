@@ -336,14 +336,6 @@ export function ProgrammePlayer({
   const readOnlyMode = previewMode || facilitatorMode;
 
   useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 1100px)");
-    const sync = () => setMapOpen(desktop.matches);
-    const frame = requestAnimationFrame(sync);
-    desktop.addEventListener("change", sync);
-    return () => { cancelAnimationFrame(frame); desktop.removeEventListener("change", sync); };
-  }, []);
-
-  useEffect(() => {
     const controller = new AbortController();
     void (async () => {
       try {
@@ -1354,19 +1346,34 @@ export function ProgrammePlayer({
               {facilitatorMode ? <><ArrowLeft /> Back to facilitator</> : <><ArrowLeft /> Exit reader</>}
             </Link>
 
+            <div className="prototype-learning-document">
             <div className="prototype-reader-hero prototype-reader-hero-compact">
               <div className="prototype-reader-compact-head">
                 <div>
-                  <p className="prototype-eyebrow">{programme.subtitle}</p>
-                  <h1>{page.programmeDay ? `Day ${page.programmeDay} of 10` : page.key}</h1>
+                  <p className="prototype-eyebrow">
+                    {page.programmeDay ? `Day ${page.programmeDay} of 10` : page.key}
+                  </p>
+                  <h1>{page.label}</h1>
+                  <p className="prototype-reader-purpose">
+                    {sessionDesign?.dayPurpose ?? page.experimentPosition ?? programme.subtitle}
+                  </p>
                 </div>
-                <strong>{facilitatorMode ? "VIEW" : `${progressPercent}%`}</strong>
+                <strong aria-label={facilitatorMode ? "Facilitator view" : `${progressPercent}% complete`}>
+                  {facilitatorMode ? "VIEW" : `${progressPercent}%`}
+                </strong>
               </div>
-              {page.experimentPosition ? (
-                <p className="prototype-reader-position">{page.experimentPosition}</p>
+              {sessionDesign ? (
+                <div className="prototype-reader-outcomes" aria-label="Learning outcome">
+                  <strong>You will be able to</strong>
+                  <span>{sessionDesign.learnerOutcome}</span>
+                </div>
               ) : null}
+              <div className="prototype-reader-meta">
+                {sessionDesign ? <span>{sessionDesign.minutes} minutes</span> : null}
+                {page.experimentPosition ? <span>{page.experimentPosition}</span> : null}
+              </div>
               {!facilitatorMode ? (
-                <div className="prototype-progress-track light">
+                <div className="prototype-progress-track light" aria-label={`${progressPercent}% complete`}>
                   <i style={{ width: `${progressPercent}%` }} />
                 </div>
               ) : null}
@@ -1540,6 +1547,7 @@ export function ProgrammePlayer({
                 <ChevronRight />
               </button>
             </footer>
+            </div>
           </section>
         )}
       </main>
