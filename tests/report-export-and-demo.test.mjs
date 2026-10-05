@@ -64,7 +64,8 @@ test("canonical demo preserves mixed and incomplete evidence instead of a perfec
   assert.match(audit, /no completed seven-day real-world observation cycle/);
   assert.match(audit, /not improvement/);
   assert.match(execution, /one optional question deliberately passed/);
-  assert.match(execution, /do not certify completion of Phase A/i);\n  assert.match(execution, /Remaining release gates:.*complete Phase A/i);
+  assert.match(execution, /do not certify completion of Phase A/i);
+  assert.match(execution, /Remaining release gates:.*complete Phase A/i);
   assert.match(execution, /Do not infer behaviour change/i);
 });
 
