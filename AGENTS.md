@@ -103,7 +103,7 @@ Do not invent new Labs, measures, indices, behavioural claims, or interpretation
 BIS learning should feel like a carefully edited digital handbook and facilitated experience, not an AI-generated dashboard or a stack of generic cards.
 
 Required presentation principles:
-- the page itself is a continuous workbook canvas; narrative, questions, tables and evidence tasks belong to one learning surface, without an outer floating card or separate card for each activity;
+- the page itself is a continuous workbook canvas; preserve the established cards, callouts, badges and table framing within that canvas rather than flattening them; the Programme Map card leads the Learn reader and the centred Menu provides navigation;
 - one clear visual hierarchy across all learning modules and active Lab investigations;
 - the current ProgrammePlayer and canonical Lab investigation frame share the `learner-document*` visual primitives in `app/learner-document-system.css`; route-specific CSS may extend the system but must not fork its core publication surface, title hierarchy, purpose/outcome/meta treatment, or endpoint hierarchy;
 - document-flow reading for narrative content;

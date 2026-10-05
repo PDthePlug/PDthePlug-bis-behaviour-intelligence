@@ -98,6 +98,14 @@ test("Learn reader renders through the shared learner-document surface", async (
   await learningService(page, "recorded");
   await page.goto("/learn?section=learn&page=1");
 
+  const map = page.locator(".prototype-programme-map");
+  await expect(map).toBeVisible();
+  await expect(page.getByRole("link", { name: "Exit reader" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /^Open BIS menu/ })).toBeVisible();
+  expect(await map.evaluate((element) => element.parentElement?.firstElementChild === element)).toBe(true);
+  const cardRadius = await map.evaluate((element) => Number.parseFloat(getComputedStyle(element).borderRadius));
+  expect(cardRadius).toBeGreaterThan(0);
+
   const surface = page.locator(".learner-document");
   await expect(surface).toBeVisible();
   await expect(surface.locator(".learner-document-header")).toBeVisible();
@@ -122,5 +130,23 @@ test("Learn reader renders through the shared learner-document surface", async (
   expect(geometry.background).toBe("rgb(255, 255, 255)");
   expect(Number.parseFloat(geometry.radius)).toBe(0);
   expect(Math.abs(geometry.headerGutter - geometry.bodyGutter)).toBeLessThanOrEqual(1);
+  const handover = surface.locator(".prototype-lab-handoff");
+  await expect(handover).toBeVisible();
+  expect(await handover.evaluate((element) => Number.parseFloat(getComputedStyle(element).borderRadius))).toBeGreaterThan(0);
+  const mapBox = await map.boundingBox();
+  const headerBox = await surface.locator(".learner-document-header").boundingBox();
+  expect(mapBox!.y + mapBox!.height).toBeLessThanOrEqual(headerBox!.y + 1);
   await page.screenshot({ path: info.outputPath("workbook-canvas-learning.png"), fullPage: true });
+
+  await map.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(map).toHaveAttribute("open", "");
+  await map.getByRole("button").filter({ hasText: "day-4" }).click();
+  await expect(page).toHaveURL(/page=2/);
+  await expect(page.getByRole("heading", { name: "Day 4 · Evidence", exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Day 4 · Evidence", exact: true })).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/page=1/);
+  await expect(page.getByRole("heading", { name: "Day 3 · Leadership", exact: true })).toBeVisible();
 });
