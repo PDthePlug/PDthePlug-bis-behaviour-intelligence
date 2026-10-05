@@ -54,7 +54,7 @@ test("the Universal Lab player preserves a safe return path back to Day 3 learni
   assert.match(lab, /returnTo/);
   assert.match(lab, /startsWith\("\/"\)/);
   assert.match(lab, /!.*startsWith\("\/\/"\)/);
-  assert.match(lab, /Back to learning|Return to your learning module/);
+  assert.match(lab, /router\.replace\(programmeReturnTo\)/);
 });
 
 test("learner menu never routes another module into the Habit experiment by accident", async () => {
