@@ -42,14 +42,22 @@ test("reader back navigation is task-aware and leaving is explicit", async () =>
   assert.match(player, /<ArrowLeft \/> Exit reader/);
 });
 
-test("only the Leap9 synthetic demonstration fixture is generated", async () => {
-  const seed = await source("scripts/seed-bis-reporting-demo.sql");
-  assert.match(seed, /LEAP9-DEMO-HAB-20/);
-  assert.match(seed, /'Leap9'/);
-  assert.match(seed, /leap9\.demo\./);
-  assert.doesNotMatch(seed, /BIS Demonstration — 20-person Habit Lab/);
-  assert.match(seed, /Thando Mokoena/);
-  assert.match(seed, /Lwazi Nxumalo/);
+test("PR #111 evidence certification is the canonical demo contract", async () => {
+  const [seed, audit, contract] = await Promise.all([
+    source("scripts/seed-bis-reporting-demo.sql"),
+    source("docs/BIS_INTELLIGENCE_AUDIT_20261004.md"),
+    source("docs/BIS_CANONICAL_DEMO_20261005.md"),
+  ]);
+  assert.match(seed, /RETIRED: PR #32-era Leap9 production demo seed/);
+  assert.match(seed, /PR #111/);
+  assert.doesNotMatch(seed, /LEAP9-DEMO-HAB-20/);
+  assert.doesNotMatch(seed, /leap9\.demo\./);
+  assert.match(audit, /Twenty normally authenticated synthetic learners/i);
+  assert.match(audit, /facilitator API returned twenty assigned learners/i);
+  assert.match(audit, /administrator.*twenty-participant aggregate/i);
+  assert.match(audit, /not evidence of student behaviour change or programme effectiveness/i);
+  assert.match(contract, /PR #111.*supersedes.*PR #32/is);
+  assert.match(contract, /Historical enrolments and evidence are not rewritten or deleted/);
 });
 
 
