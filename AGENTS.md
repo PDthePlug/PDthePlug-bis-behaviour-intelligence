@@ -103,7 +103,8 @@ Do not invent new Labs, measures, indices, behavioural claims, or interpretation
 BIS learning should feel like a carefully edited digital handbook and facilitated experience, not an AI-generated dashboard or a stack of generic cards.
 
 Required presentation principles:
-- one clear visual hierarchy across all learning modules;
+- one clear visual hierarchy across all learning modules and active Lab investigations;
+- the current ProgrammePlayer and canonical Lab investigation frame share the `learner-document*` visual primitives in `app/learner-document-system.css`; route-specific CSS may extend the system but must not fork its core publication surface, title hierarchy, purpose/outcome/meta treatment, or endpoint hierarchy;
 - document-flow reading for narrative content;
 - evidence and learner actions receive stronger hierarchy than passive reading;
 - tables preserve meaning and relationships;
@@ -123,7 +124,7 @@ Avoid:
 - floating controls covering primary actions;
 - generic AI copy such as "unlock insights", "supercharge", or filler explanations.
 
-Responsive tables should become meaningful stacked structures on narrow screens when necessary rather than becoming unreadable screenshots or horizontally overflowing grids.
+Responsive tables must preserve the authored relationship between headings, rows and values. Use a meaningful stacked structure only when that relationship remains explicit; otherwise keep the table intact inside a deliberate table-local horizontal scroll container. Never turn relational table content into unrelated cards merely to eliminate scrolling.
 
 ## 6. Customer-facing language
 
