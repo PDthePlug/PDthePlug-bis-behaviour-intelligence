@@ -61,7 +61,7 @@ async function updateProfile(request: Request) {
     return Response.json({ error: "Profile settings could not be read." }, { status: 400 });
   }
 
-  const update: Record<string, string> = {};
+  const update: Partial<typeof learners.$inferInsert> = {};
   if (body.deliveryEdition !== undefined) {
     if (typeof body.deliveryEdition !== "string" || !DELIVERY_EDITIONS.has(body.deliveryEdition)) {
       return Response.json({ error: "Choose a valid BIS experience." }, { status: 400 });
