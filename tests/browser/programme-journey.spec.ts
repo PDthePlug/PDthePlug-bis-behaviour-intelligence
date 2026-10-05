@@ -94,7 +94,7 @@ test("learning closes the loop with the learner evidence portfolio after Lab com
 });
 
 
-test("Learn reader renders through the shared learner-document surface", async ({ page }) => {
+test("Learn reader renders through the shared learner-document surface", async ({ page }, info) => {
   await learningService(page, "recorded");
   await page.goto("/learn?section=learn&page=1");
 
@@ -108,13 +108,19 @@ test("Learn reader renders through the shared learner-document surface", async (
 
   const geometry = await surface.evaluate((element) => {
     const style = getComputedStyle(element);
+    const header = element.querySelector(".learner-document-header")!;
+    const body = element.querySelector(".learner-document-body")!;
     return {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       background: style.backgroundColor,
       radius: style.borderRadius,
+      headerGutter: header.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(header).paddingLeft),
+      bodyGutter: body.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(body).paddingLeft),
     };
   });
   expect(geometry.overflow).toBeLessThanOrEqual(1);
   expect(geometry.background).toBe("rgb(255, 255, 255)");
-  expect(Number.parseFloat(geometry.radius)).toBeGreaterThanOrEqual(16);
+  expect(Number.parseFloat(geometry.radius)).toBe(0);
+  expect(Math.abs(geometry.headerGutter - geometry.bodyGutter)).toBeLessThanOrEqual(1);
+  await page.screenshot({ path: info.outputPath("workbook-canvas-learning.png"), fullPage: true });
 });

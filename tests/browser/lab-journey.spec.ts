@@ -161,7 +161,7 @@ test("a no-opportunity day is recorded distinctly and restores after refresh", a
 });
 
 
-test("Lab investigation renders through the shared learner-document surface", async ({ page }) => {
+test("Lab investigation renders through the shared learner-document surface", async ({ page }, info) => {
   await service(page, 2);
   await page.goto("/labs/ldr?step=1");
 
@@ -182,5 +182,6 @@ test("Lab investigation renders through the shared learner-document surface", as
   });
   expect(geometry.overflow).toBeLessThanOrEqual(1);
   expect(geometry.background).toBe("rgb(255, 255, 255)");
-  expect(Number.parseFloat(geometry.radius)).toBeGreaterThanOrEqual(16);
+  expect(Number.parseFloat(geometry.radius)).toBe(0);
+  await page.screenshot({ path: info.outputPath("workbook-canvas-lab.png"), fullPage: true });
 });
