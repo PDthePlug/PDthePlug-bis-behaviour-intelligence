@@ -263,6 +263,7 @@
   padding-inline:var(--learner-document-inline);
   border-bottom:0;
   font-size:11px;
+  justify-content:flex-start;
   text-align:left;
 }
 
