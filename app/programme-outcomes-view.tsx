@@ -558,7 +558,7 @@ export function ProgrammeOutcomesView({
         </section>
       ) : null}
 
-      {flow && !flow.suppressed && !outcome.suppressed ? <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-evidence-flow">
+      {flow && report.status === "AVAILABLE" ? <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-evidence-flow">
         <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>
         <div className="journey-activity-strip">
           <Metric label="Responses recorded" value={flow.totals?.recordedResponses ?? "Hidden for privacy"} />
@@ -566,7 +566,7 @@ export function ProgrammeOutcomesView({
           <Metric label="Started real-world test" value={flow.totals?.startedExperiment ?? "Hidden for privacy"} />
           <Metric label="Completed Lab" value={flow.totals?.completed ?? "Hidden for privacy"} />
         </div>
-        <div className="journey-days">{flow.stages.map(stage => <article key={stage.investigation}><span>{EVIDENCE_STAGE_LABELS[stage.investigation]}</span><strong>{stage.suppressed ? "Hidden" : stage.participants}</strong><small>learners · {stage.suppressed ? "small group" : `${stage.responses} responses`}</small></article>)}</div>
+        <div className="journey-days">{flow.stages.map(stage => <article key={stage.investigation}><span>{EVIDENCE_STAGE_LABELS[stage.investigation]}</span><strong className={stage.suppressed ? "outcome-metric-status" : undefined}>{stage.suppressed ? "Hidden" : stage.participants}</strong><small>learners · {stage.suppressed ? "small group" : `${stage.responses} responses`}</small></article>)}</div>
         <p>{flow.privacyNote}</p>
       </section> : null}
 
