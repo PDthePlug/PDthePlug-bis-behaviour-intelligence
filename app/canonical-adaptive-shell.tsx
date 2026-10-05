@@ -4,8 +4,6 @@ import { BisMark } from "@/components/brand/bis-mark";
 import {
   applyPersonalisation,
   loadLocalPersonalisation,
-  normalisePersonalisation,
-  savePersonalisation,
 } from "@/lib/learner-personalization";
 
 import Link from "next/link";
@@ -102,36 +100,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
   useEffect(() => {
     const local = loadLocalPersonalisation();
     if (local) applyPersonalisation(local);
-
-    // Settings owns its profile fetch so it cannot be overwritten by a slower shell request.
-    if (pathname.startsWith("/settings")) return;
-
-    const controller = new AbortController();
-    void fetch("/api/profile", { cache: "no-store", signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) return;
-        const payload = (await response.json()) as {
-          profile?: null | {
-            appearancePreference?: string;
-            accentPreference?: string;
-            textSizePreference?: string;
-            readingWidthPreference?: string;
-          };
-        };
-        if (!payload.profile || controller.signal.aborted) return;
-        savePersonalisation(normalisePersonalisation({
-          appearance: payload.profile.appearancePreference as never,
-          accent: payload.profile.accentPreference as never,
-          textSize: payload.profile.textSizePreference as never,
-          readingWidth: payload.profile.readingWidthPreference as never,
-        }));
-      })
-      .catch(() => {
-        // Local preferences remain available if the profile request is temporarily unavailable.
-      });
-
-    return () => controller.abort();
-  }, [pathname]);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
