@@ -1,0 +1,125 @@
+/* Learner-controlled BIS presentation preferences.
+   These tokens change presentation only. They never alter authored content, evidence,
+   programme structure, enrolment history or assessment meaning. */
+
+:root {
+  --bis-text-scale: 1;
+  --bis-reading-max: 840px;
+  --bis-user-accent: #173f35;
+  --bis-user-accent-soft: #dfeae4;
+}
+
+html[data-bis-text-size="small"] { --bis-text-scale: .94; }
+html[data-bis-text-size="standard"] { --bis-text-scale: 1; }
+html[data-bis-text-size="large"] { --bis-text-scale: 1.1; }
+html[data-bis-text-size="extra_large"] { --bis-text-scale: 1.2; }
+
+html[data-bis-reading-width="narrow"] { --bis-reading-max: 700px; }
+html[data-bis-reading-width="standard"] { --bis-reading-max: 840px; }
+html[data-bis-reading-width="wide"] { --bis-reading-max: 1020px; }
+
+html[data-bis-accent="bis"] { --bis-user-accent: #173f35; --bis-user-accent-soft: #dfeae4; }
+html[data-bis-accent="blue"] { --bis-user-accent: #2f5f92; --bis-user-accent-soft: #e1ebf6; }
+html[data-bis-accent="amber"] { --bis-user-accent: #9a681e; --bis-user-accent-soft: #f3ead7; }
+html[data-bis-accent="sage"] { --bis-user-accent: #55765e; --bis-user-accent-soft: #e2ebe4; }
+
+.canonical-shell {
+  --canonical-accent: var(--bis-user-accent);
+  --canonical-soft: var(--bis-user-accent-soft);
+  --teal: var(--bis-user-accent);
+}
+
+html[data-bis-appearance="light"] .canonical-shell {
+  --background:#f5f6f5; --foreground:#17201d; --card:#fff; --card-foreground:#17201d;
+  --muted:#ecefeb; --muted-foreground:#66706b; --border:#d8ddd8; --input:#cbd2cc;
+  --ink:#17313b; --cream:#f7faf9; --paper:#fff;
+  background:#f5f6f5; color:#17201d;
+}
+
+html[data-bis-appearance="warm"] .canonical-shell {
+  --background:#f3efe6; --foreground:#2b2b27; --card:#fffdf8; --card-foreground:#2b2b27;
+  --muted:#ebe4d7; --muted-foreground:#6c685f; --border:#ddd4c5; --input:#cec4b5;
+  --ink:#2e3935; --cream:#f6f0e5; --paper:#fffdf8;
+  --canonical-line:#ddd4c5; --canonical-surface:#fffdf8; --canonical-muted:#6c685f;
+  background:#f3efe6; color:#2b2b27;
+}
+html[data-bis-appearance="warm"] .canonical-topbar,
+html[data-bis-appearance="warm"] .canonical-menu { background:rgba(255,253,248,.97); }
+html[data-bis-appearance="warm"] .profile-card,
+html[data-bis-appearance="warm"] .settings-surface,
+html[data-bis-appearance="warm"] .portfolio-lab-group { background:#fffdf8; }
+
+html[data-bis-appearance="dark"] .canonical-shell {
+  --background:#151917; --foreground:#f4f3ee; --card:#202522; --card-foreground:#f4f3ee;
+  --muted:#2a302c; --muted-foreground:#b4beb8; --border:#3b433e; --input:#46504a;
+  --ink:#f4f3ee; --cream:#151917; --paper:#202522;
+  --canonical-line:#39403c; --canonical-surface:#202522; --canonical-muted:#aeb8b2;
+  --learner-reading:#e7ebe8; --learner-secondary:#b4beb8; --learner-soft-line:#3b433e;
+  background:#151917; color:#f4f3ee;
+}
+html[data-bis-appearance="dark"] .canonical-topbar,
+html[data-bis-appearance="dark"] .canonical-menu,
+html[data-bis-appearance="dark"] .canonical-mobile-guide { background:rgba(27,32,29,.97); color:#f4f3ee; }
+html[data-bis-appearance="dark"] .canonical-brand,
+html[data-bis-appearance="dark"] .profile-page,
+html[data-bis-appearance="dark"] .settings-page,
+html[data-bis-appearance="dark"] .evidence-workspace { color:#f4f3ee; }
+html[data-bis-appearance="dark"] .profile-card,
+html[data-bis-appearance="dark"] .settings-surface,
+html[data-bis-appearance="dark"] .portfolio-lab-group,
+html[data-bis-appearance="dark"] .portfolio-lab-body,
+html[data-bis-appearance="dark"] .evidence-workspace input,
+html[data-bis-appearance="dark"] .evidence-workspace select,
+html[data-bis-appearance="dark"] .evidence-workspace textarea,
+html[data-bis-appearance="dark"] .profile-secondary,
+html[data-bis-appearance="dark"] .settings-choice { background:#202522; color:#f4f3ee; border-color:#3b433e; }
+html[data-bis-appearance="dark"] .evidence-wording { background:#1b201d; color:#e7ebe8; }
+html[data-bis-appearance="dark"] .evidence-workspace button.secondary { background:#202522; color:#f4f3ee; border-color:#6d7b73; }
+
+@media (prefers-color-scheme: dark) {
+  html[data-bis-appearance="system"] .canonical-shell {
+    --background:#151917; --foreground:#f4f3ee; --card:#202522; --card-foreground:#f4f3ee;
+    --muted:#2a302c; --muted-foreground:#b4beb8; --border:#3b433e; --input:#46504a;
+    --ink:#f4f3ee; --cream:#151917; --paper:#202522;
+    --canonical-line:#39403c; --canonical-surface:#202522; --canonical-muted:#aeb8b2;
+    --learner-reading:#e7ebe8; --learner-secondary:#b4beb8; --learner-soft-line:#3b433e;
+    background:#151917; color:#f4f3ee;
+  }
+  html[data-bis-appearance="system"] .canonical-topbar,
+  html[data-bis-appearance="system"] .canonical-menu,
+  html[data-bis-appearance="system"] .canonical-mobile-guide { background:rgba(27,32,29,.97); color:#f4f3ee; }
+  html[data-bis-appearance="system"] .profile-card,
+  html[data-bis-appearance="system"] .settings-surface,
+  html[data-bis-appearance="system"] .portfolio-lab-group,
+  html[data-bis-appearance="system"] .portfolio-lab-body,
+  html[data-bis-appearance="system"] .evidence-workspace input,
+  html[data-bis-appearance="system"] .evidence-workspace select,
+  html[data-bis-appearance="system"] .evidence-workspace textarea,
+  html[data-bis-appearance="system"] .profile-secondary,
+  html[data-bis-appearance="system"] .settings-choice { background:#202522; color:#f4f3ee; border-color:#3b433e; }
+  html[data-bis-appearance="system"] .evidence-wording { background:#1b201d; color:#e7ebe8; }
+}
+
+.canonical-shell .prototype-document { max-width:var(--bis-reading-max); }
+.canonical-shell .learner-document,
+.canonical-shell .learner-document-surface { max-width:var(--bis-reading-max); margin-inline:auto; }
+
+.canonical-shell .prototype-document p,
+.canonical-shell .prototype-document li,
+.canonical-shell .prototype-document blockquote,
+.canonical-shell .habit-lab-route .surface-card p,
+.canonical-shell .habit-lab-route .surface-card li,
+.canonical-shell .habit-lab-route .field-help,
+.canonical-shell .habit-lab-route .field-description {
+  font-size:calc(16px * var(--bis-text-scale));
+}
+
+.canonical-shell .prototype-document textarea,
+.canonical-shell .habit-lab-route input,
+.canonical-shell .habit-lab-route textarea,
+.canonical-shell .habit-lab-route select,
+.profile-page,
+.settings-page,
+.evidence-workspace {
+  font-size:calc(1rem * var(--bis-text-scale));
+}
