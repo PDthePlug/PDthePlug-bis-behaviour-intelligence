@@ -40,18 +40,18 @@ test("learner profile setup opens the prototype-derived BIS shell without forcin
   assert.match(habitPage, /params\.section === "learn" \? "learn" : "today"/);
 });
 
-test("Habit Lab and field experiment are focused child surfaces under the canonical BIS learner menu", async () => {
-  const [lab, experiment, shell, layout, canonical] = await Promise.all([
+test("Habit Lab and field experiment are compatibility aliases into the canonical Universal Lab surface", async () => {
+  const [lab, experiment, layout, canonical] = await Promise.all([
     source("app/habit-lab/page.tsx"),
     source("app/habit-lab/experiment/page.tsx"),
-    source("app/habit-lab/habit-lab-shell.tsx"),
     source("app/habit-lab/layout.tsx"),
     source("app/canonical-adaptive-shell.tsx"),
   ]);
-  assert.match(lab, /view="lab"/);
-  assert.match(experiment, /view="experiment"/);
-  assert.match(shell, /HabitRouteBridge target=\{view\} hideReturnLink/);
-  assert.doesNotMatch(shell, /FocusedLearnerMenu/);
+  assert.match(lab, /\/labs\/hab/);
+  assert.match(experiment, /\/labs\/hab/);
+  assert.match(experiment, /step: "7"/);
+  assert.doesNotMatch(lab, /HabitLabShell|HabitRouteBridge/);
+  assert.doesNotMatch(experiment, /HabitLabShell|HabitRouteBridge/);
   assert.match(layout, /CanonicalAdaptiveShell/);
   for (const label of ["Today", "Learn", "Lab", "Experiment", "Profile"]) {
     assert.match(canonical, new RegExp(`label: "${label}"`));
@@ -110,11 +110,10 @@ test("legacy learning URLs collapse into the Learn surface", async () => {
 
 
 test("Day 3 Lab handoff preserves the exact learner handbook return path", async () => {
-  const [player, labPage, experimentPage, shell] = await Promise.all([
+  const [player, labPage, experimentPage] = await Promise.all([
     source("app/learning/programme-player.tsx"),
     source("app/habit-lab/page.tsx"),
     source("app/habit-lab/experiment/page.tsx"),
-    source("app/habit-lab/habit-lab-shell.tsx"),
   ]);
 
   assert.match(player, /function labHrefWithReturn\(href: string, returnTo: string\)/);
@@ -122,12 +121,12 @@ test("Day 3 Lab handoff preserves the exact learner handbook return path", async
   assert.match(player, /const resolvedLabHref = universalLabHref \?\? moduleDefinition\?\.labHref/);
   assert.match(player, /labHrefWithReturn\(resolvedLabHref, learningReturnTo\)/);
   assert.match(labPage, /optionalSafeReturnPath\(params\.returnTo\)/);
-  assert.match(labPage, /liveUniversalLabHref\("HAB", \{ returnTo \}\)/);
-  assert.match(labPage, /returnTo=\{returnTo\}/);
+  assert.match(labPage, /query\.set\("returnTo", returnTo\)/);
+  assert.match(labPage, /\/labs\/hab/);
   assert.match(experimentPage, /optionalSafeReturnPath\(params\.returnTo\)/);
-  assert.match(experimentPage, /liveUniversalLabHref\("HAB", \{ returnTo, step: 7 \}\)/);
-  assert.match(experimentPage, /returnTo=\{returnTo\}/);
-  assert.match(shell, /programmeReturnTo=\{safeReturnTo\}/);
+  assert.match(experimentPage, /new URLSearchParams\(\{ step: "7" \}\)/);
+  assert.match(experimentPage, /query\.set\("returnTo", returnTo\)/);
+  assert.match(experimentPage, /\/labs\/hab/);
 });
 
 
@@ -144,20 +143,20 @@ test("Day 3 continuation unlocks only after Investigation 7 has captured real ev
 
 
 test("Lab entry routes preserve the programme return path even when sign-in is required", async () => {
-  const [auth, habitShell, decision, money, universal] = await Promise.all([
+  const [auth, habit, decision, money, universal] = await Promise.all([
     source("lib/auth-redirect.ts"),
-    source("app/habit-lab/habit-lab-shell.tsx"),
+    source("app/habit-lab/page.tsx"),
     source("app/decision/page.tsx"),
     source("app/money/page.tsx"),
     source("app/labs/[code]/page.tsx"),
   ]);
 
   assert.match(auth, /optionalSafeReturnPath/);
-  assert.match(habitShell, /returnTo=\$\{encodeURIComponent\(safeReturnTo\)\}/);
+  assert.match(habit, /returnTo=\$\{encodeURIComponent\(returnTo\)\}/);
   assert.match(decision, /returnTo=\$\{encodeURIComponent\(returnTo\)\}/);
   assert.match(money, /returnTo=\$\{encodeURIComponent\(returnTo\)\}/);
   assert.match(universal, /returnTo=\$\{encodeURIComponent\(returnTo\)\}/);
-  for (const route of [habitShell, decision, money, universal]) {
+  for (const route of [habit, decision, money, universal]) {
     assert.match(route, /requireUser\(next\)/);
   }
 });

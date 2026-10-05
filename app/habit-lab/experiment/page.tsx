@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { HabitLabShell } from "../habit-lab-shell";
 import { optionalSafeReturnPath } from "@/lib/auth-redirect";
 import { requireUser } from "@/lib/supabase/require-user";
-import { liveUniversalLabHref } from "@/lib/lab-runtime-routing";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -21,7 +19,8 @@ export default async function HabitExperimentPage({
   const returnTo = optionalSafeReturnPath(params.returnTo);
   const next = returnTo ? `/habit-lab/experiment?returnTo=${encodeURIComponent(returnTo)}` : "/habit-lab/experiment";
   await requireUser(next);
-  const universalHref = await liveUniversalLabHref("HAB", { returnTo, step: 7 });
-  if (universalHref) redirect(universalHref);
-  return <HabitLabShell view="experiment" returnTo={returnTo} />;
+
+  const query = new URLSearchParams({ step: "7" });
+  if (returnTo) query.set("returnTo", returnTo);
+  redirect(`/labs/hab?${query.toString()}`);
 }

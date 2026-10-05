@@ -47,14 +47,14 @@ test("live Decision and Money Labs are available to the standard Day 3 handover"
   assert.equal(byCode.FAI.labStatus, "planned");
 });
 
-test("live core Labs preserve a safe return path back to Day 3 learning", async () => {
-  const lab = await source("app/core-lab-experience.tsx");
+test("the Universal Lab player preserves a safe return path back to Day 3 learning", async () => {
+  const lab = await source("app/labs/[code]/universal-runtime-lab.tsx");
 
-  assert.match(lab, /searchParams\.get\("returnTo"\)/);
-  assert.match(lab, /requestedReturnTo\.startsWith\("\/"\)/);
-  assert.match(lab, /!requestedReturnTo\.startsWith\("\/\/"\)/);
-  assert.match(lab, /Back to learning/);
-  assert.match(lab, /Return to your learning module/);
+  assert.match(lab, /useSearchParams/);
+  assert.match(lab, /returnTo/);
+  assert.match(lab, /startsWith\("\/"\)/);
+  assert.match(lab, /!.*startsWith\("\/\/"\)/);
+  assert.match(lab, /router\.replace\(programmeReturnTo\)/);
 });
 
 test("learner menu never routes another module into the Habit experiment by accident", async () => {

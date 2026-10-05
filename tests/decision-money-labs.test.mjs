@@ -58,18 +58,16 @@ test("enforces one calendar-day observation at a time for both live core Labs", 
   assert.match(experience, /Privacy screen active/);
 });
 
-test("exposes both Labs from the private BIS home and their own routes", async () => {
-  const [home, decisionPage, moneyPage] = await Promise.all([
-    readFile(new URL("app/bis-app.tsx", root), "utf8"),
+test("Decision and Money compatibility routes terminate in the Universal Lab player", async () => {
+  const [decisionPage, moneyPage] = await Promise.all([
     readFile(new URL("app/decision/page.tsx", root), "utf8"),
     readFile(new URL("app/money/page.tsx", root), "utf8"),
   ]);
 
-  assert.match(home, /href="\/decision"/);
-  assert.match(home, /href="\/money"/);
-  assert.match(home, /3 production Labs/);
-  assert.match(decisionPage, /coreLabsBySlug\.decision/);
-  assert.match(moneyPage, /coreLabsBySlug\.money/);
+  assert.match(decisionPage, /redirect\(query\.size \? `\/labs\/dec\?/);
+  assert.match(moneyPage, /redirect\(query\.size \? `\/labs\/mon\?/);
+  assert.doesNotMatch(decisionPage, /CoreLabExperience|coreLabsBySlug|liveUniversalLabHref/);
+  assert.doesNotMatch(moneyPage, /CoreLabExperience|coreLabsBySlug|liveUniversalLabHref/);
 });
 
 test("preserves the supplied Decision Lab 4.2.1 narrative and authored learning sequence", async () => {
@@ -152,22 +150,21 @@ test("Decision Lab records Full versus Minimum pauses without rewriting older ev
 });
 
 
-test("legacy Habit Decision and Money entry routes hand off to Universal Lab after governed dynamic activation", async () => {
-  const [routing, decision, money, habit, experiment] = await Promise.all([
-    readFile(new URL("lib/lab-runtime-routing.ts", root), "utf8"),
+test("Habit Decision and Money legacy entry URLs are aliases only, never alternate Lab players", async () => {
+  const [decision, money, habit, experiment] = await Promise.all([
     readFile(new URL("app/decision/page.tsx", root), "utf8"),
     readFile(new URL("app/money/page.tsx", root), "utf8"),
     readFile(new URL("app/habit-lab/page.tsx", root), "utf8"),
     readFile(new URL("app/habit-lab/experiment/page.tsx", root), "utf8"),
   ]);
 
-  assert.match(routing, /learner_bis_lab_runtime/);
-  assert.match(routing, /runtime_mode/);
-  assert.match(routing, /"DYNAMIC"/);
-  assert.match(decision, /liveUniversalLabHref\("DEC"/);
-  assert.match(money, /liveUniversalLabHref\("MON"/);
-  assert.match(habit, /liveUniversalLabHref\("HAB"/);
-  assert.match(experiment, /liveUniversalLabHref\("HAB", \{ returnTo, step: 7 \}\)/);
+  assert.match(decision, /\/labs\/dec/);
+  assert.match(money, /\/labs\/mon/);
+  assert.match(habit, /\/labs\/hab/);
+  assert.match(experiment, /new URLSearchParams\(\{ step: "7" \}\)/);
+  for (const source of [decision, money, habit, experiment]) {
+    assert.doesNotMatch(source, /CoreLabExperience|HabitLabShell|liveUniversalLabHref/);
+  }
 });
 
 
