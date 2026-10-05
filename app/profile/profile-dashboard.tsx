@@ -137,7 +137,7 @@ export function ProfileDashboard({
             <span className="profile-row-icon"><FlaskConical aria-hidden="true" /></span>
             <span className="profile-row-copy">
               <strong>Evidence Portfolio</strong>
-              <small>Your evidence portfolio has its own home for evidence anchors, reflections, revisions and facilitator reviews.</small>
+              <small>Your evidence portfolio has its own home for evidence anchors, calculated measures, reflections, revisions and facilitator reviews.</small>
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>
