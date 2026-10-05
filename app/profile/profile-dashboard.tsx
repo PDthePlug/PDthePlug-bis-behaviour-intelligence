@@ -14,7 +14,6 @@ import {
   Palette,
   Settings,
   Sparkles,
-  UserRound,
 } from "lucide-react";
 
 type ProfileSnapshot = {
