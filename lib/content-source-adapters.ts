@@ -1095,6 +1095,179 @@ function serializedMarkdownTable(
   };
 }
 
+
+function markdownPipeCells(line: string) {
+  let value = line.trim();
+  if (value.startsWith("|")) value = value.slice(1);
+  if (value.endsWith("|")) value = value.slice(0, -1);
+  return value.split(/(?<!\\)\|/).map((cell) =>
+    cleanMarkdownAuthoredText(cell.replace(/\\\|/g, "|").trim()),
+  );
+}
+
+function standardMarkdownTableAt(
+  lines: string[],
+  index: number,
+): { block: SourceBlock; end: number } | null {
+  const headerLine = lines[index]?.trim() ?? "";
+  const dividerLine = lines[index + 1]?.trim() ?? "";
+  if (!headerLine.includes("|") || !dividerLine.includes("|")) return null;
+
+  const headers = markdownPipeCells(headerLine);
+  const dividers = markdownPipeCells(dividerLine);
+  if (headers.length < 2 || headers.length !== dividers.length) return null;
+  if (!dividers.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, "")))) return null;
+
+  const rows = [headers];
+  let cursor = index + 2;
+  while (cursor < lines.length) {
+    const raw = lines[cursor];
+    const trimmed = raw.trim();
+    if (!trimmed || !trimmed.includes("|")) break;
+    if (/^\s{0,3}#{1,4}\s+/.test(raw) || strictProgrammePageKey(trimmed)) break;
+    const cells = markdownPipeCells(raw);
+    if (cells.length !== headers.length) break;
+    rows.push(cells);
+    cursor += 1;
+  }
+  if (rows.length < 2) return null;
+
+  return {
+    block: {
+      text: rows.map((row) => row.join(" | ")).join(" \n "),
+      heading: false,
+      html: tableHtml(rows),
+      tableRows: rows,
+      responseColumns: inferTableResponseColumns(rows),
+      kind: "table",
+    },
+    end: cursor,
+  };
+}
+
+function markdownPseudoTableAt(
+  lines: string[],
+  index: number,
+): { block: SourceBlock; end: number } | null {
+  const head = cleanMarkdownAuthoredText(lines[index]?.trim() ?? "");
+  if (!["Icon Meaning", "Icon Level Meaning"].includes(head)) return null;
+
+  const collected = [head];
+  let cursor = index + 1;
+  while (cursor < lines.length && collected.length < 20) {
+    const trimmed = lines[cursor].trim();
+    if (!trimmed) break;
+    if (/^\s{0,3}#{1,4}\s+/.test(lines[cursor]) || strictProgrammePageKey(trimmed)) break;
+    const cleaned = cleanMarkdownAuthoredText(trimmed.replace(/^[-*+]\s+/, ""));
+    if (!/^(?:📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌|🤔|🧠|🎭|🌱|📌|🔍|⚖️)\s+\S/u.test(cleaned)) break;
+    collected.push(cleaned);
+    cursor += 1;
+  }
+  const block = pseudoTableBlock(collected);
+  return block && collected.length >= 3 ? { block, end: cursor } : null;
+}
+
+function markdownBoxAt(
+  lines: string[],
+  index: number,
+): { block: SourceBlock; end: number } | null {
+  const first = lines[index]?.trim() ?? "";
+  if (!/[┌┐└┘│─]/u.test(first) && (first.match(/\|/g) ?? []).length < 3) return null;
+
+  const source: string[] = [];
+  let cursor = index;
+  let blankRun = 0;
+  while (cursor < lines.length && source.length < 36) {
+    const raw = lines[cursor];
+    const trimmed = raw.trim();
+    if (!trimmed) {
+      blankRun += 1;
+      if (blankRun > 1 || !source.length) break;
+      source.push("");
+      cursor += 1;
+      continue;
+    }
+    blankRun = 0;
+    if (
+      source.length > 0
+      && /^\s{0,3}#{1,4}\s+/.test(raw)
+      && !/[┌┐└┘│─|]/u.test(trimmed)
+    ) break;
+    if (
+      source.length > 0
+      && strictProgrammePageKey(trimmed)
+      && !/[┌┐└┘│─|]/u.test(trimmed)
+    ) break;
+    source.push(trimmed);
+    cursor += 1;
+    if (/[└┘]/u.test(trimmed) && source.length > 1) break;
+  }
+
+  const cleaned = source
+    .flatMap((line) => line
+      .replace(/[┌┐└┘│─]+/gu, " ")
+      .replace(/\|+/g, "\n")
+      .split("\n"))
+    .map((line) => cleanMarkdownAuthoredText(line))
+    .filter(Boolean);
+  if (!cleaned.length) return null;
+
+  return {
+    block: {
+      text: cleaned.join(" "),
+      heading: false,
+      lines: cleaned,
+      kind: "paragraph",
+      html: '<div class="authored-lines handbook-callout handbook-source-callout">' +
+        cleaned.map(escapeHtml).join("<br/>") +
+        "</div>",
+    },
+    end: cursor,
+  };
+}
+
+function markdownListAt(
+  lines: string[],
+  index: number,
+): { block: SourceBlock; end: number } | null {
+  const first = lines[index]?.trim() ?? "";
+  const unordered = first.match(/^(?:[-+*]|[•·])\s+(.+)$/u);
+  if (!unordered) return null;
+
+  const items: string[] = [];
+  let cursor = index;
+  while (cursor < lines.length) {
+    const match = lines[cursor].trim().match(/^(?:[-+*]|[•·])\s+(.+)$/u);
+    if (!match) break;
+    const item = cleanMarkdownAuthoredText(match[1]);
+    if (item) items.push(item);
+    cursor += 1;
+  }
+  if (!items.length) return null;
+
+  return {
+    block: {
+      text: items.join(" "),
+      heading: false,
+      kind: "paragraph",
+      lines: items,
+      html: "<ul>" + items.map((item) => "<li>" + escapeHtml(item) + "</li>").join("") + "</ul>",
+    },
+    end: cursor,
+  };
+}
+
+function markdownHeadingLike(raw: string, cleaned: string) {
+  const trimmed = raw.trim();
+  const boldOnly = /^\*{2}[^*].*\*{2}$/.test(trimmed) || /^__[^_].*__$/.test(trimmed);
+  const upper = cleaned.length <= 130
+    && /[A-Z]/.test(cleaned)
+    && cleaned === cleaned.toUpperCase()
+    && !/[.!?]$/.test(cleaned);
+  const named = /^(?:how to use this book|learning levels|your 10-day map|before you begin\b|a note on\b|quick check\b|activity\s+\d+\b|what is\b|the concept\b|one quiet minute\b|today'?s insight\b|your portfolio\b|tomorrow\b)/i.test(cleaned);
+  return boldOnly || upper || named;
+}
+
 function markdownBlocks(markdown: string) {
   const blocks: SourceBlock[] = [];
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
@@ -1106,6 +1279,7 @@ function markdownBlocks(markdown: string) {
     blocks.push({
       text: cleaned,
       heading,
+      kind: "paragraph",
       html: heading ? "<h3>" + escapeHtml(cleaned) + "</h3>" : "<p>" + escapeHtml(cleaned) + "</p>",
     });
   };
@@ -1113,16 +1287,50 @@ function markdownBlocks(markdown: string) {
     const text = paragraph.join(" ").trim();
     paragraph = [];
     if (!text) return;
-    const heading = Boolean(canonicalPageKey(text) && text.length < 80);
+    const cleaned = cleanMarkdownAuthoredText(text);
+    const heading = Boolean(canonicalPageKey(cleaned) && cleaned.length < 80)
+      || markdownHeadingLike(text, cleaned);
     pushText(text, heading);
   };
 
   for (let index = 0; index < lines.length; index += 1) {
-    const table = serializedMarkdownTable(lines, index);
-    if (table) {
+    const standardTable = standardMarkdownTableAt(lines, index);
+    if (standardTable) {
       flush();
-      blocks.push(table.block);
-      index = table.end - 1;
+      blocks.push(standardTable.block);
+      index = standardTable.end - 1;
+      continue;
+    }
+
+    const serializedTable = serializedMarkdownTable(lines, index);
+    if (serializedTable) {
+      flush();
+      blocks.push(serializedTable.block);
+      index = serializedTable.end - 1;
+      continue;
+    }
+
+    const pseudoTable = markdownPseudoTableAt(lines, index);
+    if (pseudoTable) {
+      flush();
+      blocks.push(pseudoTable.block);
+      index = pseudoTable.end - 1;
+      continue;
+    }
+
+    const sourceBox = markdownBoxAt(lines, index);
+    if (sourceBox) {
+      flush();
+      blocks.push(sourceBox.block);
+      index = sourceBox.end - 1;
+      continue;
+    }
+
+    const list = markdownListAt(lines, index);
+    if (list) {
+      flush();
+      blocks.push(list.block);
+      index = list.end - 1;
       continue;
     }
 
@@ -1140,24 +1348,38 @@ function markdownBlocks(markdown: string) {
       continue;
     }
 
+    if (/^\s{0,3}(?:(?:-{3,})|(?:\*{3,})|(?:_{3,}))\s*$/.test(line)) {
+      flush();
+      blocks.push({
+        text: "section break",
+        heading: false,
+        kind: "paragraph",
+        html: '<hr class="handbook-section-rule"/>',
+      });
+      continue;
+    }
+
+    const cleaned = cleanMarkdownAuthoredText(trimmed);
     const structural =
-      Boolean(strictProgrammePageKey(trimmed))
-      || /^investigation\s*[1-9]\b/i.test(trimmed)
-      || /^(phase\s+[ab]|mission\s*:|you will produce\s*:|time\s*:|difficulty\s*:)/i.test(trimmed)
-      || /^(bei-\d+|step\s+\d+|✍️|☐|⭐|🌱|⏸|🔎|🤔|📖|🧠|🤝|💭|✅|🏠|📂|⚡|🔬|🎯|🧪|📊|📌)/u.test(trimmed)
-      || /^(answers?|suggested answers?)\s*:?$/i.test(trimmed)
-      || /\?["”]?\s*$/.test(trimmed)
-      || handbookFieldCue(trimmed)
-      || looksLikeBlank(trimmed);
+      Boolean(strictProgrammePageKey(cleaned))
+      || /^investigation\s*[1-9]\b/i.test(cleaned)
+      || /^(phase\s+[ab]|mission\s*:|you will produce\s*:|time\s*:|difficulty\s*:)/i.test(cleaned)
+      || /^(bei-\d+|step\s+\d+|✍️|☐|⭐|🌱|⏸|🔎|🤔|📖|🧠|🤝|💭|✅|🏠|📂|⚡|🔬|🎯|🧪|📊|📌)/u.test(cleaned)
+      || /^(answers?|suggested answers?)\s*:?$/i.test(cleaned)
+      || /\?["”]?\s*$/.test(cleaned)
+      || handbookFieldCue(cleaned)
+      || looksLikeBlank(cleaned)
+      || markdownHeadingLike(trimmed, cleaned);
 
     if (structural) {
       flush();
       pushText(
         trimmed,
-        Boolean(strictProgrammePageKey(trimmed))
-          || /^investigation\s*[1-9]\b/i.test(trimmed)
-          || /^phase\s+[ab]\b/i.test(trimmed)
-          || /^(📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌)/u.test(trimmed),
+        Boolean(strictProgrammePageKey(cleaned))
+          || /^investigation\s*[1-9]\b/i.test(cleaned)
+          || /^phase\s+[ab]\b/i.test(cleaned)
+          || /^(📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌)/u.test(cleaned)
+          || markdownHeadingLike(trimmed, cleaned),
       );
       continue;
     }
@@ -1169,11 +1391,12 @@ function markdownBlocks(markdown: string) {
     ) {
       flush();
     }
-    paragraph.push(trimmed.replace(/^[-*+]\s+/, ""));
+    paragraph.push(trimmed);
   }
   flush();
   return blocks;
 }
+
 
 function pdfString(value: string) {
   const inner = value.slice(1, -1);
