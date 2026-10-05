@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     "tests/browser/harness/next-env.d.ts",
     "test-results/**",
     "playwright-report/**",
+    "test-results-staging/**",
+    "playwright-report-staging/**",
   ]),
   {
     files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],

@@ -11,6 +11,7 @@ for(const name of ['programme-evidence-flow','programme-report-pdf']){
  const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./programme-evidence-flow"','"./programme-evidence-flow.mjs"');
  await writeFile(join(dir,`${name}.mjs`),code);
 }
+await writeFile(join(dir,"evidence-reporting.mjs"), await readFile(new URL("../lib/evidence-reporting.mjs", import.meta.url)));
 const {renderProgrammeOutcomePdf}=await import(pathToFileURL(join(dir,'programme-report-pdf.mjs')).href);
 test.after(()=>rm(dir,{recursive:true,force:true}));
 const outcome={cohort:{id:'group',name:'Universal report specimen',labCode:'RES',labVersion:'1',startsOn:null,endsOn:null},participantCount:6,suppressed:false,minimumReportableCohortSize:5,metrics:null,evidenceFlow:{runtimeMode:'DYNAMIC',participantCount:6,suppressed:false,stages:[{investigation:7,participants:3,responses:24,suppressed:false},{investigation:8,participants:null,responses:null,suppressed:true}],totals:{recordedResponses:24,anchoredMeasures:9,startedExperiment:3,completed:null},privacyNote:'Counts describe recorded evidence, not proof of change.'}};

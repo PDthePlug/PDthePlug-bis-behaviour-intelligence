@@ -18,6 +18,8 @@ npm run test:staging
 
 `BIS_STAGING_BASE_URL` may point at an already deployed staging application. When it is absent, Playwright starts the current checkout on port 3200. The ordinary `npm run verify` remains deterministic and does not consume staging data.
 
+The facilitator intelligence journey additionally requires `BIS_STAGING_FACILITATOR_EMAIL` and `BIS_STAGING_FACILITATOR_PASSWORD` for a prepared facilitator assigned to the synthetic demo cohort. Missing credentials fail before that role signs in. Supply them through the process environment as above.
+
 ## Controlled mutation contract
 
 Read-only authentication, role boundary, real catalogue/runtime, Content Studio access, responsive layout, console, HTTP and rating-control checks run by default. Evidence mutation is deliberately fail-closed. Use a dedicated resettable learner, then set:
