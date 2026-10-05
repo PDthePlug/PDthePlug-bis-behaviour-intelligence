@@ -159,3 +159,28 @@ test("a no-opportunity day is recorded distinctly and restores after refresh", a
   await page.reload();
   await expect(page.locator(`[data-prompt-id="${action!.id}"]`).getByRole("button", { name: "No opportunity", exact: true })).toHaveAttribute("aria-pressed", "true");
 });
+
+
+test("Lab investigation renders through the shared learner-document surface", async ({ page }) => {
+  await service(page, 2);
+  await page.goto("/labs/ldr?step=1");
+
+  const surface = page.locator(".learner-document");
+  await expect(surface).toBeVisible();
+  await expect(surface.locator(".learner-document-header")).toBeVisible();
+  await expect(surface.locator(".learner-document-title")).toBeVisible();
+  await expect(surface.locator(".learner-document-purpose")).toBeVisible();
+  await expect(surface.locator(".learner-document-body")).toBeVisible();
+
+  const geometry = await surface.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      background: style.backgroundColor,
+      radius: style.borderRadius,
+    };
+  });
+  expect(geometry.overflow).toBeLessThanOrEqual(1);
+  expect(geometry.background).toBe("rgb(255, 255, 255)");
+  expect(Number.parseFloat(geometry.radius)).toBeGreaterThanOrEqual(16);
+});

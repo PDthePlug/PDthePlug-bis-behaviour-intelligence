@@ -42,9 +42,9 @@ export function LabInvestigationFrame({
   return (
     <div
       className="universal-lab-frame"
-      style={{ "--lab-frame-accent": accent } as React.CSSProperties}
+      style={{ "--lab-frame-accent": accent, "--learner-document-accent": accent } as React.CSSProperties}
     >
-      <div className="universal-lab-progress" aria-label={`${labTitle} progress`}>
+      <div className="universal-lab-progress learner-document-route-progress" aria-label={`${labTitle} progress`}>
         <Progress value={(step / investigations.length) * 100} />
         <strong>{step}/{investigations.length}</strong>
       </div>
@@ -72,10 +72,10 @@ export function LabInvestigationFrame({
         })}
       </nav>
 
-      <section className="universal-lab-stage" id="lab-investigation-start">
-        <article className="universal-lab-document">
+      <section className="universal-lab-stage learner-document-stage" id="lab-investigation-start">
+        <article className="universal-lab-document learner-document">
           <LabMissionHeader investigation={current} step={step} total={investigations.length} />
-          <div className="universal-lab-document-body">
+          <div className="universal-lab-document-body learner-document-body">
             {children}
           </div>
         </article>
@@ -112,20 +112,20 @@ export function LabMissionHeader({
       ? authoredTitle
       : "";
   return (
-    <header className="universal-lab-mission">
-      <div className="universal-lab-mission-copy">
-        <p className="eyebrow">Investigation {step} of {total}</p>
-        <h1>{canonicalTitle}</h1>
+    <header className="universal-lab-mission learner-document-header">
+      <div className="universal-lab-mission-copy learner-document-heading">
+        <p className="eyebrow learner-document-eyebrow">Investigation {step} of {total}</p>
+        <h1 className="learner-document-title">{canonicalTitle}</h1>
         {authoredFocus ? <p className="universal-lab-focus">{authoredFocus}</p> : null}
-        <p>{investigation.mission}</p>
+        <p className="learner-document-purpose">{investigation.mission}</p>
         {investigation.produces?.length ? (
-          <div className="universal-lab-produces">
+          <div className="universal-lab-produces learner-document-outcomes">
             <strong>You will produce:</strong>
             {investigation.produces.map((output) => <span key={output}>{output}</span>)}
           </div>
         ) : null}
       </div>
-      <div className="universal-lab-meta">
+      <div className="universal-lab-meta learner-document-meta">
         <Badge variant="outline">{investigation.time}</Badge>
         {investigation.difficulty ? <Badge variant="outline">{investigation.difficulty}</Badge> : null}
         <small>Investigation {step} of {total}</small>

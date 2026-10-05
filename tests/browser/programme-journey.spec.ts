@@ -92,3 +92,29 @@ test("learning closes the loop with the learner evidence portfolio after Lab com
   await expect(page.getByRole("heading", { name: "Your evidence record is ready." })).toBeVisible();
   await expect(page.getByRole("link", { name: "View my evidence portfolio" })).toHaveAttribute("href", "/profile#evidence-portfolio");
 });
+
+
+test("Learn reader renders through the shared learner-document surface", async ({ page }) => {
+  await learningService(page, "recorded");
+  await page.goto("/learn?section=learn&page=1");
+
+  const surface = page.locator(".learner-document");
+  await expect(surface).toBeVisible();
+  await expect(surface.locator(".learner-document-header")).toBeVisible();
+  await expect(surface.locator(".learner-document-title")).toHaveText("Day 3");
+  await expect(surface.locator(".learner-document-purpose")).toBeVisible();
+  await expect(surface.locator(".learner-document-body")).toBeVisible();
+  await expect(surface.locator(".learner-document-footer")).toBeVisible();
+
+  const geometry = await surface.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      background: style.backgroundColor,
+      radius: style.borderRadius,
+    };
+  });
+  expect(geometry.overflow).toBeLessThanOrEqual(1);
+  expect(geometry.background).toBe("rgb(255, 255, 255)");
+  expect(Number.parseFloat(geometry.radius)).toBeGreaterThanOrEqual(16);
+});

@@ -7,6 +7,7 @@ import "../../../../app/learning/handbook-presentation.css";
 import "../../../../app/canonical-shell.css";
 import "../../../../app/learner-readability.css";
 import "../../../../app/lab-investigation-frame.css";
+import "../../../../app/learner-document-system.css";
 import "../../../../app/profile/profile.css";
 import { CanonicalAdaptiveShell } from "../../../../app/canonical-adaptive-shell";
 
