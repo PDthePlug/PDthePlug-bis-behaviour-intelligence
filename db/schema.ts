@@ -21,6 +21,10 @@ export const learners = sqliteTable("learners", {
   language: text("language").notNull().default("en"),
   timezone: text("timezone").notNull().default("Africa/Johannesburg"),
   status: text("status").notNull().default("ACTIVE"),
+  appearancePreference: text("appearance_preference").notNull().default("system"),
+  accentPreference: text("accent_preference").notNull().default("bis"),
+  textSizePreference: text("text_size_preference").notNull().default("standard"),
+  readingWidthPreference: text("reading_width_preference").notNull().default("standard"),
   createdAt: timestamp(),
   updatedAt: timestamp(),
 });
