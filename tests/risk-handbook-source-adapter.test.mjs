@@ -294,7 +294,7 @@ test("pasted Markdown learning source preserves publication semantics before Pro
       "Day ten body.",
       "# RISK INVESTIGATION CERTIFICATE",
       "This certifies that",
-    ].join("\\n");
+    ].join("\n");
 
     const output = await adapter.adaptLearningSource(
       new TextEncoder().encode(body),
