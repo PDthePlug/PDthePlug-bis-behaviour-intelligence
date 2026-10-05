@@ -44,7 +44,7 @@ test.describe('Leap9 programme experience v2', () => {
       await page.getByRole('button', { name: 'See programme intelligence' }).click();
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Programme intelligence');
       await expect(page.getByText('Is learning turning into action?')).toBeVisible();
-      await expect(page.getByText('What should change next?')).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'What should change next?' })).toBeVisible();
       await expect(page.getByRole('link', { name: 'Download illustrative report' })).toBeVisible();
 
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
