@@ -22,6 +22,7 @@ import { ProgrammeReportGraphic } from "./programme-report-graphics";
 import { EvidenceDisclosure } from "./evidence-disclosure";
 import "./programme-intelligence.css";
 import type { DeliveryEdition } from "@/lib/learning-foundation";
+import { OpportunityCountSummary } from "./opportunity-count-summary";
 
 type ProgressRow = {
   userId: string;
@@ -268,13 +269,6 @@ export function FacilitatorWorkspace({
     reviewing: participants.filter((item) => (item.enrolment?.currentInvestigation ?? 0) >= 8).length,
   };
 
-  const opportunities = {
-    none: participants.filter((item) => item.experiment?.opportunityCount === 0).length,
-    one: participants.filter((item) => (item.experiment?.opportunityCount ?? 0) === 1).length,
-    two: participants.filter((item) => (item.experiment?.opportunityCount ?? 0) === 2).length,
-    threePlus: participants.filter((item) => (item.experiment?.opportunityCount ?? 0) >= 3).length,
-  };
-
   return (
     <div className="facilitator-workspace">
       <div className="facilitator-view-head">
@@ -383,12 +377,7 @@ export function FacilitatorWorkspace({
             </div>
             <div className="surface-card ops-section">
               <div className="section-title"><div><p className="eyebrow">Real-world exposure</p><h2>Opportunities recorded</h2></div><ClipboardCheck /></div>
-              <div className="opportunity-bands">
-                <div><span>None</span><strong>{opportunities.none}</strong></div>
-                <div><span>One</span><strong>{opportunities.one}</strong></div>
-                <div><span>Two</span><strong>{opportunities.two}</strong></div>
-                <div><span>3+</span><strong>{opportunities.threePlus}</strong></div>
-              </div>
+              <OpportunityCountSummary learners={participants} />
             </div>
           </section>
           <section className="surface-card ops-section">

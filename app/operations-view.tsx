@@ -32,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ProgrammeOutcomesView, type SponsorSnapshot } from "./programme-outcomes-view";
 import { AssessmentGovernance } from "./assessment-governance";
 import { FacilitatorWorkspace } from "./facilitator-workspace";
+import { OpportunityCountSummary } from "./opportunity-count-summary";
 
 type PublishedLab = { code: string; title: string; version: string; runtimeMode: string };
 
@@ -521,13 +522,8 @@ function AdminPanel({ data, identity, saving, act, section = "all" }: { data: No
       </section>
 
       <section hidden={section !== "all" && section !== "overview"} className="surface-card ops-section">
-        <div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2><p>Shows how often learners had a real chance to test the behaviour.</p></div><Activity /></div>
-        <div className="opportunity-bands">
-          <div><span>No opportunity</span><strong>{data.metrics.opportunityBands.none}</strong></div>
-          <div><span>One</span><strong>{data.metrics.opportunityBands.one}</strong></div>
-          <div><span>Two</span><strong>{data.metrics.opportunityBands.two}</strong></div>
-          <div><span>Three or more</span><strong>{data.metrics.opportunityBands.threePlus}</strong></div>
-        </div>
+        <div className="section-title"><div><p className="eyebrow">Activity</p><h2>Real-world opportunities</h2></div><Activity /></div>
+        <OpportunityCountSummary learners={data.learners} />
       </section>
 
       <section hidden={section !== "all" && section !== "overview"}>
