@@ -19,6 +19,7 @@ import {
   safeContentCode,
   safeContentSlug,
   nextContentVersion,
+  copyPublishedPackageVersion,
   sha256Hex,
   validateContentSource,
   type ContentKind,
@@ -269,6 +270,37 @@ async function postHandler(request: Request) {
         }
       }
       const id = `${itemId}:${version}`;
+      const previousSources = copyFromVersionId
+        ? await db.select().from(contentSourceFiles).where(eq(contentSourceFiles.versionId, copyFromVersionId))
+        : [];
+      const copiedSources = [];
+      for (const source of previousSources) {
+        let storagePath = source.storagePath;
+        let sourceHash = source.sourceHash;
+        let sourceBytes = source.sourceBytes;
+        if (source.sourceFormat === "BIS_PACKAGE_JSON" && sourceVersion) {
+          const storage = requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET);
+          const download = await storage.download(source.storagePath);
+          if (download.error || !download.data) throw new Error("The published source could not be opened for this update.");
+          const original = new Uint8Array(await download.data.arrayBuffer());
+          if (source.sourceHash && await sha256Hex(original) !== source.sourceHash) {
+            throw new Error("The published source no longer matches its saved record.");
+          }
+          const bytes = copyPublishedPackageVersion(original, item.code, sourceVersion.version, version);
+          sourceHash = await sha256Hex(bytes);
+          sourceBytes = bytes.byteLength;
+          storagePath = `sources/${id}/${source.sourceKey}/${sourceHash}.json`;
+          const upload = await storage.upload(storagePath, bytes, { contentType: "application/json", upsert: false });
+          if (upload.error) throw new Error("The editable source copy could not be saved. The published source is preserved.");
+        }
+        copiedSources.push({
+          id: `${id}:source:${source.sourceKey}`, versionId: id, itemId,
+          sourceKey: source.sourceKey, deliveryEdition: source.deliveryEdition,
+          sourceFormat: source.sourceFormat, fileName: source.fileName,
+          storagePath, sourceHash, sourceBytes, mimeType: source.mimeType,
+          createdBy: identity.id, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+        });
+      }
       await db.insert(contentLibraryVersions).values({
         id,
         itemId,
@@ -284,36 +316,15 @@ async function postHandler(request: Request) {
         createdBy: identity.id,
         updatedAt: new Date().toISOString(),
       });
-      let copiedSourceKeys: string[] = [];
-      if (copyFromVersionId && sourceVersion) {
-        const previousSources = await db.select().from(contentSourceFiles)
-          .where(eq(contentSourceFiles.versionId, copyFromVersionId));
-        if (previousSources.length) {
-          await db.insert(contentSourceFiles).values(previousSources.map((source) => ({
-            id: `${id}:source:${source.sourceKey}`,
-            versionId: id,
-            itemId,
-            sourceKey: source.sourceKey,
-            deliveryEdition: source.deliveryEdition,
-            sourceFormat: source.sourceFormat,
-            fileName: source.fileName,
-            storagePath: source.storagePath,
-            sourceHash: source.sourceHash,
-            sourceBytes: source.sourceBytes,
-            mimeType: source.mimeType,
-            createdBy: identity.id,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          })));
-          copiedSourceKeys = previousSources.map((source) => source.sourceKey);
-        }
-      }
+      const copiedSourceKeys = copiedSources.map(source => source.sourceKey);
+      if (copiedSources.length) await db.insert(contentSourceFiles).values(copiedSources);
       await audit(identity.id, "CONTENT_VERSION_CREATED", "CONTENT_LIBRARY_VERSION", id, {
         itemId,
         version,
         sourceFormat,
         copiedFromVersionId: copyFromVersionId,
         copiedSourceKeys,
+        copiedSourceHashes: copiedSources.map(source => ({ sourceKey: source.sourceKey, sourceHash: source.sourceHash })),
       });
       return Response.json(await snapshot(), { status: 201 });
     }
