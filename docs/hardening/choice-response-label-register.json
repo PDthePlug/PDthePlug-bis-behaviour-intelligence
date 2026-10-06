@@ -10,12 +10,13 @@
       "responseId": "ATT.WB.EMERGING_ADULT.DAY10.F004",
       "precedingChoice": "☐ Resilience Lab — How do I get back up?",
       "problem": "A generic authored response immediately follows a choice list; the shared nearest-prompt logic can label it with only the final choice. Actual ATT emerging-adult Day10 duplicates the Resilience choice beside this response.",
-      "correction": "OPEN: resolve the authored response intent and improve shared labelling without removing/rekeying existing answers.",
+      "correction": "Generic response label uses the exact authored choice-list introduction. All three Attention source variants preserve original field identity and restore the saved response after refresh.",
       "verification": [
         "Manual ATT emerging-adult Day10 at 430 pixels; full 13-screen review",
-        "Source adjacency inspection; candidates are not all certified visual defects."
+        "Source adjacency inspection; candidates are not all certified visual defects.",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "releaseStatus": "SHARED_CORRECTION_IN_BRANCH; EXACT_LIVE_ROLE_VARIANTS_OPEN"
     },
     {
       "route": "/handbooks/att?page=12",
@@ -26,12 +27,13 @@
       "responseId": "ATT.WB.SCHOOL.DAY10.F004",
       "precedingChoice": "☐ Resilience Lab — How do I get back up?",
       "problem": "A generic authored response immediately follows a choice list; the shared nearest-prompt logic can label it with only the final choice. Actual ATT emerging-adult Day10 duplicates the Resilience choice beside this response.",
-      "correction": "OPEN: resolve the authored response intent and improve shared labelling without removing/rekeying existing answers.",
+      "correction": "Generic response label uses the exact authored choice-list introduction. All three Attention source variants preserve original field identity and restore the saved response after refresh.",
       "verification": [
         "Manual ATT emerging-adult Day10 at 430 pixels; full 13-screen review",
-        "Source adjacency inspection; candidates are not all certified visual defects."
+        "Source adjacency inspection; candidates are not all certified visual defects.",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "releaseStatus": "SHARED_CORRECTION_IN_BRANCH; EXACT_LIVE_ROLE_VARIANTS_OPEN"
     },
     {
       "route": "/handbooks/att?page=12",
@@ -42,12 +44,13 @@
       "responseId": "ATT.WB.WORKPLACE.DAY10.F004",
       "precedingChoice": "☐ Resilience Lab — How do I get back up?",
       "problem": "A generic authored response immediately follows a choice list; the shared nearest-prompt logic can label it with only the final choice. Actual ATT emerging-adult Day10 duplicates the Resilience choice beside this response.",
-      "correction": "OPEN: resolve the authored response intent and improve shared labelling without removing/rekeying existing answers.",
+      "correction": "Generic response label uses the exact authored choice-list introduction. All three Attention source variants preserve original field identity and restore the saved response after refresh.",
       "verification": [
         "Manual ATT emerging-adult Day10 at 430 pixels; full 13-screen review",
-        "Source adjacency inspection; candidates are not all certified visual defects."
+        "Source adjacency inspection; candidates are not all certified visual defects.",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "releaseStatus": "SHARED_CORRECTION_IN_BRANCH; EXACT_LIVE_ROLE_VARIANTS_OPEN"
     }
   ],
   "sourcePackagesChanged": false

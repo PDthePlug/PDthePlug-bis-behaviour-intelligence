@@ -1,5 +1,5 @@
 {
-  "status": "MERGED_PR131; PRODUCTION_ALIAS_VERIFICATION_PENDING; FULL_CERTIFICATION_OPEN",
+  "status": "RELEASED_PR131; FULL_CERTIFICATION_OPEN",
   "baseCommit": "472d8c13822be7377548d33bcd29b570640dde7d",
   "branch": "hardening/facilitator-evidence-coverage-20261006",
   "actualStaging": [
@@ -136,6 +136,14 @@
       "actualStates": 6,
       "temporaryShare": "REVOKED"
     },
-    "production": "Canonical www alias still identifies PR130 on last inspection; PR131 not certified live."
+    "production": {
+      "id": "dpl_3PdNujigbF4Zcs6nbVhNzp9fjjRq",
+      "state": "READY",
+      "canonicalAlias": "www.bisportal.online",
+      "exactMerge": "0ad4c8f38fb53a92a6b331564b9182caac935142",
+      "publicLiveStates": 9,
+      "evidence": "docs/hardening/opportunity-production-live.json",
+      "authenticatedRoles": "OPEN; no staging credentials sent to production"
+    }
   }
 }

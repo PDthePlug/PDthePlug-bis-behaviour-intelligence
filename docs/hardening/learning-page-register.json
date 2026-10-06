@@ -205,16 +205,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -393,19 +395,22 @@
       "sourceContentVersion": "1.4",
       "sourceHash": "caff62d8656ce1b6507b2bcdcfcb9dc9aed6d6fb391ac99e25f8415a68138158",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -614,16 +619,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -802,19 +809,22 @@
       "sourceContentVersion": "1.4",
       "sourceHash": "a074b423ad8cc0ecec53da235ecbe2aaed315d559d40542d8656e29f4a8fd37a",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -1022,16 +1032,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1210,19 +1222,22 @@
       "sourceContentVersion": "1.4",
       "sourceHash": "645e89b8a7f09082dd5e8a279b912e8e4df9815d5f759dd640012f63a68e0350",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -1431,16 +1446,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1619,19 +1636,22 @@
       "sourceContentVersion": "1.7",
       "sourceHash": "5f40e0e919215577ed039fb0ee34b7e7236d7ac7d75a6e21e85373ab1c25e758",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -1840,16 +1860,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2028,19 +2050,22 @@
       "sourceContentVersion": "1.7",
       "sourceHash": "8233f7f7f19b1b17ce2f7c562941cb85a453e8364f3122abc0eeea9d82747745",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -2249,16 +2274,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2437,19 +2464,22 @@
       "sourceContentVersion": "1.7",
       "sourceHash": "197d820209dc737a8f3ac0f6425878fad8a5f3240ed2ff382896e33869b4a415",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -2659,16 +2689,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2847,19 +2879,22 @@
       "sourceContentVersion": "1.2",
       "sourceHash": "cbd3fd6168b5df1510ff623419de73e22b1ab9fa929a12e599aa60a70536b00d",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -3069,16 +3104,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3261,23 +3298,24 @@
         "What was discovered uses literal bullet paragraphs rather than semantic list grouping.",
         "Authored certificate completion wording is visible in a clearly gated reference view. Header/status/gate correctly prevent completion; the body is not explicitly labelled a template."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
-        "docs/hardening/document-review-reference-pages-20261006.json"
+        "docs/hardening/document-review-reference-pages-20261006.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
-      "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass.",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass. Follow-up shared correction: affected presentation regions inspected at representative mobile/desktop widths; complete corrected-page and populated live-role certification remain open.",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "LANGUAGE-PUBLICATION-FOOTER",
-        "ACCESSIBILITY-AUTHORED-BULLETS",
-        "LANGUAGE-CERTIFICATE-STATE"
+        "LANGUAGE-CERTIFICATE-STATE",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -3487,16 +3525,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3675,19 +3715,22 @@
       "sourceContentVersion": "1.2",
       "sourceHash": "77a035713e91bbdaeafa83df1bc98bafc66add446cda2323e069252939e34837",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -3897,16 +3940,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4071,7 +4116,7 @@
         "docs/hardening/reader-document-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PROFILE_REFERENCE_CORRECTIONS_RELEASED_PR133; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -4091,19 +4136,22 @@
       "sourceContentVersion": "1.2.1",
       "sourceHash": "e963ce403b6d10131844a16695766c96de10c174e815b348c54f05fa036dbf4e",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -4313,16 +4361,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4488,7 +4538,7 @@
         "docs/hardening/reader-document-verification.json"
       ],
       "manualVisualStatus": "Affected profile-table regions manually inspected at 360/430/1280 in reference-only staging. Entire corrected page and populated live bindings are not certified.",
-      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PROFILE_REFERENCE_CORRECTIONS_RELEASED_PR133; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -4508,19 +4558,22 @@
       "sourceContentVersion": "1.2.1",
       "sourceHash": "8658c2496e25cac1545db2d51d6b96c68dbf1bfe83ff8a93f88fb051cfbbd332",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -4730,16 +4783,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4904,7 +4959,7 @@
         "docs/hardening/reader-document-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PROFILE_REFERENCE_CORRECTIONS_RELEASED_PR133; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -4924,19 +4979,22 @@
       "sourceContentVersion": "1.2.1",
       "sourceHash": "2e5d71f763c1155347c311aaa61dd2c4ba392c2f669e1142c26223091cb16c32",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -5146,16 +5204,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5307,7 +5367,7 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
@@ -5317,10 +5377,12 @@
         "docs/hardening/profile-structure-register.json",
         "tests/browser/profile-table-recovery.spec.ts",
         "tests/browser/reference-reading.spec.ts",
-        "docs/hardening/reader-document-verification.json"
+        "docs/hardening/reader-document-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -5340,19 +5402,22 @@
       "sourceContentVersion": "1.0",
       "sourceHash": "c4b413ff6b9bbed4eec9ec1a408d8ae03379ea3995e2591576fbe75fbdb89b9e",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -5563,21 +5628,22 @@
         "Decorative heading markers compete with reading hierarchy.",
         "Weekend / Field Experiment headings repeat the shared publication title; No Session / Experiment Position / What You Do metadata appears as dense uninterrupted text."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
-        "docs/hardening/document-review-reference-pages-20261006.json"
+        "docs/hardening/document-review-reference-pages-20261006.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
-      "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass.",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass. Follow-up shared correction: affected presentation regions inspected at representative mobile/desktop widths; complete corrected-page and populated live-role certification remain open.",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "VISUAL-REFERENCE-HEADERS"
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
       ]
     },
     {
@@ -5726,7 +5792,7 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
@@ -5737,16 +5803,16 @@
         "tests/browser/profile-table-recovery.spec.ts",
         "tests/browser/reference-reading.spec.ts",
         "docs/hardening/reader-document-verification.json",
-        "docs/hardening/choice-response-label-register.json"
+        "docs/hardening/choice-response-label-register.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
-      "manualVisualStatus": "Complete corrected reference page visually inspected at 430px: 13 sequential screenshots plus full reading text; profile regions inspected at 360/1280. New checkpoint-marker and repeated choice-label defects remain open. No certification of populated/live bindings.",
-      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "manualVisualStatus": "Complete corrected reference page visually inspected at 430px: 13 sequential screenshots plus full reading text; profile regions inspected at 360/1280. New checkpoint-marker and repeated choice-label defects remain open. No certification of populated/live bindings. Follow-up shared correction: affected presentation regions inspected at representative mobile/desktop widths; complete corrected-page and populated live-role certification remain open.",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed.",
-        "VISUAL-CHECKPOINT-MARKER: decorative Final Checkpoint icon remains visible.",
-        "LANGUAGE-CHOICE-RESPONSE: final Resilience choice repeated as generic response label."
+        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed."
       ]
     },
     {
@@ -5762,19 +5828,22 @@
       "sourceContentVersion": "1.0",
       "sourceHash": "1f79b0fd4ae0d7e25b7291da893e382fc73a9be50c821aa4d924ea47c7ab2566",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     },
     {
@@ -5984,16 +6053,18 @@
       "problem": [
         "Decorative heading markers compete with reading hierarchy."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -6145,7 +6216,7 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
@@ -6155,10 +6226,12 @@
         "docs/hardening/profile-structure-register.json",
         "tests/browser/profile-table-recovery.spec.ts",
         "tests/browser/reference-reading.spec.ts",
-        "docs/hardening/reader-document-verification.json"
+        "docs/hardening/reader-document-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -6178,19 +6251,22 @@
       "sourceContentVersion": "1.0",
       "sourceHash": "85b23c100370e48d0682c21d14e6bb2038fc5186ff6b7fa12036fa0d29e27ca2",
       "problem": [],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared reference-page follow-up restores semantic passive lists and contextual headings; metadata, checkpoint decorations and choice-response labels retain source/answer identities. No completion or certification is inferred.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-page-presentation.spec.ts",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
       ]
     }
   ],

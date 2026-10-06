@@ -1,0 +1,11 @@
+# Shared reference-page presentation
+
+The full Attention weekend and Money certificate review identified repeated opening headings, dense experiment metadata, literal bullet paragraphs and internal production footer text. The shared renderer now keeps the publication title once, places passive weekend context in an Experiment details disclosure, and keeps the four authored actions and original response controls open. The source includes both combined and separate metadata formats; neither requires a module-specific page repair.
+
+Consecutive passive bullet paragraphs become a semantic list with the original paragraphs retained. Native authored lists share the visual markers; interactive choice lists retain their existing controls. Internal production footer variants remain retained and hidden, including compiled line breaks and FROZEN labels. Brand wording and learner-facing certificate fields remain visible.
+
+Checkpoint activity titles hide their decorative check marker while evidence/status checkmarks remain intact. The generic response following an authored choice list uses its exact introduction instead of repeating only the final Resilience option. The original field identity and saved response survive refresh.
+
+Application revision `2ad3138d6fde3789613c81d5dab91dcb95ba71d9` passed full `npm run verify`: 633 acceptance and 240 browser tests, lint, TypeScript, source audit, optimized build and retained-package trace. `reference-page-presentation-verification.json` records 39 focused browser checks at 360/430/1280, all 15 accepted Weekend/Certificate editions, the three Attention response variants and read-only staging evidence. All 195 source variants, 5,957 original controls and 15 source packages retain their accepted identities. Actual changed regions were inspected; captures alone do not certify whole pages or completion states.
+
+The broader hardening pass remains open. Certificate issuance/template semantics require canonical workflow review. Missing profile narrative/value/unit bindings, provider Auth management access, remaining exact-page/state review and authenticated production role verification are not closed by this presentation correction. The restored Menu is unchanged.
