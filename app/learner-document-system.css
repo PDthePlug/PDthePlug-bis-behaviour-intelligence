@@ -396,6 +396,19 @@
   }
 }
 
+.canonical-shell .learner-document .learner-document-body ul.source-list{
+  list-style:disc;
+  padding-inline-start:1.4em;
+}
+.canonical-shell .learner-document .learner-document-body ol.source-list{
+  list-style:decimal;
+  padding-inline-start:1.4em;
+}
+.canonical-shell .learner-document .learner-document-body .source-list>li{
+  margin-block:8px;
+  padding-inline-start:0.15em;
+}
+
 @media(max-width:430px){
   :root{--learner-document-inline:18px}
 
