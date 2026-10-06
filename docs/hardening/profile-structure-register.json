@@ -47,8 +47,18 @@
       "sourceTableCount": 0,
       "sourceResponseControlCount": 0,
       "problem": "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section.",
-      "correction": "OPEN: restore the authored relationship through a reviewed shared presentation/binding contract without guessing metrics, overwriting source or rekeying existing responses.",
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "correction": "Shared renderer restores semantic Element/My Answer columns and authored row labels. Existing resolved values and source context are retained, including zero and negative values. Unavailable values use a dash and one caption. No fields, values, source text or semantic IDs are invented.",
+      "releaseStatus": "PRESENTATION_CORRECTION_IN_BRANCH; SOURCE_BINDINGS_UNRESOLVED; FULL_CERTIFICATION_OPEN",
+      "verification": [
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/handbook-response-integrity.json",
+        "docs/hardening/reader-document-verification.json"
+      ],
+      "presentationEvidence": "All six exact source variants browser checked at 360/430/1280. Actual emerging-adult Identity and Attention reference pages checked at the same widths; affected table regions inspected. Other editions and live populated states remain outside actual-page certification.",
+      "outstanding": [
+        "Approved narrative/value/calculation/unit bindings for this exact profile source and live Lab version.",
+        "Assigned-facilitator and authenticated production variants; source fixture rendering alone is not live certification."
+      ]
     },
     {
       "route": "/handbooks/att?page=12",
@@ -95,8 +105,18 @@
       "sourceTableCount": 0,
       "sourceResponseControlCount": 0,
       "problem": "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section.",
-      "correction": "OPEN: restore the authored relationship through a reviewed shared presentation/binding contract without guessing metrics, overwriting source or rekeying existing responses.",
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "correction": "Shared renderer restores semantic Element/My Answer columns and authored row labels. Existing resolved values and source context are retained, including zero and negative values. Unavailable values use a dash and one caption. No fields, values, source text or semantic IDs are invented.",
+      "releaseStatus": "PRESENTATION_CORRECTION_IN_BRANCH; SOURCE_BINDINGS_UNRESOLVED; FULL_CERTIFICATION_OPEN",
+      "verification": [
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/handbook-response-integrity.json",
+        "docs/hardening/reader-document-verification.json"
+      ],
+      "presentationEvidence": "All six exact source variants browser checked at 360/430/1280. Actual emerging-adult Identity and Attention reference pages checked at the same widths; affected table regions inspected. Other editions and live populated states remain outside actual-page certification.",
+      "outstanding": [
+        "Approved narrative/value/calculation/unit bindings for this exact profile source and live Lab version.",
+        "Assigned-facilitator and authenticated production variants; source fixture rendering alone is not live certification."
+      ]
     },
     {
       "route": "/handbooks/att?page=12",
@@ -143,8 +163,18 @@
       "sourceTableCount": 0,
       "sourceResponseControlCount": 0,
       "problem": "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section.",
-      "correction": "OPEN: restore the authored relationship through a reviewed shared presentation/binding contract without guessing metrics, overwriting source or rekeying existing responses.",
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "correction": "Shared renderer restores semantic Element/My Answer columns and authored row labels. Existing resolved values and source context are retained, including zero and negative values. Unavailable values use a dash and one caption. No fields, values, source text or semantic IDs are invented.",
+      "releaseStatus": "PRESENTATION_CORRECTION_IN_BRANCH; SOURCE_BINDINGS_UNRESOLVED; FULL_CERTIFICATION_OPEN",
+      "verification": [
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/handbook-response-integrity.json",
+        "docs/hardening/reader-document-verification.json"
+      ],
+      "presentationEvidence": "All six exact source variants browser checked at 360/430/1280. Actual emerging-adult Identity and Attention reference pages checked at the same widths; affected table regions inspected. Other editions and live populated states remain outside actual-page certification.",
+      "outstanding": [
+        "Approved narrative/value/calculation/unit bindings for this exact profile source and live Lab version.",
+        "Assigned-facilitator and authenticated production variants; source fixture rendering alone is not live certification."
+      ]
     },
     {
       "route": "/handbooks/idn?page=12",
@@ -184,8 +214,18 @@
       "sourceTableCount": 0,
       "sourceResponseControlCount": 0,
       "problem": "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section.",
-      "correction": "OPEN: restore the authored relationship through a reviewed shared presentation/binding contract without guessing metrics, overwriting source or rekeying existing responses.",
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "correction": "Shared renderer restores semantic Element/My Answer columns and authored row labels. Existing resolved values and source context are retained, including zero and negative values. Unavailable values use a dash and one caption. No fields, values, source text or semantic IDs are invented.",
+      "releaseStatus": "PRESENTATION_CORRECTION_IN_BRANCH; SOURCE_BINDINGS_UNRESOLVED; FULL_CERTIFICATION_OPEN",
+      "verification": [
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/handbook-response-integrity.json",
+        "docs/hardening/reader-document-verification.json"
+      ],
+      "presentationEvidence": "All six exact source variants browser checked at 360/430/1280. Actual emerging-adult Identity and Attention reference pages checked at the same widths; affected table regions inspected. Other editions and live populated states remain outside actual-page certification.",
+      "outstanding": [
+        "Approved narrative/value/calculation/unit bindings for this exact profile source and live Lab version.",
+        "Assigned-facilitator and authenticated production variants; source fixture rendering alone is not live certification."
+      ]
     },
     {
       "route": "/handbooks/idn?page=12",
@@ -225,8 +265,18 @@
       "sourceTableCount": 0,
       "sourceResponseControlCount": 0,
       "problem": "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section.",
-      "correction": "OPEN: restore the authored relationship through a reviewed shared presentation/binding contract without guessing metrics, overwriting source or rekeying existing responses.",
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "correction": "Shared renderer restores semantic Element/My Answer columns and authored row labels. Existing resolved values and source context are retained, including zero and negative values. Unavailable values use a dash and one caption. No fields, values, source text or semantic IDs are invented.",
+      "releaseStatus": "PRESENTATION_CORRECTION_IN_BRANCH; SOURCE_BINDINGS_UNRESOLVED; FULL_CERTIFICATION_OPEN",
+      "verification": [
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/handbook-response-integrity.json",
+        "docs/hardening/reader-document-verification.json"
+      ],
+      "presentationEvidence": "All six exact source variants browser checked at 360/430/1280. Actual emerging-adult Identity and Attention reference pages checked at the same widths; affected table regions inspected. Other editions and live populated states remain outside actual-page certification.",
+      "outstanding": [
+        "Approved narrative/value/calculation/unit bindings for this exact profile source and live Lab version.",
+        "Assigned-facilitator and authenticated production variants; source fixture rendering alone is not live certification."
+      ]
     },
     {
       "route": "/handbooks/idn?page=12",
@@ -268,8 +318,18 @@
       "sourceTableCount": 0,
       "sourceResponseControlCount": 0,
       "problem": "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section.",
-      "correction": "OPEN: restore the authored relationship through a reviewed shared presentation/binding contract without guessing metrics, overwriting source or rekeying existing responses.",
-      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+      "correction": "Shared renderer restores semantic Element/My Answer columns and authored row labels. Existing resolved values and source context are retained, including zero and negative values. Unavailable values use a dash and one caption. No fields, values, source text or semantic IDs are invented.",
+      "releaseStatus": "PRESENTATION_CORRECTION_IN_BRANCH; SOURCE_BINDINGS_UNRESOLVED; FULL_CERTIFICATION_OPEN",
+      "verification": [
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/handbook-response-integrity.json",
+        "docs/hardening/reader-document-verification.json"
+      ],
+      "presentationEvidence": "All six exact source variants browser checked at 360/430/1280. Actual emerging-adult Identity and Attention reference pages checked at the same widths; affected table regions inspected. Other editions and live populated states remain outside actual-page certification.",
+      "outstanding": [
+        "Approved narrative/value/calculation/unit bindings for this exact profile source and live Lab version.",
+        "Assigned-facilitator and authenticated production variants; source fixture rendering alone is not live certification."
+      ]
     }
   ],
   "productionDataChanged": false,

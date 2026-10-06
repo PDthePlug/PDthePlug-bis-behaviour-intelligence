@@ -1,5 +1,5 @@
 {
-  "status": "VERIFIED_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+  "status": "MERGED_PR131; PRODUCTION_ALIAS_VERIFICATION_PENDING; FULL_CERTIFICATION_OPEN",
   "baseCommit": "472d8c13822be7377548d33bcd29b570640dde7d",
   "branch": "hardening/facilitator-evidence-coverage-20261006",
   "actualStaging": [
@@ -120,5 +120,22 @@
   ],
   "dataMutations": false,
   "boundary": "Staging has 20 dedicated synthetic learners and 20 existing demonstration learners. This read-only verification changed no records and is not programme-outcome evidence. Production authenticated role checks remain open.",
-  "applicationHead": "706985bb5d034d9f7d74980a379e99e96b59975c"
+  "applicationHead": "706985bb5d034d9f7d74980a379e99e96b59975c",
+  "release": {
+    "pullRequest": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/131",
+    "head": "fc3e48344257f7d6611ce152e212669d80375c3e",
+    "merge": "0ad4c8f38fb53a92a6b331564b9182caac935142",
+    "ci": {
+      "run": 37533424324,
+      "conclusion": "SUCCESS"
+    },
+    "preview": {
+      "id": "dpl_HA5SWCsF2Xw817NS24Ezc7nc8gJZ",
+      "state": "READY",
+      "exactHead": true,
+      "actualStates": 6,
+      "temporaryShare": "REVOKED"
+    },
+    "production": "Canonical www alias still identifies PR130 on last inspection; PR131 not certified live."
+  }
 }

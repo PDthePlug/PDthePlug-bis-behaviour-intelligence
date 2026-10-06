@@ -932,21 +932,25 @@
         "@/app/habit/programme-entry"
       ],
       "problem": "Uniform continuous reading canvas; response/check ordering, settings and source preservation",
-      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module.",
+      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module. Current shared follow-up restores source list markers, accurate reference-only response status and Identity/Attention profile label/value table relationships without creating answers.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "scripts/certify-hardening-learning.mjs",
         "tests/learner-module-integrity-audit.test.mjs",
         "tests/static-learning-package.test.mjs",
         "tests/browser/programme-journey.spec.ts",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/reference-reading.spec.ts",
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/reader-document-verification.json"
       ],
       "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_RELEASED_PR130; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "Approved profile source bindings remain unresolved: CONTENT-PROFILE-BINDINGS."
       ]
     },
     {
@@ -1305,7 +1309,7 @@
         "./staff-workspace-shell"
       ],
       "problem": "Large repeated participant messages, filter races, uncertain report meanings and role disclosure names Opportunity bands displayed zero totals without available-data coverage; zero wording implied that no situation occurred.",
-      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access; actual programme-owner decision/review UI saves and refresh passed with sponsor/foreign-cohort denial Product iteration in branch: Facilitator group metrics precede collapsed class administration; sponsor counts and understanding labels state their populations and self-report limits. Current follow-up: shared staff opportunity summary excludes unavailable counts, states the available population and preserves recorded zeroes with a bounded explanation.",
+      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access; actual programme-owner decision/review UI saves and refresh passed with sponsor/foreign-cohort denial Product iteration in branch: Facilitator group metrics precede collapsed class administration; sponsor counts and understanding labels state their populations and self-report limits. Current follow-up: shared staff opportunity summary excludes unavailable counts, states the available population and preserves recorded zeroes with a bounded explanation. Participant summaries describe saved records, avoid unsupported repeated-testing and learning-cycle claims, and do not infer a missing first test from unavailable Universal counts.",
       "verification": [
         "tests/browser/facilitator-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
@@ -1317,9 +1321,12 @@
         "docs/hardening/product-experience-verification.json",
         "tests/browser/opportunity-coverage.spec.ts",
         "scripts/inspect-hardening-opportunity-coverage.mjs",
-        "docs/hardening/opportunity-coverage-20261006.md"
+        "docs/hardening/opportunity-coverage-20261006.md",
+        "tests/browser/facilitator-record-meaning.spec.ts",
+        "scripts/inspect-hardening-facilitator-records.mjs",
+        "docs/hardening/reader-document-verification.json"
       ],
-      "releaseStatus": "PRIOR_CORRECTIONS_RELEASED; OPPORTUNITY_CORRECTION_IN_BRANCH; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_RELEASED; OPPORTUNITY_PR131_MERGED; RECORD_MEANING_IN_BRANCH; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
