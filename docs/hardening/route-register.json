@@ -932,7 +932,7 @@
         "@/app/habit/programme-entry"
       ],
       "problem": "Uniform continuous reading canvas; response/check ordering, settings and source preservation",
-      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module. Current shared follow-up restores source list markers, accurate reference-only response status and Identity/Attention profile label/value table relationships without creating answers.",
+      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module. Current shared follow-up restores source list markers, accurate reference-only response status and Identity/Attention profile label/value table relationships without creating answers. Profile/reference/list corrections released PR133. Shared reference-page metadata/list/choice-label follow-up is verified in the current branch.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "scripts/certify-hardening-learning.mjs",
@@ -942,9 +942,11 @@
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-reading.spec.ts",
         "tests/browser/profile-table-recovery.spec.ts",
-        "docs/hardening/reader-document-verification.json"
+        "docs/hardening/reader-document-verification.json",
+        "docs/hardening/reader-document-verification.json",
+        "docs/hardening/reference-page-presentation-verification.json"
       ],
-      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_RELEASED_PR130; CERTIFICATION_PARTIAL",
+      "releaseStatus": "SHARED_CORRECTIONS_RELEASED_PR133; REFERENCE_PRESENTATION_IN_BRANCH; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1326,11 +1328,12 @@
         "scripts/inspect-hardening-facilitator-records.mjs",
         "docs/hardening/reader-document-verification.json"
       ],
-      "releaseStatus": "PRIOR_CORRECTIONS_RELEASED; OPPORTUNITY_PR131_MERGED; RECORD_MEANING_IN_BRANCH; CERTIFICATION_PARTIAL",
+      "releaseStatus": "SHARED_CORRECTIONS_RELEASED_PR133; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "Primary participant Lab/progamme position label: LANGUAGE-LAB-POSITION."
       ]
     }
   ],

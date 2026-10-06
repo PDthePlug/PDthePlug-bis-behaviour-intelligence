@@ -478,6 +478,14 @@ function cleanOrphanedResponseControls(root: HTMLElement) {
 }
 
 function nearestPrompt(field: HTMLElement) {
+  // A response following an authored choice list belongs to its introduction,
+  // rather than acquiring the final choice as a second, unrelated question.
+  let choice = field.previousElementSibling;
+  if (choice?.matches("p.choice-line") && printableBox.test(normalise(choice.textContent ?? ""))) {
+    while (choice?.matches("p.choice-line")) choice = choice.previousElementSibling;
+    const introduction = normalise(choice?.textContent ?? "");
+    if (choice?.matches("p") && introduction.endsWith(":") && introduction.length <= 320) return introduction;
+  }
   const parent = field.parentElement;
   if (parent && parent !== field.closest(".prototype-document")) {
     const parentText = normalise(parent.textContent ?? "").replace(/_+/g, "").trim();
@@ -1326,15 +1334,19 @@ function normaliseCompiledHandbookStructure(root: HTMLElement) {
 
 function hideEditorialProductionMetadata(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>("p,div").forEach((element) => {
-    if (element.children.length > 0 && !element.matches("p")) return;
+    if (element.querySelector("input,textarea,select,button,[data-field-id]")) return;
+    if (!element.matches("p") && element.querySelector("p,div,section,table,ul,ol,h1,h2,h3,h4")) return;
     const text = normalise(element.textContent ?? "");
     if (
-      /\bControlled Production Master\b/i.test(text) ||
+      // Compiled line breaks can concatenate this label with the preceding
+      // edition/title in textContent. The full production phrase is explicit.
+      /Controlled Production Master(?:FROZEN)?\b/i.test(text) ||
       /\bArchitecture frozen\b/i.test(text) ||
       /\bProduction-freeze revision\b/i.test(text)
     ) {
       element.classList.add("handbook-production-metadata");
       element.hidden = true;
+      element.setAttribute("aria-hidden", "true");
     }
   });
 }
@@ -1571,8 +1583,74 @@ function restoreUnpairedProfileTables(root: HTMLElement) {
   }
 }
 
-function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancementContext) {
+function restoreParagraphBulletLists(root: HTMLElement) {
+  for (const first of root.querySelectorAll<HTMLElement>("p.source-item")) {
+    if (!first.isConnected || first.closest("li") || !/^\s*•\s+/.test(first.textContent ?? "")) continue;
+    const rows: HTMLElement[] = [];
+    let cursor: Element | null = first;
+    while (cursor?.matches("p.source-item") && /^\s*•\s+/.test(cursor.textContent ?? "") && !cursor.querySelector("input,textarea,select,button,[data-field-id]")) {
+      rows.push(cursor as HTMLElement); cursor = cursor.nextElementSibling;
+    }
+    if (rows.length < 2) continue;
+    const list = document.createElement("ul");
+    list.className = "source-list handbook-restored-list";
+    first.before(list);
+    for (const paragraph of rows) {
+      const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+      const text = walker.nextNode() as Text | null;
+      const marker = /^\s*•\s+/.exec(text?.data ?? "");
+      if (text && marker) {
+        const remainder = text.splitText(marker[0].length);
+        const original = document.createElement("span");
+        original.className = "handbook-print-bullet";
+        original.hidden = true; original.setAttribute("aria-hidden", "true");
+        remainder.before(original); original.append(text);
+      }
+      const item = document.createElement("li"); item.append(paragraph); list.append(item);
+    }
+  }
+  // Existing native source lists share the same markers. Interactive option
+  // lists keep their controls and established presentation.
+  root.querySelectorAll<HTMLElement>("ul,ol").forEach(list => {
+    if (!list.querySelector("input,textarea,select,button,[data-field-id]") && !list.getAttribute("role")) list.classList.add("handbook-authored-list");
+  });
+}
+
+function discloseWeekendContext(root: HTMLElement, pageId: string) {
+  if (!pageId.endsWith(".WEEKEND") || root.querySelector(".handbook-weekend-details")) return;
+  const combined = [...root.querySelectorAll<HTMLElement>("ul.handbook-restored-list>li:first-child")]
+    .find(item => /^NO SESSION\s+EXPERIMENT POSITION:\s*.+\s+WHAT YOU DO:$/i.test(normalise(item.textContent ?? "")) && !item.querySelector("input,textarea,select,button,[data-field-id]"));
+  const separate = [...root.querySelectorAll<HTMLElement>("p,h3")].find(item => /^NO SESSION$/i.test(normalise(item.textContent ?? "")));
+  const position = separate?.nextElementSibling as HTMLElement | null;
+  const actionHeading = position?.nextElementSibling as HTMLElement | null;
+  const separatePosition = /^EXPERIMENT POSITION:\s*(.+)$/i.exec(normalise(position?.textContent ?? ""));
+  if (!combined && (!separate || !separatePosition || !/^WHAT YOU DO:$/i.test(normalise(actionHeading?.textContent ?? ""))
+    || [separate, position, actionHeading].some(item => item?.querySelector("input,textarea,select,button,[data-field-id]")))) return;
+  const details = document.createElement("details");
+  details.className = "learner-document-disclosure handbook-weekend-details";
+  const summary = document.createElement("summary"); summary.textContent = "Experiment details";
+  const session = document.createElement("p"); session.textContent = "No session";
+  const days = document.createElement("p");
+  days.textContent = combined ? /^NO SESSION\s+EXPERIMENT POSITION:\s*(.+?)\s+WHAT YOU DO:$/i.exec(normalise(combined.textContent ?? ""))![1] : separatePosition![1];
+  details.append(summary, session, days);
+  if (combined) {
+    const list = combined.parentElement!; list.before(details);
+    list.classList.add("source-list");
+    const heading = document.createElement("h3"); heading.textContent = "What to do"; list.before(heading);
+    combined.classList.add("handbook-print-context"); combined.hidden = true; combined.setAttribute("aria-hidden", "true");
+  } else {
+    separate!.before(details);
+    for (const original of [separate!, position!]) {
+      original.classList.add("handbook-print-context"); original.hidden = true; original.setAttribute("aria-hidden", "true");
+    }
+    actionHeading!.textContent = "What to do";
+  }
+}
+
+function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancementContext, pageId: string) {
   restoreUnpairedProfileTables(root);
+  restoreParagraphBulletLists(root);
+  discloseWeekendContext(root, pageId);
   // Printed cover matter belongs behind the reading canvas. Keep the original
   // nodes and publisher trace; only internal production notes leave the display.
   const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2")]
@@ -1612,7 +1690,9 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
     for (const heading of [...root.querySelectorAll<HTMLElement>("h1,h2,.day-kicker")].slice(0, 3)) {
       const value = normalise(heading.textContent ?? "");
       if (titleKey(value) === titleKey(context.pageTitle)
-        || (context.programmeDay && value === `DAY ${context.programmeDay} OF 10`)) {
+        || (context.programmeDay && value === `DAY ${context.programmeDay} OF 10`)
+        || (pageId.endsWith(".WEEKEND") && /^(?:WEEKEND|Field Experiment)$/i.test(value))
+        || (pageId.endsWith(".CERTIFICATE") && /^CERTIFICATE$/i.test(value))) {
         heading.classList.add("handbook-repeated-heading");
         heading.hidden = true;
       }
@@ -1712,7 +1792,10 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
     if (!node) return;
     const raw = node.data;
     const leading = raw.length - raw.trimStart().length;
-    const cleaned = learnerHeadingText(raw.trimStart());
+    // The checkpoint title names an activity, not a verified outcome. Preserve
+    // checkmarks everywhere else, including answer choices and evidence status.
+    const cleaned = /^✅\s*(?:Final\s+)?Checkpoint\b/i.test(raw.trimStart())
+      ? raw.trimStart().replace(/^✅\s*/u, "") : learnerHeadingText(raw.trimStart());
     const length = raw.trimStart().length - cleaned.length;
     if (!length) return;
     const start = node.splitText(leading);
@@ -1779,7 +1862,7 @@ export function enhanceHandbookDocument(
   addMissingCheckpointResponses(root, labCode, pageId);
   structureAuthoredResponses(root);
   addFacilitatorCues(root, context);
-  finishHandbookPresentation(root, context);
+  finishHandbookPresentation(root, context, pageId);
   if (!learningCheckListeners.has(root)) {
     root.addEventListener("input", () => syncHandbookLearningChecks(root));
     root.addEventListener("change", () => syncHandbookLearningChecks(root));

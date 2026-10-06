@@ -67,3 +67,5 @@ Remaining release/certification work is tracked in `open-findings.md` and each r
 The current product follow-up is recorded in `opportunity-coverage-20261006.md`: staff counts distinguish unavailable data from recorded zeroes. The exact Identity Day 10 full-page inspection is in `document-review-idn-day10-20261006.json`; `profile-structure-register.json` identifies six affected Identity/Attention source variants. Their binding/list/reference-status findings remain open. PR #130 product corrections are released; full certification remains ongoing.
 
 The next product batch is `reader-document-hardening-20261006.md`: semantic profile tables, truthful reference status, visible authored list markers and facilitator record language. Source bindings remain an explicit separate finding. `reader-document-verification.json` records exact evidence and its limits; full certification remains ongoing.
+
+Shared reference-page corrections and their boundaries are recorded in `reference-page-presentation-20261006.md` and `reference-page-presentation-verification.json`. These changes preserve accepted sources, choices, response identities and the restored Menu.

@@ -222,7 +222,7 @@
   font:400 calc(14px * var(--bis-text-scale,1))/1.65 var(--font-sans,system-ui,sans-serif);
   letter-spacing:normal;
 }
-.canonical-shell .learner-document :is(.handbook-repeated-heading,.handbook-heading-decoration,.handbook-production-note)[hidden]{
+.canonical-shell .learner-document :is(.handbook-repeated-heading,.handbook-heading-decoration,.handbook-print-bullet,.handbook-production-note,.handbook-production-metadata,.handbook-print-context)[hidden]{
   display:none!important;
 }
 
@@ -396,15 +396,15 @@
   }
 }
 
-.canonical-shell .learner-document .learner-document-body ul.source-list{
+.canonical-shell .learner-document :is(ul.source-list,ul.handbook-authored-list){
   list-style:disc;
   padding-inline-start:1.4em;
 }
-.canonical-shell .learner-document .learner-document-body ol.source-list{
+.canonical-shell .learner-document :is(ol.source-list,ol.handbook-authored-list){
   list-style:decimal;
   padding-inline-start:1.4em;
 }
-.canonical-shell .learner-document .learner-document-body .source-list>li{
+.canonical-shell .learner-document :is(.source-list,.handbook-authored-list)>li{
   margin-block:8px;
   padding-inline-start:0.15em;
 }

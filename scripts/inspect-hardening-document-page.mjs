@@ -34,7 +34,7 @@ try {
       await expect(page.locator(".learner-document-status")).toHaveText("Reference view · you can read this page, but cannot add responses yet");
       await expect(document.locator("[data-field-id]:not(:disabled)")).toHaveCount(0);
     }
-    const listStyles = await document.locator("ul.source-list,ol.source-list").evaluateAll(elements => elements.map(element => ({ type: element.tagName, style: getComputedStyle(element).listStyleType, items: element.children.length })));
+    const listStyles = await document.locator("ul.source-list,ol.source-list,ul.handbook-authored-list,ol.handbook-authored-list").evaluateAll(elements => elements.map(element => ({ type: element.tagName, style: getComputedStyle(element).listStyleType, items: element.children.length })));
     for (const list of listStyles) expect(list.style).toBe(list.type === "UL" ? "disc" : "decimal");
     const headings = await document.locator("h1,h2,h3,h4,h5,h6").allTextContents();
     const text = await document.innerText();
@@ -47,10 +47,21 @@ try {
       await page.screenshot({ path: `${output}/${name}` });
       screens.push(name);
     }
+    let experimentDisclosure = "NOT_APPLICABLE";
+    const experimentDetails = document.locator(".handbook-weekend-details");
+    if (await experimentDetails.count()) {
+      await expect(experimentDetails.locator("input,textarea,select,button,[data-field-id]")).toHaveCount(0);
+      await experimentDetails.locator(":scope > summary").focus(); await page.keyboard.press("Enter");
+      await expect(experimentDetails).toHaveAttribute("open", "");
+      await expect(experimentDetails).toContainText("No session"); await expect(experimentDetails).toContainText("Days 4–5 of 7");
+      await page.screenshot({ path: `${output}/${width}-experiment-details.png` });
+      await page.keyboard.press("Enter"); await expect(experimentDetails).not.toHaveAttribute("open");
+      experimentDisclosure = "PASS; source context retained; no response controls folded";
+    }
     await page.addScriptTag({ content: axe });
     const accessibility = await page.evaluate(async () => (await window.axe.run(window.document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] } })).violations.map(item => ({ id: item.id, targets: item.nodes.map(node => node.target) })));
     const overflow = await page.evaluate(() => window.document.documentElement.scrollWidth - innerWidth);
-    rows.push({ route, role: "LEARNER", edition: profile.deliveryEdition, width, headings, screens, height, overflow, accessibility, errors, referenceView, responseStatus: await page.locator(".learner-document-status").innerText(), listStyles, manualReview: "PENDING; image capture is not manual certification" });
+    rows.push({ route, role: "LEARNER", edition: profile.deliveryEdition, width, headings, screens, height, overflow, accessibility, errors, referenceView, responseStatus: await page.locator(".learner-document-status").innerText(), listStyles, experimentDisclosure, manualReview: "PENDING; image capture is not manual certification" });
     await writeFile(`${output}/audit.json`, JSON.stringify(rows, null, 2));
     console.log(JSON.stringify({ width, screens: screens.length, overflow, accessibility, errors }));
     await context.close();
