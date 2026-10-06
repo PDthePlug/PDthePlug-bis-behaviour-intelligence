@@ -84,5 +84,7 @@ test("Commercial Intelligence UI explains its automation boundary in customer la
   assert.match(panel, /needsRefresh && next\.canWrite/);
   assert.match(panel, /action: "refresh", mode/);
   assert.match(panel, /action: "draft"/);
-  assert.match(panel, /action: "decision"/);\n  const route = await source("app/api/commercial/intelligence/route.ts");\n  assert.match(route, /timeZone: "Africa\\/Johannesburg"/);
+  assert.match(panel, /action: "decision"/);
+  const route = await source("app/api/commercial/intelligence/route.ts");
+  assert.match(route, /timeZone: "Africa\\/Johannesburg"/);
 });
