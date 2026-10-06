@@ -1,6 +1,7 @@
+import { mkdir } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 
-const profile = {
+const initialProfile = {
   identity: { email: "browser.learner@example.test", displayName: "Browser Learner" },
   roles: [],
   profile: {
@@ -16,6 +17,7 @@ const profile = {
 };
 
 async function profileService(page: Page, patches: Record<string, unknown>[] = []) {
+  const profile = structuredClone(initialProfile);
   await page.route("**/api/profile", async (route) => {
     if (route.request().method() === "PATCH") {
       const body = route.request().postDataJSON() as Record<string, unknown>;
@@ -40,12 +42,14 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(dimensions.documentWidth).toBeLessThanOrEqual(dimensions.viewportWidth);
 }
 
-test("Profile is an identity home and Evidence Portfolio has its own destination", async ({ page }) => {
+test("Profile is an identity home and Evidence Portfolio has its own destination", async ({ page }, testInfo) => {
   await profileService(page);
   await page.goto("/profile");
 
   await expect(page.getByRole("heading", { name: "Browser Learner" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /My experience/ })).toHaveAttribute("href", "/settings#experience");
+  await mkdir("outputs", { recursive: true });
+  await page.screenshot({ path: `outputs/BIS-profile-${testInfo.project.name}.png` });
+  await expect(page.getByRole("link", { name: /My experience/ })).toHaveAttribute("href", "/experience");
   await expect(page.getByRole("link", { name: /Settings/ })).toHaveAttribute("href", "/settings");
   await expect(page.getByRole("link", { name: /Evidence Portfolio/ })).toHaveAttribute("href", "/portfolio");
   await expect(page.getByRole("link", { name: /Learning/ })).toHaveAttribute("href", "/learn");
@@ -55,41 +59,71 @@ test("Profile is an identity home and Evidence Portfolio has its own destination
   await expectNoHorizontalOverflow(page);
 });
 
-test("Settings changes appearance, reading comfort and life context without touching evidence", async ({ page }) => {
+test("Settings persist on re-entry, and My experience is a separate destination", async ({ page }, testInfo) => {
   const patches: Record<string, unknown>[] = [];
   await profileService(page, patches);
   await page.goto("/settings");
-
-  await expect(page.getByRole("heading", { name: "Make BIS comfortable to use." })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Choose the context that fits your life now" })).toBeVisible();
-
-  await page.getByRole("button", { name: /Warm/ }).click();
+  await expect(page.getByRole("heading", { name: "Settings", exact: true })).toBeVisible();
+  await expect(page.getByRole("radio")).toHaveCount(0);
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toBeEnabled();
+  await mkdir("outputs", { recursive: true });
+  await page.screenshot({ path: `outputs/BIS-settings-${testInfo.project.name}.png` });
+  await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("warm");
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.bisAppearance)).toBe("warm");
-
-  await page.getByRole("button", { name: /^Blue/ }).click();
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Blue", exact: true }).click();
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.bisAccent)).toBe("blue");
-
-  await page.getByRole("button", { name: /Large Easier reading/ }).click();
+  await expect(page.getByRole("button", { name: "Blue", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Reading", exact: true }).click();
+  await page.getByRole("combobox", { name: "Text size", exact: true }).selectOption("large");
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.bisTextSize)).toBe("large");
-
-  await page.getByRole("button", { name: /Narrow Shorter lines/ }).click();
-  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.bisReadingWidth)).toBe("narrow");
-
-  await page.getByRole("button", { name: /Workplace Professional behaviour/ }).click();
-  await expect(page.getByText(/Current experience:/)).toContainText("Workplace");
-  await expect(page.getByText(/Changing context does not delete, rewrite or reclassify evidence/)).toBeVisible();
-
-  await expect.poll(() => patches).toEqual(expect.arrayContaining([
-    { appearance: "warm" },
-    { accent: "blue" },
-    { textSize: "large" },
-    { readingWidth: "narrow" },
-    { deliveryEdition: "workplace" },
-  ]));
+  await expect(page.getByRole("combobox", { name: "Page width", exact: true })).toBeEnabled();
+  await page.getByRole("combobox", { name: "Page width", exact: true }).selectOption("narrow");
+  await expect(page.getByRole("combobox", { name: "Page width", exact: true })).toBeEnabled();
+  await page.reload();
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toHaveValue("warm");
+  await page.getByRole("button", { name: "Reading", exact: true }).click();
+  await expect(page.getByRole("combobox", { name: "Text size", exact: true })).toHaveValue("large");
+  await expect(page.getByRole("combobox", { name: "Page width", exact: true })).toHaveValue("narrow");
+  await expectNoHorizontalOverflow(page);
+  await page.goto("/profile");
+  await page.getByRole("link", { name: /My experience/ }).click();
+  await expect(page).toHaveURL(/\/experience$/);
+  await expect(page.getByRole("heading", { name: "My experience", exact: true })).toBeVisible();
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toHaveCount(0);
+  await page.getByRole("radio", { name: "Workplace", exact: true }).check();
+  await expect(page.getByRole("radio", { name: "Workplace", exact: true })).toBeEnabled();
+  await expect(page.getByRole("radio", { name: "Workplace", exact: true })).toBeChecked();
+  await page.reload();
+  await expect(page.getByRole("radio", { name: "Workplace", exact: true })).toBeChecked();
+  await expect(patches).toEqual([{ appearance: "warm" }, { accent: "blue" }, { textSize: "large" }, { readingWidth: "narrow" }, { deliveryEdition: "workplace" }]);
   await expectNoHorizontalOverflow(page);
 });
 
-test("Evidence Portfolio opens with Lab history collapsed and expands only on request", async ({ page }) => {
+test("empty settings responses offer recovery and failed saves restore the saved theme", async ({ page }) => {
+  let available = false;
+  await page.route("**/api/profile", async route => {
+    if (!available || route.request().method() === "PATCH") await route.fulfill({ status: 503, body: "" });
+    else await route.fulfill({ json: initialProfile });
+  });
+  await page.goto("/settings");
+  await expect(page.locator(".settings-status [role=alert]")).toHaveText("Settings could not be loaded.");
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toBeDisabled();
+  available = true;
+  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toBeEnabled();
+  await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("dark");
+  await expect(page.locator(".settings-status [role=alert]")).toHaveText("That setting could not be saved. Try again.");
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toHaveValue("system");
+  await expect(page.getByText(/Unexpected end|JSON input/)).toHaveCount(0);
+  await page.goto("/experience");
+  await expect(page.getByRole("radio", { name: "Workplace", exact: true })).toBeEnabled();
+  await page.getByRole("radio", { name: "Workplace", exact: true }).check();
+  await expect(page.locator(".settings-status [role=alert]")).toHaveText("That setting could not be saved. Try again.");
+  await expect(page.getByRole("radio", { name: "School", exact: true })).toBeChecked();
+});
+
+test("Evidence Portfolio opens with Lab history collapsed and expands only on request", async ({ page }, testInfo) => {
   await profileService(page);
   const evidence = {
     id: "evidence",
@@ -119,16 +153,24 @@ test("Evidence Portfolio opens with Lab history collapsed and expands only on re
     await route.fulfill({
       json: view === "timeline"
         ? { records: [evidence], index: { years: [2026], labs: ["HAB"], record_count: 1 } }
-        : { groups: [], rubrics: [], submissions: [] },
+        : { groups: [], rubrics: [], submissions: [{ id: "submission", user_id: "learner", cohort_id: "group", title: "My transfer evidence", created_at: evidence.occurred_at, revoked_at: null, current: true, evidence: [evidence], reviews: [{ id: "review", created_at: evidence.occurred_at, disposition: "REVIEWED", feedback: "You changed the cue; test it in another situation.", criterion_scores: [] }] }] },
     });
   });
 
+  await page.route("**/api/evidence-portfolio", async route => route.fulfill({ json: { labs: [{ enrolmentId: "enrolment", labCode: "HAB", labVersion: "4.5.2", title: "Habit Lab", status: "COMPLETED", startedAt: "2026-10-01T10:00:00Z", completedAt: "2026-10-05T10:00:00Z", anchors: [{ id: "EXPERIMENT", label: "Real-world test", status: "RECORDED", lastRecordedAt: "2026-10-05T10:00:00Z" }], metrics: [{ code: "HAB.BEI06", label: "Observed adherence", value: "71%", provenanceStatus: "VERIFIED" }], intelligence: { nextAction: { label: "Revisit your evidence and transfer plan" } } }] } }));
   await page.goto("/portfolio");
   await expect(page.getByRole("heading", { name: "Evidence Portfolio", exact: true })).toBeVisible();
   await expect(page.getByText("Habit Lab", { exact: true })).toBeVisible();
   await expect(page.getByText("I changed the cue before the routine started.")).toBeHidden();
+  await mkdir("outputs", { recursive: true });
+  await page.screenshot({ path: `outputs/BIS-portfolio-${testInfo.project.name}.png` });
 
-  await page.locator(".portfolio-lab-group summary").click();
+  await page.locator(".portfolio-lab-group > summary").click();
+  await expect(page.getByText("Observed adherence", { exact: true })).toBeVisible();
+  await expect(page.getByText("71%", { exact: true })).toBeVisible();
+  await expect(page.locator(".portfolio-feedback > p")).toHaveText("You changed the cue; test it in another situation.");
+  await expect(page.getByText("I changed the cue before the routine started.")).toBeHidden();
+  await page.locator(".portfolio-responses > summary").click();
   await expect(page.getByText("I changed the cue before the routine started.")).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "Select evidence: My transfer evidence" })).toBeVisible();
   await expectNoHorizontalOverflow(page);

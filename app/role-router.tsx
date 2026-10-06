@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
+import { normalisePersonalisation, savePersonalisation, type LearnerPersonalisation } from "@/lib/learner-personalization";
 
 type AccessSnapshot = {
   roles?: string[];
-  profile?: { deliveryEdition?: string } | null;
+  profile?: { deliveryEdition?: string; appearancePreference?: string; accentPreference?: string; textSizePreference?: string; readingWidthPreference?: string } | null;
   error?: string;
 };
 
@@ -24,11 +25,17 @@ export function RoleRouter() {
           cache: "no-store",
           signal: controller.signal,
         });
-        const snapshot = (await response.json()) as AccessSnapshot;
-        if (!response.ok) {
+        const snapshot = (await response.json().catch(() => null)) as AccessSnapshot | null;
+        if (!response.ok || !snapshot) {
           throw new Error("We couldn't open your BIS workspace. Please try again.");
         }
         if (controller.signal.aborted) return;
+        if (snapshot.profile) savePersonalisation(normalisePersonalisation({
+          appearance: snapshot.profile.appearancePreference,
+          accent: snapshot.profile.accentPreference,
+          textSize: snapshot.profile.textSizePreference,
+          readingWidth: snapshot.profile.readingWidthPreference,
+        } as Partial<LearnerPersonalisation>));
         const staff = (snapshot.roles ?? []).some((role) => STAFF_ROLES.has(role));
         router.replace(staff ? "/workspace" : "/habit");
       } catch (cause) {

@@ -10,6 +10,8 @@ import {
   type EvidenceRecord,
   type AssessmentWorkspace,
 } from "@/lib/evidence-engine";
+import type { EvidencePortfolioLab } from "@/lib/evidence-portfolio.mjs";
+import Link from "next/link";
 import { BIS_MODULES } from "@/lib/bis-catalogue";
 
 type Timeline = {
@@ -40,6 +42,7 @@ function labTitle(code: string) {
 }
 
 export function PortfolioWorkspace() {
+  const [showSubmissions, setShowSubmissions] = useState(false);
   const [showCalculations, setShowCalculations] = useState(false);
   const [year, setYear] = useState("");
   const [lab, setLab] = useState("");
@@ -65,7 +68,8 @@ export function PortfolioWorkspace() {
   }, [query]);
 
   const timeline = useEvidenceData<Timeline>(query);
-  const sharing = useEvidenceData<AssessmentWorkspace>("view=workspace");
+  const sharing = useEvidenceData<AssessmentWorkspace>("view=learnerWorkspace");
+  const overview = useEvidenceData<{ labs: EvidencePortfolioLab[] }>("", "/api/evidence-portfolio");
   const extra = older.query === query ? older.records : [];
   const records = [...(timeline.data?.records ?? []), ...extra];
   const hasMore = older.query === query ? older.hasMore : (timeline.data?.records.length ?? 0) === 60;
@@ -90,19 +94,22 @@ export function PortfolioWorkspace() {
 
   const activeGroup = groups.find((candidate) => candidate.id === group)?.id ?? groups[0]?.id ?? "";
 
-  const groupedRecords = new Map<string, EvidenceRecord[]>();
-  for (const record of records) {
-    const existing = groupedRecords.get(record.lab_code) ?? [];
-    existing.push(record);
-    groupedRecords.set(record.lab_code, existing);
+  const allLabs = overview.data?.labs ?? [];
+  const groupsByLab = new Map<string, { key: string; title: string; lab?: EvidencePortfolioLab; records: EvidenceRecord[] }>();
+  for (const item of allLabs) {
+    if (lab && item.labCode !== lab) continue;
+    if (year && ![item.startedAt, item.completedAt, ...item.anchors.map(anchor => anchor.lastRecordedAt)].some(stamp => stamp && String(new Date(stamp).getFullYear()) === year)) continue;
+    groupsByLab.set(item.enrolmentId, { key: item.enrolmentId, title: item.title, lab: item, records: [] });
   }
-  const labGroups = Array.from(groupedRecords.entries()).map(([code, labRecords]) => ({
-    code,
-    title: labTitle(code),
-    records: labRecords,
-    latest: labRecords[0]?.occurred_at ?? "",
-    activeCount: labRecords.filter((record) => record.status === "ACTIVE").length,
-  }));
+  for (const record of records) {
+    const matched = allLabs.find(item => record.enrolment_id ? item.enrolmentId === record.enrolment_id : item.labCode === record.lab_code && item.labVersion === record.lab_version);
+    const key = matched?.enrolmentId ?? `${record.lab_code}:${record.lab_version}:${record.enrolment_id ?? "history"}`;
+    const group = groupsByLab.get(key) ?? { key, title: labTitle(record.lab_code), lab: matched, records: [] };
+    group.records.push(record);
+    groupsByLab.set(key, group);
+  }
+  const labGroups = Array.from(groupsByLab.values());
+  const reviews = sharing.data?.submissions.reduce((count, submission) => count + submission.reviews.length, 0) ?? 0;
 
   function resetSelection() {
     setSelected([]);
@@ -122,7 +129,7 @@ export function PortfolioWorkspace() {
         `/api/evidence-engine?${query}&before=${encodeURIComponent(last.occurred_at)}&beforeId=${encodeURIComponent(last.id)}`,
         { cache: "no-store" },
       );
-      const payload = await response.json();
+      const payload = await response.json().catch(() => ({ error: "Older evidence could not be loaded." }));
       if (!response.ok) throw new Error(payload.error ?? "Older evidence could not be loaded.");
       if (currentQuery.current === started) {
         setOlder({
@@ -152,6 +159,7 @@ export function PortfolioWorkspace() {
     ) {
       resetSelection();
       setTitle("");
+      setShowSubmissions(true);
     }
   }
 
@@ -193,7 +201,7 @@ export function PortfolioWorkspace() {
           {record.provenance === "LR" ? "Handbook response" : "Lab evidence"} ·{" "}
           {record.evidence_class && record.evidence_class !== "UNCLASSIFIED"
             ? record.evidence_class.toLowerCase().replaceAll("_", " ")
-            : "Awaiting source classification"}
+            : "Recorded response"}
         </p>
 
         <p className="evidence-wording">
@@ -223,8 +231,8 @@ export function PortfolioWorkspace() {
         ) : null}
 
         <details>
-          <summary>Curriculum context and source</summary>
-          <p>{record.portfolio_purpose ?? "Preserved as original evidence; meaning has not yet been classified."}</p>
+          <summary>Source</summary>
+          <p>{record.portfolio_purpose ?? "Original response"}</p>
           {record.outcome ? <p>Outcome: {record.outcome}</p> : null}
           {record.competency ? <p>Competency: {record.competency}</p> : null}
           <p className="evidence-meta">
@@ -238,15 +246,10 @@ export function PortfolioWorkspace() {
 
   return (
     <main className="evidence-workspace portfolio-workspace">
-      <p className="eyebrow">Your longitudinal record</p>
       <h1>Evidence Portfolio</h1>
-      <p>
-        Your Labs begin collapsed so you can see the shape of your history first. Open a Lab only when you want to review the evidence, revisions or facilitator feedback inside it.
-      </p>
-
       <div className="evidence-actions">
         <a className="evidence-button" href="/api/evidence-engine?view=learnerReport">
-          Download my evidence report
+          Download report
         </a>
         <button
           className="secondary"
@@ -257,13 +260,21 @@ export function PortfolioWorkspace() {
             resetSelection();
             void timeline.load();
             void sharing.load();
+            void overview.load();
           }}
         >
-          Refresh portfolio
+          Refresh
         </button>
       </div>
 
-      <div className="evidence-filters">
+      <EvidenceState {...overview} retry={() => void overview.load()} />
+      {overview.data ? <dl className="portfolio-overview">
+        <div><dt>Labs</dt><dd>{allLabs.length}</dd></div>
+        <div><dt>Completed</dt><dd>{allLabs.filter(item => item.status === "COMPLETED").length}</dd></div>
+        <div><dt>Real-world tests</dt><dd>{allLabs.filter(item => item.anchors.some(anchor => anchor.id === "EXPERIMENT" && anchor.status === "RECORDED")).length}</dd></div>
+        <div><dt>Reviews</dt><dd>{reviews}</dd></div>
+      </dl> : null}
+      <details className="portfolio-tools"><summary>Filter history</summary>      <div className="evidence-filters">
         <label>
           Year
           <select
@@ -273,7 +284,7 @@ export function PortfolioWorkspace() {
               resetSelection();
             }}
           >
-            <option value="">All recorded years</option>
+            <option value="">All years</option>
             {timeline.data?.index.years
               .slice()
               .sort((a, b) => b - a)
@@ -300,7 +311,7 @@ export function PortfolioWorkspace() {
         </label>
 
         <label>
-          Evidence purpose
+          Purpose
           <select
             value={evidenceClass}
             onChange={(event) => {
@@ -312,7 +323,7 @@ export function PortfolioWorkspace() {
             {classes.map((value) => (
               <option key={value} value={value}>
                 {value === "UNCLASSIFIED"
-                  ? "Awaiting source classification"
+                  ? "Other records"
                   : value.toLowerCase().replaceAll("_", " ")}
               </option>
             ))}
@@ -320,47 +331,42 @@ export function PortfolioWorkspace() {
         </label>
       </div>
 
+</details>
+
       <EvidenceState {...timeline} retry={() => void timeline.load()} />
 
       {timeline.data ? (
         <>
-          <p className="evidence-meta portfolio-summary">
-            {timeline.data.index.record_count} recorded evidence anchors in your history.{" "}
-            {records.length} shown with the selected filters.
-          </p>
-
-          {!records.length ? (
+          {!labGroups.length && !overview.loading ? (
             <section className="evidence-empty">
               <h2>
                 {timeline.data.index.record_count
                   ? "No records match these filters"
                   : "Your record starts with your first response"}
               </h2>
-              <p>
-                As you work through handbooks and Labs, your saved evidence appears here. The portfolio shows the history you have recorded.
-              </p>
+              <Link href="/labs">Open Labs</Link>
             </section>
           ) : (
             <div className="portfolio-lab-list">
               {labGroups.map((labGroup) => (
-                <details className="portfolio-lab-group" key={labGroup.code}>
+                <details className="portfolio-lab-group" key={labGroup.key}>
                   <summary>
-                    <span className="portfolio-lab-mark" aria-hidden="true">
-                      {labGroup.title.slice(0, 1)}
-                    </span>
                     <span className="portfolio-lab-copy">
                       <strong>{labGroup.title}</strong>
-                      <small>
-                        {labGroup.records.length} record{labGroup.records.length === 1 ? "" : "s"} ·{" "}
-                        {labGroup.activeCount} current · latest {date(labGroup.latest)}
-                      </small>
+                      <small>{labGroup.lab?.status === "COMPLETED" ? "Completed" : labGroup.lab ? "In progress" : "History"}{labGroup.lab?.completedAt ? ` · ${date(labGroup.lab.completedAt)}` : ""}</small>
                     </span>
                     <span className="portfolio-lab-action">Review</span>
                   </summary>
                   <div className="portfolio-lab-body">
-                    <ol className="evidence-timeline">
-                      {labGroup.records.map(renderRecord)}
-                    </ol>
+                    {labGroup.lab ? <>
+                      <ol className="portfolio-stages" aria-label="Evidence stages">{labGroup.lab.anchors.map(anchor => <li key={anchor.id}><span>{anchor.label}</span><small>{anchor.status === "RECORDED" ? "Recorded" : anchor.status === "WITHDRAWN" ? "Withdrawn" : "Not yet"}</small></li>)}</ol>
+                      {labGroup.lab.metrics.length ? <section className="portfolio-results"><h3>Results</h3><dl>{labGroup.lab.metrics.map(metric => <div key={metric.code}><dt>{metric.label}</dt><dd>{metric.value}{metric.provenanceStatus !== "VERIFIED" ? <small>Source check pending</small> : null}</dd></div>)}</dl></section> : <p className="evidence-meta">No measured results yet.</p>}
+                      <Link className="portfolio-next" href={`/labs/${labGroup.lab.labCode.toLowerCase()}`}>{labGroup.lab.intelligence.nextAction.label}</Link>
+                    </> : null}
+                    {sharing.data?.submissions.filter(submission => submission.evidence.some(record => record.enrolment_id === labGroup.key || (!record.enrolment_id && record.lab_code === labGroup.lab?.labCode && record.lab_version === labGroup.lab?.labVersion))).map(submission => submission.reviews.length ? <section className="portfolio-feedback" key={submission.id}><h3>Facilitator feedback</h3><p>{submission.reviews[0].feedback}</p><details><summary>Review history</summary><AssessmentHistory submission={submission} rubrics={sharing.data!.rubrics} /></details></section> : null)}
+                    <details className="portfolio-responses"><summary>Responses · {labGroup.records.length}{hasMore ? " shown" : ""}</summary>
+                      <ol className="evidence-timeline">{labGroup.records.map(renderRecord)}</ol>
+                    </details>
                   </div>
                 </details>
               ))}
@@ -389,16 +395,13 @@ export function PortfolioWorkspace() {
           aria-expanded={showCalculations}
           onClick={() => setShowCalculations(!showCalculations)}
         >
-          {showCalculations ? "Hide calculated records" : "Review calculated records over time"}
+          {showCalculations ? "Hide result history" : "Result history"}
         </button>
       </div>
       {showCalculations ? <CalculationHistory /> : null}
 
-      <section className="evidence-entry">
-        <h2>Share evidence for review</h2>
-        <p>
-          Select up to 50 current records from the same Lab and curriculum version. Sharing gives the assigned facilitator access to those selected records while your group membership and consent remain active. You can revoke access here.
-        </p>
+      <details className="portfolio-sharing" open={selectedRecords.length > 0 ? true : undefined}>
+        <summary>Share for review{selectedRecords.length ? ` · ${selectedRecords.length} selected` : ""}</summary>
         <EvidenceState {...sharing} retry={() => void sharing.load()} />
         {selectedRecords.length ? (
           <form
@@ -459,12 +462,12 @@ export function PortfolioWorkspace() {
             </button>
           </form>
         ) : (
-          <p>Select eligible evidence inside an expanded Lab to start a submission.</p>
+          <p>Select responses from a Lab to share.</p>
         )}
-      </section>
+      </details>
 
-      <section className="evidence-entry">
-        <h2>Submissions and facilitator reviews</h2>
+      <details className="portfolio-sharing" open={showSubmissions ? true : undefined}>
+        <summary>Shared evidence{sharing.data?.submissions.length ? ` · ${sharing.data.submissions.length}` : ""}</summary>
         {sharing.data?.submissions.length ? (
           sharing.data.submissions.map((submission) => (
             <article key={submission.id} className="evidence-entry">
@@ -491,9 +494,9 @@ export function PortfolioWorkspace() {
             </article>
           ))
         ) : (
-          <p>No evidence has been shared yet.</p>
+          <p>No shared evidence yet.</p>
         )}
-      </section>
+      </details>
     </main>
   );
 }

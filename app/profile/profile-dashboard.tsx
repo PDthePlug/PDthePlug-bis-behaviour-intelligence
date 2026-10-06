@@ -3,18 +3,7 @@
 import Link from "next/link";
 import { InstallCard } from "@/components/pwa/install-card";
 import { useEffect, useMemo, useState } from "react";
-import {
-  BookOpen,
-  BriefcaseBusiness,
-  Building2,
-  ChevronRight,
-  FlaskConical,
-  GraduationCap,
-  LogOut,
-  Palette,
-  Settings,
-  Sparkles,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 type ProfileSnapshot = {
   identity?: {
@@ -34,12 +23,6 @@ const editionLabels = {
   school: "School Edition",
   emerging_adult: "Emerging Adult Edition",
   workplace: "Workplace Edition",
-} as const;
-
-const editionIcons = {
-  school: GraduationCap,
-  emerging_adult: Sparkles,
-  workplace: BriefcaseBusiness,
 } as const;
 
 function hasStaffRole(roles: string[]) {
@@ -88,7 +71,6 @@ export function ProfileDashboard({
   const staff = hasStaffRole(roles);
   const editionKey = snapshot?.profile?.deliveryEdition ?? "school";
   const edition = editionLabels[editionKey];
-  const ExperienceIcon = editionIcons[editionKey];
   const learningMode =
     snapshot?.profile?.mode === "FACILITATED"
       ? "Facilitated programme"
@@ -104,7 +86,7 @@ export function ProfileDashboard({
         <div>
           <p className="eyebrow">My BIS</p>
           <h1>{displayName}</h1>
-          <p>{edition} experience · {learningMode}</p>
+          <p>{snapshot ? `${edition.replace(" Edition", "")} · ${learningMode}` : email}</p>
         </div>
       </section>
 
@@ -115,38 +97,31 @@ export function ProfileDashboard({
       <section className="profile-section" aria-labelledby="profile-my-bis">
         <h2 id="profile-my-bis">My BIS</h2>
         <div className="profile-list">
-          <Link href="/settings#experience" className="profile-row">
-            <span className="profile-row-icon"><ExperienceIcon aria-hidden="true" /></span>
+          <Link href="/experience" className="profile-row">
             <span className="profile-row-copy">
               <strong>My experience</strong>
-              <small>{edition} · Change the context BIS uses for examples and scenarios.</small>
+              <small>{edition.replace(" Edition", "")}</small>
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>
 
           <Link href="/settings" className="profile-row">
-            <span className="profile-row-icon"><Settings aria-hidden="true" /></span>
             <span className="profile-row-copy">
               <strong>Settings</strong>
-              <small>Appearance, accent colour, text size and reading width.</small>
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>
 
           <Link href="/portfolio" className="profile-row">
-            <span className="profile-row-icon"><FlaskConical aria-hidden="true" /></span>
             <span className="profile-row-copy">
               <strong>Evidence Portfolio</strong>
-              <small>Your evidence portfolio has its own home for evidence anchors, calculated measures, reflections, revisions and facilitator reviews.</small>
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>
 
           <Link href="/learn" className="profile-row">
-            <span className="profile-row-icon"><BookOpen aria-hidden="true" /></span>
             <span className="profile-row-copy">
               <strong>Learning</strong>
-              <small>Return to your handbooks and current programme journey.</small>
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>
@@ -158,10 +133,8 @@ export function ProfileDashboard({
           <h2 id="profile-programme-team">Programme team</h2>
           <div className="profile-list">
             <Link href="/workspace" className="profile-row">
-              <span className="profile-row-icon"><Building2 aria-hidden="true" /></span>
               <span className="profile-row-copy">
                 <strong>Open programme workspace</strong>
-                <small>Open the role-specific workspace available to your account.</small>
               </span>
               <ChevronRight aria-hidden="true" />
             </Link>
@@ -172,22 +145,16 @@ export function ProfileDashboard({
       <section className="profile-section" aria-labelledby="profile-account">
         <h2 id="profile-account">Account</h2>
         <div className="profile-account-card">
-          <div><span>Name</span><strong>{displayName}</strong></div>
           <div><span>Email</span><strong>{email}</strong></div>
         </div>
-        <InstallCard />
+        <details className="profile-install"><summary>Install BIS</summary><InstallCard /></details>
         <form action="/auth/signout" method="post">
           <button type="submit" className="profile-signout">
-            <LogOut aria-hidden="true" />
-            Sign out or switch account
+            Sign out
           </button>
         </form>
       </section>
 
-      <section className="profile-principle" aria-label="Personalisation note">
-        <Palette aria-hidden="true" />
-        <p><strong>Your presentation can change. Your evidence does not.</strong> Appearance and life-context settings never delete or rewrite the evidence you have already recorded.</p>
-      </section>
     </main>
   );
 }

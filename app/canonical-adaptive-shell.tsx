@@ -32,7 +32,7 @@ const stageLabels: Record<ShellStage, string> = {
 
 function resolveStage(pathname: string, section: string | null): ShellStage {
   if (pathname.startsWith("/portfolio")) return "portfolio";
-  if (pathname.startsWith("/profile") || pathname.startsWith("/settings")) return "profile";
+  if (pathname.startsWith("/profile") || pathname.startsWith("/settings") || pathname === "/experience") return "profile";
   if (pathname.startsWith("/learn") || pathname.startsWith("/handbooks/")) return "learn";
   if (pathname.startsWith("/labs")) return "lab";
   if (pathname.startsWith("/habit-lab/experiment")) return "experiment";

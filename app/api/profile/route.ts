@@ -2,6 +2,7 @@ import { eq } from "@/db/query";
 import { getDb, withSupabaseRequest } from "@/db";
 import { learners } from "@/db/schema";
 import { getRoles, identityFrom } from "@/lib/bis-access";
+import { requestSupabaseClient } from "@/lib/supabase/server";
 
 const DELIVERY_EDITIONS = new Set(["school", "emerging_adult", "workplace"]);
 const APPEARANCES = new Set(["system", "light", "warm", "dark"]);
@@ -61,6 +62,13 @@ async function updateProfile(request: Request) {
     return Response.json({ error: "Profile settings could not be read." }, { status: 400 });
   }
 
+  if (!body || Array.isArray(body) || typeof body !== "object") {
+    return Response.json({ error: "Check your settings and try again." }, { status: 400 });
+  }
+  if (Object.keys(body).some(key => !["deliveryEdition", "appearance", "accent", "textSize", "readingWidth"].includes(key))) {
+    return Response.json({ error: "Check your settings and try again." }, { status: 400 });
+  }
+
   const update: Partial<typeof learners.$inferInsert> = {};
   if (body.deliveryEdition !== undefined) {
     if (typeof body.deliveryEdition !== "string" || !DELIVERY_EDITIONS.has(body.deliveryEdition)) {
@@ -98,7 +106,10 @@ async function updateProfile(request: Request) {
   }
 
   update.updatedAt = new Date().toISOString();
-  await getDb().update(learners).set(update).where(eq(learners.userId, identity.id));
+  const values = Object.fromEntries(Object.entries(update).map(([key, value]) => [learners.__meta.columns[key].name, value]));
+  const { data, error } = await requestSupabaseClient().from("learners").update(values).eq("user_id", identity.id).select("user_id").maybeSingle();
+  if (error) throw error;
+  if (!data) return Response.json({ error: "Complete your learner profile before changing settings." }, { status: 409 });
 
   return Response.json(await readProfile(identity), {
     headers: {
@@ -107,10 +118,13 @@ async function updateProfile(request: Request) {
   });
 }
 
-export async function GET() {
-  return withSupabaseRequest(profileSnapshot);
+async function safely(operation: () => Promise<Response>) {
+  try { return await withSupabaseRequest(operation); }
+  catch (cause) {
+    console.error("BIS profile operation failed", cause);
+    return Response.json({ error: "Your profile is unavailable. Please try again." }, { status: 503, headers: { "cache-control": "private, no-store" } });
+  }
 }
 
-export async function PATCH(request: Request) {
-  return withSupabaseRequest(() => updateProfile(request));
-}
+export async function GET() { return safely(profileSnapshot); }
+export async function PATCH(request: Request) { return safely(() => updateProfile(request)); }

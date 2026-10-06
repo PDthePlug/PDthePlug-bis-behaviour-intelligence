@@ -15,7 +15,7 @@ test("Profile is an authenticated learner destination with sign out", async () =
   assert.match(shell, /href: "\/profile"/);
   assert.match(dashboard, /action="\/auth\/signout"/);
   assert.match(dashboard, /method="post"/);
-  assert.match(dashboard, /Sign out or switch account/);
+  assert.match(dashboard, /Sign out/);
 });
 
 test("staff access remains assigned and invisible to learner-only profiles", async () => {
