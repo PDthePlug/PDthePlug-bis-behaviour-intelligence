@@ -150,3 +150,20 @@ test("Learn reader renders through the shared learner-document surface", async (
   await expect(page).toHaveURL(/page=1/);
   await expect(page.getByRole("heading", { name: "Day 3 · Leadership", exact: true })).toBeVisible();
 });
+
+
+test("unavailable learning retries the same module and page after a transient failure", async ({ page }) => {
+  await learningService(page);
+  let fail = true;
+  await page.route("**/api/runtime-content**", route => route.fulfill(fail
+    ? { status: 503, json: { error: "The published programme could not be opened." } }
+    : { json: { payload: programme } }));
+  await page.goto("/learn?section=learn&page=2");
+  await expect(page.getByRole("heading", { name: "Programme unavailable" })).toBeVisible();
+  const retry = page.getByRole("link", { name: "Try again", exact: true });
+  await expect(retry).toHaveAttribute("href", "/learn?section=learn&page=2");
+  fail = false;
+  await retry.click();
+  await expect(page.locator(".prototype-document")).toContainText("Day 4 · Evidence");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+});

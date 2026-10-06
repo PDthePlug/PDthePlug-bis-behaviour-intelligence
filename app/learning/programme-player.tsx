@@ -1069,7 +1069,7 @@ export function ProgrammePlayer({
         <LockKeyhole />
         <h1>Programme unavailable</h1>
         <p>{error}</p>
-        <Link href="/habit">Try the programme again</Link>
+        <a href={`${pathname}?${searchParams.toString()}`}>Try again</a>
       </main>
     );
   }
