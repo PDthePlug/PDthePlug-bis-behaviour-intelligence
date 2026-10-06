@@ -1047,6 +1047,7 @@ export function ContentStudio() {
                                   <input
                                     ref={(node) => { fileInputs.current[inputKey] = node; }}
                                     type="file"
+                                    aria-label={`Upload ${slot.label} source`}
                                     accept=".json,.docx,.pdf,.html,.htm,.md,.txt,.zip,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/html,text/markdown,text/plain,application/zip"
                                     hidden
                                     onChange={(event) => {
