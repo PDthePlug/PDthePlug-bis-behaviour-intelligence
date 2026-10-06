@@ -372,7 +372,7 @@ function DecisionReview({
       </label>
       <label className="decision-review-note">
         What did the organisation learn?
-        <textarea value={reviewNote} onChange={(event) => setReviewNote(event.target.value)} maxLength={1200} placeholder="Record what the next evidence supports, what remains uncertain, and whether the programme change should continue." />
+        <textarea value={reviewNote} onChange={(event) => setReviewNote(event.target.value)} maxLength={1200} placeholder="Record what the next evidence supports, what remains uncertain, and what your team decided." />
       </label>
       <button
         type="button"
@@ -888,7 +888,7 @@ export function ProgrammeOutcomesView({
               <div className="outcomes-section-heading">
                 <div>
                   <p className="eyebrow">Programme decisions</p>
-                  <h2>What did the organisation decide to change?</h2>
+                  <h2>What did the organisation decide?</h2>
                 </div>
                 <ClipboardCheck />
               </div>
@@ -942,7 +942,7 @@ export function ProgrammeOutcomesView({
                 <div className="decision-create">
                   <div>
                     <p className="eyebrow">Record a decision</p>
-                    <h3>Choose one change to try in the next programme.</h3>
+                    <h3>Record your team’s decision.</h3>
                   </div>
                   <div className="decision-form-grid">
                     <label>
@@ -967,12 +967,12 @@ export function ProgrammeOutcomesView({
                       <textarea value={decisionEvidence} onChange={(event) => setDecisionEvidence(event.target.value)} maxLength={1200} placeholder="Summarise the group result that led to this decision. Do not include private learner responses." />
                     </label>
                     <label className="decision-form-wide">
-                      What will the programme change?
+                      What did your team decide?
                       <textarea value={decisionText} onChange={(event) => setDecisionText(event.target.value)} maxLength={1200} placeholder="Record your team's decision and the evidence behind it." />
                     </label>
                     <label className="decision-form-wide">
                       What do we expect to observe next?
-                      <textarea value={expectedOutcome} onChange={(event) => setExpectedOutcome(event.target.value)} maxLength={1200} placeholder="What would you hope to see improve or change next time?" />
+                      <textarea value={expectedOutcome} onChange={(event) => setExpectedOutcome(event.target.value)} maxLength={1200} placeholder="What will you look for when you review this decision?" />
                     </label>
                     <label>
                       Who will own this?

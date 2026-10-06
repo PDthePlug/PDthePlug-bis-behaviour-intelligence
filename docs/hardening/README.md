@@ -2,7 +2,7 @@
 
 Status: **ongoing**. This register is a release record for verified corrections and an explicit list of remaining certification work. A successful build or deployment does not close the whole hardening pass.
 
-Baseline: `d8ca307ae455024b5816240d4db08f0dddd6bf73` (#126). Isolated branch: `hardening/production-readiness-20261006`. Application corrections: `b0aee73`, `75bf471`, `9aa717e`, `6835a04`, `e6c3c2e`, `958e2cd`. No production learner records, source files, content activations or database definitions were replaced with staging data.
+Baseline: `d8ca307ae455024b5816240d4db08f0dddd6bf73` (#126). Isolated branch: `hardening/production-readiness-20261006`. Application corrections: `b0aee73`, `75bf471`, `9aa717e`, `6835a04`, `e6c3c2e`, `958e2cd`, `f9ff382`, `87e1a65`. No production learner records, source files, content activations or database definitions were replaced with staging data.
 
 ## System map
 
@@ -34,7 +34,7 @@ The roster changes preserve those boundaries. Facilitators get one compact summa
 
 See `configuration-report.md`, the full platform snapshots and `platform-differences.json`. The read-only inventory covers every non-system schema, table/view, function definition hash and permissions, trigger, constraint, index, RLS policy, extension, schema/role settings and bucket settings. It never reads learner response values, Auth identities, object contents or secret values.
 
-All common definitions matched in the baseline inventory. Production has preserved Agency/Companion additions and two provider-managed Realtime functions. The private-schema anonymous USAGE grant differs; BIS function EXECUTE permissions and RLS remain unchanged. No migration is justified merely to equalise inventories. Actual publishing review exposed an explicit-unpublish fallback defect; the append-only migration and positive/negative access regression are described in `migration-review.md`. It is applied to staging pending reviewed production release. Staging data must never be promoted into production.
+All common definitions matched in the baseline inventory. Production has preserved Agency/Companion additions and two provider-managed Realtime functions. The private-schema anonymous USAGE grant differs; BIS function EXECUTE permissions and RLS remain unchanged. No migration is justified merely to equalise inventories. Actual publishing review exposed an explicit-unpublish fallback defect; the append-only migrations and positive/negative access regressions are described in `migration-review.md`. They are applied to staging pending reviewed production release. Staging data must never be promoted into production.
 
 Preview bindings previously existed only for specific old branches. This pass added global preview URL/public-key bindings to BIS Staging and an explicit production acknowledgement of `false`. Production bindings were preserved. `vercel-bindings.json` records names/scopes/types without key values. Production backend identity was read live and returned `swmhsqivqaqwovojbceo` with staging certification disabled.
 

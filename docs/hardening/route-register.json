@@ -86,7 +86,8 @@
       "problem": "Commercial access must remain independent from private learner evidence",
       "correction": "Retained separate role check and customer-safe failures",
       "verification": [
-        "tests/browser/workspace-consolidation.spec.ts"
+        "tests/browser/workspace-consolidation.spec.ts",
+        "scripts/certify-hardening-role-variants.mjs"
       ],
       "releaseStatus": "REVIEWED_PARTIAL",
       "outstanding": [
@@ -464,7 +465,8 @@
       "verification": [
         "scripts/certify-hardening-evidence.mjs",
         "tests/role-routed-reporting.test.mjs",
-        "tests/staff-workspace-hardening.test.mjs"
+        "tests/staff-workspace-hardening.test.mjs",
+        "scripts/certify-hardening-role-variants.mjs"
       ],
       "releaseStatus": "REVIEWED_PARTIAL",
       "outstanding": [
@@ -601,16 +603,16 @@
         "./commercial-workspace"
       ],
       "problem": "Commercial role boundary and muted caption contrast",
-      "correction": "Retained separate role boundary; metadata contrast corrected",
+      "correction": "Retained separate role boundary; metadata contrast corrected; actual four-role controls, write/read-only boundaries, UI save/refresh and post-revocation denial verified",
       "verification": [
         "tests/ui-components.test.mjs",
-        "tests/browser/workspace-consolidation.spec.ts"
+        "tests/browser/workspace-consolidation.spec.ts",
+        "scripts/certify-hardening-role-variants.mjs"
       ],
       "releaseStatus": "REVIEWED_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "Actual journeys for each commercial role: UAT-ROLE-VARIANTS."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
       ]
     },
     {
@@ -1279,18 +1281,20 @@
         "./staff-workspace-shell"
       ],
       "problem": "Large repeated participant messages, filter races, uncertain report meanings and role disclosure names",
-      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion",
+      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access; actual programme-owner decision/review UI saves and refresh passed with sponsor/foreign-cohort denial",
       "verification": [
         "tests/browser/facilitator-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/browser/programme-intelligence.spec.ts",
-        "scripts/certify-hardening-evidence.mjs"
+        "scripts/certify-hardening-evidence.mjs",
+        "tests/programme-owner-cohort-access.test.mjs",
+        "docs/hardening/migration-review.md",
+        "scripts/certify-hardening-role-variants.mjs"
       ],
       "releaseStatus": "REVIEWED_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "Actual PROGRAMME_OWNER decision-write journey: UAT-ROLE-VARIANTS."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
       ]
     }
   ],

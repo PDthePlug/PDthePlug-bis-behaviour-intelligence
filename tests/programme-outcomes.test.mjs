@@ -315,8 +315,8 @@ test("programme decision register connects evidence to a next-cycle organisation
   ]);
 
   assert.match(view, /Programme decisions/);
-  assert.match(view, /What did the organisation decide to change\?/);
-  assert.match(view, /What will the programme change\?/);
+  assert.match(view, /What did the organisation decide\?/);
+  assert.match(view, /What did your team decide\?/);
   assert.match(view, /What do we expect to observe next\?/);
   assert.match(view, /Use in decision/);
   assert.match(view, /reviewProgrammeDecision/);
