@@ -41,9 +41,10 @@ test("Money safety boundary is reading, not an extra answer, across all editions
   for (const edition of ["school", "emerging_adult", "workplace"]) {
     await page.getByRole("combobox", { name: "Handbook", exact: true }).selectOption(`money-${edition}`);
     const root = page.locator(`[data-specimen="money-${edition}"][data-day="3"]`);
+    const instruction = edition === "workplace" ? "Additionally, do not use Money Lab to investigate:" : "Do not use Money Lab to experiment with spending that involves:";
     await expect(root).toBeVisible();
-    await expect(root.getByRole("textbox", { name: "Do not use Money Lab to experiment with spending that involves:", exact: true })).toHaveCount(0);
-    await expect(root.getByText("Do not use Money Lab to experiment with spending that involves:", { exact: true })).toBeVisible();
+    await expect(root.getByRole("textbox", { name: instruction, exact: true })).toHaveCount(0);
+    await expect(root.getByText(instruction, { exact: true })).toBeVisible();
     await expect(root.getByText(/Essential needs/).first()).toBeVisible();
   }
 });
