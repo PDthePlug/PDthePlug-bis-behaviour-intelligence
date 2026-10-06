@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-10-06T12:24:30.297382+00:00",
+  "observedAt": "2026-10-06T16:03:34.549798+00:00",
   "project": "lbmhkddrkhtmkcvfmumd",
   "pageScreens": [
     {
@@ -2118,9 +2118,9 @@
     "syntheticClock": "Development + exact staging + fixture-only; calendar server exited"
   },
   "release": {
-    "npmRunVerify": "Final artifact correction f9ff382 verification running; previous 620 acceptance / 162 browser passed",
+    "npmRunVerify": "PASS: 628 acceptance, 165 browser journeys, source audit, lint, types, build and all 15 static packages in the serverless trace; application includes 87e1a65 owner correction",
     "pullRequest": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/127",
-    "preview": "958e2cd READY on Vercel/staging; 42 actual preview states exposed six repeated static Learning self-fetch failures, corrected in f9ff382; final deployment recheck pending",
+    "preview": "911a152 READY; 48 actual states clean; all 15 runtime editions retrieved through real APIs (12 retained STATIC, 3 governed DYNAMIC)",
     "production": "Pending"
   },
   "learningPreviews": {
@@ -3249,5 +3249,732 @@
         "touchpoints": 10
       }
     ]
+  },
+  "roleVariants": {
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "rows": [
+      {
+        "role": "PROGRAMME_OWNER",
+        "assignedCohortOnly": "PASS",
+        "sponsorAndForeignCohortWriteDenied": "PASS",
+        "privateNarrativeExcluded": "PASS",
+        "decisionAndReviewUIRefresh": "PASS",
+        "reviewOutcome": "NOT_ENOUGH_EVIDENCE",
+        "widths": [
+          360,
+          430,
+          1280
+        ]
+      },
+      {
+        "role": "COMMERCIAL_READ_ONLY",
+        "read": "PASS",
+        "write": "DENIED",
+        "roleAssignment": "DENIED",
+        "widths": [
+          360,
+          430,
+          1280
+        ]
+      },
+      {
+        "role": "COMMERCIAL_RESEARCH",
+        "read": "PASS",
+        "write": "UI_SAVE_AND_REFRESH_PASS",
+        "roleAssignment": "DENIED",
+        "widths": [
+          360,
+          430,
+          1280
+        ]
+      },
+      {
+        "role": "COMMERCIAL_LEAD",
+        "read": "PASS",
+        "write": "UI_SAVE_AND_REFRESH_PASS",
+        "roleAssignment": "DENIED",
+        "widths": [
+          360,
+          430,
+          1280
+        ]
+      },
+      {
+        "role": "COMMERCIAL_ADMIN",
+        "read": "PASS",
+        "write": "UI_SAVE_AND_REFRESH_PASS",
+        "roleAssignment": "DENIED",
+        "widths": [
+          360,
+          430,
+          1280
+        ]
+      }
+    ],
+    "temporaryRolesRevoked": "PASS",
+    "boundary": "Actor retains only its original safeguarding role. Synthetic team decisions and organisations remain labelled software fixtures with audit history; no existing records or production data modified."
+  },
+  "vercelLearningArtifacts": {
+    "deployment": "dpl_DGLKQf8HEzuwrEQwP6auVNA1NPA6",
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "rows": [
+      {
+        "code": "HAB",
+        "edition": "school",
+        "mode": "DYNAMIC",
+        "versionId": "content:module:HAB:1.6",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "HAB",
+        "edition": "emerging_adult",
+        "mode": "DYNAMIC",
+        "versionId": "content:module:HAB:1.6",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "HAB",
+        "edition": "workplace",
+        "mode": "DYNAMIC",
+        "versionId": "content:module:HAB:1.6",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "DEC",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:DEC:1.7",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "DEC",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:DEC:1.7",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "DEC",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:DEC:1.7",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "MON",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:MON:1.2",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "MON",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:MON:1.2",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "MON",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:MON:1.2",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "IDN",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:IDN:1.2.1",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "IDN",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:IDN:1.2.1",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "IDN",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:IDN:1.2.1",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "ATT",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:ATT:1.0",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "ATT",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:ATT:1.0",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "ATT",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:ATT:1.0",
+        "touchpoints": 10,
+        "result": "PASS"
+      }
+    ]
+  },
+  "vercelPreview": {
+    "deploymentId": "dpl_DGLKQf8HEzuwrEQwP6auVNA1NPA6",
+    "commit": "911a152cd64c50c9fa9fa9fdebc6d2a12de033a7",
+    "states": [
+      {
+        "role": "LEARNER",
+        "route": "/learn",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/learn",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/habit?page=4",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/habit?page=4",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/habit?page=12",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/habit?page=12",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/labs/hab?step=7",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/labs/hab?step=7",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/portfolio",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/portfolio",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/settings",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/settings",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/handbooks/dec?page=2",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/handbooks/dec?page=2",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=2",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/handbooks/mon?page=2",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/learn",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/learn",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/habit?page=4",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/habit?page=4",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/habit?page=12",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/habit?page=12",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/labs/hab?step=7",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/labs/hab?step=7",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/portfolio",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/portfolio",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/settings",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/settings",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/handbooks/dec?page=2",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/handbooks/dec?page=2",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=2",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/handbooks/mon?page=2",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/learn",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/learn",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/habit?page=4",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/habit?page=4",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/habit?page=12",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/habit?page=12",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/labs/hab?step=7",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/labs/hab?step=7",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/portfolio",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/portfolio",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/settings",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/settings",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/handbooks/dec?page=2",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/handbooks/dec?page=2",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=2",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/handbooks/mon?page=2",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "FACILITATOR",
+        "route": "/workspace?view=facilitator&section=participants",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/workspace?view=facilitator&section=participants",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "FACILITATOR",
+        "route": "/workspace?view=facilitator&section=participants",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/workspace?view=facilitator&section=participants",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "FACILITATOR",
+        "route": "/workspace?view=facilitator&section=participants",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/workspace?view=facilitator&section=participants",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SPONSOR_VIEWER",
+        "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SPONSOR_VIEWER",
+        "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SPONSOR_VIEWER",
+        "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/workspace?view=admin&section=access",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/workspace?view=admin&section=access",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/content-studio",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/content-studio",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.6/runtime?kind=LEARNING_MODULE&code=HAB&edition=school&page=4",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/content-studio/preview/content%3Amodule%3AHAB%3A1.6/runtime?kind=LEARNING_MODULE&code=HAB&edition=school&page=4",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/commercial",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/commercial",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/workspace?view=admin&section=access",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/workspace?view=admin&section=access",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/content-studio",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/content-studio",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.6/runtime?kind=LEARNING_MODULE&code=HAB&edition=school&page=4",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/content-studio/preview/content%3Amodule%3AHAB%3A1.6/runtime?kind=LEARNING_MODULE&code=HAB&edition=school&page=4",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/commercial",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/commercial",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/workspace?view=admin&section=access",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/workspace?view=admin&section=access",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/content-studio",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/content-studio",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.6/runtime?kind=LEARNING_MODULE&code=HAB&edition=school&page=4",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/content-studio/preview/content%3Amodule%3AHAB%3A1.6/runtime?kind=LEARNING_MODULE&code=HAB&edition=school&page=4",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "SYSTEM_ADMIN",
+        "route": "/commercial",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/commercial",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "PUBLIC",
+        "route": "/sign-in",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/sign-in",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "PUBLIC",
+        "route": "/forgot-password",
+        "width": 360,
+        "status": 200,
+        "finalPath": "/forgot-password",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "PUBLIC",
+        "route": "/sign-in",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/sign-in",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "PUBLIC",
+        "route": "/forgot-password",
+        "width": 430,
+        "status": 200,
+        "finalPath": "/forgot-password",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "PUBLIC",
+        "route": "/sign-in",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/sign-in",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      },
+      {
+        "role": "PUBLIC",
+        "route": "/forgot-password",
+        "width": 1280,
+        "status": 200,
+        "finalPath": "/forgot-password",
+        "overflow": 0,
+        "accessibility": [],
+        "errors": [],
+        "unlabelledInputs": 0
+      }
+    ],
+    "result": "PASS: 48 states",
+    "backend": "lbmhkddrkhtmkcvfmumd",
+    "boundary": "Programme-owner policy/copy addition subsequently verified in actual local staging; final PR-head Vercel confirmation pending."
   }
 }
