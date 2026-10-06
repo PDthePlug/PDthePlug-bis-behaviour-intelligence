@@ -94,8 +94,17 @@ async function loadLatestPersisted() {
   return { run: latestRun.data, recommendations: recommendations.data ?? [] };
 }
 
-function isSameUtcDay(a: string, b: string) {
-  return a.slice(0, 10) === b.slice(0, 10);
+function johannesburgDay(value: string) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Africa/Johannesburg",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(value));
+}
+
+function isSameCommercialDay(a: string, b: string) {
+  return johannesburgDay(a) === johannesburgDay(b);
 }
 
 async function createBriefRun(args: {
@@ -114,7 +123,7 @@ async function createBriefRun(args: {
       const ai = await buildAiFounderBrief(args.input, brief);
       if (ai) {
         summary = ai.text;
-        provider = "OPENAI";
+        provider = "AI_GATEWAY";
         model = ai.model;
       }
     } catch {
@@ -225,7 +234,7 @@ async function getHandler() {
     const needsRefresh =
       !persisted.run ||
       persisted.run.input_fingerprint !== brief.inputFingerprint ||
-      !isSameUtcDay(persisted.run.created_at, now);
+      !isSameCommercialDay(persisted.run.created_at, now);
 
     return Response.json({
       identity: { email: identity.email, displayName: identity.displayName },
@@ -276,7 +285,7 @@ async function postHandler(request: Request) {
           const ai = await answerCommercialQuestion(question, input, brief);
           if (ai) {
             answer = ai.text;
-            provider = "OPENAI";
+            provider = "AI_GATEWAY";
             model = ai.model;
           }
         } catch {
@@ -378,7 +387,7 @@ async function postHandler(request: Request) {
           const ai = await draftCommercialMessage({ input, brief, opportunity, purpose });
           if (ai) {
             draft = ai.text;
-            provider = "OPENAI";
+            provider = "AI_GATEWAY";
             model = ai.model;
           }
         } catch {
