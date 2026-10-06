@@ -113,7 +113,7 @@ function intelligenceState(refreshed: boolean, dismissed = false) {
     latestRun: refreshed ? {
       id: "run-1",
       summary: "Leap9 is the clearest decision today: review the prepared outreach and decide whether to send.",
-      provider: "OPENAI",
+      provider: "AI_GATEWAY",
       model: "gpt-5.6-luna",
       created_at: "2026-10-07T00:02:00Z",
       input_fingerprint: "fixture",
@@ -160,7 +160,7 @@ async function mockCommercial(page: Page) {
       await route.fulfill({
         json: {
           answer: "Leap9 is the clearest approval decision in the current CRM.",
-          provider: "OPENAI",
+          provider: "AI_GATEWAY",
           model: "gpt-5.6-luna",
         },
       });
@@ -170,7 +170,7 @@ async function mockCommercial(page: Page) {
       await route.fulfill({
         json: {
           draft: "Hello,\n\nFollowing our conversation, we made the BIS programme experience more tangible for Leap9.\n\nKind regards",
-          provider: "OPENAI",
+          provider: "AI_GATEWAY",
           model: "gpt-5.6-luna",
         },
       });
