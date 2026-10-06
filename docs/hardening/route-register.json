@@ -1,6 +1,6 @@
 {
   "baseCommit": "d8ca307ae455024b5816240d4db08f0dddd6bf73",
-  "generatedAt": "2026-10-06T18:14:48.692Z",
+  "generatedAt": "2026-10-06T21:21:28.470Z",
   "routes": [
     {
       "route": "/api/bis",
@@ -911,7 +911,7 @@
         "tests/browser/reader-hardening.spec.ts",
         "docs/hardening/product-experience-verification.json"
       ],
-      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_RELEASED_PR130; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -941,7 +941,7 @@
         "tests/browser/programme-journey.spec.ts",
         "docs/hardening/product-experience-verification.json"
       ],
-      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_RELEASED_PR130; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -971,7 +971,7 @@
         "scripts/certify-hardening-photo.mjs",
         "docs/hardening/product-experience-verification.json"
       ],
-      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_RELEASED_PR130; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1304,8 +1304,8 @@
         "@/lib/supabase/require-user",
         "./staff-workspace-shell"
       ],
-      "problem": "Large repeated participant messages, filter races, uncertain report meanings and role disclosure names",
-      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access; actual programme-owner decision/review UI saves and refresh passed with sponsor/foreign-cohort denial Product iteration in branch: Facilitator group metrics precede collapsed class administration; sponsor counts and understanding labels state their populations and self-report limits.",
+      "problem": "Large repeated participant messages, filter races, uncertain report meanings and role disclosure names Opportunity bands displayed zero totals without available-data coverage; zero wording implied that no situation occurred.",
+      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access; actual programme-owner decision/review UI saves and refresh passed with sponsor/foreign-cohort denial Product iteration in branch: Facilitator group metrics precede collapsed class administration; sponsor counts and understanding labels state their populations and self-report limits. Current follow-up: shared staff opportunity summary excludes unavailable counts, states the available population and preserves recorded zeroes with a bounded explanation.",
       "verification": [
         "tests/browser/facilitator-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
@@ -1314,9 +1314,12 @@
         "tests/programme-owner-cohort-access.test.mjs",
         "docs/hardening/migration-review.md",
         "scripts/certify-hardening-role-variants.mjs",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "tests/browser/opportunity-coverage.spec.ts",
+        "scripts/inspect-hardening-opportunity-coverage.mjs",
+        "docs/hardening/opportunity-coverage-20261006.md"
       ],
-      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_RELEASED; OPPORTUNITY_CORRECTION_IN_BRANCH; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1337,6 +1340,12 @@
       "head": "072123e1f05f69a257df4d5ba701439d2b88d996",
       "merge": "6a5a13d87049e0aebde2f29a707cae50903b54ab",
       "ciRun": 37493508041
+    },
+    {
+      "pullRequest": 130,
+      "head": "e5ba5cf8af27d191a6fff7357497e068a25582d4",
+      "merge": "472d8c13822be7377548d33bcd29b570640dde7d",
+      "ciRun": 37510596417
     }
   ],
   "productIterations": [
@@ -1345,7 +1354,7 @@
       "baseCommit": "63118cf512b459b0f89a271687bd1e1fc7da57d9",
       "register": "docs/hardening/learning-page-register.json",
       "evidence": "docs/hardening/product-experience-verification.json",
-      "releaseStatus": "IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL_CERTIFICATION_OPEN",
       "applicationHead": "6fd70aae1c372f1ea1784b14a79ecced5dd939f3"
     }
   ]

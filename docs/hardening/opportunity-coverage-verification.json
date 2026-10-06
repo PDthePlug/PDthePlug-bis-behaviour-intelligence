@@ -1,0 +1,124 @@
+{
+  "status": "VERIFIED_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+  "baseCommit": "472d8c13822be7377548d33bcd29b570640dde7d",
+  "branch": "hardening/facilitator-evidence-coverage-20261006",
+  "actualStaging": [
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "learners": 20,
+      "availableCounts": 0,
+      "unavailableCounts": 20,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "refresh": "PASS"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "learners": 20,
+      "availableCounts": 0,
+      "unavailableCounts": 20,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "refresh": "PASS"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "learners": 20,
+      "availableCounts": 0,
+      "unavailableCounts": 20,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "refresh": "PASS"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 360,
+      "learners": 40,
+      "availableCounts": 0,
+      "unavailableCounts": 40,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "refresh": "PASS"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 430,
+      "learners": 40,
+      "availableCounts": 0,
+      "unavailableCounts": 40,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "refresh": "PASS"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 1280,
+      "learners": 40,
+      "availableCounts": 0,
+      "unavailableCounts": 40,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "refresh": "PASS"
+    }
+  ],
+  "focusedBrowser": {
+    "command": "npx playwright test tests/browser/opportunity-coverage.spec.ts",
+    "result": "PASS",
+    "cases": 24,
+    "widths": [
+      360,
+      430,
+      1280
+    ],
+    "covers": [
+      "empty population",
+      "all unavailable",
+      "recorded zero",
+      "mixed available/unavailable",
+      "keyboard disclosure",
+      "refresh",
+      "console errors",
+      "overflow"
+    ]
+  },
+  "automatedReleaseChecks": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "acceptance": 633,
+    "browser": 210,
+    "lint": "PASS",
+    "typescript": "PASS",
+    "canonicalSourceAudit": "PASS",
+    "optimizedBuild": "PASS",
+    "retainedLearningPackages": 15,
+    "additionalAuditScriptLint": "PASS",
+    "viewportWidths": [
+      360,
+      430,
+      1280
+    ]
+  },
+  "screens": [
+    "docs/hardening/screens/opportunity-coverage-20261006/facilitator-360.png",
+    "docs/hardening/screens/opportunity-coverage-20261006/facilitator-1280.png",
+    "docs/hardening/screens/opportunity-coverage-20261006/system_admin-430.png"
+  ],
+  "dataMutations": false,
+  "boundary": "Staging has 20 dedicated synthetic learners and 20 existing demonstration learners. This read-only verification changed no records and is not programme-outcome evidence. Production authenticated role checks remain open.",
+  "applicationHead": "706985bb5d034d9f7d74980a379e99e96b59975c"
+}
