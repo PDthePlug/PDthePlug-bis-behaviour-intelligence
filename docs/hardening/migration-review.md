@@ -13,3 +13,11 @@ The new database regression starts with a retained global static activation plus
 Applied to staging for normal-API lifecycle verification. Production application is pending reviewed PR and green verification; production publication/data state must not be modified merely to test the migration.
 
 Recovery, if required: add a new reviewed forward migration restoring the prior function body from `20261004111602_atomic_content_publication.sql`; retain the same signature, security and ACL. This restores the old operation behaviour, not activation records. Do not automatically re-enable content, delete history or roll the database back wholesale. Any intended content restoration must use a separately authorised normal governed publication operation.
+
+## Programme-owner group metadata
+
+Migration: `supabase/migrations/20261006123109_hardening_programme_owner_cohort_read.sql`. Actual staging owner testing found that a correctly scoped owner could view aggregate reporting but could not save a decision: the handler validates an active group through a metadata SELECT, and the existing cohort policy admitted only administrators/facilitators.
+
+The migration adds one authenticated SELECT policy using the existing `private.can_manage_programme_decisions(id)` helper. That helper requires an active COHORT assignment for the exact group and resolves email or linked application identity. The policy does not change the facilitator helper, cohort writes, membership access, responses, private reflections or sponsor permissions. No records or existing definitions are modified.
+
+Both owner-positive regressions fail against the previous policies; all six actual-policy database regressions pass after the addition. They cover own-group decision insert, linked identity, foreign-group denial, revoked/global-only/unauthenticated/anonymous denial, no cohort writes or participant-detail access, and preserved administrator/facilitator scopes. It is applied to staging pending reviewed production release. Recovery is a forward migration dropping only `cohorts_programme_owner_read`; do not remove prior policies or delete decisions.

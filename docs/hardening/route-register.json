@@ -1279,12 +1279,14 @@
         "./staff-workspace-shell"
       ],
       "problem": "Large repeated participant messages, filter races, uncertain report meanings and role disclosure names",
-      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion",
+      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access",
       "verification": [
         "tests/browser/facilitator-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/browser/programme-intelligence.spec.ts",
-        "scripts/certify-hardening-evidence.mjs"
+        "scripts/certify-hardening-evidence.mjs",
+        "tests/programme-owner-cohort-access.test.mjs",
+        "docs/hardening/migration-review.md"
       ],
       "releaseStatus": "REVIEWED_PARTIAL",
       "outstanding": [
