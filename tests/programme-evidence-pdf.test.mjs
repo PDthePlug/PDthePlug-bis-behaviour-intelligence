@@ -21,7 +21,7 @@ const normalise=s=>s.replace(/\s+/g,' ').trim();
 test('Universal report includes executive findings, graphics, actions, Unicode and every canonical insight',async()=>{
  const bytes=await renderProgrammeOutcomePdf(outcome);assert.ok(bytes.length>1000);assert.match(Buffer.from(bytes.slice(0,8)).toString(),/%PDF/);
  const {pdf,text,pages}=await inspect(bytes);
- assert.match(text,/Réfiloë Dlamini/);assert.match(text,/Applied Commerce®/);assert.match(text,/Executive summary/);assert.match(text,/Action plan/);assert.match(text,/24 responses and 9 measures/);assert.match(text,/Unavailable/);
+ assert.match(text,/Réfiloë Dlamini/);assert.match(text,/Applied Commerce®/);assert.match(text,/Executive summary/);assert.match(text,/Programme review/);assert.match(text,/24 responses and 9 measures/);assert.match(text,/Unavailable/);
  for(const insight of buildProgrammeReport(outcome).insights)for(const key of ['observation','context','interpretation','action','boundary'])assert.ok(normalise(text).includes(normalise(insight[key])),`${insight.id}:${key} absent from PDF`);
  assert.doesNotMatch(text,/Observed adherence|Prediction accuracy|SECRET_PRIVATE/);
  // Actual glyph geometry, rather than source-code snapshots.
@@ -29,7 +29,7 @@ test('Universal report includes executive findings, graphics, actions, Unicode a
  assert.equal(pages.length,pdf.numPages);await pdf.cleanup();
 });
 test('suppressed report withholds all findings and totals before any cover rendering',async()=>{
- const {pdf,text}=await inspect(await renderProgrammeOutcomePdf({...outcome,participantCount:4,evidenceFlow:{...outcome.evidenceFlow,totals:{...outcome.evidenceFlow.totals,recordedResponses:987654}}}));assert.match(text,/Report withheld/);assert.doesNotMatch(text,/987654|24 responses|Action plan|recorded experiment start/);await pdf.cleanup();
+ const {pdf,text}=await inspect(await renderProgrammeOutcomePdf({...outcome,participantCount:4,evidenceFlow:{...outcome.evidenceFlow,totals:{...outcome.evidenceFlow.totals,recordedResponses:987654}}}));assert.match(text,/Report withheld/);assert.doesNotMatch(text,/987654|24 responses|Programme review|recorded experiment start/);await pdf.cleanup();
 });
 test('illustrative status repeats on every page and long decisions paginate with table headers',async()=>{
  const long={...outcome,decisionRegister:{decisions:Array.from({length:14},(_,i)=>({sourceTitle:`Decision ${i+1}`,decisionText:'Review the conditions and follow up with the facilitator. '.repeat(12),expectedOutcome:'A reportable observation next time.',ownerLabel:'Programme team',reviewOn:null,status:'OPEN',reviewOutcome:null,reviewNote:null}))}};

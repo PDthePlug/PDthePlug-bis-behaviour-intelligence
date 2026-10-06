@@ -31,13 +31,15 @@ export default async function ContentPreviewRuntimePage({
       : null;
     if (!edition) notFound();
     return (
-      <ProgrammePlayer
-        moduleCode={code}
-        initialSection="learn"
-        initialLearnMode="reader"
-        previewVersionId={versionId}
-        previewEdition={edition}
-      />
+      <CanonicalAdaptiveShell>
+        <ProgrammePlayer
+          moduleCode={code}
+          initialSection="learn"
+          initialLearnMode="reader"
+          previewVersionId={versionId}
+          previewEdition={edition}
+        />
+      </CanonicalAdaptiveShell>
     );
   }
 

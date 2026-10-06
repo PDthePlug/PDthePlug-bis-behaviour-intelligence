@@ -118,7 +118,9 @@ test("empty settings responses offer recovery and failed saves restore the saved
   await expect(page.getByText(/Unexpected end|JSON input/)).toHaveCount(0);
   await page.goto("/experience");
   await expect(page.getByRole("radio", { name: "Workplace", exact: true })).toBeEnabled();
-  await page.getByRole("radio", { name: "Workplace", exact: true }).check();
+  const attemptedSave = page.waitForRequest(request => request.url().endsWith("/api/profile") && request.method() === "PATCH");
+  await page.getByRole("radio", { name: "Workplace", exact: true }).click();
+  expect((await attemptedSave).postDataJSON()).toEqual({ deliveryEdition: "workplace" });
   await expect(page.locator(".settings-status [role=alert]")).toHaveText("That setting could not be saved. Try again.");
   await expect(page.getByRole("radio", { name: "School", exact: true })).toBeChecked();
 });

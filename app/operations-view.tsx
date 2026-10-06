@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Activity,
   Check,
@@ -158,7 +159,7 @@ function formatDate(value: string | null | undefined) {
 
 function ProgressStatus({ learner }: { learner: ProgressRow }) {
   const experiment = learner.experiment;
-  return <article className="ops-learner-card"><div className="ops-learner-head"><div><strong>{learner.displayName}</strong><span>{learner.email}</span></div><Badge variant="outline">{label(learner.enrolment?.status ?? learner.status)}</Badge></div><div className="ops-progress-line"><span style={{ width: `${Math.min(100, ((learner.enrolment?.currentInvestigation ?? 0) / 9) * 100)}%` }} /></div><dl><div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div><div><dt>Recorded days</dt><dd>{experiment?.recordedDays ?? "Not available"}</dd></div><div><dt>Opportunities</dt><dd>{experiment?.opportunityCount ?? "Not available"}</dd></div><div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div></dl>{learner.supportGuidance && <p className="ops-support-guidance">{learner.supportGuidance}</p>}</article>;
+  return <details className="operator-learner-row"><summary><span><strong>{learner.displayName}</strong><small>{learner.email}</small></span><span>{learner.enrolment ? label(learner.enrolment.status) : "Not started"}<small>Last activity {formatDate(learner.lastActivityAt)}</small></span></summary><div className="operator-learner-detail"><dl><div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div><div><dt>Recorded days</dt><dd>{experiment?.recordedDays ?? "Not available"}</dd></div><div><dt>Opportunities</dt><dd>{experiment?.opportunityCount ?? "Not available"}</dd></div></dl>{learner.supportGuidance ? <p className="ops-support-guidance">{learner.supportGuidance}</p> : null}</div></details>;
 }
 
 export function OperationsView({ initialRoles, perspective = "facilitator", section = "all", onSectionChange, cohortId, onCohortChange }: { initialRoles: string[]; perspective?: "facilitator" | "outcomes" | "admin"; section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void }) {
@@ -297,6 +298,16 @@ function AuditPanel({ labs }: { labs: PublishedLab[] }) {
 }
 
 function AdminPanel({ data, identity, saving, act, section = "all" }: { data: NonNullable<StaffSnapshot["admin"]>; identity: StaffSnapshot["identity"]; section?: string; saving: boolean; act: (payload: Record<string, unknown>) => Promise<boolean> }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const learnerSearch = searchParams.get("operatorSearch") ?? "";
+  const learnerFilter = searchParams.get("operatorFilter") ?? "all";
+  function filterLearners(key: "operatorSearch" | "operatorFilter", value: string) {
+    const params = new URLSearchParams(window.location.search);
+    if (value && value !== "all") params.set(key, value); else params.delete(key);
+    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
+  }
+  const visibleLearners = data.learners.filter(learner => `${learner.displayName} ${learner.email}`.toLocaleLowerCase().includes(learnerSearch.trim().toLocaleLowerCase()) && (learnerFilter === "all" || (learnerFilter === "not-started" ? !learner.enrolment : learner.enrolment?.status === learnerFilter)));
   const [roleEmail, setRoleEmail] = useState(identity.email);
   const [role, setRole] = useState("FACILITATOR");
   const [roleCohortId, setRoleCohortId] = useState(data.cohorts[0]?.id ?? "");
@@ -392,7 +403,7 @@ function AdminPanel({ data, identity, saving, act, section = "all" }: { data: No
         <div className="ops-form-row">
           <Input aria-label="Staff email" type="email" value={roleEmail} onChange={(event) => setRoleEmail(event.target.value)} placeholder="staff@example.org" />
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Staff role"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="FACILITATOR">Facilitator</SelectItem>
               <SelectItem value="SAFEGUARDING_OFFICER">Safeguarding officer</SelectItem>
@@ -403,7 +414,7 @@ function AdminPanel({ data, identity, saving, act, section = "all" }: { data: No
           </Select>
           {scopedRole ? (
             <Select value={roleCohortId} onValueChange={setRoleCohortId}>
-              <SelectTrigger><SelectValue placeholder="Choose group" /></SelectTrigger>
+              <SelectTrigger aria-label="Group for staff access"><SelectValue placeholder="Choose group" /></SelectTrigger>
               <SelectContent>{data.cohorts.filter((cohort) => cohort.status === "ACTIVE").map((cohort) => <SelectItem key={cohort.id} value={cohort.id}>{cohort.name}</SelectItem>)}</SelectContent>
             </Select>
           ) : null}
@@ -521,7 +532,10 @@ function AdminPanel({ data, identity, saving, act, section = "all" }: { data: No
 
       <section hidden={section !== "all" && section !== "overview"}>
         <div className="ops-section-heading"><div><p className="eyebrow">Learners</p><h2>Learner progress</h2></div><Badge variant="outline">Private responses hidden</Badge></div>
-        <div className="ops-learner-grid">{data.learners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div>
+        <div className="participant-filters"><div><label htmlFor="operator-learner-search">Find a learner</label><input id="operator-learner-search" type="search" value={learnerSearch} onChange={event => filterLearners("operatorSearch", event.target.value)} placeholder="Name or email" /></div><div><label htmlFor="operator-learner-filter">Show</label><select id="operator-learner-filter" value={learnerFilter} onChange={event => filterLearners("operatorFilter", event.target.value)}><option value="all">All learners</option><option value="not-started">Not started</option><option value="IN_PROGRESS">In progress</option><option value="COMPLETED">Completed</option></select></div></div>
+        <p role="status" className="ops-helper">{visibleLearners.length} of {data.learners.length} learners shown</p>
+        <div className="operator-learner-roster">{visibleLearners.map((learner) => <ProgressStatus key={learner.userId} learner={learner} />)}</div>
+        {visibleLearners.length === 0 ? <p className="ops-helper">No learners match these filters. Try another name or show all learners.</p> : null}
       </section>
     </div>
   );

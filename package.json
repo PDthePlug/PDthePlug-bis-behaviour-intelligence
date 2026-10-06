@@ -22,7 +22,7 @@
     "test:browser": "npm run runtime:check && playwright test",
     "test:staging": "npm run runtime:check && playwright test --config=playwright.staging.config.ts",
     "lint": "npm run runtime:check && eslint . --ignore-pattern dist --ignore-pattern .next",
-    "verify:build": "npm run runtime:check && npm run lint && npm run typecheck && npm run test:acceptance && npm run audit:source && npm run build"
+    "verify:build": "npm run runtime:check && npm run lint && npm run typecheck && npm run test:acceptance && npm run audit:source && npm run build && node scripts/verify-static-learning-trace.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

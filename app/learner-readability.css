@@ -284,6 +284,10 @@
 }
 
 /* Error, saving, locked and waiting states must remain legible. */
+.canonical-shell .learning-state p {
+  color: #52635a;
+}
+
 .canonical-shell .learning-state p,
 .canonical-shell .privacy-paused-card > p:not(.eyebrow),
 .canonical-shell .prototype-error {

@@ -12,7 +12,7 @@ import { identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { CONTENT_STUDIO_BUCKET, sha256Hex } from "../../../lib/content-studio";
 import { isDeliveryEdition } from "../../../lib/learning-foundation";
-import { gunzipSync } from "node:zlib";
+import { loadStaticLearningPackage } from "../../../lib/static-learning-package.mjs";
 
 const STATIC_LEARNING_SLUGS: Record<string, string> = {
   HAB: "habit",
@@ -96,15 +96,7 @@ async function loadHandler(request: Request) {
       return Response.json({ error: "This learning programme is not available yet." }, { status: 404 });
     }
     try {
-      const assetResponse = await fetch(
-        new URL(`/handbooks/v1/${slug}-${edition}.json.gz.b64`, request.url),
-        { cache: "no-store" },
-      );
-      if (!assetResponse.ok) {
-        return Response.json({ error: "The published programme could not be loaded." }, { status: 502 });
-      }
-      const encoded = (await assetResponse.text()).trim();
-      const payload = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8")) as unknown;
+      const payload = await loadStaticLearningPackage(slug, edition!);
       return Response.json({
         item: {
           id: item.id,

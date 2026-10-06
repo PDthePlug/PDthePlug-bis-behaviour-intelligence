@@ -1,4 +1,5 @@
 /* RC01 sign-in simplification */
+.auth-story .eyebrow { color: #bdd0cc; }
 .auth-story.auth-story-simplified {
   justify-content: flex-start;
   gap: clamp(56px, 12vh, 140px);

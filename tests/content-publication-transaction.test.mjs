@@ -34,6 +34,7 @@ for(const table of tables){
 }
 await db.exec(await readFile(new URL("20261004033000_content_activation_offline_state.sql",root),"utf8"));
 await db.exec(await readFile(new URL("20261004111602_atomic_content_publication.sql",root),"utf8"));
+await db.exec(await readFile(new URL("20261006120007_hardening_learning_static_offline.sql",root),"utf8"));
 await db.exec(await readFile(new URL("20261003234500_active_universal_lab_runtime.sql",root),"utf8"));
 await db.exec(await readFile(new URL("20261004112609_universal_enrolment_continuity.sql",root),"utf8"));
 await db.exec(await readFile(new URL("20261004154823_preserve_static_enrolment_handoff.sql",root),"utf8"));
@@ -53,6 +54,25 @@ async function version(id,editions=["school"],kind="LAB"){
 }
 const transition=(action,id=null)=>db.query("select bis_transition_content($1,'title',$2,'bis-content-compiler-6')",[action,id]);
 const rows=async(table,columns="*")=>(await db.query(`select ${columns} from ${table} order by id`)).rows;
+
+test("taking a migrated learning module offline also closes its retained static fallback",async()=>{
+  await item("LEARNING_MODULE");
+  await version("legacy",["school","emerging_adult","workplace"],"LEARNING_MODULE");
+  await db.query("update content_library_versions set status='PUBLISHED',runtime_status='LIVE' where id='legacy'");
+  await db.query("insert into content_runtime_activations(id,item_id,version_id,runtime_mode,status,activated_by) values('legacy-live','title','legacy','STATIC','ACTIVE','admin')");
+  await version("update",["school"],"LEARNING_MODULE");
+  await transition("PUBLISH","update");
+  // An edition-specific publication must preserve other accepted editions.
+  assert.equal((await rows("content_runtime_activations"))[0].status,"ACTIVE");
+  await transition("UNPUBLISH");
+  assert.equal((await rows("content_runtime_activations")).filter(a=>a.status==="ACTIVE").length,0);
+  assert.equal((await rows("content_edition_activations")).filter(a=>a.status==="ACTIVE").length,0);
+  assert.deepEqual((await rows("content_library_versions")).map(v=>[v.id,v.runtime_status]),[["legacy","READY"],["update","READY"]]);
+  assert.equal((await rows("content_runtime_artifacts")).length,4);
+  await transition("REPUBLISH","update");
+  assert.equal((await rows("content_runtime_activations")).filter(a=>a.status==="ACTIVE").length,0);
+  assert.deepEqual((await rows("content_edition_activations")).filter(a=>a.status==="ACTIVE").map(a=>a.delivery_edition),["school"]);
+});
 
 test("publish, replace, rollback, take offline and repeatedly restore retain one exact live Lab",async()=>{
   await item(); await version("v1"); await transition("PUBLISH","v1");

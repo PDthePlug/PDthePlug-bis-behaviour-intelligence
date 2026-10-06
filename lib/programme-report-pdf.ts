@@ -379,7 +379,7 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     canvas.paragraph("Prepared by P.D. · Applied Commerce®", { color: C.muted });
     return canvas.finish();
   }
-  canvas.section("Executive summary", "What the programme results are showing", "KEY FINDINGS · Recorded participation, practice and evidence, followed by suggested programme actions.");
+  canvas.section("Executive summary", "What the programme results are showing", "KEY FINDINGS · Recorded participation, practice and evidence, with questions for programme review.");
   for (const item of report.insights.slice(0, 3)) canvas.finding(item, true);
   if (!report.insights.length) canvas.paragraph("No reportable finding is available yet. Review the permitted records and delivery calendar before drawing a conclusion.");
   canvas.paragraph(report.boundary, { color: C.muted });
@@ -395,8 +395,8 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     canvas.section(domainLabels[domain], domainLabels[domain], undefined, false);
     items.forEach(item => canvas.finding(item));
   }
-  canvas.section("Action plan", "What may be worth exploring next", "Suggestions are evidence-linked discussion prompts. They are separate from the decisions your team has saved.");
-  canvas.table(["Finding and responsible team", "Suggested action"], report.insights.map(item => [`${item.title} · ${item.owner}`, `${item.action} Basis: ${item.observation}`]));
+  canvas.section("Programme review", "What may be worth exploring next", "These evidence-linked questions and follow-ups support your team's review. They do not prescribe programme changes and remain separate from your saved decisions.");
+  canvas.table(["Finding and responsible team", "Question or follow-up"], report.insights.map(item => [`${item.title} · ${item.owner}`, `${item.action} Basis: ${item.observation}`]));
   if (report.decisions.length) canvas.section("Programme decisions", "What did the organisation decide to change?", "Recorded team decisions and their next review.");
   else canvas.paragraph("Programme decisions: No programme decision is recorded in this report.", { color: C.muted });
   for (const decision of report.decisions) {

@@ -45,7 +45,7 @@ export function LabInvestigationFrame({
       style={{ "--lab-frame-accent": accent, "--learner-document-accent": accent } as React.CSSProperties}
     >
       <div className="universal-lab-progress learner-document-route-progress" aria-label={`${labTitle} progress`}>
-        <Progress value={(step / investigations.length) * 100} />
+        <Progress aria-label={`${labTitle} investigation progress`} aria-valuetext={`Investigation ${step} of ${investigations.length}`} value={(step / investigations.length) * 100} />
         <strong>{step}/{investigations.length}</strong>
       </div>
 
@@ -58,6 +58,7 @@ export function LabInvestigationFrame({
               key={item.number}
               type="button"
               disabled={!available}
+              aria-label={`Investigation ${item.number}: ${item.title}${complete ? ", completed" : ""}`}
               className={step === item.number ? "current" : complete ? "complete" : ""}
               onClick={() => onSelect(item.number)}
               aria-current={step === item.number ? "step" : undefined}

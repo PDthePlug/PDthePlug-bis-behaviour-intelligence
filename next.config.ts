@@ -49,6 +49,7 @@ const nextConfig: NextConfig = {
     }];
   },
   outputFileTracingIncludes: {
+    "/api/runtime-content": ["./public/handbooks/v1/*.json.gz.b64"],
     "/api/staff": ["./assets/report-fonts/**/*"],
     "/experience/leap9/report": ["./assets/report-fonts/**/*"],
     "/programmes/[asset]": ["./public/programmes/chunks/**/*"],

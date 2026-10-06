@@ -499,7 +499,7 @@ export function ProgrammePlayer({
     : null;
   const resolvedLabHref = universalLabHref ?? moduleDefinition?.labHref;
   const moduleLabIsLive = Boolean(
-    moduleRuntime?.runtimeMode && resolvedLabHref,
+    moduleRuntime?.runtimeMode === "DYNAMIC" && resolvedLabHref,
   );
   const completed = useMemo(
     () =>
@@ -1069,7 +1069,7 @@ export function ProgrammePlayer({
         <LockKeyhole />
         <h1>Programme unavailable</h1>
         <p>{error}</p>
-        <Link href="/habit">Try the programme again</Link>
+        <a href={`${pathname}?${searchParams.toString()}`}>Try again</a>
       </main>
     );
   }
@@ -1128,8 +1128,8 @@ export function ProgrammePlayer({
                 <h1>{facilitatorMode ? "Learner experience." : `Good to see you, ${firstName}.`}</h1>
                 <p>
                   {facilitatorMode
-                    ? "This is the same learning environment your group uses. Facilitation cues are added only for you; learner answers remain private."
-                    : "Your programme, Lab and field experiment are one journey. This screen tells you what needs your attention now; it does not create another navigation system."}
+                    ? "Use this handbook to prepare for and guide the group. Learners keep their responses private."
+                    : "Your programme brings together guided learning, the Lab and real-world practice. Start with the next activity below."}
                 </p>
               </div>
               <div className="prototype-today-status">
@@ -1397,7 +1397,7 @@ export function ProgrammePlayer({
                 {page.experimentPosition ? <span>{page.experimentPosition}</span> : null}
               </div>
               {!facilitatorMode ? (
-                <div className="prototype-progress-track light learner-document-progress" aria-label={`${progressPercent}% complete`}>
+                <div className="prototype-progress-track light learner-document-progress" role="progressbar" aria-label="Handbook reviewed" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}>
                   <i style={{ width: `${progressPercent}%` }} />
                 </div>
               ) : null}

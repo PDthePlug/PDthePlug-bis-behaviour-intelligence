@@ -64,9 +64,9 @@ test("facilitator workspace keeps four operational views and opens learning thro
   assert.doesNotMatch(facilitator, /href="#readiness-review"/);
 });
 
-test("participant cards drill into facilitator-safe progress detail", async () => {
+test("compact participant rows drill into facilitator-safe progress detail", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
-  assert.match(facilitator, /participant-card-button/);
+  assert.match(facilitator, /participant-roster-row/);
   assert.match(facilitator, /learner: learner\.userId/);
   assert.match(facilitator, /Open learner/);
   for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Observed strengths", "Where support may help", "Support history"]) {

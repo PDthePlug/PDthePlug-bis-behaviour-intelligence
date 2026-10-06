@@ -30,7 +30,11 @@ const stageLabels: Record<ShellStage, string> = {
   profile: "Profile",
 };
 
-function resolveStage(pathname: string, section: string | null): ShellStage {
+function resolveStage(pathname: string, section: string | null, previewKind: string | null): ShellStage {
+  if (pathname.startsWith("/content-studio/preview/")) {
+    if (previewKind === "LEARNING_MODULE") return "learn";
+    if (previewKind === "LAB") return "lab";
+  }
   if (pathname.startsWith("/portfolio")) return "portfolio";
   if (pathname.startsWith("/profile") || pathname.startsWith("/settings") || pathname === "/experience") return "profile";
   if (pathname.startsWith("/learn") || pathname.startsWith("/handbooks/")) return "learn";
@@ -45,7 +49,7 @@ function resolveStage(pathname: string, section: string | null): ShellStage {
 export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const stage = resolveStage(pathname, searchParams.get("section"));
+  const stage = resolveStage(pathname, searchParams.get("section"), searchParams.get("kind"));
   const [menuOpen, setMenuOpen] = useState(false);
   const experimentHref = pathname.startsWith("/decision")
     ? "/decision?step=7"

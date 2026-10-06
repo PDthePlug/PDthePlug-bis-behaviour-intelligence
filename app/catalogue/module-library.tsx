@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, BookOpen, FlaskConical } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import {
   BIS_MODULES,
   BIS_PRODUCT_SCOPE,
@@ -35,17 +35,22 @@ type RuntimeCatalogueItem = {
 export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
   const [volume, setVolume] = useState<BISVolume>(1);
   const [runtimeItems, setRuntimeItems] = useState<RuntimeCatalogueItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
     void fetch("/api/runtime-catalogue", { cache: "no-store", signal: controller.signal })
-      .then((response) => response.ok ? response.json() : { items: [] })
+      .then((response) => { if (!response.ok) throw new Error("Catalogue unavailable"); return response.json(); })
       .then((data) => {
-        if (!controller.signal.aborted) setRuntimeItems(Array.isArray(data.items) ? data.items : []);
+        if (!Array.isArray(data?.items) || data.items.some((item: RuntimeCatalogueItem) => !item || !["LEARNING_MODULE", "LAB"].includes(item.kind) || typeof item.code !== "string" || typeof item.live !== "boolean")) throw new Error("Catalogue unavailable");
+        if (!controller.signal.aborted) setRuntimeItems(data.items);
       })
-      .catch(() => {});
+      .catch(() => { if (!controller.signal.aborted) setError(true); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
-  }, []);
+  }, [retry]);
   const modules = useMemo(
     () => BIS_MODULES.filter((item) => item.volume === volume),
     [volume],
@@ -93,42 +98,36 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
         <span>{modules.length} {mode === "learning" ? "handbooks" : "Labs"}</span>
       </div>
 
-      <section className="bis-module-grid" aria-label={title}>
+      {loading ? <p role="status" className="bis-library-notice">Checking what is available…</p> : null}
+      {error ? <div role="alert" className="bis-library-notice"><p>We couldn’t check which titles are available. Please try again.</p><button type="button" onClick={() => { setLoading(true); setError(false); setRetry(value => value + 1); }}>Try again</button></div> : null}
+      <section className="bis-module-grid" aria-label={title} aria-busy={loading}>
         {modules.map((item) => {
           const status = mode === "learning" ? item.learningStatus : item.labStatus;
           const runtime = runtimeItems.find((entry) =>
             entry.code === item.code &&
-            entry.kind === (mode === "learning" ? "LEARNING_MODULE" : "LAB") &&
-            entry.live,
+            entry.kind === (mode === "learning" ? "LEARNING_MODULE" : "LAB"),
           );
           const dynamic = runtime?.runtimeMode === "DYNAMIC";
-          const open = dynamic ? Boolean(runtime?.routePath) : isModuleOpen(item, mode);
+          const open = !loading && !error && Boolean(runtime?.live && (mode !== "lab" || dynamic) && (dynamic ? runtime.routePath : isModuleOpen(item, mode)));
           const href = dynamic ? runtime?.routePath ?? null : moduleHref(item, mode);
-          const displayStatus = dynamic ? "live" : status;
+          const displayStatus = open ? "live" : status === "live" ? "catalogued" : status;
           const liveLabRuntime = runtimeItems.find((entry) =>
             entry.code === item.code &&
             entry.kind === "LAB" &&
             entry.live &&
+            entry.runtimeMode === "DYNAMIC" &&
             Boolean(entry.routePath),
           );
-          const labConnected =
-            Boolean(liveLabRuntime) ||
-            (item.labStatus === "live" && Boolean(item.labHref));
-          const Icon = mode === "learning" ? BookOpen : FlaskConical;
+          const labConnected = Boolean(liveLabRuntime);
 
           const body = (
             <>
-              <div className="bis-module-card-top">
-                <span>{String(item.global).padStart(2, "0")}</span>
-                <Icon aria-hidden="true" />
-              </div>
               <div className="bis-module-card-copy">
-                <small>Volume {item.volume} · {mode === "learning" ? "Handbook" : "Lab"} {item.position}</small>
                 <h3>{item.title}</h3>
               </div>
               <div className="bis-module-card-foot">
                 <div>
-                  <span className={open ? "open" : ""}>{statusLabel(mode, displayStatus)}</span>
+                  <span className={open ? "open" : ""}>{loading ? "Checking availability" : error ? "Availability unknown" : statusLabel(mode, displayStatus)}</span>
                   {mode === "learning" && open ? (
                     <small className={labConnected ? "connected" : ""}>
                       {labConnected ? "Lab connected" : "Lab access pending"}

@@ -47,7 +47,7 @@
   border:1px solid transparent;
   border-radius:16px;
   background:transparent;
-  color:#83908c;
+  color:#58665f;
   text-align:left;
 }
 .universal-investigation-nav button>span{
@@ -377,7 +377,7 @@
   line-height:1.2;
 }
 .universal-computed-value small{
-  color:#68766f;
+  color:#58665f;
   font-size:11px;
   line-height:1.45;
 }
@@ -393,7 +393,7 @@
 }
 .universal-experiment-status>div{display:grid;gap:3px}
 .universal-experiment-status span{
-  color:#2f8276;
+  color:#24695e;
   font-size:10px;
   font-weight:900;
   letter-spacing:.1em;
@@ -453,13 +453,15 @@
   overflow-wrap:anywhere;
   text-wrap:balance;
 }
-.universal-welcome-copy>p:last-of-type{
+.universal-package-welcome .universal-welcome-grid .universal-welcome-copy>p:last-of-type{
   max-width:650px;
   margin:0;
   color:#c3cfcc;
   font-size:17px;
   line-height:1.68;
 }
+
+.learning-state-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:20px}
 .universal-welcome-meta{
   display:flex;
   flex-wrap:wrap;
@@ -1708,7 +1710,7 @@
   border-top:1px solid #dfe4e1;
 }
 .universal-package-lab .step-footer>span{
-  color:#71807a;
+  color:#596b62;
   font:500 11px/1.45 var(--font-sans,system-ui,sans-serif);
 }
 .universal-package-lab .step-footer [data-slot="button"]{

@@ -70,6 +70,7 @@ test("learning library distinguishes handbook availability from Lab readiness", 
   assert.match(library, /Lab access pending/);
   assert.match(library, /Digital access pending/);
   assert.match(library, /entry\.kind === "LAB"/);
-  assert.match(library, /item\.labStatus === "live"/);
+  assert.match(library, /const labConnected = Boolean\(liveLabRuntime\)/);
+  assert.match(library, /Boolean\(runtime\?\.live/);
   assert.match(css, /bis-module-card-foot small\.connected/);
 });
