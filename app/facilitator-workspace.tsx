@@ -121,7 +121,7 @@ function position(learner: ProgressRow) {
   if (step >= 8) return "Evidence review stage";
   if (step >= 6 && !learner.experiment && !learner.enrolment?.experimentStartedAt) return "Preparing the experiment";
   if (learner.experiment && (learner.experiment.recordedDays ?? 0) === 0) return "First observation pending";
-  if (learner.experiment && (learner.experiment.opportunityCount ?? 0) === 0 && (learner.experiment.recordedDays ?? 0) >= 2) return "No real-world opportunity yet";
+  if (learner.experiment && (learner.experiment.opportunityCount ?? 0) === 0 && (learner.experiment.recordedDays ?? 0) >= 2) return "No opportunity recorded yet";
   if (step >= 6) return "Experiment in progress";
   if (step >= 4) return "Building the experiment";
   if (step > 0) return "Early investigations";
@@ -140,9 +140,9 @@ function evidencePosition(learner: ProgressRow) {
   if (!experiment) return learner.enrolment?.experimentStartedAt ? "Experiment started · evidence counts not available" : "No experiment evidence yet";
   const opportunities = experiment.opportunityCount ?? 0;
   const threshold = experiment.minimumEvidenceThreshold ?? 3;
-  if (opportunities >= threshold) return "Observation threshold reached";
-  if (opportunities > 0) return "Evidence building";
-  if ((experiment.recordedDays ?? 0) > 0) return "Observing · no matching situation yet";
+  if (opportunities >= threshold) return "Minimum opportunity count reached";
+  if (opportunities > 0) return "Opportunities recorded";
+  if ((experiment.recordedDays ?? 0) > 0) return "Observations recorded · no opportunity recorded";
   return "First observation pending";
 }
 
@@ -153,9 +153,9 @@ function observedStrengths(learner: ProgressRow) {
   if (step >= 4) strengths.push("Reached the mapping activity");
   if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Experiment start recorded");
   if ((experiment?.recordedDays ?? 0) >= 3) strengths.push(`${experiment!.recordedDays} observation days recorded`);
-  if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push("Repeated real-world testing");
-  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Evidence ready for a coverage check");
-  if (learner.enrolment?.status === "COMPLETED") strengths.push("Completed the learning cycle");
+  if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push(`${experiment!.opportunityCount} opportunities recorded`);
+  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Minimum opportunity count reached");
+  if (learner.enrolment?.status === "COMPLETED") strengths.push("Lab marked complete");
   return strengths.slice(0, 4);
 }
 
@@ -165,9 +165,9 @@ function supportFocus(learner: ProgressRow) {
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
   if (step <= 3) focus.push("Build learning momentum");
-  if (step >= 6 && !experiment) focus.push("Move from planning to the first real-world test");
+  if (step >= 6 && !experiment && !learner.enrolment?.experimentStartedAt) focus.push("Move from planning to the first real-world test");
   if (experiment && (experiment.recordedDays ?? 0) < 3) focus.push("Build observation consistency");
-  if (experiment && (experiment.opportunityCount ?? 0) === 0) focus.push("Find a realistic situation where the behaviour can be tested");
+  if (experiment && (experiment.opportunityCount ?? 0) === 0) focus.push("Ask what situations were available and what has been recorded");
   if (experiment && (experiment.opportunityCount ?? 0) > 0 && (experiment.opportunityCount ?? 0) < (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Collect enough repeat evidence for a stronger review");
   if (step >= 8 && experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Review what changed, what stayed the same and what should be tested next");
   return focus.slice(0, 3);
@@ -428,11 +428,11 @@ export function FacilitatorWorkspace({
 
             <section className="ops-two-column">
               <div className="surface-card ops-section">
-                <div className="section-title"><div><p className="eyebrow">Observed strengths</p><h2>What the programme record shows</h2></div><Check /></div>
+                <div className="section-title"><div><p className="eyebrow">Recorded activity</p><h2>What the programme record shows</h2></div><Check /></div>
                 <div className="participant-attribute-list">
-                  {observedStrengths(selected).length ? observedStrengths(selected).map((strength) => <span key={strength}><Check />{strength}</span>) : <p className="ops-helper">Strength signals will appear as programme activity builds.</p>}
+                  {observedStrengths(selected).length ? observedStrengths(selected).map((strength) => <span key={strength}>{strength}</span>) : <p className="ops-helper">Recorded programme activity will appear here as learners take part.</p>}
                 </div>
-                <p className="participant-attribute-note">These describe observable programme behaviour, not personality or ability.</p>
+                <p className="participant-attribute-note">This summarises saved progress and experiment records. It does not establish evidence quality, ability or behaviour change.</p>
               </div>
               <div className="surface-card ops-section">
                 <div className="section-title"><div><p className="eyebrow">Where support may help</p><h2>Next useful facilitator moves</h2></div><Activity /></div>

@@ -69,7 +69,7 @@ test("compact participant rows drill into facilitator-safe progress detail", asy
   assert.match(facilitator, /participant-roster-row/);
   assert.match(facilitator, /learner: learner\.userId/);
   assert.match(facilitator, /Open learner/);
-  for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Observed strengths", "Where support may help", "Support history"]) {
+  for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Recorded activity", "Where support may help", "Support history"]) {
     assert.match(facilitator, new RegExp(field));
   }
   for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "hypothesis", "Companion"]) {
@@ -128,18 +128,19 @@ test("learner-only profiles do not advertise staff access", async () => {
   assert.doesNotMatch(profile, /Facilitator and Audit access/i);
 });
 
-test("participant insight labels stay behavioural rather than personality based", async () => {
+test("participant activity labels describe records without unsupported behavioural conclusions", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
   for (const strength of [
     "Reached the mapping activity",
     "Experiment start recorded",
     "observation days recorded",
-    "Repeated real-world testing",
-    "Evidence ready",
+    "opportunities recorded",
+    "Minimum opportunity count reached",
   ]) {
     assert.match(facilitator, new RegExp(strength));
   }
-  assert.match(facilitator, /observable programme behaviour, not personality or ability/);
+  assert.match(facilitator, /does not establish evidence quality, ability or behaviour change/);
+  assert.doesNotMatch(facilitator, /Repeated real-world testing|No real-world opportunity yet|Completed the learning cycle/);
 });
 
 

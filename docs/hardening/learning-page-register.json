@@ -3256,20 +3256,28 @@
       "source": "public/handbooks/v1/money-emerging_adult.json.gz.b64",
       "sourceContentVersion": "1.2",
       "sourceHash": "7bd0e05bb3b5d0bf4e0ab57ed98fbb1e82636b57b071879ed05a951224149672",
-      "problem": [],
+      "problem": [
+        "Certificate shows internal publication code, Controlled Production MasterFROZEN and release stamp in the learner canvas.",
+        "What was discovered uses literal bullet paragraphs rather than semantic list grouping.",
+        "Authored certificate completion wording is visible in a clearly gated reference view. Header/status/gate correctly prevent completion; the body is not explicitly labelled a template."
+      ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/document-review-reference-pages-20261006.json"
       ],
-      "manualVisualStatus": "PARTIAL: current staging opening/context excerpt inspected at 360/430/1280; full-page editorial and source-version review remains pending.",
+      "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass.",
       "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "LANGUAGE-PUBLICATION-FOOTER",
+        "ACCESSIBILITY-AUTHORED-BULLETS",
+        "LANGUAGE-CERTIFICATE-STATE"
       ]
     },
     {
@@ -4050,21 +4058,24 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
-        "docs/hardening/profile-structure-register.json"
+        "docs/hardening/profile-structure-register.json",
+        "tests/browser/profile-table-recovery.spec.ts",
+        "tests/browser/reference-reading.spec.ts",
+        "docs/hardening/reader-document-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
+        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed."
       ]
     },
     {
@@ -4463,7 +4474,7 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
@@ -4471,16 +4482,17 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "docs/hardening/profile-structure-register.json",
-        "docs/hardening/document-review-idn-day10-20261006.json"
+        "docs/hardening/document-review-idn-day10-20261006.json",
+        "tests/browser/profile-table-recovery.spec.ts",
+        "tests/browser/reference-reading.spec.ts",
+        "docs/hardening/reader-document-verification.json"
       ],
-      "manualVisualStatus": "FULL PAGE VISUALLY INSPECTED: 34 screens at 360/430/1280, reference-only learner variant; identified defects remain open.",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "manualVisualStatus": "Affected profile-table regions manually inspected at 360/430/1280 in reference-only staging. Entire corrected page and populated live bindings are not certified.",
+      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction.",
-        "VISUAL-SOURCE-LIST: authored list markers absent.",
-        "LANGUAGE-REFERENCE-SAVE: autosave status conflicts with disabled fields."
+        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed."
       ]
     },
     {
@@ -4879,21 +4891,24 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
-        "docs/hardening/profile-structure-register.json"
+        "docs/hardening/profile-structure-register.json",
+        "tests/browser/profile-table-recovery.spec.ts",
+        "tests/browser/reference-reading.spec.ts",
+        "docs/hardening/reader-document-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
+        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed."
       ]
     },
     {
@@ -5292,21 +5307,24 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
-        "docs/hardening/profile-structure-register.json"
+        "docs/hardening/profile-structure-register.json",
+        "tests/browser/profile-table-recovery.spec.ts",
+        "tests/browser/reference-reading.spec.ts",
+        "docs/hardening/reader-document-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
+        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed."
       ]
     },
     {
@@ -5542,7 +5560,8 @@
       "sourceContentVersion": "1.0",
       "sourceHash": "1f79b0fd4ae0d7e25b7291da893e382fc73a9be50c821aa4d924ea47c7ab2566",
       "problem": [
-        "Decorative heading markers compete with reading hierarchy."
+        "Decorative heading markers compete with reading hierarchy.",
+        "Weekend / Field Experiment headings repeat the shared publication title; No Session / Experiment Position / What You Do metadata appears as dense uninterrupted text."
       ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
@@ -5550,13 +5569,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/document-review-reference-pages-20261006.json"
       ],
-      "manualVisualStatus": "PARTIAL: current staging opening/context excerpt inspected at 360/430/1280; full-page editorial and source-version review remains pending.",
+      "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass.",
       "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "VISUAL-REFERENCE-HEADERS"
       ]
     },
     {
@@ -5705,21 +5726,27 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
-        "docs/hardening/profile-structure-register.json"
+        "docs/hardening/profile-structure-register.json",
+        "tests/browser/profile-table-recovery.spec.ts",
+        "tests/browser/reference-reading.spec.ts",
+        "docs/hardening/reader-document-verification.json",
+        "docs/hardening/choice-response-label-register.json"
       ],
-      "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "manualVisualStatus": "Complete corrected reference page visually inspected at 430px: 13 sequential screenshots plus full reading text; profile regions inspected at 360/1280. New checkpoint-marker and repeated choice-label defects remain open. No certification of populated/live bindings.",
+      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
+        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed.",
+        "VISUAL-CHECKPOINT-MARKER: decorative Final Checkpoint icon remains visible.",
+        "LANGUAGE-CHOICE-RESPONSE: final Resilience choice repeated as generic response label."
       ]
     },
     {
@@ -6118,21 +6145,24 @@
         "Source day/title repeats the publication header.",
         "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
-      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
+      "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited. Shared profile table restores authored label/value relationships, retains known values and reports unavailable values once. Reference-only status and source-list markers reflect the actual reading mode.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
-        "docs/hardening/profile-structure-register.json"
+        "docs/hardening/profile-structure-register.json",
+        "tests/browser/profile-table-recovery.spec.ts",
+        "tests/browser/reference-reading.spec.ts",
+        "docs/hardening/reader-document-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
+      "releaseStatus": "PR130_RELEASED; PROFILE_REFERENCE_LIST_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
-        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
+        "CONTENT-PROFILE-BINDINGS: approved narrative/value/unit bindings remain unresolved; no values are guessed."
       ]
     },
     {

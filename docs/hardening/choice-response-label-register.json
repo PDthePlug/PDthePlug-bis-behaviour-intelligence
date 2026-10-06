@@ -1,0 +1,54 @@
+{
+  "scope": "195 accepted source pages; positive adjacency pattern only. Actual defect confirmed on ATT emerging-adult Day10 at 430; other rows are candidates for review.",
+  "findings": [
+    {
+      "route": "/handbooks/att?page=12",
+      "role": "Learner; assigned facilitator reference",
+      "edition": "emerging_adult",
+      "source": "public/handbooks/v1/attention-emerging_adult.json.gz.b64",
+      "semanticStepId": "ATT.PROGRAMME.DAY10",
+      "responseId": "ATT.WB.EMERGING_ADULT.DAY10.F004",
+      "precedingChoice": "☐ Resilience Lab — How do I get back up?",
+      "problem": "A generic authored response immediately follows a choice list; the shared nearest-prompt logic can label it with only the final choice. Actual ATT emerging-adult Day10 duplicates the Resilience choice beside this response.",
+      "correction": "OPEN: resolve the authored response intent and improve shared labelling without removing/rekeying existing answers.",
+      "verification": [
+        "Manual ATT emerging-adult Day10 at 430 pixels; full 13-screen review",
+        "Source adjacency inspection; candidates are not all certified visual defects."
+      ],
+      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+    },
+    {
+      "route": "/handbooks/att?page=12",
+      "role": "Learner; assigned facilitator reference",
+      "edition": "school",
+      "source": "public/handbooks/v1/attention-school.json.gz.b64",
+      "semanticStepId": "ATT.PROGRAMME.DAY10",
+      "responseId": "ATT.WB.SCHOOL.DAY10.F004",
+      "precedingChoice": "☐ Resilience Lab — How do I get back up?",
+      "problem": "A generic authored response immediately follows a choice list; the shared nearest-prompt logic can label it with only the final choice. Actual ATT emerging-adult Day10 duplicates the Resilience choice beside this response.",
+      "correction": "OPEN: resolve the authored response intent and improve shared labelling without removing/rekeying existing answers.",
+      "verification": [
+        "Manual ATT emerging-adult Day10 at 430 pixels; full 13-screen review",
+        "Source adjacency inspection; candidates are not all certified visual defects."
+      ],
+      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+    },
+    {
+      "route": "/handbooks/att?page=12",
+      "role": "Learner; assigned facilitator reference",
+      "edition": "workplace",
+      "source": "public/handbooks/v1/attention-workplace.json.gz.b64",
+      "semanticStepId": "ATT.PROGRAMME.DAY10",
+      "responseId": "ATT.WB.WORKPLACE.DAY10.F004",
+      "precedingChoice": "☐ Resilience Lab — How do I get back up?",
+      "problem": "A generic authored response immediately follows a choice list; the shared nearest-prompt logic can label it with only the final choice. Actual ATT emerging-adult Day10 duplicates the Resilience choice beside this response.",
+      "correction": "OPEN: resolve the authored response intent and improve shared labelling without removing/rekeying existing answers.",
+      "verification": [
+        "Manual ATT emerging-adult Day10 at 430 pixels; full 13-screen review",
+        "Source adjacency inspection; candidates are not all certified visual defects."
+      ],
+      "releaseStatus": "UNRESOLVED; FULL_CERTIFICATION_OPEN"
+    }
+  ],
+  "sourcePackagesChanged": false
+}

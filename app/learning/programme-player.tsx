@@ -1414,6 +1414,8 @@ export function ProgrammePlayer({
                   : saveState === "dirty"
                     ? "Changes waiting to save…"
                     : saveState === "error" ? "Not saved — retry before leaving"
+                      : labSequenceLocked && selected > dayThreeIndex
+                        ? "Reference view · you can read this page, but cannot add responses yet"
                       : Object.values(snapshot?.workbookResponses ?? {}).some((response) => response.semanticStepId === page.id)
                         ? "Your saved responses are up to date"
                         : "Your responses save automatically as you write"}

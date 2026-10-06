@@ -861,7 +861,7 @@ function applyKnownValues(root: HTMLElement, context: HandbookEnhancementContext
     field.replaceWith(output);
   });
   root.querySelectorAll<HTMLElement>("p,li").forEach((element) => {
-    if (element.classList.contains("handbook-system-value") || element.querySelector("[data-field-id]")) return;
+    if (element.classList.contains("handbook-system-value") || element.classList.contains("handbook-profile-label") || element.querySelector("[data-field-id]")) return;
     const text = normalise(element.textContent ?? "");
     if (!text) return;
     const known = findKnownValue(text, context);
@@ -1505,7 +1505,74 @@ function addFacilitatorCues(root: HTMLElement, context: HandbookEnhancementConte
   }
 }
 
+function restoreUnpairedProfileTables(root: HTMLElement) {
+  for (const header of root.querySelectorAll<HTMLElement>("p")) {
+    if (header.dataset.profileTableHeader === "true" || normalise(header.textContent ?? "") !== "Element My Answer") continue;
+    const rows: HTMLElement[] = [];
+    let next = header.nextElementSibling;
+    while (next?.tagName === "P") {
+      if (!normalise(next.textContent ?? "") || next.querySelector("input,textarea,select,button,[data-field-id]")) break;
+      rows.push(next as HTMLElement);
+      next = next.nextElementSibling;
+    }
+    // Recover only the explicit authored two-column profile header and its
+    // uninterrupted passive rows. Existing answer controls are never moved.
+    if (rows.length < 2) continue;
+    const title = learnerHeadingText(header.previousElementSibling?.textContent ?? "Investigation profile");
+    const table = document.createElement("table");
+    table.className = "handbook-profile-table";
+    table.setAttribute("aria-label", title);
+    table.createCaption().textContent = "A dash means the value is not available in this view.";
+    const headingRow = table.createTHead().insertRow();
+    for (const label of ["Element", "My Answer"]) {
+      const cell = document.createElement("th");
+      cell.scope = "col";
+      cell.textContent = label;
+      headingRow.append(cell);
+    }
+    const body = table.createTBody();
+    for (const original of rows) {
+      const row = body.insertRow();
+      const label = document.createElement("th");
+      label.scope = "row";
+      label.dataset.label = "Element";
+      const answer = row.insertCell();
+      answer.dataset.label = "My Answer";
+      const known = original.classList.contains("handbook-system-value") ? original.querySelector(":scope > strong") : null;
+      if (known) {
+        // Reuse only a value already resolved by the existing Lab binding code.
+        // This is neither an additional calculation nor an editable score.
+        answer.append(known);
+        const source = original.querySelector(":scope > small");
+        if (source) answer.append(source);
+        answer.dataset.systemValue = "true";
+        answer.className = "handbook-table-system-value";
+        original.classList.remove("handbook-system-value");
+      } else {
+        const unavailable = document.createElement("span");
+        unavailable.textContent = "—";
+        unavailable.setAttribute("aria-label", "Not available in this view");
+        answer.append(unavailable);
+      }
+      original.classList.add("handbook-profile-label");
+      label.append(original);
+      row.prepend(label);
+    }
+    const wrapper = document.createElement("div");
+    wrapper.className = "handbook-table-scroll";
+    wrapper.tabIndex = 0;
+    wrapper.setAttribute("role", "region");
+    wrapper.setAttribute("aria-label", `${title} — profile table`);
+    wrapper.append(table);
+    header.dataset.profileTableHeader = "true";
+    header.hidden = true;
+    header.setAttribute("aria-hidden", "true");
+    header.after(wrapper);
+  }
+}
+
 function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancementContext) {
+  restoreUnpairedProfileTables(root);
   // Printed cover matter belongs behind the reading canvas. Keep the original
   // nodes and publisher trace; only internal production notes leave the display.
   const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2")]

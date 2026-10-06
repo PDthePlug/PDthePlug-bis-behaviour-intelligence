@@ -1,0 +1,204 @@
+{
+  "applicationHead": "9eb62ae135246137f1fd6424ebdf2d75d25d0ab0",
+  "scope": "Exact emerging-adult Attention weekend and Money certificate reference pages, not other editions or completion certification.",
+  "actualStates": [
+    {
+      "route": "/handbooks/att?page=7",
+      "role": "LEARNER",
+      "edition": "emerging_adult",
+      "width": 360,
+      "headings": [
+        "Field Experiment · Days 4–5",
+        "WEEKEND",
+        "Field Experiment",
+        "📖 Two More Days",
+        "💭 Weekend Reflection",
+        "⚡ Micro-Execution"
+      ],
+      "screens": [
+        "360-00.png",
+        "360-01.png",
+        "360-02.png",
+        "360-03.png",
+        "360-04.png"
+      ],
+      "height": 3483,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "referenceView": true,
+      "responseStatus": "Reference view · you can read this page, but cannot add responses yet",
+      "listStyles": [],
+      "manualReview": "Full page and reading text manually inspected at the named viewport. Findings remain explicitly open."
+    },
+    {
+      "route": "/handbooks/att?page=7",
+      "role": "LEARNER",
+      "edition": "emerging_adult",
+      "width": 430,
+      "headings": [
+        "Field Experiment · Days 4–5",
+        "WEEKEND",
+        "Field Experiment",
+        "📖 Two More Days",
+        "💭 Weekend Reflection",
+        "⚡ Micro-Execution"
+      ],
+      "screens": [
+        "430-00.png",
+        "430-01.png",
+        "430-02.png",
+        "430-03.png",
+        "430-04.png"
+      ],
+      "height": 3280,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "referenceView": true,
+      "responseStatus": "Reference view · you can read this page, but cannot add responses yet",
+      "listStyles": [],
+      "manualReview": "Full page and reading text manually inspected at the named viewport. Findings remain explicitly open."
+    },
+    {
+      "route": "/handbooks/att?page=7",
+      "role": "LEARNER",
+      "edition": "emerging_adult",
+      "width": 1280,
+      "headings": [
+        "Field Experiment · Days 4–5",
+        "WEEKEND",
+        "Field Experiment",
+        "📖 Two More Days",
+        "💭 Weekend Reflection",
+        "⚡ Micro-Execution"
+      ],
+      "screens": [
+        "1280-00.png",
+        "1280-01.png",
+        "1280-02.png",
+        "1280-03.png",
+        "1280-04.png"
+      ],
+      "height": 3156,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "referenceView": true,
+      "responseStatus": "Reference view · you can read this page, but cannot add responses yet",
+      "listStyles": [],
+      "manualReview": "Full page and reading text manually inspected at the named viewport. Findings remain explicitly open."
+    },
+    {
+      "route": "/handbooks/mon?page=13",
+      "role": "LEARNER",
+      "edition": "emerging_adult",
+      "width": 360,
+      "headings": [
+        "Money Investigation Certificate",
+        "CERTIFICATE",
+        "Money Investigation Certificate"
+      ],
+      "screens": [
+        "360-00.png",
+        "360-01.png",
+        "360-02.png",
+        "360-03.png"
+      ],
+      "height": 2601,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "referenceView": true,
+      "responseStatus": "Reference view · you can read this page, but cannot add responses yet",
+      "listStyles": [],
+      "manualReview": "Full page and reading text manually inspected at the named viewport. Findings remain explicitly open."
+    },
+    {
+      "route": "/handbooks/mon?page=13",
+      "role": "LEARNER",
+      "edition": "emerging_adult",
+      "width": 430,
+      "headings": [
+        "Money Investigation Certificate",
+        "CERTIFICATE",
+        "Money Investigation Certificate"
+      ],
+      "screens": [
+        "430-00.png",
+        "430-01.png",
+        "430-02.png",
+        "430-03.png"
+      ],
+      "height": 2427,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "referenceView": true,
+      "responseStatus": "Reference view · you can read this page, but cannot add responses yet",
+      "listStyles": [],
+      "manualReview": "Full page and reading text manually inspected at the named viewport. Findings remain explicitly open."
+    },
+    {
+      "route": "/handbooks/mon?page=13",
+      "role": "LEARNER",
+      "edition": "emerging_adult",
+      "width": 1280,
+      "headings": [
+        "Money Investigation Certificate",
+        "CERTIFICATE",
+        "Money Investigation Certificate"
+      ],
+      "screens": [
+        "1280-00.png",
+        "1280-01.png",
+        "1280-02.png"
+      ],
+      "height": 2258,
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "referenceView": true,
+      "responseStatus": "Reference view · you can read this page, but cannot add responses yet",
+      "listStyles": [],
+      "manualReview": "Full page and reading text manually inspected at the named viewport. Findings remain explicitly open."
+    }
+  ],
+  "screensManuallyInspected": 26,
+  "findings": [
+    {
+      "id": "VISUAL-REFERENCE-HEADERS",
+      "route": "/handbooks/att?page=7",
+      "role": "LEARNER",
+      "problem": "Weekend / Field Experiment headings repeat the shared publication title; No Session / Experiment Position / What You Do metadata appears as dense uninterrupted text.",
+      "correction": "OPEN: shared reference-page presentation should separate secondary experiment context and remove only duplicate display headings, retaining authored source and controls.",
+      "releaseStatus": "UNRESOLVED"
+    },
+    {
+      "id": "LANGUAGE-PUBLICATION-FOOTER",
+      "route": "/handbooks/mon?page=13",
+      "role": "LEARNER",
+      "problem": "Certificate shows internal publication code, Controlled Production MasterFROZEN and release stamp in the learner canvas.",
+      "correction": "OPEN: retain provenance in source/operator details; shared learner presentation should hide internal production footer text.",
+      "releaseStatus": "UNRESOLVED"
+    },
+    {
+      "id": "ACCESSIBILITY-AUTHORED-BULLETS",
+      "route": "/handbooks/mon?page=13",
+      "role": "LEARNER",
+      "problem": "What was discovered uses literal bullet paragraphs rather than semantic list grouping.",
+      "correction": "OPEN: shared positive-pattern renderer should preserve authored order/wording while expressing a semantic list without moving or rekeying response fields.",
+      "releaseStatus": "UNRESOLVED"
+    },
+    {
+      "id": "LANGUAGE-CERTIFICATE-STATE",
+      "route": "/handbooks/mon?page=13",
+      "role": "LEARNER",
+      "problem": "Authored certificate completion wording is visible in a clearly gated reference view. Header/status/gate correctly prevent completion; the body is not explicitly labelled a template.",
+      "correction": "OPEN: review clear template/issued state wording against verified Lab completion and facilitator confirmation; do not infer certification from access or a reference screenshot.",
+      "releaseStatus": "REVIEW_REQUIRED"
+    }
+  ],
+  "automated": "All six states: no overflow, WCAG violations, console/page/network errors; reference controls disabled and status accurate.",
+  "preservation": "No writes, completion, downloads, source edits, private answers or production data mutation."
+}

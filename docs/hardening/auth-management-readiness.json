@@ -1,0 +1,15 @@
+{
+  "observedSpecRevision": "55",
+  "observationsCurrent": true,
+  "observedPhase": "running",
+  "managementTokenProcessBinding": false,
+  "secretBindings": 0,
+  "outboundIdentities": 0,
+  "runtimeVariableNames": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+  ],
+  "authConfigurationComparison": "BLOCKED; ready management credential unavailable",
+  "environmentRestartCapabilityAvailable": false,
+  "configurationMutated": false
+}

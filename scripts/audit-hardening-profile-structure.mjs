@@ -4,6 +4,7 @@ import { gunzipSync } from "node:zlib";
 
 // Inventory a source-structure defect; this does not edit packages or invent bindings.
 const findings = [];
+const previous = JSON.parse(await readFile("docs/hardening/profile-structure-register.json", "utf8").catch(() => '{"findings":[]}'));
 let pagesReviewed = 0;
 for (const name of (await readdir("public/handbooks/v1")).filter(name => name.endsWith(".json.gz.b64")).sort()) {
   const source = `public/handbooks/v1/${name}`;
@@ -16,7 +17,7 @@ for (const name of (await readdir("public/handbooks/v1")).filter(name => name.en
     if (!header) continue;
     const remainder = page.html.slice(header.index + header[0].length);
     const section = remainder.split(/<hr\b|<h[1-6]\b/i, 1)[0];
-    findings.push({
+    const finding = {
       route: `/handbooks/${publication.labCode.toLowerCase()}?page=${publication.treatment.pages.indexOf(page) + 1}`,
       role: "Learner; assigned facilitator reference",
       module: publication.labCode,
@@ -32,7 +33,13 @@ for (const name of (await readdir("public/handbooks/v1")).filter(name => name.en
       problem: "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section.",
       correction: "OPEN: restore the authored relationship through a reviewed shared presentation/binding contract without guessing metrics, overwriting source or rekeying existing responses.",
       releaseStatus: "UNRESOLVED; FULL_CERTIFICATION_OPEN",
-    });
+    };
+    // Keep reviewed renderer evidence only for the identical authored source bytes.
+    const reviewed = previous.findings.find(item => item.source === source && item.semanticStepId === page.id && item.sourcePackageByteHash === finding.sourcePackageByteHash);
+    if (reviewed) for (const key of ["correction", "releaseStatus", "verification", "presentationEvidence", "outstanding"]) {
+      if (reviewed[key] !== undefined) finding[key] = reviewed[key];
+    }
+    findings.push(finding);
   }
 }
 const report = { sourcePagesInspected: pagesReviewed, scope: "All 15 accepted source packages; source-pattern inspection is not whole-page editorial or live certification.", findings, productionDataChanged: false, sourcePackagesChanged: false };
