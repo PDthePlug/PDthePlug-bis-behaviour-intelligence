@@ -14,7 +14,7 @@ import {
 import { sha256Hex } from "./content-studio";
 import { prepareUniversalLabPresentation } from "./universal-lab-presentation.mjs";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-8";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-9";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -390,8 +390,39 @@ export async function compileLearningEdition(
     throw new Error(`${edition}: BIS could not create the Day 3 Lab handover boundary.`);
   }
 
-  const fieldIds = compiledPages.flatMap((page) => [...page.html.matchAll(/data-field-id="([^"]+)"/g)].map((match) => match[1]));
-  if (new Set(fieldIds).size !== fieldIds.length) throw new Error(`${edition}: duplicate workbook field IDs were found.`);
+  const fieldControls = compiledPages.flatMap((page) =>
+    [...page.html.matchAll(/<(textarea|input|select)\b([^>]*)>/gi)].map((match) => {
+      const attributes = match[2] ?? "";
+      const fieldId = attributes.match(/\bdata-field-id\s*=\s*["']([^"']+)["']/i)?.[1] ?? "";
+      const sourceKey = attributes.match(/\bdata-source-key\s*=\s*["']([^"']+)["']/i)?.[1] ?? "";
+      const value = attributes.match(/\bvalue\s*=\s*["']([^"']*)["']/i)?.[1] ?? "";
+      return {
+        tag: (match[1] ?? "").toLowerCase(),
+        attributes,
+        fieldId,
+        sourceKey,
+        value,
+      };
+    }).filter((control) => control.fieldId),
+  );
+  const fieldGroups = new Map<string, typeof fieldControls>();
+  for (const control of fieldControls) {
+    const group = fieldGroups.get(control.fieldId) ?? [];
+    group.push(control);
+    fieldGroups.set(control.fieldId, group);
+  }
+  for (const [fieldId, controls] of fieldGroups) {
+    if (controls.length < 2) continue;
+    const sourceKeys = new Set(controls.map((control) => control.sourceKey));
+    const values = new Set(controls.map((control) => control.value));
+    const isRadioGroup = controls.every((control) =>
+      control.tag === "input" && /\btype\s*=\s*["']radio["']/i.test(control.attributes)
+    );
+    if (!isRadioGroup || sourceKeys.size !== 1 || values.size !== controls.length) {
+      throw new Error(`${edition}: duplicate workbook field ID ${fieldId} is not a valid single-choice radio group.`);
+    }
+  }
+  const fieldIds = [...fieldGroups.keys()];
   const editionNamespace = `${expectedCode}.WB.${edition.toUpperCase()}.`;
   if (fieldIds.some((id) => !id.startsWith(editionNamespace))) {
     throw new Error(`${edition}: workbook fields must stay inside the ${editionNamespace}* namespace.`);

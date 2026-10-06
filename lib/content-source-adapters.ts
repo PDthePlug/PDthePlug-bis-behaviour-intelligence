@@ -154,9 +154,13 @@ type SourceBlock = {
   answerColumn?: number;
   responseColumns?: Array<{
     index: number;
-    type: "TEXT" | "CATEGORICAL";
+    type: "TEXT" | "CATEGORICAL" | "DATE" | "INTEGER";
     options?: string[];
   }>;
+  matrixChoice?: {
+    labelColumn: number;
+    optionColumns: Array<{ index: number; value: string }>;
+  };
   lines?: string[];
   kind?: "paragraph" | "table";
 };
@@ -185,17 +189,52 @@ function inferTableResponseColumns(rows: string[][]): SourceBlock["responseColum
   const inferred: NonNullable<SourceBlock["responseColumns"]> = [];
 
   headers.forEach((header, index) => {
-    if (!learnerResponseHeader(header)) return;
+    if (index === 0) return;
     const values = dataRows.map((row) => row[index] ?? "");
+    if (!values.length) return;
+
+    const authoredOptions = [...new Set(values.flatMap((value) => checkboxOptions(value)))];
+    if (authoredOptions.length >= 2) {
+      inferred.push({ index, type: "CATEGORICAL", options: authoredOptions });
+      return;
+    }
+
     const blankCount = values.filter(authoredBlankCell).length;
-    if (!values.length || blankCount === 0) return;
-    inferred.push({
-      index,
-      type: "TEXT",
-    });
+    if (blankCount === 0) return;
+
+    if (/^date\b/i.test(header)) {
+      inferred.push({ index, type: "DATE" });
+      return;
+    }
+    if (/^(?:number|count|total)\b/i.test(header)) {
+      inferred.push({ index, type: "INTEGER" });
+      return;
+    }
+    if (learnerResponseHeader(header) || /^(?:notes?|entry|response|answer)\b/i.test(header)) {
+      inferred.push({ index, type: "TEXT" });
+    }
   });
 
   return inferred.length ? inferred : undefined;
+}
+
+function inferMatrixChoice(rows: string[][]): SourceBlock["matrixChoice"] | undefined {
+  if (rows.length < 2 || rows[0].length < 3) return undefined;
+  const headers = rows[0].map((cell) => cell.replace(/\*+/g, "").replace(/\s+/g, " ").trim());
+  const dataRows = rows.slice(1);
+  const optionColumns = headers
+    .map((value, index) => ({ index, value }))
+    .filter(({ index, value }) => index > 0 && Boolean(value));
+  if (optionColumns.length < 2) return undefined;
+
+  const isCheckboxCell = (value: string) => /^\s*☐\s*$/u.test(value) || /^\s*☐\s*[^☐]*$/u.test(value);
+  const everyRowIsChoiceMatrix = dataRows.every((row) =>
+    Boolean((row[0] ?? "").trim())
+    && optionColumns.every(({ index }) => isCheckboxCell(row[index] ?? "")),
+  );
+  return everyRowIsChoiceMatrix
+    ? { labelColumn: 0, optionColumns }
+    : undefined;
 }
 
 function sourceToken(value: string) {
@@ -281,6 +320,17 @@ function handbookShortControl(sourceKey: string, label: string, raw = label) {
     return "<input type=\"number\" min=\"" + min + "\" max=\"" + max + "\" " + attrs.join(" ") + " />";
   }
   return "<input type=\"text\" " + attrs.join(" ") + " />";
+}
+
+function handbookRadio(sourceKey: string, prompt: string, value: string, name: string) {
+  return (
+    '<input type="radio" class="response workbook-radio-response"' +
+    ' name="' + escapeHtml(name) + '"' +
+    ' value="' + escapeHtml(value) + '"' +
+    ' data-source-key="' + escapeHtml(sourceKey) + '"' +
+    ' data-purpose="LEARNING_RESPONSE" data-privacy-class="P3"' +
+    ' aria-label="' + escapeHtml(prompt + ": " + value) + '" />'
+  );
 }
 
 function handbookTextarea(sourceKey: string, prompt: string) {
@@ -380,6 +430,34 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         continue;
       }
 
+      if (block.tableRows?.length && block.matrixChoice) {
+        const header = block.tableRows[0];
+        const rows = block.tableRows.slice(1);
+        const optionIndexes = new Set(block.matrixChoice.optionColumns.map((option) => option.index));
+        html.push(
+          '<table class="handbook-table handbook-response-table handbook-choice-matrix"><thead><tr>' +
+          header.map((cell) => '<th scope="col">' + escapeHtml(cell) + "</th>").join("") +
+          "</tr></thead><tbody>" +
+          rows.map((row) => {
+            const rowLabel = row[block.matrixChoice!.labelColumn] || "Workbook response";
+            const sourceKey = nextSourceKey(rowLabel);
+            const radioName = "wb-" + sourceKey;
+            return "<tr>" + row.map((cell, cellIndex) => {
+              const label = header[cellIndex] ?? "";
+              if (optionIndexes.has(cellIndex)) {
+                const value = block.matrixChoice!.optionColumns.find((option) => option.index === cellIndex)?.value || label;
+                return '<td data-label="' + escapeHtml(label) + '">' +
+                  handbookRadio(sourceKey, rowLabel, value, radioName) +
+                  "</td>";
+              }
+              return '<td data-label="' + escapeHtml(label) + '">' + escapeHtml(cell) + "</td>";
+            }).join("") + "</tr>";
+          }).join("") +
+          "</tbody></table>",
+        );
+        continue;
+      }
+
       if (block.tableRows?.length && block.responseColumns?.length) {
         const header = block.tableRows[0];
         const rows = block.tableRows.slice(1);
@@ -394,9 +472,14 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
               const spec = block.responseColumns?.find((candidate) => candidate.index === cellIndex);
               if (spec && (spec.type === "CATEGORICAL" || !cell.replace(/[_—–.\s-]+/g, ""))) {
                 const prompt = rowLabel + " — " + label;
+                const sourceKey = nextSourceKey(prompt);
                 const control = spec.type === "CATEGORICAL"
-                  ? handbookChoice(nextSourceKey(prompt), prompt, spec.options ?? [])
-                  : handbookTextarea(nextSourceKey(prompt), prompt);
+                  ? handbookChoice(sourceKey, prompt, spec.options ?? [])
+                  : spec.type === "DATE"
+                    ? handbookShortControl(sourceKey, prompt, "Date:")
+                    : spec.type === "INTEGER"
+                      ? handbookShortControl(sourceKey, prompt, "Number: ___ / 7")
+                      : handbookTextarea(sourceKey, prompt);
                 return '<td data-label="' + escapeHtml(label) + '">' + control + "</td>";
               }
               return '<td data-label="' + escapeHtml(label) + '">' + escapeHtml(cell) + "</td>";
@@ -531,6 +614,9 @@ function programmeExperimentPosition(body: SourceBlock[]) {
     if (/^EXPERIMENT POSITION\s*:?$/i.test(joined[index])) {
       return joined[index + 1]?.trim() || null;
     }
+    if (/^YOUR EXPERIMENT BEGINS WHEN THIS SESSION ENDS\.?$/i.test(joined[index])) {
+      return "Day 1 of 7 begins when this session ends.";
+    }
   }
   return null;
 }
@@ -631,7 +717,10 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
     if (key) boundaries.push({ key, index });
   }
 
-  const found = new Map(boundaries.map((boundary) => [boundary.key, boundary.index]));
+  const found = new Map<PageKey, number>();
+  for (const boundary of boundaries) {
+    if (!found.has(boundary.key)) found.set(boundary.key, boundary.index);
+  }
   const missing = PAGE_KEYS.filter((key) => !found.has(key));
   if (missing.length) {
     if (boundaries.length >= 5) {
@@ -1113,6 +1202,7 @@ function serializedMarkdownTable(
       html: tableHtml(rows),
       tableRows: rows,
       responseColumns: inferTableResponseColumns(rows),
+      matrixChoice: inferMatrixChoice(rows),
       kind: "table",
     },
     end,
@@ -1318,19 +1408,21 @@ function markdownBlocks(markdown: string) {
   };
 
   for (let index = 0; index < lines.length; index += 1) {
-    const serializedTable = serializedMarkdownTable(lines, index);
-    if (serializedTable) {
-      flush();
-      blocks.push(serializedTable.block);
-      index = serializedTable.end - 1;
-      continue;
-    }
-
+    // Standard pipe tables must win before the legacy serialized-table grammar.
+    // Otherwise checkbox matrix rows can be flattened into paragraph/choice text.
     const standardTable = standardMarkdownTableAt(lines, index);
     if (standardTable) {
       flush();
       blocks.push(standardTable.block);
       index = standardTable.end - 1;
+      continue;
+    }
+
+    const serializedTable = serializedMarkdownTable(lines, index);
+    if (serializedTable) {
+      flush();
+      blocks.push(serializedTable.block);
+      index = serializedTable.end - 1;
       continue;
     }
 

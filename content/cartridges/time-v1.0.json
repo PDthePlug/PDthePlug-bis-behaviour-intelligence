@@ -1,0 +1,1429 @@
+{
+  "kind": "LAB",
+  "schemaVersion": "universal-lab-v1",
+  "runtimeProfile": "UNIVERSAL_V1",
+  "identity": {
+    "code": "TIM",
+    "version": "1.0",
+    "title": "Time Lab™",
+    "shortTitle": "Time Lab",
+    "accent": "#2f8276",
+    "focus": "Investigate one real time pattern using opportunity-based evidence."
+  },
+  "factoryCapabilities": {
+    "baseline": true,
+    "indicatorCodes": [
+      "BEI-01",
+      "BEI-02",
+      "BEI-03",
+      "BEI-04",
+      "BEI-05",
+      "BEI-06",
+      "BEI-07",
+      "BEI-08",
+      "BEI-09",
+      "BEI-10"
+    ],
+    "facilitatorOnlyIndicatorCodes": [],
+    "derivedSignatures": [
+      "Time Adherence Rate = Full Time Pauses completed ÷ Eligible opportunities observed × 100",
+      "Prediction Accuracy = 100 − |Predicted adherence − Actual adherence|",
+      "Reclaim Rate = Full Time Pauses with reclaimed time ÷ Full Time Pauses completed × 100",
+      "Shift: BEI-07 - BEI-01",
+      "Shift: BEI-08 - BEI-04"
+    ],
+    "experiment": {
+      "detected": true,
+      "days": 7
+    },
+    "repeatableEvidenceTable": true,
+    "profileSummary": true,
+    "certificate": true,
+    "facilitatorGuide": false,
+    "requiresBehaviourRuntimeV2": true
+  },
+  "computedFields": [
+    {
+      "id": "TIM.I1.RISK_INDEX",
+      "label": "Time Risk Index",
+      "investigation": 1,
+      "operation": "LIKERT_RISK_INDEX",
+      "inputs": [
+        "TIM.I1.BASELINE.KNOW",
+        "TIM.I1.BASELINE.NO_TIME",
+        "TIM.I1.BASELINE.UNNOTICED",
+        "TIM.I1.BASELINE.PRIORITISE",
+        "TIM.I1.BASELINE.SAY_YES",
+        "TIM.I1.BASELINE.GUILT",
+        "TIM.I1.BASELINE.MATTERS",
+        "TIM.I1.BASELINE.PROTECT",
+        "TIM.I1.BASELINE.STEALS",
+        "TIM.I1.BASELINE.CONTROL"
+      ],
+      "directions": [
+        "PROTECTIVE",
+        "RISK",
+        "RISK",
+        "PROTECTIVE",
+        "RISK",
+        "RISK",
+        "PROTECTIVE",
+        "PROTECTIVE",
+        "PROTECTIVE",
+        "PROTECTIVE"
+      ],
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.ELIGIBLE_COUNT",
+      "label": "Eligible opportunities observed",
+      "investigation": 8,
+      "operation": "COUNT_EQUALS",
+      "inputs": [
+        "TIM.I7.D1.ELIGIBLE",
+        "TIM.I7.D2.ELIGIBLE",
+        "TIM.I7.D3.ELIGIBLE",
+        "TIM.I7.D4.ELIGIBLE",
+        "TIM.I7.D5.ELIGIBLE",
+        "TIM.I7.D6.ELIGIBLE",
+        "TIM.I7.D7.ELIGIBLE"
+      ],
+      "equals": "Yes",
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.FULL_COUNT",
+      "label": "Full Time Pauses completed",
+      "investigation": 8,
+      "operation": "COUNT_EQUALS",
+      "inputs": [
+        "TIM.I7.D1.PAUSE",
+        "TIM.I7.D2.PAUSE",
+        "TIM.I7.D3.PAUSE",
+        "TIM.I7.D4.PAUSE",
+        "TIM.I7.D5.PAUSE",
+        "TIM.I7.D6.PAUSE",
+        "TIM.I7.D7.PAUSE"
+      ],
+      "equals": "Yes",
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.RECLAIMED_COUNT",
+      "label": "Full Pauses with reclaimed time",
+      "investigation": 8,
+      "operation": "COUNT_EQUALS",
+      "inputs": [
+        "TIM.I7.D1.RECLAIMED",
+        "TIM.I7.D2.RECLAIMED",
+        "TIM.I7.D3.RECLAIMED",
+        "TIM.I7.D4.RECLAIMED",
+        "TIM.I7.D5.RECLAIMED",
+        "TIM.I7.D6.RECLAIMED",
+        "TIM.I7.D7.RECLAIMED"
+      ],
+      "equals": "Yes",
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.ADHERENCE",
+      "label": "Time Adherence Rate",
+      "investigation": 8,
+      "operation": "RATIO_PERCENT",
+      "inputs": [
+        "TIM.I8.FULL_COUNT",
+        "TIM.I8.ELIGIBLE_COUNT"
+      ],
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.PREDICTION_ACCURACY",
+      "label": "Prediction Accuracy",
+      "investigation": 8,
+      "operation": "ACCURACY_PERCENT",
+      "inputs": [
+        "TIM.I6.PREDICTED_ADHERENCE",
+        "TIM.I8.ADHERENCE"
+      ],
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.RECLAIM_RATE",
+      "label": "Reclaim Rate",
+      "investigation": 8,
+      "operation": "RATIO_PERCENT",
+      "inputs": [
+        "TIM.I8.RECLAIMED_COUNT",
+        "TIM.I8.FULL_COUNT"
+      ],
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.AWARE_SHIFT",
+      "label": "Time Awareness Shift",
+      "investigation": 8,
+      "operation": "DIFFERENCE",
+      "inputs": [
+        "TIM.I8.AWARE_POST",
+        "TIM.I1.AWARE_PRE"
+      ],
+      "precision": 0
+    },
+    {
+      "id": "TIM.I8.CONFIDENCE_SHIFT",
+      "label": "Time Confidence Shift",
+      "investigation": 8,
+      "operation": "DIFFERENCE",
+      "inputs": [
+        "TIM.I8.CONFIDENCE_POST",
+        "TIM.I5.CONFIDENCE_PRE"
+      ],
+      "precision": 0
+    },
+    {
+      "id": "TIM.I9.PROFILE",
+      "label": "Time Investigation Profile",
+      "investigation": 9,
+      "operation": "COLLECTION",
+      "inputs": [
+        "TIM.I2.PATTERN",
+        "TIM.I6.TARGET",
+        "TIM.I4.TIME_STEAL",
+        "TIM.I4.INTENTION",
+        "TIM.I4.SMALLEST",
+        "TIM.I4.PROTECT",
+        "TIM.I4.LEAK",
+        "TIM.I5.EQUATION",
+        "TIM.I8.ADHERENCE",
+        "TIM.I8.PREDICTION_ACCURACY",
+        "TIM.I8.RECLAIM_RATE",
+        "TIM.I9.IDENTITY_SHIFT"
+      ]
+    }
+  ],
+  "investigations": [
+    {
+      "number": 1,
+      "title": "Seeing Time",
+      "mission": "Establish an honest starting picture of where your time goes.",
+      "phase": "Investigation",
+      "time": "15 minutes",
+      "difficulty": "Observe",
+      "produces": [
+        "Time Awareness baseline",
+        "Time Baseline Profile",
+        "Time Risk Index"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I1.AWARE_PRE",
+          "label": "Time Awareness Index (Pre)",
+          "prompt": "On a scale of 1–10, how aware are you of where your time actually goes?",
+          "type": "INTEGER",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "min": 1,
+          "max": 10,
+          "controlRole": "RATING",
+          "indicatorCode": "BEI-01",
+          "indicatorLabel": "Time Awareness Index (Pre)"
+        },
+        {
+          "id": "TIM.I1.BASELINE.KNOW",
+          "label": "Know exactly where your time goes",
+          "prompt": "Know exactly where your time goes",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "PROTECTIVE"
+        },
+        {
+          "id": "TIM.I1.BASELINE.NO_TIME",
+          "label": "Feel like you have no time",
+          "prompt": "Feel like you have no time",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "RISK"
+        },
+        {
+          "id": "TIM.I1.BASELINE.UNNOTICED",
+          "label": "Waste time without realising it",
+          "prompt": "Waste time without realising it",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "RISK"
+        },
+        {
+          "id": "TIM.I1.BASELINE.PRIORITISE",
+          "label": "Prioritise what matters most",
+          "prompt": "Prioritise what matters most",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "PROTECTIVE"
+        },
+        {
+          "id": "TIM.I1.BASELINE.SAY_YES",
+          "label": "Say yes to things you should say no to",
+          "prompt": "Say yes to things you should say no to",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "RISK"
+        },
+        {
+          "id": "TIM.I1.BASELINE.GUILT",
+          "label": "Feel guilty about how you spend your time",
+          "prompt": "Feel guilty about how you spend your time",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "RISK"
+        },
+        {
+          "id": "TIM.I1.BASELINE.MATTERS",
+          "label": "Have time for what matters",
+          "prompt": "Have time for what matters",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "PROTECTIVE"
+        },
+        {
+          "id": "TIM.I1.BASELINE.PROTECT",
+          "label": "Protect your time from others",
+          "prompt": "Protect your time from others",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "PROTECTIVE"
+        },
+        {
+          "id": "TIM.I1.BASELINE.STEALS",
+          "label": "Know what steals your time most",
+          "prompt": "Know what steals your time most",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "PROTECTIVE"
+        },
+        {
+          "id": "TIM.I1.BASELINE.CONTROL",
+          "label": "Have control over your schedule",
+          "prompt": "Have control over your schedule",
+          "type": "CATEGORICAL",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Always"
+          ],
+          "indicatorCode": "BEI-02",
+          "indicatorLabel": "Time Baseline Profile",
+          "baselineDirection": "PROTECTIVE"
+        },
+        {
+          "id": "TIM.I1.RISK_INDEX",
+          "label": "Time Risk Index",
+          "prompt": "Time Risk Index",
+          "type": "INTEGER",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 100,
+          "readOnly": true,
+          "indicatorCode": "BEI-05",
+          "indicatorLabel": "Time Risk Index"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "The Pattern",
+      "mission": "Name one ordinary time pattern without turning it into a judgment about yourself.",
+      "phase": "Investigation",
+      "time": "10 minutes",
+      "difficulty": "Observe",
+      "produces": [
+        "A named time pattern",
+        "A target situation"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I2.PATTERN",
+          "label": "Time pattern",
+          "prompt": "What is one thing you do that eats your time?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I2.SITUATION",
+          "label": "Situation",
+          "prompt": "When and where does this pattern appear? What kind of moment is it?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I2.BEFORE",
+          "label": "What happens just before",
+          "prompt": "What usually happens just before this time pattern starts?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I2.COST",
+          "label": "What it pushes out",
+          "prompt": "What does this pattern push out or replace?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "The Time Pause",
+      "mission": "Practise slowing one real time moment down before it takes over.",
+      "phase": "Investigation",
+      "time": "10 minutes",
+      "difficulty": "Practise",
+      "produces": [
+        "A practised Time Pause"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I3.ABOUT_TO",
+          "label": "About to do",
+          "prompt": "What are you about to do in the time moment you are practising on?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I3.INTENTION",
+          "label": "Intention underneath",
+          "prompt": "What were you actually planning to do before this pull appeared?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I3.STEAL",
+          "label": "What is stealing the time",
+          "prompt": "What is pulling your attention away?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I3.SMALLEST",
+          "label": "Smallest first step",
+          "prompt": "What is the smallest first step of the thing you meant to do?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I3.PROTECT",
+          "label": "Protecting move",
+          "prompt": "What is the smallest move that would protect your time right now?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I3.CHOICE",
+          "label": "Choice",
+          "prompt": "What will you choose in this moment?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title": "Mapping the Time Moment",
+      "mission": "Map the trigger, leak and intention underneath your selected pattern.",
+      "phase": "Investigation",
+      "time": "10 minutes",
+      "difficulty": "Analyse",
+      "produces": [
+        "A Time Pattern map"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I4.TRIGGER",
+          "label": "Trigger bundle",
+          "prompt": "What was really happening just before your time got taken—time, place, people, environment and feeling?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I4.TIME_STEAL",
+          "label": "What steals the time",
+          "prompt": "What is usually stealing your time in this moment?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I4.INTENTION",
+          "label": "Intention underneath",
+          "prompt": "What did you actually mean to do?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I4.SMALLEST",
+          "label": "Smallest first step",
+          "prompt": "What is the smallest first action that would count as starting?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I4.PROTECT",
+          "label": "Protecting move",
+          "prompt": "What would protect your time in this moment?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I4.LEAK",
+          "label": "Time leak",
+          "prompt": "Where is the unnoticed time leak in this pattern?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title": "Working Time Equation",
+      "mission": "Turn your current explanation into something that can be tested and proven wrong.",
+      "phase": "Investigation",
+      "time": "10 minutes",
+      "difficulty": "Analyse",
+      "produces": [
+        "A Working Time Equation",
+        "A falsification test"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I5.EQUATION",
+          "label": "Working Time Equation",
+          "prompt": "Complete your working explanation: when this situation happens, what do you tend to do, where does the time go, and what do you think the Time Pause will change?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I5.CONFIDENCE_PRE",
+          "label": "Time Confidence Index (Pre)",
+          "prompt": "How confident are you that your Working Time Equation explains your time pattern?",
+          "type": "INTEGER",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "min": 1,
+          "max": 10,
+          "controlRole": "RATING",
+          "indicatorCode": "BEI-04",
+          "indicatorLabel": "Time Confidence Index (Pre)"
+        },
+        {
+          "id": "TIM.I5.FALSIFICATION",
+          "label": "Falsification test",
+          "prompt": "If your explanation is wrong or incomplete, what would you expect to observe?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title": "Experiment Contract",
+      "mission": "Design the smallest safe seven-day test that can reveal what actually happens.",
+      "phase": "Investigation",
+      "time": "15 minutes",
+      "difficulty": "Challenge",
+      "produces": [
+        "A seven-day experiment contract",
+        "A predicted adherence rate"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I6.TARGET",
+          "label": "Target condition",
+          "prompt": "What specific time, place, feeling or type of moment are you watching for?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I6.MINIMUM",
+          "label": "Minimum version",
+          "prompt": "What is the smallest Time Pause you can complete on your worst day?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I6.WITNESS",
+          "label": "Witness or check-in person",
+          "prompt": "Who can check in with you without judging or managing your performance?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I6.RESTART",
+          "label": "Restart plan",
+          "prompt": "What will you do after a missed day so that one miss does not become abandonment?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I6.FAILURE",
+          "label": "Failure signal",
+          "prompt": "What observable signal will tell you that the method is not working as designed?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I6.PREDICTED_ADHERENCE",
+          "label": "Predicted Time Pause Adherence",
+          "prompt": "When an eligible time moment appears, what percentage of the time do you predict you will complete a Full Time Pause before acting?",
+          "type": "INTEGER",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 100,
+          "indicatorCode": "BEI-03",
+          "indicatorLabel": "Predicted Time Pause Adherence"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "title": "Seven-Day Time Experiment",
+      "mission": "Record only the first eligible time moment each day, including no-opportunity days and missed records honestly.",
+      "phase": "Experiment",
+      "time": "7 days",
+      "difficulty": "Challenge",
+      "produces": [
+        "Seven days of opportunity-based evidence"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I7.D1.DATE",
+          "label": "Day 1 date",
+          "prompt": "Date",
+          "type": "DATE",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 1"
+        },
+        {
+          "id": "TIM.I7.D1.ELIGIBLE",
+          "label": "Day 1 eligible time moment",
+          "prompt": "Did an eligible time moment appear?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "group": "Day 1",
+          "allowNoOpportunity": true
+        },
+        {
+          "id": "TIM.I7.D1.PAUSE",
+          "label": "Day 1 Full Time Pause",
+          "prompt": "Did you complete a Full Time Pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "Partial",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 1"
+        },
+        {
+          "id": "TIM.I7.D1.RECLAIMED",
+          "label": "Day 1 reclaimed time",
+          "prompt": "Was a block of time reclaimed after the pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 1"
+        },
+        {
+          "id": "TIM.I7.D1.NOTES",
+          "label": "Day 1 notes",
+          "prompt": "What happened? Record only what you can point to.",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 1"
+        },
+        {
+          "id": "TIM.I7.D2.DATE",
+          "label": "Day 2 date",
+          "prompt": "Date",
+          "type": "DATE",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 2"
+        },
+        {
+          "id": "TIM.I7.D2.ELIGIBLE",
+          "label": "Day 2 eligible time moment",
+          "prompt": "Did an eligible time moment appear?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "group": "Day 2",
+          "allowNoOpportunity": true
+        },
+        {
+          "id": "TIM.I7.D2.PAUSE",
+          "label": "Day 2 Full Time Pause",
+          "prompt": "Did you complete a Full Time Pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "Partial",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 2"
+        },
+        {
+          "id": "TIM.I7.D2.RECLAIMED",
+          "label": "Day 2 reclaimed time",
+          "prompt": "Was a block of time reclaimed after the pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 2"
+        },
+        {
+          "id": "TIM.I7.D2.NOTES",
+          "label": "Day 2 notes",
+          "prompt": "What happened? Record only what you can point to.",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 2"
+        },
+        {
+          "id": "TIM.I7.D3.DATE",
+          "label": "Day 3 date",
+          "prompt": "Date",
+          "type": "DATE",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 3"
+        },
+        {
+          "id": "TIM.I7.D3.ELIGIBLE",
+          "label": "Day 3 eligible time moment",
+          "prompt": "Did an eligible time moment appear?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "group": "Day 3",
+          "allowNoOpportunity": true
+        },
+        {
+          "id": "TIM.I7.D3.PAUSE",
+          "label": "Day 3 Full Time Pause",
+          "prompt": "Did you complete a Full Time Pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "Partial",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 3"
+        },
+        {
+          "id": "TIM.I7.D3.RECLAIMED",
+          "label": "Day 3 reclaimed time",
+          "prompt": "Was a block of time reclaimed after the pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 3"
+        },
+        {
+          "id": "TIM.I7.D3.NOTES",
+          "label": "Day 3 notes",
+          "prompt": "What happened? Record only what you can point to.",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 3"
+        },
+        {
+          "id": "TIM.I7.D4.DATE",
+          "label": "Day 4 date",
+          "prompt": "Date",
+          "type": "DATE",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 4"
+        },
+        {
+          "id": "TIM.I7.D4.ELIGIBLE",
+          "label": "Day 4 eligible time moment",
+          "prompt": "Did an eligible time moment appear?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "group": "Day 4",
+          "allowNoOpportunity": true
+        },
+        {
+          "id": "TIM.I7.D4.PAUSE",
+          "label": "Day 4 Full Time Pause",
+          "prompt": "Did you complete a Full Time Pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "Partial",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 4"
+        },
+        {
+          "id": "TIM.I7.D4.RECLAIMED",
+          "label": "Day 4 reclaimed time",
+          "prompt": "Was a block of time reclaimed after the pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 4"
+        },
+        {
+          "id": "TIM.I7.D4.NOTES",
+          "label": "Day 4 notes",
+          "prompt": "What happened? Record only what you can point to.",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 4"
+        },
+        {
+          "id": "TIM.I7.D5.DATE",
+          "label": "Day 5 date",
+          "prompt": "Date",
+          "type": "DATE",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 5"
+        },
+        {
+          "id": "TIM.I7.D5.ELIGIBLE",
+          "label": "Day 5 eligible time moment",
+          "prompt": "Did an eligible time moment appear?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "group": "Day 5",
+          "allowNoOpportunity": true
+        },
+        {
+          "id": "TIM.I7.D5.PAUSE",
+          "label": "Day 5 Full Time Pause",
+          "prompt": "Did you complete a Full Time Pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "Partial",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 5"
+        },
+        {
+          "id": "TIM.I7.D5.RECLAIMED",
+          "label": "Day 5 reclaimed time",
+          "prompt": "Was a block of time reclaimed after the pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 5"
+        },
+        {
+          "id": "TIM.I7.D5.NOTES",
+          "label": "Day 5 notes",
+          "prompt": "What happened? Record only what you can point to.",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 5"
+        },
+        {
+          "id": "TIM.I7.D6.DATE",
+          "label": "Day 6 date",
+          "prompt": "Date",
+          "type": "DATE",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 6"
+        },
+        {
+          "id": "TIM.I7.D6.ELIGIBLE",
+          "label": "Day 6 eligible time moment",
+          "prompt": "Did an eligible time moment appear?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "group": "Day 6",
+          "allowNoOpportunity": true
+        },
+        {
+          "id": "TIM.I7.D6.PAUSE",
+          "label": "Day 6 Full Time Pause",
+          "prompt": "Did you complete a Full Time Pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "Partial",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 6"
+        },
+        {
+          "id": "TIM.I7.D6.RECLAIMED",
+          "label": "Day 6 reclaimed time",
+          "prompt": "Was a block of time reclaimed after the pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 6"
+        },
+        {
+          "id": "TIM.I7.D6.NOTES",
+          "label": "Day 6 notes",
+          "prompt": "What happened? Record only what you can point to.",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 6"
+        },
+        {
+          "id": "TIM.I7.D7.DATE",
+          "label": "Day 7 date",
+          "prompt": "Date",
+          "type": "DATE",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 7"
+        },
+        {
+          "id": "TIM.I7.D7.ELIGIBLE",
+          "label": "Day 7 eligible time moment",
+          "prompt": "Did an eligible time moment appear?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "group": "Day 7",
+          "allowNoOpportunity": true
+        },
+        {
+          "id": "TIM.I7.D7.PAUSE",
+          "label": "Day 7 Full Time Pause",
+          "prompt": "Did you complete a Full Time Pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "Partial",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 7"
+        },
+        {
+          "id": "TIM.I7.D7.RECLAIMED",
+          "label": "Day 7 reclaimed time",
+          "prompt": "Was a block of time reclaimed after the pause?",
+          "type": "CATEGORICAL",
+          "sensitivity": "P2",
+          "required": true,
+          "origin": "SOURCE",
+          "options": [
+            "Yes",
+            "No",
+            "N/A"
+          ],
+          "group": "Day 7"
+        },
+        {
+          "id": "TIM.I7.D7.NOTES",
+          "label": "Day 7 notes",
+          "prompt": "What happened? Record only what you can point to.",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "group": "Day 7"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "title": "Evidence Review",
+      "mission": "Read the experiment as evidence about attention, not as a verdict on discipline.",
+      "phase": "Review",
+      "time": "15 minutes",
+      "difficulty": "Analyse",
+      "produces": [
+        "Time Adherence Rate",
+        "Prediction Accuracy",
+        "Reclaim Rate",
+        "Post measures"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I8.ELIGIBLE_COUNT",
+          "label": "Eligible opportunities observed",
+          "prompt": "Eligible opportunities observed",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 7,
+          "readOnly": true
+        },
+        {
+          "id": "TIM.I8.FULL_COUNT",
+          "label": "Full Time Pauses completed",
+          "prompt": "Full Time Pauses completed",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 7,
+          "readOnly": true
+        },
+        {
+          "id": "TIM.I8.RECLAIMED_COUNT",
+          "label": "Full Pauses with reclaimed time",
+          "prompt": "Full Time Pauses where a block of time was reclaimed",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 7,
+          "readOnly": true
+        },
+        {
+          "id": "TIM.I8.ADHERENCE",
+          "label": "Time Adherence Rate",
+          "prompt": "Time Adherence Rate",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 100,
+          "readOnly": true,
+          "indicatorCode": "BEI-06",
+          "indicatorLabel": "Time Adherence Rate"
+        },
+        {
+          "id": "TIM.I8.PREDICTION_ACCURACY",
+          "label": "Prediction Accuracy",
+          "prompt": "Prediction Accuracy",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 100,
+          "readOnly": true
+        },
+        {
+          "id": "TIM.I8.RECLAIM_RATE",
+          "label": "Reclaim Rate",
+          "prompt": "Reclaim Rate",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "min": 0,
+          "max": 100,
+          "readOnly": true
+        },
+        {
+          "id": "TIM.I8.AWARE_POST",
+          "label": "Time Awareness Index (Post)",
+          "prompt": "On a scale of 1–10, how aware are you of where your time actually goes now?",
+          "type": "INTEGER",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "min": 1,
+          "max": 10,
+          "controlRole": "RATING",
+          "indicatorCode": "BEI-07",
+          "indicatorLabel": "Time Awareness Index (Post)"
+        },
+        {
+          "id": "TIM.I8.AWARE_SHIFT",
+          "label": "Time Awareness Shift",
+          "prompt": "Time Awareness Shift",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "readOnly": true
+        },
+        {
+          "id": "TIM.I8.CONFIDENCE_POST",
+          "label": "Time Confidence Index (Post)",
+          "prompt": "How confident are you now that your Working Time Equation explains your time pattern?",
+          "type": "INTEGER",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "min": 1,
+          "max": 10,
+          "controlRole": "RATING",
+          "indicatorCode": "BEI-08",
+          "indicatorLabel": "Time Confidence Index (Post)"
+        },
+        {
+          "id": "TIM.I8.CONFIDENCE_SHIFT",
+          "label": "Time Confidence Shift",
+          "prompt": "Time Confidence Shift",
+          "type": "INTEGER",
+          "sensitivity": "P2",
+          "required": false,
+          "origin": "SOURCE",
+          "readOnly": true
+        },
+        {
+          "id": "TIM.I8.PATTERN_SHIFT",
+          "label": "Where the pattern shifted",
+          "prompt": "Where in your week did the pattern shift—even a little?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I8.LEARNING",
+          "label": "What the evidence taught me",
+          "prompt": "What does the evidence show about where your attention actually went?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "title": "Time Investigation Profile",
+      "mission": "Transfer the method and bring the investigation together into a reusable profile.",
+      "phase": "Synthesis",
+      "time": "15 minutes",
+      "difficulty": "Integrate",
+      "produces": [
+        "A Time Investigation Profile",
+        "A second-pattern transfer map"
+      ],
+      "prompts": [
+        {
+          "id": "TIM.I9.SECOND_PATTERN",
+          "label": "Second time pattern",
+          "prompt": "What second time pattern could you map with the same method?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I9.SECOND_SMALLEST",
+          "label": "Second-pattern smallest step",
+          "prompt": "What is the smallest first step in that second pattern?",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE"
+        },
+        {
+          "id": "TIM.I9.IDENTITY_SHIFT",
+          "label": "Identity Shift Indicator",
+          "prompt": "Finish the sentence: I am becoming someone who…",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": true,
+          "origin": "SOURCE",
+          "indicatorCode": "BEI-09",
+          "indicatorLabel": "Identity Shift Indicator",
+          "group": "Behaviour Profile Summary"
+        },
+        {
+          "id": "TIM.I9.PROFILE",
+          "label": "Time Investigation Profile",
+          "prompt": "Time Investigation Profile",
+          "type": "TEXT",
+          "sensitivity": "P3",
+          "required": false,
+          "origin": "SOURCE",
+          "readOnly": true,
+          "indicatorCode": "BEI-10",
+          "indicatorLabel": "Time Investigation Profile",
+          "group": "Behaviour Profile Summary"
+        }
+      ]
+    }
+  ]
+}

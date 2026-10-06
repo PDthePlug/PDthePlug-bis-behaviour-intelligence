@@ -5,6 +5,10 @@ export type UniversalComputedOperation =
   | "DIFFERENCE"
   | "COUNT_TRUE"
   | "COUNT_PRESENT"
+  | "COUNT_EQUALS"
+  | "RATIO_PERCENT"
+  | "ACCURACY_PERCENT"
+  | "LIKERT_RISK_INDEX"
   | "MAX"
   | "COPY"
   | "COLLECTION"
@@ -18,6 +22,8 @@ export type UniversalComputedField = {
   inputs: string[];
   legacyInputs?: string[];
   precision?: number;
+  equals?: string;
+  directions?: Array<"RISK" | "PROTECTIVE">;
 };
 
 export type UniversalExperimentContract = {
