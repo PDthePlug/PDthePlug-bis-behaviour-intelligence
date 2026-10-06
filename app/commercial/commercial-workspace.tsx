@@ -3,8 +3,8 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { WorkspaceMenu } from "@/components/workspace-menu";
-import { LayoutDashboard, Users, ClipboardCheck, BookOpen, Settings2 } from "lucide-react";
-import styles from "./commercial.module.css";
+import { LayoutDashboard, Users, ClipboardCheck, BookOpen, Settings2, Bot } from "lucide-react";
+import styles from "./commercial.module.css";\nimport { CommercialIntelligencePanel } from "./commercial-intelligence-panel";
 
 type Identity = { email: string; displayName: string };
 type Organisation = { id: string; name: string; organisation_type: string; website: string | null; research_status: string; status: string; notes: string | null };
@@ -26,9 +26,9 @@ async function api(action?: Record<string, unknown>) { const response = await fe
 export function CommercialWorkspace({ identity, roles }: { identity: Identity; roles: string[] }) {
   const [data, setData] = useState<Snapshot | null>(null);
   const router = useRouter(), params = useSearchParams();
-  type View = "overview" | "pipeline" | "accounts" | "tasks" | "proposals";
+  type View = "intelligence" | "overview" | "pipeline" | "accounts" | "tasks" | "proposals";
   const requested = params.get("section");
-  const view: View = ["overview","pipeline","accounts","tasks","proposals"].includes(requested ?? "") ? requested as View : "overview";
+  const view: View = ["intelligence","overview","pipeline","accounts","tasks","proposals"].includes(requested ?? "") ? requested as View : "intelligence";
   function setView(next: View) {router.push(`/commercial?section=${next}`, {scroll:false});}
   const [lane, setLane] = useState<"ALL" | Opportunity["lane"]>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -50,10 +50,10 @@ export function CommercialWorkspace({ identity, roles }: { identity: Identity; r
 
   return <div className={styles.shell}>
     <main className={styles.main}>
-      <header className={styles.topbar}><div><span className={styles.eyebrow}>BIS · Commercial workspace</span><h1>{view === "overview" ? "Partnerships, pipeline and execution." : pretty(view)}</h1></div><div className={styles.topActions}><button className={styles.secondary} onClick={() => void refresh()} disabled={loading}>Refresh</button><button className={styles.primary} onClick={() => setShowNewOpportunity(true)} disabled={!data?.canWrite}>+ New opportunity</button></div></header>
+      <header className={styles.topbar}><div><span className={styles.eyebrow}>BIS · Commercial workspace</span><h1>{view === "intelligence" ? "Commercial Intelligence." : view === "overview" ? "Partnerships, pipeline and execution." : pretty(view)}</h1></div><div className={styles.topActions}><button className={styles.secondary} onClick={() => void refresh()} disabled={loading}>Refresh</button><button className={styles.primary} onClick={() => setShowNewOpportunity(true)} disabled={!data?.canWrite}>+ New opportunity</button></div></header>
       {error && <div className={styles.error}>{error}</div>}
       {loading && !data ? <div className={styles.loading}>Loading BIS Commercial Workspace…</div> : null}
-      {data && view === "overview" && <Overview data={data} setView={setView} setLane={setLane} select={(id) => { setSelectedId(id); setView("pipeline"); }} />}
+      {data && view === "intelligence" && <CommercialIntelligencePanel onOpenOpportunity={(id) => { setSelectedId(id); setView("pipeline"); }} />}\n      {data && view === "overview" && <Overview data={data} setView={setView} setLane={setLane} select={(id) => { setSelectedId(id); setView("pipeline"); }} />}
       {data && view === "pipeline" && <Pipeline opportunities={filtered} organisations={data.organisations} lane={lane} setLane={setLane} select={setSelectedId} />}
       {data && view === "accounts" && <Accounts data={data} onAdd={() => setShowNewOrganisation(true)} select={(id) => { setSelectedId(id); setView("pipeline"); }} />}
       {data && view === "tasks" && <Tasks data={data} busy={busy} mutate={mutate} />}
@@ -75,7 +75,7 @@ export function CommercialWorkspace({ identity, roles }: { identity: Identity; r
   </div>;
 }
 
-function Overview({ data, setView, setLane, select }: { data: Snapshot; setView: (view: "overview" | "pipeline" | "accounts" | "tasks" | "proposals") => void; setLane: (lane: "ALL" | Opportunity["lane"]) => void; select: (id: string) => void }) {
+function Overview({ data, setView, setLane, select }: { data: Snapshot; setView: (view: "intelligence" | "overview" | "pipeline" | "accounts" | "tasks" | "proposals") => void; setLane: (lane: "ALL" | Opportunity["lane"]) => void; select: (id: string) => void }) {
   const waveOne = data.opportunities.filter((item) => item.wave === "WAVE_1");
   const overdue = data.tasks.filter((task) => task.status !== "DONE" && task.due_at && new Date(task.due_at) < new Date());
   return <div className={styles.stack}>
