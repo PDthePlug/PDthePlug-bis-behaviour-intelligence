@@ -26,5 +26,5 @@ for (const file of (await files(path.join(root, "app"))).filter(file => /\/(page
     problem: prior?.problem??"Full route and state review pending", correction: prior?.correction??"Preserve accepted content and data; record specific changes here", verification: prior?.verification??[], releaseStatus: prior?.releaseStatus??"OPEN", outstanding:prior?.outstanding??[] });
 }
 await mkdir(path.join(root,"docs/hardening"),{recursive:true});
-await writeFile(path.join(root,"docs/hardening/route-register.json"), JSON.stringify({ baseCommit:"d8ca307ae455024b5816240d4db08f0dddd6bf73", generatedAt:new Date().toISOString(), routes },null,2)+"\n");
+await writeFile(path.join(root,"docs/hardening/route-register.json"), JSON.stringify({ ...existing, baseCommit:"d8ca307ae455024b5816240d4db08f0dddd6bf73", generatedAt:new Date().toISOString(), routes },null,2)+"\n");
 console.log(`Mapped ${routes.length} route patterns; retained existing review evidence and open findings.`);

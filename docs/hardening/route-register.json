@@ -1,6 +1,6 @@
 {
   "baseCommit": "d8ca307ae455024b5816240d4db08f0dddd6bf73",
-  "generatedAt": "2026-10-06T10:47:15.491Z",
+  "generatedAt": "2026-10-06T16:24:11.288Z",
   "routes": [
     {
       "route": "/api/bis",
@@ -35,7 +35,7 @@
         "tests/evidence-validation.test.mjs",
         "tests/response-write-batches.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -62,7 +62,7 @@
         "tests/facilitator-session-view.test.mjs",
         "tests/sql/workspace-consolidation-staging.sql"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -89,7 +89,7 @@
         "tests/browser/workspace-consolidation.spec.ts",
         "scripts/certify-hardening-role-variants.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -121,7 +121,7 @@
         "scripts/inspect-hardening-previews.mjs",
         "scripts/certify-hardening-publication.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -163,7 +163,7 @@
         "scripts/certify-hardening-learning-publication.mjs",
         "docs/hardening/migration-review.md"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -196,7 +196,7 @@
         "tests/bis-volume-migration.test.mjs",
         "scripts/certify-hardening-publication.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -229,7 +229,7 @@
         "tests/staff-evidence-engine.test.mjs",
         "tests/universal-evidence-transactions.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -254,7 +254,7 @@
         "scripts/certify-hardening-evidence.mjs",
         "tests/evidence-portfolio.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -279,7 +279,7 @@
         "tests/learner-runtime-access-parity.test.mjs",
         "tests/standard-day3-handoff.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -313,7 +313,7 @@
         "tests/decision-money-labs.test.mjs",
         "tests/full-evidence-loop.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -344,7 +344,7 @@
         "tests/workbook-reliability.test.mjs",
         "tests/browser/reader-hardening.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -373,7 +373,7 @@
         "tests/profile-settings-api.test.mjs",
         "tests/browser/profile-evidence.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -399,7 +399,7 @@
         "tests/browser/production-hardening.spec.ts",
         "tests/learning-library-ux.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -422,7 +422,7 @@
         "../../../lib/supabase/server",
         "../../../lib/content-studio",
         "../../../lib/learning-foundation",
-        "node:zlib"
+        "../../../lib/static-learning-package.mjs"
       ],
       "problem": "Versioned edition access; retained Learning self-fetch returned protected Vercel sign-in HTML",
       "correction": "Read trusted bundled handbook assets directly; build verifies all 15 editions in the serverless trace; retained publication/RLS gates",
@@ -432,7 +432,7 @@
         "tests/static-learning-package.test.mjs",
         "scripts/verify-static-learning-trace.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -468,7 +468,7 @@
         "tests/staff-workspace-hardening.test.mjs",
         "scripts/certify-hardening-role-variants.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -489,7 +489,7 @@
         "tests/environment-safety.test.mjs",
         "scripts/hardening-staging-session.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -530,7 +530,7 @@
         "scripts/certify-hardening-photo.mjs",
         "tests/universal-calculation-integrity.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -555,7 +555,7 @@
         "tests/google-sign-in.test.mjs",
         "tests/auth-confirmation-reliability.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -582,7 +582,7 @@
         "tests/production-domain-routing.test.mjs",
         "tests/auth-confirmation-reliability.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -609,10 +609,11 @@
         "tests/browser/workspace-consolidation.spec.ts",
         "scripts/certify-hardening-role-variants.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -634,11 +635,12 @@
         "scripts/prepare-hardening-staging.mjs",
         "scripts/certify-hardening-publication.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -660,11 +662,12 @@
         "tests/browser/content-studio-recovery.spec.ts",
         "scripts/certify-hardening-publication.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -690,13 +693,14 @@
         "scripts/inspect-hardening-learning-preview.mjs",
         "scripts/certify-hardening-learning-publication.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
         "Actual historical edition rollback requires a second governed edition version; first-publication rollback denial verified, multi-version transaction covered by database tests.",
-        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED."
+        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -717,11 +721,12 @@
         "tests/decision-money-labs.test.mjs",
         "tests/browser/production-hardening.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs."
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -739,7 +744,7 @@
         "tests/browser/programme-experience.spec.ts",
         "tests/report-export-and-demo.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -763,7 +768,7 @@
         "tests/report-export-and-demo.test.mjs",
         "tests/programme-evidence-pdf.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -784,7 +789,7 @@
       "verification": [
         "tests/browser/programme-experience-v2.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -807,10 +812,11 @@
         "tests/browser/profile-evidence.spec.ts",
         "scripts/certify-hardening-learning.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -829,7 +835,7 @@
         "tests/auth-confirmation-reliability.test.mjs",
         "tests/auth-confirmation-reliability.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -854,10 +860,11 @@
         "tests/experiment-timing.test.mjs",
         "tests/browser/lab-journey.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -878,10 +885,11 @@
         "tests/lab-progress-compatibility.test.mjs",
         "tests/browser/lab-journey.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -902,12 +910,13 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/browser/reader-hardening.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs.",
-        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED."
+        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -930,11 +939,12 @@
         "tests/static-learning-package.test.mjs",
         "tests/browser/programme-journey.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED."
+        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -958,10 +968,11 @@
         "scripts/certify-hardening-lab.mjs",
         "scripts/certify-hardening-photo.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -980,11 +991,12 @@
       "verification": [
         "tests/browser/production-hardening.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs."
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1004,11 +1016,12 @@
         "tests/browser/production-hardening.spec.ts",
         "tests/learning-library-ux.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs."
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1026,10 +1039,11 @@
       "verification": [
         "tests/learning-library-ux.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1048,10 +1062,11 @@
         "tests/learning-library-ux.test.mjs",
         "tests/production-domain-routing.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1072,10 +1087,11 @@
         "tests/decision-money-labs.test.mjs",
         "tests/browser/lab-journey.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1095,10 +1111,11 @@
         "tests/browser/workspace-consolidation.spec.ts",
         "tests/canonical-adaptive-shell.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1120,10 +1137,11 @@
         "tests/browser/staff-evidence-engine.spec.ts",
         "scripts/certify-hardening-evidence.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1143,10 +1161,11 @@
         "tests/browser/profile-evidence.spec.ts",
         "tests/profile-settings-api.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1168,7 +1187,7 @@
         "tests/vercel-migration.test.mjs",
         "tests/handbook-import.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -1190,10 +1209,11 @@
         "tests/staging-release-suite.test.mjs",
         "tests/browser/reader-hardening.spec.ts"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1213,7 +1233,7 @@
         "tests/auth-confirmation-reliability.test.mjs",
         "tests/auth-confirmation-reliability.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1239,10 +1259,11 @@
         "tests/browser/reader-hardening.spec.ts",
         "scripts/certify-hardening-learning.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     },
     {
@@ -1263,7 +1284,7 @@
         "tests/staging/auth-and-access.spec.ts",
         "tests/release-1-1-refinement.test.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -1291,12 +1312,27 @@
         "docs/hardening/migration-review.md",
         "scripts/certify-hardening-role-variants.mjs"
       ],
-      "releaseStatus": "REVIEWED_PARTIAL",
+      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
-        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Shared floating Menu visual obstruction review: VISUAL-MENU."
       ]
     }
   ],
-  "coverageBoundary": "48 patterns inventoried and individually dispositioned. REVIEWED_PARTIAL is not whole-route certification. Real staging/preview/state measurements are added in verification-evidence.json; see open-findings.md for release and remaining scope."
+  "coverageBoundary": "48 patterns inventoried and individually dispositioned. REVIEWED_PARTIAL is not whole-route certification. Real staging/preview/state measurements are added in verification-evidence.json; see open-findings.md for release and remaining scope. Correction merges are recorded separately from full route certification; CONFIG-DNS and VISUAL-MENU remain open.",
+  "correctionReleases": [
+    {
+      "pullRequest": 127,
+      "head": "911a152cd64c50c9fa9fa9fdebc6d2a12de033a7",
+      "merge": "444fc637675d75d06fad8c14cbbcfd0a2f514101",
+      "ciRun": 37463084914
+    },
+    {
+      "pullRequest": 128,
+      "head": "072123e1f05f69a257df4d5ba701439d2b88d996",
+      "merge": "6a5a13d87049e0aebde2f29a707cae50903b54ab",
+      "ciRun": 37493508041
+    }
+  ]
 }
