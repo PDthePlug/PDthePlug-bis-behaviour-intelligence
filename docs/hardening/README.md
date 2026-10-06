@@ -2,6 +2,8 @@
 
 Status: **ongoing**. This register is a release record for verified corrections and an explicit list of remaining certification work. A successful build or deployment does not close the whole hardening pass.
 
+Latest continuation: [Content Studio immutable-update and historical Learning rollback certification](studio-history-certification-20261006.md), including 117 exact-version page states, nine preview workspace states, preserved sources/responses/progress, and the released [PR134 reference-page presentation evidence](reference-page-release.json). Mobile source-table affordance and remaining role/configuration findings stay explicit.
+
 Baseline: `d8ca307ae455024b5816240d4db08f0dddd6bf73` (#126). Isolated branch: `hardening/production-readiness-20261006`. Application corrections: `b0aee73`, `75bf471`, `9aa717e`, `6835a04`, `e6c3c2e`, `958e2cd`, `f9ff382`, `87e1a65`. No production learner records, source files, content activations or database definitions were replaced with staging data.
 
 ## System map

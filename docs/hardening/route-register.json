@@ -115,17 +115,19 @@
         "../../../../lib/supabase/server"
       ],
       "problem": "Preview must be current/version-bound without live learner persistence",
-      "correction": "135 actual Lab previews; preserved explicit preview isolation",
+      "correction": "135 actual Lab previews; preserved explicit preview isolation Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/content-preview-uat.test.mjs",
         "scripts/inspect-hardening-previews.mjs",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -153,21 +155,25 @@
         "../../../lib/supabase/server",
         "../../../lib/lab-factory-capabilities.mjs"
       ],
-      "problem": "Immutable sources, preparation, fingerprint UAT and atomic publishing",
-      "correction": "Normal API staging versions/publishing; no bypass of editorial REVIEW; old identities preserved; explicit whole-module unpublish closes the retained global fallback without deleting immutable versions or learning history",
+      "problem": "Immutable sources, preparation, fingerprint UAT and atomic publishing; published JSON source copies retained the prior package version and could not prepare",
+      "correction": "Normal API staging versions/publishing; no bypass of editorial REVIEW; old identities preserved; explicit whole-module unpublish closes the retained global fallback without deleting immutable versions or learning history; branch correction gives copied JSON its own immutable object and updated envelope version, preserving all authored content and strict validation Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/content-studio.test.mjs",
         "tests/content-publication-transaction.test.mjs",
         "scripts/prepare-hardening-staging.mjs",
         "scripts/certify-hardening-publication.mjs",
         "scripts/certify-hardening-learning-publication.mjs",
-        "docs/hardening/migration-review.md"
+        "docs/hardening/migration-review.md",
+        "tests/content-source-version-copy.test.mjs",
+        "scripts/certify-hardening-learning-history.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -190,17 +196,19 @@
         "../../../../lib/supabase/server"
       ],
       "problem": "Canonical volume inventory/checksums and preparation review",
-      "correction": "All three canonical volume hashes checked; 32 Labs/14 REVIEW notes registered",
+      "correction": "All three canonical volume hashes checked; 32 Labs/14 REVIEW notes registered Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "scripts/map-hardening-metrics.mjs",
         "tests/bis-volume-migration.test.mjs",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -627,20 +635,24 @@
         "@/lib/supabase/require-user",
         "./content-studio"
       ],
-      "problem": "Governed authoring must preserve versions, fingerprints and editorial review; edition badge contrast",
-      "correction": "Preserved source/compile/final-check/approval/explicit publication; badge contrast corrected; reviewed candidates remain unpublished",
+      "problem": "Governed authoring must preserve versions, fingerprints and editorial review; edition badge contrast; published JSON source copies retained the prior package version and could not prepare",
+      "correction": "Preserved source/compile/final-check/approval/explicit publication; badge contrast corrected; reviewed candidates remain unpublished; branch correction gives copied JSON its own immutable object and updated envelope version, preserving all authored content and strict validation Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/browser/content-studio-recovery.spec.ts",
         "tests/content-publication-transaction.test.mjs",
         "scripts/prepare-hardening-staging.mjs",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "tests/content-source-version-copy.test.mjs",
+        "scripts/certify-hardening-learning-history.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -656,18 +668,20 @@
         "./preview-workspace"
       ],
       "problem": "Preview/final-check workflow must be bound to exact artifacts",
-      "correction": "Preserved fingerprint and version workflow; no editorial waiver",
+      "correction": "Preserved fingerprint and version workflow; no editorial waiver Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/content-preview-uat.test.mjs",
         "tests/browser/content-studio-recovery.spec.ts",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -684,23 +698,24 @@
         "@/app/canonical-adaptive-shell"
       ],
       "problem": "New source packages must use shared renderer without individual page repair",
-      "correction": "135 real Lab preview screens across five packages, nine stages and three widths; preserved authored controls and shared canvas; Learning uses the canonical shell with accurate stage labels and readable captions; 117 real Learning preview states clean",
+      "correction": "135 real Lab preview screens across five packages, nine stages and three widths; preserved authored controls and shared canvas; Learning uses the canonical shell with accurate stage labels and readable captions; 117 real Learning preview states clean Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "scripts/inspect-hardening-previews.mjs",
         "tests/risk-lab-factory-proof.test.mjs",
         "tests/identity-lab-factory-reuse.test.mjs",
         "scripts/certify-hardening-publication.mjs",
         "scripts/inspect-hardening-learning-preview.mjs",
-        "scripts/certify-hardening-learning-publication.mjs"
+        "scripts/certify-hardening-learning-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
-        "Actual historical edition rollback requires a second governed edition version; first-publication rollback denial verified, multi-version transaction covered by database tests.",
         "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -932,7 +947,7 @@
         "@/app/habit/programme-entry"
       ],
       "problem": "Uniform continuous reading canvas; response/check ordering, settings and source preservation",
-      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module. Current shared follow-up restores source list markers, accurate reference-only response status and Identity/Attention profile label/value table relationships without creating answers. Profile/reference/list corrections released PR133. Shared reference-page metadata/list/choice-label follow-up is verified in the current branch.",
+      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module. Current shared follow-up restores source list markers, accurate reference-only response status and Identity/Attention profile label/value table relationships without creating answers. Profile/reference/list corrections released PR133. Shared reference-page metadata/list/choice-label follow-up released PR134 after 633 acceptance, 240 browser and 42 actual protected-preview checks.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "scripts/certify-hardening-learning.mjs",

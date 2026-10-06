@@ -1,0 +1,19 @@
+{
+  "route": "/content-studio/preview/[versionId]/runtime?edition=school&page=4",
+  "versionId": "content:module:HAB:1.8",
+  "width": 360,
+  "before": {
+    "left": 0,
+    "width": 290,
+    "content": 620,
+    "label": "PartWhat It Was — scroll horizontally if needed",
+    "active": true
+  },
+  "after": {
+    "left": 40,
+    "width": 290,
+    "content": 620
+  },
+  "status": "PASS: keyboard reaches the horizontally scrollable table",
+  "visualReview": "Scroll affordance and reading-width treatment require review; no source cells are missing"
+}

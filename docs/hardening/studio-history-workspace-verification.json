@@ -1,0 +1,110 @@
+[
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=school",
+    "edition": "school",
+    "width": 360,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=school",
+    "edition": "school",
+    "width": 430,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=school",
+    "edition": "school",
+    "width": 1280,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=emerging_adult",
+    "edition": "emerging_adult",
+    "width": 360,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=emerging_adult",
+    "edition": "emerging_adult",
+    "width": 430,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=emerging_adult",
+    "edition": "emerging_adult",
+    "width": 1280,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=workplace",
+    "edition": "workplace",
+    "width": 360,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=workplace",
+    "edition": "workplace",
+    "width": 430,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  },
+  {
+    "route": "/content-studio/preview/content%3Amodule%3AHAB%3A1.8?kind=LEARNING_MODULE&code=HAB&edition=workplace",
+    "edition": "workplace",
+    "width": 1280,
+    "overflow": 0,
+    "violations": [],
+    "errors": [],
+    "navigation": "PASS: Next preview page and Previous preserve the return page",
+    "deviceControls": "PASS: keyboard Mobile and Desktop",
+    "previewBoundary": "Explicit preview-only notice",
+    "manualReview": "PENDING; image capture does not certify all content"
+  }
+]
