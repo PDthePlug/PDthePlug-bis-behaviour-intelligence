@@ -92,68 +92,69 @@ export function ProfileDashboard({
 
       {profileError ? (
         <p className="profile-notice" role="status">Some profile details could not be refreshed. Your account remains available.</p>
-  …1273 tokens truncated…er } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
-import { normalisePersonalisation, savePersonalisation, type LearnerPersonalisation } from "@/lib/learner-personalization";
+      ) : null}
 
-type AccessSnapshot = {
-  roles?: string[];
-  profile?: { deliveryEdition?: string; appearancePreference?: string; accentPreference?: string; textSizePreference?: string; readingWidthPreference?: string } | null;
-  error?: string;
-};
+      <section className="profile-section" aria-labelledby="profile-my-bis">
+        <h2 id="profile-my-bis">My BIS</h2>
+        <div className="profile-list">
+          <Link href="/experience" className="profile-row">
+            <span className="profile-row-copy">
+              <strong>My experience</strong>
+              <small>{edition.replace(" Edition", "")}</small>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
 
-const STAFF_ROLES = new Set(["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER", "PROGRAMME_OWNER"]);
+          <Link href="/settings" className="profile-row">
+            <span className="profile-row-copy">
+              <strong>Settings</strong>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
 
-export function RoleRouter() {
-  const router = useRouter();
-  const [error, setError] = useState("");
+          <Link href="/portfolio" className="profile-row">
+            <span className="profile-row-copy">
+              <strong>Evidence Portfolio</strong>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
 
-  useEffect(() => {
-    const controller = new AbortController();
-    void (async () => {
-      try {
-        const response = await fetch("/api/profile", {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        const snapshot = (await response.json().catch(() => null)) as AccessSnapshot | null;
-        if (!response.ok || !snapshot) {
-          throw new Error("We couldn't open your BIS workspace. Please try again.");
-        }
-        if (controller.signal.aborted) return;
-        if (snapshot.profile) savePersonalisation(normalisePersonalisation({
-          appearance: snapshot.profile.appearancePreference,
-          accent: snapshot.profile.accentPreference,
-          textSize: snapshot.profile.textSizePreference,
-          readingWidth: snapshot.profile.readingWidthPreference,
-        } as Partial<LearnerPersonalisation>));
-        const staff = (snapshot.roles ?? []).some((role) => STAFF_ROLES.has(role));
-        router.replace(staff ? "/workspace" : "/habit");
-      } catch (cause) {
-        if (!controller.signal.aborted) {
-          setError(cause instanceof Error ? cause.message : "We couldn't open your BIS workspace. Please try again.");
-        }
-      }
-    })();
-    return () => controller.abort();
-  }, [router]);
+          <Link href="/learn" className="profile-row">
+            <span className="profile-row-copy">
+              <strong>Learning</strong>
+            </span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
 
-  if (error) {
-    return (
-      <main className="learning-state">
-        <ShieldCheck />
-        <h1>We couldn&apos;t open your BIS workspace.</h1>
-        <p>{error}</p>
-        <button type="button" onClick={() => window.location.reload()}>Try again</button>
-      </main>
-    );
-  }
+      {staff ? (
+        <section className="profile-section" aria-labelledby="profile-programme-team">
+          <h2 id="profile-programme-team">Programme team</h2>
+          <div className="profile-list">
+            <Link href="/workspace" className="profile-row">
+              <span className="profile-row-copy">
+                <strong>Open programme workspace</strong>
+              </span>
+              <ChevronRight aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
-  return (
-    <main className="learning-state">
-      <span className="learning-loader" />
-      <h1>Opening BIS…</h1>
-      <p>Getting your learning and programme access ready.</p>
+      <section className="profile-section" aria-labelledby="profile-account">
+        <h2 id="profile-account">Account</h2>
+        <div className="profile-account-card">
+          <div><span>Email</span><strong>{email}</strong></div>
+        </div>
+        <details className="profile-install"><summary>Install BIS</summary><InstallCard /></details>
+        <form action="/auth/signout" method="post">
+          <button type="submit" className="profile-signout">
+            Sign out
+          </button>
+        </form>
+      </section>
+
     </main>
   );
 }
