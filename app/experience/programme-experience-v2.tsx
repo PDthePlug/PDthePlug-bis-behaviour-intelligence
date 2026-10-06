@@ -4,26 +4,18 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
-  BookOpen,
   Check,
   ChevronDown,
-  Compass,
   Download,
-  Eye,
-  FlaskConical,
-  Gauge,
-  Lightbulb,
-  MessageCircleQuestion,
-  ShieldCheck,
-  Sparkles,
-  UserRoundCheck,
-  Users,
 } from 'lucide-react';
 import learning from '@/lib/experience/leap9-learning.json';
 import { sessionDesignForDay } from '@/lib/session-design';
 import {
   experienceEvidence,
+  explainExperience,
+  sponsorFindings,
   illustrativeCohort,
+  illustrativeParticipants,
   initialExperience,
   restoreExperience,
   type ExperienceState,
@@ -38,33 +30,16 @@ const steps = [
   { id: 'experiment', label: 'Real-world test', perspective: 'Participant' },
   { id: 'facilitator', label: 'Facilitator view', perspective: 'Facilitator' },
   { id: 'profile', label: 'Evidence profile', perspective: 'Evidence' },
-  { id: 'programme', label: 'Programme intelligence', perspective: 'Programme' },
+  { id: 'programme', label: 'Programme outcomes', perspective: 'Programme' },
 ] as const;
 
-const guideCopy = [
-  'Start here for the programme frame. The guide closes automatically once you begin, and you can reopen it at any time.',
-  'Work through Naledi’s fictional situation. Change the example answers if you want to see how the evidence profile responds.',
-  'Move time forward through a fictional seven-day test. The observations demonstrate how BIS separates prediction, opportunity and what actually happened.',
-  'Switch perspective. The cohort view shows structural progress and support signals first; private learner-authored evidence remains protected unless explicitly shared.',
-  'See how one investigation becomes a source-linked evidence record rather than a personality label or generic completion badge.',
-  'Finish with the questions a programme team needs answered: is learning turning into action, where is support needed, and what should change next?',
-];
-
-const participantRows = [
-  { name: 'Naledi Mokoena', position: 'Evidence review', evidence: '6 opportunities', support: 'Depends on your choice', tone: 'focus' },
-  { name: 'Thabo Maseko', position: 'Experiment in progress', evidence: '4 opportunities', support: 'No request', tone: 'steady' },
-  { name: 'Zanele Ndlovu', position: 'Evidence review', evidence: 'Threshold reached', support: 'Acknowledged', tone: 'support' },
-  { name: 'Amina Petersen', position: 'Preparing experiment', evidence: 'Not started', support: 'Check-in useful', tone: 'attention' },
-  { name: 'Sipho Dlamini', position: 'Experiment in progress', evidence: '2 opportunities', support: 'No request', tone: 'steady' },
-  { name: 'Lerato Khumalo', position: 'Early investigation', evidence: 'Building context', support: 'No request', tone: 'steady' },
-] as const;
-
-const programmeArc = [
-  { label: 'Learn & identify', detail: 'Build relevance, language and a usable starting model.' },
-  { label: 'Investigate & predict', detail: 'Turn a repeated pattern into a testable explanation and plan.' },
-  { label: 'Test in real life', detail: 'Collect observations outside the facilitated environment.' },
-  { label: 'Review & transfer', detail: 'Interpret evidence, support the person and decide what moves forward.' },
-];
+const participantRows = [0, 12, 6, 16, 14, 18].map(index => {
+  const row = illustrativeParticipants[index];
+  const opportunities = row.events.filter(event => event.eligibleOpportunity).length;
+  return { name: row.name, position: row.completed ? 'Evidence review' : opportunities ? 'Experiment in progress' : row.active ? 'Preparing experiment' : 'Early investigation',
+    evidence: opportunities ? `${opportunities} opportunities` : 'Not started',
+    support: row.supportRequested ? 'Requested' : 'No request', tone: index === 0 ? 'focus' : row.supportRequested ? 'support' : 'steady' };
+});
 
 const touchpoints = Array.from({ length: 10 }, (_, index) => sessionDesignForDay(index + 1, 'emerging_adult')!);
 const { loop, story } = learning;
@@ -85,11 +60,12 @@ export function ProgrammeExperienceV2() {
   const [state, setState] = useState<ExperienceState>({ ...initialExperience });
   const [ready, setReady] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
-  const [guideOpen, setGuideOpen] = useState(true);
   const [mapOpen, setMapOpen] = useState(false);
   const [resetRequested, setResetRequested] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const evidence = experienceEvidence(state);
+  const feedback = explainExperience(state);
+  const findings = sponsorFindings();
 
   const statusSummary = useMemo(() => {
     if (!state.shared) return 'Private reflection not shared';
@@ -106,14 +82,12 @@ export function ProgrammeExperienceV2() {
       }
       const index = hashIndex();
       setStep(index);
-      setGuideOpen(index === 0);
       setReady(true);
     });
 
     const syncHistory = () => {
       const index = hashIndex();
       setStep(index);
-      setGuideOpen(index === 0);
       setResetRequested(false);
     };
 
@@ -163,7 +137,6 @@ export function ProgrammeExperienceV2() {
     const next = Math.max(0, Math.min(steps.length - 1, index));
     window.history.pushState(null, '', '#' + steps[next].id);
     setStep(next);
-    setGuideOpen(next === 0);
     setMapOpen(false);
     setResetRequested(false);
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -220,18 +193,14 @@ export function ProgrammeExperienceV2() {
           <small>Behaviour Intelligence Series™ · Applied Commerce®</small>
         </a>
         <div className="experience-v2-topbar-meta">
-          <span>Programme Experience · v2</span>
-          <span>Fictional simulation</span>
+          <span>Programme Experience</span>
         </div>
       </header>
 
-      <div className="experience-v2-disclosure">
-        <ShieldCheck size={17} aria-hidden="true" />
-        <p>
-          Fictional participants and illustrative programme results. Use the supplied scenario rather than personal information.
-          Nothing entered here is submitted to a live Leap9 programme.
-        </p>
-      </div>
+      <details className="experience-v2-disclosure">
+        <summary>About this simulation</summary>
+        <p>Fictional participants and illustrative results, prepared for discussion. Use Naledi’s scenario rather than personal information. Practice answers stay in this browser tab and are never sent to a live Leap9 programme. The cohort report uses a separate, fixed sample of 20 participants.</p>
+      </details>
 
       <div className="experience-v2-shell">
         <aside className="experience-v2-map" aria-label="Experience map">
@@ -241,12 +210,11 @@ export function ProgrammeExperienceV2() {
             aria-expanded={mapOpen}
             onClick={() => setMapOpen((value) => !value)}
           >
-            <span><Compass size={17} /> Experience map</span>
+            <span> Experience map</span>
             <ChevronDown size={17} aria-hidden="true" />
           </button>
 
           <div className={mapOpen ? 'experience-v2-map-body is-open' : 'experience-v2-map-body'}>
-            <p>One participant. Three operating perspectives.</p>
             <nav aria-label="Leap9 programme experience">
               {steps.map((item, index) => (
                 <button
@@ -255,7 +223,6 @@ export function ProgrammeExperienceV2() {
                   aria-current={step === index ? 'step' : undefined}
                   onClick={() => go(index)}
                 >
-                  <span>{String(index + 1).padStart(2, '0')}</span>
                   <div>
                     <strong>{item.label}</strong>
                     <small>{item.perspective}</small>
@@ -285,35 +252,11 @@ export function ProgrammeExperienceV2() {
               <h1 ref={heading} tabIndex={-1}>
                 {step === 0 ? 'See the programme move.' : steps[step].label}
               </h1>
-              <p className="experience-v2-purpose">
-                {step === 0
-                  ? 'Experience how learning can become observable behaviour, human support and programme intelligence without turning a young person into a score.'
-                  : step === 1
-                    ? 'Follow one fictional participant from relevance and learning into a testable behavioural plan.'
-                    : step === 2
-                      ? 'Separate what Naledi expected from what actually happened across repeated real-world opportunities.'
-                      : step === 3
-                        ? 'See the cohort first, then the person — with privacy boundaries preserved.'
-                        : step === 4
-                          ? 'Turn one investigation into traceable evidence that can travel forward without becoming a label.'
-                          : 'Translate participation and evidence coverage into questions a programme team can act on.'}
-              </p>
+              <p className="experience-v2-purpose">{step === 0 ? 'Follow Naledi from learning to practice, facilitator feedback and programme outcomes.' : step === 1 ? 'A small first step towards completing a job application.' : step === 2 ? 'Did the plan hold up in daily life?' : step === 3 ? 'Who needs a conversation before the next session?' : step === 4 ? 'What Naledi tried, what happened and what to try next.' : 'What the evidence means for Leap9.'}</p>
             </div>
             <span className="experience-v2-step-pill">{step + 1} / {steps.length}</span>
             <div className="experience-v2-progress" aria-hidden="true"><i style={{ width: progressWidth(step) }} /></div>
           </section>
-
-          <details
-            className="experience-v2-guide"
-            open={guideOpen}
-            onToggle={(event) => setGuideOpen(event.currentTarget.open)}
-          >
-            <summary>
-              <span><Sparkles size={16} /> How to explore this step</span>
-              <ChevronDown size={16} aria-hidden="true" />
-            </summary>
-            <p>{guideCopy[step]}</p>
-          </details>
 
           {!ready ? (
             <div className="experience-v2-loading" role="status">Preparing your programme experience…</div>
@@ -336,46 +279,9 @@ export function ProgrammeExperienceV2() {
                     </div>
                   </section>
 
-                  <section className="experience-v2-section">
-                    <div className="experience-v2-section-heading">
-                      <p className="experience-v2-eyebrow">Programme arc</p>
-                      <h2>Not another course. A visible transfer journey.</h2>
-                    </div>
-                    <div className="experience-v2-arc">
-                      {programmeArc.map((item, index) => (
-                        <article key={item.label}>
-                          <span>{String(index + 1).padStart(2, '0')}</span>
-                          <h3>{item.label}</h3>
-                          <p>{item.detail}</p>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
-
-                  <section className="experience-v2-perspectives">
-                    <article>
-                      <UserRoundCheck size={22} />
-                      <p>01 / Participant</p>
-                      <h3>Experience the learning.</h3>
-                      <span>See a repeated pattern become a small, testable response.</span>
-                    </article>
-                    <article>
-                      <Users size={22} />
-                      <p>02 / Facilitator</p>
-                      <h3>Support the person.</h3>
-                      <span>See cohort progress, support signals and only the evidence a learner chooses to share.</span>
-                    </article>
-                    <article>
-                      <Gauge size={22} />
-                      <p>03 / Programme</p>
-                      <h3>Learn from the cohort.</h3>
-                      <span>See where learning reaches action, where evidence is thin and where programme attention may help.</span>
-                    </article>
-                  </section>
-
                   <details className="experience-v2-touchpoints">
                     <summary>
-                      <span><BookOpen size={17} /> See the ten facilitated touchpoints</span>
+                      <span>Ten facilitated touchpoints</span>
                       <ChevronDown size={17} aria-hidden="true" />
                     </summary>
                     <div>
@@ -402,15 +308,15 @@ export function ProgrammeExperienceV2() {
                 <>
                   <section className="experience-v2-story-grid">
                     <article className="experience-v2-person-card">
-                      <p className="experience-v2-eyebrow">Fictional participant</p>
+                      <p className="experience-v2-eyebrow">Participant</p>
                       <h2>Naledi Mokoena</h2>
                       <p className="experience-v2-person-meta">22 · Johannesburg · preparing job applications</p>
                       <p>
                         Naledi wants to follow through on her plans, but when an application feels difficult she often reaches for her phone before she starts.
                       </p>
                       <div className="experience-v2-person-goal">
-                        <span>Transfer goal</span>
-                        <strong>Move from “I know what I should do” to a small response she can actually repeat outside the session.</strong>
+                        <span>Goal</span>
+                        <strong>Start her application before reaching for her phone.</strong>
                       </div>
                     </article>
 
@@ -433,7 +339,7 @@ export function ProgrammeExperienceV2() {
                     <div className="experience-v2-section-heading">
                       <p className="experience-v2-eyebrow">From learning to investigation</p>
                       <h2>Make the pattern usable.</h2>
-                      <p>The same answers become Naledi’s working map and later reappear in her evidence profile.</p>
+                      <p>Describe what happens, then choose one action to try.</p>
                     </div>
 
                     {rating('baseline', 'How much control does Naledi report having over this pattern?')}
@@ -447,7 +353,7 @@ export function ProgrammeExperienceV2() {
                     <div className="experience-v2-equation">
                       <span>Working explanation</span>
                       <strong>{state.cue} → {state.routine} → {state.reward}</strong>
-                      <p>A hypothesis to test, not a verdict about Naledi.</p>
+                      <p>Check this explanation against what happens during the week.</p>
                     </div>
 
                     {textField(
@@ -456,17 +362,7 @@ export function ProgrammeExperienceV2() {
                       'Keep the first action small enough to use on a difficult day.',
                     )}
 
-                    <div className="experience-v2-handover">
-                      <FlaskConical size={23} />
-                      <div>
-                        <p className="experience-v2-eyebrow">Day 3 · Lab handover</p>
-                        <h3>Learning gives Naledi a question. The Lab gives her a way to test it.</h3>
-                        <p>
-                          The full Behaviour Contract also records a witness, restart plan, minimum version and failure signal.
-                          This shortened experience keeps the handover visible without pretending to complete the full Lab.
-                        </p>
-                      </div>
-                    </div>
+                    <details className="experience-v2-touchpoints"><summary>The full Habit Lab</summary><p>The full Lab adds a witness, restart plan, minimum version and failure signal. Day 3 prepares the handover into a separate 90-minute Lab session, followed by seven days of practice.</p></details>
                   </section>
                 </>
               ) : null}
@@ -476,10 +372,10 @@ export function ProgrammeExperienceV2() {
                   <section className="experience-v2-section">
                     <div className="experience-v2-section-heading">
                       <p className="experience-v2-eyebrow">Prediction</p>
-                      <h2>Before the week begins, Naledi makes a claim she can later compare with evidence.</h2>
+                      <h2>How often does Naledi expect to use her plan?</h2>
                     </div>
                     <label className="experience-v2-field experience-v2-field-compact">
-                      <span>What percentage of opportunities does she predict she will use the smaller response?</span>
+                      <span>Predicted use of the smaller response (%)</span>
                       <input
                         type="number"
                         required
@@ -488,7 +384,7 @@ export function ProgrammeExperienceV2() {
                         value={state.prediction}
                         onChange={(event) => update({ prediction: Number(event.target.value) })}
                       />
-                      <small>Prediction is compared with observation. It is never counted as an outcome.</small>
+
                     </label>
                   </section>
 
@@ -496,7 +392,7 @@ export function ProgrammeExperienceV2() {
                     <div className="experience-v2-section-heading">
                       <p className="experience-v2-eyebrow">Seven-day real-world test</p>
                       <h2>What actually happened?</h2>
-                      <p>Days 1–6 are fictional observations. Record Naledi’s final day.</p>
+                      <p>Record Naledi’s final day.</p>
                     </div>
 
                     <div className="experience-v2-week">
@@ -535,27 +431,20 @@ export function ProgrammeExperienceV2() {
                     </fieldset>
 
                     <p className="experience-v2-caption">
-                      “No opportunity” is not treated as failure. It is excluded from the adherence denominator.
+                      A day without an opportunity is left out of the percentage.
                     </p>
                   </section>
 
-                  <section className="experience-v2-result-panel">
-                    <div className="experience-v2-metric">
-                      <strong>{evidence.opportunityCount}</strong>
-                      <span>real opportunities</span>
-                    </div>
-                    <div className="experience-v2-metric">
-                      <strong>{evidence.replacementCount}</strong>
-                      <span>smaller responses used</span>
-                    </div>
-                    <div className="experience-v2-metric">
-                      <strong>{evidence.adherence ?? 'N/A'}%</strong>
-                      <span>observed adherence</span>
-                    </div>
-                    <div className="experience-v2-result-copy">
-                      <p><strong>{state.prediction}% predicted</strong> · {evidence.adherence ?? 'N/A'}% observed.</p>
-                      <p>This describes a short test. It does not prove permanent change or programme causation.</p>
-                    </div>
+                  <section className="experience-v2-section experience-v2-feedback">
+                    <h2>Following through on a plan</h2>
+                    <p>{feedback.followThrough}</p>
+                    <p><strong>Try next:</strong> {feedback.nextStep}</p>
+                    <details className="experience-v2-measures"><summary>Measures</summary><dl>
+                      <div><dt>Opportunities</dt><dd>{evidence.opportunityCount}</dd></div>
+                      <div><dt>Smaller response used</dt><dd>{evidence.replacementCount}</dd></div>
+                      <div><dt>Use of the plan</dt><dd>{evidence.adherence ?? 'Not available'}%</dd></div>
+                      <div><dt>Prediction</dt><dd>{state.prediction}%</dd></div>
+                    </dl><p>These observations cover one week and the situation Naledi chose to test.</p></details>
                   </section>
 
                   <section className="experience-v2-section experience-v2-workbook">
@@ -590,13 +479,12 @@ export function ProgrammeExperienceV2() {
                       <p className="experience-v2-eyebrow">Facilitator · Lerato Dlamini</p>
                       <h2>See the cohort before opening a person.</h2>
                       <p>
-                        BIS gives Lerato enough structure to know where support may be useful without exposing private learner-authored material by default.
+                        Lerato can arrange check-ins and review the work participants choose to share.
                       </p>
                     </div>
                     <div className="experience-v2-facilitator-principle">
-                      <Eye size={20} />
-                      <strong>Structural visibility first.</strong>
-                      <span>Progress, evidence coverage and support requests are visible. Private reflection remains private unless shared.</span>
+                      <strong>Private reflections stay private.</strong>
+                      <span>Lerato sees progress and requests for support. Naledi chooses whether to share her reflection.</span>
                     </div>
                   </section>
 
@@ -609,7 +497,7 @@ export function ProgrammeExperienceV2() {
 
                   <section className="experience-v2-section">
                     <div className="experience-v2-section-heading">
-                      <p className="experience-v2-eyebrow">Cohort operations</p>
+                      <p className="experience-v2-eyebrow">Participants</p>
                       <h2>Where does facilitator attention belong?</h2>
                     </div>
                     <div className="experience-v2-cohort-table">
@@ -620,7 +508,7 @@ export function ProgrammeExperienceV2() {
                         <div key={row.name} className={'experience-v2-cohort-row ' + row.tone}>
                           <strong>{row.name}</strong>
                           <span>{row.position}</span>
-                          <span>{row.evidence}</span>
+                          <span>{row.name === 'Naledi Mokoena' ? `${evidence.opportunityCount} opportunities` : row.evidence}</span>
                           <span>{row.name === 'Naledi Mokoena' ? (state.supportRequested ? 'Requested' : 'No request') : row.support}</span>
                         </div>
                       ))}
@@ -638,8 +526,8 @@ export function ProgrammeExperienceV2() {
                     </div>
                     <dl>
                       <div><dt>Programme position</dt><dd>Example experiment recorded · evidence review reached</dd></div>
-                      <div><dt>Support signal</dt><dd>{state.supportRequested ? (state.supportAcknowledged ? 'Request acknowledged' : 'Conversation requested') : 'No support request'}</dd></div>
-                      <div><dt>Evidence coverage</dt><dd>{evidence.opportunityCount} opportunities · {evidence.replacementCount} smaller responses used</dd></div>
+                      <div><dt>Support</dt><dd>{state.supportRequested ? (state.supportAcknowledged ? 'Request acknowledged' : 'Conversation requested') : 'No support request'}</dd></div>
+                      <div><dt>Practice recorded</dt><dd>{evidence.opportunityCount} opportunities · {evidence.replacementCount} smaller responses used</dd></div>
                     </dl>
 
                     {state.supportRequested ? (
@@ -649,14 +537,13 @@ export function ProgrammeExperienceV2() {
                         disabled={state.supportAcknowledged}
                         onClick={() => update({ supportAcknowledged: true })}
                       >
-                        <MessageCircleQuestion size={17} />
                         {state.supportAcknowledged ? 'Support request acknowledged' : 'Acknowledge support request'}
                       </button>
                     ) : null}
 
                     {state.shared ? (
                       <div className="experience-v2-shared-review">
-                        <p className="experience-v2-eyebrow">Explicitly shared for this simulation</p>
+                        <p className="experience-v2-eyebrow">Shared by Naledi</p>
                         <blockquote>{state.reflection}</blockquote>
                         <label className="experience-v2-field">
                           <span>Facilitator review note</span>
@@ -680,7 +567,6 @@ export function ProgrammeExperienceV2() {
                       </div>
                     ) : (
                       <div className="experience-v2-privacy-card">
-                        <Eye size={21} />
                         <div>
                           <h3>Naledi’s reflection stays private.</h3>
                           <p>
@@ -701,127 +587,52 @@ export function ProgrammeExperienceV2() {
                       <div>
                         <p className="experience-v2-eyebrow">Participant evidence</p>
                         <h2>Naledi Mokoena</h2>
-                        <p>Behaviour Intelligence Programme · fictional evidence record</p>
+                        <p>Behaviour Intelligence Programme</p>
                       </div>
                       <span>Investigation evidence</span>
                     </div>
 
-                    <div className="experience-v2-profile-grid">
-                      <article><span>Context</span><strong>{state.cue}</strong></article>
-                      <article><span>Plan</span><strong>{state.alternative}</strong></article>
-                      <article><span>Observed test</span><strong>{evidence.replacementCount} / {evidence.opportunityCount} opportunities</strong></article>
-                      <article><span>Self-report comparison</span><strong>{state.baseline} → {state.post} / 10 ({evidence.controlShift > 0 ? '+' : ''}{evidence.controlShift})</strong></article>
-                      <article className="wide"><span>Participant interpretation</span><strong>{state.reflection}</strong></article>
-                      <article className="wide"><span>Facilitator review</span><strong>{state.attested ? state.note : 'No illustrative review recorded'}</strong></article>
-                    </div>
+                    <section className="experience-v2-feedback">
+                      <h3>Following through</h3><p>{feedback.followThrough}</p>
+                      <h3>Feeling able to manage the habit</h3><p>{feedback.control}</p>
+                      <h3>Try next</h3><p>{feedback.nextStep}</p>
+                      <h3>Naledi’s reflection</h3><blockquote>{state.reflection}</blockquote>
+                      <h3>Facilitator feedback</h3><p>{state.attested ? state.note : 'Not reviewed yet. Naledi can share this work with Lerato for feedback.'}</p>
+                    </section>
+                    <details className="experience-v2-measures"><summary>Plan & measures</summary><dl>
+                      <div><dt>Situation</dt><dd>{state.cue}</dd></div>
+                      <div><dt>Planned action</dt><dd>{state.alternative}</dd></div>
+                      <div><dt>Use of the plan</dt><dd>{evidence.replacementCount} / {evidence.opportunityCount} opportunities</dd></div>
+                      <div><dt>Rating of control</dt><dd>{state.baseline} → {state.post} / 10</dd></div>
+                    </dl></details>
                   </section>
-
-                  <section className="experience-v2-section">
-                    <div className="experience-v2-section-heading">
-                      <p className="experience-v2-eyebrow">Longitudinal evidence</p>
-                      <h2>The value is not one score. It is a trail.</h2>
-                    </div>
-                    <div className="experience-v2-evidence-chain">
-                      <article><span>01</span><strong>Learning</strong><p>Naledi identifies a repeated situation and language for describing it.</p></article>
-                      <article><span>02</span><strong>Prediction</strong><p>She makes a claim before the real-world test begins.</p></article>
-                      <article><span>03</span><strong>Observation</strong><p>Repeated opportunities show what happened outside the session.</p></article>
-                      <article><span>04</span><strong>Review</strong><p>Her interpretation stays separate from observed behaviour and human review.</p></article>
-                    </div>
-                  </section>
-
-                  <div className="experience-v2-boundary-note">
-                    <ShieldCheck size={20} />
-                    <div>
-                      <strong>Evidence of an investigation, not a label for a person.</strong>
-                      <p>A live BIS portfolio can carry source-linked evidence forward. Completing this simulation does not issue a credential or prove participant development.</p>
-                    </div>
-                  </div>
                 </>
               ) : null}
 
               {step === 5 ? (
                 <>
-                  <section className="experience-v2-programme-hero">
-                    <div>
-                      <p className="experience-v2-eyebrow">Programme perspective · Leap9</p>
-                      <h2>Move from reporting activity to learning from the programme.</h2>
-                      <p>
-                        The illustrative cohort stays aggregate. The useful question is not simply “how many completed?” but what the evidence suggests the programme team should look at next.
-                      </p>
-                    </div>
-                    <div className="experience-v2-programme-numbers">
-                      <div><strong>20</strong><span>enrolled</span></div>
-                      <div><strong>18</strong><span>active</span></div>
-                      <div><strong>16</strong><span>started a real-world test</span></div>
-                      <div><strong>12</strong><span>evidence ready for review</span></div>
-                    </div>
+                  <section className="experience-v2-section">
+                    <p className="experience-v2-eyebrow">Leap9 · Programme outcomes</p>
+                    <h2>From intention to follow-through</h2>
+                    <p>What participants do with a plan matters beyond the session. Here is what the sample tells us, and what Leap9 can ask BIS to check next.</p>
                   </section>
-
-                  <section className="experience-v2-question-grid">
-                    <article>
-                      <div className="experience-v2-question-icon"><Gauge size={21} /></div>
-                      <p className="experience-v2-eyebrow">Question 01</p>
-                      <h3>Is learning turning into action?</h3>
-                      <strong>16 of 20 participants started an experiment.</strong>
-                      <p>Four have not yet crossed the handover from understanding into a real-world test.</p>
-                      <div><span>Programme attention</span><p>Inspect the Day 3 handover and the support between planning and the first attempt.</p></div>
-                    </article>
-
-                    <article>
-                      <div className="experience-v2-question-icon"><MessageCircleQuestion size={21} /></div>
-                      <p className="experience-v2-eyebrow">Question 02</p>
-                      <h3>Where is support needed?</h3>
-                      <strong>5 participants requested facilitator support.</strong>
-                      <p>A request is a human-support signal, not a diagnosis or risk label.</p>
-                      <div><span>Programme attention</span><p>Protect time for check-ins before the next touchpoint and track whether requests are acknowledged.</p></div>
-                    </article>
-
-                    <article>
-                      <div className="experience-v2-question-icon"><Lightbulb size={21} /></div>
-                      <p className="experience-v2-eyebrow">Question 03</p>
-                      <h3>What should change next?</h3>
-                      <strong>8 participants do not yet have sufficient observations for strong review.</strong>
-                      <p>Some evidence is still building; some participants recorded no matching opportunity yet.</p>
-                      <div><span>Programme attention</span><p>Strengthen the experiment setup and help participants choose situations that can realistically be observed.</p></div>
-                    </article>
-                  </section>
-
-                  <section className="experience-v2-decision-register">
-                    <div className="experience-v2-section-heading">
-                      <p className="experience-v2-eyebrow">Illustrative programme decision</p>
-                      <h2>Turn a cohort signal into a decision that can be checked later.</h2>
-                    </div>
-                    <div className="experience-v2-decision-row">
-                      <div><span>Signal</span><strong>4 participants have not started the real-world experiment.</strong></div>
-                      <div><span>Decision</span><strong>Strengthen the Day 3 handover and add a short first-attempt check-in.</strong></div>
-                      <div><span>What to compare next</span><strong>Next cohort: movement from “ready” to first recorded observation.</strong></div>
-                    </div>
-                  </section>
-
-                  <section className="experience-v2-report-card">
-                    <div>
-                      <p className="experience-v2-eyebrow">Illustrative outcome report</p>
-                      <h2>Participation → Behaviour → Evidence → Programme learning</h2>
-                      <p>
-                        The downloadable report uses fixed fictional aggregate data. Private reflections and identifiable learner answers are excluded.
-                      </p>
-                    </div>
-                    <a className="experience-v2-primary" href="/experience/leap9/report">
-                      <Download size={18} />
-                      Download illustrative report
-                    </a>
-                  </section>
-
-                  <div className="experience-v2-close">
-                    <Compass size={22} />
-                    <div>
-                      <strong>A possible Leap9 implementation — open to discussion.</strong>
-                      <p>
-                        This experience demonstrates one way Behaviour Intelligence could sit inside an existing youth-development programme:
-                        participant learning, facilitator support, evidence continuity and programme-level intelligence in one operating loop.
-                      </p>
-                    </div>
+                  <div className="experience-v2-findings">
+                    {findings.map(item => <section key={item.title}>
+                      <h3>{item.title}</h3><p><strong>{item.observation}</strong></p><p>{item.meaning}</p>
+                      <p><strong>Next step:</strong> {item.action}</p>
+                      <details><summary>Evidence & limits</summary><p>{item.basis}</p><p>{item.limit}</p></details>
+                    </section>)}
                   </div>
+                  <details className="experience-v2-measures"><summary>Programme measures</summary><dl>
+                    <div><dt>Enrolled</dt><dd>{illustrativeCohort.enrolled}</dd></div>
+                    <div><dt>Active</dt><dd>{illustrativeCohort.active}</dd></div>
+                    <div><dt>Started a test</dt><dd>{illustrativeCohort.started}</dd></div>
+                    <div><dt>Enough observations for review</dt><dd>{illustrativeCohort.sufficient}</dd></div>
+                  </dl></details>
+                  <section className="experience-v2-report-card">
+                    <div><h2>Programme outcome report</h2><p>Findings, practical next steps and the evidence behind them.</p></div>
+                    <a className="experience-v2-primary" href="/experience/leap9/report"><Download size={18} />Download illustrative report</a>
+                  </section>
                 </>
               ) : null}
 
@@ -838,7 +649,7 @@ export function ProgrammeExperienceV2() {
                       : step === 2
                         ? 'See the facilitator view'
                         : step === 4
-                          ? 'See programme intelligence'
+                          ? 'See programme outcomes'
                           : 'Continue'}
                     <ArrowRight size={17} />
                   </button>
@@ -849,14 +660,14 @@ export function ProgrammeExperienceV2() {
           )}
 
           <p role="status" className="experience-v2-save">
-            {saveMessage || (ready ? 'Practice answers stay only in this browser tab. You can revisit any perspective.' : '')}
+            {saveMessage}
           </p>
         </main>
       </div>
 
       <footer className="experience-v2-footer">
         <strong>Behaviour Intelligence Series™</strong>
-        <span>Learning. Practice. Evidence. Human support.</span>
+        <span>Learn. Practice. Evidence. Human support. · Prepared by P.D.</span>
       </footer>
     </div>
   );

@@ -64,9 +64,11 @@ export function buildEvidencePortfolio(input: {
 export type PortfolioIntelligence = {
   modelVersion: string; classificationStatus: string; confidence: null;
   summary: string; boundary: string;
+  feedback: Array<{ title: string; meaning: string; nextStep: string; codes: string[] }>;
   nextAction: { label: string; investigation: number; reason: string };
   evidenceRefs: Array<{ evidenceId: string | null; sourceObjectId: string; anchorId: string | null }>;
   measurementReview: { verified: number; unverified: number }; gaps: string[];
 };
+export function explainPortfolioMeasures(metrics: EvidencePortfolioMetric[]): PortfolioIntelligence['feedback'];
 export function evidenceAnchorId(investigationId: string): string | null;
 export function buildPortfolioIntelligence(input: { enrolment: Record<string, unknown>; anchors: EvidencePortfolioAnchor[]; metrics: EvidencePortfolioMetric[]; evidence: Array<Record<string, unknown>> }): PortfolioIntelligence;

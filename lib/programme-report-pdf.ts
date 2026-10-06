@@ -3,6 +3,7 @@ import type { ProgrammeEvidenceFlow } from "./programme-evidence-flow";
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { buildProgrammeReport, type ProgrammeReport, type ReportChart, type ReportInsight } from "./programme-intelligence.mjs";
+import { sponsorFindings } from "./experience/programme-experience.mjs";
 
 type Outcome = {
   cohort: {
@@ -331,7 +332,7 @@ class ReportDocument {
   }
 }
 
-export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date(), options: { illustrative?: boolean } = {}) {
+export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date(), options: { illustrative?: boolean; leap9Experience?: boolean } = {}) {
   const report = buildProgrammeReport(outcome);
   const canvas = new ReportDocument(report, options.illustrative === true, generatedAt);
   canvas.section("Behaviour Intelligence Series™", "Programme Results Report", report.profile.name);
@@ -347,6 +348,35 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   canvas.paragraph(report.boundary, { color: C.muted });
   if (report.status === "SUPPRESSED") {
     canvas.section("Privacy", "Report withheld", `At least ${report.minimumReportableCohortSize} eligible participants are required. Findings and chart values are withheld when the group is too small or the underlying report is restricted.`);
+    return canvas.finish();
+  }
+  // The public experience uses its own fixed sample and a concise sponsor view.
+  // Live reports continue to use authorised aggregates and privacy gates above.
+  if (options.illustrative && options.leap9Experience) {
+    canvas.section("Programme outcomes", "From intention to follow-through", "What Leap9 can learn from the example, and what BIS should check next.");
+    for (const item of sponsorFindings()) {
+      canvas.ensure(180);
+      canvas.paragraph(item.title, { size: 13, font: "bold" });
+      canvas.paragraph(item.observation, { font: "bold" });
+      canvas.paragraph(item.meaning);
+      canvas.paragraph(`Next step: ${item.action}`);
+      canvas.paragraph(`Evidence: ${item.basis}`, { size: 9, color: C.muted });
+      canvas.paragraph(item.limit, { size: 9, color: C.muted, gap: 20 });
+    }
+    canvas.section("Supporting evidence", "What was observed", "Programme totals support the findings; they do not replace them.");
+    const repeat = report.charts.find(item => item.id === "repeat-response");
+    if (repeat) canvas.chart(repeat);
+    const paired = report.insights.find(item => item.id.startsWith("paired-"));
+    if (paired) {
+      canvas.paragraph("How participants feel about managing their habit", { font: "bold" });
+      canvas.paragraph(paired.observation);
+      canvas.paragraph("This comparison uses the same question before and after, for the participants with both answers. A rise means they report feeling more in control; it does not certify competence or job readiness.");
+    }
+    canvas.paragraph("What to check next", { font: "bold" });
+    canvas.paragraph("BIS should review a relevant practical task with an agreed assessment rubric, then follow up to see whether the behaviour holds in a new situation. Leap9 can provide the practice opportunity; programme design and evidence quality remain BIS’s responsibility.");
+    canvas.paragraph("How the example was prepared", { font: "bold" });
+    canvas.paragraph("Twenty varied fictional participant records supply the page and report. Some show more frequent use of the plan, some less, and some too few observations. Visitor practice answers do not change these cohort records. No private learner reflection appears in this report.");
+    canvas.paragraph("Prepared by P.D. · Applied Commerce®", { color: C.muted });
     return canvas.finish();
   }
   canvas.section("Executive summary", "What the programme results are showing", "KEY FINDINGS · Recorded participation, practice and evidence, followed by suggested programme actions.");

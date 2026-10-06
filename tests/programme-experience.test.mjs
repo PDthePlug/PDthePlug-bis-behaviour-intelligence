@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { experienceEvidence, initialExperience, restoreExperience, illustrativeCohort } from '../lib/experience/programme-experience.mjs';
+import { experienceEvidence, initialExperience, restoreExperience, illustrativeCohort, illustrativeParticipants, cohortEvidence, explainExperience, sponsorFindings } from '../lib/experience/programme-experience.mjs';
 
 test('simulation calculates with canonical Habit metrics and keeps no opportunity distinct', () => {
   const used = experienceEvidence(initialExperience);
@@ -23,4 +23,24 @@ test('cohort fixture reconciles evidence coverage and allows mixed results', () 
   assert.equal(illustrativeCohort.sufficient + illustrativeCohort.limited + illustrativeCohort.none, illustrativeCohort.enrolled);
   assert.ok(illustrativeCohort.completed < illustrativeCohort.enrolled);
   assert.ok(illustrativeCohort.support > 0);
+});
+
+test('illustrative outcomes derive from varied records and stay separate from visitor practice', () => {
+  assert.deepEqual(cohortEvidence(illustrativeParticipants), illustrativeCohort);
+  assert.equal(illustrativeCohort.improved + illustrativeCohort.otherDirection + illustrativeCohort.same, illustrativeCohort.sufficient);
+  assert.equal(illustrativeCohort.observations, illustrativeParticipants.reduce((sum, row) => sum + row.events.length, 0));
+  const before = sponsorFindings();
+  experienceEvidence({ ...initialExperience, observation: 'none', post: 1 });
+  assert.deepEqual(sponsorFindings(), before);
+  assert.ok(before.every(item => item.observation && item.meaning && item.action && item.basis && item.limit));
+  assert.match(before[0].observation, /5 of 12/);
+  assert.match(before[2].action, /BIS owns improvements to programme delivery/);
+});
+
+test('participant meaning follows edits and does not equate perceived control with competence', () => {
+  assert.match(explainExperience(initialExperience).followThrough, /4 of 6 opportunities/);
+  assert.match(explainExperience({ ...initialExperience, observation: 'none' }).followThrough, /3 of 5/);
+  assert.match(explainExperience({ ...initialExperience, post: 2 }).control, /2 points lower/);
+  assert.match(explainExperience({ ...initialExperience, post: 4 }).control, /stayed at 4\/10/);
+  assert.match(explainExperience(initialExperience).control, /does not measure job readiness/);
 });
