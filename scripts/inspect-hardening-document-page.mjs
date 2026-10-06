@@ -29,6 +29,13 @@ try {
     const document = page.locator(".learner-document");
     await expect(document).toBeVisible({ timeout: 60000 });
     await page.waitForLoadState("networkidle");
+    const referenceView = await page.locator(".prototype-sequence-notice").count() > 0;
+    if (referenceView) {
+      await expect(page.locator(".learner-document-status")).toHaveText("Reference view · you can read this page, but cannot add responses yet");
+      await expect(document.locator("[data-field-id]:not(:disabled)")).toHaveCount(0);
+    }
+    const listStyles = await document.locator("ul.source-list,ol.source-list").evaluateAll(elements => elements.map(element => ({ type: element.tagName, style: getComputedStyle(element).listStyleType, items: element.children.length })));
+    for (const list of listStyles) expect(list.style).toBe(list.type === "UL" ? "disc" : "decimal");
     const headings = await document.locator("h1,h2,h3,h4,h5,h6").allTextContents();
     const text = await document.innerText();
     await writeFile(`${output}/${width}-reading.txt`, text);
@@ -43,7 +50,7 @@ try {
     await page.addScriptTag({ content: axe });
     const accessibility = await page.evaluate(async () => (await window.axe.run(window.document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] } })).violations.map(item => ({ id: item.id, targets: item.nodes.map(node => node.target) })));
     const overflow = await page.evaluate(() => window.document.documentElement.scrollWidth - innerWidth);
-    rows.push({ route, role: "LEARNER", edition: profile.deliveryEdition, width, headings, screens, height, overflow, accessibility, errors, manualReview: "PENDING; image capture is not manual certification" });
+    rows.push({ route, role: "LEARNER", edition: profile.deliveryEdition, width, headings, screens, height, overflow, accessibility, errors, referenceView, responseStatus: await page.locator(".learner-document-status").innerText(), listStyles, manualReview: "PENDING; image capture is not manual certification" });
     await writeFile(`${output}/audit.json`, JSON.stringify(rows, null, 2));
     console.log(JSON.stringify({ width, screens: screens.length, overflow, accessibility, errors }));
     await context.close();
