@@ -24,7 +24,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -56,7 +56,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -88,7 +88,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -120,7 +120,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -152,7 +152,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -184,7 +184,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -214,7 +214,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -246,7 +246,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -278,7 +278,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -310,7 +310,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -342,7 +342,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -374,7 +374,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -402,7 +402,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -432,7 +432,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -464,7 +464,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -496,7 +496,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -528,7 +528,7 @@
         "docs/hardening/handbook-response-integrity.json"
       ],
       "manualVisualStatus": "PARTIAL: current staged publication opening/disclosure inspected at 360/430/1280; exact source-version full-page review remains pending.",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -561,7 +561,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -593,7 +593,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -623,7 +623,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -655,7 +655,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -687,7 +687,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -719,7 +719,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -751,7 +751,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -783,7 +783,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -811,7 +811,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -841,7 +841,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -873,7 +873,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -905,7 +905,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -937,7 +937,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -969,7 +969,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1001,7 +1001,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1031,7 +1031,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1063,7 +1063,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1095,7 +1095,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1127,7 +1127,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1159,7 +1159,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1191,7 +1191,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1219,7 +1219,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1250,7 +1250,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1282,7 +1282,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1314,7 +1314,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1346,7 +1346,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1378,7 +1378,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1410,7 +1410,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1440,7 +1440,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1472,7 +1472,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1504,7 +1504,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1536,7 +1536,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1568,7 +1568,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1600,7 +1600,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1628,7 +1628,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1659,7 +1659,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1691,7 +1691,7 @@
         "docs/hardening/handbook-response-integrity.json"
       ],
       "manualVisualStatus": "PARTIAL: current staged publication opening/disclosure inspected at 360/430/1280; exact source-version full-page review remains pending.",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1723,7 +1723,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1755,7 +1755,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1787,7 +1787,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1819,7 +1819,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1849,7 +1849,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1881,7 +1881,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1913,7 +1913,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1945,7 +1945,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1977,7 +1977,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2009,7 +2009,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2037,7 +2037,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2068,7 +2068,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2100,7 +2100,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2132,7 +2132,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2164,7 +2164,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2196,7 +2196,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2228,7 +2228,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2258,7 +2258,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2290,7 +2290,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2322,7 +2322,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2354,7 +2354,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2386,7 +2386,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2418,7 +2418,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2446,7 +2446,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2478,7 +2478,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2510,7 +2510,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2542,7 +2542,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2574,7 +2574,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2606,7 +2606,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2638,7 +2638,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2668,7 +2668,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2700,7 +2700,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2732,7 +2732,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2764,7 +2764,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2796,7 +2796,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2828,7 +2828,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2856,7 +2856,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2888,7 +2888,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2920,7 +2920,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2952,7 +2952,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2984,7 +2984,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PARTIAL: current staging opening/context excerpt inspected at 360/430/1280; full-page editorial and source-version review remains pending.",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3016,7 +3016,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3048,7 +3048,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3078,7 +3078,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3110,7 +3110,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3142,7 +3142,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3174,7 +3174,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3206,7 +3206,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3238,7 +3238,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3266,7 +3266,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PARTIAL: current staging opening/context excerpt inspected at 360/430/1280; full-page editorial and source-version review remains pending.",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3298,7 +3298,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3330,7 +3330,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3362,7 +3362,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3394,7 +3394,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3426,7 +3426,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3458,7 +3458,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3488,7 +3488,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3520,7 +3520,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3552,7 +3552,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3584,7 +3584,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3616,7 +3616,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3648,7 +3648,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3676,7 +3676,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3708,7 +3708,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3740,7 +3740,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3772,7 +3772,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3804,7 +3804,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3836,7 +3836,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3868,7 +3868,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3898,7 +3898,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3930,7 +3930,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3962,7 +3962,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3994,7 +3994,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4026,7 +4026,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4047,7 +4047,8 @@
       "problem": [
         "Passive session labels interrupt the lesson opening.",
         "Decorative heading markers compete with reading hierarchy.",
-        "Source day/title repeats the publication header."
+        "Source day/title repeats the publication header.",
+        "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
@@ -4055,13 +4056,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/profile-structure-register.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
       ]
     },
     {
@@ -4086,7 +4089,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4118,7 +4121,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4150,7 +4153,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4182,7 +4185,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4214,7 +4217,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4246,7 +4249,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4278,7 +4281,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4308,7 +4311,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4340,7 +4343,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4372,7 +4375,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4404,7 +4407,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4436,7 +4439,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4457,7 +4460,8 @@
       "problem": [
         "Passive session labels interrupt the lesson opening.",
         "Decorative heading markers compete with reading hierarchy.",
-        "Source day/title repeats the publication header."
+        "Source day/title repeats the publication header.",
+        "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
@@ -4465,13 +4469,18 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/profile-structure-register.json",
+        "docs/hardening/document-review-idn-day10-20261006.json"
       ],
-      "manualVisualStatus": "PARTIAL: current staging opening/context excerpt inspected at 360/430/1280; full-page editorial and source-version review remains pending.",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "manualVisualStatus": "FULL PAGE VISUALLY INSPECTED: 34 screens at 360/430/1280, reference-only learner variant; identified defects remain open.",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction.",
+        "VISUAL-SOURCE-LIST: authored list markers absent.",
+        "LANGUAGE-REFERENCE-SAVE: autosave status conflicts with disabled fields."
       ]
     },
     {
@@ -4496,7 +4505,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4528,7 +4537,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4560,7 +4569,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4592,7 +4601,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4624,7 +4633,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4656,7 +4665,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4688,7 +4697,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4718,7 +4727,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4750,7 +4759,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4782,7 +4791,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4814,7 +4823,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4846,7 +4855,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4867,7 +4876,8 @@
       "problem": [
         "Passive session labels interrupt the lesson opening.",
         "Decorative heading markers compete with reading hierarchy.",
-        "Source day/title repeats the publication header."
+        "Source day/title repeats the publication header.",
+        "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
@@ -4875,13 +4885,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/profile-structure-register.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
       ]
     },
     {
@@ -4906,7 +4918,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4938,7 +4950,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4970,7 +4982,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5002,7 +5014,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5034,7 +5046,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5066,7 +5078,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5098,7 +5110,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5128,7 +5140,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5160,7 +5172,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5192,7 +5204,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5224,7 +5236,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5256,7 +5268,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5277,7 +5289,8 @@
       "problem": [
         "Passive session labels interrupt the lesson opening.",
         "Decorative heading markers compete with reading hierarchy.",
-        "Source day/title repeats the publication header."
+        "Source day/title repeats the publication header.",
+        "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
@@ -5285,13 +5298,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/profile-structure-register.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
       ]
     },
     {
@@ -5316,7 +5331,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5348,7 +5363,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PARTIAL: current staging opening/context excerpt inspected at 360/430/1280; full-page editorial and source-version review remains pending.",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5380,7 +5395,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5412,7 +5427,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5444,7 +5459,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5476,7 +5491,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5508,7 +5523,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5538,7 +5553,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PARTIAL: current staging opening/context excerpt inspected at 360/430/1280; full-page editorial and source-version review remains pending.",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5570,7 +5585,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5602,7 +5617,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5634,7 +5649,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5666,7 +5681,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5687,7 +5702,8 @@
       "problem": [
         "Passive session labels interrupt the lesson opening.",
         "Decorative heading markers compete with reading hierarchy.",
-        "Source day/title repeats the publication header."
+        "Source day/title repeats the publication header.",
+        "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
@@ -5695,13 +5711,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/profile-structure-register.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
       ]
     },
     {
@@ -5726,7 +5744,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5758,7 +5776,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5790,7 +5808,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5822,7 +5840,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5854,7 +5872,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5886,7 +5904,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5918,7 +5936,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5948,7 +5966,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5980,7 +5998,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -6012,7 +6030,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -6044,7 +6062,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -6076,7 +6094,7 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -6097,7 +6115,8 @@
       "problem": [
         "Passive session labels interrupt the lesson opening.",
         "Decorative heading markers compete with reading hierarchy.",
-        "Source day/title repeats the publication header."
+        "Source day/title repeats the publication header.",
+        "Profile header and row labels are unpaired paragraphs; no value/answer cells or semantic bindings exist in this section."
       ],
       "correction": "Shared presentation retains authored text and response keys; session context is disclosed, repeated publication headings are hidden, decorative heading markers are hidden, and embedded paper labels are separated after checklist creation. No source package is edited.",
       "verification": [
@@ -6105,13 +6124,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/profile-structure-register.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "CONTENT-PROFILE-TABLE: source structure and answer/calculation bindings require shared correction."
       ]
     },
     {
@@ -6136,14 +6157,14 @@
         "docs/hardening/product-experience-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "IN_BRANCH; FULL CERTIFICATION OPEN",
+      "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
       ]
     }
   ],
-  "generatedAt": "2026-10-06T18:14:48.813Z",
+  "generatedAt": "2026-10-06T21:21:28.412Z",
   "coverageBoundary": "195 accepted source page/edition variants. Source inventory and fixture rendering do not imply every live publication, role or state has been manually reviewed.",
   "productIteration": "docs/hardening/product-experience-20261006.md"
 }
