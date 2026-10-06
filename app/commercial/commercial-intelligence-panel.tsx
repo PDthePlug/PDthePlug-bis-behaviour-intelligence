@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   Bot,
@@ -165,7 +165,7 @@ export function CommercialIntelligencePanel({
   const [draftingId, setDraftingId] = useState<string | null>(null);
   const autoRefreshStarted = useRef(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const next = (await intelligenceApi()) as IntelligenceSnapshot;
       setData(next);
@@ -177,9 +177,9 @@ export function CommercialIntelligencePanel({
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  async function refresh(mode: "auto" | "manual") {
+  const refresh = useCallback(async (mode: "auto" | "manual") => {
     setRefreshing(true);
     try {
       await intelligenceApi({ action: "refresh", mode });
@@ -190,7 +190,7 @@ export function CommercialIntelligencePanel({
     } finally {
       setRefreshing(false);
     }
-  }
+  }, [load]);
 
   useEffect(() => {
     let cancelled = false;
@@ -213,7 +213,7 @@ export function CommercialIntelligencePanel({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [refresh]);
 
   async function ask(event: FormEvent) {
     event.preventDefault();
