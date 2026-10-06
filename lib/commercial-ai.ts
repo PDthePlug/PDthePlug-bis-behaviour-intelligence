@@ -1,4 +1,8 @@
-import type { CommercialBrief, CommercialIntelligenceInput, CommercialOpportunity } from "./commercial-intelligence";
+import type {
+  CommercialBrief,
+  CommercialIntelligenceInput,
+  CommercialOpportunity,
+} from "./commercial-intelligence";
 
 type AiResult = {
   text: string;
@@ -9,8 +13,12 @@ function configuredModel() {
   return process.env.AI_GATEWAY_MODEL?.trim() || "openai/gpt-5.6-luna";
 }
 
+function gatewayToken() {
+  return process.env.VERCEL_OIDC_TOKEN?.trim() || process.env.AI_GATEWAY_API_KEY?.trim() || "";
+}
+
 export function commercialAiConfigured() {
-  return Boolean(process.env.VERCEL_OIDC_TOKEN?.trim() || process.env.AI_GATEWAY_API_KEY?.trim());
+  return Boolean(gatewayToken());
 }
 
 function extractResponseText(payload: unknown) {
@@ -23,6 +31,7 @@ function extractResponseText(payload: unknown) {
     if (!item || typeof item !== "object") continue;
     const content = (item as { content?: unknown[] }).content;
     if (!Array.isArray(content)) continue;
+
     for (const part of content) {
       if (
         part &&
@@ -37,12 +46,12 @@ function extractResponseText(payload: unknown) {
   return pieces.join("\n").trim();
 }
 
-async function callOpenAI(instructions: string, input: string): Promise<AiResult | null> {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) return null;
+async function callGateway(instructions: string, input: string): Promise<AiResult | null> {
+  const token = gatewayToken();
+  if (!token) return null;
 
   const model = configuredModel();
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetch("https://ai-gateway.vercel.sh/v1/responses", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -69,12 +78,14 @@ async function callOpenAI(instructions: string, input: string): Promise<AiResult
 
   const payload = await response.json();
   const text = extractResponseText(payload);
-  if (!text) throw new Error("Commercial AI returned no usable text.");
+  if (!text) throw new Error("Commercial AI Gateway returned no usable text.");
   return { text, model };
 }
 
 function compactContext(input: CommercialIntelligenceInput, brief: CommercialBrief) {
-  const organisations = new Map(input.organisations.map((organisation) => [organisation.id, organisation.name]));
+  const organisations = new Map(
+    input.organisations.map((organisation) => [organisation.id, organisation.name]),
+  );
 
   return {
     generatedAt: brief.generatedAt,
@@ -111,10 +122,16 @@ External contact, sends, pricing changes, WON/LOST decisions and terms always re
 Do not request or expose learner evidence; the commercial workspace is separate from participant behavioural data.
 Use concise South African business English. Avoid sales clichés and generic AI language.`;
 
-export async function buildAiFounderBrief(input: CommercialIntelligenceInput, brief: CommercialBrief) {
-  return callOpenAI(
+export async function buildAiFounderBrief(
+  input: CommercialIntelligenceInput,
+  brief: CommercialBrief,
+) {
+  return callGateway(
     operatorRules,
-    `Write a founder morning brief from this CRM snapshot. Start with what matters today, then explain at most five actions in priority order. Distinguish approval decisions from research work. End with one sentence naming what can safely wait.\n\nCRM CONTEXT:\n${JSON.stringify(compactContext(input, brief))}`,
+    `Write a founder morning brief from this CRM snapshot. Start with what matters today, then explain at most five actions in priority order. Distinguish approval decisions from research work. End with one sentence naming what can safely wait.
+
+CRM CONTEXT:
+${JSON.stringify(compactContext(input, brief))}`,
   );
 }
 
@@ -123,9 +140,15 @@ export async function answerCommercialQuestion(
   input: CommercialIntelligenceInput,
   brief: CommercialBrief,
 ) {
-  return callOpenAI(
+  return callGateway(
     operatorRules,
-    `Answer the founder's question using only the CRM context. Explain the evidence behind the answer and identify uncertainty plainly. Do not create an external action.\n\nQUESTION:\n${question}\n\nCRM CONTEXT:\n${JSON.stringify(compactContext(input, brief))}`,
+    `Answer the founder's question using only the CRM context. Explain the evidence behind the answer and identify uncertainty plainly. Do not create an external action.
+
+QUESTION:
+${question}
+
+CRM CONTEXT:
+${JSON.stringify(compactContext(input, brief))}`,
   );
 }
 
@@ -147,7 +170,7 @@ export async function draftCommercialMessage(args: {
       primary: Boolean(item.is_primary),
     }));
 
-  return callOpenAI(
+  return callGateway(
     operatorRules,
     `Prepare a concise ${args.purpose === "FOLLOW_UP_DRAFT" ? "follow-up" : "first outreach"} email draft for human review.
 Do not say a proposal, attachment, meeting or link was sent unless the CRM context explicitly says so.
@@ -167,6 +190,10 @@ ${JSON.stringify({
 })}
 
 CURRENT PRIORITY SIGNALS:
-${JSON.stringify(args.brief.recommendations.filter((item) => item.opportunityId === args.opportunity.id))}`,
+${JSON.stringify(
+  args.brief.recommendations.filter(
+    (item) => item.opportunityId === args.opportunity.id,
+  ),
+)}`,
   );
 }
