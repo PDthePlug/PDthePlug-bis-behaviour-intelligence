@@ -1,0 +1,244 @@
+{
+  "project": "prj_lJFrx8m2tjcEbSJ0sDYyTy0wSQVp",
+  "team": "team_0F7XVax56npxBWgjVdXMJj3V",
+  "observedAt": "2026-10-06",
+  "previewBackend": "lbmhkddrkhtmkcvfmumd",
+  "productionBackend": "swmhsqivqaqwovojbceo",
+  "previewGlobalBindingsAdded": true,
+  "productionBindingsModified": false,
+  "variables": [
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": null,
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": null,
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": null,
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/continuous-workbook-canvas",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/continuous-workbook-canvas",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/continuous-workbook-canvas",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/programme-intelligence-reporting",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/programme-intelligence-reporting",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/programme-intelligence-reporting",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "production"
+      ],
+      "gitBranch": null,
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/staff-evidence-architecture",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/staff-evidence-architecture",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/staff-evidence-architecture",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "migration/universal-core-lab-artifacts-20261005",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "migration/universal-core-lab-artifacts-20261005",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "migration/universal-core-lab-artifacts-20261005",
+      "type": "plain"
+    },
+    {
+      "key": "BIS_CORE_LAB_MIGRATION_ENABLED",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "migration/universal-core-lab-artifacts-20261005",
+      "type": "encrypted"
+    },
+    {
+      "key": "BIS_MIGRATION_STAGING_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "migration/universal-core-lab-artifacts-20261005",
+      "type": "encrypted"
+    },
+    {
+      "key": "BIS_MIGRATION_PRODUCTION_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "migration/universal-core-lab-artifacts-20261005",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-completion-20261005",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-completion-20261005",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-completion-20261005",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-runtime-standards-20261004",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-runtime-standards-20261004",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-runtime-standards-20261004",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-full-scope-20261004",
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "preview"
+      ],
+      "gitBranch": "implementation/bis-full-scope-20261004",
+      "type": "plain"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "target": [
+        "production"
+      ],
+      "gitBranch": null,
+      "type": "encrypted"
+    },
+    {
+      "key": "NEXT_PUBLIC_SUPABASE_URL",
+      "target": [
+        "production"
+      ],
+      "gitBranch": null,
+      "type": "encrypted"
+    }
+  ],
+  "valuesOmitted": true
+}

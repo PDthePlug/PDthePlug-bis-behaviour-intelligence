@@ -1,0 +1,51 @@
+import assert from "node:assert/strict";
+import { readFile, writeFile } from "node:fs/promises";
+import { chromium } from "@playwright/test";
+import { stagingSession } from "./hardening-staging-session.mjs";
+import { evaluateUniversalComputed } from "../lib/universal-lab-v2.mjs";
+
+if(process.env.BIS_STAGING_ALLOW_MUTATIONS!=="true")throw new Error("Explicit staging mutation acknowledgement required.");
+const group=JSON.parse(await readFile("/tmp/bis-hardening-group.json","utf8"));
+const learner=await stagingSession("LEARNER"),facilitator=await stagingSession("FACILITATOR"),sponsor=await stagingSession("SPONSOR_VIEWER");
+const snapshot=await learner.request("/api/universal-lab?lab=HAB");
+assert.equal(snapshot.enrolment.status,"COMPLETED");
+const computed=evaluateUniversalComputed(snapshot.definition,Object.fromEntries(Object.entries(snapshot.responses).map(([id,row])=>[id,row.value])));
+assert.deepEqual(snapshot.computed,computed);
+for(const field of snapshot.definition.computedFields)assert.deepEqual(snapshot.measurements[field.id]?.value,computed[field.id],`Persisted ${field.id} differs from presentation.`);
+const portfolio=await learner.request("/api/evidence-portfolio");
+const lab=portfolio.labs.find(lab=>lab.enrolmentId===snapshot.enrolment.id);
+assert.ok(lab.metrics.length>0);assert.ok(lab.metrics.every(metric=>metric.provenanceStatus==="VERIFIED"&&metric.sourceCount>0));
+const report=await learner.request("/api/evidence-engine?view=learnerReport");
+assert.ok(report.recordCount>0&&report.calculationHistory.length>0);
+const records=report.originalEvidence.filter(record=>record.enrolment_id===snapshot.enrolment.id&&record.status==="ACTIVE");
+const shared=records.find(record=>record.sensitivity==="P2"&&record.source_object_type==="RESPONSE");
+const privateRecord=records.find(record=>record.sensitivity==="P3");
+assert.ok(shared&&privateRecord);
+let privateDenied=false;
+try{await learner.request("/api/evidence-engine",{action:"share",cohortId:group.id,evidenceIds:[privateRecord.id],title:"Denied private fixture",requestKey:crypto.randomUUID()});}catch{privateDenied=true;}
+assert.ok(privateDenied,"Highly private reflection was shared.");
+await learner.request("/api/evidence-engine",{action:"share",cohortId:group.id,evidenceIds:[shared.id],title:"BIS hardening synthetic chosen evidence",requestKey:crypto.randomUUID()});
+const review=await facilitator.request(`/api/evidence-engine?view=workspace&cohortId=${group.id}`);
+const submission=review.submissions.find(item=>item.title==="BIS hardening synthetic chosen evidence"&&item.current);
+assert.ok(submission);assert.deepEqual(submission.evidence.map(item=>item.id),[shared.id]);
+assert.ok(!JSON.stringify(review).includes("PRIVATE-HARDENING-REFLECTION"));
+await facilitator.request("/api/evidence-engine",{action:"assess",submissionId:submission.id,rubricId:null,disposition:"REVIEWED",feedback:"Synthetic verification: the chosen evidence can be reviewed without revealing other reflections. This is not a competence rating.",scores:[],expectedReviewId:null,requestKey:crypto.randomUUID()});
+const refreshed=await learner.request("/api/evidence-engine?view=learnerWorkspace");
+assert.ok(refreshed.submissions.find(item=>item.id===submission.id).reviews.length===1);
+await learner.request("/api/evidence-engine",{action:"revoke",submissionId:submission.id});
+const afterRevocation=await facilitator.request(`/api/evidence-engine?view=workspace&cohortId=${group.id}`);
+assert.ok(!afterRevocation.submissions.some(item=>item.id===submission.id&&item.current));
+const outcomes=await sponsor.request("/api/staff");
+assert.equal(outcomes.sponsor.cohorts.find(item=>item.cohort.id===group.id).participantCount,20);
+assert.ok(!JSON.stringify(outcomes).includes("PRIVATE-HARDENING-REFLECTION"));
+assert.ok(!JSON.stringify(outcomes.sponsor).includes("SYNTHETIC-HARDENING-EVIDENCE"));
+const browser=await chromium.launch();
+let pdfBytes,csvBytes;
+try {
+ await sponsor.browserState("/tmp/bis-hardening-sponsor-storage.json");
+ const context=await browser.newContext({storageState:"/tmp/bis-hardening-sponsor-storage.json"});
+ const pdf=await context.request.get(sponsor.base+`/api/staff?report=pdf&cohortId=${group.id}`);assert.equal(pdf.status(),200);assert.match(pdf.headers()["cache-control"],/private/);pdfBytes=await pdf.body();assert.match(pdfBytes.subarray(0,8).toString(),/%PDF/);await writeFile("/tmp/bis-hardening-evidence/synthetic-programme-report.pdf",pdfBytes);
+ const csv=await context.request.get(sponsor.base+`/api/evidence-engine?view=report&cohortId=${group.id}&download=csv`);assert.equal(csv.status(),200);csvBytes=await csv.body();assert.ok(!csvBytes.toString().includes("PRIVATE-HARDENING-REFLECTION"));await writeFile("/tmp/bis-hardening-evidence/synthetic-assessment-report.csv",csvBytes);
+} finally {await browser.close();}
+const result={project:"lbmhkddrkhtmkcvfmumd",cohort:group.id,participants:20,completed:"PASS",computedFields:Object.keys(computed).length,persistedCalculationParity:"PASS",verifiedMetricSources:lab.metrics.length,learnerOriginalRecords:report.recordCount,calculationHistory:report.calculationHistory.length,privateShare:"DENIED",exactEvidenceShare:"PASS",facilitatorPrivateText:"EXCLUDED",humanReview:"PASS",reviewRefresh:"PASS",revocation:"PASS",sponsorPrivateText:"EXCLUDED",pdfBytes:pdfBytes.length,csvBytes:csvBytes.length};
+await writeFile("/tmp/bis-hardening-evidence-audit.json",JSON.stringify(result,null,2));console.log(result);

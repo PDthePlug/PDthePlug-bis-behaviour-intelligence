@@ -1,0 +1,3253 @@
+{
+  "observedAt": "2026-10-06T12:24:30.297382+00:00",
+  "project": "lbmhkddrkhtmkcvfmumd",
+  "pageScreens": [
+    {
+      "role": "LEARNER",
+      "route": "/",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/mon",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/rsk",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/rsk",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/zzz",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/zzz",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/mon",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/mon?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/rsk",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/rsk",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/hab",
+      "width": 360,
+      "status": 404,
+      "finalPath": "/learning/hab",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/learning/hab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/habit",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab/experiment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/decision",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/dec",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/money",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/portfolio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/portfolio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/commercial",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/workspace",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/staff"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/mon",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/rsk",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/rsk",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/zzz",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/zzz",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/mon",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/mon?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/rsk",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/rsk",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/hab",
+      "width": 430,
+      "status": 404,
+      "finalPath": "/learning/hab",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/learning/hab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/habit",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab/experiment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/decision",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/dec",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/money",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/portfolio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/portfolio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/commercial",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/workspace",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/staff"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/mon",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/rsk",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/rsk",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/zzz",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/zzz",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/mon",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/mon?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/rsk",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/rsk",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/hab",
+      "width": 1280,
+      "status": 404,
+      "finalPath": "/learning/hab",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/learning/hab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/habit",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab/experiment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/decision",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/dec",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/money",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/portfolio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/portfolio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/commercial",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/workspace",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/staff"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/content-studio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/content-studio"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/content-studio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/content-studio"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/content-studio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/content-studio"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=outcomes",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=outcomes",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=outcomes",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/reset-password",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/sign-in?next=%2Freset-password",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience/leap9",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9/v2",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience/leap9/v2",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/qa-handbooks",
+      "width": 360,
+      "status": 404,
+      "finalPath": "/qa-handbooks",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/qa-handbooks"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/reset-password",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/sign-in?next=%2Freset-password",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience/leap9",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9/v2",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience/leap9/v2",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/qa-handbooks",
+      "width": 430,
+      "status": 404,
+      "finalPath": "/qa-handbooks",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/qa-handbooks"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/reset-password",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/sign-in?next=%2Freset-password",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience/leap9",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9/v2",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience/leap9/v2",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/qa-handbooks",
+      "width": 1280,
+      "status": 404,
+      "finalPath": "/qa-handbooks",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/qa-handbooks"
+        }
+      ],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec?page=4",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=4",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec?page=4",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=4",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec?page=4",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=4",
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "unlabelledInputs": 0
+    }
+  ],
+  "pageScreensCount": 162,
+  "pageAccessibility": "No detected WCAG A/AA violations in final sampled states",
+  "boundary": "Automated checks and manual representative inspection are separate; not every hidden state or production role is certified.",
+  "expectedErrors": {
+    "/labs/zzz": "Unknown/unpublished Lab: API404 and library action",
+    "/learning/hab": "Invalid legacy slug; /learning/habit is positive",
+    "/decision": "Staging static activation; canonical links now withheld pending publication review",
+    "LEARNER:/workspace": "Staff API403",
+    "FACILITATOR:/content-studio": "Admin API403",
+    "/qa-handbooks": "Local public404; preview gate disabled"
+  },
+  "labPreviews": {
+    "packages": 5,
+    "investigations": 9,
+    "widths": [
+      360,
+      430,
+      1280
+    ],
+    "screens": 135,
+    "overflow": 0,
+    "unlabelledInputs": 0,
+    "unexpectedErrors": 0,
+    "boundary": "Geometry/input checks and representative manual review; full preview axe variants remain open"
+  },
+  "learning": [
+    {
+      "code": "HAB",
+      "edition": "school",
+      "fieldId": "HAB.WB.SCHOOL.DAY1.F6D2C1E598C",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "DEC",
+      "edition": "school",
+      "fieldId": "DEC.WB.SCHOOL.DAY1.F006",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "MON",
+      "edition": "school",
+      "fieldId": "MON.WB.SCHOOL.DAY1.F004",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "IDN",
+      "edition": "school",
+      "fieldId": "IDN.WB.AUTO.O3Z17Y.1",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "ATT",
+      "edition": "school",
+      "fieldId": "ATT.WB.SCHOOL.DAY1.F004",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "HAB",
+      "edition": "emerging_adult",
+      "fieldId": "HAB.WB.EMERGING_ADULT.DAY1.F36EBC134BF",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "DEC",
+      "edition": "emerging_adult",
+      "fieldId": "DEC.WB.AUTO.1H2MLSR.1",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "MON",
+      "edition": "emerging_adult",
+      "fieldId": "MON.WB.EMERGING_ADULT.DAY1.F008",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "IDN",
+      "edition": "emerging_adult",
+      "fieldId": "IDN.WB.AUTO.1Y821DW.1",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "ATT",
+      "edition": "emerging_adult",
+      "fieldId": "ATT.WB.AUTO.H9SFEL.1",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "HAB",
+      "edition": "workplace",
+      "fieldId": "HAB.WB.WORKPLACE.DAY1.F517771A792",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "DEC",
+      "edition": "workplace",
+      "fieldId": "DEC.WB.WORKPLACE.DAY1.F008",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "MON",
+      "edition": "workplace",
+      "fieldId": "MON.WB.WORKPLACE.DAY1.F004",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "IDN",
+      "edition": "workplace",
+      "fieldId": "IDN.WB.AUTO.1Y821DW.1",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    },
+    {
+      "code": "ATT",
+      "edition": "workplace",
+      "fieldId": "ATT.WB.AUTO.TE6HGP.1",
+      "textSize": 20.8,
+      "responseRefresh": "PASS",
+      "understandingRefresh": "PASS",
+      "overflow": 0
+    }
+  ],
+  "evidence": {
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "cohort": "a652342a-07e3-4850-8d03-2dc130d38919",
+    "participants": 20,
+    "completed": "PASS",
+    "computedFields": 6,
+    "persistedCalculationParity": "PASS",
+    "verifiedMetricSources": 16,
+    "learnerOriginalRecords": 119,
+    "calculationHistory": 48,
+    "privateShare": "DENIED",
+    "exactEvidenceShare": "PASS",
+    "facilitatorPrivateText": "EXCLUDED",
+    "humanReview": "PASS",
+    "reviewRefresh": "PASS",
+    "revocation": "PASS",
+    "sponsorPrivateText": "EXCLUDED",
+    "pdfBytes": 62625,
+    "csvBytes": 408
+  },
+  "photo": {
+    "upload": "PASS",
+    "refresh": "PASS",
+    "crossUserRead": "DENIED",
+    "crossUserWrite": "DENIED",
+    "remove": "PASS",
+    "removeRefresh": "PASS",
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "objectPath": "7315531e-0486-4e54-b967-015bf36b4b9e/7b1ef1a0-5fa2-4a88-893a-7cbd89c6749a/HAB/I7/HAB.I7.OBSERVATION.IMAGE/2.jpg"
+  },
+  "publication": {
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "itemId": "content:lab:HAB",
+    "versionIdsRetained": 3,
+    "transitions": [
+      {
+        "transition": "ROLLBACK",
+        "predecessor": "content:lab:HAB:4.5.2",
+        "activationId": "activation:content:lab:HAB",
+        "exactSupersessionEdge": "PASS"
+      },
+      {
+        "transition": "UNPUBLISH",
+        "availability": "OFFLINE",
+        "versionsRetained": "PASS"
+      },
+      {
+        "transition": "REPUBLISH",
+        "availability": "LIVE",
+        "fingerprintGovernance": "PASS"
+      }
+    ],
+    "finalVersion": "content:lab:HAB:4.5.4",
+    "existingEnrolment": "COMPLETED"
+  },
+  "calendar": {
+    "participants": 20,
+    "normalSaves": 340,
+    "observationDays": 7,
+    "completed": 20,
+    "syntheticClock": "Development + exact staging + fixture-only; calendar server exited"
+  },
+  "release": {
+    "npmRunVerify": "Final artifact correction f9ff382 verification running; previous 620 acceptance / 162 browser passed",
+    "pullRequest": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/127",
+    "preview": "958e2cd READY on Vercel/staging; 42 actual preview states exposed six repeated static Learning self-fetch failures, corrected in f9ff382; final deployment recheck pending",
+    "production": "Pending"
+  },
+  "learningPreviews": {
+    "states": [
+      {
+        "edition": "school",
+        "position": 1,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 2,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 3,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 4,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 5,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 6,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 7,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 8,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 9,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 10,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 11,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 12,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 13,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 1,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 2,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 3,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 4,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 5,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 6,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 7,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 8,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 9,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 10,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 11,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 12,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 13,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 1,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 2,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 3,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 4,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 5,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 6,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 7,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 8,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 9,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 10,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 11,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 12,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 13,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 1,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 2,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 3,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 4,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 5,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 6,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 7,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 8,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 9,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 10,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 11,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 12,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 13,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 1,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 2,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 3,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 4,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 5,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 6,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 7,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 8,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 9,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 10,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 11,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 12,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 13,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 1,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 2,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 3,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 4,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 5,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 6,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 7,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 8,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 9,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 10,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 11,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 12,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 13,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 1,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 2,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 3,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 4,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 5,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 6,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 7,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 8,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 9,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 10,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 11,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 12,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 13,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 1,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 2,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 3,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 4,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 5,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 6,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 7,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 8,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 9,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 10,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 11,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 12,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 13,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 1,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 2,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 3,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 4,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 5,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 6,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 7,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 8,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 9,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 10,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 11,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 12,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 13,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      }
+    ],
+    "count": 117,
+    "result": "PASS",
+    "boundary": "Actual Content Studio runtime; all three prepared HAB editions, 13 pages each, at 360/430/1280. A config-triggered dev-server restart interrupted the last three visits; the clean 114 states were retained and the remaining three were verified after restart."
+  },
+  "learningPublication": {
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "itemId": "content:module:HAB",
+    "versionId": "content:module:HAB:1.6",
+    "sourceVersionsRetained": 3,
+    "workbookResponsesAndProgressRetained": "PASS",
+    "transitions": [
+      {
+        "transition": "PUBLISH",
+        "editions": 3,
+        "authoredPagesPerEdition": 13,
+        "previewFingerprint": "PASS",
+        "priorVersionsRetained": "PASS"
+      },
+      {
+        "transition": "ROLLBACK_WITHOUT_EDITION_PREDECESSOR",
+        "result": "DENIED",
+        "boundary": "The retained global static activation is not an edition supersession edge."
+      },
+      {
+        "transition": "UNPUBLISH",
+        "editionsOffline": 3,
+        "retainedGlobalFallback": "OFFLINE",
+        "runtimeAndCatalogue": "PASS"
+      },
+      {
+        "transition": "REPUBLISH",
+        "editions": 3,
+        "retainedGlobalFallback": "REMAINS_OFFLINE",
+        "sameReviewedVersion": "PASS"
+      }
+    ],
+    "finalAvailability": "LIVE: all three editions",
+    "historicalEditionRollback": "No edition predecessor exists; negative actual case verified; multi-version rollback covered by database acceptance."
+  },
+  "learningPreparation": {
+    "itemId": "content:module:HAB",
+    "versionId": "content:module:HAB:1.6",
+    "version": "1.6",
+    "previous": [],
+    "sources": [
+      {
+        "edition": "school",
+        "hash": "ed54b07c10c853071b23447f7d5b5dd144755de27cefec198f767a1d18adb518",
+        "originalVersion": "content:module:HAB:1.4",
+        "authoredPageParity": "PASS: only void serialization and existing 20000-character limit differ",
+        "pages": 13,
+        "touchpoints": 10
+      },
+      {
+        "edition": "emerging_adult",
+        "hash": "b01fe6c6c911acd6889816798830c4267890f02f081b7489533d0f6535d9dd55",
+        "originalVersion": "content:module:HAB:1.4",
+        "authoredPageParity": "PASS: only void serialization and existing 20000-character limit differ",
+        "pages": 13,
+        "touchpoints": 10
+      },
+      {
+        "edition": "workplace",
+        "hash": "482e89d0133c29061cb3c32b4283c3adbce622558a9e139efd1018de10dedb58",
+        "originalVersion": "content:module:HAB:1.4",
+        "authoredPageParity": "PASS: only void serialization and existing 20000-character limit differ",
+        "pages": 13,
+        "touchpoints": 10
+      }
+    ]
+  }
+}

@@ -1,0 +1,1298 @@
+{
+  "baseCommit": "d8ca307ae455024b5816240d4db08f0dddd6bf73",
+  "generatedAt": "2026-10-06T10:47:15.491Z",
+  "routes": [
+    {
+      "route": "/api/bis",
+      "kind": "handler",
+      "role": "Authenticated owner; legacy static guards and scoped actions",
+      "source": "app/api/bis/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "../../../lib/legacy-lab-guard",
+        "../../../lib/supabase/server",
+        "../../../db/query",
+        "../../../db",
+        "../../../db/schema",
+        "../../../lib/bis-access",
+        "../../../lib/habit-lab",
+        "../../../lib/learning-foundation",
+        "../../../lib/bis-metrics.mjs",
+        "@/lib/learner-evidence",
+        "@/lib/evidence-companion.mjs",
+        "../../../lib/experiment-timing.mjs",
+        "../../../lib/response-write-batches.mjs",
+        "../../../lib/evidence-validation.mjs",
+        "../../../lib/bis-access"
+      ],
+      "problem": "Consent/profile/support and legacy writes must preserve ownership and provenance",
+      "correction": "Retained request-scoped RLS and guarded legacy operations; staging setup verified",
+      "verification": [
+        "tests/closed-pilot-controls.test.mjs",
+        "tests/evidence-validation.test.mjs",
+        "tests/response-write-batches.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/class-operations",
+      "kind": "handler",
+      "role": "Assigned facilitator/admin; RLS/RPC scope",
+      "source": "app/api/class-operations/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "zod",
+        "@/db",
+        "@/lib/bis-access",
+        "@/lib/supabase/server"
+      ],
+      "problem": "Session/attendance updates must reject foreign groups and stale writes",
+      "correction": "Retained validated atomic RPCs and private cache policy",
+      "verification": [
+        "tests/facilitator-session-view.test.mjs",
+        "tests/sql/workspace-consolidation-staging.sql"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/commercial",
+      "kind": "handler",
+      "role": "Commercial roles; read-only versus write/admin checks",
+      "source": "app/api/commercial/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "../../../lib/api-error-response",
+        "../../../lib/bis-access",
+        "../../../lib/commercial-access",
+        "../../../lib/supabase/server"
+      ],
+      "problem": "Commercial access must remain independent from private learner evidence",
+      "correction": "Retained separate role check and customer-safe failures",
+      "verification": [
+        "tests/browser/workspace-consolidation.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/content-studio/preview",
+      "kind": "handler",
+      "role": "SYSTEM_ADMIN",
+      "source": "app/api/content-studio/preview/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "../../../../lib/api-error-response",
+        "../../../../db/query",
+        "../../../../db",
+        "../../../../db/schema",
+        "../../../../lib/bis-access",
+        "../../../../lib/content-studio",
+        "../../../../lib/content-compiler",
+        "../../../../lib/content-uat",
+        "../../../../lib/supabase/server"
+      ],
+      "problem": "Preview must be current/version-bound without live learner persistence",
+      "correction": "135 actual Lab previews; preserved explicit preview isolation",
+      "verification": [
+        "tests/content-preview-uat.test.mjs",
+        "scripts/inspect-hardening-previews.mjs",
+        "scripts/certify-hardening-publication.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+      ]
+    },
+    {
+      "route": "/api/content-studio",
+      "kind": "handler",
+      "role": "SYSTEM_ADMIN",
+      "source": "app/api/content-studio/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "../../../db/query",
+        "../../../lib/api-error-response",
+        "../../../db",
+        "../../../db/schema",
+        "../../../lib/content-studio",
+        "../../../lib/content-compiler",
+        "../../../lib/learning-foundation",
+        "../../../lib/question-quality.mjs",
+        "../../../lib/question-intelligence.mjs",
+        "../../../lib/content-source-adapters",
+        "../../../lib/content-uat",
+        "../../../lib/bis-access",
+        "../../../lib/supabase/server",
+        "../../../lib/lab-factory-capabilities.mjs"
+      ],
+      "problem": "Immutable sources, preparation, fingerprint UAT and atomic publishing",
+      "correction": "Normal API staging versions/publishing; no bypass of editorial REVIEW; old identities preserved; explicit whole-module unpublish closes the retained global fallback without deleting immutable versions or learning history",
+      "verification": [
+        "tests/content-studio.test.mjs",
+        "tests/content-publication-transaction.test.mjs",
+        "scripts/prepare-hardening-staging.mjs",
+        "scripts/certify-hardening-publication.mjs",
+        "scripts/certify-hardening-learning-publication.mjs",
+        "docs/hardening/migration-review.md"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+      ]
+    },
+    {
+      "route": "/api/content-studio/volume-audit",
+      "kind": "handler",
+      "role": "SYSTEM_ADMIN",
+      "source": "app/api/content-studio/volume-audit/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "imports": [
+        "../../../../lib/bis-access",
+        "../../../../lib/api-error-response",
+        "../../../../db/query",
+        "../../../../db",
+        "../../../../db/schema",
+        "../../../../lib/content-compiler",
+        "../../../../lib/content-source-adapters",
+        "../../../../lib/content-studio",
+        "../../../../lib/supabase/server"
+      ],
+      "problem": "Canonical volume inventory/checksums and preparation review",
+      "correction": "All three canonical volume hashes checked; 32 Labs/14 REVIEW notes registered",
+      "verification": [
+        "scripts/map-hardening-metrics.mjs",
+        "tests/bis-volume-migration.test.mjs",
+        "scripts/certify-hardening-publication.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+      ]
+    },
+    {
+      "route": "/api/evidence-engine",
+      "kind": "handler",
+      "role": "Learner owner; assigned facilitator; scoped sponsor; admin governance",
+      "source": "app/api/evidence-engine/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "zod",
+        "@/db",
+        "@/lib/bis-access",
+        "@/lib/supabase/server",
+        "@/lib/learner-evidence",
+        "@/lib/evidence-engine",
+        "@/lib/authored-assessment-rubrics.json",
+        "@/lib/evidence-engine"
+      ],
+      "problem": "Private sharing, human review, revocation, suppressed reports and original/calculated histories",
+      "correction": "Actual chosen P2 share/P3 denial/review/refresh/revoke; sponsor narrative exclusion and CSV verified",
+      "verification": [
+        "scripts/certify-hardening-evidence.mjs",
+        "tests/staff-evidence-engine.test.mjs",
+        "tests/universal-evidence-transactions.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/evidence-portfolio",
+      "kind": "handler",
+      "role": "Authenticated evidence owner",
+      "source": "app/api/evidence-portfolio/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "@/db",
+        "@/lib/bis-access",
+        "@/lib/learner-evidence"
+      ],
+      "problem": "Metrics must retain source verification and versioned history",
+      "correction": "Actual completed Lab reports verified source counts and calculation history",
+      "verification": [
+        "scripts/certify-hardening-evidence.mjs",
+        "tests/evidence-portfolio.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/lab-runtime",
+      "kind": "handler",
+      "role": "Authenticated learner; RLS publication access",
+      "source": "app/api/lab-runtime/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "@/db",
+        "@/lib/bis-access",
+        "@/lib/supabase/server"
+      ],
+      "problem": "Availability metadata must distinguish static versus Universal runtime",
+      "correction": "Retained metadata RPC; consumers now require dynamic activation for canonical handover",
+      "verification": [
+        "tests/learner-runtime-access-parity.test.mjs",
+        "tests/standard-day3-handoff.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs."
+      ]
+    },
+    {
+      "route": "/api/labs",
+      "kind": "handler",
+      "role": "Authenticated owner; guarded legacy STATIC lab operations",
+      "source": "app/api/labs/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "../../../lib/legacy-lab-guard",
+        "../../../db/query",
+        "../../../db",
+        "../../../db/schema",
+        "../../../lib/bis-access",
+        "../../../lib/core-labs",
+        "../../../lib/lab-lifecycle-contract",
+        "../../../lib/habit-lab",
+        "../../../lib/bis-access",
+        "../../../lib/evidence-validation.mjs"
+      ],
+      "problem": "Legacy version writes must not replace Universal evidence",
+      "correction": "Retained version guard/RLS; no new legacy behaviour",
+      "verification": [
+        "tests/decision-money-labs.test.mjs",
+        "tests/full-evidence-loop.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/learning",
+      "kind": "handler",
+      "role": "Authenticated learner, own responses/progress",
+      "source": "app/api/learning/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "../../../db/query",
+        "../../../db",
+        "../../../db/schema",
+        "../../../lib/bis-access",
+        "../../../lib/supabase/server",
+        "../../../lib/learning-foundation",
+        "../../../lib/api-error-response"
+      ],
+      "problem": "Responses, checks, edition and source-linked immutable evidence need refresh recovery",
+      "correction": "15 active edition/module save/check/reading-size refresh tests passed; actual normal writes plus accepted browser source-wide regression",
+      "verification": [
+        "scripts/certify-hardening-learning.mjs",
+        "tests/workbook-reliability.test.mjs",
+        "tests/browser/reader-hardening.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/profile",
+      "kind": "handler",
+      "role": "Authenticated owner; protected allowed preference fields",
+      "source": "app/api/profile/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "imports": [
+        "@/db/query",
+        "@/db",
+        "@/db/schema",
+        "@/lib/bis-access",
+        "@/lib/supabase/server"
+      ],
+      "problem": "Preference/edition validation and rollback without forged identity fields",
+      "correction": "Actual staging preference/edition writes; response failures and invalid fields covered",
+      "verification": [
+        "scripts/certify-hardening-learning.mjs",
+        "tests/profile-settings-api.test.mjs",
+        "tests/browser/profile-evidence.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/runtime-catalogue",
+      "kind": "handler",
+      "role": "Authenticated; edition/publication-scoped RLS",
+      "source": "app/api/runtime-catalogue/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "../../../db/query",
+        "../../../db",
+        "../../../db/schema",
+        "../../../lib/bis-access"
+      ],
+      "problem": "Missing/offline/static metadata must not create canonical Lab links",
+      "correction": "Retained metadata API; UI requires matching live dynamic Lab and validates payload",
+      "verification": [
+        "tests/browser/production-hardening.spec.ts",
+        "tests/learning-library-ux.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/runtime-content",
+      "kind": "handler",
+      "role": "Authenticated learner or assigned facilitator read-only",
+      "source": "app/api/runtime-content/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "../../../lib/content-html.mjs",
+        "../../../db/query",
+        "../../../db",
+        "../../../db/schema",
+        "../../../lib/bis-access",
+        "../../../lib/supabase/server",
+        "../../../lib/content-studio",
+        "../../../lib/learning-foundation",
+        "node:zlib"
+      ],
+      "problem": "Versioned edition access; retained Learning self-fetch returned protected Vercel sign-in HTML",
+      "correction": "Read trusted bundled handbook assets directly; build verifies all 15 editions in the serverless trace; retained publication/RLS gates",
+      "verification": [
+        "tests/learner-runtime-access-parity.test.mjs",
+        "tests/content-compiler-runtime.test.mjs",
+        "tests/static-learning-package.test.mjs",
+        "scripts/verify-static-learning-trace.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/staff",
+      "kind": "handler",
+      "role": "Scoped staff roles; SYSTEM_ADMIN access/enrolment; restricted safeguarding",
+      "source": "app/api/staff/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "../../../db/query",
+        "../../../lib/api-error-response",
+        "../../../db",
+        "@/lib/evidence-reporting.mjs",
+        "../../../db/staff-progress",
+        "../../../db/schema",
+        "../../../lib/bis-access",
+        "../../../lib/bis-access",
+        "../../../lib/supabase/server",
+        "../../../lib/habit-lab",
+        "../../../lib/programme-report-pdf"
+      ],
+      "problem": "Compact rosters, aggregate privacy, authorised downloads and explicit programme decisions",
+      "correction": "Normal staging 20-person group creation/assignment/enrolment/report/PDF; programme report wording descriptive",
+      "verification": [
+        "scripts/certify-hardening-evidence.mjs",
+        "tests/role-routed-reporting.test.mjs",
+        "tests/staff-workspace-hardening.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/staging-certification/environment",
+      "kind": "handler",
+      "role": "Public non-secret backend identity",
+      "source": "app/api/staging-certification/environment/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [],
+      "problem": "Fixture credentials must never reach production by mistaken environment binding",
+      "correction": "Exact project ref checked before all certification logins; live production denies staging certification",
+      "verification": [
+        "tests/environment-safety.test.mjs",
+        "scripts/hardening-staging-session.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/api/universal-lab",
+      "kind": "handler",
+      "role": "Authenticated owner, active governed version",
+      "source": "app/api/universal-lab/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "../../../lib/api-error-response",
+        "../../../lib/lab-progress-compatibility.mjs",
+        "../../../lib/lab-interaction-contract.mjs",
+        "../../../lib/lab-clock.mjs",
+        "../../../lib/evidence-validation.mjs",
+        "../../../lib/content-html.mjs",
+        "../../../db/query",
+        "../../../db",
+        "../../../db/schema",
+        "../../../lib/bis-access",
+        "../../../lib/supabase/server",
+        "../../../lib/content-studio",
+        "../../../lib/content-compiler",
+        "../../../lib/lab-lifecycle-contract",
+        "../../../lib/universal-lab-presentation.mjs",
+        "../../../lib/universal-lab-v2.mjs"
+      ],
+      "problem": "Unavailable errors and full canonical lifecycle/calculation/photo provenance",
+      "correction": "404 human guidance versus transient error; 20 normal full journeys/340 saves; computed/persisted parity and photo isolation",
+      "verification": [
+        "scripts/certify-hardening-lab.mjs",
+        "scripts/certify-hardening-evidence.mjs",
+        "scripts/certify-hardening-photo.mjs",
+        "tests/universal-calculation-integrity.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/auth/callback",
+      "kind": "handler",
+      "role": "Public callback; valid authenticated recovery/OAuth state",
+      "source": "app/auth/callback/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/auth-redirect",
+        "@/lib/supabase/server"
+      ],
+      "problem": "Safe return paths and code exchange",
+      "correction": "Retained safe destinations; provider delivery/configuration still open",
+      "verification": [
+        "tests/google-sign-in.test.mjs",
+        "tests/auth-confirmation-reliability.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-AUTH / AUTH-RECOVERY: delivered provider flow and full management settings."
+      ]
+    },
+    {
+      "route": "/auth/signout",
+      "kind": "handler",
+      "role": "Authenticated session action",
+      "source": "app/auth/signout/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "imports": [
+        "next/server",
+        "@/lib/auth-redirect",
+        "@/lib/supabase/server"
+      ],
+      "problem": "Session clearing and return route",
+      "correction": "Retained signout contract; final production authenticated exercise remains open",
+      "verification": [
+        "tests/production-domain-routing.test.mjs",
+        "tests/auth-confirmation-reliability.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/commercial",
+      "kind": "page",
+      "role": "SYSTEM_ADMIN, COMMERCIAL_ADMIN, COMMERCIAL_LEAD, COMMERCIAL_RESEARCH, COMMERCIAL_READ_ONLY",
+      "source": "app/commercial/page.tsx",
+      "methods": [],
+      "imports": [
+        "react",
+        "next/navigation",
+        "../../lib/bis-access",
+        "../../lib/commercial-access",
+        "../../lib/supabase/server",
+        "./commercial-workspace"
+      ],
+      "problem": "Commercial role boundary and muted caption contrast",
+      "correction": "Retained separate role boundary; metadata contrast corrected",
+      "verification": [
+        "tests/ui-components.test.mjs",
+        "tests/browser/workspace-consolidation.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Actual journeys for each commercial role: UAT-ROLE-VARIANTS."
+      ]
+    },
+    {
+      "route": "/content-studio",
+      "kind": "page",
+      "role": "SYSTEM_ADMIN",
+      "source": "app/content-studio/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "./content-studio"
+      ],
+      "problem": "Governed authoring must preserve versions, fingerprints and editorial review; edition badge contrast",
+      "correction": "Preserved source/compile/final-check/approval/explicit publication; badge contrast corrected; reviewed candidates remain unpublished",
+      "verification": [
+        "tests/browser/content-studio-recovery.spec.ts",
+        "tests/content-publication-transaction.test.mjs",
+        "scripts/prepare-hardening-staging.mjs",
+        "scripts/certify-hardening-publication.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+      ]
+    },
+    {
+      "route": "/content-studio/preview/[versionId]",
+      "kind": "page",
+      "role": "SYSTEM_ADMIN",
+      "source": "app/content-studio/preview/[versionId]/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "next/navigation",
+        "@/lib/supabase/require-user",
+        "./preview-workspace"
+      ],
+      "problem": "Preview/final-check workflow must be bound to exact artifacts",
+      "correction": "Preserved fingerprint and version workflow; no editorial waiver",
+      "verification": [
+        "tests/content-preview-uat.test.mjs",
+        "tests/browser/content-studio-recovery.spec.ts",
+        "scripts/certify-hardening-publication.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+      ]
+    },
+    {
+      "route": "/content-studio/preview/[versionId]/runtime",
+      "kind": "page",
+      "role": "SYSTEM_ADMIN",
+      "source": "app/content-studio/preview/[versionId]/runtime/page.tsx",
+      "methods": [],
+      "imports": [
+        "next/navigation",
+        "@/lib/supabase/require-user",
+        "@/app/learning/programme-player",
+        "@/app/labs/[code]/universal-runtime-lab",
+        "@/app/canonical-adaptive-shell"
+      ],
+      "problem": "New source packages must use shared renderer without individual page repair",
+      "correction": "135 real Lab preview screens across five packages, nine stages and three widths; preserved authored controls and shared canvas; Learning uses the canonical shell with accurate stage labels and readable captions; 117 real Learning preview states clean",
+      "verification": [
+        "scripts/inspect-hardening-previews.mjs",
+        "tests/risk-lab-factory-proof.test.mjs",
+        "tests/identity-lab-factory-reuse.test.mjs",
+        "scripts/certify-hardening-publication.mjs",
+        "scripts/inspect-hardening-learning-preview.mjs",
+        "scripts/certify-hardening-learning-publication.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
+        "Actual historical edition rollback requires a second governed edition version; first-publication rollback denial verified, multi-version transaction covered by database tests.",
+        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED."
+      ]
+    },
+    {
+      "route": "/decision",
+      "kind": "page",
+      "role": "Authenticated learner",
+      "source": "app/decision/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "next/navigation",
+        "@/lib/auth-redirect",
+        "@/lib/supabase/require-user"
+      ],
+      "problem": "Staging static activation differs from production dynamic publication; canonical route unavailable in staging",
+      "correction": "Preserved route; withheld catalogue/handover links for static runtime; explicit CONFIG-STATIC finding",
+      "verification": [
+        "tests/decision-money-labs.test.mjs",
+        "tests/browser/production-hardening.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs."
+      ]
+    },
+    {
+      "route": "/experience/leap9",
+      "kind": "page",
+      "role": "Public fictional demonstration",
+      "source": "app/experience/leap9/page.tsx",
+      "methods": [],
+      "imports": [
+        "../programme-experience"
+      ],
+      "problem": "Readable simulation labels and stage rail contrast",
+      "correction": "Preserved fictional content; muted rail text contrast corrected",
+      "verification": [
+        "tests/browser/programme-experience.spec.ts",
+        "tests/report-export-and-demo.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/experience/leap9/report",
+      "kind": "handler",
+      "role": "Public fictional PDF",
+      "source": "app/experience/leap9/report/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "@/lib/programme-report-pdf",
+        "@/lib/experience/leap9-report"
+      ],
+      "problem": "Download must identify illustrative fictional evidence",
+      "correction": "Retained fixed illustrative data/no learner input; shared report interpretation labels updated",
+      "verification": [
+        "tests/report-export-and-demo.test.mjs",
+        "tests/programme-evidence-pdf.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/experience/leap9/v2",
+      "kind": "page",
+      "role": "Public fictional demonstration",
+      "source": "app/experience/leap9/v2/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "../../programme-experience-v2"
+      ],
+      "problem": "Continuous reading, compact guidance disclosures and footer contrast",
+      "correction": "Preserved simulation and collapsible guidance; footer contrast corrected",
+      "verification": [
+        "tests/browser/programme-experience-v2.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/experience",
+      "kind": "page",
+      "role": "Authenticated user",
+      "source": "app/experience/page.tsx",
+      "methods": [],
+      "imports": [
+        "@/lib/supabase/require-user",
+        "../canonical-adaptive-shell",
+        "./experience-panel"
+      ],
+      "problem": "Edition changes must persist and roll back safely on error",
+      "correction": "Preserved controlled choice; failed-save test verifies request plus restored edition",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "scripts/certify-hardening-learning.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/forgot-password",
+      "kind": "page",
+      "role": "Public",
+      "source": "app/forgot-password/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "./password-recovery-form"
+      ],
+      "problem": "Recovery form and callback destination; delivered mail is not proved by synthetic accounts",
+      "correction": "Retained safe recovery flow; delivery/configuration remains open",
+      "verification": [
+        "tests/browser/auth-return.spec.ts",
+        "tests/auth-confirmation-reliability.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-AUTH / AUTH-RECOVERY: delivered provider flow and full management settings."
+      ]
+    },
+    {
+      "route": "/habit-lab/experiment",
+      "kind": "page",
+      "role": "Authenticated learner",
+      "source": "app/habit-lab/experiment/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "next/navigation",
+        "@/lib/auth-redirect",
+        "@/lib/supabase/require-user"
+      ],
+      "problem": "Legacy experiment links must reach calendar evidence",
+      "correction": "Retained canonical handoff; evidence/calendar safeguards unchanged",
+      "verification": [
+        "tests/experiment-timing.test.mjs",
+        "tests/browser/lab-journey.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/habit-lab",
+      "kind": "page",
+      "role": "Authenticated learner",
+      "source": "app/habit-lab/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "next/navigation",
+        "@/lib/auth-redirect",
+        "@/lib/supabase/require-user"
+      ],
+      "problem": "Legacy entry must hand off safely; final Profile captions lacked contrast",
+      "correction": "Preserved Universal handoff and return path; shared calculated captions corrected",
+      "verification": [
+        "tests/lab-progress-compatibility.test.mjs",
+        "tests/browser/lab-journey.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/habit",
+      "kind": "page",
+      "role": "Learner; assigned facilitator read-only",
+      "source": "app/habit/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "next/navigation",
+        "@/lib/supabase/require-user",
+        "./programme-entry"
+      ],
+      "problem": "Today and Learn must remain separate; workbook recovery and presentation",
+      "correction": "Shared reader preserved; human intro wording; handover requires a dynamic publication",
+      "verification": [
+        "tests/browser/programme-journey.spec.ts",
+        "tests/browser/reader-hardening.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs.",
+        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED."
+      ]
+    },
+    {
+      "route": "/handbooks/[code]",
+      "kind": "page",
+      "role": "Learner; assigned facilitator read-only",
+      "source": "app/handbooks/[code]/page.tsx",
+      "methods": [],
+      "imports": [
+        "next/navigation",
+        "@/lib/supabase/require-user",
+        "@/app/habit/programme-entry"
+      ],
+      "problem": "Uniform continuous reading canvas; response/check ordering, settings and source preservation",
+      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch",
+      "verification": [
+        "tests/browser/reader-hardening.spec.ts",
+        "scripts/certify-hardening-learning.mjs",
+        "tests/learner-module-integrity-audit.test.mjs",
+        "tests/static-learning-package.test.mjs",
+        "tests/browser/programme-journey.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED."
+      ]
+    },
+    {
+      "route": "/labs/[code]",
+      "kind": "page",
+      "role": "Learner owning versioned enrolment",
+      "source": "app/labs/[code]/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "next/navigation",
+        "@/lib/auth-redirect",
+        "@/lib/supabase/require-user",
+        "./universal-runtime-lab"
+      ],
+      "problem": "Unavailable Lab errors had no recovery; completed navigation/progress/photo controls unnamed; low contrast captions/navigation",
+      "correction": "Human unavailable state and transient retry; named controls; computed/navigation contrast corrected",
+      "verification": [
+        "tests/browser/lab-journey.spec.ts",
+        "tests/universal-calculation-integrity.test.mjs",
+        "scripts/certify-hardening-lab.mjs",
+        "scripts/certify-hardening-photo.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/labs",
+      "kind": "page",
+      "role": "Learner",
+      "source": "app/labs/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "../catalogue/module-library"
+      ],
+      "problem": "Same catalogue density and publication ambiguity; static activations cannot open canonical routes",
+      "correction": "Shared compact catalogue; dynamic live publication required; static/offline/missing state withheld",
+      "verification": [
+        "tests/browser/production-hardening.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs."
+      ]
+    },
+    {
+      "route": "/learn",
+      "kind": "page",
+      "role": "Learner",
+      "source": "app/learn/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "../catalogue/module-library"
+      ],
+      "problem": "Oversized repeated catalogue numbering; failed or missing metadata could imply availability",
+      "correction": "Compact title cards; publication-authoritative links; loading/error/retry; readable metadata",
+      "verification": [
+        "tests/browser/production-hardening.spec.ts",
+        "tests/learning-library-ux.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-STATIC: staging Decision static activation cannot open canonical Universal route; production dynamic differs."
+      ]
+    },
+    {
+      "route": "/learning/[lab]",
+      "kind": "page",
+      "role": "Authenticated learner",
+      "source": "app/learning/[lab]/page.tsx",
+      "methods": [],
+      "imports": [
+        "next/navigation",
+        "@/lib/supabase/require-user"
+      ],
+      "problem": "Known slug compatibility and invalid slug behaviour",
+      "correction": "Retained mapping; /learning/habit positive and /learning/hab negative cases separately recorded",
+      "verification": [
+        "tests/learning-library-ux.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/learning",
+      "kind": "page",
+      "role": "Authenticated learner",
+      "source": "app/learning/page.tsx",
+      "methods": [],
+      "imports": [
+        "next/navigation",
+        "@/lib/supabase/require-user"
+      ],
+      "problem": "Compatibility entry must not fork the reader",
+      "correction": "Retained redirect contract",
+      "verification": [
+        "tests/learning-library-ux.test.mjs",
+        "tests/production-domain-routing.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/money",
+      "kind": "page",
+      "role": "Authenticated learner",
+      "source": "app/money/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "next/navigation",
+        "@/lib/auth-redirect",
+        "@/lib/supabase/require-user"
+      ],
+      "problem": "Legacy handoff and authored no-opportunity capture",
+      "correction": "Retained Universal redirect and return path; shared controls/contrast apply",
+      "verification": [
+        "tests/decision-money-labs.test.mjs",
+        "tests/browser/lab-journey.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/",
+      "kind": "page",
+      "role": "Authenticated learner/staff; role-routed entry",
+      "source": "app/page.tsx",
+      "methods": [],
+      "imports": [
+        "next/navigation",
+        "@/lib/supabase/require-user",
+        "./role-router"
+      ],
+      "problem": "Role destinations and private return paths",
+      "correction": "Retained routing; no source/content replacement",
+      "verification": [
+        "tests/browser/workspace-consolidation.spec.ts",
+        "tests/canonical-adaptive-shell.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "kind": "page",
+      "role": "Learner, own evidence only",
+      "source": "app/portfolio/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "../canonical-adaptive-shell",
+        "./portfolio-workspace"
+      ],
+      "problem": "Original evidence/calculation/observation/self-report must be distinguishable; avoid repeated missing detail",
+      "correction": "Preserved compact disclosure presentation and provenance; actual share/revoke/review/download verified",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "scripts/certify-hardening-evidence.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/profile",
+      "kind": "page",
+      "role": "Authenticated learner/staff",
+      "source": "app/profile/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "./profile-dashboard"
+      ],
+      "problem": "Profile and private evidence summaries require role-safe reading",
+      "correction": "Retained accepted profile structure and collapsed evidence history",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/profile-settings-api.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/programmes/[asset]",
+      "kind": "handler",
+      "role": "Public authored fixed asset whitelist",
+      "source": "app/programmes/[asset]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "imports": [
+        "node:fs/promises",
+        "node:path",
+        "next/server"
+      ],
+      "problem": "Only known chunk assets; integrity/cache/MIME headers",
+      "correction": "Retained whitelist/integrity; unknown asset 404; no learner data served",
+      "verification": [
+        "tests/vercel-migration.test.mjs",
+        "tests/handbook-import.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/qa-handbooks",
+      "kind": "page",
+      "role": "Synthetic preview/opt-in verification gate; absent locally by design",
+      "source": "app/qa-handbooks/page.tsx",
+      "methods": [],
+      "imports": [
+        "next/navigation",
+        "./verification"
+      ],
+      "problem": "Verification surface must not become an ordinary learner route",
+      "correction": "Retained deployment gate; 404 documented as expected when not enabled",
+      "verification": [
+        "tests/staging-release-suite.test.mjs",
+        "tests/browser/reader-hardening.spec.ts"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/reset-password",
+      "kind": "page",
+      "role": "Public recovery session",
+      "source": "app/reset-password/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "../forgot-password/password-recovery-form"
+      ],
+      "problem": "Reset validation and expired/missing recovery session",
+      "correction": "Retained safe reset/error state; actual delivered recovery still open",
+      "verification": [
+        "tests/browser/auth-return.spec.ts",
+        "tests/auth-confirmation-reliability.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "CONFIG-AUTH / AUTH-RECOVERY: delivered provider flow and full management settings."
+      ]
+    },
+    {
+      "route": "/settings",
+      "kind": "page",
+      "role": "Authenticated user",
+      "source": "app/settings/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "./settings-panel",
+        "../canonical-adaptive-shell"
+      ],
+      "problem": "Text size/width persistence and failed-save rollback must be clear",
+      "correction": "Preserved settings recovery; regression now checks attempted PATCH and rollback rather than requiring a rejected radio choice to remain checked",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/reader-hardening.spec.ts",
+        "scripts/certify-hardening-learning.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/sign-in",
+      "kind": "page",
+      "role": "Public",
+      "source": "app/sign-in/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/auth-redirect",
+        "./sign-in-form"
+      ],
+      "problem": "Authentication, safe next destination and role routing",
+      "correction": "Preserved sign-in; real synthetic staging login verified",
+      "verification": [
+        "tests/google-sign-in.test.mjs",
+        "tests/staging/auth-and-access.spec.ts",
+        "tests/release-1-1-refinement.test.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
+      ]
+    },
+    {
+      "route": "/workspace",
+      "kind": "page",
+      "role": "FACILITATOR, SPONSOR_VIEWER, PROGRAMME_OWNER, SYSTEM_ADMIN, SAFEGUARDING_OFFICER; scoped access",
+      "source": "app/workspace/page.tsx",
+      "methods": [],
+      "imports": [
+        "next",
+        "@/lib/supabase/require-user",
+        "./staff-workspace-shell"
+      ],
+      "problem": "Large repeated participant messages, filter races, uncertain report meanings and role disclosure names",
+      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion",
+      "verification": [
+        "tests/browser/facilitator-evidence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/browser/programme-intelligence.spec.ts",
+        "scripts/certify-hardening-evidence.mjs"
+      ],
+      "releaseStatus": "REVIEWED_PARTIAL",
+      "outstanding": [
+        "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
+        "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
+        "Actual PROGRAMME_OWNER decision-write journey: UAT-ROLE-VARIANTS."
+      ]
+    }
+  ],
+  "coverageBoundary": "48 patterns inventoried and individually dispositioned. REVIEWED_PARTIAL is not whole-route certification. Real staging/preview/state measurements are added in verification-evidence.json; see open-findings.md for release and remaining scope."
+}

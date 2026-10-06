@@ -1,0 +1,58 @@
+[
+  {
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "slug": "bis-demo-bootstrap-20261004",
+    "version": 2,
+    "verifyJwt": true,
+    "sha256": "f1443952161ec5ad2d35dfa7ffb2525aa7dc5649298303753f6feb3bfb8b09be",
+    "behavior": "Returns 410; no provisioning or publication capability remains.",
+    "source": [
+      {
+        "name": "index.ts",
+        "content": "Deno.serve(() => new Response(\"Demo account provisioning has completed.\", { status: 410 }));"
+      }
+    ]
+  },
+  {
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "slug": "bis-fullscope-certification-provision",
+    "version": 6,
+    "verifyJwt": true,
+    "sha256": "264faf6c85b3f73d9418da2b027ae019e28c50e88b62c3aa33ae1f0d896ef2a6",
+    "behavior": "Returns 410; no provisioning or publication capability remains.",
+    "source": [
+      {
+        "name": "index.ts",
+        "content": "Deno.serve(() => new Response(\"Certification provisioning disabled\", { status: 410 }));"
+      }
+    ]
+  },
+  {
+    "project": "swmhsqivqaqwovojbceo",
+    "slug": "bis-volume-stage-temp",
+    "version": 3,
+    "verifyJwt": true,
+    "sha256": "e5191d91773f072c8821761adfd335a5aaaa24061d68c144a9f4ecf33ce4e253",
+    "behavior": "Returns 410; no provisioning or publication capability remains.",
+    "source": [
+      {
+        "name": "index.ts",
+        "content": "import \"jsr:@supabase/functions-js/edge-runtime.d.ts\";\nDeno.serve(() => new Response(\"Temporary BIS volume staging endpoint is closed.\", { status: 410 }));"
+      }
+    ]
+  },
+  {
+    "project": "swmhsqivqaqwovojbceo",
+    "slug": "bis-volume-publish-temp",
+    "version": 2,
+    "verifyJwt": true,
+    "sha256": "43904e33e72ed73881e09c08776512ec2684990ce0fe00e97007f0c17a1a344e",
+    "behavior": "Returns 410; no provisioning or publication capability remains.",
+    "source": [
+      {
+        "name": "index.ts",
+        "content": "import \"jsr:@supabase/functions-js/edge-runtime.d.ts\";\nDeno.serve(() => new Response(\"Temporary BIS publication endpoint is closed.\", { status: 410 }));"
+      }
+    ]
+  }
+]
