@@ -39,7 +39,7 @@
   box-shadow:none;
 }
 
-.canonical-shell .learner-document-header{
+.canonical-shell .learner-document .learner-document-header{
   margin:0;
   padding:clamp(30px,5vw,52px) var(--learner-document-inline) 28px;
   border:0;
@@ -50,19 +50,19 @@
   box-shadow:none;
 }
 
-.canonical-shell .learner-document-heading-row{
+.canonical-shell .learner-document .learner-document-heading-row{
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
   gap:22px;
   align-items:start;
 }
 
-.canonical-shell .learner-document-heading{
+.canonical-shell .learner-document .learner-document-heading{
   min-width:0;
   max-width:760px;
 }
 
-.canonical-shell .learner-document-eyebrow{
+.canonical-shell .learner-document .learner-document-eyebrow{
   margin:0 0 10px;
   color:var(--learner-document-accent);
   font:850 10px/1.3 var(--font-sans,system-ui,sans-serif);
@@ -70,7 +70,7 @@
   text-transform:uppercase;
 }
 
-.canonical-shell .learner-document-title{
+.canonical-shell .learner-document .learner-document-title{
   max-width:18ch;
   margin:0;
   color:var(--learner-document-ink);
@@ -79,14 +79,14 @@
   text-wrap:balance;
 }
 
-.canonical-shell .learner-document-purpose{
+.canonical-shell .learner-document .learner-document-purpose{
   max-width:690px;
   margin:14px 0 0!important;
   color:var(--learner-document-muted)!important;
   font:400 16px/1.68 var(--font-sans,system-ui,sans-serif)!important;
 }
 
-.canonical-shell .learner-document-status-pill{
+.canonical-shell .learner-document .learner-document-status-pill{
   min-width:54px;
   padding:7px 10px;
   border:1px solid #d7ddd9;
@@ -97,14 +97,14 @@
   text-align:center;
 }
 
-.canonical-shell .learner-document-outcomes{
+.canonical-shell .learner-document .learner-document-outcomes{
   display:flex;
   flex-wrap:wrap;
   gap:7px;
   margin:22px 0 0;
 }
 
-.canonical-shell .learner-document-outcomes>strong{
+.canonical-shell .learner-document .learner-document-outcomes>strong{
   flex-basis:100%;
   margin-bottom:2px;
   color:#65716c;
@@ -113,7 +113,7 @@
   text-transform:uppercase;
 }
 
-.canonical-shell .learner-document-outcomes>span{
+.canonical-shell .learner-document .learner-document-outcomes>span{
   padding:7px 10px;
   border:1px solid #dce2de;
   border-radius:999px;
@@ -122,14 +122,14 @@
   font:750 11px/1.3 var(--font-sans,system-ui,sans-serif);
 }
 
-.canonical-shell .learner-document-meta{
+.canonical-shell .learner-document .learner-document-meta{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
   margin-top:20px;
 }
 
-.canonical-shell .learner-document-meta :is(span,[data-slot="badge"]){
+.canonical-shell .learner-document .learner-document-meta :is(span,[data-slot="badge"]){
   min-height:30px;
   display:inline-flex;
   align-items:center;
@@ -159,6 +159,46 @@
 .canonical-shell .learner-document-body{
   min-width:0;
   color:var(--learner-document-copy);
+}
+
+/* Secondary context shares one disclosure treatment in Learn and Lab. */
+.canonical-shell .learner-document .learner-document-disclosure{
+  margin:16px 0 24px;
+  padding:0;
+  border:0;
+  border-block:1px solid var(--learner-document-border);
+  border-radius:0;
+  background:transparent;
+  color:var(--learner-document-copy);
+}
+.canonical-shell .learner-document .learner-document-disclosure>summary{
+  min-height:48px;
+  padding:12px 0;
+  cursor:pointer;
+  color:var(--learner-document-ink);
+  font:650 14px/1.6 var(--font-sans,system-ui,sans-serif);
+}
+.canonical-shell .learner-document .learner-document-disclosure>summary:focus-visible{
+  outline:3px solid var(--learner-document-accent);
+  outline-offset:3px;
+}
+.canonical-shell .learner-document .learner-document-disclosure>p{
+  max-width:72ch;
+  margin:0 0 16px;
+  font-size:calc(16px * var(--bis-text-scale,1));
+  line-height:1.72;
+}
+.canonical-shell .learner-document .handbook-session-details :is(p,div,h2,h3,h4){
+  margin:0 0 8px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--learner-document-copy);
+  font:400 calc(14px * var(--bis-text-scale,1))/1.65 var(--font-sans,system-ui,sans-serif);
+  letter-spacing:normal;
+}
+.canonical-shell .learner-document :is(.handbook-repeated-heading,.handbook-heading-decoration)[hidden]{
+  display:none!important;
 }
 
 .canonical-shell .learner-document-status{
@@ -290,25 +330,25 @@
     border-radius:0;
   }
 
-  .canonical-shell .learner-document-header{
+  .canonical-shell .learner-document .learner-document-header{
     padding-top:26px;
     padding-bottom:24px;
   }
 
-  .canonical-shell .learner-document-title{
+  .canonical-shell .learner-document .learner-document-title{
     max-width:none;
     font-size:36px;
   }
 
-  .canonical-shell .learner-document-purpose{
+  .canonical-shell .learner-document .learner-document-purpose{
     font-size:15px!important;
   }
 
-  .canonical-shell .learner-document-heading-row{
+  .canonical-shell .learner-document .learner-document-heading-row{
     gap:12px;
   }
 
-  .canonical-shell .learner-document-status-pill{
+  .canonical-shell .learner-document .learner-document-status-pill{
     min-width:50px;
     padding:6px 8px;
     font-size:10px;
@@ -334,11 +374,11 @@
 @media(max-width:430px){
   :root{--learner-document-inline:18px}
 
-  .canonical-shell .learner-document-title{
+  .canonical-shell .learner-document .learner-document-title{
     font-size:34px;
   }
 
-  .canonical-shell .learner-document-outcomes>span{
+  .canonical-shell .learner-document .learner-document-outcomes>span{
     width:100%;
     border-radius:12px;
   }

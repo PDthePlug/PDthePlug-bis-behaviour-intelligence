@@ -1,6 +1,7 @@
 import { learnerText, type LearnerEdition } from "../../lib/school-language";
 import { authoredQuestions } from "../../lib/universal-lab-presentation.mjs";
 import { BIS_LEARNING_SESSION_MINUTES } from "../../lib/session-design";
+import { learnerHeadingText } from "../../lib/learner-heading-presentation.mjs";
 
 type LabCode = string;
 
@@ -18,6 +19,7 @@ export type HandbookEnhancementContext = {
   referenceOnly?: boolean;
   edition?: LearnerEdition;
   programmeDay?: number | null;
+  pageTitle?: string;
   formativeCheckTarget?: number;
   enableFormativeLearningChecks?: boolean;
   facilitatorMode?: boolean;
@@ -1503,6 +1505,128 @@ function addFacilitatorCues(root: HTMLElement, context: HandbookEnhancementConte
   }
 }
 
+function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancementContext) {
+  // The publication header already supplies the day and title. Keep the source
+  // elements intact so this never changes the text used for response identities.
+  const titleKey = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+  if (context.pageTitle) {
+    for (const heading of [...root.querySelectorAll<HTMLElement>("h1,h2,.day-kicker")].slice(0, 3)) {
+      const value = normalise(heading.textContent ?? "");
+      if (titleKey(value) === titleKey(context.pageTitle)
+        || (context.programmeDay && value === `DAY ${context.programmeDay} OF 10`)) {
+        heading.classList.add("handbook-repeated-heading");
+        heading.hidden = true;
+      }
+    }
+  }
+
+  // Printed line wrapping sometimes attaches the next section label to the
+  // final checklist item or resource. Separate it after checklist construction
+  // so its existing storage key and checked state stay intact.
+  root.querySelectorAll<HTMLElement>(".handbook-check-row>span,.handbook-check-context").forEach((element) => {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    let node = walker.nextNode();
+    while (node) {
+      const match = /\b(YOU WILL NEED:|EXPERIMENT POSITION:)/i.exec(node.textContent ?? "");
+      if (match && match.index > 0) {
+        const range = document.createRange();
+        range.setStart(node, match.index);
+        range.setEnd(element, element.childNodes.length);
+        const contextLine = document.createElement(match[1].toUpperCase() === "YOU WILL NEED:" ? "h3" : "p");
+        contextLine.className = "handbook-session-context";
+        contextLine.append(range.extractContents());
+        const checklist = element.closest(".handbook-choice-list");
+        const anchor = checklist?.parentElement?.matches("p")
+          ? checklist.parentElement
+          : element.closest(".handbook-check-row") ?? element;
+        anchor.after(contextLine);
+        const choice = element.closest(".handbook-check-row")?.querySelector("input");
+        if (choice) choice.setAttribute("aria-label", normalise(element.textContent ?? ""));
+        break;
+      }
+      node = walker.nextNode();
+    }
+  });
+
+  const rows: HTMLElement[] = [];
+  root.querySelectorAll<HTMLElement>("p,div,span,h3").forEach((element) => {
+    if (element.closest(".handbook-session-details,table")
+      || element.querySelector("input,textarea,select,button,details")) return;
+    const value = normalise(element.textContent ?? "");
+    if (!/^(SESSION|TIME|MODE|DIFFICULTY):/i.test(value)) return;
+    // Choose the outer row, preserving rich text inside it.
+    if (element.parentElement !== root
+      && /^(SESSION|TIME|MODE|DIFFICULTY):/i.test(normalise(element.parentElement?.textContent ?? ""))
+      && !element.parentElement?.querySelector("input,textarea,select,button")) return;
+
+    if (/TODAY YOU WILL:/i.test(value)) {
+      // Some source editions combine passive labels with the objectives in one
+      // printable paragraph. Split only the passive prefix; objectives stay open.
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        const match = /TODAY YOU WILL:/i.exec(node.textContent ?? "");
+        if (match) {
+          const range = document.createRange();
+          range.setStart(element, 0);
+          range.setEnd(node, match.index);
+          const row = document.createElement("div");
+          row.append(range.extractContents());
+          element.before(row);
+          rows.push(row);
+          break;
+        }
+        node = walker.nextNode();
+      }
+    } else {
+      rows.push(element);
+    }
+  });
+  for (const row of rows) {
+    if (!row.parentElement || row.closest(".handbook-session-details")) continue;
+    // A standalone duration can be an important Lab handover, not secondary
+    // session metadata. Fold only a session block with additional labels.
+    const text = normalise(row.textContent ?? "");
+    if (!/^SESSION:/i.test(text)
+      || (!/\b(TIME|MODE|DIFFICULTY):/i.test(text)
+        && !rows.includes(row.nextElementSibling as HTMLElement))) continue;
+    const details = document.createElement("details");
+    details.className = "learner-document-disclosure handbook-session-details";
+    const summary = document.createElement("summary");
+    summary.textContent = context.programmeDay === 3 ? "Lab session details" : "Session details";
+    row.before(details);
+    details.append(summary, row);
+    // Only adjacent passive rows belong together; never collapse a task.
+    while (details.nextElementSibling && rows.includes(details.nextElementSibling as HTMLElement)) {
+      details.append(details.nextElementSibling);
+    }
+    if (context.programmeDay === 3) {
+      const duration = /TIME:\s*(\d+\s*minutes)/i.exec(normalise(details.textContent ?? ""))?.[1];
+      if (duration) summary.textContent += ` · ${duration}`;
+    }
+  }
+
+  root.querySelectorAll<HTMLElement>("h1,h2,h3,h4").forEach((heading) => {
+    if (heading.querySelector(".handbook-heading-decoration,input,textarea,select")) return;
+    const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+    const node = walker.nextNode() as Text | null;
+    if (!node) return;
+    const raw = node.data;
+    const leading = raw.length - raw.trimStart().length;
+    const cleaned = learnerHeadingText(raw.trimStart());
+    const length = raw.trimStart().length - cleaned.length;
+    if (!length) return;
+    const start = node.splitText(leading);
+    start.splitText(length);
+    const decoration = document.createElement("span");
+    decoration.className = "handbook-heading-decoration";
+    decoration.hidden = true;
+    decoration.setAttribute("aria-hidden", "true");
+    start.before(decoration);
+    decoration.append(start);
+  });
+}
+
 export function enhanceHandbookDocument(
   root: HTMLElement,
   labCode: LabCode,
@@ -1545,6 +1669,7 @@ export function enhanceHandbookDocument(
   addMissingCheckpointResponses(root, labCode, pageId);
   structureAuthoredResponses(root);
   addFacilitatorCues(root, context);
+  finishHandbookPresentation(root, context);
   if (!learningCheckListeners.has(root)) {
     root.addEventListener("input", () => syncHandbookLearningChecks(root));
     root.addEventListener("change", () => syncHandbookLearningChecks(root));
