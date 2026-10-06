@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { BIS_PRODUCTION_ORIGIN } from "@/lib/auth-redirect";
 import "./globals.css";
 import "./brand.css";
+import "./personalization.css";
 import { PwaProvider } from "@/components/pwa/pwa-provider";
 import "./learning/programme-player.css";
 import "./habit-lab/focused-runtime.css";

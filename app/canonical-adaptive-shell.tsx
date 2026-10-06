@@ -1,6 +1,10 @@
 "use client";
 
 import { BisMark } from "@/components/brand/bis-mark";
+import {
+  applyPersonalisation,
+  loadLocalPersonalisation,
+} from "@/lib/learner-personalization";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -28,7 +32,7 @@ const stageLabels: Record<ShellStage, string> = {
 
 function resolveStage(pathname: string, section: string | null): ShellStage {
   if (pathname.startsWith("/portfolio")) return "portfolio";
-  if (pathname.startsWith("/profile")) return "profile";
+  if (pathname.startsWith("/profile") || pathname.startsWith("/settings")) return "profile";
   if (pathname.startsWith("/learn") || pathname.startsWith("/handbooks/")) return "learn";
   if (pathname.startsWith("/labs")) return "lab";
   if (pathname.startsWith("/habit-lab/experiment")) return "experiment";
@@ -92,6 +96,11 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
     ],
     [experimentHref],
   );
+
+  useEffect(() => {
+    const local = loadLocalPersonalisation();
+    if (local) applyPersonalisation(local);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
