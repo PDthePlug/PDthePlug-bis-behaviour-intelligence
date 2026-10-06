@@ -409,6 +409,24 @@
   padding-inline-start:0.15em;
 }
 
+.canonical-shell .prototype-player .prototype-document table.handbook-profile-table{
+  table-layout:fixed;
+  min-width:0;
+  width:100%;
+}
+.canonical-shell .prototype-player .prototype-document .handbook-profile-table caption{
+  padding:12px 14px;
+  text-align:left;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--learner-document-muted);
+}
+.canonical-shell .prototype-player .prototype-document .handbook-profile-table tr>:first-child{width:68%}
+.canonical-shell .prototype-player .prototype-document .handbook-profile-table :is(th,td){padding:12px 14px;overflow-wrap:anywhere}
+.canonical-shell .prototype-player .prototype-document .handbook-profile-table tbody th{background:transparent;font-weight:400}
+.canonical-shell .prototype-player .prototype-document .handbook-profile-table .handbook-profile-label{margin:0;max-width:none}
+.canonical-shell .prototype-player .prototype-document .handbook-profile-table td small{display:block;margin-top:6px;font-size:12px;line-height:1.5;font-weight:400}
+
 @media(max-width:430px){
   :root{--learner-document-inline:18px}
 
