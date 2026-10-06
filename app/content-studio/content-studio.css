@@ -334,7 +334,7 @@
 .content-source-slot-main{display:grid!important;grid-template-columns:24px minmax(0,1fr) auto;align-items:center!important;gap:11px!important}
 .content-source-slot-main>svg{width:20px;color:var(--teal)}
 .edition-state{
-  display:inline-flex;align-items:center;justify-content:center;min-height:27px;padding:0 9px;border-radius:999px;background:#f0f1ef;color:#6e7773;font-size:9px;font-weight:900;white-space:nowrap;
+  display:inline-flex;align-items:center;justify-content:center;min-height:27px;padding:0 9px;border-radius:999px;background:#f0f1ef;color:#52635a;font-size:9px;font-weight:900;white-space:nowrap;
 }
 .edition-state.ready{background:#fff3d8;color:#7e5f22}
 .edition-state.live{background:#e5f3ed;color:#28685c}

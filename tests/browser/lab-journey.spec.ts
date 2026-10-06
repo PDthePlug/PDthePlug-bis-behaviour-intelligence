@@ -61,6 +61,24 @@ async function noOverflow(page: Page) {
   expect(Math.abs(box!.x + box!.width / 2 - page.viewportSize()!.width / 2)).toBeLessThan(3);
 }
 
+test("Lab failures offer recovery and completed mobile navigation remains named", async ({ page }) => {
+  await service(page, 7);
+  let fail = true;
+  await page.route("**/api/universal-lab**", route => fail ? route.fulfill({ status: 503, json: { error: "The Lab could not be opened. Please try again." } }) : route.fallback());
+  await page.goto("/labs/ldr");
+  await expect(page.getByRole("button", { name: "Try again", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to the Lab library" })).toHaveAttribute("href", "/labs");
+  fail = false;
+  await page.getByRole("button", { name: "Try again", exact: true }).click();
+  await expect(page.getByRole("progressbar", { name: "Leadership Lab™ investigation progress" })).toBeVisible();
+  for (let stage = 1; stage <= 6; stage++) await expect(page.getByRole("button", { name: new RegExp(`^Investigation ${stage}: .*, completed$`) })).toBeVisible();
+  await page.route("**/api/universal-lab**", route => route.fulfill({ status: 404, json: { error: "This Lab is not available yet. Choose another investigation from the Lab library." } }));
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Lab unavailable" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Try again", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Back to the Lab library" })).toBeVisible();
+});
+
 test("reading text size also reaches Lab instructions and response controls", async ({ page }) => {
   await service(page, 2);
   await page.route("**/api/profile", route => route.fulfill({ json: { profile: { textSizePreference: "extra_large", readingWidthPreference: "standard" } } }));

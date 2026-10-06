@@ -14,7 +14,7 @@ import {
   measurementValues,
   responses,
 } from "../../../db/schema";
-import { identityFrom } from "../../../lib/bis-access";
+import { AccessError, identityFrom } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { CONTENT_STUDIO_BUCKET, sha256Hex } from "../../../lib/content-studio";
 import type { UniversalLabPackage, UniversalLabPrompt } from "../../../lib/content-compiler";
@@ -84,8 +84,9 @@ async function activeLab(code: string) {
     artifact_hash: string;
     compiler_version: string | null;
   };
-  if (error || !runtime || runtime.runtime_mode !== "DYNAMIC") {
-    throw new Error("This Lab is not published in the Universal experience yet.");
+  if (error) throw new Error("Lab availability could not be checked.");
+  if (!runtime || runtime.runtime_mode !== "DYNAMIC") {
+    throw new AccessError("This Lab is not available yet. Choose another investigation from the Lab library.", 404);
   }
 
   const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(runtime.storage_path);

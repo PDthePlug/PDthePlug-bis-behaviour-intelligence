@@ -6,6 +6,24 @@ const rubric={id:"rubric",lab_code:"SYS",lab_version:"1",title:"Systems Transfer
 const base={identity:{id:"staff",email:"staff@local.invalid",displayName:"Staff"},roles:["SYSTEM_ADMIN","FACILITATOR","PROGRAMME_OWNER"],privacyBoundary:{},admin:{metrics:{learners:1,completed:1,experimentActive:0,openSafeguardingCases:0,opportunityBands:{none:1,one:0,two:0,threePlus:0}},learners:[learner],roleAssignments:[],cohorts:[cohort],labAssignments:[],supportedLabVersions:["1"],publishedLabs:[{code:"SYS",title:"Systems Thinking Lab",version:"1",runtimeMode:"DYNAMIC"}]},facilitator:{cohorts:[cohort],learners:[learner],notes:[],referrals:[]},sponsor:{cohorts:[{cohort,participantCount:5,minimumReportableCohortSize:5,suppressed:false,metrics:null,evidenceFlow:{cohortId:"group",runtimeMode:"DYNAMIC",suppressed:false,participantCount:5,totals:{recordedResponses:20,anchoredMeasures:4,startedExperiment:5,completed:5},stages:[],privacyNote:"Private wording excluded"}}]},safeguarding:null};
 async function menu(page:Page,name:string){await page.getByRole("button",{name:"Open BIS menu · Staff workspace menu"}).click();await page.getByRole("dialog",{name:"Staff workspace menu"}).getByRole("link",{name,exact:false}).click();}
 function checks(page:Page){const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));page.on("console",m=>{if(m.type()==="error")errors.push(m.text());});page.on("response",r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`);});return async()=>{expect(errors).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);};}
+test("operator scans a large roster, expands evidence and retains filters after refresh",async({page},info)=>{
+ const verify=checks(page);
+ const learners=Array.from({length:100},(_,index)=>({...learner,userId:`learner-${index}`,displayName:`Learner ${String(index).padStart(3,"0")}`,email:`learner-${index}@local.invalid`,enrolment:index%2===0?learner.enrolment:null,experiment:null,supportGuidance:"Check the existing tasks before drawing a conclusion."}));
+ await page.route("**/api/staff",r=>r.fulfill({json:{...base,admin:{...base.admin,learners}}}));
+ await page.goto("/staff-shell?view=admin&section=overview");
+ await expect(page.locator(".operator-learner-row")).toHaveCount(100);
+ await expect(page.locator(".operator-learner-row[open]")).toHaveCount(0);
+ const row=page.locator(".operator-learner-row").first();
+ await row.locator("summary").focus();await page.keyboard.press("Enter");
+ await expect(row.getByText("Check the existing tasks before drawing a conclusion.")).toBeVisible();
+ await page.getByLabel("Find a learner").fill("Learner 042");
+ await expect(page.locator(".operator-learner-row")).toHaveCount(1);
+ await page.reload();await expect(page.getByLabel("Find a learner")).toHaveValue("Learner 042");
+ await page.getByLabel("Find a learner").fill("");await page.getByLabel("Show",{exact:true}).selectOption("not-started");
+ await expect(page.locator(".operator-learner-row")).toHaveCount(50);
+ await page.reload();await expect(page.getByLabel("Show",{exact:true})).toHaveValue("not-started");
+ await info.attach("compact-operator-roster",{body:await page.screenshot({fullPage:true}),contentType:"image/png"});await verify();
+});
 test("centred staff menu separates operational tasks, preserves browser history and keyboard access",async({page})=>{
  const verify=checks(page);await page.route("**/api/staff",r=>r.fulfill({json:base}));await page.route("**/api/class-operations?**",r=>r.fulfill({json:{sessions:[],attendance:[]}}));await page.goto("/staff-shell");await expect(page.getByRole("heading",{name:"Plan and record the class"})).toBeVisible();expect(await page.locator(".staff-workspace-switcher,.facilitator-subnav").count()).toBe(0);
  await page.getByRole("button",{name:"Open BIS menu · Staff workspace menu"}).click();await expect(page.getByRole("dialog")).toBeVisible();await page.keyboard.press("Escape");await expect(page.getByRole("dialog")).toHaveCount(0);await expect(page.getByRole("button",{name:"Open BIS menu · Staff workspace menu"})).toBeFocused();

@@ -861,7 +861,7 @@ export function ProgrammeOutcomesView({
               </div>
 
               <p className="organisational-learning-intro">
-                BIS shows what happened and where the team may want to improve the programme next. These are review questions, not proof of why a result happened.
+                BIS describes the recorded evidence and offers questions for programme review. The report does not establish what caused a result or prescribe programme changes.
               </p>
 
               <div className="organisational-learning-grid">
@@ -968,7 +968,7 @@ export function ProgrammeOutcomesView({
                     </label>
                     <label className="decision-form-wide">
                       What will the programme change?
-                      <textarea value={decisionText} onChange={(event) => setDecisionText(event.target.value)} maxLength={1200} placeholder="Describe one deliberate change to programme design, facilitation, timing or support." />
+                      <textarea value={decisionText} onChange={(event) => setDecisionText(event.target.value)} maxLength={1200} placeholder="Record your team's decision and the evidence behind it." />
                     </label>
                     <label className="decision-form-wide">
                       What do we expect to observe next?

@@ -172,26 +172,6 @@ function supportFocus(learner: ProgressRow) {
   return focus.slice(0, 3);
 }
 
-function ParticipantCard({ learner }: { learner: ProgressRow }) {
-  const progress = Math.min(100, ((learner.enrolment?.currentInvestigation ?? 0) / 9) * 100);
-  return (
-    <article className="ops-learner-card">
-      <div className="ops-learner-head">
-        <div><strong>{learner.displayName}</strong><span>{learner.email}</span></div>
-        <Badge variant="outline">{position(learner)}</Badge>
-      </div>
-      <div className="ops-progress-line"><span style={{ width: String(progress) + "%" }} /></div>
-      <dl>
-        <div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div>
-        <div><dt>Recorded days</dt><dd>{learner.experiment?.recordedDays ?? "Not available"}</dd></div>
-        <div><dt>Opportunities</dt><dd>{learner.experiment?.opportunityCount ?? "Not available"}</dd></div>
-        <div><dt>Last activity</dt><dd>{formatDate(learner.lastActivityAt)}</dd></div>
-      </dl>
-      {learner.supportGuidance && <p className="participant-attribute-note">{learner.supportGuidance}</p>}
-    </article>
-  );
-}
-
 export function FacilitatorWorkspace({
   data,
   saving,
@@ -218,6 +198,8 @@ export function FacilitatorWorkspace({
       ? requestedSection
       : "cohort";
   const requestedGroup = searchParams.get("group");
+  const learnerSearch = searchParams.get("search") ?? "";
+  const learnerFilter = searchParams.get("filter") ?? "all";
   const cohort = data.cohorts.find((item) => item.id === requestedGroup) ?? data.cohorts[0];
   const participants = useMemo(
     () => data.learners.filter((learner) =>
@@ -227,6 +209,13 @@ export function FacilitatorWorkspace({
   );
   const selectedLearnerId = searchParams.get("learner") ?? "";
   const selected = participants.find((learner) => learner.userId === selectedLearnerId);
+  const visibleParticipants = participants.filter((learner) => {
+    const matchesSearch = `${learner.displayName} ${learner.email}`.toLocaleLowerCase().includes(learnerSearch.trim().toLocaleLowerCase());
+    const matchesFilter = learnerFilter === "attention" ? needsAttention(learner)
+      : learnerFilter === "completed" ? learner.enrolment?.status === "COMPLETED"
+        : learnerFilter === "not-started" ? !learner.enrolment : true;
+    return matchesSearch && matchesFilter;
+  });
   const cohortLabCode = cohort?.labCode ?? "";
   const moduleDefinition = BIS_MODULES.find((item) => item.code === cohortLabCode);
 
@@ -240,6 +229,13 @@ export function FacilitatorWorkspace({
     else if (patch.group) params.set("group", patch.group);
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function filterLearners(key: "search" | "filter", value: string) {
+    const params = new URLSearchParams(window.location.search);
+    if (value && value !== "all") params.set(key, value);
+    else params.delete(key);
+    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
   }
 
   if (!cohort) {
@@ -447,7 +443,7 @@ export function FacilitatorWorkspace({
               <div className="surface-card ops-section">
                 <div className="section-title"><div><p className="eyebrow">Where support may help</p><h2>Next useful facilitator moves</h2></div><Activity /></div>
                 <div className="participant-focus-list">
-                  {supportFocus(selected).map((item, index) => <div key={item}><strong>{String(index + 1).padStart(2,"0")}</strong><p>{item}</p></div>)}
+                  {supportFocus(selected).map((item) => <p key={item}>{item}</p>)}
                   {supportFocus(selected).length === 0 ? <p className="ops-helper">No learner currently needs a check-in based on the progress shown here.</p> : null}
                 </div>
               </div>
@@ -465,14 +461,22 @@ export function FacilitatorWorkspace({
         ) : (
           <div>
             <div className="ops-section-heading"><div><p className="eyebrow">{cohort.name}</p><h2>{participants.length} learners</h2></div><Badge variant="outline">Private responses hidden</Badge></div>
-            <div className="ops-learner-grid participant-grid">
-              {participants.map((learner) => (
-                <button type="button" className="participant-card-button" key={learner.userId} onClick={() => navigateWorkspace({ section: "participants", learner: learner.userId })}>
-                  <ParticipantCard learner={learner} />
-                  <span className="participant-open">Open learner →</span>
-                </button>
-              ))}
+            <div className="participant-filters">
+              <div><label htmlFor="participant-search">Find a learner</label><input id="participant-search" type="search" value={learnerSearch} onChange={(event) => filterLearners("search", event.target.value)} placeholder="Name or email" /></div>
+              <div><label htmlFor="participant-filter">Show</label><select id="participant-filter" value={learnerFilter} onChange={(event) => filterLearners("filter", event.target.value)}><option value="all">All learners</option><option value="attention">May need a check-in</option><option value="completed">Completed</option><option value="not-started">Not started</option></select></div>
             </div>
+            <p className="ops-helper" role="status">{visibleParticipants.length} of {participants.length} learners shown</p>
+            <div className="participant-roster">
+              {visibleParticipants.map((learner) => <article className="participant-roster-row" key={learner.userId}>
+                <div><strong>{learner.displayName}</strong><small>{learner.email}</small></div>
+                <div><span>{position(learner)}</span><small>Last activity {formatDate(learner.lastActivityAt)}</small></div>
+                <button type="button" aria-label={`Open learner: ${learner.displayName}`} onClick={() => navigateWorkspace({ section: "participants", learner: learner.userId })}>Open learner →</button>
+              </article>)}
+            </div>
+            {visibleParticipants.length === 0 ? <p className="ops-helper">No learners match these filters. Try another name or show all learners.</p> : null}
+            <EvidenceDisclosure title="How to read progress and evidence">
+              <p>Progress shows the stage reached, not understanding or behaviour change. Open a learner to see observation coverage and useful support actions. Private responses remain hidden.</p>
+            </EvidenceDisclosure>
           </div>
         )
       ) : null}

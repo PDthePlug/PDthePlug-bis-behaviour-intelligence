@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { ArrowRight, Check, Eye, LoaderCircle, LockKeyhole, Search, ShieldCheck } from "lucide-react";
 import { LabInvestigationFrame } from "@/app/lab-investigation-frame";
 import { Badge } from "@/components/ui/badge";
@@ -1102,6 +1103,8 @@ export function UniversalRuntimeLab({
   const [saving, setSaving] = useState(false);
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
+  const [loadAttempt, setLoadAttempt] = useState(0);
+  const [unavailable, setUnavailable] = useState(false);
   const [step, setStep] = useState(1);
   const router = useRouter();
   const pathname = usePathname();
@@ -1149,6 +1152,7 @@ export function UniversalRuntimeLab({
         } else {
           const response = await fetch(`/api/universal-lab?lab=${encodeURIComponent(labCode)}`, { cache: "no-store", signal: controller.signal });
           data = await response.json() as Snapshot & { error?: string };
+          setUnavailable(response.status === 404);
           if (!response.ok) throw new Error(data.error ?? "The Lab could not be opened.");
         }
         if (controller.signal.aborted) return;
@@ -1167,7 +1171,7 @@ export function UniversalRuntimeLab({
       }
     })();
     return () => controller.abort();
-  }, [labCode, previewVersionId]);
+  }, [labCode, previewVersionId, loadAttempt]);
 
   const investigation = snapshot?.definition.investigations[step - 1];
 
@@ -1271,7 +1275,7 @@ export function UniversalRuntimeLab({
   }
 
   if (loading) return <main className="learning-state"><LoaderCircle className="learning-loader" /><h1>Opening Lab…</h1></main>;
-  if (!snapshot) return <main className="learning-state"><LockKeyhole /><h1>Lab unavailable</h1><p>{error}</p></main>;
+  if (!snapshot) return <main className="learning-state"><LockKeyhole /><h1>Lab unavailable</h1><p role="alert">{error}</p><div className="learning-state-actions">{!unavailable ? <Button onClick={() => { setLoading(true); setError(""); setLoadAttempt(attempt => attempt + 1); }}>Try again</Button> : null}<Button asChild variant="outline"><Link href="/labs">Back to the Lab library</Link></Button></div></main>;
 
   if (!snapshot.enrolment) {
     return (

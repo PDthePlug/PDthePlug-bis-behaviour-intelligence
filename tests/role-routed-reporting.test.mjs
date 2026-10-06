@@ -55,7 +55,8 @@ test("programme PDF renderer is a structured institutional report and excludes p
   assert.match(pdf, /How much information we have/);
   assert.match(pdf, /Human support/);
   assert.match(pdf, /Progress and programme context/);
-  assert.match(pdf, /Action plan/);
+  assert.match(pdf, /Programme review/);
+  assert.match(pdf, /They do not prescribe programme changes/);
   assert.match(pdf, /What remains private/);
   for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "hypothesis"]) {
     assert.doesNotMatch(pdf, new RegExp(privateField));

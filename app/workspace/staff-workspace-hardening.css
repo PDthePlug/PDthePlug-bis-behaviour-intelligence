@@ -503,6 +503,27 @@
 }
 
 .facilitator-cohort-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.participant-filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin:20px 0 12px}
+.participant-filters>div{display:grid;gap:7px;font-size:13px;font-weight:650}
+.participant-filters :is(input,select){width:100%;min-width:0;min-height:44px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--background);color:var(--foreground);font:inherit}
+.participant-roster{border-top:1px solid var(--border)}
+.operator-learner-roster{border-top:1px solid var(--border)}
+.operator-learner-row{border-bottom:1px solid var(--border)}
+.operator-learner-row>summary{display:list-item;min-height:52px;padding:14px 12px;cursor:pointer}
+.operator-learner-row>summary>span{display:inline-grid;vertical-align:top;width:48%;gap:4px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.operator-learner-row small{font-size:12px;color:var(--muted-foreground)}
+.operator-learner-detail{padding:0 20px 20px}
+.operator-learner-detail dl{display:flex;flex-wrap:wrap;gap:16px 32px;margin:8px 0;font-size:13px}
+.operator-learner-detail dt{color:var(--muted-foreground)}
+.operator-learner-detail dd{margin:4px 0 0;font-weight:650}
+.operator-learner-row>summary:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.participant-roster-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:center;gap:20px;padding:14px 0;border-bottom:1px solid var(--border)}
+.participant-roster-row>div{display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}
+.participant-roster-row strong,.participant-roster-row span{font-size:14px;line-height:1.5}
+.participant-roster-row small{font-size:12px;line-height:1.5;color:var(--muted-foreground)}
+.participant-roster-row button{min-height:44px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--background);color:var(--foreground);font-size:13px;font-weight:650}
+.participant-filters :is(input,select):focus-visible,.participant-roster-row button:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+@media(max-width:700px){.participant-filters{grid-template-columns:1fr}.participant-roster-row{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}.participant-roster-row>div:nth-child(2){grid-column:1}.participant-roster-row>button{grid-column:2;grid-row:1 / 3}}
 .facilitator-learner-experience-link{min-height:42px;display:inline-flex;align-items:center;gap:8px;padding:0 14px;border-radius:12px;background:var(--ink);color:white;text-decoration:none;font-size:12px;font-weight:850}
 .facilitator-learner-experience-link svg{width:16px}
 .facilitator-learner-experience-link:hover{opacity:.94}
@@ -510,3 +531,5 @@
   .facilitator-cohort-actions{width:100%;justify-content:flex-start}
   .facilitator-learner-experience-link{width:100%;justify-content:center}
 }
+.staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) .eyebrow{color:#c5ddd4}
+.staff-workspace-shell .ops-cohort-banner [data-slot="badge"]{color:#eef6f2;background:#ffffff14;border-color:#ffffff40}

@@ -120,8 +120,8 @@ export function EvidenceImages({ enrollmentId, labCode, investigation, evidenceF
       <Button type="button" variant="outline" disabled={busy || !!pending || !loaded || items.length >= 5} onClick={() => camera.current?.click()}><Camera /> Take photo</Button>
       <Button type="button" variant="outline" disabled={busy || !!pending || !loaded || items.length >= 5} onClick={() => picker.current?.click()}><Upload /> Choose image</Button>
     </div>
-    <input ref={camera} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void upload(file); }} />
-    <input ref={picker} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void upload(file); }} />
+    <input ref={camera} type="file" aria-label="Take an evidence photo" accept="image/jpeg,image/png,image/webp" capture="environment" hidden onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void upload(file); }} />
+    <input ref={picker} type="file" aria-label="Choose an evidence photo" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (file) void upload(file); }} />
     {!loaded && !error && <p role="status">Loading attachments…</p>}
     {items.length > 0 && <ul>{items.map((name) => <li key={name}><Button type="button" variant="outline" disabled={busy} onClick={() => void manage(name, false)}>View photo {name[0]}</Button><Button type="button" variant="ghost" disabled={busy} aria-label={`Remove photo ${name[0]}`} onClick={() => void manage(name, true)}><Trash2 /> Remove</Button></li>)}</ul>}
     {preview && <div>{/* Private object URL: never pass learner evidence through an image CDN. */}

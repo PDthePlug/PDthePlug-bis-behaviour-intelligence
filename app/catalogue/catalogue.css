@@ -12,7 +12,7 @@
 }
 .bis-library-eyebrow{
   margin:0 0 8px;
-  color:#69716d;
+  color:#59635d;
   font-size:11px;
   font-weight:850;
   letter-spacing:.09em;
@@ -25,7 +25,7 @@
 }
 .bis-library-hero>div:first-child>p:last-child{
   margin:14px 0 0;
-  color:#69716d;
+  color:#59635d;
   font-size:16px;
 }
 .bis-library-count{
@@ -39,7 +39,7 @@
 }
 .bis-library-count span{
   margin-top:3px;
-  color:#69716d;
+  color:#59635d;
   font-size:12px;
   font-weight:800;
 }
@@ -57,7 +57,7 @@
   border:0;
   border-radius:12px;
   background:transparent;
-  color:#5f6863;
+  color:#45524b;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -86,7 +86,7 @@
 }
 .bis-volume-heading p{
   margin:0 0 4px;
-  color:#69716d;
+  color:#59635d;
   font-size:11px;
   font-weight:850;
   letter-spacing:.08em;
@@ -97,7 +97,7 @@
   font:600 clamp(28px,4vw,38px)/1 var(--font-serif);
 }
 .bis-volume-heading>span{
-  color:#69716d;
+  color:#59635d;
   font-size:12px;
   font-weight:800;
 }
@@ -106,12 +106,14 @@
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:12px;
 }
+.bis-library-notice{margin:18px 0;color:#354844;font-size:15px;line-height:1.6}
+.bis-library-notice button{min-height:44px;padding:8px 16px;border:1px solid #bfcac4;border-radius:8px;background:white;color:#173f35;font:inherit;font-weight:650}
 .bis-module-card{
-  min-height:210px;
+  min-height:138px;
   padding:20px;
   display:grid;
-  grid-template-rows:auto 1fr auto;
-  gap:22px;
+  grid-template-rows:1fr auto;
+  gap:18px;
   border:1px solid #dedad2;
   border-radius:20px;
   background:#fff;
@@ -134,7 +136,7 @@ a.bis-module-card:hover{
   justify-content:space-between;
 }
 .bis-module-card-top>span{
-  color:#8a918d;
+  color:#59665e;
   font-size:11px;
   font-weight:900;
   letter-spacing:.08em;
@@ -144,7 +146,7 @@ a.bis-module-card:hover{
   color:#557168;
 }
 .bis-module-card-copy{
-  align-self:end;
+  align-self:start;
 }
 .bis-module-card-copy small{
   color:#7a827e;
@@ -152,7 +154,7 @@ a.bis-module-card:hover{
   font-weight:800;
 }
 .bis-module-card-copy h3{
-  margin:7px 0 0;
+  margin:0;
   font:600 25px/1.08 var(--font-serif);
   letter-spacing:-.025em;
 }
@@ -163,7 +165,7 @@ a.bis-module-card:hover{
   align-items:center;
   border-radius:999px;
   background:#ebe8e1;
-  color:#717975;
+  color:#52635a;
   font-size:10px;
   font-weight:900;
 }
@@ -209,7 +211,7 @@ a.bis-module-card:hover{
     grid-template-columns:1fr;
   }
   .bis-module-card{
-    min-height:168px;
+    min-height:124px;
     gap:16px;
   }
 }
@@ -224,7 +226,7 @@ a.bis-module-card:hover{
   min-width:0;
 }
 .bis-module-card-foot small{
-  color:#8a918d;
+  color:#59665e;
   font-size:9px;
   font-weight:800;
   white-space:nowrap;
