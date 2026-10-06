@@ -824,7 +824,7 @@
       "problem": "Recovery form and callback destination; delivered mail is not proved by synthetic accounts",
       "correction": "Retained safe recovery flow; delivery/configuration remains open",
       "verification": [
-        "tests/browser/auth-return.spec.ts",
+        "tests/auth-confirmation-reliability.test.mjs",
         "tests/auth-confirmation-reliability.test.mjs"
       ],
       "releaseStatus": "REVIEWED_PARTIAL",
@@ -1208,7 +1208,7 @@
       "problem": "Reset validation and expired/missing recovery session",
       "correction": "Retained safe reset/error state; actual delivered recovery still open",
       "verification": [
-        "tests/browser/auth-return.spec.ts",
+        "tests/auth-confirmation-reliability.test.mjs",
         "tests/auth-confirmation-reliability.test.mjs"
       ],
       "releaseStatus": "REVIEWED_PARTIAL",
