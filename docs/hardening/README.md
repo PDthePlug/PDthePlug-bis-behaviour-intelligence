@@ -54,6 +54,8 @@ Programme reporting uses authorised SQL aggregates, `buildProgrammeReport`, acce
 
 ## Verification and release boundary
 
+The current product iteration is documented in `product-experience-20261006.md`. `learning-page-register.json` expands the dynamic Learn routes into all 195 accepted page/edition variants, with separate manual-review and release status. `handbook-response-integrity.json` compares all 5,957 rendered controls against the original accepted renderer and verifies unchanged source packages. `calculation-context-register.json` retains the source-derived explanations used by the shared Lab presentation for all 283 canonical calculations. The corresponding audit scripts make both checks repeatable; `scripts/map-hardening-learning-pages.mjs` preserves page reviews when the source inventory is regenerated. Shared presentation corrections do not close pending editorial reading or role/state reviews.
+
 The accepted release contract is `npm run verify`: runtime, lint, TypeScript, acceptance tests, canonical-source audit, optimised build and browser journeys at 360, 430 and 1280 pixels. Browser fixtures exercise the real shared components and interaction contracts; they are distinct from authenticated staging evidence.
 
 Authenticated staging certification uses dedicated synthetic accounts and normal application APIs/RLS. The controlled calendar runs only for those fixture emails, on the exact staging backend and a local development server. It cannot affect production builds or ordinary users. Credentials are held in a private temporary file and are excluded from the repository and reports.

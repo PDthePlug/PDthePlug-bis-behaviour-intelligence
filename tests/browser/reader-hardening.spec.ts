@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+
+const responseIdentities = JSON.parse(readFileSync(new URL("../fixtures/handbook-response-identities.json", import.meta.url), "utf8")) as Array<{ slug: string; edition: string; day: number; count: number; digest: string }>;
 
 test("real handbook checks follow answers, stay unique after rerenders and restore on refresh", async ({ page }, info) => {
   const errors: string[] = [];
@@ -65,7 +69,44 @@ test("repeated reader enhancement is stable across every active handbook edition
         return { duplicateChecks: checks.length - new Set(checkIds).size, excessChecks: checks.length > 4, duplicateResponses: fields.length - new Set(fields.map(field => field.getAttribute("data-field-id"))).size, misplaced: checks.filter(check => [...element.querySelectorAll(`[data-response-check="${check.dataset.formativeSignalFor}"]`)].some(field => !(field.compareDocumentPosition(check) & Node.DOCUMENT_POSITION_FOLLOWING))).length };
       });
       expect(issues, `${slug}-${edition} day ${day}`).toEqual({ duplicateChecks: 0, excessChecks: false, duplicateResponses: 0, misplaced: 0 });
+      const fields = await root.locator("[data-field-id]").evaluateAll(elements => elements.map(element => ({ id: element.getAttribute("data-field-id"), key: element.getAttribute("data-source-key"), purpose: element.getAttribute("data-purpose") })).sort((left, right) => left.id!.localeCompare(right.id!)));
+      const accepted = responseIdentities.find(row => row.slug === slug && row.edition === edition && row.day === day)!;
+      expect(fields.length, `${slug}-${edition} day ${day} response count`).toBe(accepted.count);
+      expect(createHash("sha256").update(JSON.stringify(fields)).digest("hex"), `${slug}-${edition} day ${day} accepted response identities`).toBe(accepted.digest);
       }
+    }
+  }
+});
+
+test("session disclosures preserve objectives, Lab timing and heading wording across editions", async ({ page }) => {
+  await page.goto("/reader-hardening");
+  for (const slug of ["habit", "decision", "money", "identity", "attention"]) {
+    for (const edition of ["school", "emerging_adult", "workplace"]) {
+      await page.getByRole("combobox", { name: "Handbook", exact: true }).selectOption(`${slug}-${edition}`);
+      await page.getByRole("combobox", { name: "Day", exact: true }).selectOption("1");
+      const root = page.locator(`[data-specimen="${slug}-${edition}"][data-day="1"]`);
+      await expect(root).toBeVisible();
+      const details = root.locator(".handbook-session-details");
+      await expect(details).toHaveCount(1);
+      await expect(details.locator("input,textarea,select,button")).toHaveCount(0);
+      await expect(details).toContainText("SESSION:");
+      await expect(details).toContainText("MODE:");
+      await expect(details).not.toContainText("TODAY YOU WILL");
+      await expect(root.locator(".handbook-check-row,.source-list>li").first()).toBeVisible();
+      await details.locator("summary").focus();
+      await page.keyboard.press("Enter");
+      await expect(details).toHaveAttribute("open", "");
+      await page.keyboard.press("Enter");
+      await expect(details).not.toHaveAttribute("open");
+      const decoration = root.locator(".handbook-heading-decoration").first();
+      await expect(decoration).toBeHidden();
+      expect(await decoration.textContent()).toMatch(/📖|💭/u);
+      await page.getByRole("combobox", { name: "Day", exact: true }).selectOption("3");
+      const bridge = page.locator(`[data-specimen="${slug}-${edition}"][data-day="3"]`);
+      await expect(bridge.locator(".handbook-session-details")).toHaveCount(1);
+      await expect(bridge.getByText("Lab session details · 90 minutes", { exact: true })).toBeVisible();
+      await expect(bridge.locator(".handbook-session-details")).toContainText("90 minutes");
+      expect(await bridge.locator(".handbook-check-row").allTextContents()).not.toEqual(expect.arrayContaining([expect.stringContaining("YOU WILL NEED")]));
     }
   }
 });
@@ -95,4 +136,45 @@ test("reading preference changes actual handbook text and answer size after navi
   await expect(root.locator("textarea").first()).toBeVisible();
   expect(await root.locator("p").first().evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(20.8, 1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test("orientation, weekend and certificate render across every accepted handbook edition", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/reader-hardening");
+  for (const slug of ["habit", "decision", "money", "identity", "attention"]) {
+    for (const edition of ["school", "emerging_adult", "workplace"]) {
+      await page.getByRole("combobox", { name: "Handbook", exact: true }).selectOption(`${slug}-${edition}`);
+      for (const key of ["Welcome", "Weekend", "Certificate"]) {
+        await page.getByRole("combobox", { name: "Day", exact: true }).selectOption(key);
+        const root = page.locator(`[data-specimen="${slug}-${edition}"][data-page-key="${key}"]`);
+        await expect(root).toBeVisible();
+        expect((await root.textContent())!.length).toBeGreaterThan(100);
+        await expect(root.locator("h1")).toHaveCount(0);
+        if (key === "Welcome") {
+          const publication = root.locator(".handbook-publication-details");
+          await expect(publication).toHaveCount(1);
+          await expect(publication).not.toContainText("Dear Reader");
+          await expect(publication).not.toContainText("BEFORE YOU BEGIN");
+          await expect(publication.locator("input,textarea,select,button")).toHaveCount(0);
+          await publication.locator("summary").focus(); await page.keyboard.press("Enter");
+          await expect(publication).toHaveAttribute("open", "");
+          await expect(publication).toContainText("Applied Commerce");
+          expect(await publication.innerText()).not.toMatch(/Controlled Production Master|Architecture frozen|Production.freeze/);
+          if (["money", "identity", "attention"].includes(slug)) {
+            const original = publication.locator(".handbook-production-note");
+            await expect(original).toHaveCount(1);
+            await expect(original).toBeHidden();
+            await expect(original).toContainText("Controlled Production Master");
+          }
+          await page.keyboard.press("Enter"); await expect(publication).not.toHaveAttribute("open");
+        }
+        const fields = await root.locator("[data-field-id]").evaluateAll(elements => elements.map(element => `${element.getAttribute("data-field-id")}${element instanceof HTMLInputElement && element.type === "radio" ? `:${element.value}` : ""}`));
+        expect(new Set(fields).size).toBe(fields.length);
+        await expect(root.locator(".handbook-session-details input,.handbook-session-details textarea")).toHaveCount(0);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), `${slug}-${edition} ${key}`).toBeLessThanOrEqual(1);
+      }
+    }
+  }
+  expect(errors).toEqual([]);
 });

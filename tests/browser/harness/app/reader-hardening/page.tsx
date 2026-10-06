@@ -9,7 +9,7 @@ export default function Page() {
   const [error, setError] = useState("");
   const [day, setDay] = useState("2");
   const root = useRef<HTMLDivElement>(null);
-  const current = handbook?.treatment.pages.find(page => String(page.programmeDay) === day);
+  const current = handbook?.treatment.pages.find(page => String(page.programmeDay) === day || page.key === day);
   useEffect(() => {
     const controller = new AbortController();
     fetch(`/handbooks/v1/${source}.json.gz.b64`, { signal: controller.signal }).then(async response => {
@@ -21,7 +21,7 @@ export default function Page() {
   }, [source]);
   useLayoutEffect(() => {
     if (!root.current || !current || !handbook) return;
-    for (let pass = 0; pass < 4; pass++) enhanceHandbookDocument(root.current, handbook.labCode, current.id, { programmeDay: current.programmeDay, enableFormativeLearningChecks: true });
+    for (let pass = 0; pass < 4; pass++) enhanceHandbookDocument(root.current, handbook.labCode, current.id, { programmeDay: current.programmeDay, pageTitle: current.label, enableFormativeLearningChecks: true });
     for (const field of root.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-field-id]")) {
       const saved = sessionStorage.getItem(field.dataset.fieldId!);
       if (field instanceof HTMLInputElement && field.type === "radio") field.checked = saved === field.value;
@@ -32,7 +32,7 @@ export default function Page() {
   }, [current, handbook]);
   return <main className="prototype-player">
     {error ? <p role="alert">{error}</p> : null}
-    <nav aria-label="Test specimen"><label>Handbook<select value={source} onChange={e => setSource(e.target.value)}>{["habit", "money", "decision", "identity", "attention"].flatMap(slug => ["school", "emerging_adult", "workplace"].map(edition => <option value={`${slug}-${edition}`} key={`${slug}-${edition}`}>{slug} · {edition}</option>))}</select></label><label>Day<select value={day} onChange={e => setDay(e.target.value)}>{Array.from({ length: 10 }, (_, i) => <option key={i + 1}>{i + 1}</option>)}</select></label></nav>
-    <article className="prototype-reader learner-document-stage"><div key={`${source}-${current?.id}`} ref={root} className="prototype-document learner-document" data-specimen={`${handbook?.slug}-${handbook?.edition}`} data-day={current?.programmeDay} dangerouslySetInnerHTML={{ __html: current?.html ?? "Loading handbook…" }} /></article>
+    <nav aria-label="Test specimen"><label>Handbook<select value={source} onChange={e => setSource(e.target.value)}>{["habit", "money", "decision", "identity", "attention"].flatMap(slug => ["school", "emerging_adult", "workplace"].map(edition => <option value={`${slug}-${edition}`} key={`${slug}-${edition}`}>{slug} · {edition}</option>))}</select></label><label>Day<select value={day} onChange={e => setDay(e.target.value)}>{Array.from({ length: 10 }, (_, i) => <option key={i + 1}>{i + 1}</option>)}{["Welcome", "Weekend", "Certificate"].map(key => <option key={key}>{key}</option>)}</select></label></nav>
+    <article className="prototype-reader learner-document-stage"><div key={`${source}-${current?.id}`} ref={root} className="prototype-document learner-document" data-specimen={`${handbook?.slug}-${handbook?.edition}`} data-day={current?.programmeDay} data-page-key={current?.key} dangerouslySetInnerHTML={{ __html: current?.html ?? "Loading handbook…" }} /></article>
   </main>;
 }

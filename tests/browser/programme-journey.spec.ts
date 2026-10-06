@@ -41,6 +41,33 @@ async function learningService(page: Page, state: "due" | "recorded" | "review" 
   } }));
 }
 
+test("reader gives one title and reports save state only for responses that exist", async ({ page }) => {
+  await learningService(page, "recorded");
+  const reader = structuredClone(programme);
+  reader.treatment.pages[1].label = "Day 4 · Evidence";
+  reader.treatment.pages[1].html += '<p>SESSION: Evidence review</p><p>TIME: 45 minutes</p><p>MODE: Facilitated</p><p>What did you notice?</p><textarea class="response" data-field-id="LDR.WB.DAY4.ORIGINAL" data-source-key="day4-original" data-purpose="LEARNING_RESPONSE" aria-label="What did you notice?"></textarea>';
+  await page.route("**/api/runtime-content**", route => route.fulfill({ json: { payload: reader } }));
+  const responses: Record<string, { value: string; semanticStepId: string; sourceFieldKey: string; updatedAt: string }> = {};
+  await page.route("**/api/learning**", async route => {
+    if (route.request().method() === "POST") {
+      const body = route.request().postDataJSON();
+      if (body.action === "saveWorkbookResponses") for (const item of body.items) responses[item.semanticFieldId] = { value: item.value, semanticStepId: item.semanticStepId, sourceFieldKey: item.sourceFieldKey, updatedAt: new Date().toISOString() };
+    }
+    await route.fulfill({ json: { profile: { displayName: "Browser learner", deliveryEdition: "school" }, releases: [{ id: "browser-release", labCode: "LDR", status: "ACTIVE" }], progress: [], workbookResponses: responses } });
+  });
+  await page.goto("/learn?section=learn&page=2");
+  await expect(page.getByRole("heading", { name: "Day 4 · Evidence", exact: true })).toHaveCount(1);
+  await expect(page.locator(".handbook-repeated-heading")).toBeHidden();
+  await expect(page.locator(".learner-document-status")).toHaveText("Your responses save automatically as you write");
+  const answer = page.getByRole("textbox", { name: "What did you notice?", exact: true });
+  await answer.fill("I checked what I recorded before drawing a conclusion.");
+  await expect(page.locator(".learner-document-status")).toHaveText("Your saved responses are up to date");
+  await page.reload();
+  await expect(answer).toHaveValue("I checked what I recorded before drawing a conclusion.");
+  await expect(answer).toHaveAttribute("data-field-id", "LDR.WB.DAY4.ORIGINAL");
+  await expect(page.locator(".learner-document-status")).toHaveText("Your saved responses are up to date");
+});
+
 test("Today reminder offers only current evidence and carries the learning location", async ({ page }) => {
   await learningService(page);
   await page.goto("/learn?page=1");

@@ -17,6 +17,8 @@ import { evaluateUniversalComputed } from "@/lib/universal-lab-v2.mjs";
 import { availableLabPrompts } from "@/lib/lab-interaction-contract.mjs";
 import { validPromptResponse } from "@/lib/evidence-validation.mjs";
 import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentation.mjs";
+import { learnerHeadingHtml, learnerHeadingText } from "@/lib/learner-heading-presentation.mjs";
+import { learnerCalculationContexts } from "@/lib/learner-calculation-context.mjs";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 import { EvidenceImages } from "@/components/evidence/evidence-images";
 
@@ -76,14 +78,12 @@ const investigationEvidenceGuidance: Record<number, string> = {
 
 function UniversalPrompt({
   prompt,
-  investigationNumber,
   value,
   passed,
   onValue,
   onPass,
 }: {
   prompt: UniversalLabPrompt;
-  investigationNumber: number;
   value: string;
   passed: boolean;
   onValue: (value: string) => void;
@@ -116,17 +116,15 @@ function UniversalPrompt({
   const titleId = `prompt-title-${prompt.id}`;
   const helpId = `prompt-help-${prompt.id}`;
   const authoredHelp = prompt.prompt !== prompt.label ? prompt.prompt : null;
-  const interactionHelp = ratingScale
+  const interactionHelp = ratingScale && !prompt.readOnly
     ? "Choose the number that best matches your experience right now."
-    : prompt.type === "TEXT" && prompt.label.length < 110
-      ? investigationEvidenceGuidance[investigationNumber] ?? "Use a short, specific example that will still make sense when you review your evidence later."
-      : null;
+    : null;
   const help = authoredHelp ?? interactionHelp;
 
   if (compactField) {
     return (
       <section data-prompt-id={prompt.id} className={`universal-compact-prompt ${passed ? "passed" : ""}`}>
-        <label htmlFor={`compact-${prompt.id}`}>{prompt.label}</label>
+        <label htmlFor={`compact-${prompt.id}`}>{learnerHeadingText(prompt.label)}</label>
         <Input
           id={`compact-${prompt.id}`}
           aria-describedby={help ? helpId : undefined}
@@ -149,7 +147,7 @@ function UniversalPrompt({
     <section data-prompt-id={prompt.id} className={`prompt-section universal-prompt ${passed ? "passed" : ""}`} data-group={prompt.group || undefined}>
       <div className="prompt-body">
         {group ? <p className="prompt-kicker">{group}</p> : null}
-        <h2 id={titleId} className={prompt.label.length > 90 ? "long-prompt-title" : undefined}>{prompt.label}</h2>
+        <h2 id={titleId} className={prompt.label.length > 90 ? "long-prompt-title" : undefined}>{learnerHeadingText(prompt.label)}</h2>
         {help ? <p id={helpId}>{help}</p> : null}
         {prompt.readOnly ? (
           <div className="universal-computed-value" aria-live="polite">
@@ -813,6 +811,8 @@ function UniversalInvestigationForm({
   };
 
   const promptById = new Map(visiblePrompts.map((prompt) => [prompt.id, prompt]));
+  const calculationContexts = useMemo(() => learnerCalculationContexts(snapshot.definition), [snapshot.definition])
+    .filter(context => promptById.has(context.id));
   const blockPromptIds = new Set(
     (investigation.blocks ?? []).flatMap((block) => {
       if (block.type === "PROMPT") return [block.promptId];
@@ -846,7 +846,6 @@ function UniversalInvestigationForm({
       <UniversalPrompt
         key={prompt.id}
         prompt={prompt}
-        investigationNumber={investigation.number}
         value={prompt.readOnly ? valueOf(snapshot, prompt.id) : (values[prompt.id] ?? "")}
         passed={passed.has(prompt.id)}
         onValue={(value) => updatePromptValue(prompt.id, value)}
@@ -861,7 +860,7 @@ function UniversalInvestigationForm({
     if (isExperimentInvestigation && !previewMode) {
       return [
         ...blocks.flatMap((block, index) => block.type === "HTML" && block.visibility !== "AFTER_EXPERIMENT" ? [(
-          <article key={`instructions-${index}`} className="imported-lab-content" dangerouslySetInnerHTML={{ __html: block.html }} />
+          <article key={`instructions-${index}`} className="imported-lab-content" dangerouslySetInnerHTML={{ __html: learnerHeadingHtml(block.html) }} />
         )] : []),
         <section key="daily-entry" className="universal-daily-entry" aria-label="Current experiment evidence">
           <h2>Record one real moment</h2>
@@ -887,7 +886,7 @@ function UniversalInvestigationForm({
           <article
             key={`content-${index}`}
             className="imported-lab-content"
-            dangerouslySetInnerHTML={{ __html: block.html }}
+            dangerouslySetInnerHTML={{ __html: learnerHeadingHtml(block.html) }}
           />,
         );
         continue;
@@ -990,6 +989,12 @@ function UniversalInvestigationForm({
 
   return (
     <div className="investigation-stack universal-package-lab">
+      {investigationEvidenceGuidance[investigation.number] ? (
+        <details className="learner-document-disclosure universal-evidence-guidance">
+          <summary>How to record useful evidence</summary>
+          <p>{investigationEvidenceGuidance[investigation.number]}</p>
+        </details>
+      ) : null}
       {snapshot.definition.runtimeProfile === "UNIVERSAL_V2"
         && step === snapshot.definition.experiment?.investigation
         && snapshot.definition.experiment ? (
@@ -1013,13 +1018,27 @@ function UniversalInvestigationForm({
       ) : null}
       {investigation.blocks?.length ? renderedBlocks : (
         <>
-          {investigation.introHtml ? <article className="story-card" dangerouslySetInnerHTML={{ __html: investigation.introHtml }} /> : null}
+          {investigation.introHtml ? <article className="story-card" dangerouslySetInnerHTML={{ __html: learnerHeadingHtml(investigation.introHtml) }} /> : null}
           {investigation.prompts.map(renderPrompt)}
         </>
       )}
       {investigation.blocks?.length
         ? investigation.prompts.filter((prompt) => !blockPromptIds.has(prompt.id)).map(renderPrompt)
         : null}
+      {calculationContexts.length ? (
+        <details className="learner-document-disclosure universal-calculation-context">
+          <summary>How these results are worked out</summary>
+          <p>Review the original answers alongside these results. A calculation does not independently verify its inputs or establish lasting behaviour change.</p>
+          {calculationContexts.map(context => (
+            <section className="learner-document-context-section" key={context.id} data-calculation-for={context.id}>
+              <h3>{context.label}</h3>
+              <p>{context.calculation}</p>
+              <p>{context.meaning}</p>
+              <details><summary>Answers used</summary><ul>{context.sources.map((source, index) => <li key={`${source.id}-${index}`}>{source.label}</li>)}</ul></details>
+            </section>
+          ))}
+        </details>
+      ) : null}
       {isExperimentInvestigation && !previewMode && snapshot.enrolment ? <EvidenceImages key={`${snapshot.enrolment.id}:${step}`} enrollmentId={snapshot.enrolment.id} labCode={snapshot.definition.identity.code} investigation={step} evidenceFieldId={`${snapshot.definition.identity.code}.I${step}.OBSERVATION.IMAGE`} onBlockedChange={setAttachmentBlocked} /> : null}
       {error ? <p className="field-error">{error}</p> : null}
       {attemptedSubmit && !ready ? (

@@ -11,6 +11,23 @@ test('programme report explains findings, preserves unavailable values and has a
  await page.getByText('What supports this finding?').first().click();await expect(page.getByText('A recorded start is not proof that an opportunity occurred or that behaviour improved.',{exact:true})).toBeVisible();await expect(page.getByText('Thandi Mokoena')).toHaveCount(0);
  await page.screenshot({path:`test-results/intelligence-${info.project.name}.png`,fullPage:true});await verify();
 });
+
+test('sponsor activity distinguishes handbook progress, Lab respondents and answered fields', async ({ page }) => {
+ const verify = observe(page);
+ await page.route('**/api/staff', r => r.fulfill({ json: base }));
+ await page.goto('/staff-shell?view=outcomes&section=learning&group=group');
+ const journey = page.locator('.outcomes-learning-journey');
+ await expect(journey.getByText('Handbook activity', { exact: true })).toBeVisible();
+ await expect(journey.getByText('Lab answers', { exact: true })).toBeVisible();
+ await expect(journey.getByText('Lab answers recorded', { exact: true })).toBeVisible();
+ const basis = journey.getByText(/Handbook activity counts learners with saved handbook progress/);
+ await expect(basis).toBeHidden();
+ await journey.getByText('Where these counts come from', { exact: true }).focus(); await page.keyboard.press('Enter');
+ await expect(basis).toBeVisible();
+ await expect(journey.getByText(/they do not establish understanding, evidence quality or behaviour change/)).toBeVisible();
+ await expect(page.getByText('Thandi Mokoena')).toHaveCount(0);
+ await verify();
+});
 test('facilitator can act on a check-in suggestion and return with browser Back',async({page},info)=>{
  const verify=observe(page);await page.route('**/api/staff',r=>r.fulfill({json:base}));await page.route('**/api/class-operations?**',r=>r.fulfill({json:{sessions:[],attendance:[]}}));await page.goto('/staff-shell?view=facilitator&group=group');
  await expect(page.getByRole('heading',{name:'Where a check-in could help'})).toBeVisible();await page.getByText('Thandi Mokoena · Reached experiment preparation; no start is recorded.',{exact:true}).click();await expect(page.getByText('Reached experiment preparation; no start is recorded.',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Open participant · Thandi Mokoena'}).click();await expect(page).toHaveURL(/learner=learner/);await expect(page.getByRole('heading',{name:'Thandi Mokoena',exact:true})).toBeVisible();await page.goBack();await expect(page.getByRole('heading',{name:'Where a check-in could help'})).toBeVisible();await page.screenshot({path:`test-results/facilitator-intelligence-${info.project.name}.png`,fullPage:true});await verify();
@@ -47,4 +64,22 @@ test('privacy-limited reports keep explanation collapsed without exposing result
  await expect(page.getByText(/This group has 2 learners/)).toBeVisible();
  await expect(page.getByRole('heading', { name: 'Systems Transfer Test', exact: true })).toHaveCount(0);
  await expect(page.getByText('Thandi Mokoena')).toHaveCount(0); await verify();
+});
+
+test('facilitator learning percentages state their response denominator and self-report limit', async ({ page }) => {
+ const verify = observe(page);
+ const learningChecks = { participantCount: 1, signalsRecorded: 4, understood: 2, unsure: 1, needsExample: 1, understoodRate: 50, supportSignalRate: 50, byDay: [{ semanticStepId: 'SYS.PROGRAMME.DAY1', signalsRecorded: 4, understood: 2, unsure: 1, needsExample: 1, understoodRate: 50, supportSignalRate: 50 }] };
+ await page.route('**/api/staff', r => r.fulfill({ json: { ...base, facilitator: { ...base.facilitator, cohorts: [{ ...cohort, learningChecks }] } } }));
+ await page.route('**/api/class-operations?**', r => r.fulfill({ json: { sessions: [], attendance: [] } }));
+ await page.goto('/staff-shell?view=facilitator&group=group');
+ const checks = page.locator('.facilitator-learning-checks');
+ await expect(checks.getByText('Answers marked understood', { exact: true })).toBeVisible();
+ await expect(checks.getByText('50%', { exact: true })).toBeVisible();
+ await expect(checks.getByText('4 check responses', { exact: true })).toBeVisible();
+ await expect(checks.getByText(/They are not test marks or evidence of behaviour change/)).toBeVisible();
+ const basis = checks.getByText(/Percentages use recorded check responses/);
+ await expect(basis).toBeHidden();
+ await checks.getByText('How to read these responses', { exact: true }).focus(); await page.keyboard.press('Enter');
+ await expect(basis).toBeVisible();
+ await verify();
 });

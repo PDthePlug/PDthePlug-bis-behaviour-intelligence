@@ -61,6 +61,37 @@ async function noOverflow(page: Page) {
   expect(Math.abs(box!.x + box!.width / 2 - page.viewportSize()!.width / 2)).toBeLessThan(3);
 }
 
+test("Lab guidance appears once while authored question instructions and response controls remain", async ({ page }) => {
+  await service(page, 8);
+  await page.goto("/labs/ldr?step=8");
+  const guidance = page.locator(".universal-evidence-guidance");
+  await expect(guidance).toHaveCount(1);
+  await expect(guidance.locator("p")).toBeHidden();
+  await guidance.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(guidance.locator("p")).toBeVisible();
+  await expect(page.getByText("Compare what you expected with the evidence you actually collected.", { exact: true })).toHaveCount(1);
+  await expect(page.locator(".universal-prompt .prompt-body>p").filter({ hasText: "Compare what you expected with the evidence you actually collected." })).toHaveCount(0);
+  await expect(page.getByRole("checkbox", { name: /Prefer not to answer/ }).first()).toBeVisible();
+  await noOverflow(page);
+});
+
+test("Lab result context identifies original inputs and keeps calculation help optional", async ({ page }) => {
+  await service(page, 8);
+  await page.goto("/labs/ldr?step=8");
+  const details = page.locator(".universal-calculation-context");
+  await expect(details).toHaveCount(1);
+  await expect(details.locator("[data-calculation-for]").first()).toBeHidden();
+  await details.locator(":scope > summary").focus(); await page.keyboard.press("Enter");
+  await expect(details.locator("[data-calculation-for]").first()).toBeVisible();
+  await expect(details).toContainText("does not independently verify its inputs");
+  const source = details.locator("details").first();
+  await source.locator("summary").focus(); await page.keyboard.press("Enter");
+  await expect(source.locator("li").first()).toBeVisible();
+  expect((await source.locator("li").allTextContents()).join(" ")).not.toMatch(/\b(?:BEI|TEI)-\d/);
+  await noOverflow(page);
+});
+
 test("Lab failures offer recovery and completed mobile navigation remains named", async ({ page }) => {
   await service(page, 7);
   let fail = true;

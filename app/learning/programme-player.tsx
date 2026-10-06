@@ -874,6 +874,7 @@ export function ProgrammePlayer({
         selected > dayThreeIndex,
       edition: programme?.edition ?? snapshot?.profile.deliveryEdition,
       programmeDay: page.programmeDay,
+      pageTitle: page.label,
       formativeCheckTarget: sessionDesign?.checkTarget,
       enableFormativeLearningChecks: Boolean(sessionDesign),
       facilitatorMode,
@@ -1412,7 +1413,10 @@ export function ProgrammePlayer({
                   ? "Saving workbook responses…"
                   : saveState === "dirty"
                     ? "Changes waiting to save…"
-                    : saveState === "error" ? "Not saved — retry before leaving" : "Workbook responses saved"}
+                    : saveState === "error" ? "Not saved — retry before leaving"
+                      : Object.values(snapshot?.workbookResponses ?? {}).some((response) => response.semanticStepId === page.id)
+                        ? "Your saved responses are up to date"
+                        : "Your responses save automatically as you write"}
               {!readOnlyMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
 

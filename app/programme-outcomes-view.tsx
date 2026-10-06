@@ -592,10 +592,15 @@ export function ProgrammeOutcomesView({
               </div>
 
               <div className="journey-activity-strip">
-                <Metric label="Learners active" value={outcome.learningSummary.learningJourney.activity.participantsWithHandbookActivity} detail="learners" />
-                <Metric label="Usable responses" value={outcome.learningSummary.learningJourney.activity.participantsWithStructuredResponses} detail="learners" />
-                <Metric label="Responses recorded" value={outcome.learningSummary.learningJourney.activity.structuredResponsesRecorded} detail="total" />
+                <Metric label="Handbook activity" value={outcome.learningSummary.learningJourney.activity.participantsWithHandbookActivity} detail="learners with saved progress" />
+                <Metric label="Lab answers" value={outcome.learningSummary.learningJourney.activity.participantsWithStructuredResponses} detail="learners with recorded answers" />
+                <Metric label="Lab answers recorded" value={outcome.learningSummary.learningJourney.activity.structuredResponsesRecorded} detail="answered fields" />
               </div>
+
+              <EvidenceDisclosure title="Where these counts come from">
+                <p>Handbook activity counts learners with saved handbook progress. Lab answers count learners with at least one answered field in this programme’s Lab version; the total counts their answered fields.</p>
+                <p>Lab answers include starting checks and reflections as well as real-world records. Answers marked “Prefer not to answer” are excluded. These counts show where records exist; they do not establish understanding, evidence quality or behaviour change.</p>
+              </EvidenceDisclosure>
 
               <div className="journey-days" aria-label="Programme day progress">
                 {outcome.learningSummary.learningJourney.days.map((day) => (
@@ -678,12 +683,12 @@ export function ProgrammeOutcomesView({
                 <ClipboardCheck />
               </div>
               <p className="learning-checks-intro">
-                These are anonymous, learner-reported understanding signals captured during the 45-minute sessions. They show where facilitation may need another example or explanation; they are not marks and do not change BEI results.
+                These group summaries describe learners’ own understanding during the 45-minute sessions. They show where learners asked for another example or explanation. They are not test marks or evidence of behaviour change.
               </p>
               <div className="journey-activity-strip learning-checks-summary">
-                <Metric label="Check signals" value={outcome.learningChecks.signalsRecorded ?? 0} detail="responses" />
-                <Metric label="Understand" value={percent(outcome.learningChecks.understoodRate)} detail="self-reported" />
-                <Metric label="Want more support" value={percent(outcome.learningChecks.supportSignalRate)} detail="unsure / need example" />
+                <Metric label="Check responses" value={outcome.learningChecks.signalsRecorded ?? 0} detail="recorded answers" />
+                <Metric label="Answers marked understood" value={percent(outcome.learningChecks.understoodRate)} detail="self-reported" />
+                <Metric label="Answers asking for support" value={percent(outcome.learningChecks.supportSignalRate)} detail="unsure / another example" />
               </div>
               {outcome.learningChecks.byDay.length ? (
                 <div className="learning-check-day-grid">
@@ -694,19 +699,20 @@ export function ProgrammeOutcomesView({
                       <article key={day.semanticStepId}>
                         <span>{label}</span>
                         <strong>{percent(day.understoodRate)}</strong>
-                        <small>understand</small>
+                        <small>marked understood</small>
                         <div className="learning-check-day-bar"><i style={{ width: `${Math.min(100, day.understoodRate ?? 0)}%` }} /></div>
-                        <em>{percent(day.supportSignalRate)} want more support</em>
+                        <em>{percent(day.supportSignalRate)} asked for support</em>
                       </article>
                     );
                   })}
                 </div>
               ) : (
-                <p className="outcome-muted">Learning-check signals will appear as learners use the new in-session checks.</p>
+                <p className="outcome-muted">Responses will appear here as learners answer a lesson check.</p>
               )}
-              <p className="learning-checks-boundary">
-                {outcome.learningChecks.interpretationBoundary?.note ?? "Use these signals as programme-design information, not as proof of mastery or individual performance."}
-              </p>
+              <EvidenceDisclosure title="How to read these responses">
+                <p>Percentages use recorded check responses, not the number of learners. A learner can answer checks at several sessions. Missing responses do not show whether a learner understands.</p>
+                <p>These summaries can inform a conversation about support. They do not establish mastery, individual performance or the cause of a result.</p>
+              </EvidenceDisclosure>
             </section>
           ) : null}
 

@@ -412,7 +412,7 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   canvas.paragraph("What this report uses", { font: "bold" });
   canvas.paragraph("Authorised group aggregates of recorded programme activity, structured participant check-ins, real-world observations where defined by the Lab, and saved facilitator assessments of currently shared task evidence. The same report model supplies dashboard findings and PDF findings.");
   canvas.paragraph("In-session learning checks", { font: "bold" });
-  canvas.paragraph("Learning checks are participant-reported understanding signals, not marks, BEI evidence or proof of mastery. Repeated responses are not unique-participant mastery counts. Starting-point and later comparisons use only the paired records supplied by the programme measure.");
+  canvas.paragraph("Learning checks describe participants' own understanding, not test marks, observed behaviour or proof of mastery. Percentages use recorded check responses, not the number of participants; one participant can answer at several sessions. Missing responses do not show whether someone understands. Starting-point and later comparisons use only the paired records supplied by the programme measure.");
   canvas.paragraph("What remains private", { font: "bold" });
   canvas.paragraph("Individual answers, private reflections, personal experiment wording, support messages and Companion conversations are excluded. Small groups and unavailable values stay hidden; unavailable values are not zero. No hidden value is reconstructed by subtraction.");
   canvas.paragraph("What this report does not claim", { font: "bold" });
