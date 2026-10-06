@@ -15,7 +15,7 @@ type Task = { id: string; opportunity_id: string | null; title: string; status: 
 type Activity = { id: string; opportunity_id: string; activity_type: string; direction: string; subject: string | null; body: string | null; occurred_at: string; actor_email: string };
 type Snapshot = { identity: Identity; roles: string[]; canWrite: boolean; canAdmin: boolean; metrics: { organisations: number; opportunities: number; school: number; emergingAdult: number; workplace: number; waveOne: number; frozenProposals: number; discovery: number; won: number; openTasks: number }; organisations: Organisation[]; contacts: Contact[]; opportunities: Opportunity[]; proposals: Proposal[]; tasks: Task[]; activities: Activity[]; controlledStages: string[] };
 
-const stageOrder = ["RESEARCH","QUALIFY","QUALIFIED","THESIS_READY","PROPOSAL_DRAFT","PROPOSAL_FROZEN","CONTACTED","DISCOVERY","SCOPED","PROPOSAL_SENT","NEGOTIATION","WON","NURTURE","WATCHLIST","HOLD","LOST"];
+const stageOrder = ["RESEARCH","QUALIFY","QUALIFIED","THESIS_READY","DRAFT_READY","PROPOSAL_DRAFT","PROPOSAL_FROZEN","CONTACTED","DISCOVERY","SCOPED","PROPOSAL_SENT","NEGOTIATION","WON","NURTURE","WATCHLIST","HOLD","LOST"];
 const laneNames: Record<string, string> = { SCHOOL: "School", EMERGING_ADULT: "Emerging Adult", WORKPLACE: "Workplace" };
 const laneQuestion: Record<string, string> = { SCHOOL: "What happens after learning?", EMERGING_ADULT: "What happens when capability meets independence and real work?", WORKPLACE: "What happens when development meets the next real situation?" };
 
