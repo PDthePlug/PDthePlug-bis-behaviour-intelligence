@@ -7,7 +7,7 @@ const source = (path) => readFile(new URL(path, root), "utf8");
 
 test("Commercial Intelligence schema is isolated, auditable and write-gated", async () => {
   const migration = await source("supabase/migrations/20261006232429_bis_commercial_intelligence_v1.sql");
-  const leastPrivilege = await source("supabase/migrations/20261006233844_bis_commercial_intelligence_v1_least_privilege.sql");
+  const leastPrivilege = await source("supabase/migrations/20261006233844_bis_commercial_intelligence_v1_least_privilege.sql");\n  const immutableAudit = await source("supabase/migrations/20261006234315_bis_commercial_intelligence_v1_immutable_audit.sql");
   for (const table of [
     "crm_agent_runs",
     "crm_recommendations",
@@ -30,7 +30,7 @@ test("Commercial Intelligence schema is isolated, auditable and write-gated", as
   assert.match(leastPrivilege, /grant select, insert on table public\.crm_agent_runs to authenticated/);
   assert.match(leastPrivilege, /grant select, insert, update on table public\.crm_recommendations to authenticated/);
   assert.doesNotMatch(leastPrivilege, /grant .* to anon/);
-  assert.match(migration, /never learner evidence/i);
+  assert.match(migration, /never learner evidence/i);\n  assert.match(immutableAudit, /Commercial recommendation evidence is immutable after creation/);\n  assert.match(immutableAudit, /Commercial research source provenance is immutable after capture/);
 });
 
 test("Commercial Intelligence keeps irreversible work behind human approval", async () => {
