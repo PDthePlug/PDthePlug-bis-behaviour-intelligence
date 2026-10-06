@@ -4,7 +4,8 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { WorkspaceMenu } from "@/components/workspace-menu";
 import { LayoutDashboard, Users, ClipboardCheck, BookOpen, Settings2, Bot } from "lucide-react";
-import styles from "./commercial.module.css";\nimport { CommercialIntelligencePanel } from "./commercial-intelligence-panel";
+import styles from "./commercial.module.css";
+import { CommercialIntelligencePanel } from "./commercial-intelligence-panel";
 
 type Identity = { email: string; displayName: string };
 type Organisation = { id: string; name: string; organisation_type: string; website: string | null; research_status: string; status: string; notes: string | null };
