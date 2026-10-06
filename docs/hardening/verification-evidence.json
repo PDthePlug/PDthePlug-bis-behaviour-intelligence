@@ -2121,7 +2121,18 @@
     "npmRunVerify": "PASS: 628 acceptance, 165 browser journeys, source audit, lint, types, build and all 15 static packages in the serverless trace; application includes 87e1a65 owner correction",
     "pullRequest": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/127",
     "preview": "911a152 READY; 48 actual states clean; all 15 runtime editions retrieved through real APIs (12 retained STATIC, 3 governed DYNAMIC)",
-    "production": "Pending"
+    "production": "Pending",
+    "followUp": {
+      "pullRequest": 128,
+      "head": "072123e1f05f69a257df4d5ba701439d2b88d996",
+      "ciRun": 37493508041,
+      "ci": "PASS",
+      "merge": "6a5a13d87049e0aebde2f29a707cae50903b54ab",
+      "previewEvidence": "docs/hardening/final-preview-verification.json",
+      "migrationEvidence": "docs/hardening/production-migration-verification.json",
+      "productionEvidence": "docs/hardening/production-live-verification.json",
+      "completeHardeningPass": false
+    }
   },
   "learningPreviews": {
     "states": [

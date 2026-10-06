@@ -1,0 +1,34 @@
+{
+  "observedAt": "2026-10-06T16:17:02.992Z",
+  "projectRef": "swmhsqivqaqwovojbceo",
+  "mergedPR": 127,
+  "mergeSha": "444fc637675d75d06fad8c14cbbcfd0a2f514101",
+  "migration": "20261006120007_hardening_learning_static_offline.sql",
+  "changedDefinitions": [
+    {
+      "category": "functions",
+      "name": "public.bis_transition_content(p_action text, p_item_id text, p_version_id text, p_compiler_version text)",
+      "before": {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.bis_transition_content(p_action text, p_item_id text, p_version_id text, p_compiler_version text)",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": false,
+        "definition": "fa895e7ad9050240ed827719b95e6740"
+      },
+      "after": {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.bis_transition_content(p_action text, p_item_id text, p_version_id text, p_compiler_version text)",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": false,
+        "definition": "32f198240b4046d1fa1d23d1e885f903"
+      }
+    }
+  ],
+  "statementScope": "CREATE OR REPLACE FUNCTION only; installation contains no data mutations.",
+  "publicationDefinitionMatchesStaging": true,
+  "ownerPolicy": "Pending PR128 green CI"
+}

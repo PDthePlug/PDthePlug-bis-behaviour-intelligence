@@ -1,0 +1,432 @@
+{
+  "commit": "072123e1f05f69a257df4d5ba701439d2b88d996",
+  "deployment": "dpl_D3sYEzm1t7WSeUYcK3gxB6JXrd4Y",
+  "projectRef": "lbmhkddrkhtmkcvfmumd",
+  "pageStates": [
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec?page=2",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=2",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec?page=2",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=2",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec?page=2",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=2",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/commercial",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": []
+    }
+  ],
+  "owner": {
+    "rows": [
+      {
+        "role": "PROGRAMME_OWNER",
+        "width": 360,
+        "neutralDecisionForm": "PASS",
+        "existingDecisionAndReview": "PASS",
+        "overflow": 0,
+        "violations": [],
+        "errors": []
+      },
+      {
+        "role": "PROGRAMME_OWNER",
+        "width": 430,
+        "neutralDecisionForm": "PASS",
+        "existingDecisionAndReview": "PASS",
+        "overflow": 0,
+        "violations": [],
+        "errors": []
+      },
+      {
+        "role": "PROGRAMME_OWNER",
+        "width": 1280,
+        "neutralDecisionForm": "PASS",
+        "existingDecisionAndReview": "PASS",
+        "overflow": 0,
+        "violations": [],
+        "errors": []
+      }
+    ],
+    "assignedCohortOnly": "PASS",
+    "privateNarrativeExcluded": "PASS",
+    "productionRecordsModified": false
+  },
+  "learningRuntimeEditions": {
+    "deployment": "dpl_D3sYEzm1t7WSeUYcK3gxB6JXrd4Y",
+    "commit": "072123e1f05f69a257df4d5ba701439d2b88d996",
+    "project": "lbmhkddrkhtmkcvfmumd",
+    "rows": [
+      {
+        "code": "HAB",
+        "edition": "school",
+        "mode": "DYNAMIC",
+        "versionId": "content:module:HAB:1.6",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "HAB",
+        "edition": "emerging_adult",
+        "mode": "DYNAMIC",
+        "versionId": "content:module:HAB:1.6",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "HAB",
+        "edition": "workplace",
+        "mode": "DYNAMIC",
+        "versionId": "content:module:HAB:1.6",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "DEC",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:DEC:1.7",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "DEC",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:DEC:1.7",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "DEC",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:DEC:1.7",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "MON",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:MON:1.2",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "MON",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:MON:1.2",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "MON",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:MON:1.2",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "IDN",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:IDN:1.2.1",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "IDN",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:IDN:1.2.1",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "IDN",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:IDN:1.2.1",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "ATT",
+        "edition": "school",
+        "mode": "STATIC",
+        "versionId": "content:module:ATT:1.0",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "ATT",
+        "edition": "emerging_adult",
+        "mode": "STATIC",
+        "versionId": "content:module:ATT:1.0",
+        "touchpoints": 10,
+        "result": "PASS"
+      },
+      {
+        "code": "ATT",
+        "edition": "workplace",
+        "mode": "STATIC",
+        "versionId": "content:module:ATT:1.0",
+        "touchpoints": 10,
+        "result": "PASS"
+      }
+    ]
+  }
+}

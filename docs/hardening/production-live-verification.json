@@ -1,0 +1,147 @@
+{
+  "observedAt": "2026-10-06T16:23:56.860Z",
+  "identity": {
+    "projectRef": "swmhsqivqaqwovojbceo",
+    "stagingCertificationAllowed": false
+  },
+  "domains": [
+    {
+      "origin": "https://bisportal.online",
+      "path": "/",
+      "status": 200,
+      "location": null,
+      "vercelError": null
+    },
+    {
+      "origin": "https://bisportal.online",
+      "path": "/sign-in",
+      "status": 308,
+      "location": "https://www.bisportal.online/sign-in",
+      "vercelError": null
+    },
+    {
+      "origin": "https://bis-behaviour-intelligence.vercel.app",
+      "path": "/",
+      "status": 404,
+      "location": null,
+      "vercelError": "DEPLOYMENT_NOT_FOUND"
+    },
+    {
+      "origin": "https://bis-behaviour-intelligence.vercel.app",
+      "path": "/sign-in",
+      "status": 404,
+      "location": null,
+      "vercelError": "DEPLOYMENT_NOT_FOUND"
+    },
+    {
+      "origin": "https://bis-behaviour-intelligence-denvermpofu09-2813s-projects.vercel.app",
+      "path": "/",
+      "status": 302,
+      "location": "https://vercel.com/sso-api",
+      "vercelError": null
+    },
+    {
+      "origin": "https://bis-behaviour-intelligence-denvermpofu09-2813s-projects.vercel.app",
+      "path": "/sign-in",
+      "status": 302,
+      "location": "https://vercel.com/sso-api",
+      "vercelError": null
+    }
+  ],
+  "domainBoundary": "Apex DNS mixes GoDaddy website-builder and Vercel addresses; registrar correction pending. Short legacy Vercel hostname is not an active deployment alias.",
+  "anonymousDenial": [
+    {
+      "path": "/api/staff",
+      "status": 401
+    },
+    {
+      "path": "/api/commercial",
+      "status": 401
+    },
+    {
+      "path": "/api/content-studio",
+      "status": 401
+    }
+  ],
+  "hsts": "max-age=63072000; includeSubDomains; preload",
+  "rows": [
+    {
+      "route": "/sign-in",
+      "width": 360,
+      "finalPath": "/sign-in",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/forgot-password",
+      "width": 360,
+      "finalPath": "/forgot-password",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/learn",
+      "width": 360,
+      "finalPath": "/sign-in",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/sign-in",
+      "width": 430,
+      "finalPath": "/sign-in",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/forgot-password",
+      "width": 430,
+      "finalPath": "/forgot-password",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/learn",
+      "width": 430,
+      "finalPath": "/sign-in",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/sign-in",
+      "width": 1280,
+      "finalPath": "/sign-in",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/forgot-password",
+      "width": 1280,
+      "finalPath": "/forgot-password",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    },
+    {
+      "route": "/learn",
+      "width": 1280,
+      "finalPath": "/sign-in",
+      "violations": [],
+      "overflow": 0,
+      "errors": []
+    }
+  ],
+  "authenticatedProductionJourneys": "OPEN: approved account bindings unavailable; staging credentials never sent to production",
+  "productionRecordsModified": false,
+  "mergeSha": "6a5a13d87049e0aebde2f29a707cae50903b54ab",
+  "deployment": "dpl_236sE9epezR2H7uq6f75niY4BovQ",
+  "deploymentState": "READY",
+  "canonicalAliasMatchesDeployment": true
+}
