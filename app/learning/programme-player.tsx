@@ -25,7 +25,7 @@ import {
 import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
 import { loadLearningLabRuntime, universalLearningKnownValues } from "../../lib/learning-lab-runtime.mjs";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
-import { enhanceHandbookDocument, type HandbookKnownValue } from "./handbook-document-enhancements";
+import { enhanceHandbookDocument, syncHandbookLearningChecks, type HandbookKnownValue } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
 import {
   BIS_LAB_PHASE_A_MINUTES,
@@ -909,6 +909,7 @@ export function ProgrammePlayer({
           if ("placeholder" in field) field.placeholder = "Captured in the live Lab";
         }
       });
+    syncHandbookLearningChecks(documentRoot);
   }, [
     drafts,
     knownValues,
@@ -1630,4 +1631,3 @@ export function ProgrammePlayer({
     </EditionLanguageScope>
   );
 }
-

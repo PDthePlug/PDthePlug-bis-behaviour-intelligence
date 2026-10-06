@@ -19,6 +19,7 @@ import { FacilitatorClassOperations } from "./facilitator-class-operations";
 import { FacilitatorAssessment } from "./facilitator-assessment";
 import { buildFacilitatorBrief } from "@/lib/programme-intelligence.mjs";
 import { ProgrammeReportGraphic } from "./programme-report-graphics";
+import { EvidenceDisclosure } from "./evidence-disclosure";
 import "./programme-intelligence.css";
 import type { DeliveryEdition } from "@/lib/learning-foundation";
 
@@ -249,6 +250,11 @@ export function FacilitatorWorkspace({
   const reviewReady = participants.filter((item) => (item.enrolment?.currentInvestigation ?? 0) >= 8).length;
   const attention = participants.filter(needsAttention);
   const brief = buildFacilitatorBrief(participants);
+  const checkInGroups = new Map<string, typeof brief.actions>();
+  brief.actions.forEach(item => {
+    const key = `${item.observation}|${item.action}`;
+    checkInGroups.set(key, [...(checkInGroups.get(key) ?? []), item]);
+  });
   const learningChecks = cohort.learningChecks ?? null;
   const participantNotes = selected ? data.notes.filter((item) => item.learnerUserId === selected.userId) : [];
   const participantReferrals = selected ? data.referrals.filter((item) => item.learnerUserId === selected.userId) : [];
@@ -308,10 +314,16 @@ export function FacilitatorWorkspace({
           <section className="programme-intelligence-section">
             <p className="eyebrow">Your next session</p><h2>Where a check-in could help</h2>
             <p>These suggestions use recorded progress and observation counts. Ask participants what support would be useful; the records do not explain their reasons.</p>
-            {brief.actions.length ? <ul className="facilitator-action-list">{brief.actions.map(item => <li key={item.userId}>
-              <strong>{item.displayName}</strong><p>{item.observation}</p><p><strong>Suggested check-in:</strong> {item.action}</p>
-              <Button variant="outline" onClick={() => navigateWorkspace({ section: "participants", learner: item.userId })}>Open participant · {item.displayName}</Button>
-            </li>)}</ul> : <p>No check-in suggestion is indicated by the available progress records. This does not mean that nobody needs support.</p>}
+            {brief.actions.length ? [...checkInGroups.values()].map(items => <EvidenceDisclosure
+              key={items[0].observation}
+              title={`${items.length === 1 ? items[0].displayName : `${items.length} learners`} · ${items[0].observation.includes("no observation is recorded") ? "No observations yet" : items[0].observation}`}
+            >
+              <p>{items[0].observation}</p><p><strong>Suggested check-in:</strong> {items[0].action}</p>
+              <ul className="facilitator-action-list">{items.map(item => <li key={item.userId}>
+                <strong>{item.displayName}</strong>
+                <Button variant="outline" onClick={() => navigateWorkspace({ section: "participants", learner: item.userId })}>Open participant · {item.displayName}</Button>
+              </li>)}</ul>
+            </EvidenceDisclosure>) : <EvidenceDisclosure title="No check-in suggestions yet"><p>The available progress records do not indicate a check-in. This does not mean that nobody needs support.</p></EvidenceDisclosure>}
             <ProgrammeReportGraphic chart={brief.chart} />
           </section>
           <FacilitatorClassOperations key={cohort.id} cohortId={cohort.id} participants={participants} />
@@ -321,7 +333,7 @@ export function FacilitatorWorkspace({
             <article><ClipboardCheck /><span>Review stage</span><strong>{reviewReady}</strong></article>
             <article><ShieldAlert /><span>Needs attention</span><strong>{attention.length}</strong></article>
           </section>
-          {learningChecks ? (
+          {learningChecks && learningChecks.signalsRecorded === 0 ? <EvidenceDisclosure title="Learning checks have no responses yet"><p>Understanding and requests for another example will appear here after learners answer a lesson check.</p></EvidenceDisclosure> : learningChecks ? (
             <section className="surface-card ops-section facilitator-learning-checks">
               <div className="section-title">
                 <div>
@@ -333,7 +345,7 @@ export function FacilitatorWorkspace({
               </div>
               <section className="ops-metrics facilitator-learning-check-metrics">
                 <article><ClipboardCheck /><span>Checks recorded</span><strong>{learningChecks.signalsRecorded}</strong></article>
-                <article><Check /><span>Can explain</span><strong>{learningChecks.understoodRate === null ? "—" : `${learningChecks.understoodRate}%`}</strong></article>
+                <article><Check /><span>Understand</span><strong>{learningChecks.understoodRate === null ? "—" : `${learningChecks.understoodRate}%`}</strong></article>
                 <article><Activity /><span>Unsure</span><strong>{learningChecks.unsure}</strong></article>
                 <article><Users /><span>Need another example</span><strong>{learningChecks.needsExample}</strong></article>
               </section>
@@ -343,7 +355,7 @@ export function FacilitatorWorkspace({
                     <div key={day.semanticStepId}>
                       <span><strong>{programmeStepLabel(day.semanticStepId)}</strong><small>{day.signalsRecorded} check signal{day.signalsRecorded === 1 ? "" : "s"}</small></span>
                       <span>
-                        <strong>{day.understoodRate === null ? "—" : `${day.understoodRate}% can explain`}</strong>
+                        <strong>{day.understoodRate === null ? "—" : `${day.understoodRate}% understand`}</strong>
                         <small>{day.needsExample} need another example · {day.unsure} unsure</small>
                       </span>
                     </div>

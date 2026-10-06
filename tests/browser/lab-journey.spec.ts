@@ -61,6 +61,20 @@ async function noOverflow(page: Page) {
   expect(Math.abs(box!.x + box!.width / 2 - page.viewportSize()!.width / 2)).toBeLessThan(3);
 }
 
+test("reading text size also reaches Lab instructions and response controls", async ({ page }) => {
+  await service(page, 2);
+  await page.route("**/api/profile", route => route.fulfill({ json: { profile: { textSizePreference: "extra_large", readingWidthPreference: "standard" } } }));
+  await page.goto("/settings");
+  await page.getByRole("button", { name: "Reading", exact: true }).click();
+  await page.getByRole("combobox", { name: "Text size" }).selectOption("extra_large");
+  await page.goto("/labs/ldr?step=2");
+  await expect(page.locator(".universal-lab-document-body")).toBeVisible();
+  for (const selector of [".universal-lab-document-body p", ".universal-lab-document-body textarea"]) {
+    expect(await page.locator(selector).first().evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(20.8, 1);
+  }
+  await noOverflow(page);
+});
+
 test("Leadership welcome, baseline numeric save and all investigation controls", async ({ page }, info) => {
   const api = await service(page);
   await page.goto("/labs/ldr");

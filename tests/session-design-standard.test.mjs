@@ -154,7 +154,7 @@ test("School, Emerging Adult and Workplace share the session standard but use ed
   assert.match(workplace.applicationFrame, /Workload|teams|customers|professional routines/);
 });
 
-test("handbooks interleave 2–4 purpose-labelled formative checks before the end checkpoint", async () => {
+test("handbooks interleave 2–4 formative checks and ask about understanding after an answer", async () => {
   const enhancement = await source("app/learning/handbook-document-enhancements.ts");
 
   assert.match(enhancement, /context\.formativeCheckTarget \?\? 3/);
@@ -164,7 +164,9 @@ test("handbooks interleave 2–4 purpose-labelled formative checks before the en
   for (const kind of ["RECALL", "UNDERSTAND", "DISTINGUISH", "PREDICT", "APPLY", "CHALLENGE", "CONFIDENCE"]) {
     assert.ok(enhancement.includes(kind), `Missing formative check kind: ${kind}`);
   }
-  assert.match(enhancement, /This is for learning, not a mark or BEI score/);
+  assert.match(enhancement, /After answering, how clear does this feel\?/);
+  assert.match(enhancement, /syncHandbookLearningChecks/);
+  assert.doesNotMatch(enhancement, /Pause here before you continue/);
   assert.match(enhancement, /FORMATIVE_CHECK/);
 });
 

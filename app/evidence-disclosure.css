@@ -1,0 +1,10 @@
+.evidence-disclosure{margin:16px 0;border-block:1px solid var(--border,#dfe4df);color:inherit}
+.evidence-disclosure[hidden]{display:none}
+.evidence-disclosure>summary{cursor:pointer;min-height:48px;padding:12px 4px;font-size:14px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+.evidence-disclosure>summary:focus-visible{outline:2px solid var(--bis-user-accent,#173f35);outline-offset:3px}
+.evidence-disclosure-body{padding:4px 4px 18px;font-size:14px;line-height:1.65}
+.evidence-disclosure-body>p{margin:0 0 12px}
+.evidence-disclosure-body>p:last-child{margin-bottom:0}
+.evidence-disclosure-body .facilitator-action-list{margin:12px 0 0;padding:0;list-style:none}
+.evidence-disclosure-body .facilitator-action-list li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--border,#dfe4df)}
+.evidence-disclosure-body .facilitator-action-list button{min-height:44px;max-width:100%;white-space:normal;text-align:left}

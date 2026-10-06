@@ -113,18 +113,44 @@ function collapseSuggestedAnswers(root: HTMLElement) {
   }
 }
 
-function hasExistingAnswerSpace(element: HTMLElement) {
-  if (element.querySelector("[data-field-id]")) return true;
+function existingAnswerSpace(element: HTMLElement): HTMLElement | null {
+  if (element.querySelector("[data-field-id]")) return element;
   let cursor = element.nextElementSibling;
   let inspected = 0;
   while (cursor && inspected < 3) {
-    if (cursor.matches("[data-field-id]") || cursor.querySelector("[data-field-id]")) return true;
+    if (cursor.matches("[data-field-id]") || cursor.querySelector("[data-field-id]")) return cursor as HTMLElement;
     if (cursor.matches("h1,h2,h3,h4,hr,details") || isCheckpointHeading(cursor as HTMLElement)) break;
     if (questionPrompts(cursor as HTMLElement).length) break;
     inspected += 1;
     cursor = cursor.nextElementSibling;
   }
-  return false;
+  return null;
+}
+
+function hasExistingAnswerSpace(element: HTMLElement) {
+  return Boolean(existingAnswerSpace(element));
+}
+
+const learningCheckListeners = new WeakSet<HTMLElement>();
+
+/** A support check follows the written response, including restored answers. */
+export function syncHandbookLearningChecks(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>("[data-formative-signal-for]").forEach(signal => {
+    const checkId = signal.dataset.formativeSignalFor;
+    const fields = [...root.querySelectorAll<HTMLTextAreaElement | HTMLInputElement>(`[data-response-check="${checkId}"]`)];
+    signal.hidden = !fields.length || fields.some(field => !field.value.trim());
+  });
+}
+
+function removeInstructionResponseControls(root: HTMLElement) {
+  root.querySelectorAll<HTMLTextAreaElement>("textarea.response[data-field-id]").forEach(field => {
+    const prompt = normalise(field.getAttribute("aria-label") || nearestPrompt(field));
+    // A source list introduction is reading, not a learner task. Saved records
+    // remain untouched; this removes only the misplaced presentation control.
+    if (/^(do not use .* to experiment with .* involves|before you begin .* read this carefully)\s*[:.]?$/i.test(prompt)) {
+      field.remove();
+    }
+  });
 }
 
 function createResponse(
@@ -220,13 +246,13 @@ function createFormativeSignal(
   group.dataset.formativeSignalFor = checkId;
 
   const legend = document.createElement("legend");
-  legend.textContent = "Before you continue, how sure are you?";
+  legend.textContent = "After answering, how clear does this feel?";
   group.append(legend);
 
   const options = document.createElement("div");
   options.className = "handbook-formative-signal-options";
   const choices = [
-    ["UNDERSTOOD", "I can explain this"],
+    ["UNDERSTOOD", "I understand this"],
     ["UNSURE", "I’m unsure"],
     ["NEEDS_EXAMPLE", "I need another example"],
   ] as const;
@@ -261,6 +287,9 @@ function addInterleavedConceptChecks(
   pageId: string,
   context: HandbookEnhancementContext,
 ) {
+  // React may restore values or update shared context without replacing the
+  // document. Do not choose a second set from the already-enhanced markup.
+  if (root.querySelector("[data-formative-signal-for]")) return;
   const candidates = interleavedQuestionCandidates(root);
   const target = Math.max(2, Math.min(4, context.formativeCheckTarget ?? 3));
   const selected = distributedConceptChecks(candidates, target);
@@ -283,9 +312,7 @@ function addInterleavedConceptChecks(
       label.className = "handbook-concept-check-label";
       const title = document.createElement("strong");
       title.textContent = formativeCheckLabel(checkKind);
-      const note = document.createElement("span");
-      note.textContent = "Pause here before you continue. This is for learning, not a mark or BEI score.";
-      label.append(title, note);
+      label.append(title);
 
       if (element.tagName === "LI") element.prepend(label);
       else element.insertAdjacentElement("beforebegin", label);
@@ -325,13 +352,11 @@ function addInterleavedConceptChecks(
 
     if (!root.querySelector(`[data-formative-signal-for="${checkId}"]`)) {
       const signal = createFormativeSignal(labCode, pageId, checkId, checkKind);
+      const answer = existingAnswerSpace(element);
+      answer?.querySelectorAll<HTMLElement>("[data-field-id]").forEach(field => { field.dataset.responseCheck = checkId; });
+      if (answer?.matches("[data-field-id]")) answer.dataset.responseCheck = checkId;
       if (element.tagName === "LI") element.append(signal);
-      else {
-        const responseGroup = element.nextElementSibling?.classList.contains("handbook-concept-check-responses")
-          ? element.nextElementSibling
-          : element;
-        responseGroup.insertAdjacentElement("afterend", signal);
-      }
+      else (answer ?? element).insertAdjacentElement("afterend", signal);
     }
   });
 }
@@ -514,7 +539,7 @@ function structureAuthoredResponses(root: HTMLElement) {
       group.append(wrapper);
     });
     // Only consume the exact authored prompt, never nearby narrative or headings.
-    if (preceding?.matches("p") && normalise(preceding.textContent || "") === prompt) preceding.remove();
+    if (preceding?.matches("p") && normalise(preceding.textContent || "").replace(/^["“”'‘’]+|["“”'‘’]+$/g, "") === prompt.replace(/^["“”'‘’]+|["“”'‘’]+$/g, "")) preceding.remove();
   }
 }
 
@@ -1496,6 +1521,7 @@ export function enhanceHandbookDocument(
   }
   normaliseCompiledHandbookStructure(root);
   standardisePageHeading(root);
+  removeInstructionResponseControls(root);
   cleanOrphanedResponseControls(root);
   labelAuthoredResponses(root);
   removeUnboundGenericResponses(root);
@@ -1519,4 +1545,10 @@ export function enhanceHandbookDocument(
   addMissingCheckpointResponses(root, labCode, pageId);
   structureAuthoredResponses(root);
   addFacilitatorCues(root, context);
+  if (!learningCheckListeners.has(root)) {
+    root.addEventListener("input", () => syncHandbookLearningChecks(root));
+    root.addEventListener("change", () => syncHandbookLearningChecks(root));
+    learningCheckListeners.add(root);
+  }
+  syncHandbookLearningChecks(root);
 }

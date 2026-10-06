@@ -12,6 +12,9 @@ test.describe('Leap9 programme experience v2', () => {
     await page.goto('/experience/leap9/v2');
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('See the programme move.');
+    expect(await page.locator('.experience-v2-hero-panel>div').first().evaluate(element => parseFloat(getComputedStyle(element).paddingLeft))).toBeGreaterThanOrEqual(22);
+    const welcomeHeading = page.locator('.experience-v2-hero-panel h2');
+    expect(await welcomeHeading.evaluate(element => element.getBoundingClientRect().left - element.parentElement!.getBoundingClientRect().left)).toBeGreaterThanOrEqual(22);
     const notice = page.locator('.experience-v2-disclosure');
     await expect(notice).not.toHaveAttribute('open', '');
     await expect(page.locator('.experience-v2-perspectives, .experience-v2-arc')).toHaveCount(0);
