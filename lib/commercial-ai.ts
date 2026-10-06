@@ -6,11 +6,11 @@ type AiResult = {
 };
 
 function configuredModel() {
-  return process.env.OPENAI_COMMERCIAL_MODEL?.trim() || "gpt-5.6-luna";
+  return process.env.AI_GATEWAY_MODEL?.trim() || "openai/gpt-5.6-luna";
 }
 
 export function commercialAiConfigured() {
-  return Boolean(process.env.OPENAI_API_KEY?.trim());
+  return Boolean(process.env.VERCEL_OIDC_TOKEN?.trim() || process.env.AI_GATEWAY_API_KEY?.trim());
 }
 
 function extractResponseText(payload: unknown) {
@@ -45,7 +45,7 @@ async function callOpenAI(instructions: string, input: string): Promise<AiResult
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -63,7 +63,7 @@ async function callOpenAI(instructions: string, input: string): Promise<AiResult
   if (!response.ok) {
     const requestId = response.headers.get("x-request-id");
     throw new Error(
-      `Commercial AI request failed (${response.status})${requestId ? ` [${requestId}]` : ""}.`,
+      `Commercial AI Gateway request failed (${response.status})${requestId ? ` [${requestId}]` : ""}.`,
     );
   }
 
