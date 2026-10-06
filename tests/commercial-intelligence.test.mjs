@@ -7,6 +7,7 @@ const source = (path) => readFile(new URL(path, root), "utf8");
 
 test("Commercial Intelligence schema is isolated, auditable and write-gated", async () => {
   const migration = await source("supabase/migrations/20261006232429_bis_commercial_intelligence_v1.sql");
+  const leastPrivilege = await source("supabase/migrations/20261006233844_bis_commercial_intelligence_v1_least_privilege.sql");
   for (const table of [
     "crm_agent_runs",
     "crm_recommendations",
@@ -16,6 +17,7 @@ test("Commercial Intelligence schema is isolated, auditable and write-gated", as
     "crm_signal_events",
   ]) {
     assert.ok(migration.includes("create table public." + table));
+    assert.ok(leastPrivilege.includes("revoke all on table public." + table));
   }
   assert.match(migration, /enable row level security/);
   assert.match(migration, /private\.can_write_commercial/);
@@ -25,7 +27,9 @@ test("Commercial Intelligence schema is isolated, auditable and write-gated", as
     migration.indexOf("create table public.crm_agent_runs"),
   );
   assert.doesNotMatch(helper, /COMMERCIAL_READ_ONLY/);
-  assert.match(migration, /revoke delete on public\.crm_agent_runs from authenticated/);
+  assert.match(leastPrivilege, /grant select, insert on table public\.crm_agent_runs to authenticated/);
+  assert.match(leastPrivilege, /grant select, insert, update on table public\.crm_recommendations to authenticated/);
+  assert.doesNotMatch(leastPrivilege, /grant .* to anon/);
   assert.match(migration, /never learner evidence/i);
 });
 
@@ -44,7 +48,10 @@ test("Commercial Intelligence keeps irreversible work behind human approval", as
   assert.match(route, /RECIPIENT_COLLISION/);
 
   assert.match(ai, /store: false/);
-  assert.match(ai, /VERCEL_OIDC_TOKEN/);\n  assert.match(ai, /AI_GATEWAY_API_KEY/);\n  assert.match(ai, /https:\/\/ai-gateway\\.vercel\\.sh\/v1\/responses/);
+  assert.match(ai, /VERCEL_OIDC_TOKEN/);
+  assert.match(ai, /AI_GATEWAY_API_KEY/);
+  assert.match(ai, /https:\/\/ai-gateway\.vercel\.sh\/v1\/responses/);
+  assert.match(ai, /openai\/gpt-5\.6-luna/);
   assert.match(ai, /External contact, sends, pricing changes, WON\/LOST decisions and terms always require human approval/);
   assert.match(ai, /Do not request or expose learner evidence/);
   assert.doesNotMatch(ai, /NEXT_PUBLIC_(?:OPENAI|AI_GATEWAY)/);
@@ -65,13 +72,16 @@ test("Commercial workspace opens on Intelligence and recognizes the live draft-r
   assert.match(workspace, /: "intelligence";/);
   assert.match(workspace, /DRAFT_READY/);
   assert.match(api, /"DRAFT_READY"/);
-  assert.match(env, /OPENAI_API_KEY=/);
-  assert.match(env, /OPENAI_COMMERCIAL_MODEL=gpt-5\.6-luna/);
-  assert.doesNotMatch(env, /NEXT_PUBLIC_OPENAI_API_KEY/);
+  assert.match(env, /AI_GATEWAY_API_KEY=/);
+  assert.match(env, /AI_GATEWAY_MODEL=openai\/gpt-5\.6-luna/);
+  assert.doesNotMatch(env, /NEXT_PUBLIC_(?:OPENAI|AI_GATEWAY)/);
 });
 
 test("Commercial Intelligence UI explains its automation boundary in customer language", async () => {
-  const panel = await source("app/commercial/commercial-intelligence-panel.tsx");
+  const [panel, route] = await Promise.all([
+    source("app/commercial/commercial-intelligence-panel.tsx"),
+    source("app/api/commercial/intelligence/route.ts"),
+  ]);
   for (const phrase of [
     "Founder operating brief",
     "What deserves your attention",
@@ -85,6 +95,5 @@ test("Commercial Intelligence UI explains its automation boundary in customer la
   assert.match(panel, /action: "refresh", mode/);
   assert.match(panel, /action: "draft"/);
   assert.match(panel, /action: "decision"/);
-  const route = await source("app/api/commercial/intelligence/route.ts");
-  assert.match(route, /timeZone: "Africa\\/Johannesburg"/);
+  assert.match(route, /timeZone: "Africa\/Johannesburg"/);
 });
