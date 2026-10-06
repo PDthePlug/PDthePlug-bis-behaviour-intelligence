@@ -76,6 +76,22 @@ test("Lab guidance appears once while authored question instructions and respons
   await noOverflow(page);
 });
 
+test("Lab result context identifies original inputs and keeps calculation help optional", async ({ page }) => {
+  await service(page, 8);
+  await page.goto("/labs/ldr?step=8");
+  const details = page.locator(".universal-calculation-context");
+  await expect(details).toHaveCount(1);
+  await expect(details.locator("[data-calculation-for]").first()).toBeHidden();
+  await details.locator(":scope > summary").focus(); await page.keyboard.press("Enter");
+  await expect(details.locator("[data-calculation-for]").first()).toBeVisible();
+  await expect(details).toContainText("does not independently verify its inputs");
+  const source = details.locator("details").first();
+  await source.locator("summary").focus(); await page.keyboard.press("Enter");
+  await expect(source.locator("li").first()).toBeVisible();
+  expect((await source.locator("li").allTextContents()).join(" ")).not.toMatch(/\b(?:BEI|TEI)-\d/);
+  await noOverflow(page);
+});
+
 test("Lab failures offer recovery and completed mobile navigation remains named", async ({ page }) => {
   await service(page, 7);
   let fail = true;

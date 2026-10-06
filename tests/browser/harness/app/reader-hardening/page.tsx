@@ -21,7 +21,7 @@ export default function Page() {
   }, [source]);
   useLayoutEffect(() => {
     if (!root.current || !current || !handbook) return;
-    for (let pass = 0; pass < 4; pass++) enhanceHandbookDocument(root.current, handbook.labCode, current.id, { programmeDay: current.programmeDay, enableFormativeLearningChecks: true });
+    for (let pass = 0; pass < 4; pass++) enhanceHandbookDocument(root.current, handbook.labCode, current.id, { programmeDay: current.programmeDay, pageTitle: current.label, enableFormativeLearningChecks: true });
     for (const field of root.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-field-id]")) {
       const saved = sessionStorage.getItem(field.dataset.fieldId!);
       if (field instanceof HTMLInputElement && field.type === "radio") field.checked = saved === field.value;

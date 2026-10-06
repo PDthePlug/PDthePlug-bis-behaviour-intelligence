@@ -18,6 +18,7 @@ import { availableLabPrompts } from "@/lib/lab-interaction-contract.mjs";
 import { validPromptResponse } from "@/lib/evidence-validation.mjs";
 import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentation.mjs";
 import { learnerHeadingHtml, learnerHeadingText } from "@/lib/learner-heading-presentation.mjs";
+import { learnerCalculationContexts } from "@/lib/learner-calculation-context.mjs";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 import { EvidenceImages } from "@/components/evidence/evidence-images";
 
@@ -810,6 +811,8 @@ function UniversalInvestigationForm({
   };
 
   const promptById = new Map(visiblePrompts.map((prompt) => [prompt.id, prompt]));
+  const calculationContexts = useMemo(() => learnerCalculationContexts(snapshot.definition), [snapshot.definition])
+    .filter(context => promptById.has(context.id));
   const blockPromptIds = new Set(
     (investigation.blocks ?? []).flatMap((block) => {
       if (block.type === "PROMPT") return [block.promptId];
@@ -1022,6 +1025,20 @@ function UniversalInvestigationForm({
       {investigation.blocks?.length
         ? investigation.prompts.filter((prompt) => !blockPromptIds.has(prompt.id)).map(renderPrompt)
         : null}
+      {calculationContexts.length ? (
+        <details className="learner-document-disclosure universal-calculation-context">
+          <summary>How these results are worked out</summary>
+          <p>Review the original answers alongside these results. A calculation does not independently verify its inputs or establish lasting behaviour change.</p>
+          {calculationContexts.map(context => (
+            <section className="learner-document-context-section" key={context.id} data-calculation-for={context.id}>
+              <h3>{context.label}</h3>
+              <p>{context.calculation}</p>
+              <p>{context.meaning}</p>
+              <details><summary>Answers used</summary><ul>{context.sources.map((source, index) => <li key={`${source.id}-${index}`}>{source.label}</li>)}</ul></details>
+            </section>
+          ))}
+        </details>
+      ) : null}
       {isExperimentInvestigation && !previewMode && snapshot.enrolment ? <EvidenceImages key={`${snapshot.enrolment.id}:${step}`} enrollmentId={snapshot.enrolment.id} labCode={snapshot.definition.identity.code} investigation={step} evidenceFieldId={`${snapshot.definition.identity.code}.I${step}.OBSERVATION.IMAGE`} onBlockedChange={setAttachmentBlocked} /> : null}
       {error ? <p className="field-error">{error}</p> : null}
       {attemptedSubmit && !ready ? (

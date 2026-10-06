@@ -150,6 +150,25 @@ test("orientation, weekend and certificate render across every accepted handbook
         const root = page.locator(`[data-specimen="${slug}-${edition}"][data-page-key="${key}"]`);
         await expect(root).toBeVisible();
         expect((await root.textContent())!.length).toBeGreaterThan(100);
+        await expect(root.locator("h1")).toHaveCount(0);
+        if (key === "Welcome") {
+          const publication = root.locator(".handbook-publication-details");
+          await expect(publication).toHaveCount(1);
+          await expect(publication).not.toContainText("Dear Reader");
+          await expect(publication).not.toContainText("BEFORE YOU BEGIN");
+          await expect(publication.locator("input,textarea,select,button")).toHaveCount(0);
+          await publication.locator("summary").focus(); await page.keyboard.press("Enter");
+          await expect(publication).toHaveAttribute("open", "");
+          await expect(publication).toContainText("Applied Commerce");
+          expect(await publication.innerText()).not.toMatch(/Controlled Production Master|Architecture frozen|Production.freeze/);
+          if (["money", "identity", "attention"].includes(slug)) {
+            const original = publication.locator(".handbook-production-note");
+            await expect(original).toHaveCount(1);
+            await expect(original).toBeHidden();
+            await expect(original).toContainText("Controlled Production Master");
+          }
+          await page.keyboard.press("Enter"); await expect(publication).not.toHaveAttribute("open");
+        }
         const fields = await root.locator("[data-field-id]").evaluateAll(elements => elements.map(element => `${element.getAttribute("data-field-id")}${element instanceof HTMLInputElement && element.type === "radio" ? `:${element.value}` : ""}`));
         expect(new Set(fields).size).toBe(fields.length);
         await expect(root.locator(".handbook-session-details input,.handbook-session-details textarea")).toHaveCount(0);

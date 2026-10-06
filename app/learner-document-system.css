@@ -188,6 +188,31 @@
   font-size:calc(16px * var(--bis-text-scale,1));
   line-height:1.72;
 }
+.canonical-shell .learner-document .learner-document-disclosure .learner-document-context-section{
+  margin:20px 0;
+  padding:16px 0 0;
+  border-top:1px solid var(--learner-document-border);
+}
+.canonical-shell .learner-document .learner-document-disclosure .learner-document-context-section>h3{
+  margin:0 0 10px;
+  color:var(--learner-document-ink);
+  font:650 calc(16px * var(--bis-text-scale,1))/1.5 var(--font-sans,system-ui,sans-serif);
+}
+.canonical-shell .learner-document .learner-document-disclosure .learner-document-context-section>p{
+  margin:0 0 12px;
+  font-size:calc(16px * var(--bis-text-scale,1));
+  line-height:1.72;
+}
+.canonical-shell .learner-document .learner-document-disclosure .learner-document-context-section>details>summary{
+  min-height:48px;
+  padding:12px 0;
+  cursor:pointer;
+  font:650 calc(14px * var(--bis-text-scale,1))/1.6 var(--font-sans,system-ui,sans-serif);
+}
+.canonical-shell .learner-document .learner-document-disclosure .learner-document-context-section>details>ul{
+  padding-left:24px;
+  list-style:disc;
+}
 .canonical-shell .learner-document .handbook-session-details :is(p,div,h2,h3,h4){
   margin:0 0 8px;
   padding:0;
@@ -197,7 +222,7 @@
   font:400 calc(14px * var(--bis-text-scale,1))/1.65 var(--font-sans,system-ui,sans-serif);
   letter-spacing:normal;
 }
-.canonical-shell .learner-document :is(.handbook-repeated-heading,.handbook-heading-decoration)[hidden]{
+.canonical-shell .learner-document :is(.handbook-repeated-heading,.handbook-heading-decoration,.handbook-production-note)[hidden]{
   display:none!important;
 }
 

@@ -1506,6 +1506,38 @@ function addFacilitatorCues(root: HTMLElement, context: HandbookEnhancementConte
 }
 
 function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancementContext) {
+  // Printed cover matter belongs behind the reading canvas. Keep the original
+  // nodes and publisher trace; only internal production notes leave the display.
+  const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2")]
+    .find(heading => normalise(heading.textContent ?? "").toUpperCase() === "WELCOME");
+  if (welcome && !root.querySelector(".handbook-publication-details")) {
+    const cover = document.createRange();
+    cover.setStart(root, 0);
+    cover.setEndBefore(welcome);
+    const specimen = cover.cloneContents();
+    if (/\bLAB™/.test(specimen.textContent ?? "")
+      && !specimen.querySelector("input,textarea,select,button")) {
+      const details = document.createElement("details");
+      details.className = "learner-document-disclosure handbook-publication-details";
+      const summary = document.createElement("summary");
+      summary.textContent = "About this handbook";
+      details.append(summary, cover.extractContents());
+      welcome.before(details);
+      details.querySelectorAll<HTMLElement>("p,div").forEach(row => {
+        const text = normalise(row.textContent ?? "");
+        if (!/^Version\b/i.test(text) || !/Controlled Production Master|Architecture frozen|Production.freeze/i.test(text)) return;
+        if ([...row.querySelectorAll("p,div")].some(child => /^Version\b/i.test(normalise(child.textContent ?? ""))
+          && /Controlled Production Master|Architecture frozen|Production.freeze/i.test(child.textContent ?? ""))) return;
+        const version = document.createElement("p");
+        version.textContent = text.split(/Controlled Production Master|Architecture frozen|Production.freeze/i)[0].replace(/[|\s]+$/, "").trim();
+        row.before(version);
+        row.classList.add("handbook-production-note");
+        row.hidden = true;
+        row.setAttribute("aria-hidden", "true");
+      });
+    }
+  }
+
   // The publication header already supplies the day and title. Keep the source
   // elements intact so this never changes the text used for response identities.
   const titleKey = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
@@ -1624,6 +1656,17 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
     decoration.setAttribute("aria-hidden", "true");
     start.before(decoration);
     decoration.append(start);
+  });
+
+  // The shared publication header supplies the page's only top-level heading.
+  // Source formatting can mark several workbook sections as h1; retain their
+  // text, attributes and controls while giving them section semantics.
+  if (context.pageTitle) root.querySelectorAll("h1").forEach(heading => {
+    const section = document.createElement("h2");
+    for (const attribute of heading.attributes) section.setAttribute(attribute.name, attribute.value);
+    section.setAttribute("data-source-heading-level", "1");
+    section.append(...heading.childNodes);
+    heading.replaceWith(section);
   });
 }
 
