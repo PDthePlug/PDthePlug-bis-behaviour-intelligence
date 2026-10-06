@@ -54,7 +54,8 @@ export function CommercialWorkspace({ identity, roles }: { identity: Identity; r
       <header className={styles.topbar}><div><span className={styles.eyebrow}>BIS · Commercial workspace</span><h1>{view === "intelligence" ? "Commercial Intelligence." : view === "overview" ? "Partnerships, pipeline and execution." : pretty(view)}</h1></div><div className={styles.topActions}><button className={styles.secondary} onClick={() => void refresh()} disabled={loading}>Refresh</button><button className={styles.primary} onClick={() => setShowNewOpportunity(true)} disabled={!data?.canWrite}>+ New opportunity</button></div></header>
       {error && <div className={styles.error}>{error}</div>}
       {loading && !data ? <div className={styles.loading}>Loading BIS Commercial Workspace…</div> : null}
-      {data && view === "intelligence" && <CommercialIntelligencePanel onOpenOpportunity={(id) => { setSelectedId(id); setView("pipeline"); }} />}\n      {data && view === "overview" && <Overview data={data} setView={setView} setLane={setLane} select={(id) => { setSelectedId(id); setView("pipeline"); }} />}
+      {data && view === "intelligence" && <CommercialIntelligencePanel onOpenOpportunity={(id) => { setSelectedId(id); setView("pipeline"); }} />}
+      {data && view === "overview" && <Overview data={data} setView={setView} setLane={setLane} select={(id) => { setSelectedId(id); setView("pipeline"); }} />}
       {data && view === "pipeline" && <Pipeline opportunities={filtered} organisations={data.organisations} lane={lane} setLane={setLane} select={setSelectedId} />}
       {data && view === "accounts" && <Accounts data={data} onAdd={() => setShowNewOrganisation(true)} select={(id) => { setSelectedId(id); setView("pipeline"); }} />}
       {data && view === "tasks" && <Tasks data={data} busy={busy} mutate={mutate} />}
@@ -65,6 +66,7 @@ export function CommercialWorkspace({ identity, roles }: { identity: Identity; r
     </main>
     <WorkspaceMenu label="Commercial workspace menu" groups={[
       {label:"Commercial operations",items:[
+        {id:"intelligence",label:"Intelligence",detail:"Today, approvals and next actions",href:"/commercial?section=intelligence",icon:Bot,active:view==="intelligence"},
         {id:"overview",label:"Overview",detail:"Partnership priorities",href:"/commercial?section=overview",icon:LayoutDashboard,active:view==="overview"},
         {id:"pipeline",label:"Pipeline",detail:"Opportunities and next actions",href:"/commercial?section=pipeline",icon:Settings2,active:view==="pipeline"},
         {id:"accounts",label:"Organisations",detail:"Accounts and contacts",href:"/commercial?section=accounts",icon:Users,active:view==="accounts"},
