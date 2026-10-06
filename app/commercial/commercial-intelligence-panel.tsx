@@ -483,7 +483,7 @@ export function CommercialIntelligencePanel({
             <span>
               <AlertTriangle size={15} /> Draft only · nothing has been sent
             </span>
-            <small>{draft.provider === "OPENAI" ? "AI-assisted" : "Safe fallback draft"}</small>
+            <small>{draft.provider === "AI_GATEWAY" ? "AI-assisted" : "Safe fallback draft"}</small>
           </div>
         </section>
       ) : null}
