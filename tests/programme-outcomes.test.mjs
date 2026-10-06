@@ -260,9 +260,10 @@ test("organisation learning adds programme-design questions without exposing lea
   assert.match(view, /Adaptation/);
   assert.match(view, /How confident can we be\?/);
   assert.match(view, /For the next programme/);
-  assert.match(view, /Observe/);
-  assert.match(view, /Try one clear change/);
-  assert.match(view, /Check the next group/);
+  // The owner removed the repeated static Observe/Try/Check cards. Contextual
+  // findings and practical decisions remain available without this extra loop.
+  assert.doesNotMatch(view, /organisational-learning-loop/);
+  assert.match(view, /Evidence still developing/);
 
   assert.match(migration, /private\.can_view_sponsor_cohort/);
   assert.match(migration, /supportResponse/);

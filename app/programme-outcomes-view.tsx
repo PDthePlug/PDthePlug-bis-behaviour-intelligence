@@ -1,5 +1,6 @@
 "use client";
 import { AssessmentReports } from "./assessment-reports";
+import { EvidenceDisclosure } from "./evidence-disclosure";
 import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
 
 import { buildProgrammeReport } from "@/lib/programme-intelligence.mjs";
@@ -454,6 +455,15 @@ export function ProgrammeOutcomesView({
   const metrics = flow?.runtimeMode === "DYNAMIC" ? null : outcome.metrics;
   const decisionRegister = outcome.decisionRegister;
   const report = buildProgrammeReport(outcome);
+  const pendingInsights = report.insights.filter(insight => insight.evidence.sample === 0 || insight.id === "practice-unavailable" || (insight.id === "evidence-coverage" && flow?.totals?.recordedResponses === 0 && flow?.totals?.anchoredMeasures === 0) || (insight.id === "next-programme" && outcome.organisationLearning?.comparison?.baselineOnly));
+  const currentInsights = report.insights.filter(insight => !pendingInsights.includes(insight));
+  const renderInsight = (insight: (typeof report.insights)[number]) => <article key={insight.id}>
+    <h3>{insight.title}</h3><p>{insight.observation}</p><p>{insight.interpretation}</p>
+    <p className="programme-insight-action"><strong>Suggested next step</strong><br />{insight.action}</p>
+    <details className="programme-insight-evidence"><summary>What supports this finding?</summary>
+      <p>{insight.context}</p><p>{insight.evidence.basis}{insight.evidence.sample === null ? "" : ` · ${insight.evidence.sample} contributing records or participants, as described above`}</p><p>{insight.boundary}</p>
+    </details>
+  </article>;
 
   function prefillDecisionFromInsight(insight: { kicker: string; title: string; body: string }) {
     setDecisionSignal(programmeDecisionSignal(insight.kicker));
@@ -541,20 +551,12 @@ export function ProgrammeOutcomesView({
             <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
             <Lightbulb />
           </div>
-          <div className="outcomes-insight-grid">
-            {report.insights.map(insight => <article key={insight.id}>
-              <h3>{insight.title}</h3><p>{insight.observation}</p><p>{insight.interpretation}</p>
-              <p className="programme-insight-action"><strong>Suggested next step</strong><br />{insight.action}</p>
-              <details className="programme-insight-evidence"><summary>What supports this finding?</summary>
-                <p>{insight.context}</p><p>{insight.evidence.basis}{insight.evidence.sample === null ? "" : ` · ${insight.evidence.sample} contributing records or participants, as described above`}</p><p>{insight.boundary}</p>
-              </details>
-            </article>)}
-          </div>
-          <div className="programme-intelligence-section">
-            <h2>Progress and programme context</h2>
+          {currentInsights.length ? <div className="outcomes-insight-grid">{currentInsights.map(renderInsight)}</div> : null}
+          {pendingInsights.length ? <EvidenceDisclosure title="Evidence still developing"><div className="outcomes-insight-grid">{pendingInsights.map(renderInsight)}</div></EvidenceDisclosure> : null}
+          <EvidenceDisclosure title="Progress and programme context">
             {report.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
             <p>{report.boundary}</p>
-          </div>
+          </EvidenceDisclosure>
         </section>
       ) : null}
 
@@ -571,15 +573,12 @@ export function ProgrammeOutcomesView({
       </section> : null}
 
       {report.status === "SUPPRESSED" ? (
-        <section className="outcomes-suppressed">
-          <LockKeyhole />
-          <p className="eyebrow">Small group privacy</p>
-          <h2>Too few learners to report group results safely.</h2>
+        <EvidenceDisclosure title="Group results are not available yet">
           <p>
             This group has {outcome.participantCount} learner{outcome.participantCount === 1 ? "" : "s"}.
             Results appear from {outcome.minimumReportableCohortSize} learners so no group pattern can point back to one person.
           </p>
-        </section>
+        </EvidenceDisclosure>
       ) : (
         <>
           {outcome.learningSummary?.learningJourney ? (
@@ -610,8 +609,12 @@ export function ProgrammeOutcomesView({
                 ))}
               </div>
 
+              {!outcome.learningSummary.learningJourney.baselineThemes.length || !outcome.learningSummary.learningJourney.skillShifts.length ? <EvidenceDisclosure title="Learning comparisons still developing">
+                {!outcome.learningSummary.learningJourney.baselineThemes.length ? <p>Recurring challenges appear when enough responses can be shown safely.</p> : null}
+                {!outcome.learningSummary.learningJourney.skillShifts.length ? <p>Before-and-after comparisons need enough learners with both check-ins.</p> : null}
+              </EvidenceDisclosure> : null}
               <div className="learning-evidence-grid">
-                <section className="surface-card learning-patterns">
+                {outcome.learningSummary.learningJourney.baselineThemes.length ? <section className="surface-card learning-patterns">
                   <div>
                     <p className="eyebrow">Recurring challenges</p>
                     <h3>What is showing up across the group?</h3>
@@ -634,9 +637,9 @@ export function ProgrammeOutcomesView({
                   ) : (
                     <p className="outcome-muted">No recurring challenge is large enough to show safely yet.</p>
                   )}
-                </section>
+                </section> : null}
 
-                <section className="surface-card learning-shifts">
+                {outcome.learningSummary.learningJourney.skillShifts.length ? <section className="surface-card learning-shifts">
                   <div>
                     <p className="eyebrow">Growth signals</p>
                     <h3>Where are group measures moving?</h3>
@@ -659,12 +662,13 @@ export function ProgrammeOutcomesView({
                   ) : (
                     <p className="outcome-muted">Before-and-after group shifts will appear when enough learners have completed both check-ins.</p>
                   )}
-                </section>
+                </section> : null}
               </div>
             </section>
           ) : null}
 
-          {outcome.learningChecks && !outcome.learningChecks.suppressed ? (
+          {outcome.learningChecks && !outcome.learningChecks.suppressed && !outcome.learningChecks.signalsRecorded ? <EvidenceDisclosure hidden={section !== "all" && section !== "learning"} title="Learning checks have no responses yet"><p>Understanding and support signals appear after learners answer the in-session checks. These are self-reports, not marks.</p></EvidenceDisclosure> : null}
+          {outcome.learningChecks && !outcome.learningChecks.suppressed && Boolean(outcome.learningChecks.signalsRecorded) ? (
             <section hidden={section !== "all" && section !== "learning"} className="outcomes-learning-checks">
               <div className="outcomes-section-heading">
                 <div>
@@ -678,7 +682,7 @@ export function ProgrammeOutcomesView({
               </p>
               <div className="journey-activity-strip learning-checks-summary">
                 <Metric label="Check signals" value={outcome.learningChecks.signalsRecorded ?? 0} detail="responses" />
-                <Metric label="Can explain" value={percent(outcome.learningChecks.understoodRate)} detail="self-reported" />
+                <Metric label="Understand" value={percent(outcome.learningChecks.understoodRate)} detail="self-reported" />
                 <Metric label="Want more support" value={percent(outcome.learningChecks.supportSignalRate)} detail="unsure / need example" />
               </div>
               {outcome.learningChecks.byDay.length ? (
@@ -690,7 +694,7 @@ export function ProgrammeOutcomesView({
                       <article key={day.semanticStepId}>
                         <span>{label}</span>
                         <strong>{percent(day.understoodRate)}</strong>
-                        <small>can explain</small>
+                        <small>understand</small>
                         <div className="learning-check-day-bar"><i style={{ width: `${Math.min(100, day.understoodRate ?? 0)}%` }} /></div>
                         <em>{percent(day.supportSignalRate)} want more support</em>
                       </article>
@@ -759,6 +763,10 @@ export function ProgrammeOutcomesView({
           ) : null}
 
           {metrics ? <>
+          {metrics.prediction.averageActualRate === null || !metrics.change.repeatOpportunityParticipants ? <EvidenceDisclosure hidden={section !== "all" && section !== "evidence"} title="Real-world comparisons still developing">
+            {metrics.prediction.averageActualRate === null ? <p>Expectations can be compared with what happened once matching real-world observations are available.</p> : null}
+            {!metrics.change.repeatOpportunityParticipants ? <p>Later-response comparisons need the same situation to occur more than once. Missing observations do not mean a failed attempt.</p> : null}
+          </EvidenceDisclosure> : null}
           <section hidden={section !== "all" && section !== "evidence"} className="outcome-question-grid">
             <article className="outcome-question-card">
               <div className="outcome-card-title"><Compass /><span>Action</span></div>
@@ -774,7 +782,7 @@ export function ProgrammeOutcomesView({
               </p>
             </article>
 
-            <article className="outcome-question-card">
+            {metrics.prediction.averageActualRate !== null ? <article className="outcome-question-card">
               <div className="outcome-card-title"><Gauge /><span>Expectation vs reality</span></div>
               <h2>What did people expect—and what happened?</h2>
               <div className="outcome-metric-row">
@@ -785,7 +793,7 @@ export function ProgrammeOutcomesView({
               <p>
                 The difference shows where behaviour in practice did not match what people expected beforehand.
               </p>
-            </article>
+            </article> : null}
 
             <article className="outcome-question-card">
               <div className="outcome-card-title"><FlaskConical /><span>Real-world testing</span></div>
@@ -813,7 +821,7 @@ export function ProgrammeOutcomesView({
               </p>
             </article>
 
-            <article className="outcome-question-card">
+            {metrics.change.repeatOpportunityParticipants > 0 ? <article className="outcome-question-card">
               <div className="outcome-card-title"><Repeat2 /><span>Next time</span></div>
               <h2>What happened the next time?</h2>
               <div className="outcome-metric-row">
@@ -824,7 +832,7 @@ export function ProgrammeOutcomesView({
               <p>
                 This compares the first and latest similar situation. {metrics.change.changedOtherDirection} learner{metrics.change.changedOtherDirection === 1 ? "" : "s"} changed in another direction.
               </p>
-            </article>
+            </article> : null}
 
             <article className="outcome-question-card">
               <div className="outcome-card-title"><MessageCircleQuestion /><span>Support</span></div>
@@ -871,23 +879,6 @@ export function ProgrammeOutcomesView({
                 ))}
               </div>
 
-              <div className="organisational-learning-loop">
-                <div>
-                  <span>01</span>
-                  <strong>Observe</strong>
-                  <p>Use the group results to choose one participation, support or adjustment question worth looking into.</p>
-                </div>
-                <div>
-                  <span>02</span>
-                  <strong>Try one clear change</strong>
-                  <p>Change one part of the programme, facilitation or timing instead of reacting to one person or one story.</p>
-                </div>
-                <div>
-                  <span>03</span>
-                  <strong>Check the next group</strong>
-                  <p>When the next similar group completes the programme, check whether the pattern changed after the programme decision.</p>
-                </div>
-              </div>
             </section>
           ) : null}
 
