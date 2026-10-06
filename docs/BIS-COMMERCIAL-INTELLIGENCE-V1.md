@@ -137,7 +137,7 @@ The existing Overview, Pipeline, Organisations, Tasks and Proposals remain avail
 
 ## Release strategy
 
-The three additive schema migrations were first installed and inspected on **BIS Staging**: the intelligence tables/policies, the missing artifact-run index, and the least-privilege table grants. Production was not modified during implementation.
+The four additive schema migrations were first installed and inspected on **BIS Staging**: the intelligence tables/policies, the missing artifact-run index, the least-privilege table grants, and immutable audit/provenance guards. Production was not modified during implementation.
 
 Release gate:
 
