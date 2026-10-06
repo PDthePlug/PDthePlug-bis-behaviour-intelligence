@@ -1,6 +1,6 @@
 {
   "baseCommit": "d8ca307ae455024b5816240d4db08f0dddd6bf73",
-  "generatedAt": "2026-10-06T16:24:11.288Z",
+  "generatedAt": "2026-10-06T18:14:48.692Z",
   "routes": [
     {
       "route": "/api/bis",
@@ -905,12 +905,13 @@
         "./programme-entry"
       ],
       "problem": "Today and Learn must remain separate; workbook recovery and presentation",
-      "correction": "Shared reader preserved; human intro wording; handover requires a dynamic publication",
+      "correction": "Shared reader preserved; human intro wording; handover requires a dynamic publication Product iteration in branch: Canonical shared Learn presentation retains separate Day 3 Lab duration and all response identities.",
       "verification": [
         "tests/browser/programme-journey.spec.ts",
-        "tests/browser/reader-hardening.spec.ts"
+        "tests/browser/reader-hardening.spec.ts",
+        "docs/hardening/product-experience-verification.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -931,15 +932,16 @@
         "@/app/habit/programme-entry"
       ],
       "problem": "Uniform continuous reading canvas; response/check ordering, settings and source preservation",
-      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch",
+      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "scripts/certify-hardening-learning.mjs",
         "tests/learner-module-integrity-audit.test.mjs",
         "tests/static-learning-package.test.mjs",
-        "tests/browser/programme-journey.spec.ts"
+        "tests/browser/programme-journey.spec.ts",
+        "docs/hardening/product-experience-verification.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -961,14 +963,15 @@
         "./universal-runtime-lab"
       ],
       "problem": "Unavailable Lab errors had no recovery; completed navigation/progress/photo controls unnamed; low contrast captions/navigation",
-      "correction": "Human unavailable state and transient retry; named controls; computed/navigation contrast corrected",
+      "correction": "Human unavailable state and transient retry; named controls; computed/navigation contrast corrected Product iteration in branch: Canonical shared Lab presentation uses one optional investigation guidance disclosure; retains specific authored instructions and response IDs. A shared optional calculation disclosure names the inputs and explains units/limits, with all 283 canonical calculation artifact identities and input orders retained.",
       "verification": [
         "tests/browser/lab-journey.spec.ts",
         "tests/universal-calculation-integrity.test.mjs",
         "scripts/certify-hardening-lab.mjs",
-        "scripts/certify-hardening-photo.mjs"
+        "scripts/certify-hardening-photo.mjs",
+        "docs/hardening/product-experience-verification.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1302,7 +1305,7 @@
         "./staff-workspace-shell"
       ],
       "problem": "Large repeated participant messages, filter races, uncertain report meanings and role disclosure names",
-      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access; actual programme-owner decision/review UI saves and refresh passed with sponsor/foreign-cohort denial",
+      "correction": "Compact filterable facilitator roster and operator disclosures; URL refresh; named role/group selectors; sponsor descriptive language and private reflection exclusion; programme-owner decision wording accepts any team choice; exact-cohort metadata policy supports the existing governed decision save without broader participant access; actual programme-owner decision/review UI saves and refresh passed with sponsor/foreign-cohort denial Product iteration in branch: Facilitator group metrics precede collapsed class administration; sponsor counts and understanding labels state their populations and self-report limits.",
       "verification": [
         "tests/browser/facilitator-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
@@ -1310,9 +1313,10 @@
         "scripts/certify-hardening-evidence.mjs",
         "tests/programme-owner-cohort-access.test.mjs",
         "docs/hardening/migration-review.md",
-        "scripts/certify-hardening-role-variants.mjs"
+        "scripts/certify-hardening-role-variants.mjs",
+        "docs/hardening/product-experience-verification.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PRIOR_CORRECTIONS_MERGED; PRODUCT_CORRECTIONS_IN_BRANCH; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1320,7 +1324,7 @@
       ]
     }
   ],
-  "coverageBoundary": "48 patterns inventoried and individually dispositioned. REVIEWED_PARTIAL is not whole-route certification. Real staging/preview/state measurements are added in verification-evidence.json; see open-findings.md for release and remaining scope. Correction merges are recorded separately from full route certification; CONFIG-DNS and VISUAL-MENU remain open.",
+  "coverageBoundary": "48 patterns inventoried and individually dispositioned. REVIEWED_PARTIAL is not whole-route certification. Real staging/preview/state measurements are added in verification-evidence.json; see open-findings.md for release and remaining scope. Correction merges are recorded separately from full route certification; CONFIG-DNS and VISUAL-MENU remain open. Current product corrections and their dynamic 195-page inventory are separately recorded in productIterations; no whole-route certification claimed.",
   "correctionReleases": [
     {
       "pullRequest": 127,
@@ -1333,6 +1337,16 @@
       "head": "072123e1f05f69a257df4d5ba701439d2b88d996",
       "merge": "6a5a13d87049e0aebde2f29a707cae50903b54ab",
       "ciRun": 37493508041
+    }
+  ],
+  "productIterations": [
+    {
+      "branch": "hardening/product-experience-20261006",
+      "baseCommit": "63118cf512b459b0f89a271687bd1e1fc7da57d9",
+      "register": "docs/hardening/learning-page-register.json",
+      "evidence": "docs/hardening/product-experience-verification.json",
+      "releaseStatus": "IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "applicationHead": "6fd70aae1c372f1ea1784b14a79ecced5dd939f3"
     }
   ]
 }

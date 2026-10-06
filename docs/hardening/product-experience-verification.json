@@ -1,0 +1,1800 @@
+{
+  "recordedAt": "2026-10-06T18:20:17.014409+00:00",
+  "branch": "hardening/product-experience-20261006",
+  "baseCommit": "63118cf512b459b0f89a271687bd1e1fc7da57d9",
+  "status": "VERIFIED_CORRECTIONS_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+  "automated": {
+    "command": "npm run verify",
+    "status": "PASS",
+    "exitCode": 0,
+    "acceptance": 633,
+    "browser": 186,
+    "canonicalSources": "PASS",
+    "optimizedBuild": "PASS",
+    "retainedLearningPackages": 15,
+    "viewportWidths": [
+      360,
+      430,
+      1280
+    ],
+    "toolsLint": "PASS: all four current audit/inspection scripts",
+    "boundary": "Latest application commit verified in full. Earlier interrupted run after visual fixes is not used as release evidence."
+  },
+  "responseIntegrity": {
+    "baseline": "tests/fixtures/handbook-response-identities.json",
+    "touchpointEditionVariants": 150,
+    "renderedControls": 5694,
+    "preserved": [
+      "semantic field IDs",
+      "source keys",
+      "response purposes",
+      "source packages",
+      "checkbox storage keys"
+    ],
+    "baselineMethod": "Accepted renderer before presentation changes; sorted ID/source-key/purpose digests, including radio option controls. Current reader test compares every digest after four enhancement passes. Separate current/original module comparison covers all 195 variants and 5,957 controls, including the 263 orientation/weekend/certificate controls.",
+    "allSourcePageEditionVariants": 195,
+    "allRenderedControls": 5957,
+    "completeComparison": "docs/hardening/handbook-response-integrity.json",
+    "sourcePackagesByteComparison": "PASS: all 15 packages equal the accepted baseline"
+  },
+  "nonTouchpointRendering": {
+    "pageEditionVariants": 45,
+    "pages": [
+      "Welcome",
+      "Weekend",
+      "Certificate"
+    ],
+    "boundary": "Rendering and identity checks; manual paragraph and visual review remain separate."
+  },
+  "actualStaging": {
+    "mutations": false,
+    "roles": [
+      "LEARNER",
+      "FACILITATOR",
+      "SPONSOR_VIEWER"
+    ],
+    "states": [
+      {
+        "name": "decision-day1",
+        "role": "LEARNER",
+        "route": "/handbooks/dec?page=2",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "decision-day1-360"
+      },
+      {
+        "name": "habit-day3",
+        "role": "LEARNER",
+        "route": "/handbooks/hab?page=4",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "habit-day3-360"
+      },
+      {
+        "name": "lab-pattern",
+        "role": "LEARNER",
+        "route": "/labs/hab?step=2",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "lab-pattern-360"
+      },
+      {
+        "name": "lab-review",
+        "role": "LEARNER",
+        "route": "/labs/hab?step=8",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "lab-review-360"
+      },
+      {
+        "name": "money-safety",
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=4",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "money-safety-360"
+      },
+      {
+        "name": "identity-day10",
+        "role": "LEARNER",
+        "route": "/handbooks/idn?page=12",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "identity-day10-360"
+      },
+      {
+        "name": "attention-weekend",
+        "role": "LEARNER",
+        "route": "/handbooks/att?page=7",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "NOT_APPLICABLE; no secondary disclosure on this page",
+        "screenshotPrefix": "attention-weekend-360"
+      },
+      {
+        "name": "money-certificate",
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=13",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "NOT_APPLICABLE; no secondary disclosure on this page",
+        "screenshotPrefix": "money-certificate-360"
+      },
+      {
+        "name": "attention-orientation",
+        "role": "LEARNER",
+        "route": "/handbooks/att?page=1",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "attention-orientation-360"
+      },
+      {
+        "name": "decision-day1",
+        "role": "LEARNER",
+        "route": "/handbooks/dec?page=2",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "decision-day1-430"
+      },
+      {
+        "name": "habit-day3",
+        "role": "LEARNER",
+        "route": "/handbooks/hab?page=4",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "habit-day3-430"
+      },
+      {
+        "name": "lab-pattern",
+        "role": "LEARNER",
+        "route": "/labs/hab?step=2",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "lab-pattern-430"
+      },
+      {
+        "name": "lab-review",
+        "role": "LEARNER",
+        "route": "/labs/hab?step=8",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "lab-review-430"
+      },
+      {
+        "name": "money-safety",
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=4",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "money-safety-430"
+      },
+      {
+        "name": "identity-day10",
+        "role": "LEARNER",
+        "route": "/handbooks/idn?page=12",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "identity-day10-430"
+      },
+      {
+        "name": "attention-weekend",
+        "role": "LEARNER",
+        "route": "/handbooks/att?page=7",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "NOT_APPLICABLE; no secondary disclosure on this page",
+        "screenshotPrefix": "attention-weekend-430"
+      },
+      {
+        "name": "money-certificate",
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=13",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "NOT_APPLICABLE; no secondary disclosure on this page",
+        "screenshotPrefix": "money-certificate-430"
+      },
+      {
+        "name": "attention-orientation",
+        "role": "LEARNER",
+        "route": "/handbooks/att?page=1",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "attention-orientation-430"
+      },
+      {
+        "name": "decision-day1",
+        "role": "LEARNER",
+        "route": "/handbooks/dec?page=2",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "decision-day1-1280"
+      },
+      {
+        "name": "habit-day3",
+        "role": "LEARNER",
+        "route": "/handbooks/hab?page=4",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "habit-day3-1280"
+      },
+      {
+        "name": "lab-pattern",
+        "role": "LEARNER",
+        "route": "/labs/hab?step=2",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "lab-pattern-1280"
+      },
+      {
+        "name": "lab-review",
+        "role": "LEARNER",
+        "route": "/labs/hab?step=8",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "lab-review-1280"
+      },
+      {
+        "name": "money-safety",
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=4",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "money-safety-1280"
+      },
+      {
+        "name": "identity-day10",
+        "role": "LEARNER",
+        "route": "/handbooks/idn?page=12",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "identity-day10-1280"
+      },
+      {
+        "name": "attention-weekend",
+        "role": "LEARNER",
+        "route": "/handbooks/att?page=7",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "NOT_APPLICABLE; no secondary disclosure on this page",
+        "screenshotPrefix": "attention-weekend-1280"
+      },
+      {
+        "name": "money-certificate",
+        "role": "LEARNER",
+        "route": "/handbooks/mon?page=13",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "NOT_APPLICABLE; no secondary disclosure on this page",
+        "screenshotPrefix": "money-certificate-1280"
+      },
+      {
+        "name": "attention-orientation",
+        "role": "LEARNER",
+        "route": "/handbooks/att?page=1",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": 0,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "attention-orientation-1280"
+      },
+      {
+        "name": "facilitator-group",
+        "role": "FACILITATOR",
+        "route": "/workspace?view=facilitator&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": null,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "facilitator-group-360"
+      },
+      {
+        "name": "facilitator-group",
+        "role": "FACILITATOR",
+        "route": "/workspace?view=facilitator&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": null,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "facilitator-group-430"
+      },
+      {
+        "name": "facilitator-group",
+        "role": "FACILITATOR",
+        "route": "/workspace?view=facilitator&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": null,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "facilitator-group-1280"
+      },
+      {
+        "name": "sponsor-learning",
+        "role": "SPONSOR_VIEWER",
+        "route": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 360,
+        "overflow": 0,
+        "headerBodyGutterDifference": null,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "sponsor-learning-360"
+      },
+      {
+        "name": "sponsor-learning",
+        "role": "SPONSOR_VIEWER",
+        "route": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 430,
+        "overflow": 0,
+        "headerBodyGutterDifference": null,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "sponsor-learning-430"
+      },
+      {
+        "name": "sponsor-learning",
+        "role": "SPONSOR_VIEWER",
+        "route": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+        "width": 1280,
+        "overflow": 0,
+        "headerBodyGutterDifference": null,
+        "accessibility": [],
+        "errors": [],
+        "keyboardDisclosure": "PASS",
+        "screenshotPrefix": "sponsor-learning-1280"
+      }
+    ],
+    "result": "PASS: 33/33 states; no document overflow, shared header/body gutter differences, automated WCAG violations, console errors, page exceptions or failed HTTP requests. Native disclosure keyboard operation passed where applicable."
+  },
+  "governedLearningPreview": {
+    "module": "HAB",
+    "version": "1.6",
+    "immutablePublication": "Existing accepted staging publication; not republished by this iteration.",
+    "states": [
+      {
+        "edition": "school",
+        "position": 1,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 2,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 3,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 4,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 5,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 6,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 7,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 8,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 9,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 10,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 11,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 12,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 13,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 1,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 2,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 3,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 4,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 5,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 6,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 7,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 8,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 9,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 10,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 11,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 12,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 13,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 1,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 2,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 3,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 4,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 5,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 6,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 7,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 8,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 9,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 10,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 11,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 12,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "school",
+        "position": 13,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 1,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 2,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 3,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 4,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 5,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 6,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 7,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 8,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 9,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 10,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 11,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 12,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 13,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 1,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 2,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 3,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 4,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 5,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 6,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 7,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 8,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 9,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 10,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 11,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 12,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 13,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 1,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 2,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 3,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 4,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 5,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 6,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 7,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 8,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 9,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 10,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 11,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 12,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "emerging_adult",
+        "position": 13,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 1,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 2,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 3,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 4,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 5,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 6,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 7,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 8,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 9,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 10,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 11,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 12,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 13,
+        "width": 360,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 1,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 2,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 3,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 4,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 5,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 6,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 7,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 8,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 9,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 10,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 11,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 12,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 13,
+        "width": 430,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 1,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 2,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 3,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 4,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 5,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 6,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 7,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 8,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 9,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 10,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 11,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 12,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      },
+      {
+        "edition": "workplace",
+        "position": 13,
+        "width": 1280,
+        "overflow": 0,
+        "violations": [],
+        "unlabelled": 0,
+        "errors": []
+      }
+    ],
+    "result": "PASS: 117/117 states across school/emerging_adult/workplace, 13 pages and all three viewport widths; no overflow, unlabelled controls, automated WCAG violations or browser errors.",
+    "boundary": "Actual Content Studio Learning preview; does not certify unpublished modules or every interactive failure state."
+  },
+  "authenticatedSponsorPdf": {
+    "status": 200,
+    "bytes": 66397,
+    "pages": 18,
+    "selfReportBoundary": true,
+    "responseDenominator": true,
+    "privateProbeExcluded": true
+  },
+  "screenshots": [
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/attention-orientation-after-360.png",
+      "sha256": "c031698132047278e111e93acd9ab3f10e7b81b99f608d33c4a6443ccf0ef76b",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/attention-orientation-before-360.png",
+      "sha256": "4305cce29ac7fa37eb44700d2d3e7279700221f0a9a079670ee8f4d8973e395f",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/attention-publication-details-after-360.png",
+      "sha256": "d2e1de948678cbe9b6fc7a147fad8fec812477941b7ae195d5f0fca5dfa7bb23",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/decision-opening-after-360.png",
+      "sha256": "78cff521080fe83f280a02a647757ef8ba940ed9194376ebf8bfcf3d3a0a86d9",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/decision-opening-before-360.png",
+      "sha256": "b71d34d466a151af6c225ef3db51aa2dab4c675cebbba07e595eed4312eb8261",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/decision-reading-after-1280.png",
+      "sha256": "77281f46d46824dde3f1c416101b65a4d198071192002c164c15ab752d927675",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/facilitator-summary-after-1280.png",
+      "sha256": "09cea146db6fc3f1b637d5f06712ed174ae45bbf3d1350cf1bf505bd6ecd9a06",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/habit-bridge-after-430.png",
+      "sha256": "496a0610314933dec4d9ac1dc0218dec563527389ca6958c7463eb79e9b01126",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/habit-result-context-after-1280.png",
+      "sha256": "67ea536631a5945ad77c7a798b90f9ffb7ed83e84123aaeb96f146f19f9a3786",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/habit-result-context-after-360.png",
+      "sha256": "4b6405f70e0bc1d2508ace49ab31941deffc81436ed7d06b39e32cd160eae60e",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/sponsor-counts-after-360.png",
+      "sha256": "343a6fb031f446f30ef5a25c5fa93518fbe9f9d4e95a7ff120d0358b2e2a0ae0",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    },
+    {
+      "file": "docs/hardening/screens/product-experience-20261006/sponsor-response-boundary-after-430.png",
+      "sha256": "e1ac82bf0db3c2747aea01fa57395a3c491794e23183bec99b875217cb02b638",
+      "scope": "Dedicated synthetic staging accounts; viewport excerpt only; development badge excluded from product assessment."
+    }
+  ],
+  "manualReview": {
+    "inspected": [
+      "Decision Day 1 opening and narrative excerpts at 360/1280; session disclosure at 430",
+      "Habit Day 3 opening, objectives and preparation labels at mobile widths; separate authored 90-minute Lab disclosure",
+      "Habit Pattern and Evidence Review response/guidance/rating excerpts at mobile and desktop widths",
+      "Facilitator summary/check responses and class disclosure at mobile and desktop widths",
+      "Sponsor count labels and response interpretation disclosure at mobile and desktop widths",
+      "Attention orientation opening/publication details at all three widths: internal production notes excluded from display, original source retained.",
+      "Money safety/Day 3, Identity Day 10, Attention weekend and Money certificate opening excerpts at all three widths.",
+      "Habit calculated results and nested original-input disclosures at all widths; correct zero/rating-point interpretation and 650-weight headings confirmed."
+    ],
+    "remaining": [
+      "All 195 pages need exact full-page/edition editorial review; these excerpts do not close whole-page certification.",
+      "Original Menu passive-text obstruction remains VISUAL-MENU; original position and behaviour preserved per user request.",
+      "Primary programme code/version metadata remains LANGUAGE-PROGRAMME-METADATA.",
+      "Assigned-facilitator read-only Learn variants and all remaining state variants remain UAT-ALL-STATES.",
+      "Production authenticated principal journeys remain LIVE-ROLES.",
+      "Every other live Lab/version needs manual practical-interpretation review under METRIC-CONTEXT; the shared correction and canonical source coverage are verified."
+    ]
+  },
+  "dataBoundary": "No production rows, authored sources, calculation definitions, RLS policies or content activations changed; normal authenticated staging screens inspected read-only.",
+  "applicationHead": "6fd70aae1c372f1ea1784b14a79ecced5dd939f3",
+  "expandedContextInspection": {
+    "states": [
+      {
+        "name": "orientation",
+        "width": 360,
+        "overflow": 0,
+        "accessibility": [],
+        "heading": null,
+        "result": "PASS"
+      },
+      {
+        "name": "calculations",
+        "width": 360,
+        "overflow": 0,
+        "accessibility": [],
+        "heading": {
+          "fontWeight": "650",
+          "fontSize": "16px",
+          "marginBottom": "10px"
+        },
+        "result": "PASS"
+      },
+      {
+        "name": "orientation",
+        "width": 430,
+        "overflow": 0,
+        "accessibility": [],
+        "heading": null,
+        "result": "PASS"
+      },
+      {
+        "name": "calculations",
+        "width": 430,
+        "overflow": 0,
+        "accessibility": [],
+        "heading": {
+          "fontWeight": "650",
+          "fontSize": "16px",
+          "marginBottom": "10px"
+        },
+        "result": "PASS"
+      },
+      {
+        "name": "orientation",
+        "width": 1280,
+        "overflow": 0,
+        "accessibility": [],
+        "heading": null,
+        "result": "PASS"
+      },
+      {
+        "name": "calculations",
+        "width": 1280,
+        "overflow": 0,
+        "accessibility": [],
+        "heading": {
+          "fontWeight": "650",
+          "fontSize": "16px",
+          "marginBottom": "10px"
+        },
+        "result": "PASS"
+      }
+    ],
+    "result": "PASS: orientation publication details exclude internal production/freeze notes; Habit source and result disclosures show readable grouping and 1\u201310 rating-point explanations; open disclosures have no automated WCAG violations or overflow."
+  },
+  "additionalUnchangedSurfaces": [
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "width": 360,
+      "headings": [
+        "Evidence Portfolio"
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "portfolio-360"
+    },
+    {
+      "name": "learn-library",
+      "route": "/learn",
+      "width": 360,
+      "headings": [
+        "Learning library."
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "learn-library-360"
+    },
+    {
+      "name": "reading-settings",
+      "route": "/settings",
+      "width": 360,
+      "headings": [
+        "Settings"
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "reading-settings-360"
+    },
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "width": 430,
+      "headings": [
+        "Evidence Portfolio"
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "portfolio-430"
+    },
+    {
+      "name": "learn-library",
+      "route": "/learn",
+      "width": 430,
+      "headings": [
+        "Learning library."
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "learn-library-430"
+    },
+    {
+      "name": "reading-settings",
+      "route": "/settings",
+      "width": 430,
+      "headings": [
+        "Settings"
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "reading-settings-430"
+    },
+    {
+      "name": "portfolio",
+      "route": "/portfolio",
+      "width": 1280,
+      "headings": [
+        "Evidence Portfolio"
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "portfolio-1280"
+    },
+    {
+      "name": "learn-library",
+      "route": "/learn",
+      "width": 1280,
+      "headings": [
+        "Learning library."
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "learn-library-1280"
+    },
+    {
+      "name": "reading-settings",
+      "route": "/settings",
+      "width": 1280,
+      "headings": [
+        "Settings"
+      ],
+      "overflow": 0,
+      "accessibility": [],
+      "errors": [],
+      "screen": "reading-settings-1280"
+    }
+  ],
+  "additionalUnchangedSurfacesBoundary": "Nine earlier actual staging states of unchanged portfolio/library/settings surfaces. The five additional handbook routes are superseded by the current 33-state sweep.",
+  "calculationContext": {
+    "script": "scripts/audit-hardening-calculation-context.mjs",
+    "register": "docs/hardening/calculation-context-register.json",
+    "labs": 32,
+    "calculations": 283,
+    "result": "PASS",
+    "preserved": [
+      "canonical source hashes",
+      "accepted compiler artifact hashes",
+      "ordered input field IDs",
+      "calculation definitions"
+    ],
+    "boundary": "Source-derived context coverage and actual Habit interpretation inspection; every other live Lab/version still needs manual interpretation review."
+  }
+}
