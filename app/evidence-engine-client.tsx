@@ -1,14 +1,14 @@
 "use client";
 import {useCallback,useEffect,useRef,useState} from "react";
-export function useEvidenceData<T>(query: string) {
+export function useEvidenceData<T>(query: string, endpoint = "/api/evidence-engine") {
  const [data,setData]=useState<T|null>(null),[error,setError]=useState(""),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[message,setMessage]=useState("");
  const sequence=useRef(0),write=useRef(false),queryRef=useRef(query);
  const load=useCallback(async(signal?:AbortSignal)=>{
   const current=++sequence.current;setLoading(true);setError("");
-  try {const response=await fetch(`/api/evidence-engine?${query}`,{cache:"no-store",signal});const payload=await response.json();if(!response.ok)throw new Error(payload.error??"Evidence is unavailable.");if(current===sequence.current&&!signal?.aborted)setData(payload);}
+  try {const response=await fetch(`${endpoint}${query ? `?${query}` : ""}`,{cache:"no-store",signal});const payload=await response.json().catch(()=>({error:"Evidence is unavailable. Please try again."}));if(!response.ok)throw new Error(payload.error??"Evidence is unavailable.");if(current===sequence.current&&!signal?.aborted)setData(payload);}
   catch(cause){if(current===sequence.current&&!signal?.aborted){setData(null);setError(cause instanceof Error?cause.message:"Evidence is unavailable.");}}
   finally{if(current===sequence.current&&!signal?.aborted)setLoading(false);}
- },[query]);
+ },[query,endpoint]);
  useEffect(()=>{
   queryRef.current=query;
   const controller=new AbortController(),invalidate=()=>{++sequence.current;};
@@ -19,7 +19,7 @@ export function useEvidenceData<T>(query: string) {
  },[load,query]);
  async function act(body:Record<string,unknown>) {
   if(write.current)return false;write.current=true;++sequence.current;setSaving(true);setError("");setMessage("");const startedQuery=queryRef.current;
-  try {const response=await fetch("/api/evidence-engine",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const payload=await response.json();if(!response.ok)throw new Error(payload.error??"Evidence could not be saved.");if(startedQuery===queryRef.current){setMessage("Saved.");await load();}return true;}
+  try {const response=await fetch("/api/evidence-engine",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const payload=await response.json().catch(()=>({error:"Evidence is unavailable. Please try again."}));if(!response.ok)throw new Error(payload.error??"Evidence could not be saved.");if(startedQuery===queryRef.current){setMessage("Saved.");await load();}return true;}
   catch(cause){if(startedQuery===queryRef.current)setError(cause instanceof Error?cause.message:"Evidence could not be saved.");return false;}
   finally{write.current=false;setSaving(false);}
  }

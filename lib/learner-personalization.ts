@@ -47,7 +47,7 @@ export function savePersonalisation(value: LearnerPersonalisation) {
   const resolved = normalisePersonalisation(value);
   applyPersonalisation(resolved);
   if (typeof window !== "undefined") {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(resolved));
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(resolved)); } catch { /* Preferences still apply when browser storage is unavailable. */ }
   }
   return resolved;
 }

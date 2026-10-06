@@ -3,18 +3,7 @@
 import Link from "next/link";
 import { InstallCard } from "@/components/pwa/install-card";
 import { useEffect, useMemo, useState } from "react";
-import {
-  BookOpen,
-  BriefcaseBusiness,
-  Building2,
-  ChevronRight,
-  FlaskConical,
-  GraduationCap,
-  LogOut,
-  Palette,
-  Settings,
-  Sparkles,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 type ProfileSnapshot = {
   identity?: {
@@ -34,12 +23,6 @@ const editionLabels = {
   school: "School Edition",
   emerging_adult: "Emerging Adult Edition",
   workplace: "Workplace Edition",
-} as const;
-
-const editionIcons = {
-  school: GraduationCap,
-  emerging_adult: Sparkles,
-  workplace: BriefcaseBusiness,
 } as const;
 
 function hasStaffRole(roles: string[]) {
@@ -88,7 +71,6 @@ export function ProfileDashboard({
   const staff = hasStaffRole(roles);
   const editionKey = snapshot?.profile?.deliveryEdition ?? "school";
   const edition = editionLabels[editionKey];
-  const ExperienceIcon = editionIcons[editionKey];
   const learningMode =
     snapshot?.profile?.mode === "FACILITATED"
       ? "Facilitated programme"
@@ -104,90 +86,74 @@ export function ProfileDashboard({
         <div>
           <p className="eyebrow">My BIS</p>
           <h1>{displayName}</h1>
-          <p>{edition} experience · {learningMode}</p>
+          <p>{snapshot ? `${edition.replace(" Edition", "")} · ${learningMode}` : email}</p>
         </div>
       </section>
 
       {profileError ? (
         <p className="profile-notice" role="status">Some profile details could not be refreshed. Your account remains available.</p>
-      ) : null}
+  …1273 tokens truncated…er } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
+import { normalisePersonalisation, savePersonalisation, type LearnerPersonalisation } from "@/lib/learner-personalization";
 
-      <section className="profile-section" aria-labelledby="profile-my-bis">
-        <h2 id="profile-my-bis">My BIS</h2>
-        <div className="profile-list">
-          <Link href="/settings#experience" className="profile-row">
-            <span className="profile-row-icon"><ExperienceIcon aria-hidden="true" /></span>
-            <span className="profile-row-copy">
-              <strong>My experience</strong>
-              <small>{edition} · Change the context BIS uses for examples and scenarios.</small>
-            </span>
-            <ChevronRight aria-hidden="true" />
-          </Link>
+type AccessSnapshot = {
+  roles?: string[];
+  profile?: { deliveryEdition?: string; appearancePreference?: string; accentPreference?: string; textSizePreference?: string; readingWidthPreference?: string } | null;
+  error?: string;
+};
 
-          <Link href="/settings" className="profile-row">
-            <span className="profile-row-icon"><Settings aria-hidden="true" /></span>
-            <span className="profile-row-copy">
-              <strong>Settings</strong>
-              <small>Appearance, accent colour, text size and reading width.</small>
-            </span>
-            <ChevronRight aria-hidden="true" />
-          </Link>
+const STAFF_ROLES = new Set(["SYSTEM_ADMIN", "FACILITATOR", "SAFEGUARDING_OFFICER", "SPONSOR_VIEWER", "PROGRAMME_OWNER"]);
 
-          <Link href="/portfolio" className="profile-row">
-            <span className="profile-row-icon"><FlaskConical aria-hidden="true" /></span>
-            <span className="profile-row-copy">
-              <strong>Evidence Portfolio</strong>
-              <small>Your evidence portfolio has its own home for evidence anchors, calculated measures, reflections, revisions and facilitator reviews.</small>
-            </span>
-            <ChevronRight aria-hidden="true" />
-          </Link>
+export function RoleRouter() {
+  const router = useRouter();
+  const [error, setError] = useState("");
 
-          <Link href="/learn" className="profile-row">
-            <span className="profile-row-icon"><BookOpen aria-hidden="true" /></span>
-            <span className="profile-row-copy">
-              <strong>Learning</strong>
-              <small>Return to your handbooks and current programme journey.</small>
-            </span>
-            <ChevronRight aria-hidden="true" />
-          </Link>
-        </div>
-      </section>
+  useEffect(() => {
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        const response = await fetch("/api/profile", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const snapshot = (await response.json().catch(() => null)) as AccessSnapshot | null;
+        if (!response.ok || !snapshot) {
+          throw new Error("We couldn't open your BIS workspace. Please try again.");
+        }
+        if (controller.signal.aborted) return;
+        if (snapshot.profile) savePersonalisation(normalisePersonalisation({
+          appearance: snapshot.profile.appearancePreference,
+          accent: snapshot.profile.accentPreference,
+          textSize: snapshot.profile.textSizePreference,
+          readingWidth: snapshot.profile.readingWidthPreference,
+        } as Partial<LearnerPersonalisation>));
+        const staff = (snapshot.roles ?? []).some((role) => STAFF_ROLES.has(role));
+        router.replace(staff ? "/workspace" : "/habit");
+      } catch (cause) {
+        if (!controller.signal.aborted) {
+          setError(cause instanceof Error ? cause.message : "We couldn't open your BIS workspace. Please try again.");
+        }
+      }
+    })();
+    return () => controller.abort();
+  }, [router]);
 
-      {staff ? (
-        <section className="profile-section" aria-labelledby="profile-programme-team">
-          <h2 id="profile-programme-team">Programme team</h2>
-          <div className="profile-list">
-            <Link href="/workspace" className="profile-row">
-              <span className="profile-row-icon"><Building2 aria-hidden="true" /></span>
-              <span className="profile-row-copy">
-                <strong>Open programme workspace</strong>
-                <small>Open the role-specific workspace available to your account.</small>
-              </span>
-              <ChevronRight aria-hidden="true" />
-            </Link>
-          </div>
-        </section>
-      ) : null}
+  if (error) {
+    return (
+      <main className="learning-state">
+        <ShieldCheck />
+        <h1>We couldn&apos;t open your BIS workspace.</h1>
+        <p>{error}</p>
+        <button type="button" onClick={() => window.location.reload()}>Try again</button>
+      </main>
+    );
+  }
 
-      <section className="profile-section" aria-labelledby="profile-account">
-        <h2 id="profile-account">Account</h2>
-        <div className="profile-account-card">
-          <div><span>Name</span><strong>{displayName}</strong></div>
-          <div><span>Email</span><strong>{email}</strong></div>
-        </div>
-        <InstallCard />
-        <form action="/auth/signout" method="post">
-          <button type="submit" className="profile-signout">
-            <LogOut aria-hidden="true" />
-            Sign out or switch account
-          </button>
-        </form>
-      </section>
-
-      <section className="profile-principle" aria-label="Personalisation note">
-        <Palette aria-hidden="true" />
-        <p><strong>Your presentation can change. Your evidence does not.</strong> Appearance and life-context settings never delete or rewrite the evidence you have already recorded.</p>
-      </section>
+  return (
+    <main className="learning-state">
+      <span className="learning-loader" />
+      <h1>Opening BIS…</h1>
+      <p>Getting your learning and programme access ready.</p>
     </main>
   );
 }
