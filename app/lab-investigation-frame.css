@@ -47,7 +47,7 @@
   border:1px solid transparent;
   border-radius:16px;
   background:transparent;
-  color:#83908c;
+  color:#58665f;
   text-align:left;
 }
 .universal-investigation-nav button>span{
@@ -377,7 +377,7 @@
   line-height:1.2;
 }
 .universal-computed-value small{
-  color:#68766f;
+  color:#58665f;
   font-size:11px;
   line-height:1.45;
 }

@@ -108,13 +108,14 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
             entry.kind === (mode === "learning" ? "LEARNING_MODULE" : "LAB"),
           );
           const dynamic = runtime?.runtimeMode === "DYNAMIC";
-          const open = !loading && !error && Boolean(runtime?.live && (dynamic ? runtime.routePath : isModuleOpen(item, mode)));
+          const open = !loading && !error && Boolean(runtime?.live && (mode !== "lab" || dynamic) && (dynamic ? runtime.routePath : isModuleOpen(item, mode)));
           const href = dynamic ? runtime?.routePath ?? null : moduleHref(item, mode);
           const displayStatus = open ? "live" : status === "live" ? "catalogued" : status;
           const liveLabRuntime = runtimeItems.find((entry) =>
             entry.code === item.code &&
             entry.kind === "LAB" &&
             entry.live &&
+            entry.runtimeMode === "DYNAMIC" &&
             Boolean(entry.routePath),
           );
           const labConnected = Boolean(liveLabRuntime);

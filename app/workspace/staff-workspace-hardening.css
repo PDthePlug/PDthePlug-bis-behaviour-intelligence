@@ -532,4 +532,4 @@
   .facilitator-learner-experience-link{width:100%;justify-content:center}
 }
 .staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) .eyebrow{color:#c5ddd4}
-.staff-workspace-shell .ops-cohort-banner [data-slot="badge"]{color:#eef6f2;background:#ffffff14;border-color:#ffffff40}
+.staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) [data-slot="badge"]{color:#eef6f2;background:#ffffff14;border-color:#ffffff40}

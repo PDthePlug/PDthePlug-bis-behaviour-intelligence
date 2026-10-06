@@ -499,7 +499,7 @@ export function ProgrammePlayer({
     : null;
   const resolvedLabHref = universalLabHref ?? moduleDefinition?.labHref;
   const moduleLabIsLive = Boolean(
-    moduleRuntime?.runtimeMode && resolvedLabHref,
+    moduleRuntime?.runtimeMode === "DYNAMIC" && resolvedLabHref,
   );
   const completed = useMemo(
     () =>

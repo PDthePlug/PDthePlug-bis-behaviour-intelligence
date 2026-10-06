@@ -4,7 +4,7 @@ test("library honours offline publication and recovers a failed availability che
   let fail = true;
   await page.route("**/api/runtime-catalogue", route => route.fulfill(fail ? {status:503,json:{error:"Unavailable"}} : {json:{items:[
     {code:"HAB",kind:"LEARNING_MODULE",live:true,runtimeMode:"STATIC",routePath:"/habit"},
-    {code:"HAB",kind:"LAB",live:false,runtimeMode:null,routePath:"/labs/hab"},
+    {code:"HAB",kind:"LAB",live:true,runtimeMode:"STATIC",routePath:"/labs/hab"},
     {code:"DEC",kind:"LEARNING_MODULE",live:false,runtimeMode:null,routePath:"/handbooks/dec"},
   ]}}));
   await page.goto("/library");
