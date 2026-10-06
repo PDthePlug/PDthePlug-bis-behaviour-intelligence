@@ -215,9 +215,10 @@ test("facilitator and sponsor analytics only expose aggregate learning-check sig
   assert.match(staff, /sponsor_cohort_learning_checks/);
   assert.match(staff, /Learning checks/);
   assert.match(facilitator, /Where learners want more support/);
-  assert.match(facilitator, /not marks and do not change BEI results/);
-  assert.match(sponsor, /anonymous, learner-reported understanding signals/);
-  assert.match(sponsor, /not marks and do not change BEI results/);
+  assert.match(facilitator, /not test marks or evidence of behaviour change/);
+  assert.match(sponsor, /group summaries describe learners’ own understanding/);
+  assert.match(sponsor, /not test marks or evidence of behaviour change/);
   assert.match(report, /In-session learning checks/);
-  assert.match(report, /not marks, BEI evidence or proof of mastery/);
+  assert.match(report, /not test marks, observed behaviour or proof of mastery/);
+  assert.match(report, /Percentages use recorded check responses, not the number of participants/);
 });

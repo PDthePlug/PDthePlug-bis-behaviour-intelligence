@@ -27,8 +27,9 @@ test("customer-facing staff language explains intent without internal role jargo
   assert.doesNotMatch(shell, /BIS Administrator/);
   assert.match(operations, /Learners in BIS/);
   assert.match(operations, /Group count only/);
-  assert.match(outcomes, /Usable responses/);
-  assert.match(outcomes, /Responses recorded/);
+  assert.match(outcomes, /Handbook activity/);
+  assert.match(outcomes, /Lab answers recorded/);
+  assert.match(outcomes, /they do not establish understanding, evidence quality or behaviour change/);
   assert.match(shell, /destination\("facilitator","cohort","Group"/);
   assert.match(shell, /destination\("facilitator","participants","Learners"/);
   assert.doesNotMatch(facilitator, /facilitator-subnav/);
@@ -89,7 +90,9 @@ test("customer-facing language stays plain across learner, facilitator and organ
   assert.match(signIn, /BIS will open the right version of your learning programme/);
   assert.match(profile, /Open programme workspace/);
   assert.match(player, /Seven-day real-world test/);
-  assert.match(facilitator, /No learner currently needs a check-in/);
+  assert.match(facilitator, /The recorded progress does not suggest a check-in/);
+  assert.match(facilitator, /Ask this learner what support would be useful/);
+  assert.doesNotMatch(facilitator, /No learner currently needs a check-in/);
   assert.match(operations, /Programme results · view only/);
   assert.match(outcomes, /What the programme can learn/);
   assert.match(outcomes, /Programme decisions/);

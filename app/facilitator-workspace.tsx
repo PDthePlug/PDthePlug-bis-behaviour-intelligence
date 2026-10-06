@@ -307,6 +307,12 @@ export function FacilitatorWorkspace({
               </Link>
             </div>
           </section>
+          <section className="ops-metrics facilitator-group-summary" aria-label="Group summary">
+            <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
+            <article><Activity /><span>Experiments started</span><strong>{experiments}</strong></article>
+            <article><ClipboardCheck /><span>Review stage</span><strong>{reviewReady}</strong></article>
+            <article><ShieldAlert /><span>Needs attention</span><strong>{attention.length}</strong></article>
+          </section>
           <section className="programme-intelligence-section">
             <p className="eyebrow">Your next session</p><h2>Where a check-in could help</h2>
             <p>These suggestions use recorded progress and observation counts. Ask participants what support would be useful; the records do not explain their reasons.</p>
@@ -322,26 +328,19 @@ export function FacilitatorWorkspace({
             </EvidenceDisclosure>) : <EvidenceDisclosure title="No check-in suggestions yet"><p>The available progress records do not indicate a check-in. This does not mean that nobody needs support.</p></EvidenceDisclosure>}
             <ProgrammeReportGraphic chart={brief.chart} />
           </section>
-          <FacilitatorClassOperations key={cohort.id} cohortId={cohort.id} participants={participants} />
-          <section className="ops-metrics">
-            <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
-            <article><Activity /><span>Experiments started</span><strong>{experiments}</strong></article>
-            <article><ClipboardCheck /><span>Review stage</span><strong>{reviewReady}</strong></article>
-            <article><ShieldAlert /><span>Needs attention</span><strong>{attention.length}</strong></article>
-          </section>
           {learningChecks && learningChecks.signalsRecorded === 0 ? <EvidenceDisclosure title="Learning checks have no responses yet"><p>Understanding and requests for another example will appear here after learners answer a lesson check.</p></EvidenceDisclosure> : learningChecks ? (
             <section className="surface-card ops-section facilitator-learning-checks">
               <div className="section-title">
                 <div>
                   <p className="eyebrow">Learning checks</p>
                   <h2>Where learners want more support</h2>
-                  <p>These are learner-reported understanding signals from the lesson. They are not marks and do not change BEI results.</p>
+                  <p>These answers describe how learners say they understand the lesson. They are not test marks or evidence of behaviour change.</p>
                 </div>
                 <ClipboardCheck />
               </div>
               <section className="ops-metrics facilitator-learning-check-metrics">
                 <article><ClipboardCheck /><span>Checks recorded</span><strong>{learningChecks.signalsRecorded}</strong></article>
-                <article><Check /><span>Understand</span><strong>{learningChecks.understoodRate === null ? "—" : `${learningChecks.understoodRate}%`}</strong></article>
+                <article><Check /><span>Answers marked understood</span><strong>{learningChecks.understoodRate === null ? "—" : `${learningChecks.understoodRate}%`}</strong></article>
                 <article><Activity /><span>Unsure</span><strong>{learningChecks.unsure}</strong></article>
                 <article><Users /><span>Need another example</span><strong>{learningChecks.needsExample}</strong></article>
               </section>
@@ -349,22 +348,28 @@ export function FacilitatorWorkspace({
                 <div className="facilitator-learning-check-days">
                   {learningChecks.byDay.map((day) => (
                     <div key={day.semanticStepId}>
-                      <span><strong>{programmeStepLabel(day.semanticStepId)}</strong><small>{day.signalsRecorded} check signal{day.signalsRecorded === 1 ? "" : "s"}</small></span>
+                      <span><strong>{programmeStepLabel(day.semanticStepId)}</strong><small>{day.signalsRecorded} check response{day.signalsRecorded === 1 ? "" : "s"}</small></span>
                       <span>
-                        <strong>{day.understoodRate === null ? "—" : `${day.understoodRate}% understand`}</strong>
+                        <strong>{day.understoodRate === null ? "—" : `${day.understoodRate}% marked understood`}</strong>
                         <small>{day.needsExample} need another example · {day.unsure} unsure</small>
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="ops-helper">Learning-check signals will appear as learners move through the new session format.</p>
+                <p className="ops-helper">Responses will appear here as learners answer a lesson check.</p>
               )}
-              <p className="participant-attribute-note">
-                {learningChecks.interpretationBoundary?.note ?? "Use these signals to decide where to explain, model or practise again; do not treat them as learner scores."}
-              </p>
+              <EvidenceDisclosure title="How to read these responses">
+                <p>Percentages use recorded check responses, not the number of learners. A learner can answer checks at several sessions. Missing responses do not show whether a learner understands.</p>
+                <p>Use these responses to decide where to explain, model or practise again. Ask learners what support would help.</p>
+              </EvidenceDisclosure>
             </section>
           ) : null}
+
+          <details className="surface-card facilitator-class-disclosure">
+            <summary>Class sessions and attendance</summary>
+            <FacilitatorClassOperations key={cohort.id} cohortId={cohort.id} participants={participants} />
+          </details>
 
           <section className="ops-two-column">
             <div className="surface-card ops-section">
@@ -444,7 +449,7 @@ export function FacilitatorWorkspace({
                 <div className="section-title"><div><p className="eyebrow">Where support may help</p><h2>Next useful facilitator moves</h2></div><Activity /></div>
                 <div className="participant-focus-list">
                   {supportFocus(selected).map((item) => <p key={item}>{item}</p>)}
-                  {supportFocus(selected).length === 0 ? <p className="ops-helper">No learner currently needs a check-in based on the progress shown here.</p> : null}
+                  {supportFocus(selected).length === 0 ? <p className="ops-helper">The recorded progress does not suggest a check-in. Ask this learner what support would be useful.</p> : null}
                 </div>
               </div>
             </section>

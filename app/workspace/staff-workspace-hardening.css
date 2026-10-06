@@ -496,6 +496,10 @@
 .facilitator-learning-check-days strong{font-size:14px;line-height:1.4}
 .facilitator-learning-check-days small{color:var(--muted-foreground);font-size:12px;line-height:1.45}
 .facilitator-learning-checks .participant-attribute-note{margin:0;padding:14px 16px;border-radius:14px;background:#f1eee7;color:var(--muted-foreground);font-size:13px;line-height:1.6}
+.facilitator-class-disclosure{padding:0 24px}
+.facilitator-class-disclosure>summary{min-height:56px;padding:16px 0;color:var(--foreground);font-size:16px;font-weight:650;cursor:pointer}
+.facilitator-class-disclosure>summary:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.facilitator-class-disclosure>.class-operations{margin-top:0;padding-top:12px;border-top:1px solid var(--border)}
 
 @media(max-width:700px){
   .facilitator-learning-check-days>div{align-items:flex-start;flex-direction:column;gap:8px}
