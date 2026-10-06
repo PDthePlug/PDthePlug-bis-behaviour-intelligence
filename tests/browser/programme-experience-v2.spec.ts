@@ -12,12 +12,13 @@ test.describe('Leap9 programme experience v2', () => {
     await page.goto('/experience/leap9/v2');
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('See the programme move.');
-    const guide = page.locator('.experience-v2-guide');
-    await expect(guide).toHaveAttribute('open', '');
+    const notice = page.locator('.experience-v2-disclosure');
+    await expect(notice).not.toHaveAttribute('open', '');
+    await expect(page.locator('.experience-v2-perspectives, .experience-v2-arc')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Begin with Naledi' }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Participant journey');
-    await expect(guide).not.toHaveAttribute('open', '');
+    await expect(notice).not.toHaveAttribute('open', '');
 
     await page.getByLabel('How much control does Naledi report').selectOption('3');
     await page.getByLabel('What tends to start the pattern?').fill('After a difficult commute');
@@ -25,6 +26,7 @@ test.describe('Leap9 programme experience v2', () => {
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Real-world test');
     await page.getByLabel('There was no opportunity', { exact: true }).check();
+    await expect(page.getByText(/in 3 of 5 opportunities/)).toBeVisible();
     await page.getByLabel('Share evidence summary with facilitator', { exact: false }).check();
     await page.getByLabel('Ask for human support', { exact: false }).check();
     await page.getByRole('button', { name: 'See the facilitator view' }).click();
@@ -37,12 +39,14 @@ test.describe('Leap9 programme experience v2', () => {
 
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Evidence profile');
+    await expect(page.getByText(/rated her control 3 points higher/)).toBeVisible();
+    await expect(page.locator('.experience-v2-evidence-chain')).toHaveCount(0);
     await expect(page.getByText('Shared evidence supports a follow-up about the smaller first action.', { exact: true })).toBeVisible();
 
-    await page.getByRole('button', { name: 'See programme intelligence' }).click();
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Programme intelligence');
-    await expect(page.getByText('Is learning turning into action?')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'What should change next?' })).toBeVisible();
+    await page.getByRole('button', { name: 'See programme outcomes' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Programme outcomes');
+    await expect(page.getByText('Are participants following through more often?')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'What can we say about readiness for the next opportunity?' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Download illustrative report' })).toBeVisible();
 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);

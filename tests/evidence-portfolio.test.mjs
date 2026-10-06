@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildEvidencePortfolio, humanMetricLabel } from "../lib/evidence-portfolio.mjs";
+import { buildEvidencePortfolio, humanMetricLabel, explainPortfolioMeasures } from "../lib/evidence-portfolio.mjs";
 
 test("evidence portfolio turns the Lab trail into stable learner-facing anchors", () => {
   const labs = buildEvidencePortfolio({
@@ -116,4 +116,25 @@ test("Universal measures use the enrolled source label and do not turn counts in
   });
   assert.equal(result[0].metrics[0].label,"Observation days completed");
   assert.equal(result[0].metrics[0].value,"4");
+});
+
+test("feedback explains follow-through, self-report and prediction without scoring competence", () => {
+  const metric = (code, value) => ({ code: `HAB.${code}`, value, provenanceStatus: "VERIFIED", formulaVersion: "1.0" });
+  const feedback = explainPortfolioMeasures([metric("BEI06", "67%"), metric("OPPORTUNITY_COUNT", "6"), metric("REPLACEMENT_COUNT", "4"), metric("CONTROL_SHIFT", "+2"), metric("BEI03", "97%")]);
+  assert.match(feedback[0].meaning, /4 of 6 recorded opportunities/);
+  assert.match(feedback[0].nextStep, /one occasion.*one when you did not/);
+  assert.match(feedback[1].meaning, /2 points higher/);
+  assert.match(feedback[1].meaning, /not a measured gain in skill/);
+  assert.match(feedback[2].meaning, /3 percentage points/);
+});
+
+test("feedback refuses Universal code reuse, unverified sources and conflicting counts", () => {
+  const metric = { code: "HAB.BEI06", value: "67%", provenanceStatus: "VERIFIED", formulaVersion: "1.0" };
+  assert.deepEqual(explainPortfolioMeasures([{ ...metric, formulaVersion: "universal-lab-v2:bei" }]), []);
+  assert.deepEqual(explainPortfolioMeasures([{ ...metric, provenanceStatus: "UNVERIFIED" }]), []);
+  assert.deepEqual(explainPortfolioMeasures([{ ...metric, code: "RSK.BEI06" }]), []);
+  assert.deepEqual(explainPortfolioMeasures([{ ...metric, value: "Not available" }]), []);
+  const feedback = explainPortfolioMeasures([metric, { ...metric, code: "HAB.OPPORTUNITY_COUNT", value: "10" }, { ...metric, code: "HAB.REPLACEMENT_COUNT", value: "2" }]);
+  assert.doesNotMatch(feedback[0].meaning, /2 of 10/);
+  assert.equal(feedback[0].codes.length, 1);
 });

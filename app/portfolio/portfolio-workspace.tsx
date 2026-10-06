@@ -11,6 +11,7 @@ import {
   type AssessmentWorkspace,
 } from "@/lib/evidence-engine";
 import type { EvidencePortfolioLab } from "@/lib/evidence-portfolio.mjs";
+import { explainPortfolioMeasures } from "@/lib/evidence-portfolio.mjs";
 import Link from "next/link";
 import { BIS_MODULES } from "@/lib/bis-catalogue";
 
@@ -39,6 +40,17 @@ function date(value: string) {
 
 function labTitle(code: string) {
   return BIS_MODULES.find((module) => module.code === code)?.title ?? code;
+}
+
+function practiceAreas(records: EvidenceRecord[]) {
+  const areas = new Map<string, { title: string; outcomes: Set<string> }>();
+  for (const record of records) {
+    if (record.status !== "ACTIVE" || !record.competency) continue;
+    const area = areas.get(record.competency) ?? { title: record.competency, outcomes: new Set<string>() };
+    if (record.outcome) area.outcomes.add(record.outcome);
+    areas.set(area.title, area);
+  }
+  return [...areas.values()];
 }
 
 export function PortfolioWorkspace() {
@@ -236,8 +248,7 @@ export function PortfolioWorkspace() {
           {record.outcome ? <p>Outcome: {record.outcome}</p> : null}
           {record.competency ? <p>Competency: {record.competency}</p> : null}
           <p className="evidence-meta">
-            {record.investigation_id} · {record.lab_version} · Recorded {date(record.recorded_at)} ·{" "}
-            {record.source_object_type.toLowerCase()}
+            {labTitle(record.lab_code)} · Recorded {date(record.recorded_at)}
           </p>
         </details>
       </li>
@@ -359,11 +370,16 @@ export function PortfolioWorkspace() {
                   </summary>
                   <div className="portfolio-lab-body">
                     {labGroup.lab ? <>
-                      <ol className="portfolio-stages" aria-label="Evidence stages">{labGroup.lab.anchors.map(anchor => <li key={anchor.id}><span>{anchor.label}</span><small>{anchor.status === "RECORDED" ? "Recorded" : anchor.status === "WITHDRAWN" ? "Withdrawn" : "Not yet"}</small></li>)}</ol>
-                      {labGroup.lab.metrics.length ? <section className="portfolio-results"><h3>Results</h3><dl>{labGroup.lab.metrics.map(metric => <div key={metric.code}><dt>{metric.label}</dt><dd>{metric.value}{metric.provenanceStatus !== "VERIFIED" ? <small>Source check pending</small> : null}</dd></div>)}</dl></section> : <p className="evidence-meta">No measured results yet.</p>}
+                      <section className="portfolio-meaning">
+                        <h3>Your practice</h3>
+                        {practiceAreas(labGroup.records).map(area => <div className="portfolio-practice-area" key={area.title}><h4>{area.title}</h4>{[...area.outcomes].map(outcome => <p key={outcome}>{outcome}</p>)}</div>)}
+                        {(labGroup.lab.intelligence.feedback ?? explainPortfolioMeasures(labGroup.lab.metrics)).length ? (labGroup.lab.intelligence.feedback ?? explainPortfolioMeasures(labGroup.lab.metrics)).map(item => <div className="portfolio-guidance" key={item.title}><h4>{item.title}</h4><p>{item.meaning}</p><p><strong>Try next:</strong> {item.nextStep}</p></div>) : <p>{labGroup.lab.intelligence.summary ?? "Your saved work is ready to discuss with your facilitator. A recorded answer alone does not show how well you can apply it."}</p>}
+                      </section>
                       <Link className="portfolio-next" href={`/labs/${labGroup.lab.labCode.toLowerCase()}`}>{labGroup.lab.intelligence.nextAction.label}</Link>
+                      {labGroup.lab.intelligence.nextAction.reason ? <p className="portfolio-next-reason">{labGroup.lab.intelligence.nextAction.reason}</p> : null}
                     </> : null}
                     {sharing.data?.submissions.filter(submission => submission.evidence.some(record => record.enrolment_id === labGroup.key || (!record.enrolment_id && record.lab_code === labGroup.lab?.labCode && record.lab_version === labGroup.lab?.labVersion))).map(submission => submission.reviews.length ? <section className="portfolio-feedback" key={submission.id}><h3>Facilitator feedback</h3><p>{submission.reviews[0].feedback}</p><details><summary>Review history</summary><AssessmentHistory submission={submission} rubrics={sharing.data!.rubrics} /></details></section> : null)}
+                    {labGroup.lab ? <details className="portfolio-measures"><summary>Measures & progress</summary><ol className="portfolio-stages" aria-label="Evidence stages">{labGroup.lab.anchors.map(anchor => <li key={anchor.id}><span>{anchor.label}</span><small>{anchor.status === "RECORDED" ? "Recorded" : anchor.status === "WITHDRAWN" ? "Withdrawn" : "Not yet"}</small></li>)}</ol>{labGroup.lab.metrics.length ? <section className="portfolio-results"><h3>Measures</h3><dl>{labGroup.lab.metrics.map(metric => <div key={metric.code}><dt>{metric.label}</dt><dd>{metric.value}{metric.provenanceStatus !== "VERIFIED" ? <small>Source check pending</small> : null}</dd></div>)}</dl></section> : <p className="evidence-meta">No measured results yet.</p>}</details> : null}
                     <details className="portfolio-responses"><summary>Responses · {labGroup.records.length}{hasMore ? " shown" : ""}</summary>
                       <ol className="evidence-timeline">{labGroup.records.map(renderRecord)}</ol>
                     </details>

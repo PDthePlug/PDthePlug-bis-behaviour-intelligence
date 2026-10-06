@@ -166,6 +166,10 @@ test("Evidence Portfolio opens with Lab history collapsed and expands only on re
   await page.screenshot({ path: `outputs/BIS-portfolio-${testInfo.project.name}.png` });
 
   await page.locator(".portfolio-lab-group > summary").click();
+  await expect(page.getByText("Observed adherence", { exact: true })).toBeHidden();
+  await expect(page.getByText(/You used your planned response in 71%/)).toBeVisible();
+  await expect(page.getByText("Behaviour design", { exact: true })).toBeVisible();
+  await page.locator(".portfolio-measures > summary").click();
   await expect(page.getByText("Observed adherence", { exact: true })).toBeVisible();
   await expect(page.getByText("71%", { exact: true })).toBeVisible();
   await expect(page.locator(".portfolio-feedback > p")).toHaveText("You changed the cue; test it in another situation.");

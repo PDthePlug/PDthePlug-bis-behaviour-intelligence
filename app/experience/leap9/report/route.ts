@@ -2,7 +2,7 @@ import { renderProgrammeOutcomePdf } from '@/lib/programme-report-pdf';
 import { leap9IllustrativeReport } from '@/lib/experience/leap9-report';
 
 export async function GET() {
-  const pdf = await renderProgrammeOutcomePdf(leap9IllustrativeReport, new Date(), { illustrative: true });
+  const pdf = await renderProgrammeOutcomePdf(leap9IllustrativeReport, new Date(), { illustrative: true, leap9Experience: true });
   return new Response(new Uint8Array(pdf), {
     headers: {
       'Content-Type': 'application/pdf',
