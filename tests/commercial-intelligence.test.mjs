@@ -44,10 +44,10 @@ test("Commercial Intelligence keeps irreversible work behind human approval", as
   assert.match(route, /RECIPIENT_COLLISION/);
 
   assert.match(ai, /store: false/);
-  assert.match(ai, /OPENAI_API_KEY/);
+  assert.match(ai, /VERCEL_OIDC_TOKEN/);\n  assert.match(ai, /AI_GATEWAY_API_KEY/);\n  assert.match(ai, /https:\/\/ai-gateway\\.vercel\\.sh\/v1\/responses/);
   assert.match(ai, /External contact, sends, pricing changes, WON\/LOST decisions and terms always require human approval/);
   assert.match(ai, /Do not request or expose learner evidence/);
-  assert.doesNotMatch(ai, /NEXT_PUBLIC_OPENAI/);
+  assert.doesNotMatch(ai, /NEXT_PUBLIC_(?:OPENAI|AI_GATEWAY)/);
 
   assert.match(engine, /isSequenceHold/);
   assert.match(engine, /OUTREACH_APPROVAL/);
@@ -84,5 +84,5 @@ test("Commercial Intelligence UI explains its automation boundary in customer la
   assert.match(panel, /needsRefresh && next\.canWrite/);
   assert.match(panel, /action: "refresh", mode/);
   assert.match(panel, /action: "draft"/);
-  assert.match(panel, /action: "decision"/);
+  assert.match(panel, /action: "decision"/);\n  const route = await source("app/api/commercial/intelligence/route.ts");\n  assert.match(route, /timeZone: "Africa\\/Johannesburg"/);
 });
