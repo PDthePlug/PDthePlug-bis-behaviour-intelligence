@@ -1,7 +1,7 @@
 {
   "status": "IN_REVIEW",
   "compiler": "bis-content-compiler-9",
-  "mainBase": "d0334908b2ec5d6cf8a2fa3e75a98774968880d1",
+  "mainBase": "cef3959acacbe25ec29352d00a359e4c93f8fabd",
   "pages": 52,
   "sources": [
     {
@@ -31,10 +31,15 @@
   ],
   "preservation": "Original source and published version artifacts are retained. Learning content is never generated from Lab workbooks. The recent pasted Time School text has not been claimed byte-identical to the previous intake without a direct byte comparison.",
   "checks": {
-    "acceptance": "667 PASS locally",
+    "acceptance": "671 PASS on preceding ac1594d exact CI; final outline change awaiting checks",
     "source": "32 Lab packages and 4 authored Learning editions PASS locally",
-    "browser": "RUNNING",
-    "studio": "RUNNING"
+    "browser": "294 PASS on preceding ac1594d exact CI; final outline disclosure checks pending",
+    "studio": "RUNNING",
+    "ci": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/actions/runs/37598761278"
   },
-  "release": "Unpublished; review and exact CI required."
+  "release": "Unpublished; review and exact CI required.",
+  "editorialReview": [
+    "Time Day 6 introduces five tracked days but illustrates seven; Day 7 concluding count does not include its last recorded full pause; Day 8 examples contradict full-pause counts and denominators. Original authored wording is preserved pending editorial correction.",
+    "The programme frame has a 45-minute guided-learning target while the authored Day 1 outline specifies 60 minutes. The distinct source duration is preserved, not silently rewritten."
+  ]
 }

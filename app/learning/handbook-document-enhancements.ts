@@ -1682,6 +1682,24 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
   restoreUnpairedProfileTables(root);
   restoreParagraphBulletLists(root);
   discloseWeekendContext(root, pageId);
+  // The printed overview repeats the publication header. Keep its authored
+  // objectives and resources available without putting another large panel
+  // between the learner and the first reading. Never fold response controls
+  // or safety guidance into this passive disclosure.
+  root.querySelectorAll<HTMLElement>("blockquote.handbook-callout").forEach(outline => {
+    if (outline.closest("details") || outline.querySelector("input,textarea,select,button")) return;
+    const text = normalise(outline.textContent ?? "");
+    if (!/^TODAY(?:\s*[—–-]\s*PART\s+[AB])?\s*TIME:/i.test(text)
+      || !/BY THE END OF TODAY,?\s+YOU WILL:/i.test(text)
+      || !/YOU WILL NEED:/i.test(text)) return;
+    const details = document.createElement("details");
+    details.className = "learner-document-disclosure handbook-session-details";
+    const summary = document.createElement("summary");
+    const duration = /TIME:\s*(\d+\s*minutes)/i.exec(text)?.[1];
+    summary.textContent = `Session outline${duration ? ` · ${duration}` : ""}`;
+    outline.before(details);
+    details.append(summary, outline);
+  });
   // Printed cover matter belongs behind the reading canvas. Keep the original
   // nodes and publisher trace; only internal production notes leave the display.
   const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2,h3,h4")]

@@ -51,3 +51,9 @@ The temporary staging accounts and synthetic cohort are labelled `BIS hardening 
 ## Canonical Trust / Time continuation — 7 October 2026
 
 `canonical-learning-20261007.json` and the 52 additional source-specific rows in the learning page register track the compiler 9 correction separately from accepted live artifacts. The owner-uploaded Trust School manuscript is preserved byte-for-byte (152,539 bytes, SHA-256 `da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0`). Production has no authoritative Emerging Adult or Workplace Trust Learning manuscript; neither is generated from a Lab workbook. Source and preview provenance is now checked before review. Existing production enrolments, source bytes and learner responses are not migrated or overwritten by this compiler change. New publication remains versioned and explicit.
+
+### Authoritative manuscript and presentation findings
+
+- **SOURCE-TIM-ARITHMETIC — OPEN:** All three Time manuscripts contain Day 6/7/8 narrative count inconsistencies. The record covers the exact authored examples; no arithmetic in deterministic runtime metrics is altered to match narrative errors. Keep sources immutable and obtain a reviewed editorial version before claiming content accuracy.
+- **SOURCE-SESSION-DURATION — OPEN:** The shared programme frame uses the accepted 45-minute guided-learning target; authored Day 1 outlines specify 60 minutes. Original durations remain visible in the expandable Session outline. This source/programme difference is explicit pending editorial review.
+- **VISUAL-PRINTED-OUTLINE — IN REVIEW:** The large passive Today/time/objectives/resources callout repeats programme framing before the first reading. The shared reader now folds only this recognisable passive outline into Session outline, preserving its DOM text; blocks with learner controls, safety guidance and unrelated content remain open. Mobile and desktop disclosure checks must pass before release.
