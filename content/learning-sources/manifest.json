@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "sources": [
+    {
+      "moduleCode": "TIM",
+      "moduleTitle": "Time Lab™",
+      "volume": 1,
+      "handbook": 6,
+      "version": "1.0",
+      "sourcePath": "content/learning-sources/time-v1.0-authored.md",
+      "sourceFormat": "MARKDOWN",
+      "uploadedName": "Pasted text(1).txt",
+      "uploadedBytes": 479151,
+      "uploadedSha256": "706491b535deb8f64a4393a762e657f77b2773e3087640a719aa4248b99b245d",
+      "editions": [
+        {
+          "deliveryEdition": "school",
+          "sourceId": "TIM-LM-1.0-S",
+          "startLine": 1,
+          "endLine": 5627,
+          "sha256": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+          "startMarker": "# TIME LAB™\n\n## School Edition"
+        },
+        {
+          "deliveryEdition": "emerging_adult",
+          "sourceId": "TIM-LM-1.0-EA",
+          "startLine": 5628,
+          "endLine": 11283,
+          "sha256": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+          "startMarker": "# TIME LAB™\n\n## Emerging Adult Edition"
+        },
+        {
+          "deliveryEdition": "workplace",
+          "sourceId": "TIM-LM-1.0-W",
+          "startLine": 11284,
+          "endLine": 16972,
+          "sha256": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+          "startMarker": "# TIME LAB™\n\n## Workplace Edition"
+        }
+      ],
+      "slug": "time"
+    }
+  ]
+}

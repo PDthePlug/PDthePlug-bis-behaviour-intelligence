@@ -18,7 +18,7 @@
     "typecheck": "npm run runtime:check && tsc --noEmit",
     "test": "npm run build && node --test tests/*.test.mjs",
     "test:acceptance": "npm run runtime:check && node --test tests/*.test.mjs",
-    "audit:source": "npm run runtime:check && node scripts/audit-canonical-sources.mjs",
+    "audit:source": "npm run runtime:check && node scripts/audit-canonical-sources.mjs && node scripts/audit-canonical-learning-sources.mjs",
     "test:browser": "npm run runtime:check && playwright test",
     "test:staging": "npm run runtime:check && playwright test --config=playwright.staging.config.ts",
     "lint": "npm run runtime:check && eslint . --ignore-pattern dist --ignore-pattern .next",
