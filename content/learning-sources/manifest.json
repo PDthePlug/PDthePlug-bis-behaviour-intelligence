@@ -49,30 +49,30 @@
       "sourcePath": "content/learning-sources/time-v2.0-authored.md",
       "sourceFormat": "MARKDOWN",
       "uploadedName": "Time Lab v2 instructional rebuild",
-      "uploadedBytes": 370516,
+      "uploadedBytes": 370452,
       "uploadedSha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "editions": [
         {
           "deliveryEdition": "school",
           "sourceId": "TIM-LM-2.0-S",
           "startLine": 1,
-          "endLine": 3761,
+          "endLine": 3755,
           "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
           "startMarker": "# TIME LAB™\n\n## School Edition"
         },
         {
           "deliveryEdition": "emerging_adult",
           "sourceId": "TIM-LM-2.0-EA",
-          "startLine": 3762,
-          "endLine": 7543,
+          "startLine": 3756,
+          "endLine": 7531,
           "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
           "startMarker": "# TIME LAB™\n\n## Emerging Adult Edition"
         },
         {
           "deliveryEdition": "workplace",
           "sourceId": "TIM-LM-2.0-W",
-          "startLine": 7544,
-          "endLine": 11354,
+          "startLine": 7532,
+          "endLine": 11345,
           "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
           "startMarker": "# TIME LAB™\n\n## Workplace Edition"
         }
