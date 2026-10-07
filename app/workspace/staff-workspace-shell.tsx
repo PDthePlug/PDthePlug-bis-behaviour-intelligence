@@ -50,6 +50,7 @@ export function StaffWorkspaceShell() {
   const [hidden, setHidden] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -62,27 +63,29 @@ export function StaffWorkspaceShell() {
           cache: "no-store",
           signal: controller.signal,
         });
-        const payload = (await response.json()) as StaffSession & { error?: string };
-        if (!response.ok) {
-          throw new Error(
+        const payload = await response.json().catch(() => null) as StaffSession | null;
+        if (!response.ok || typeof payload?.identity?.email !== "string" || typeof payload.identity.displayName !== "string" || !Array.isArray(payload.roles) || !payload.roles.every(role => typeof role === "string")) {
+          if (controller.signal.aborted) return;
+          setError(
             response.status === 403
               ? "This account does not have access to the programme workspace."
               : "We couldn't open the programme workspace. Please try again.",
           );
+          return;
         }
         if (controller.signal.aborted) return;
         const roles = payload.roles ?? [];
         setSession({ identity: payload.identity, roles });
-      } catch (cause) {
+      } catch {
         if (!controller.signal.aborted) {
-          setError(cause instanceof Error ? cause.message : "We couldn't open the programme workspace. Please try again.");
+          setError("We couldn't open the programme workspace. Please try again.");
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
     })();
     return () => controller.abort();
-  }, []);
+  }, [loadAttempt]);
 
   useEffect(() => {
     if (!session || hidden) return;
@@ -129,6 +132,7 @@ export function StaffWorkspaceShell() {
           <p className="staff-gate-eyebrow">Staff access</p>
           <h1>Workspace unavailable</h1>
           <p className="staff-gate-error" role="alert">{error}</p>
+          <button className="staff-gate-primary" type="button" onClick={() => { setError(""); setLoading(true); setLoadAttempt(attempt => attempt + 1); }}>Try again</button>
           <Link className="staff-gate-secondary" href="/profile">Back to profile</Link>
         </section>
       </main>
@@ -226,4 +230,3 @@ export function StaffWorkspaceShell() {
     </div>
   );
 }
-

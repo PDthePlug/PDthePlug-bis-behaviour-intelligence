@@ -14,12 +14,13 @@ const browser = await chromium.launch({ proxy: process.env.HTTPS_PROXY ? { serve
 const rows = [];
 const roleRoutes = {
   LEARNER: ["/habit", "/learn", "/handbooks/hab?page=4", "/handbooks/hab?page=13", "/labs/hab", "/portfolio", "/settings", "/profile"],
-  FACILITATOR: ["cohort", "participants", "review"].map(section => `/workspace?view=facilitator&section=${section}&group=${group.id}`),
+  FACILITATOR: ["cohort", "participants", "support", "review"].map(section => `/workspace?view=facilitator&section=${section}&group=${group.id}`),
   SPONSOR_VIEWER: ["overview", "learning", "evidence", "reports"].map(section => `/workspace?view=outcomes&section=${section}&group=${group.id}`),
-  PROGRAMME_OWNER: [`/workspace?view=outcomes&section=decisions&group=${group.id}`],
-  SYSTEM_ADMIN: ["/workspace?view=admin&section=overview", "/content-studio"],
+  PROGRAMME_OWNER: ["overview", "learning", "evidence", "reports", "decisions"].map(section => `/workspace?view=outcomes&section=${section}&group=${group.id}`),
+  SYSTEM_ADMIN: ["overview", "groups", "access", "assessment"].map(section => `/workspace?view=admin&section=${section}`).concat(["/content-studio"]),
   SAFEGUARDING_OFFICER: ["/workspace?view=facilitator&section=support"],
 };
+if (!baseline) for (const role of Object.keys(roleRoutes)) roleRoutes[role] = [...new Set(["/profile", "/settings", "/experience", ...roleRoutes[role]])];
 try {
   for (const [role, routes] of Object.entries(roleRoutes)) {
     const session = await productionSession(role);

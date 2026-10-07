@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-10-07",
+  "target": "shared browser harness; synthetic fixtures",
+  "result": "PASS_FOCUSED_CHECKS; final protected preview/live remain pending",
+  "runs": [
+    {
+      "cases": 48,
+      "description": "Profile/settings/evidence plus staff roster, review, reports, privacy and group setup",
+      "result": "PASS"
+    },
+    {
+      "cases": 21,
+      "description": "Five new profile/workspace recovery cases plus existing Studio transitions at three widths",
+      "result": "PASS"
+    },
+    {
+      "cases": 15,
+      "description": "Final missing-profile/retry/role/incomplete-timeline cases, with source-required history index validation",
+      "result": "PASS"
+    },
+    {
+      "cases": 3,
+      "description": "Keyboard focus >=3:1 and opaque navigation in light/warm/dark/system-dark themes at three widths",
+      "result": "PASS"
+    }
+  ],
+  "runsOverlap": true,
+  "acceptance": {
+    "finalBuild": 664,
+    "result": "PASS",
+    "includes": "lint, typecheck, source audits, production build and trace of all 15 retained source packages"
+  },
+  "manualReview": "Profile identity, long-email wrapping, role workspace links and installation reading content inspected at 360/430/1280. Captures do not close all role/theme/large-text variants. Native install disclosure marker corrected after capture and remains a final-preview check.",
+  "initialHarnessFailures": "Six initial assertions ambiguously matched Next.js route announcer plus the real alert. Locators now scope the actual Profile/workspace error. No app failure is presented as a passing result.",
+  "initialAcceptanceFailures": "Three source guards expected the former outer staff-only JSX shape. Guards now require the exact staff-programme and commercial-role link conditions; browser tests exercise all four commercial-only roles and learner denial.",
+  "sourceContentReplaced": false,
+  "productionDataCopied": false
+}

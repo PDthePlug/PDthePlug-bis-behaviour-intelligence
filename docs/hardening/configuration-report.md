@@ -13,8 +13,8 @@ The earlier baseline below is retained as release history. Current exact invento
 | Auth configuration | 243 settings inspected | 243 settings inspected | Six provider/origin differences enumerated with credential values omitted; production Google is intentionally enabled, staging Google disabled |
 | Password minimum | 8 | 8 | Reviewed management change aligns existing signup/reset forms; current passwords are not replaced |
 | Compromised-password protection | Disabled | Disabled | Enablement returned HTTP402 requiring Pro plan or above; billing was not changed |
-| Auth return origins | Exact local callbacks; preview origins pending | Canonical www allowlist preserved | Staging-only frontend preview binding accepts only deployment-bound origins; production ignores it |
-| Email delivery | Default provider; no custom SMTP; 2 emails/hour | Same | Delivered recovery requires a real inbox; no delivery is claimed for synthetic invalid-domain accounts |
+| Auth return origins | Exact local callbacks plus reviewed preview callback | Canonical www allowlist preserved | Staging-only frontend preview binding accepts only deployment-bound origins; production ignores it |
+| Email delivery | Default provider; no custom SMTP; 2 emails/hour | Same | Deployed preview return-origin parameters verified with the provider request intercepted; no email requested. Delivered recovery requires a real inbox; no delivery is claimed for synthetic invalid-domain accounts |
 | PostgreSQL | 17.11.0.002 | 17.6.1.166 | Read-only compatibility catalogue completed; backup/maintenance/rollback and owning-service review remain required |
 | Agency/Companion services | Absent | 23 preserved additional relations | Associated definitions and grants inventoried; service owner remains unidentified after user reports being unsure; no consolidation or deletion |
 | Production verification accounts | Separate 24 existing staging fixtures | 11 new authorised QA accounts; 6 synthetic learners | Normal application enrolment/role access; no staging records copied; original 73-table count/fingerprint comparison passes; exact new structural mapping is separately recorded |

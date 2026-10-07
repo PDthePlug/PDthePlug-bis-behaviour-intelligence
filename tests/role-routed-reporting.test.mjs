@@ -8,7 +8,8 @@ const source = (path) => readFile(new URL(path, root), "utf8");
 test("learner profile does not advertise staff access unless a staff role exists", async () => {
   const profile = await source("app/profile/profile-dashboard.tsx");
   assert.match(profile, /const staff = hasStaffRole\(roles\)/);
-  assert.match(profile, /\{staff \? \(/);
+  assert.match(profile, /\{staff \? <Link href="\/workspace"/);
+  assert.match(profile, /\{commercial \? <Link href="\/commercial"/);
   assert.match(profile, /Open programme workspace/);
   assert.match(profile, /"SPONSOR_VIEWER"/);
   assert.match(profile, /"PROGRAMME_OWNER"/);

@@ -1,4 +1,5 @@
 "use client";
+import { readClientResponse, clientResponseMessage } from "@/lib/client-response";
 import {useCallback,useEffect,useRef,useState} from "react";
 const touchpoints=["Create relevance and introduce the problem","Build the first mental model","Prepare for the Lab handover","Interpret what the Lab revealed","Build the learner’s personal model","Apply the model in real life","Diagnose what happened","Introduce the final major conceptual layer","Integrate the whole model","Demonstrate change and transfer forward"];
 type Session={id:string;programme_day:number;session_date:string;status:string;preparation_note:string;updated_at:string};
@@ -11,17 +12,17 @@ function ClassSessionForm({current,saving,save,cohortId,day,date}:{current?:Sess
 export function FacilitatorClassOperations({cohortId,participants}:{cohortId:string;participants:Array<{userId:string;displayName:string}>}) {
  const [data,setData]=useState<Snapshot|null>(null),[day,setDay]=useState(1),[date,setDate]=useState(()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Johannesburg",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())),[error,setError]=useState(""),[message,setMessage]=useState(""),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),writing=useRef(false),sequence=useRef(0);
  const load=useCallback(async(signal?:AbortSignal)=>{
-  const request=++sequence.current;setLoading(true);
-  try{const response=await fetch(`/api/class-operations?cohortId=${encodeURIComponent(cohortId)}`,{cache:"no-store",signal});const result=await response.json();if(!response.ok)throw new Error(result.error);if(request===sequence.current&&!signal?.aborted)setData(result);}
-  catch(cause){if(request===sequence.current&&!signal?.aborted){setData(null);setError(cause instanceof Error?cause.message:"Class records are unavailable.");}}
+  const request=++sequence.current;setLoading(true);setError("");
+  try{const response=await fetch(`/api/class-operations?cohortId=${encodeURIComponent(cohortId)}`,{cache:"no-store",signal});const result=await readClientResponse<Snapshot>(response,"Class records are unavailable. Try again.",value=>Array.isArray(value.sessions)&&Array.isArray(value.attendance));if(request===sequence.current&&!signal?.aborted)setData(result);}
+  catch(cause){if(request===sequence.current&&!signal?.aborted){setData(null);setError(clientResponseMessage(cause,"Class records are unavailable. Try again."));}}
   finally{if(request===sequence.current&&!signal?.aborted)setLoading(false);}
  },[cohortId]);
  useEffect(()=>{const controller=new AbortController(),timer=setTimeout(()=>void load(controller.signal),0);return()=>{clearTimeout(timer);controller.abort();};},[load]);
  const current=data?.sessions.find(s=>s.programme_day===day&&s.session_date===date);
  async function save(body:Record<string,unknown>){
   if(writing.current)return;writing.current=true;setSaving(true);setError("");setMessage("");++sequence.current;
-  try{const response=await fetch("/api/class-operations",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw new Error(result.error);setMessage("Class record saved.");await load();}
-  catch(cause){setError(cause instanceof Error?cause.message:"The class update could not be saved.");}
+  try{const response=await fetch("/api/class-operations",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});await readClientResponse(response,"The class update could not be saved. Try again.");setMessage("Class record saved.");await load();}
+  catch(cause){setError(clientResponseMessage(cause,"The class update could not be saved. Try again."));}
   finally{writing.current=false;setSaving(false);}
  }
  function chooseSession(s:Session){setDay(s.programme_day);setDate(s.session_date);setMessage("");}

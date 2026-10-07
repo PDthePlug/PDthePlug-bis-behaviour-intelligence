@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { DEFAULT_PERSONALISATION, normalisePersonalisation, savePersonalisation, type LearnerPersonalisation } from "@/lib/learner-personalization";
 
 export type DeliveryEdition = "school" | "emerging_adult" | "workplace";
@@ -10,13 +11,14 @@ type Snapshot = { profile: null | { deliveryEdition?: DeliveryEdition; appearanc
 
 async function profileResponse(response: Response): Promise<Snapshot> {
   const payload = await response.json().catch(() => null);
-  if (!response.ok || !payload || !("profile" in payload)) throw new Error("Your settings are unavailable. Try again.");
+  if (!response.ok || !payload || !("profile" in payload) || (payload.profile !== null && (typeof payload.profile !== "object" || Array.isArray(payload.profile)))) throw new Error("Your settings are unavailable. Try again.");
   return payload;
 }
 
 export function useProfileSettings() {
   const [personalisation, setPersonalisation] = useState(DEFAULT_PERSONALISATION);
-  const [edition, setEdition] = useState<DeliveryEdition>("school");
+  const [edition, setEdition] = useState<DeliveryEdition | null>(null);
+  const [hasProfile, setHasProfile] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -25,9 +27,10 @@ export function useProfileSettings() {
 
   const apply = useCallback((snapshot: Snapshot) => {
     const p = snapshot.profile;
+    setHasProfile(Boolean(p));
     const next = normalisePersonalisation({ appearance: p?.appearancePreference, accent: p?.accentPreference, textSize: p?.textSizePreference, readingWidth: p?.readingWidthPreference } as Partial<LearnerPersonalisation>);
     setPersonalisation(savePersonalisation(next));
-    setEdition(p?.deliveryEdition ?? "school");
+    setEdition(p?.deliveryEdition ?? null);
   }, []);
 
   const load = useCallback(async (signal?: AbortSignal) => {
@@ -43,7 +46,7 @@ export function useProfileSettings() {
   useEffect(() => { const controller = new AbortController(); const timer = window.setTimeout(() => void load(controller.signal), 0); return () => { window.clearTimeout(timer); controller.abort(); }; }, [load]);
 
   async function persist(body: Record<string, string>) {
-    if (writing.current || loading || error) return;
+    if (writing.current || loading || error || !hasProfile) return;
     writing.current = true; setSaving(true); setMessage(""); setError("");
     const previous = personalisation;
     const previousEdition = edition;
@@ -59,11 +62,11 @@ export function useProfileSettings() {
     } finally { writing.current = false; setSaving(false); }
   }
 
-  return { personalisation, edition, loading, saving, error, message, load, persist, disabled: loading || saving || Boolean(error) };
+  return { personalisation, edition, loading, saving, error, message, load, persist, profileMissing: !loading && !error && !hasProfile, disabled: loading || saving || Boolean(error) || !hasProfile };
 }
 
 export function SettingsStatus({ state }: { state: ReturnType<typeof useProfileSettings> }) {
   return <div className="settings-status" aria-live="polite">
-    {state.error ? <><span role="alert">{state.error}</span><button type="button" onClick={() => void state.load()}>Retry</button></> : state.loading ? "Loading…" : state.saving ? "Saving…" : state.message}
+    {state.error ? <><span role="alert">{state.error}</span><button type="button" onClick={() => void state.load()}>Retry</button></> : state.loading ? "Loading…" : state.saving ? "Saving…" : state.profileMissing ? <>Set up your learner profile to save settings. <Link href="/habit">Set up learner profile</Link></> : state.message}
   </div>;
 }

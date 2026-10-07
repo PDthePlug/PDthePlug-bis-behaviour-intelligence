@@ -1,10 +1,16 @@
 {
-  "observedAt": "2026-10-07T03:18:07.032969+00:00",
+  "observedAt": "2026-10-07T04:21:30.198746+00:00",
   "userReport": "DNS corrected",
   "records": [
     {
       "resolver": "Google",
       "answers": [
+        {
+          "name": "bisportal.online.",
+          "type": 1,
+          "TTL": 600,
+          "data": "216.198.79.1"
+        },
         {
           "name": "bisportal.online.",
           "type": 1,
@@ -16,12 +22,6 @@
           "type": 1,
           "TTL": 600,
           "data": "76.223.105.230"
-        },
-        {
-          "name": "bisportal.online.",
-          "type": 1,
-          "TTL": 600,
-          "data": "216.198.79.1"
         }
       ],
       "status": 0

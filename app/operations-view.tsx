@@ -1,4 +1,5 @@
 "use client";
+import { readClientResponse, clientResponseMessage } from "@/lib/client-response";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -180,13 +181,12 @@ export function OperationsView({ initialRoles, perspective = "facilitator", sect
     setError("");
     try {
       const response = await fetch("/api/staff", { cache: "no-store" });
-      const payload = await response.json();
+      if (sequence === requestSequence.current && (response.status === 401 || response.status === 403)) setData(null);
+      const payload = await readClientResponse<StaffSnapshot>(response, "The programme workspace could not open. Try again.", value => Array.isArray(value.roles) && Boolean(value.identity));
       if (sequence !== requestSequence.current) return;
-      if (response.status === 401 || response.status === 403) setData(null);
-      if (!response.ok) throw new Error(payload.error ?? "The operations workspace could not open.");
       setData(payload); setUpdatedAt(new Date().toLocaleTimeString("en-ZA"));
     } catch (cause) {
-      if (sequence === requestSequence.current) setError(cause instanceof Error ? cause.message : "The operations workspace could not open.");
+      if (sequence === requestSequence.current) setError(clientResponseMessage(cause, "The programme workspace could not open. Try again."));
     } finally {
       if (sequence === requestSequence.current) { setLoading(false); setRefreshing(false); }
     }
@@ -199,6 +199,7 @@ export function OperationsView({ initialRoles, perspective = "facilitator", sect
   }, [load]);
 
   async function act(payload: Record<string, unknown>) {
+    if (writing.current) return false;
     writing.current = true; ++requestSequence.current; setRefreshing(false);
     setSaving(true);
     setError("");
@@ -208,13 +209,12 @@ export function OperationsView({ initialRoles, perspective = "facilitator", sect
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json();
       if (response.status === 401 || response.status === 403) setData(null);
-      if (!response.ok) throw new Error(result.error ?? "That change could not be saved.");
+      const result = await readClientResponse<StaffSnapshot>(response, "That change could not be saved. Try again.", value => Array.isArray(value.roles) && Boolean(value.identity));
       setData(result); setUpdatedAt(new Date().toLocaleTimeString("en-ZA"));
       return true;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "That change could not be saved.");
+      setError(clientResponseMessage(cause, "That change could not be saved. Try again."));
       return false;
     } finally {
       writing.current = false; setSaving(false);

@@ -49,6 +49,9 @@ try {
       await note.evaluate(element => element.scrollIntoView({ block: "start", behavior: "instant" }));
       await expect(note).toContainText("does not award a certificate");
     }
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const menu = page.getByRole("button", { name: /Open BIS menu/ });
+    await expect.poll(() => menu.evaluate(element => { const box = element.getBoundingClientRect(); return box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth; })).toBe(true);
     const screenshot = `${position}-${width}.png`;
     await page.screenshot({ path: `${output}/${screenshot}` });
     await page.addScriptTag({ content: axe });

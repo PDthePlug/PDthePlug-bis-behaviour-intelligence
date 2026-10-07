@@ -295,7 +295,7 @@
 .staff-workspace-shell a:focus-visible,
 .staff-gate button:focus-visible,
 .staff-gate a:focus-visible{
-  outline:3px solid color-mix(in srgb,var(--teal) 48%,white);
+  outline:3px solid var(--teal);
   outline-offset:3px;
 }
 

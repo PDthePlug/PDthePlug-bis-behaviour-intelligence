@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-10-07T04:20:47.430Z",
+  "preview": "https://bis-behaviour-intelligence-1ytl0ukzl.vercel.app",
+  "result": "PASS_RETURN_ORIGIN_ONLY",
+  "recoveryReturn": "/auth/callback?next=/reset-password",
+  "providerRequest": "Intercepted before provider; no email requested",
+  "deliveryVerified": false,
+  "recoveryTokenExchangeVerified": false,
+  "productionConfigurationChanged": false
+}

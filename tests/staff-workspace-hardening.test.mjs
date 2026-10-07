@@ -121,7 +121,8 @@ test("staff hardening layer covers facilitator drilldown and mobile reflow", asy
 test("learner-only profiles do not advertise staff access", async () => {
   const profile = await source("app/profile/profile-dashboard.tsx");
   assert.match(profile, /"SPONSOR_VIEWER"/);
-  assert.match(profile, /\{staff \? \(/);
+  assert.match(profile, /\{staff \? <Link href="\/workspace"/);
+  assert.match(profile, /\{commercial \? <Link href="\/commercial"/);
   assert.match(profile, /Open programme workspace/);
   assert.match(profile, /\) : null\}/);
   assert.doesNotMatch(profile, /cannot be self-registered/i);

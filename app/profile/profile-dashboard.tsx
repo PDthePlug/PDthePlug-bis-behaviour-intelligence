@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { InstallCard } from "@/components/pwa/install-card";
-import { useEffect, useMemo, useState } from "react";
+import { usePwaInstall } from "@/components/pwa/pwa-provider";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronRight } from "lucide-react";
 
 type ProfileSnapshot = {
@@ -47,20 +48,28 @@ export function ProfileDashboard({
 }) {
   const [snapshot, setSnapshot] = useState<ProfileSnapshot | null>(null);
   const [profileError, setProfileError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { installed } = usePwaInstall();
+
+  const load = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true); setProfileError(false);
+    try {
+      const response = await fetch("/api/profile", { cache: "no-store", signal });
+      const data = await response.json();
+      if (!response.ok || !data || typeof data !== "object" || Array.isArray(data) || !("profile" in data) || (data.profile !== null && (typeof data.profile !== "object" || Array.isArray(data.profile))) || (data.roles !== undefined && (!Array.isArray(data.roles) || !data.roles.every((role: unknown) => typeof role === "string")))) throw new Error("Profile unavailable");
+      if (!signal?.aborted) setSnapshot(data as ProfileSnapshot);
+    } catch {
+      if (!signal?.aborted) setProfileError(true);
+    } finally {
+      if (!signal?.aborted) setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
-    void fetch("/api/profile", { cache: "no-store", signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Profile could not be loaded.");
-        const data = (await response.json()) as ProfileSnapshot;
-        if (!controller.signal.aborted) setSnapshot(data);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setProfileError(true);
-      });
-    return () => controller.abort();
-  }, []);
+    const timer = window.setTimeout(() => void load(controller.signal), 0);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [load]);
 
   const email = snapshot?.identity?.email || initialIdentity.email;
   const displayName =
@@ -69,8 +78,9 @@ export function ProfileDashboard({
     initialIdentity.displayName;
   const roles = snapshot?.roles ?? [];
   const staff = hasStaffRole(roles);
-  const editionKey = snapshot?.profile?.deliveryEdition ?? "school";
-  const edition = editionLabels[editionKey];
+  const commercial = roles.some(role => ["SYSTEM_ADMIN", "COMMERCIAL_ADMIN", "COMMERCIAL_LEAD", "COMMERCIAL_RESEARCH", "COMMERCIAL_READ_ONLY"].includes(role));
+  const editionKey = snapshot?.profile?.deliveryEdition;
+  const edition = editionKey ? editionLabels[editionKey] : undefined;
   const learningMode =
     snapshot?.profile?.mode === "FACILITATED"
       ? "Facilitated programme"
@@ -86,13 +96,13 @@ export function ProfileDashboard({
         <div>
           <p className="eyebrow">My BIS</p>
           <h1>{displayName}</h1>
-          <p>{snapshot ? `${edition.replace(" Edition", "")} · ${learningMode}` : email}</p>
+          <p>{edition ? `${edition.replace(" Edition", "")} · ${learningMode}` : email}</p>
         </div>
       </section>
 
       {profileError ? (
-        <p className="profile-notice" role="status">Some profile details could not be refreshed. Your account remains available.</p>
-      ) : null}
+        <div className="profile-notice"><p role="alert">Your profile details could not be loaded. Try again.</p><button type="button" onClick={() => void load()}>Retry</button></div>
+      ) : loading ? <p className="profile-notice" role="status">Loading your profile…</p> : null}
 
       <section className="profile-section" aria-labelledby="profile-my-bis">
         <h2 id="profile-my-bis">My BIS</h2>
@@ -100,7 +110,7 @@ export function ProfileDashboard({
           <Link href="/experience" className="profile-row">
             <span className="profile-row-copy">
               <strong>My experience</strong>
-              <small>{edition.replace(" Edition", "")}</small>
+              {edition ? <small>{edition.replace(" Edition", "")}</small> : null}
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>
@@ -128,16 +138,17 @@ export function ProfileDashboard({
         </div>
       </section>
 
-      {staff ? (
+      {staff || commercial ? (
         <section className="profile-section" aria-labelledby="profile-programme-team">
-          <h2 id="profile-programme-team">Programme team</h2>
+          <h2 id="profile-programme-team">Workspaces</h2>
           <div className="profile-list">
-            <Link href="/workspace" className="profile-row">
+            {staff ? <Link href="/workspace" className="profile-row">
               <span className="profile-row-copy">
                 <strong>Open programme workspace</strong>
               </span>
               <ChevronRight aria-hidden="true" />
-            </Link>
+            </Link> : null}
+            {commercial ? <Link href="/commercial" className="profile-row"><span className="profile-row-copy"><strong>Open commercial workspace</strong></span><ChevronRight aria-hidden="true" /></Link> : null}
           </div>
         </section>
       ) : null}
@@ -147,7 +158,7 @@ export function ProfileDashboard({
         <div className="profile-account-card">
           <div><span>Email</span><strong>{email}</strong></div>
         </div>
-        <details className="profile-install"><summary>Install BIS</summary><InstallCard /></details>
+        {!installed ? <details className="profile-install"><summary>Install BIS</summary><InstallCard /></details> : null}
         <form action="/auth/signout" method="post">
           <button type="submit" className="profile-signout">
             Sign out
