@@ -47,4 +47,6 @@ New browser coverage at 360px, 430px and 1280px checks:
 
 The proxy test executes the real proxy with an observable session boundary, checking public routes and negative cases including similarly named routes and authenticated staff/profile endpoints.
 
-Release verification is `npm run verify`; the final result and any remaining limitations are recorded in `docs/hardening/dgmt-experience-verification.json`.
+Release verification passed in [GitHub CI](https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/actions/runs/37599115848): 671 acceptance tests and 300 browser tests, including the PR merge with current main. Fifteen focused DGMT/Leap9 browser checks also passed against the optimized app at 360px, 430px and 1280px.
+
+The system Chromium used locally differs from the pinned Playwright browser on three existing Leadership Lab snapshots. The same mismatch reproduces on unchanged main; all three comparisons pass with the pinned browser. No baseline or threshold was changed. Final evidence and limitations are recorded in `docs/hardening/dgmt-experience-verification.json`.
