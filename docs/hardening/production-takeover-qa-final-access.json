@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-10-07T04:51:41.526702+00:00",
+  "scope": "Exact previously revoked, user-authorised QA administrator only; original assignments untouched",
+  "reason": "Normal main-branch production deployment can proceed despite the manual API cap; final live verification requires temporary access",
+  "adminRestored": 1,
+  "traceAuditEvents": 1,
+  "otherRoles": "Assign via normal application API to synthetic cohort only; safeguarding global as required",
+  "cleanup": "Required after final checks"
+}

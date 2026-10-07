@@ -1,0 +1,2534 @@
+{
+  "observedAt": "2026-10-07T04:46:53.689430+00:00",
+  "deploymentId": "dpl_6QLsgDxY8r47TjRj2ip3WrS8xqAh",
+  "origin": "https://bis-behaviour-intelligence-7dko982b9.vercel.app",
+  "sourceCommit": "3941fca59898027ae247a353726d29ebb5d425c8",
+  "backend": "lbmhkddrkhtmkcvfmumd; verified before fixture credentials",
+  "result": "78_CLEAN_STATES; 24_SHARED_SETUP_LINK_DEFECT_STATES",
+  "stateCount": 102,
+  "states": [
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-0-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens",
+      "captureRecovery": "Fresh same-deployment recapture; original shared temporary path was overwritten by the corrected local run. Original machine findings retained."
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-1-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens",
+      "captureRecovery": "Fresh same-deployment recapture; original shared temporary path was overwritten by the corrected local run. Original machine findings retained."
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-2-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-3-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-4-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "headings": [
+        "Orientation \u00b7 Identity, Safety & Assessment",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON IDENTITY",
+        "The Safe Investigation Boundary",
+        "How You Are Assessed",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-5-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "headings": [
+        "Orientation \u00b7 Attention, Safety & Privacy",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON ATTENTION",
+        "The Safe Investigation Boundary",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-6-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-7-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-8-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-9-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-10-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-11-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "headings": [
+        "Orientation \u00b7 Identity, Safety & Assessment",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON IDENTITY",
+        "The Safe Investigation Boundary",
+        "How You Are Assessed",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-12-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "headings": [
+        "Orientation \u00b7 Attention, Safety & Privacy",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON ATTENTION",
+        "The Safe Investigation Boundary",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-13-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-14-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-15-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-16-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-17-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-18-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "headings": [
+        "Orientation \u00b7 Identity, Safety & Assessment",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON IDENTITY",
+        "The Safe Investigation Boundary",
+        "How You Are Assessed",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-19-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "headings": [
+        "Orientation \u00b7 Attention, Safety & Privacy",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON ATTENTION",
+        "The Safe Investigation Boundary",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-20-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-facilitator",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-21-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-22-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-23-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-24-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-25-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=support&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Support",
+        "No learners currently flagged for a check-in",
+        "No learner currently meets the check-in rules.",
+        "Staff note",
+        "Refer a concern",
+        "What the facilitator team has recorded"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-26-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-27-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-facilitator",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-28-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-29-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-30-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-31-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-32-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=support&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Support",
+        "No learners currently flagged for a check-in",
+        "No learner currently meets the check-in rules.",
+        "Staff note",
+        "Refer a concern",
+        "What the facilitator team has recorded"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-33-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-34-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-facilitator",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-35-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-36-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-37-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-38-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-39-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=support&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Support",
+        "No learners currently flagged for a check-in",
+        "No learner currently meets the check-in rules.",
+        "Staff note",
+        "Refer a concern",
+        "What the facilitator team has recorded"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-40-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-41-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-sponsor",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-42-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-43-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-44-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-45-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learning journey",
+        "What is changing while the programme is happening?",
+        "Where did learners feel clear, and where did they want more support?",
+        "What are learners answering consistently?",
+        "Start projects but never finish them",
+        "Procrastinate on important tasks",
+        "Avoid difficult conversations",
+        "BEI-01-Pre",
+        "Stay up too late when you should sleep",
+        "Seek approval before making decisions",
+        "Give up quickly when things get hard",
+        "What do you think happens next for Sipho?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-46-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Evidence & outcomes",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-47-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Reports",
+        "Assessment reports"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-48-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-sponsor",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-49-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-50-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-51-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-52-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learning journey",
+        "What is changing while the programme is happening?",
+        "Where did learners feel clear, and where did they want more support?",
+        "What are learners answering consistently?",
+        "Start projects but never finish them",
+        "Procrastinate on important tasks",
+        "Avoid difficult conversations",
+        "BEI-01-Pre",
+        "Stay up too late when you should sleep",
+        "Seek approval before making decisions",
+        "Give up quickly when things get hard",
+        "What do you think happens next for Sipho?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-53-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Evidence & outcomes",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-54-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Reports",
+        "Assessment reports"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-55-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-sponsor",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-56-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-57-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-58-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-59-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=learning&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learning journey",
+        "What is changing while the programme is happening?",
+        "Where did learners feel clear, and where did they want more support?",
+        "What are learners answering consistently?",
+        "Start projects but never finish them",
+        "Procrastinate on important tasks",
+        "Avoid difficult conversations",
+        "BEI-01-Pre",
+        "Stay up too late when you should sleep",
+        "Seek approval before making decisions",
+        "Give up quickly when things get hard",
+        "What do you think happens next for Sipho?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-60-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Evidence & outcomes",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-61-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Reports",
+        "Assessment reports"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-62-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-admin",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-63-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-64-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-65-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "headings": [
+        "Administration",
+        "Real-world opportunities",
+        "Learner progress",
+        "How BIS reaches and protects results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-66-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "headings": [
+        "Administration",
+        "Create a group",
+        "Add people to a group"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-67-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "headings": [
+        "Administration",
+        "Manage access"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-68-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "headings": [
+        "Administration",
+        "Curriculum evidence and rubrics",
+        "ATT.WB.CHECK.14GFGK3.SIGNAL",
+        "Enable an authored rubric",
+        "Enabled rubric versions"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-69-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-70-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Partnerships, pipeline and execution.",
+        "Wave 1",
+        "What is actually moving?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-71-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-admin",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-72-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-73-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-74-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "headings": [
+        "Administration",
+        "Real-world opportunities",
+        "Learner progress",
+        "How BIS reaches and protects results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-75-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "headings": [
+        "Administration",
+        "Create a group",
+        "Add people to a group"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-76-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "headings": [
+        "Administration",
+        "Manage access"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-77-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "headings": [
+        "Administration",
+        "Curriculum evidence and rubrics",
+        "ATT.WB.CHECK.14GFGK3.SIGNAL",
+        "Enable an authored rubric",
+        "Enabled rubric versions"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-78-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-79-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Partnerships, pipeline and execution.",
+        "Wave 1",
+        "What is actually moving?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-80-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-admin",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-81-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-82-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-83-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "headings": [
+        "Administration",
+        "Real-world opportunities",
+        "Learner progress",
+        "How BIS reaches and protects results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-84-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "headings": [
+        "Administration",
+        "Create a group",
+        "Add people to a group"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-85-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "headings": [
+        "Administration",
+        "Manage access"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-86-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "headings": [
+        "Administration",
+        "Curriculum evidence and rubrics",
+        "ATT.WB.CHECK.14GFGK3.SIGNAL",
+        "Enable an authored rubric",
+        "Enabled rubric versions"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-87-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-88-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Partnerships, pipeline and execution.",
+        "Wave 1",
+        "What is actually moving?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-89-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-safeguarding",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-90-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-91-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-92-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator&section=support",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-93-360.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-safeguarding",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-94-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-95-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-96-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator&section=support",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-97-430.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-safeguarding",
+        "My BIS",
+        "Workspaces",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-98-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-99-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+          "nodes": [
+            {
+              "target": [
+                ".settings-status > a[href$=\"habit\"]"
+              ],
+              "summary": "Fix any of the following:\n  The link has insufficient color contrast of 2.88:1 with the surrounding text. (Minimum contrast is 3:1, link text: #16262d, surrounding text: #5e6d70)\n  The link has no styling (such as underline) to distinguish it from the surrounding text"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-100-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator&section=support",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-101-1280.png",
+      "evidenceRoot": "/tmp/bis-takeover-final-preview-pages.screens"
+    }
+  ],
+  "finding": "All 24 flags are the same missing visual link distinction on Settings/My experience for four staff roles without learner profiles. No page/HTTP errors, overflow, or unnamed controls. Fixed in c685686; this preview does not claim the fix is deployed.",
+  "reader": [
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 360,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-360.png",
+      "manualReview": "PASS scoped viewport review: retained table/certificate reading rhythm and fully visible Menu. Does not close other source pages/editions/states.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-reader-4-360.png"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 360,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-360.png",
+      "manualReview": "PASS scoped viewport review: retained table/certificate reading rhythm and fully visible Menu. Does not close other source pages/editions/states.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-reader-13-360.png"
+    },
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 430,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-430.png",
+      "manualReview": "PASS scoped viewport review: retained table/certificate reading rhythm and fully visible Menu. Does not close other source pages/editions/states.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-reader-4-430.png"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 430,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-430.png",
+      "manualReview": "PASS scoped viewport review: retained table/certificate reading rhythm and fully visible Menu. Does not close other source pages/editions/states.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-reader-13-430.png"
+    },
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 1280,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": false,
+          "keyboardScroll": "NOT_NEEDED"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": false,
+          "keyboardScroll": "NOT_NEEDED"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-1280.png",
+      "manualReview": "PASS scoped viewport review: retained table/certificate reading rhythm and fully visible Menu. Does not close other source pages/editions/states.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-reader-4-1280.png"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 1280,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-1280.png",
+      "manualReview": "PASS scoped viewport review: retained table/certificate reading rhythm and fully visible Menu. Does not close other source pages/editions/states.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-reader-13-1280.png"
+    }
+  ],
+  "safeguarding": [
+    {
+      "origin": "https://bis-behaviour-intelligence-7dko982b9.vercel.app",
+      "width": 360,
+      "result": "PASS",
+      "keyboardSeverity": "PASS",
+      "acknowledgePayload": "PASS",
+      "resolutionPayload": "PASS",
+      "violations": [],
+      "overflow": 0,
+      "errors": [],
+      "caseSource": "Synthetic intercepted response; every POST intercepted before server, no case writes",
+      "manualReview": "PASS populated synthetic control layout; privacy-safe synthetic cases only.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-synthetic-safeguarding-360.png"
+    },
+    {
+      "origin": "https://bis-behaviour-intelligence-7dko982b9.vercel.app",
+      "width": 430,
+      "result": "PASS",
+      "keyboardSeverity": "PASS",
+      "acknowledgePayload": "PASS",
+      "resolutionPayload": "PASS",
+      "violations": [],
+      "overflow": 0,
+      "errors": [],
+      "caseSource": "Synthetic intercepted response; every POST intercepted before server, no case writes",
+      "manualReview": "PENDING"
+    },
+    {
+      "origin": "https://bis-behaviour-intelligence-7dko982b9.vercel.app",
+      "width": 1280,
+      "result": "PASS",
+      "keyboardSeverity": "PASS",
+      "acknowledgePayload": "PASS",
+      "resolutionPayload": "PASS",
+      "violations": [],
+      "overflow": 0,
+      "errors": [],
+      "caseSource": "Synthetic intercepted response; every POST intercepted before server, no case writes",
+      "manualReview": "PASS populated synthetic control layout; privacy-safe synthetic cases only.",
+      "durableScreenshot": "docs/hardening/screens/takeover-20261007/preview-synthetic-safeguarding-1280.png"
+    }
+  ],
+  "recoveryReturn": {
+    "observedAt": "2026-10-07T04:31:42.523Z",
+    "preview": "https://bis-behaviour-intelligence-7dko982b9.vercel.app",
+    "result": "PASS_RETURN_ORIGIN_ONLY",
+    "recoveryReturn": "/auth/callback?next=/reset-password",
+    "providerRequest": "Intercepted before provider; no email requested",
+    "deliveryVerified": false,
+    "recoveryTokenExchangeVerified": false,
+    "productionConfigurationChanged": false
+  },
+  "captureBoundary": "Temporary full-page captures include fixed chrome at its viewport coordinate. Viewport region review and keyboard/geometry checks are separate. Two shared temporary capture collisions were recovered with fresh same-deployment captures; output directories now follow each audit file to prevent repeat collisions.",
+  "wholePassComplete": false
+}

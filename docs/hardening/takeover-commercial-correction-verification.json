@@ -1,0 +1,23 @@
+{
+  "observedAt": "2026-10-07T05:13:28.523637+00:00",
+  "source": "Commercial workspace shared renderer/CSS/API language on isolated follow-up branch",
+  "finding": "All five populated commercial sections expose low-contrast secondary text; all four commercial role reads and administrator-only assignment denial pass. No original business records are edited.",
+  "correction": [
+    "Use consistent AA muted foregrounds, readable secondary labels, opaque header and visible focus",
+    "Keep compact groupings; 44px actions and mobile 16px inputs",
+    "Name and focus the horizontally scrollable opportunity pipeline",
+    "Show clear empty task/proposal states with a permitted Pipeline action",
+    "Remove implementation version from role-assignment error and clarify frozen-proposal count label",
+    "Scope body colour/background to the commercial shell rather than global body"
+  ],
+  "verification": {
+    "focusedBrowser": 6,
+    "result": "PASS at 360/430/1280; actual populated synthetic captures reviewed",
+    "build": "npm run verify:build PASS 664 acceptance, lint/typecheck/source audits/build/15 retained-package traces; final label-only copy change is additionally covered by exact-head CI",
+    "initialFixtureFailure": "Three assertions expected populated proposal captions while the synthetic fixture supplied no proposals. Fixture now supplies a valid synthetic proposal; a separate empty state is tested, without weakening contrast thresholds."
+  },
+  "releaseStatus": "FOLLOWUP_BRANCH; EXACT_HEAD_CI_AND_LIVE_PENDING",
+  "sourceBindingsChanged": false,
+  "originalProductionRecordsModified": false,
+  "wholePassComplete": false
+}

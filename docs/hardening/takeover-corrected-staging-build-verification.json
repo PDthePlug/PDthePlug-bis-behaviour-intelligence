@@ -1,0 +1,511 @@
+{
+  "observedAt": "2026-10-07T04:46:53.691843+00:00",
+  "sourceCommit": "c685686c6788737eef298b6d1a7fea105b904810",
+  "target": "Optimised local application build; normal APIs use real staging backend, verified before credentials",
+  "origin": "http://127.0.0.1:3200",
+  "result": "PASS_ALL_30_STATES",
+  "acceptanceTests": 664,
+  "buildContract": "npm run verify:build; PASS lint, typecheck, acceptance, canonical source audits, build and 15 retained-package artifact traces",
+  "focusedBrowserJourneys": 18,
+  "stateCount": 30,
+  "states": [
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-0-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-1-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-2-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-3-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-4-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-5-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-6-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-7-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-8-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-9-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-10-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-11-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-12-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-13-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-14-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-15-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-16-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-17-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-18-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-19-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-20-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-21-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-22-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-23-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-24-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-25-360.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-26-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-27-430.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-28-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-29-1280.png",
+      "evidenceRoot": "/tmp/bis-corrected-staging-pages.screens"
+    }
+  ],
+  "deployedPreviewVerified": false,
+  "initialHarnessAxeResult": "Full-document harness probe reported missing document-title in six fixtures; no product title finding. Actual staging application pages below pass the entire document axe run. Initial local probe is not presented as passing.",
+  "wholePassComplete": false
+}
