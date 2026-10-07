@@ -7,6 +7,7 @@ import {
   externalFrameworkAreas,
   comparableChange,
   highestSupportedProgression,
+  workbookResponsesToEvidenceEvents,
 } from "../lib/curriculum-competency.mjs";
 import { reportClassification, reportClassificationIds } from "../lib/report-classification.mjs";
 import {
@@ -333,4 +334,82 @@ test("sponsor report can surface privacy-safe competency progression without a m
   assert.equal(chart.rows.find(row=>row.label==="Tests and revises").value,null);
   assert.equal(Object.prototype.hasOwnProperty.call(report, "globalMaturityScore"), false);
   assert.doesNotMatch(JSON.stringify(report.insights.map(item => item.observation)),/leaderboard|maturity score/i);
+});
+
+
+test("saved authored workbook tasks become anchor-only evidence without exposing private answers", async () => {
+  const evidenceMap = await json("content/curriculum/time/time-competency-evidence-map.json");
+  const events = workbookResponsesToEvidenceEvents({
+    responses: {
+      "TIM.WB.SCHOOL.DAY3.PREDICTION": {
+        value: "private learner prediction",
+        evidenceAnchor: "TIM.D3.PREDICTION",
+        semanticFieldId: "TIM.WB.SCHOOL.DAY3.PREDICTION",
+        updatedAt: "2026-10-07T08:00:00.000Z",
+      },
+    },
+    bindings: evidenceMap.bindings,
+    labCode: "TIM",
+    contentReleaseId: "TIM:school:2.0:test",
+    contextId: "time-primary",
+  });
+  assert.equal(events.length, 1);
+  assert.equal(events[0].anchor, "TIM.D3.PREDICTION");
+  assert.equal(events[0].provenanceStatus, "VERIFIED");
+  assert.equal(events[0].privacyClass, "P3");
+  assert.equal(Object.prototype.hasOwnProperty.call(events[0], "value"), false);
+});
+
+test("an answered rubric task remains pending until assessment verifies the authored anchor", async () => {
+  const evidenceMap = await json("content/curriculum/time/time-competency-evidence-map.json");
+  const pending = workbookResponsesToEvidenceEvents({
+    responses: [{
+      semanticFieldId: "TIM.WB.SCHOOL.DAY4.EXPLANATION",
+      evidenceAnchor: "TIM.D4.WORKING_EXPLANATION",
+      value: "private explanation",
+      updatedAt: "2026-10-07T09:00:00.000Z",
+    }],
+    bindings: evidenceMap.bindings,
+    contextId: "time-primary",
+  });
+  assert.equal(pending.length, 1);
+  assert.equal(pending[0].provenanceStatus, "PENDING_ASSESSMENT");
+
+  const mappedPending = bindEvidenceToCompetencies({ events: pending, bindings: evidenceMap.bindings });
+  assert.equal(highestSupportedProgression(mappedPending).code, "NOT_YET_EVIDENCED");
+
+  const verified = workbookResponsesToEvidenceEvents({
+    responses: [{
+      semanticFieldId: "TIM.WB.SCHOOL.DAY4.EXPLANATION",
+      evidenceAnchor: "TIM.D4.WORKING_EXPLANATION",
+      value: "private explanation",
+      updatedAt: "2026-10-07T09:00:00.000Z",
+    }],
+    bindings: evidenceMap.bindings,
+    contextId: "time-primary",
+    verifiedAnchors: ["TIM.D4.WORKING_EXPLANATION"],
+  });
+  const mappedVerified = bindEvidenceToCompetencies({ events: verified, bindings: evidenceMap.bindings });
+  assert.equal(mappedVerified.every(item => item.provenanceStatus === "VERIFIED"), true);
+  assert.equal(Object.prototype.hasOwnProperty.call(verified[0], "value"), false);
+});
+
+test("transfer tasks cannot become transfer evidence from completion alone", async () => {
+  const evidenceMap = await json("content/curriculum/time/time-competency-evidence-map.json");
+  const answered = workbookResponsesToEvidenceEvents({
+    responses: [{
+      semanticFieldId: "TIM.WB.SCHOOL.DAY9.SECOND_PATTERN",
+      evidenceAnchor: "TIM.D9.SECOND_PATTERN",
+      value: "private second pattern",
+      updatedAt: "2026-10-07T10:00:00.000Z",
+      secondContext: true,
+      transferContext: "time-secondary",
+      contextId: "time-secondary",
+    }],
+    bindings: evidenceMap.bindings,
+    contextId: "time-primary",
+  });
+  assert.equal(answered[0].provenanceStatus, "PENDING_ASSESSMENT");
+  const mapped = bindEvidenceToCompetencies({ events: answered, bindings: evidenceMap.bindings });
+  assert.equal(highestSupportedProgression(mapped).code, "NOT_YET_EVIDENCED");
 });
