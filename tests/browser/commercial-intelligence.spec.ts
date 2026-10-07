@@ -264,7 +264,7 @@ test('revoked Intelligence access clears the loaded recommendation and prepared 
     await route.fallback();
   });
   await page.getByRole('button', { name: 'Dismiss' }).click();
-  await expect(page.getByRole('alert')).toContainText('Your commercial access has ended.');
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('Your commercial access has ended.');
   await expect(page.getByRole('heading', { name: 'Prepared outreach' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Approve / Accept' })).toHaveCount(0);
 });
