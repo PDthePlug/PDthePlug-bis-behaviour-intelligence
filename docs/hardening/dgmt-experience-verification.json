@@ -1,7 +1,7 @@
 {
   "date": "2026-10-07",
   "scope": "Public BIS role explorer, DGMT first-view refinement, desktop and customer-language hardening",
-  "codeCommit": "e285a78388c27d4fa3ba41111e8da72d1da409cc",
+  "codeCommit": "23673712af5c6ade1b187bc195b4e0f026b2418f",
   "productionDataAccessed": false,
   "databaseMigrations": false,
   "emailSent": false,
@@ -42,7 +42,8 @@
       "class plans and attendance persistence",
       "programme decisions and reset",
       "fixed PDF report and captioned video playback",
-      "overflow, console errors and absence of authenticated API requests"
+      "overflow, console errors and absence of authenticated API requests",
+      "immediate role and tab switches wait for handbook saves"
     ]
   },
   "anonymousOptimizedApp": {
