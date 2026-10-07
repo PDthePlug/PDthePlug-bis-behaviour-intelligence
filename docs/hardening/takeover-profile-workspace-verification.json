@@ -34,5 +34,12 @@
   "initialHarnessFailures": "Six initial assertions ambiguously matched Next.js route announcer plus the real alert. Locators now scope the actual Profile/workspace error. No app failure is presented as a passing result.",
   "initialAcceptanceFailures": "Three source guards expected the former outer staff-only JSX shape. Guards now require the exact staff-programme and commercial-role link conditions; browser tests exercise all four commercial-only roles and learner denial.",
   "sourceContentReplaced": false,
-  "productionDataCopied": false
+  "productionDataCopied": false,
+  "deployedPreviewFinding": {
+    "commit": "3941fca59898027ae247a353726d29ebb5d425c8",
+    "origin": "https://bis-behaviour-intelligence-7dko982b9.vercel.app",
+    "problem": "Staff with no learner profile see setup links relying on colour alone in Settings and My experience.",
+    "correction": "Shared settings-status links receive an explicit underline, preserving the setup target and disabled writes.",
+    "verification": "Prior-preview finding retained; corrected preview verification pending."
+  }
 }

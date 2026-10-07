@@ -21,6 +21,29 @@
       "productionConfigurationChanged": false,
       "deliveryVerified": false,
       "result": "PASS"
+    },
+    {
+      "observedAt": "2026-10-07T04:31:28.456476+00:00",
+      "origin": "https://bis-behaviour-intelligence-7dko982b9.vercel.app",
+      "callback": "https://bis-behaviour-intelligence-7dko982b9.vercel.app/auth/callback**",
+      "before": [
+        "http://127.0.0.1:3200/auth/callback**",
+        "http://localhost:3000/auth/callback**",
+        "https://bis-behaviour-intelligence-1ytl0ukzl.vercel.app/auth/callback**"
+      ],
+      "after": [
+        "http://127.0.0.1:3200/auth/callback**",
+        "http://localhost:3000/auth/callback**",
+        "https://bis-behaviour-intelligence-1ytl0ukzl.vercel.app/auth/callback**",
+        "https://bis-behaviour-intelligence-7dko982b9.vercel.app/auth/callback**"
+      ],
+      "changedSettings": [
+        "uri_allow_list"
+      ],
+      "otherAuthSettingsPreserved": true,
+      "productionConfigurationChanged": false,
+      "deliveryVerified": false,
+      "result": "PASS"
     }
   ]
 }
