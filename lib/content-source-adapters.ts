@@ -161,7 +161,7 @@ type SourceBlock = {
   kind?: "paragraph" | "table";
 };
 
-const authoredActivityHeading = /^(?:\p{Extended_Pictographic}\uFE0F?)\s+\S/u;
+const authoredActivityHeading = /^(?![☐☑☒])(?:\p{Extended_Pictographic}\uFE0F?)\s+\S/u;
 
 function learnerResponseHeader(value: string) {
   const header = value.replace(/\*+/g, "").replace(/\s+/g, " ").trim().toLowerCase();

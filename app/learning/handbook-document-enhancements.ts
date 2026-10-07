@@ -1716,6 +1716,10 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
 
   // The publication header already supplies the day and title. Keep the source
   // elements intact so this never changes the text used for response identities.
+  if (pageId.endsWith(".WELCOME") && welcome) {
+    welcome.classList.add("handbook-repeated-heading");
+    welcome.hidden = true;
+  }
   const titleKey = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
   if (context.pageTitle) {
     for (const heading of [...root.querySelectorAll<HTMLElement>("h1,h2,h3,h4,.day-kicker")].slice(0, 3)) {
