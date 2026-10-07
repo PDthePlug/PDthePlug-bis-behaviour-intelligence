@@ -423,3 +423,45 @@ test("Time blueprint declares every competency used by its daily sequence", asyn
   assert.deepEqual(missing, []);
   assert.ok(declared.has("AC-C10"));
 });
+
+
+test("Time curriculum semantic graph remains internally consistent", async () => {
+  const [blueprint, evidenceMap, atlas, framework, reports] = await Promise.all([
+    json("content/curriculum/time/time-instructional-blueprint-v2.json"),
+    json("content/curriculum/time/time-competency-evidence-map.json"),
+    json("content/curriculum/applied-commerce/concept-atlas.json"),
+    json("content/curriculum/applied-commerce/competency-framework.json"),
+    json("content/curriculum/report-classifications.json"),
+  ]);
+
+  const conceptIds = new Set(atlas.concepts.map(item => item.id));
+  const competencyIds = new Set(framework.competencies.map(item => item.id));
+  const declaredTargets = new Map(blueprint.competencyTargets.map(item => [item.competencyId, item]));
+  const authoredAnchors = new Set(blueprint.days.flatMap(day => (day.evidence ?? []).map(item => item.anchor)));
+  const reportIds = new Set(reports.classifications.map(item => item.id));
+  const progressionRank = {
+    NOT_YET_EVIDENCED: 0,
+    NOTICE: 1,
+    EXPLAIN: 2,
+    APPLY: 3,
+    TEST_AND_REVISE: 4,
+    TRANSFER: 5,
+  };
+
+  for (const day of blueprint.days) {
+    for (const conceptId of day.concepts ?? []) assert.ok(conceptIds.has(conceptId), `Unknown concept ${conceptId} on Day ${day.day}`);
+    for (const competencyId of day.competencies ?? []) assert.ok(declaredTargets.has(competencyId), `Undeclared competency ${competencyId} on Day ${day.day}`);
+    for (const reportId of day.reportingContribution ?? []) assert.ok(reportIds.has(reportId), `Unknown report classification ${reportId} on Day ${day.day}`);
+  }
+
+  for (const binding of evidenceMap.bindings ?? []) {
+    assert.ok(authoredAnchors.has(binding.anchor), `Mapped anchor ${binding.anchor} is not authored in the Time blueprint`);
+    assert.ok(competencyIds.has(binding.competencyId), `Unknown competency ${binding.competencyId} in Time evidence mapping`);
+    const target = declaredTargets.get(binding.competencyId);
+    assert.ok(target, `Mapped competency ${binding.competencyId} is missing from module targets`);
+    assert.ok(
+      progressionRank[binding.maxProgression] <= progressionRank[target.expectedCeiling],
+      `${binding.anchor} exceeds the declared ceiling for ${binding.competencyId}`,
+    );
+  }
+});
