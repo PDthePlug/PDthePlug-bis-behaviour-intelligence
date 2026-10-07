@@ -1,0 +1,4273 @@
+{
+  "observedAt": "2026-10-07T03:29:03.788Z",
+  "projectRef": "swmhsqivqaqwovojbceo",
+  "originalLearnerValuesReturned": false,
+  "scope": "Current published production definitions retrieved through an authorised QA learner; source metadata only. No source is recompiled or republished, and original learner responses are not captured.",
+  "labs": [
+    {
+      "code": "MON",
+      "version": "4.2.1",
+      "definitionSnapshotSha256": "b07e6c4a8a9fed0bbe19d583573305002ca2ca56b3dfdfebfa75e6b8ed7364a7",
+      "calculations": [
+        {
+          "id": "MON.I7.1LDI6EB",
+          "operation": "COUNT_PRESENT",
+          "sources": [
+            {
+              "id": "MON.I7.18TZSCA",
+              "label": "Day 1 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I7.8ZEUTC",
+              "label": "Day 2 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I7.147VN1M",
+              "label": "Day 3 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I7.KWX94K",
+              "label": "Day 4 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I7.15KOGYI",
+              "label": "Day 5 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I7.A3SLKO",
+              "label": "Day 6 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I7.1VZLSPM",
+              "label": "Day 7 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Counts how many of the listed answers have a recorded value.",
+          "interpretation": "This is a response count, not a success rate. An available answer counts even when it records no action or no opportunity. Missing answers remain missing.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "MON.I8.1D748Z9",
+          "operation": "DIFFERENCE",
+          "sources": [
+            {
+              "id": "MON.I8.XBYANE",
+              "label": "Money Consciousness Shift Index",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I1.1W6W7F1",
+              "label": "Money Consciousness Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Money Consciousness Shift Index minus Money Consciousness Index (Pre).",
+          "interpretation": "The difference is in points on the original 1–10 rating scale. A positive value means the first rating is higher; zero means the ratings are equal; a negative value means it is lower. These are your own ratings, not an assessment of skill or proof of programme effect.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "MON.I8.1D748Z9.2",
+          "operation": "DIFFERENCE",
+          "sources": [
+            {
+              "id": "MON.I8.12S285P",
+              "label": "Spending Confidence Index (Post)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I5.10JZLUL",
+              "label": "Spending Confidence Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Spending Confidence Index (Post) minus Spending Confidence Index (Pre).",
+          "interpretation": "The difference is in points on the original 1–10 rating scale. A positive value means the first rating is higher; zero means the ratings are equal; a negative value means it is lower. These are your own ratings, not an assessment of skill or proof of programme effect.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "MON.I9.1N7HV8D",
+          "operation": "COPY",
+          "sources": [
+            {
+              "id": "MON.I4.10MOAWT",
+              "label": "What were you feeling before you bought it?",
+              "type": "TEXT",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Repeats your recorded answer to “What were you feeling before you bought it?”.",
+          "interpretation": "This keeps an earlier answer available for review. It adds no new observation or assessment.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "MON.I9.UQKQC5",
+          "operation": "COPY",
+          "sources": [
+            {
+              "id": "MON.I5.3GFJPX",
+              "label": "My Equation",
+              "type": "TEXT",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Repeats your recorded answer to “My Equation”.",
+          "interpretation": "This keeps an earlier answer available for review. It adds no new observation or assessment.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "MON.I9.O3S5RT",
+          "operation": "PAIR",
+          "sources": [
+            {
+              "id": "MON.I5.10JZLUL",
+              "label": "Spending Confidence Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I8.12S285P",
+              "label": "Spending Confidence Index (Post)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Shows “Spending Confidence Index (Pre)” followed by “Spending Confidence Index (Post)”.",
+          "interpretation": "Compare the two original answers on their own scales. A missing answer stays unavailable; the comparison does not explain the cause of a difference.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "MON.I9.EPBMVF",
+          "operation": "PAIR",
+          "sources": [
+            {
+              "id": "MON.I1.1W6W7F1",
+              "label": "Money Consciousness Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "MON.I8.XBYANE",
+              "label": "Money Consciousness Shift Index",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Shows “Money Consciousness Index (Pre)” followed by “Money Consciousness Shift Index”.",
+          "interpretation": "Compare the two original answers on their own scales. A missing answer stays unavailable; the comparison does not explain the cause of a difference.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        }
+      ],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "MON.I1.1W6W7F1",
+          "sourceFields": [
+            "MON.I1.1W6W7F1",
+            "MON.I1.1G7L2IL",
+            "MON.I1.7VBV2D",
+            "MON.I1.10BKAYN"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "MON.I1.1WJ15RE",
+            "MON.I1.1DGDIIA",
+            "MON.I1.1792HEA",
+            "MON.I1.ABWIAC",
+            "MON.I1.1AIJ1XE",
+            "MON.I1.PS03UA",
+            "MON.I1.1F2Y4UI",
+            "MON.I1.1UBQXWI",
+            "MON.I1.19QNUWA",
+            "MON.I1.1R9XIMI"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "MON.I3.WP72N5",
+          "sourceFields": [
+            "MON.I3.WP72N5"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "MON.I5.10JZLUL",
+          "sourceFields": [
+            "MON.I5.10JZLUL",
+            "MON.I5.MFOI6G",
+            "MON.I5.R4CPT9"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "MON.I6.12WGTO9",
+            "MON.I6.F7EP01",
+            "MON.I6.1FLI52D",
+            "MON.I6.R4CPT9"
+          ]
+        },
+        {
+          "code": "BEI-06",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "MON.I7.7F29AD",
+            "MON.I7.C2YKLN",
+            "MON.I7.18TZSCA",
+            "MON.I7.1RDR8CV",
+            "MON.I7.1F9LD5V",
+            "MON.I7.62PCEP",
+            "MON.I7.8ZEUTC",
+            "MON.I7.1SACVIZ",
+            "MON.I7.12OX539",
+            "MON.I7.T8WWEN",
+            "MON.I7.147VN1M",
+            "MON.I7.9CXJ0Z",
+            "MON.I7.1Y20G93",
+            "MON.I7.9F8HOP",
+            "MON.I7.KWX94K",
+            "MON.I7.1HZY6R3",
+            "MON.I7.PKKZ5P",
+            "MON.I7.146T8SB",
+            "MON.I7.15KOGYI",
+            "MON.I7.1509C8N",
+            "MON.I7.18X3OR7",
+            "MON.I7.IMBCR5",
+            "MON.I7.A3SLKO",
+            "MON.I7.99I93V",
+            "MON.I7.13K5J65",
+            "MON.I7.1ALOIRB",
+            "MON.I7.1VZLSPM",
+            "MON.I7.KNGCCJ",
+            "MON.I7.1LDI6EB"
+          ]
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "MON.I8.1D748Z9",
+          "sourceFields": [
+            "MON.I8.XBYANE",
+            "MON.I8.1D748Z9"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "MON.I8.12S285P",
+          "sourceFields": [
+            "MON.I8.12S285P",
+            "MON.I8.1D748Z9.2",
+            "MON.I8.1BTCQBL",
+            "MON.I8.1K66FRJ",
+            "MON.I8.1K66FRJ.2",
+            "MON.I8.1K66FRJ.3",
+            "MON.I8.1K66FRJ.4",
+            "MON.I8.1K66FRJ.5",
+            "MON.I8.TE19AT"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "BOUND",
+          "primaryPromptId": "MON.I9.BTZG3I",
+          "sourceFields": [
+            "MON.I9.BTZG3I"
+          ]
+        },
+        {
+          "code": "BEI-10",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "MON.I9.VBKVNV",
+            "MON.I9.1IU3PAH",
+            "MON.I9.1N7HV8D",
+            "MON.I9.1YNKKXX",
+            "MON.I9.WPLKMD",
+            "MON.I9.UQKQC5",
+            "MON.I9.O3S5RT",
+            "MON.I9.EPBMVF",
+            "MON.I9.EH58QD",
+            "MON.I9.1KY2F3X",
+            "MON.I9.ULXFHF",
+            "MON.I9.18BRC4H",
+            "MON.I9.1FLI52D"
+          ]
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "HAB",
+      "version": "4.5.3",
+      "definitionSnapshotSha256": "d7f221dd5bc69783cf92ede8be7760c5fa5471b0fc9f32d997a54d23cb70cb07",
+      "calculations": [
+        {
+          "id": "HAB.I7.1LDI6EB",
+          "operation": "COUNT_PRESENT",
+          "sources": [
+            {
+              "id": "HAB.I7.G3IHBG",
+              "label": "Day 1 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I7.1IEXXHU",
+              "label": "Day 2 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I7.7J9JRW",
+              "label": "Day 3 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I7.1YTYHT2",
+              "label": "Day 4 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I7.1Y43R5O",
+              "label": "Day 5 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I7.18QGIPU",
+              "label": "Day 6 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I7.1D5D1LO",
+              "label": "Day 7 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Counts how many of the listed answers have a recorded value.",
+          "interpretation": "This is a response count, not a success rate. An available answer counts even when it records no action or no opportunity. Missing answers remain missing.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "HAB.I8.1D748Z9",
+          "operation": "DIFFERENCE",
+          "sources": [
+            {
+              "id": "HAB.I8.1FAGH1",
+              "label": "Habit Control Shift Index",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I1.1MYV9BK",
+              "label": "Habit Control Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Habit Control Shift Index minus Habit Control Index (Pre).",
+          "interpretation": "The difference is in points on the original 1–10 rating scale. A positive value means the first rating is higher; zero means the ratings are equal; a negative value means it is lower. These are your own ratings, not an assessment of skill or proof of programme effect.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "HAB.I8.1D748Z9.2",
+          "operation": "DIFFERENCE",
+          "sources": [
+            {
+              "id": "HAB.I8.1PO6AH9",
+              "label": "Behaviour Equation Confidence (Post)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I5.1RIN1S1",
+              "label": "Behaviour Equation Confidence (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Behaviour Equation Confidence (Post) minus Behaviour Equation Confidence (Pre).",
+          "interpretation": "The difference is in points on the original 1–10 rating scale. A positive value means the first rating is higher; zero means the ratings are equal; a negative value means it is lower. These are your own ratings, not an assessment of skill or proof of programme effect.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "HAB.I9.UQKQC5",
+          "operation": "COPY",
+          "sources": [
+            {
+              "id": "HAB.I5.3GFJPX",
+              "label": "My Equation",
+              "type": "TEXT",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Repeats your recorded answer to “My Equation”.",
+          "interpretation": "This keeps an earlier answer available for review. It adds no new observation or assessment.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "HAB.I9.O3S5RT",
+          "operation": "PAIR",
+          "sources": [
+            {
+              "id": "HAB.I5.1RIN1S1",
+              "label": "Behaviour Equation Confidence (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I8.1PO6AH9",
+              "label": "Behaviour Equation Confidence (Post)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Shows “Behaviour Equation Confidence (Pre)” followed by “Behaviour Equation Confidence (Post)”.",
+          "interpretation": "Compare the two original answers on their own scales. A missing answer stays unavailable; the comparison does not explain the cause of a difference.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "HAB.I9.1ML2CT7",
+          "operation": "PAIR",
+          "sources": [
+            {
+              "id": "HAB.I1.1MYV9BK",
+              "label": "Habit Control Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "HAB.I8.1FAGH1",
+              "label": "Habit Control Shift Index",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Shows “Habit Control Index (Pre)” followed by “Habit Control Shift Index”.",
+          "interpretation": "Compare the two original answers on their own scales. A missing answer stays unavailable; the comparison does not explain the cause of a difference.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        }
+      ],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "HAB.I1.1MYV9BK",
+          "sourceFields": [
+            "HAB.I1.1MYV9BK",
+            "HAB.I1.1FG86CZ",
+            "HAB.I1.SEZJNX",
+            "HAB.I1.6OKCWP"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "HAB.I1.1GIBUZU",
+            "HAB.I1.75GPKE",
+            "HAB.I1.1OBWML0",
+            "HAB.I1.K40CPU",
+            "HAB.I1.2U3OVA",
+            "HAB.I1.FUDCYQ",
+            "HAB.I1.2AJVPE",
+            "HAB.I1.S1FBKY",
+            "HAB.I1.1J981U6",
+            "HAB.I1.1F7RDZ6"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "HAB.I3.1EBBH02",
+          "sourceFields": [
+            "HAB.I3.1EBBH02"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "HAB.I5.1RIN1S1",
+          "sourceFields": [
+            "HAB.I5.1RIN1S1",
+            "HAB.I5.MFOI6G",
+            "HAB.I5.R4CPT9"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "HAB.I6.TG7D8T",
+            "HAB.I6.F7EP01",
+            "HAB.I6.1FLI52D",
+            "HAB.I6.R4CPT9"
+          ]
+        },
+        {
+          "code": "BEI-06",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "HAB.I7.7F29AD",
+            "HAB.I7.G3IHBG",
+            "HAB.I7.1RDR8CV",
+            "HAB.I7.1F9LD5V",
+            "HAB.I7.1IEXXHU",
+            "HAB.I7.1SACVIZ",
+            "HAB.I7.12OX539",
+            "HAB.I7.7J9JRW",
+            "HAB.I7.9CXJ0Z",
+            "HAB.I7.1Y20G93",
+            "HAB.I7.1YTYHT2",
+            "HAB.I7.1HZY6R3",
+            "HAB.I7.PKKZ5P",
+            "HAB.I7.1Y43R5O",
+            "HAB.I7.1509C8N",
+            "HAB.I7.18X3OR7",
+            "HAB.I7.18QGIPU",
+            "HAB.I7.99I93V",
+            "HAB.I7.13K5J65",
+            "HAB.I7.1D5D1LO",
+            "HAB.I7.KNGCCJ",
+            "HAB.I7.1LDI6EB"
+          ]
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "HAB.I8.1D748Z9",
+          "sourceFields": [
+            "HAB.I8.1FAGH1",
+            "HAB.I8.1D748Z9"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "HAB.I8.1PO6AH9",
+          "sourceFields": [
+            "HAB.I8.1PO6AH9",
+            "HAB.I8.1D748Z9.2",
+            "HAB.I8.1BTCQBL",
+            "HAB.I8.1K66FRJ",
+            "HAB.I8.1K66FRJ.2",
+            "HAB.I8.1K66FRJ.3",
+            "HAB.I8.1K66FRJ.4",
+            "HAB.I8.1K66FRJ.5",
+            "HAB.I8.PQ95NJ"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "BOUND",
+          "primaryPromptId": "HAB.I9.BTZG3I",
+          "sourceFields": [
+            "HAB.I9.BTZG3I"
+          ]
+        },
+        {
+          "code": "BEI-10",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "HAB.I9.1BQPEQB",
+            "HAB.I9.FBY9BX",
+            "HAB.I9.4TQNLN",
+            "HAB.I9.KGYOLH",
+            "HAB.I9.1EZUN8F",
+            "HAB.I9.UQKQC5",
+            "HAB.I9.O3S5RT",
+            "HAB.I9.1ML2CT7",
+            "HAB.I9.3K3QWL",
+            "HAB.I9.1KY2F3X",
+            "HAB.I9.ULXFHF",
+            "HAB.I9.18BRC4H",
+            "HAB.I9.1FLI52D"
+          ]
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "AST",
+      "version": "1.0",
+      "definitionSnapshotSha256": "f0dfb1f0b78d58d6c30e96b4cf55df910bc8c3698c21d5c30880bcdbdf1c04bb",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "AST.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "AST.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "AST.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "AST.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "AST.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "AST.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "AST.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "AST.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "ATT",
+      "version": "1.0",
+      "definitionSnapshotSha256": "f16e06db16f65f4b9937e6439478a07d066fa6a4809782a99620836605a1e73a",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "ATT.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "ATT.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "ATT.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "ATT.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "ATT.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "ATT.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "ATT.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "ATT.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "ATT.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "ATT.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "COM",
+      "version": "1.0",
+      "definitionSnapshotSha256": "f8cc5839a4cbec612aa394373f5ff0ac82bce31d67499f74b3b15dfb6a1ab9a1",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "COM.baseline.pre",
+          "sourceFields": [
+            "COM.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "COM.baseline.behaviour.1",
+            "COM.baseline.behaviour.2",
+            "COM.baseline.behaviour.3",
+            "COM.baseline.behaviour.4",
+            "COM.baseline.behaviour.5",
+            "COM.baseline.behaviour.6",
+            "COM.baseline.behaviour.7",
+            "COM.baseline.behaviour.8",
+            "COM.baseline.behaviour.9",
+            "COM.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "COM.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "COM.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "COM.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "COM.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "COM.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "COM.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "COM.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "COM.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "CUS",
+      "version": "1.0",
+      "definitionSnapshotSha256": "cb62e7ac109dcd62189ee1b504aafee228666fca8d448e98db7844fcfc1c9986",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "CUS.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "CUS.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "CUS.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "CUS.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "CUS.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "CUS.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "CUS.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "CUS.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "ECO",
+      "version": "1.0",
+      "definitionSnapshotSha256": "3365b18f5ced892f2d72ea2ab0712b9276017b07fcc007b047d6a46f41d76ffa",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "ECO.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "ECO.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "ECO.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "ECO.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "ECO.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "ECO.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "ECO.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "ECO.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "ENT",
+      "version": "1.0",
+      "definitionSnapshotSha256": "5fe2e6af0091c716feb120a0c6de44407faa5b9aa6c7005900115b3a150e99bc",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "ENT.baseline.pre",
+          "sourceFields": [
+            "ENT.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "ENT.baseline.behaviour.1",
+            "ENT.baseline.behaviour.2",
+            "ENT.baseline.behaviour.3",
+            "ENT.baseline.behaviour.4",
+            "ENT.baseline.behaviour.5",
+            "ENT.baseline.behaviour.6",
+            "ENT.baseline.behaviour.7",
+            "ENT.baseline.behaviour.8",
+            "ENT.baseline.behaviour.9",
+            "ENT.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "ENT.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "ENT.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "ENT.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "ENT.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "ENT.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "ENT.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "ENT.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "ENT.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "ETH",
+      "version": "1.0",
+      "definitionSnapshotSha256": "9f9b481ff0f3f4a81bf20013769fe78862278f82dbd50deceb6a5ddb5ee15579",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "ETH.baseline.pre",
+          "sourceFields": [
+            "ETH.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "ETH.baseline.behaviour.1",
+            "ETH.baseline.behaviour.2",
+            "ETH.baseline.behaviour.3",
+            "ETH.baseline.behaviour.4",
+            "ETH.baseline.behaviour.5",
+            "ETH.baseline.behaviour.6",
+            "ETH.baseline.behaviour.7",
+            "ETH.baseline.behaviour.8",
+            "ETH.baseline.behaviour.9",
+            "ETH.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "ETH.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "ETH.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "ETH.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "ETH.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "ETH.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "ETH.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "ETH.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "ETH.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "FIN",
+      "version": "1.0",
+      "definitionSnapshotSha256": "13c7ed5b6c10bfee901e1e866fa3fe904df435738a84da0f07f0079e9d5f76c3",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "FIN.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "FIN.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "FIN.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "FIN.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "FIN.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "FIN.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "FIN.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "FIN.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "FSF",
+      "version": "1.0",
+      "definitionSnapshotSha256": "a4a4a73af36c3ade2af797eb91dc51e5de6239e933f2a05a798ff8c90faddcfa",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "FSF.baseline.pre",
+          "sourceFields": [
+            "FSF.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "FSF.baseline.behaviour.1",
+            "FSF.baseline.behaviour.2",
+            "FSF.baseline.behaviour.3",
+            "FSF.baseline.behaviour.4",
+            "FSF.baseline.behaviour.5",
+            "FSF.baseline.behaviour.6",
+            "FSF.baseline.behaviour.7",
+            "FSF.baseline.behaviour.8",
+            "FSF.baseline.behaviour.9",
+            "FSF.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "FSF.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "FSF.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "FSF.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "FSF.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "FSF.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "FSF.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "FSF.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "FSF.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "GMN",
+      "version": "1.0",
+      "definitionSnapshotSha256": "da71618e62adb1cf66edad3e9797127cad8576c58028961ad9a2d086ce5b959a",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "GMN.baseline.pre",
+          "sourceFields": [
+            "GMN.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "GMN.baseline.behaviour.1",
+            "GMN.baseline.behaviour.2",
+            "GMN.baseline.behaviour.3",
+            "GMN.baseline.behaviour.4",
+            "GMN.baseline.behaviour.5",
+            "GMN.baseline.behaviour.6",
+            "GMN.baseline.behaviour.7",
+            "GMN.baseline.behaviour.8",
+            "GMN.baseline.behaviour.9",
+            "GMN.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "GMN.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "GMN.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "GMN.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "GMN.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "GMN.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "GMN.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "GMN.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "GMN.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "GRT",
+      "version": "1.0",
+      "definitionSnapshotSha256": "6e8070c1c68172afcd126e3c9db29113f46070d06dcc834a92b75e7424a4b099",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "GRT.baseline.pre",
+          "sourceFields": [
+            "GRT.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "GRT.baseline.behaviour.1",
+            "GRT.baseline.behaviour.2",
+            "GRT.baseline.behaviour.3",
+            "GRT.baseline.behaviour.4",
+            "GRT.baseline.behaviour.5",
+            "GRT.baseline.behaviour.6",
+            "GRT.baseline.behaviour.7",
+            "GRT.baseline.behaviour.8",
+            "GRT.baseline.behaviour.9",
+            "GRT.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "GRT.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "GRT.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "GRT.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "GRT.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "GRT.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "GRT.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "GRT.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "GRT.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "IDN",
+      "version": "1.0",
+      "definitionSnapshotSha256": "65b6c735219488e7e499dff5e9044cfa12f26c3f35beadd86ee4647664401235",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "IDN.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "IDN.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "IDN.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "IDN.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "IDN.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "IDN.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "IDN.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "IDN.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "IDN.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "IDN.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "INF",
+      "version": "1.0",
+      "definitionSnapshotSha256": "fd8a4529776da85ee18a09ff29615d45d1f7521031015e866f23b8f6325001ba",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "INF.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "INF.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "INF.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "INF.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "INF.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "INF.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "INF.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "INF.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "INF.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "INF.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "INN",
+      "version": "1.0",
+      "definitionSnapshotSha256": "cdb67d21b32870f14af2460cb7db75d51ec3549601b7749073155be1d35812c6",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "INN.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "INN.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "INN.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "INN.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "INN.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "INN.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "INN.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "INN.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "LCH",
+      "version": "1.0",
+      "definitionSnapshotSha256": "ac7bf8d18f22ad0ce15691062b4373f00f22741f97dccf60f909f0095d580318",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "LCH.baseline.pre",
+          "sourceFields": [
+            "LCH.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "LCH.baseline.behaviour.1",
+            "LCH.baseline.behaviour.2",
+            "LCH.baseline.behaviour.3",
+            "LCH.baseline.behaviour.4",
+            "LCH.baseline.behaviour.5",
+            "LCH.baseline.behaviour.6",
+            "LCH.baseline.behaviour.7",
+            "LCH.baseline.behaviour.8",
+            "LCH.baseline.behaviour.9",
+            "LCH.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "LCH.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "LCH.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "LCH.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "LCH.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "LCH.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "LCH.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "LCH.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "LCH.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "LDR",
+      "version": "1.0",
+      "definitionSnapshotSha256": "b1e3b7c4d0655f92b6e60652d17e4b41febff82cece2580dd903a3ed795f121a",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "LDR.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "LDR.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "LDR.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "LDR.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "LDR.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "LDR.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "LDR.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "LDR.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "LDR.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "LDR.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "LTT",
+      "version": "1.0",
+      "definitionSnapshotSha256": "16bb6c132976553b7ece391b0d0f7fc85dd3563cb25c162cba5ef00ab9c6653e",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "LTT.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "LTT.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "LTT.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "LTT.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "LTT.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "LTT.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "LTT.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "LTT.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "MTL",
+      "version": "1.0",
+      "definitionSnapshotSha256": "8cf896c37d75293d24783f04ca31b7228234dcc01746b4660185602e12bf8196",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "MTL.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "MTL.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "MTL.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "MTL.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "MTL.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "MTL.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "MTL.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "MTL.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "NEG",
+      "version": "1.0",
+      "definitionSnapshotSha256": "4348c77fce5a66c6b4d009e50dba308719f95e0eb6b6ad1b20873744438638fa",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "NEG.baseline.pre",
+          "sourceFields": [
+            "NEG.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "NEG.baseline.behaviour.1",
+            "NEG.baseline.behaviour.2",
+            "NEG.baseline.behaviour.3",
+            "NEG.baseline.behaviour.4",
+            "NEG.baseline.behaviour.5",
+            "NEG.baseline.behaviour.6",
+            "NEG.baseline.behaviour.7",
+            "NEG.baseline.behaviour.8",
+            "NEG.baseline.behaviour.9",
+            "NEG.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "NEG.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "NEG.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "NEG.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "NEG.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "NEG.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "NEG.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "NEG.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "NEG.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "OPP",
+      "version": "1.0",
+      "definitionSnapshotSha256": "72bd8b0bbb5e9eb8154c8afbf4987d3bca95ead446c670ba7790ba08269f3b16",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "OPP.baseline.pre",
+          "sourceFields": [
+            "OPP.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "OPP.baseline.behaviour.1",
+            "OPP.baseline.behaviour.2",
+            "OPP.baseline.behaviour.3",
+            "OPP.baseline.behaviour.4",
+            "OPP.baseline.behaviour.5",
+            "OPP.baseline.behaviour.6",
+            "OPP.baseline.behaviour.7",
+            "OPP.baseline.behaviour.8",
+            "OPP.baseline.behaviour.9",
+            "OPP.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "OPP.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "OPP.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "OPP.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "OPP.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "OPP.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "OPP.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "OPP.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "OPP.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "PEF",
+      "version": "1.0",
+      "definitionSnapshotSha256": "8fd17831e70b753e6c829ee24c28e6ef6c776f99c83c3a02f3f69f3f5d2f11ce",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "PEF.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "PEF.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "PEF.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "PEF.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "PEF.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "PEF.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "PEF.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "PEF.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "PUR",
+      "version": "1.0",
+      "definitionSnapshotSha256": "87ef500fc9ffeed7417d5f800ea7603234cf899cd0be5a45aaaa73e732048137",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "PUR.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "PUR.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "PUR.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "PUR.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "PUR.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "PUR.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "PUR.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "PUR.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "PUR.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "PUR.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "RES",
+      "version": "1.0",
+      "definitionSnapshotSha256": "9a18064d70284f025e3485dae9d151d97b9385c2205b1a3c6acdc36a6cf9ed84",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "RES.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "RES.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "RES.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "RES.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "RES.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "RES.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "RES.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "RES.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "RES.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "RES.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "RSK",
+      "version": "1.0",
+      "definitionSnapshotSha256": "862a14f4b1ce8ba7430847de48bb8497ff05536aefa3c91de0f74ff78eac3902",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "RSK.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "RSK.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "RSK.I3.WAS_YOUR_PREDICTION_CORRECT.2",
+          "sourceFields": [
+            "RSK.I3.WAS_YOUR_PREDICTION_CORRECT.2"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "RSK.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "RSK.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "RSK.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "RSK.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "RSK.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "RSK.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "SYS",
+      "version": "1.0",
+      "definitionSnapshotSha256": "9e99f2a7947759da4e6b799f233ee4417480de79084dfcd95604711758489230",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "SYS.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "SYS.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "SYS.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "SYS.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "SYS.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "SYS.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "SYS.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "SYS.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "TEAM",
+      "version": "1.0",
+      "definitionSnapshotSha256": "0a71beec92d4490ba8bf21d89e77476d88a5f6caf21c29403cdab6e835ae9885",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "TEAM.baseline.pre",
+          "sourceFields": [
+            "TEAM.baseline.pre"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "TEAM.baseline.behaviour.1",
+            "TEAM.baseline.behaviour.2",
+            "TEAM.baseline.behaviour.3",
+            "TEAM.baseline.behaviour.4",
+            "TEAM.baseline.behaviour.5",
+            "TEAM.baseline.behaviour.6",
+            "TEAM.baseline.behaviour.7",
+            "TEAM.baseline.behaviour.8",
+            "TEAM.baseline.behaviour.9",
+            "TEAM.baseline.behaviour.10"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "TEAM.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "TEAM.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "TEAM.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "TEAM.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "TEAM.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "TEAM.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "TEAM.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "TEAM.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "TIM",
+      "version": "1.0",
+      "definitionSnapshotSha256": "d56d5bb9ff16ceecddd40d2b7ba11844bb74fec08e894ed3323309ec64322916",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "TIM.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "TIM.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "TIM.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "TIM.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "TIM.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "TIM.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "TIM.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "TIM.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "TIM.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "TIM.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "TRS",
+      "version": "1.0",
+      "definitionSnapshotSha256": "8bb3069cd6690362eddd0489dd385748893d746cf5d69e36c8f8bed744ccf697",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "TEI-01",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "TRS.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "TRS.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "TEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "TRS.I5.TEI_04_PRE.2",
+          "sourceFields": [
+            "TRS.I5.TEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "TEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "TRS.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "TRS.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "TRS.I8.TEI_08_POST.3",
+          "sourceFields": [
+            "TRS.I8.TEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "TEI-09",
+          "status": "NOT_COLLECTED",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "TEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "TRU",
+      "version": "1.0",
+      "definitionSnapshotSha256": "b0b6b74638a0f617aeab9bffc5aa477ac2258eabfdcf4aa76907257a808767dc",
+      "calculations": [],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "TRU.I1.BEI_01_PRE.11",
+          "sourceFields": [
+            "TRU.I1.BEI_01_PRE.11"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "TRU.I3.WAS_YOUR_PREDICTION_CORRECT.1",
+          "sourceFields": [
+            "TRU.I3.WAS_YOUR_PREDICTION_CORRECT.1"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "TRU.I5.BEI_04_PRE.2",
+          "sourceFields": [
+            "TRU.I5.BEI_04_PRE.2"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-06",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "TRU.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "TRU.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "TRU.I8.BEI_08_POST.3",
+          "sourceFields": [
+            "TRU.I8.BEI_08_POST.3"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        },
+        {
+          "code": "BEI-10",
+          "status": "UNBOUND",
+          "primaryPromptId": null,
+          "sourceFields": []
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    },
+    {
+      "code": "DEC",
+      "version": "4.2.2",
+      "definitionSnapshotSha256": "c1ae10e5d3550e619f456f543549dfc9029ef7014fe62bc0339e702315318f63",
+      "calculations": [
+        {
+          "id": "DEC.I7.1LDI6EB",
+          "operation": "COUNT_PRESENT",
+          "sources": [
+            {
+              "id": "DEC.I7.18TZSCA",
+              "label": "Day 1 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I7.8ZEUTC",
+              "label": "Day 2 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I7.147VN1M",
+              "label": "Day 3 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I7.KWX94K",
+              "label": "Day 4 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I7.15KOGYI",
+              "label": "Day 5 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I7.A3SLKO",
+              "label": "Day 6 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I7.1VZLSPM",
+              "label": "Day 7 action check",
+              "type": "BOOLEAN",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Counts how many of the listed answers have a recorded value.",
+          "interpretation": "This is a response count, not a success rate. An available answer counts even when it records no action or no opportunity. Missing answers remain missing.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "DEC.I8.1D748Z9",
+          "operation": "DIFFERENCE",
+          "sources": [
+            {
+              "id": "DEC.I8.VBI9EU",
+              "label": "Decision Quality Shift Index",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I1.1VAX2OP",
+              "label": "Decision Quality Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Decision Quality Shift Index minus Decision Quality Index (Pre).",
+          "interpretation": "The difference is in points on the original 1–10 rating scale. A positive value means the first rating is higher; zero means the ratings are equal; a negative value means it is lower. These are your own ratings, not an assessment of skill or proof of programme effect.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "DEC.I8.1D748Z9.2",
+          "operation": "DIFFERENCE",
+          "sources": [
+            {
+              "id": "DEC.I8.5QUVIV",
+              "label": "Decision Confidence Index (Post)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I5.D6IVKV",
+              "label": "Decision Confidence Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Decision Confidence Index (Post) minus Decision Confidence Index (Pre).",
+          "interpretation": "The difference is in points on the original 1–10 rating scale. A positive value means the first rating is higher; zero means the ratings are equal; a negative value means it is lower. These are your own ratings, not an assessment of skill or proof of programme effect.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "DEC.I9.P0H7YN",
+          "operation": "COLLECTION",
+          "sources": [
+            {
+              "id": "DEC.I1.SCAFFOLD.APVHXN",
+              "label": "My perceived options 1",
+              "type": "TEXT",
+              "scale": null,
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I1.SCAFFOLD.1J4B2M9",
+              "label": "My perceived options 2",
+              "type": "TEXT",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Brings the listed recorded answers together in their original order.",
+          "interpretation": "This is a collection of answers, not a combined score. Missing items remain missing; an earlier retained collection can supply the result where the published calculation allows it.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "DEC.I9.UQKQC5",
+          "operation": "COPY",
+          "sources": [
+            {
+              "id": "DEC.I5.3GFJPX",
+              "label": "My Equation",
+              "type": "TEXT",
+              "scale": null,
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Repeats your recorded answer to “My Equation”.",
+          "interpretation": "This keeps an earlier answer available for review. It adds no new observation or assessment.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "DEC.I9.O3S5RT",
+          "operation": "PAIR",
+          "sources": [
+            {
+              "id": "DEC.I5.D6IVKV",
+              "label": "Decision Confidence Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I8.5QUVIV",
+              "label": "Decision Confidence Index (Post)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Shows “Decision Confidence Index (Pre)” followed by “Decision Confidence Index (Post)”.",
+          "interpretation": "Compare the two original answers on their own scales. A missing answer stays unavailable; the comparison does not explain the cause of a difference.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        },
+        {
+          "id": "DEC.I9.WDWZ6H",
+          "operation": "PAIR",
+          "sources": [
+            {
+              "id": "DEC.I1.1VAX2OP",
+              "label": "Decision Quality Index (Pre)",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            },
+            {
+              "id": "DEC.I8.VBI9EU",
+              "label": "Decision Quality Shift Index",
+              "type": "INTEGER",
+              "scale": {
+                "min": 1,
+                "max": 10
+              },
+              "sensitivity": "P2"
+            }
+          ],
+          "calculation": "Shows “Decision Quality Index (Pre)” followed by “Decision Quality Shift Index”.",
+          "interpretation": "Compare the two original answers on their own scales. A missing answer stays unavailable; the comparison does not explain the cause of a difference.",
+          "practicalMeaning": "Review the named original inputs, missing values and task context before using this result in reflection or a human assessment. It does not establish programme causation or assessed competence."
+        }
+      ],
+      "indicators": [
+        {
+          "code": "BEI-01",
+          "status": "BOUND",
+          "primaryPromptId": "DEC.I1.1VAX2OP",
+          "sourceFields": [
+            "DEC.I1.1VAX2OP",
+            "DEC.I1.1DMZR65",
+            "DEC.I1.ZPD2OD",
+            "DEC.I1.1L5OUC1"
+          ]
+        },
+        {
+          "code": "BEI-02",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "DEC.I1.5G6N5E",
+            "DEC.I1.117FZW",
+            "DEC.I1.13H3KTU",
+            "DEC.I1.15H19W",
+            "DEC.I1.WE4CC2",
+            "DEC.I1.2VJXZS",
+            "DEC.I1.7RMUHM",
+            "DEC.I1.Q05YEU",
+            "DEC.I1.1D9BWHU",
+            "DEC.I1.YPG4F0"
+          ]
+        },
+        {
+          "code": "BEI-03",
+          "status": "BOUND",
+          "primaryPromptId": "DEC.I3.1NV6GI6",
+          "sourceFields": [
+            "DEC.I3.1NV6GI6"
+          ]
+        },
+        {
+          "code": "BEI-04",
+          "status": "BOUND",
+          "primaryPromptId": "DEC.I5.D6IVKV",
+          "sourceFields": [
+            "DEC.I5.D6IVKV",
+            "DEC.I5.MFOI6G",
+            "DEC.I5.R4CPT9"
+          ]
+        },
+        {
+          "code": "BEI-05",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "DEC.I6.3ZFO8L",
+            "DEC.I6.F7EP01",
+            "DEC.I6.1FLI52D",
+            "DEC.I6.R4CPT9"
+          ]
+        },
+        {
+          "code": "BEI-06",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "DEC.I7.7F29AD",
+            "DEC.I7.9NQ3EO",
+            "DEC.I7.18TZSCA",
+            "DEC.I7.1RDR8CV",
+            "DEC.I7.1F9LD5V",
+            "DEC.I7.1N9TO12",
+            "DEC.I7.8ZEUTC",
+            "DEC.I7.1SACVIZ",
+            "DEC.I7.12OX539",
+            "DEC.I7.19E29JC",
+            "DEC.I7.147VN1M",
+            "DEC.I7.9CXJ0Z",
+            "DEC.I7.1Y20G93",
+            "DEC.I7.1N9T5RM",
+            "DEC.I7.KWX94K",
+            "DEC.I7.1HZY6R3",
+            "DEC.I7.PKKZ5P",
+            "DEC.I7.879NY8",
+            "DEC.I7.15KOGYI",
+            "DEC.I7.1509C8N",
+            "DEC.I7.18X3OR7",
+            "DEC.I7.ELAPDI",
+            "DEC.I7.A3SLKO",
+            "DEC.I7.99I93V",
+            "DEC.I7.13K5J65",
+            "DEC.I7.151UWFS",
+            "DEC.I7.1VZLSPM",
+            "DEC.I7.KNGCCJ",
+            "DEC.I7.1LDI6EB"
+          ]
+        },
+        {
+          "code": "BEI-07",
+          "status": "BOUND",
+          "primaryPromptId": "DEC.I8.1D748Z9",
+          "sourceFields": [
+            "DEC.I8.VBI9EU",
+            "DEC.I8.1D748Z9"
+          ]
+        },
+        {
+          "code": "BEI-08",
+          "status": "BOUND",
+          "primaryPromptId": "DEC.I8.5QUVIV",
+          "sourceFields": [
+            "DEC.I8.5QUVIV",
+            "DEC.I8.1D748Z9.2",
+            "DEC.I8.1BTCQBL",
+            "DEC.I8.1K66FRJ",
+            "DEC.I8.1K66FRJ.2",
+            "DEC.I8.1K66FRJ.3",
+            "DEC.I8.1K66FRJ.4",
+            "DEC.I8.1K66FRJ.5",
+            "DEC.I8.1KYL9RD"
+          ]
+        },
+        {
+          "code": "BEI-09",
+          "status": "BOUND",
+          "primaryPromptId": "DEC.I9.BTZG3I",
+          "sourceFields": [
+            "DEC.I9.BTZG3I"
+          ]
+        },
+        {
+          "code": "BEI-10",
+          "status": "BOUND",
+          "primaryPromptId": null,
+          "sourceFields": [
+            "DEC.I9.1TWLZNH",
+            "DEC.I9.P0H7YN",
+            "DEC.I9.FCBTXH",
+            "DEC.I9.1BLS26J",
+            "DEC.I9.93FZM3",
+            "DEC.I9.UQKQC5",
+            "DEC.I9.O3S5RT",
+            "DEC.I9.WDWZ6H",
+            "DEC.I9.RZ9DFR",
+            "DEC.I9.1KY2F3X",
+            "DEC.I9.ULXFHF",
+            "DEC.I9.18BRC4H",
+            "DEC.I9.1FLI52D"
+          ]
+        }
+      ],
+      "manualInterpretationReview": "PENDING; defined source/calculation/context does not certify every practical interpretation or learner state"
+    }
+  ],
+  "findings": [
+    {
+      "code": "AST",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "AST",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "AST",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "AST",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "AST",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ATT",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ATT",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ATT",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ATT",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ATT",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "COM",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "COM",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "COM",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "COM",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "CUS",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "CUS",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "CUS",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "CUS",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "CUS",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ECO",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ECO",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ECO",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ECO",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ECO",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ENT",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ENT",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ENT",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ENT",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ETH",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ETH",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ETH",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "ETH",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FIN",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FIN",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FIN",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FIN",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FIN",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FSF",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FSF",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FSF",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "FSF",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GMN",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GMN",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GMN",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GMN",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GRT",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GRT",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GRT",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "GRT",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "IDN",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "IDN",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "IDN",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "IDN",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "IDN",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INF",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INF",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INF",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INF",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INF",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INN",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INN",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INN",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INN",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "INN",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LCH",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LCH",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LCH",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LCH",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LDR",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LDR",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LDR",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LDR",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LDR",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LTT",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LTT",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LTT",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LTT",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "LTT",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "MTL",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "MTL",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "MTL",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "MTL",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "MTL",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "NEG",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "NEG",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "NEG",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "NEG",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "OPP",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "OPP",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "OPP",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "OPP",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PEF",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PEF",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PEF",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PEF",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PEF",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PUR",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PUR",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PUR",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PUR",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "PUR",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RES",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RES",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RES",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RES",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RES",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RSK",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RSK",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RSK",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RSK",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "RSK",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "SYS",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "SYS",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "SYS",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "SYS",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "SYS",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TEAM",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TEAM",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TEAM",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TEAM",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TIM",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TIM",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TIM",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TIM",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TIM",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRS",
+      "version": "1.0",
+      "indicator": "TEI-01",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRS",
+      "version": "1.0",
+      "indicator": "TEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRS",
+      "version": "1.0",
+      "indicator": "TEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRS",
+      "version": "1.0",
+      "indicator": "TEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRS",
+      "version": "1.0",
+      "indicator": "TEI-10",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRU",
+      "version": "1.0",
+      "indicator": "BEI-02",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRU",
+      "version": "1.0",
+      "indicator": "BEI-05",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRU",
+      "version": "1.0",
+      "indicator": "BEI-06",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRU",
+      "version": "1.0",
+      "indicator": "BEI-09",
+      "issue": "Unbound published indicator"
+    },
+    {
+      "code": "TRU",
+      "version": "1.0",
+      "indicator": "BEI-10",
+      "issue": "Unbound published indicator"
+    }
+  ],
+  "calculations": 20,
+  "boundary": "Self-report, observation, projection and inference remain distinct in the published questions/calculation context. Whole-pass manual interpretation review and approved Identity/Attention narrative profile bindings remain open."
+}

@@ -1,0 +1,20 @@
+{
+  "userAuthorisation": "User requested dedicated account creation for final live checks on 2026-10-07",
+  "projectRef": "swmhsqivqaqwovojbceo",
+  "groupId": "3f232f57-a493-4aa0-aa3a-59e14b1ee6f4",
+  "groupName": "BIS verification only 20261007 — synthetic records, not programme outcomes",
+  "participants": 6,
+  "editions": [
+    "school",
+    "emerging_adult",
+    "workplace"
+  ],
+  "labCode": "HAB",
+  "version": "4.5.3",
+  "normalApiSetup": "PASS",
+  "normalApiEnrolmentPlan": "PASS",
+  "sponsorOwnerScope": "Synthetic cohort only",
+  "originalLearnerDataModified": false,
+  "productionCalendarOverride": false,
+  "observedAt": "2026-10-07T03:03:37.718Z"
+}

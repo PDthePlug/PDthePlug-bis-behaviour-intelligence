@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-10-07T03:33:39.048Z",
+  "result": "FAIL",
+  "checks": [
+    {
+      "journey": "Fresh password sign-in and protected return",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "calendarOverride": false,
+  "boundary": "Dedicated authorised QA learner only. Baseline and Hook are verified only if their checks pass; calendar-complete investigation and certificate issuance are not claimed."
+}

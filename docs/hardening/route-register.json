@@ -1,6 +1,6 @@
 {
   "baseCommit": "d8ca307ae455024b5816240d4db08f0dddd6bf73",
-  "generatedAt": "2026-10-06T21:21:28.470Z",
+  "generatedAt": "2026-10-07T02:50:56.716Z",
   "routes": [
     {
       "route": "/api/bis",
@@ -653,7 +653,20 @@
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "Shared floating Menu visual obstruction review: VISUAL-MENU.",
         "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Shared Menu presentation and Learning preview table/certificate changes need exact-version regression; retained copied-source correction already released.",
+        "correction": "Shared visual primitives apply to immutable previews; prior three-edition preparation/publish/rollback proof retained. No production content republished.",
+        "verification": [
+          "studio-history-certification-20261006.md",
+          "takeover-continuation-20261007.md"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/content-studio/preview/[versionId]",
@@ -855,7 +868,21 @@
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "CONFIG-AUTH / AUTH-RECOVERY: delivered provider flow and full management settings."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Staging preview callback resolves to production canonical host instead of its own bound staging origin.",
+        "correction": "Exact deployment-bound staging origin; production canonical return and callback security unchanged.",
+        "verification": [
+          "tests/production-domain.test.mjs",
+          "auth-configuration-differences.json",
+          "auth-takeover-setting-review.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/habit-lab/experiment",
@@ -968,7 +995,21 @@
         "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
         "Shared floating Menu visual obstruction review: VISUAL-MENU.",
         "Approved profile source bindings remain unresolved: CONTENT-PROFILE-BINDINGS."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Weak clipped-column guidance, concatenated accessible names, certificate wording ambiguous as an award, Menu competing with scrolling text.",
+        "correction": "Shared conditional table guidance, cleaned section/column names, observer lifecycle, explicit certificate-template note and reserved Menu chrome; authored text/fields/relationships unchanged.",
+        "verification": [
+          "tests/browser/reader-hardening.spec.ts",
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-continuation-20261007.md"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/labs/[code]",
@@ -1262,7 +1303,20 @@
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "CONFIG-AUTH / AUTH-RECOVERY: delivered provider flow and full management settings."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Recovery return origin must stay in staging for an explicitly bound preview; live delivery incomplete.",
+        "correction": "Shared trusted staging-origin callback handling; provider minimum aligns eight-character forms; production canonical configuration preserved.",
+        "verification": [
+          "tests/production-domain.test.mjs",
+          "auth-takeover-setting-review.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/settings",
@@ -1349,7 +1403,21 @@
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "Shared floating Menu visual obstruction review: VISUAL-MENU.",
         "Primary participant Lab/progamme position label: LANGUAGE-LAB-POSITION."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Primary Lab progress labelled programme position; publication metadata competes with group reading; Menu text overlap.",
+        "correction": "Lab progress label; native Programme details disclosure with dark-banner contrast and visible marker; opaque centred Menu chrome.",
+        "verification": [
+          "tests/browser/staff-evidence-engine.spec.ts",
+          "production-takeover-role-baseline.json",
+          "production-takeover-record-preservation.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     }
   ],
   "coverageBoundary": "48 patterns inventoried and individually dispositioned. REVIEWED_PARTIAL is not whole-route certification. Real staging/preview/state measurements are added in verification-evidence.json; see open-findings.md for release and remaining scope. Correction merges are recorded separately from full route certification; CONFIG-DNS and VISUAL-MENU remain open. Current product corrections and their dynamic 195-page inventory are separately recorded in productIterations; no whole-route certification claimed.",
