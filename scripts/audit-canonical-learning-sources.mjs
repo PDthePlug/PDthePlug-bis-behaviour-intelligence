@@ -5,6 +5,12 @@ import { loadContentTools } from "./lib/load-content-tools.mjs";
 
 const manifestUrl = new URL("../content/learning-sources/manifest.json", import.meta.url);
 const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
+const timeBlueprint = JSON.parse(await readFile(new URL("../content/curriculum/time/time-instructional-blueprint-v2.json", import.meta.url), "utf8"));
+const timeEvidenceMap = JSON.parse(await readFile(new URL("../content/curriculum/time/time-competency-evidence-map.json", import.meta.url), "utf8"));
+const timeV2Anchors = [...new Set([
+  ...timeBlueprint.days.flatMap((day) => day.evidence.map((item) => item.anchor)),
+  ...(timeEvidenceMap.bindings ?? []).map((item) => item.anchor),
+])];
 const expectedPageKeys = [
   "Welcome",
   "Day 1",
@@ -48,6 +54,21 @@ try {
     const source = bytes.toString("utf8");
     const editions = entry.editions ?? [];
     const starts = editions.map((edition) => source.indexOf(edition.startMarker));
+    const computedEditions = editions.map((edition, index) => {
+      const section = source.slice(starts[index], starts[index + 1] ?? source.length);
+      return {
+        deliveryEdition: edition.deliveryEdition,
+        sha256: sha256(Buffer.from(section, "utf8")),
+        bytes: Buffer.byteLength(section, "utf8"),
+      };
+    });
+    console.log(JSON.stringify({
+      sourceId: entry.moduleCode + "-LM-" + entry.version,
+      sourcePath: entry.sourcePath,
+      uploadedBytes: bytes.byteLength,
+      uploadedSha256: sha256(bytes),
+      editions: computedEditions,
+    }, null, 2));
     assert.ok(starts.every((offset) => offset >= 0), `${entry.moduleCode}: one or more authored editions are missing.`);
     assert.deepEqual([...starts].sort((a, b) => a - b), starts, `${entry.moduleCode}: authored editions changed order.`);
 
@@ -63,6 +84,20 @@ try {
       assert.ok(section.includes(`**Volume ${entry.volume} — Handbook ${entry.handbook}**`), `${entry.moduleCode}/${edition.deliveryEdition}: handbook identity missing.`);
       assert.ok(section.includes(`Version ${entry.version} — Learner Edition`), `${entry.moduleCode}/${edition.deliveryEdition}: authored version missing.`);
       assert.ok(section.includes(edition.sourceId), `${entry.moduleCode}/${edition.deliveryEdition}: source ID ${edition.sourceId} missing.`);
+
+      if (entry.moduleCode === "TIM" && entry.version === "2.0") {
+        assert.match(section, /Your 45-Minute Learning Route/, `${entry.moduleCode}/${edition.deliveryEdition}: v2 learning route missing.`);
+        assert.doesNotMatch(section, /TIME:\s*60 minutes/, `${entry.moduleCode}/${edition.deliveryEdition}: Day 1 still declares a 60-minute learning session.`);
+        assert.match(section, /Separate Facilitated Lab Experience/, `${entry.moduleCode}/${edition.deliveryEdition}: separate Day 3 Lab boundary missing.`);
+        assert.match(section, /# Time Leverage and Protection/, `${entry.moduleCode}/${edition.deliveryEdition}: Day 8 leverage layer missing.`);
+        for (const anchor of timeV2Anchors) {
+          assert.equal(
+            section.split(`<!-- BIS:EVIDENCE ${anchor} -->`).length - 1,
+            1,
+            `${entry.moduleCode}/${edition.deliveryEdition}: expected exactly one authored evidence anchor ${anchor}.`,
+          );
+        }
+      }
 
       for (const heading of [
         "# WELCOME",
@@ -126,6 +161,15 @@ try {
       const fieldIds = programme.treatment.pages.flatMap((page) =>
         [...page.html.matchAll(/data-field-id="([^"]+)"/g)].map((match) => match[1]),
       );
+      if (entry.moduleCode === "TIM" && entry.version === "2.0") {
+        const compiledAnchors = programme.treatment.pages.flatMap((page) =>
+          [...page.html.matchAll(/data-evidence-anchor="([^"]+)"/g)].map((match) => match[1]),
+        );
+        assert.equal(new Set(compiledAnchors).size, timeV2Anchors.length, `${entry.moduleCode}/${edition.deliveryEdition}: compiled evidence-anchor coverage changed.`);
+        for (const anchor of timeV2Anchors) {
+          assert.equal(compiledAnchors.filter((item) => item === anchor).length, 1, `${entry.moduleCode}/${edition.deliveryEdition}: compiled evidence anchor ${anchor} must bind exactly one learner control.`);
+        }
+      }
       assert.ok(fieldIds.length > 0, `${entry.moduleCode}/${edition.deliveryEdition}: no learner response controls were compiled.`);
       assert.equal(new Set(fieldIds).size, fieldIds.length, `${entry.moduleCode}/${edition.deliveryEdition}: duplicate workbook field IDs.`);
       assert.ok(
