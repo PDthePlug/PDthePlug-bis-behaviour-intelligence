@@ -39,6 +39,11 @@
       "expectedCeiling": "APPLY"
     },
     {
+      "competencyId": "AC-C10",
+      "role": "SUPPORTING",
+      "expectedCeiling": "APPLY"
+    },
+    {
       "competencyId": "AC-C14",
       "role": "SUPPORTING",
       "expectedCeiling": "APPLY"
