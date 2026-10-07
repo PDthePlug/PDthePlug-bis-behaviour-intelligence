@@ -2,12 +2,12 @@
   "schemaVersion": "time-instructional-blueprint:2",
   "labCode": "TIM",
   "title": "Time Lab",
-  "status": "REFERENCE_IMPLEMENTATION_PENDING_AUTHORED_REBUILD",
+  "status": "AUTHORED_REBUILD_IN_VERIFICATION",
   "sourceDependency": {
-    "pr": 137,
-    "sourceId": "TIM-LM-1.0",
-    "status": "SOURCE_READY_PENDING_MERGE",
-    "note": "PR137 remains the canonical authored-source ingestion lane. This blueprint is intentionally on a separate clean-main architecture branch and does not overwrite that source."
+    "sourceId": "TIM-LM-2.0",
+    "status": "CANONICAL_SOURCE_PENDING_FINGERPRINT_VERIFICATION",
+    "priorImmutableSourceId": "TIM-LM-1.0",
+    "note": "TIM-LM-2.0 is a new authored instructional version built on the verified curriculum architecture. TIM-LM-1.0 remains immutable."
   },
   "instructionalStandard": "bis-instructional-standard:1",
   "programmeShape": {
