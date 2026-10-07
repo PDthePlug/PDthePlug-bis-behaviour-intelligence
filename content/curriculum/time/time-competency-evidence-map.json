@@ -1,0 +1,201 @@
+{
+  "schemaVersion": "time-competency-evidence-map:1",
+  "labCode": "TIM",
+  "status": "REFERENCE_MAPPING",
+  "rule": "Bindings are authored curriculum mappings. The runtime may only classify competency progression from evidence that carries one of these stable anchors with verified provenance. Free text is never auto-labelled as competency evidence merely because it contains related words.",
+  "bindings": [
+    {
+      "anchor": "TIM.D1.RECORD_VS_STORY",
+      "competencyId": "AC-C03",
+      "evidenceClass": "LEARNING_CHECK",
+      "maxProgression": "NOTICE",
+      "assessmentMode": "AUTHORED_CHECK"
+    },
+    {
+      "anchor": "TIM.D2.OBSERVATION_CLASSIFICATION",
+      "competencyId": "AC-C03",
+      "evidenceClass": "LEARNING_CHECK",
+      "maxProgression": "EXPLAIN",
+      "assessmentMode": "AUTHORED_CHECK"
+    },
+    {
+      "anchor": "TIM.D2.CLAIM_LIMIT",
+      "competencyId": "AC-C03",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "EXPLAIN",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D3.PREDICTION",
+      "competencyId": "AC-C04",
+      "evidenceClass": "PREDICTION",
+      "maxProgression": "APPLY",
+      "assessmentMode": "PROVENANCE_ONLY"
+    },
+    {
+      "anchor": "TIM.D3.TEST_PLAN",
+      "competencyId": "AC-C05",
+      "evidenceClass": "PLAN",
+      "maxProgression": "APPLY",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D4.WORKING_EXPLANATION",
+      "competencyId": "AC-C03",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "EXPLAIN",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D4.WORKING_EXPLANATION",
+      "competencyId": "AC-C04",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "EXPLAIN",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D5.EVIDENCE_QUALITY_REVIEW",
+      "competencyId": "AC-C03",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "APPLY",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D6.REAL_WORLD_APPLICATION",
+      "competencyId": "AC-C04",
+      "evidenceClass": "OBSERVATION",
+      "maxProgression": "APPLY",
+      "assessmentMode": "OBSERVED_RECORD"
+    },
+    {
+      "anchor": "TIM.D6.RESPONSE_RESULT",
+      "competencyId": "AC-C04",
+      "evidenceClass": "OUTCOME",
+      "maxProgression": "APPLY",
+      "assessmentMode": "OBSERVED_RECORD"
+    },
+    {
+      "anchor": "TIM.D7.BARRIER_DIAGNOSIS",
+      "competencyId": "AC-C04",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "TEST_AND_REVISE",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D7.JUSTIFIED_ADJUSTMENT",
+      "competencyId": "AC-C04",
+      "evidenceClass": "PLAN",
+      "maxProgression": "TEST_AND_REVISE",
+      "assessmentMode": "REVISION",
+      "relation": "REVISION"
+    },
+    {
+      "anchor": "TIM.D7.BARRIER_DIAGNOSIS",
+      "competencyId": "AC-C10",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "APPLY",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D8.LEVERAGE_REASONING",
+      "competencyId": "AC-C09",
+      "evidenceClass": "LEARNING_CHECK",
+      "maxProgression": "EXPLAIN",
+      "assessmentMode": "AUTHORED_CHECK"
+    },
+    {
+      "anchor": "TIM.D8.LEVERAGE_PLAN",
+      "competencyId": "AC-C09",
+      "evidenceClass": "PLAN",
+      "maxProgression": "APPLY",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D8.LEVERAGE_PLAN",
+      "competencyId": "AC-C14",
+      "evidenceClass": "PLAN",
+      "maxProgression": "APPLY",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D9.FINAL_REVIEW",
+      "competencyId": "AC-C03",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "TEST_AND_REVISE",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D9.FINAL_REVIEW",
+      "competencyId": "AC-C04",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "TEST_AND_REVISE",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D9.FINAL_REVIEW",
+      "competencyId": "AC-C15",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "TEST_AND_REVISE",
+      "assessmentMode": "AUTHORED_RUBRIC"
+    },
+    {
+      "anchor": "TIM.D9.SECOND_PATTERN",
+      "competencyId": "AC-C05",
+      "evidenceClass": "TRANSFER",
+      "maxProgression": "TRANSFER",
+      "assessmentMode": "AUTHORED_TRANSFER_TASK",
+      "secondContextRequired": true
+    },
+    {
+      "anchor": "TIM.D9.SECOND_PATTERN",
+      "competencyId": "AC-C15",
+      "evidenceClass": "TRANSFER",
+      "maxProgression": "TRANSFER",
+      "assessmentMode": "AUTHORED_TRANSFER_TASK",
+      "secondContextRequired": true
+    },
+    {
+      "anchor": "TIM.D10.TEACH_BACK",
+      "competencyId": "AC-C03",
+      "evidenceClass": "LEARNING_CHECK",
+      "maxProgression": "EXPLAIN",
+      "assessmentMode": "AUTHORED_CHECK"
+    },
+    {
+      "anchor": "TIM.D10.TRANSFER_DEMONSTRATION",
+      "competencyId": "AC-C05",
+      "evidenceClass": "TRANSFER",
+      "maxProgression": "TRANSFER",
+      "assessmentMode": "AUTHORED_TRANSFER_TASK",
+      "secondContextRequired": true
+    },
+    {
+      "anchor": "TIM.D10.TRANSFER_DEMONSTRATION",
+      "competencyId": "AC-C15",
+      "evidenceClass": "TRANSFER",
+      "maxProgression": "TRANSFER",
+      "assessmentMode": "AUTHORED_TRANSFER_TASK",
+      "secondContextRequired": true
+    },
+    {
+      "anchor": "TIM.D10.PROFILE_NARRATIVE",
+      "competencyId": "AC-C15",
+      "evidenceClass": "INTERPRETATION",
+      "maxProgression": "TEST_AND_REVISE",
+      "assessmentMode": "LEARNER_OWNED_NARRATIVE"
+    }
+  ],
+  "claimBoundaries": [
+    "Self-reported control or confidence may describe perceived change but cannot raise a competency progression level by itself.",
+    "Adherence and reclaim rates describe the defined Time experiment, not general time-management ability.",
+    "A transfer task can support transfer only for the mapped competency and recorded second context.",
+    "Private time patterns and learner reflections are excluded from sponsor reporting.",
+    "No binding creates a personality, productivity or employability classification."
+  ],
+  "reportOutputs": {
+    "learner": "Progress narrative by competency with evidence anchors, limitation and next practice.",
+    "facilitator": "Evidence state, missing review, support need and next task; private content remains hidden unless shared.",
+    "cohort": "Privacy-safe distribution of supported progression levels and evidence coverage, never a leaderboard.",
+    "sponsor": "What was taught, what was practised, what evidence exists, what progression is supported, where evidence is insufficient, and what should be tested next."
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "schemaVersion": "bis-report-classifications:1",
+  "purpose": "Defines what kind of report BIS is producing, whose evidence it uses, what claims it may make, and what must remain private or unclaimed.",
+  "doctrine": [
+    "A report classification is selected before rendering metrics or narrative.",
+    "Numbers are supporting evidence, not the report's meaning.",
+    "Competency progression is only reported when an authored competency-to-task mapping and sufficient evidence exist.",
+    "Pre/post change is described against the same defined construct or task family; unrelated responses are never treated as a progression score.",
+    "No report may infer personality, clinical status, intelligence, employability, permanent mastery or causal programme impact from participation or generic percentages.",
+    "Individual private reflections remain outside sponsor and organisation reporting."
+  ],
+  "classifications": [
+    {
+      "id": "LEARNER_PROGRESS_REPORT",
+      "audience": [
+        "learner"
+      ],
+      "unit": "individual",
+      "purpose": "Explain the learner's journey from starting point through learning, application, investigation, review and next step.",
+      "mayUse": [
+        "BASELINE",
+        "LEARNING_CHECK",
+        "CONTEXT",
+        "PREDICTION",
+        "PLAN",
+        "OBSERVATION",
+        "OUTCOME",
+        "INTERPRETATION",
+        "TRANSFER"
+      ],
+      "maySay": [
+        "what the learner demonstrated in defined tasks",
+        "where evidence strengthened or changed",
+        "what remains uncertain",
+        "next practice or transfer pathway"
+      ],
+      "mustNotSay": [
+        "fixed identity or personality",
+        "global maturity score",
+        "permanent mastery from one task"
+      ]
+    },
+    {
+      "id": "COMPETENCY_EVIDENCE_REPORT",
+      "audience": [
+        "learner",
+        "authorised facilitator"
+      ],
+      "unit": "individual",
+      "purpose": "Summarise evidence against explicitly mapped Applied Commerce competencies.",
+      "mayUse": [
+        "governed task-to-competency mappings",
+        "facilitator rubric evidence",
+        "learner-shared portfolio evidence",
+        "defined observations"
+      ],
+      "maySay": [
+        "highest supported progression level per competency",
+        "evidence type and source",
+        "limits and next evidence needed"
+      ],
+      "mustNotSay": [
+        "competency from attendance alone",
+        "competency from private reflection alone",
+        "real-world performance from a simulation"
+      ]
+    },
+    {
+      "id": "EVIDENCE_PORTFOLIO",
+      "audience": [
+        "learner"
+      ],
+      "unit": "individual_longitudinal",
+      "purpose": "Keep the learner's traceable evidence, revisions, explanations and transfer record across Labs.",
+      "mayUse": [
+        "learner-owned evidence anchors",
+        "derived deterministic measures with provenance",
+        "shared attachments"
+      ],
+      "maySay": [
+        "what was recorded",
+        "how an interpretation changed",
+        "which evidence supports a claim",
+        "what the learner plans to test next"
+      ],
+      "mustNotSay": [
+        "that a missing record equals failure",
+        "that a derived measure replaces original evidence"
+      ]
+    },
+    {
+      "id": "FACILITATOR_SUPPORT_REPORT",
+      "audience": [
+        "facilitator"
+      ],
+      "unit": "individual_support",
+      "purpose": "Show structural progress and support needs without exposing unnecessary private content.",
+      "mayUse": [
+        "stage completion",
+        "evidence presence",
+        "assessment status",
+        "learner-authorised shared evidence",
+        "support signals"
+      ],
+      "maySay": [
+        "where support is needed",
+        "which task/evidence is missing",
+        "which review is due"
+      ],
+      "mustNotSay": [
+        "private hypotheses, reflections or experiment wording unless explicitly shared",
+        "hidden personality or risk labels"
+      ]
+    },
+    {
+      "id": "COHORT_LEARNING_REPORT",
+      "audience": [
+        "programme_owner",
+        "organisation_owner"
+      ],
+      "unit": "aggregate_cohort",
+      "purpose": "Describe participation, learning evidence, application coverage and competency evidence across a reportable cohort.",
+      "mayUse": [
+        "privacy-safe aggregates",
+        "mapped learning checks",
+        "mapped rubric results",
+        "evidence coverage",
+        "delivery records"
+      ],
+      "maySay": [
+        "reportable group patterns",
+        "distribution of supported competency levels when thresholds are met",
+        "where evidence is insufficient"
+      ],
+      "mustNotSay": [
+        "identify learners by subtraction",
+        "programme caused change",
+        "missing values equal zero"
+      ]
+    },
+    {
+      "id": "SPONSOR_OUTCOME_REPORT",
+      "audience": [
+        "sponsor",
+        "organisation_owner"
+      ],
+      "unit": "aggregate_programme",
+      "purpose": "Provide substantive programme results: what was taught, what was practised, what evidence was produced, what competencies were demonstrated, what changed, and what remains unproven.",
+      "mayUse": [
+        "privacy-safe cohort aggregates",
+        "pre/post same-family comparisons",
+        "authored competency assessments",
+        "real-world observation coverage",
+        "delivery quality"
+      ],
+      "maySay": [
+        "evidence-backed progress against defined programme competencies",
+        "change in comparable measures",
+        "transfer evidence coverage",
+        "programme limitations and next decisions"
+      ],
+      "mustNotSay": [
+        "causal impact without an appropriate design",
+        "individual private content",
+        "certified external competency attainment unless separately verified"
+      ]
+    },
+    {
+      "id": "IMPLEMENTATION_QUALITY_REPORT",
+      "audience": [
+        "programme_owner",
+        "facilitator",
+        "internal_quality"
+      ],
+      "unit": "delivery",
+      "purpose": "Assess whether the intended ten-touchpoint curriculum, Lab handoff, evidence windows and reviews were actually delivered.",
+      "mayUse": [
+        "session delivery",
+        "content version",
+        "Lab handoff state",
+        "scheduled evidence windows",
+        "facilitator completion",
+        "technical access"
+      ],
+      "maySay": [
+        "delivery fidelity",
+        "coverage gaps",
+        "operational blockers",
+        "content version used"
+      ],
+      "mustNotSay": [
+        "learner capability from delivery completion"
+      ]
+    },
+    {
+      "id": "LONGITUDINAL_PATHWAY_REPORT",
+      "audience": [
+        "learner",
+        "authorised programme_owner"
+      ],
+      "unit": "longitudinal",
+      "purpose": "Show how competency evidence develops across multiple Labs or programme cycles without reducing the learner to a single score.",
+      "mayUse": [
+        "versioned competency evidence summaries",
+        "comparable task families",
+        "transfer records",
+        "dated facilitator assessments"
+      ],
+      "maySay": [
+        "which competencies have stronger or broader evidence over time",
+        "where evidence moved from explanation to application/test/transfer",
+        "recommended next practice pathway"
+      ],
+      "mustNotSay": [
+        "age-based maturity label",
+        "linear progress where evidence is non-comparable",
+        "employability or future-success prediction"
+      ]
+    }
+  ]
+}
