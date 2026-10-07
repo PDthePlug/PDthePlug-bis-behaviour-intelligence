@@ -17,15 +17,15 @@ for (const scenario of ["zero", "two", "unavailable"] as const) test(`facilitato
   await expect(page.getByText("No real-world opportunity yet", { exact: true })).toHaveCount(0);
   if (scenario === "zero") {
     await expect(page.getByRole("heading", { name: "No opportunity recorded yet", exact: true })).toBeVisible();
-    await expect(page.getByText("Ask what situations were available and what has been recorded", { exact: true })).toBeVisible();
+    await expect(page.getByText("Ask what real situations were available and whether the test needs adjusting", { exact: true })).toBeVisible();
   } else if (scenario === "two") {
-    await expect(activity.getByText("2 opportunities recorded", { exact: true })).toBeVisible();
+    await expect(activity.getByText("2 suitable real-world situations recorded", { exact: true })).toBeVisible();
     await expect(activity.getByText("3 observation days recorded", { exact: true })).toBeVisible();
   } else {
-    await expect(activity.getByText("Lab marked complete", { exact: true })).toBeVisible();
+    await expect(activity.getByText("Completed the Lab", { exact: true })).toBeVisible();
     await expect(page.getByText("Completed the learning cycle", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Move from planning to the first real-world test", { exact: true })).toHaveCount(0);
-    await expect(page.getByText("Experiment started · evidence counts not available", { exact: true })).toBeVisible();
+    await expect(page.getByText("Practice started · detail not available", { exact: true })).toBeVisible();
   }
   await page.reload(); await expect(activity).toBeVisible();
   expect(errors).toEqual([]);
