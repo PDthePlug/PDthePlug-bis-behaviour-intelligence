@@ -69,7 +69,7 @@ test('DGMT first view covers the full journey with evidence privacy and persiste
   await expect(page.getByText('REVISED_PRIVATE_REFLECTION', { exact: true })).toHaveCount(0);
   await expect(page.getByText('5 of 12 participants', { exact: false })).toBeVisible();
   await page.getByText('How BIS supports programme delivery', { exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Content Studio', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Prepare a programme', exact: true })).toBeVisible();
   await checkLayout();
   await page.screenshot({ path: testInfo.outputPath('dgmt-outcomes.png'), fullPage: true });
   const download = page.waitForEvent('download');
