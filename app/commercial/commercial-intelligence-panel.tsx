@@ -154,6 +154,14 @@ function priorityLabel(priority: DisplayRecommendation["priority"]) {
   return "Monitor";
 }
 
+function evidenceValue(evidence: EvidenceItem) {
+  if (["Stage", "Wave", "Contact", "Contact status", "Proposal", "Last activity"].includes(evidence.label) && /^[A-Z][A-Z0-9_]*$/.test(evidence.value)) {
+    const words = evidence.value.toLowerCase().replaceAll("_", " ");
+    return words.charAt(0).toUpperCase() + words.slice(1);
+  }
+  return evidence.value;
+}
+
 export function CommercialIntelligencePanel({
   onOpenOpportunity,
 }: {
@@ -377,7 +385,6 @@ export function CommercialIntelligencePanel({
                     <span className={[styles.recommendationPriority, styles[item.priority.toLowerCase()]].join(" ")}>
                       {priorityLabel(item.priority)}
                     </span>
-                    <span>{item.confidence}% confidence</span>
                   </div>
 
                   <h3>{item.title}</h3>
@@ -391,10 +398,17 @@ export function CommercialIntelligencePanel({
                   <div className={styles.evidenceChips}>
                     {item.evidence.slice(0, 3).map((evidence) => (
                       <span key={evidence.label + "-" + evidence.value}>
-                        <b>{evidence.label}</b> {evidence.value}
+                        <b>{evidence.label}</b> {evidenceValue(evidence)}
                       </span>
                     ))}
                   </div>
+
+                  <details className={styles.recommendationExplanation}>
+                    <summary>Why this action appears</summary>
+                    <p>This suggestion follows fixed rules applied to the current commercial records. Review those records before acting.</p>
+                    <p>Rule confidence: {item.confidence}/100. This is a fixed value assigned by the matching rule; it does not measure the chance of a sale.</p>
+                    <ul>{item.evidence.map(evidence => <li key={evidence.label + "-" + evidence.value}>{evidence.label}: {evidenceValue(evidence)}</li>)}</ul>
+                  </details>
 
                   <div className={styles.recommendationButtons}>
                     <button type="button" onClick={() => onOpenOpportunity(item.opportunityId)}>

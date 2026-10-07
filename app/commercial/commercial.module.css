@@ -73,6 +73,7 @@
 .evidenceChips span{padding:6px 8px;border:1px solid #e2dfd8;border-radius:999px;background:#faf9f6;color:#6c746f;font-size:9px}
 .evidenceChips b{color:#3d4843}
 .recommendationButtons{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.recommendationExplanation{margin-top:12px;color:#59675f;font-size:13px;line-height:1.6}.recommendationExplanation summary{min-height:44px;box-sizing:border-box;padding:12px 0;color:var(--green);cursor:pointer;font-weight:700}.recommendationExplanation ul{padding-left:20px}
 .recommendationButtons button{min-height:35px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #d8d5ce;border-radius:9px;background:#fff;color:#44514b;padding:7px 10px;font-size:10px;font-weight:850}
 .recommendationButtons button:hover{border-color:#b8c6c0;color:var(--green)}
 .acceptButton{background:#e9f0ec!important;border-color:#cadbd3!important;color:#24513f!important}

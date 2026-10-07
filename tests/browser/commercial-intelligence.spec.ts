@@ -203,6 +203,14 @@ test("Commercial Intelligence automatically prepares the daily founder brief and
   await expect.poll(() => state.refreshCount).toBe(1);
   await expect(page.getByText("Leap9 is the clearest decision today: review the prepared outreach and decide whether to send.")).toBeVisible();
   await expect(page.getByText("Leap9 Participant Development is prepared for a human send decision")).toBeVisible();
+  await expect(page.getByText("96% confidence", { exact: true })).toHaveCount(0);
+  const explanation = page.locator("details").filter({ hasText: "Why this action appears" });
+  await explanation.locator("summary").click();
+  await expect(explanation).toContainText("Rule confidence: 96/100");
+  await expect(explanation).toContainText("does not measure the chance of a sale");
+  await expect(explanation).toContainText("Stage: Draft ready");
+  await expect(explanation).toContainText("Wave: Wave 1");
+  await explanation.locator("summary").click();
 
   await page.getByRole("button", { name: "Prepare draft" }).click();
   await expect(page.getByRole("heading", { name: "Prepared outreach" })).toBeVisible();
