@@ -190,9 +190,9 @@ export function StaffWorkspaceShell() {
       destination("facilitator","review","Review","Review shared evidence and give feedback",ClipboardCheck),
     ]}] : []),
     ...(outcomesAvailable ? [{label:"Programme results",items:[
-      destination("outcomes","overview","Results overview","Programme coverage and the evidence chain",Activity),
+      destination("outcomes","overview","Results overview","What learners are developing and what the evidence supports",Activity),
       destination("outcomes","learning","Learning journey","Learning checks and question patterns",BookOpen),
-      destination("outcomes","evidence","Evidence & outcomes","Explore accumulated group evidence",ClipboardCheck),
+      destination("outcomes","evidence","Development & evidence","Explore the development picture and its supporting evidence",ClipboardCheck),
       destination("outcomes","decisions","Programme decisions","Turn group patterns into actions",Settings2),
       destination("outcomes","reports","Reports","Cohort and institutional assessment reports",LayoutDashboard),
     ]}] : []),
