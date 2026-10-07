@@ -1,5 +1,5 @@
 import { chromium } from '@playwright/test';
-import { mkdir, mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -9,6 +9,8 @@ import { dgmtDemonstration as slides } from '../lib/experience/dgmt-demonstratio
 // BIS_DEMO_BASE_URL=http://127.0.0.1:3100 node scripts/create-dgmt-demonstration.mjs
 const base = process.env.BIS_DEMO_BASE_URL ?? 'http://127.0.0.1:3100';
 const output = join(process.cwd(), 'public/experience');
+const narration = join(process.cwd(), 'content/media/dgmt/narration.m4a');
+const narrationCaptions = await readFile(join(process.cwd(), 'content/media/dgmt/narration.vtt'), 'utf8');
 const scratch = await mkdtemp(join(tmpdir(), 'bis-dgmt-demo-'));
 const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? '/usr/bin/chromium', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 
@@ -18,8 +20,6 @@ try {
   const demo = await browser.newPage({ viewport: { width: 860, height: 900 }, deviceScaleFactor: 1 });
   const frame = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
   const list = [];
-  const timestamp = seconds => `00:${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}.000`;
-  let captions = 'WEBVTT\n\n';
   for (const [index, slide] of slides.entries()) {
     await demo.goto(`${base}/experience/dgmt#${slide.stage}`);
     await demo.locator('.experience-v2-loading').waitFor({ state: 'hidden' });
@@ -39,16 +39,12 @@ try {
     await frame.screenshot({ path });
     if (index === 0) await frame.screenshot({ path: join(output, 'dgmt-overview.jpg'), type: 'jpeg', quality: 90 });
     list.push(`file '${path}'\nduration 18`);
-    for (const [paragraph, copy] of slide.copy.entries()) {
-      const start = index * 18 + paragraph * 6;
-      captions += `${index * 3 + paragraph + 1}\n${timestamp(start)} --> ${timestamp(start + 6)}\n${paragraph === 0 ? slide.title + ' ' : ''}${copy}\n\n`;
-    }
   }
   list.push(`file '${join(scratch, 'frame-4.png')}'`);
   await writeFile(join(scratch, 'frames.txt'), list.join('\n'));
-  await writeFile(join(output, 'dgmt-overview.vtt'), captions);
-  execFileSync('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', join(scratch, 'frames.txt'), '-t', '90', '-vf', 'fps=10,format=yuv420p', '-c:v', 'libx264', '-preset', 'medium', '-crf', '23', '-movflags', '+faststart', join(output, 'dgmt-overview.mp4')], { stdio: ['ignore', 'ignore', 'pipe'] });
-  console.log('Created 90-second DGMT demonstration, poster and English captions.');
+  await writeFile(join(output, 'dgmt-overview.vtt'), narrationCaptions);
+  execFileSync('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', join(scratch, 'frames.txt'), '-i', narration, '-map', '0:v:0', '-map', '1:a:0', '-t', '90', '-vf', 'fps=10,format=yuv420p', '-c:v', 'libx264', '-preset', 'medium', '-crf', '23', '-c:a', 'copy', '-movflags', '+faststart', join(output, 'dgmt-overview.mp4')], { stdio: ['ignore', 'ignore', 'pipe'] });
+  console.log('Created narrated 90-second DGMT demonstration, poster and timed English captions.');
 } finally {
   await browser.close();
   await rm(scratch, { recursive: true, force: true });

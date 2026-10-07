@@ -60,10 +60,11 @@
     "durationSeconds": 90,
     "width": 1280,
     "height": 720,
-    "bytes": 429133,
+    "bytes": 1517257,
     "captionLanguage": "en",
     "transcript": "Shares fixed copy with the video generator",
-    "audio": "Text-led video without narration"
+    "audio": "90-second AAC narration; enabled on user playback, no autoplay",
+    "timedCaptionCues": 15
   },
   "limitations": [
     "Practice uses fictional participants and stays in the current browser tab; programme findings use a separate fixed sample of twenty.",
@@ -71,5 +72,16 @@
     "The current My BIS profile is rendered without inventing curriculum mappings or competence claims for example answers.",
     "This release does not establish a DGMT partnership, employment outcomes or programme impact."
   ],
-  "initialDGMTEvidence": "docs/hardening/dgmt-experience-initial-verification.json"
+  "initialDGMTEvidence": "docs/hardening/dgmt-experience-initial-verification.json",
+  "narrationVerification": {
+    "browserViewports": [
+      360,
+      430,
+      1280
+    ],
+    "playbackPassed": 3,
+    "decodedAudio": "passed",
+    "defaultMuted": false,
+    "captionScriptAndAudioTrackAcceptance": "passed"
+  }
 }

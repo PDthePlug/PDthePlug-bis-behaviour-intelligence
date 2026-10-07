@@ -110,10 +110,12 @@ test('DGMT storage stays separate from Leap9 and recovers when unavailable', asy
 test('short video plays with captions and the DGMT report contains only fixed aggregates', async ({ page, request }) => {
   await page.goto('/experience/dgmt');
   const video = page.locator('video');
+  expect(await video.evaluate((element: HTMLVideoElement) => element.muted)).toBe(false);
   await video.evaluate(async (element: HTMLVideoElement) => { element.muted = true; await element.play(); });
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.duration)).toBeCloseTo(90, 0);
   await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0);
   expect(await video.evaluate((element: HTMLVideoElement) => element.textTracks.length)).toBe(1);
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement & { webkitAudioDecodedByteCount?: number }) => element.webkitAudioDecodedByteCount ?? 0)).toBeGreaterThan(0);
   await video.evaluate((element: HTMLVideoElement) => element.pause());
   await page.getByText('Read the demonstration transcript', { exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Make competencies practical.' })).toBeVisible();
