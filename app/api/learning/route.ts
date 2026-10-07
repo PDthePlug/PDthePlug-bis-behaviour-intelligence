@@ -95,6 +95,7 @@ async function learningSnapshot(userId: string, labCode = "HAB") {
     value: string;
     semanticStepId: string;
     sourceFieldKey: string;
+    evidenceAnchor?: string;
     updatedAt: string;
   }> = {};
   for (const row of responseRows) {
@@ -104,6 +105,7 @@ async function learningSnapshot(userId: string, labCode = "HAB") {
       value: decode(row.value),
       semanticStepId: promptParts[1] ?? "",
       sourceFieldKey: promptParts[2] ?? row.promptId,
+      evidenceAnchor: promptParts[3] === "EVIDENCE" ? promptParts.slice(4).join(":") || undefined : undefined,
       updatedAt: row.recordedAt,
     };
   }
