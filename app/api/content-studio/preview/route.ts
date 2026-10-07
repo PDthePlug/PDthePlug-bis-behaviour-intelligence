@@ -14,7 +14,7 @@ import {
   identityFrom,
   requireRole,
 } from "../../../../lib/bis-access";
-import { CONTENT_STUDIO_BUCKET, type ContentKind } from "../../../../lib/content-studio";
+import { CONTENT_STUDIO_BUCKET, sha256Hex, type ContentKind } from "../../../../lib/content-studio";
 import { CONTENT_COMPILER_VERSION } from "../../../../lib/content-compiler";
 import { artifactFingerprint, requiredPreviewKeys } from "../../../../lib/content-uat";
 import { requestSupabaseClient } from "../../../../lib/supabase/server";
@@ -93,7 +93,11 @@ async function handler(request: Request) {
     if (download.error || !download.data) {
       return Response.json({ error: "The compiled preview could not be opened." }, { status: 500 });
     }
-    const payload = JSON.parse(await download.data.text()) as unknown;
+    const bytes = new Uint8Array(await download.data.arrayBuffer());
+    if (await sha256Hex(bytes) !== artifact.artifactHash) {
+      return Response.json({ error: "The prepared preview no longer matches its reviewed record. Prepare a new version before reviewing it." }, { status: 409 });
+    }
+    const payload = JSON.parse(new TextDecoder().decode(bytes)) as unknown;
     const fingerprint = await artifactFingerprint(artifacts);
 
     const [existing] = await db.select().from(contentActivationUat).where(eq(contentActivationUat.versionId, versionId)).limit(1);

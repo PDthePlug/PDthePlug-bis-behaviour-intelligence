@@ -1684,7 +1684,7 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
   discloseWeekendContext(root, pageId);
   // Printed cover matter belongs behind the reading canvas. Keep the original
   // nodes and publisher trace; only internal production notes leave the display.
-  const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2")]
+  const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2,h3,h4")]
     .find(heading => normalise(heading.textContent ?? "").toUpperCase() === "WELCOME");
   if (welcome && !root.querySelector(".handbook-publication-details")) {
     const cover = document.createRange();
@@ -1718,10 +1718,10 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
   // elements intact so this never changes the text used for response identities.
   const titleKey = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
   if (context.pageTitle) {
-    for (const heading of [...root.querySelectorAll<HTMLElement>("h1,h2,.day-kicker")].slice(0, 3)) {
+    for (const heading of [...root.querySelectorAll<HTMLElement>("h1,h2,h3,h4,.day-kicker")].slice(0, 3)) {
       const value = normalise(heading.textContent ?? "");
       if (titleKey(value) === titleKey(context.pageTitle)
-        || (context.programmeDay && value === `DAY ${context.programmeDay} OF 10`)
+        || (context.programmeDay && new RegExp(`^DAY ${context.programmeDay}(?: OF 10)?$`, "i").test(value))
         || (pageId.endsWith(".WEEKEND") && /^(?:WEEKEND|Field Experiment)$/i.test(value))
         || (pageId.endsWith(".CERTIFICATE") && /^CERTIFICATE$/i.test(value))) {
         heading.classList.add("handbook-repeated-heading");

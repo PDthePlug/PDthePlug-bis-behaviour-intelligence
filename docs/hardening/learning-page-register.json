@@ -6485,6 +6485,1570 @@
           "Achievement/issuance variants remain separate from page review."
         ]
       }
+    },
+    {
+      "id": "canonical:TIM:school:Welcome",
+      "route": "/handbooks/tim?page=1",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Welcome",
+      "title": "Welcome",
+      "semanticStepId": "TIM.PROGRAMME.WELCOME",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 1",
+      "route": "/handbooks/tim?page=2",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 1",
+      "title": "Seeing Time",
+      "semanticStepId": "TIM.PROGRAMME.DAY1",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 2",
+      "route": "/handbooks/tim?page=3",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 2",
+      "title": "Thinking Like an Investigator",
+      "semanticStepId": "TIM.PROGRAMME.DAY2",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 3",
+      "route": "/handbooks/tim?page=4",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 3",
+      "title": "The Time Pause",
+      "semanticStepId": "TIM.PROGRAMME.DAY3",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation.",
+        "Multipart authored learning-to-Lab handoff must be placed between Part A and Part B."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 4",
+      "route": "/handbooks/tim?page=5",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 4",
+      "title": "Understanding the Time Pattern",
+      "semanticStepId": "TIM.PROGRAMME.DAY4",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 5",
+      "route": "/handbooks/tim?page=6",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 5",
+      "title": "Evidence Studio",
+      "semanticStepId": "TIM.PROGRAMME.DAY5",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Weekend",
+      "route": "/handbooks/tim?page=7",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Weekend",
+      "title": "Field Experiment",
+      "semanticStepId": "TIM.PROGRAMME.WEEKEND",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 6",
+      "route": "/handbooks/tim?page=8",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 6",
+      "title": "Experiment Clinic",
+      "semanticStepId": "TIM.PROGRAMME.DAY6",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 7",
+      "route": "/handbooks/tim?page=9",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 7",
+      "title": "Final Field Application",
+      "semanticStepId": "TIM.PROGRAMME.DAY7",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 8",
+      "route": "/handbooks/tim?page=10",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 8",
+      "title": "Evidence Review",
+      "semanticStepId": "TIM.PROGRAMME.DAY8",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 9",
+      "route": "/handbooks/tim?page=11",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 9",
+      "title": "Transfer & Meta-Time",
+      "semanticStepId": "TIM.PROGRAMME.DAY9",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Day 10",
+      "route": "/handbooks/tim?page=12",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Day 10",
+      "title": "Integration & Next Bridge",
+      "semanticStepId": "TIM.PROGRAMME.DAY10",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:school:Certificate",
+      "route": "/handbooks/tim?page=13",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "school",
+      "page": "Certificate",
+      "title": "TIME INVESTIGATION CERTIFICATE",
+      "semanticStepId": "TIM.PROGRAMME.CERTIFICATE",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "789f5a5111912f7edb00d90b66b2b1a8172ed9b2d4ee8695fb8c16413d97e9c4",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Welcome",
+      "route": "/handbooks/tim?page=1",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Welcome",
+      "title": "Welcome",
+      "semanticStepId": "TIM.PROGRAMME.WELCOME",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 1",
+      "route": "/handbooks/tim?page=2",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 1",
+      "title": "Seeing Time",
+      "semanticStepId": "TIM.PROGRAMME.DAY1",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 2",
+      "route": "/handbooks/tim?page=3",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 2",
+      "title": "Thinking Like an Investigator",
+      "semanticStepId": "TIM.PROGRAMME.DAY2",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 3",
+      "route": "/handbooks/tim?page=4",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 3",
+      "title": "The Time Pause",
+      "semanticStepId": "TIM.PROGRAMME.DAY3",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation.",
+        "Multipart authored learning-to-Lab handoff must be placed between Part A and Part B."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 4",
+      "route": "/handbooks/tim?page=5",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 4",
+      "title": "Understanding the Time Pattern",
+      "semanticStepId": "TIM.PROGRAMME.DAY4",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 5",
+      "route": "/handbooks/tim?page=6",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 5",
+      "title": "Evidence Studio",
+      "semanticStepId": "TIM.PROGRAMME.DAY5",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Weekend",
+      "route": "/handbooks/tim?page=7",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Weekend",
+      "title": "Field Experiment",
+      "semanticStepId": "TIM.PROGRAMME.WEEKEND",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 6",
+      "route": "/handbooks/tim?page=8",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 6",
+      "title": "Experiment Clinic",
+      "semanticStepId": "TIM.PROGRAMME.DAY6",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 7",
+      "route": "/handbooks/tim?page=9",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 7",
+      "title": "Final Field Application",
+      "semanticStepId": "TIM.PROGRAMME.DAY7",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 8",
+      "route": "/handbooks/tim?page=10",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 8",
+      "title": "Evidence Review",
+      "semanticStepId": "TIM.PROGRAMME.DAY8",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 9",
+      "route": "/handbooks/tim?page=11",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 9",
+      "title": "Transfer & Meta-Time",
+      "semanticStepId": "TIM.PROGRAMME.DAY9",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Day 10",
+      "route": "/handbooks/tim?page=12",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Day 10",
+      "title": "Integration & Next Bridge",
+      "semanticStepId": "TIM.PROGRAMME.DAY10",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:emerging_adult:Certificate",
+      "route": "/handbooks/tim?page=13",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "emerging_adult",
+      "page": "Certificate",
+      "title": "TIME INVESTIGATION CERTIFICATE",
+      "semanticStepId": "TIM.PROGRAMME.CERTIFICATE",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "829c86d3680908ed81b41532016309f739c328792c4f6ea07e2da637a1433235",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Welcome",
+      "route": "/handbooks/tim?page=1",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Welcome",
+      "title": "Welcome",
+      "semanticStepId": "TIM.PROGRAMME.WELCOME",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 1",
+      "route": "/handbooks/tim?page=2",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 1",
+      "title": "Seeing Time",
+      "semanticStepId": "TIM.PROGRAMME.DAY1",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 2",
+      "route": "/handbooks/tim?page=3",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 2",
+      "title": "Thinking Like an Investigator",
+      "semanticStepId": "TIM.PROGRAMME.DAY2",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 3",
+      "route": "/handbooks/tim?page=4",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 3",
+      "title": "The Time Pause",
+      "semanticStepId": "TIM.PROGRAMME.DAY3",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation.",
+        "Multipart authored learning-to-Lab handoff must be placed between Part A and Part B."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 4",
+      "route": "/handbooks/tim?page=5",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 4",
+      "title": "Understanding the Time Pattern",
+      "semanticStepId": "TIM.PROGRAMME.DAY4",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 5",
+      "route": "/handbooks/tim?page=6",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 5",
+      "title": "Evidence Studio",
+      "semanticStepId": "TIM.PROGRAMME.DAY5",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Weekend",
+      "route": "/handbooks/tim?page=7",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Weekend",
+      "title": "Field Experiment",
+      "semanticStepId": "TIM.PROGRAMME.WEEKEND",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 6",
+      "route": "/handbooks/tim?page=8",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 6",
+      "title": "Experiment Clinic",
+      "semanticStepId": "TIM.PROGRAMME.DAY6",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 7",
+      "route": "/handbooks/tim?page=9",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 7",
+      "title": "Final Field Application",
+      "semanticStepId": "TIM.PROGRAMME.DAY7",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 8",
+      "route": "/handbooks/tim?page=10",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 8",
+      "title": "Evidence Review",
+      "semanticStepId": "TIM.PROGRAMME.DAY8",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 9",
+      "route": "/handbooks/tim?page=11",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 9",
+      "title": "Transfer & Meta-Time",
+      "semanticStepId": "TIM.PROGRAMME.DAY9",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Day 10",
+      "route": "/handbooks/tim?page=12",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Day 10",
+      "title": "Integration & Next Bridge",
+      "semanticStepId": "TIM.PROGRAMME.DAY10",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TIM:workplace:Certificate",
+      "route": "/handbooks/tim?page=13",
+      "role": "Learner; operator governed preview",
+      "module": "TIM",
+      "edition": "workplace",
+      "page": "Certificate",
+      "title": "TIME INVESTIGATION CERTIFICATE",
+      "semanticStepId": "TIM.PROGRAMME.CERTIFICATE",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceContentVersion": "1.0",
+      "sourceHash": "1bbba18dbd5ae5d59c6cedbbaec27d7a675192391ac4aac4ad7328ffb8777607",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Welcome",
+      "route": "/handbooks/tru?page=1",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Welcome",
+      "title": "Welcome",
+      "semanticStepId": "TRU.PROGRAMME.WELCOME",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 1",
+      "route": "/handbooks/tru?page=2",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 1",
+      "title": "Seeing Trust",
+      "semanticStepId": "TRU.PROGRAMME.DAY1",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 2",
+      "route": "/handbooks/tru?page=3",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 2",
+      "title": "Thinking Like an Investigator",
+      "semanticStepId": "TRU.PROGRAMME.DAY2",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 3",
+      "route": "/handbooks/tru?page=4",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 3",
+      "title": "The Trust Pause",
+      "semanticStepId": "TRU.PROGRAMME.DAY3",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation.",
+        "Multipart authored learning-to-Lab handoff must be placed between Part A and Part B."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 4",
+      "route": "/handbooks/tru?page=5",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 4",
+      "title": "Understanding the Trust Pattern",
+      "semanticStepId": "TRU.PROGRAMME.DAY4",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 5",
+      "route": "/handbooks/tru?page=6",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 5",
+      "title": "Evidence Studio",
+      "semanticStepId": "TRU.PROGRAMME.DAY5",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Weekend",
+      "route": "/handbooks/tru?page=7",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Weekend",
+      "title": "Field Experiment",
+      "semanticStepId": "TRU.PROGRAMME.WEEKEND",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 6",
+      "route": "/handbooks/tru?page=8",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 6",
+      "title": "Experiment Clinic",
+      "semanticStepId": "TRU.PROGRAMME.DAY6",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 7",
+      "route": "/handbooks/tru?page=9",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 7",
+      "title": "Final Field Application",
+      "semanticStepId": "TRU.PROGRAMME.DAY7",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 8",
+      "route": "/handbooks/tru?page=10",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 8",
+      "title": "Evidence Review",
+      "semanticStepId": "TRU.PROGRAMME.DAY8",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 9",
+      "route": "/handbooks/tru?page=11",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 9",
+      "title": "Transfer & Meta-Trust",
+      "semanticStepId": "TRU.PROGRAMME.DAY9",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Day 10",
+      "route": "/handbooks/tru?page=12",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Day 10",
+      "title": "Integration & Next Bridge",
+      "semanticStepId": "TRU.PROGRAMME.DAY10",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
+    },
+    {
+      "id": "canonical:TRU:school:Certificate",
+      "route": "/handbooks/tru?page=13",
+      "role": "Learner; operator governed preview",
+      "module": "TRU",
+      "edition": "school",
+      "page": "Certificate",
+      "title": "TRUST INVESTIGATION CERTIFICATE",
+      "semanticStepId": "TRU.PROGRAMME.CERTIFICATE",
+      "source": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceContentVersion": "1.1",
+      "sourceHash": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "problem": [
+        "Owner-authored Learning manuscripts must remain separate from Lab sources.",
+        "Source format markers, repeated cover/day headings, incomplete frequency tables and inferred extra response controls interrupt handbook presentation."
+      ],
+      "correction": "Shared source adapter preserves source bytes, authored order and prompt-derived identities; recognised narrative/activity headings and explicit response spaces compile through the shared ProgrammePlayer document system. Every baseline row has one bound response; raw formatting fences are removed from presentation. Source and preview hashes are verified before governed review.",
+      "verification": [
+        "tests/trust-learning-source.test.mjs",
+        "tests/browser/trust-manuscript.spec.ts",
+        "scripts/audit-canonical-learning-sources.mjs"
+      ],
+      "manualVisualStatus": "PENDING staged exact-artifact sweep",
+      "releaseStatus": "IN_REVIEW_UNPUBLISHED_COMPILER9",
+      "outstanding": [
+        "Exact-version Content Studio lifecycle and mobile/desktop manual review.",
+        "Production governed publication and verification.",
+        "Full route-role-state certification remains open."
+      ]
     }
   ],
   "generatedAt": "2026-10-07T02:50:56.903Z",

@@ -161,7 +161,7 @@ type SourceBlock = {
   kind?: "paragraph" | "table";
 };
 
-const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
+const authoredActivityHeading = /^(?:\p{Extended_Pictographic}\uFE0F?)\s+\S/u;
 
 function learnerResponseHeader(value: string) {
   const header = value.replace(/\*+/g, "").replace(/\s+/g, " ").trim().toLowerCase();
@@ -328,6 +328,7 @@ function handbookBlockHtml(block: SourceBlock) {
 function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: string) {
   const html: string[] = [];
   let inAnswers = false;
+  let narrativeSection = false;
   const occurrences = new Map<string, number>();
   const nextSourceKey = (prompt: string) => {
     const normalized = prompt.replace(/\s+/g, " ").trim();
@@ -340,6 +341,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     const block = blocks[index];
     const text = block.text.replace(/\s+/g, " ").trim();
     if (!text) continue;
+    if (block.heading) narrativeSection = /^(?:📖\s*Read\b|🧠|The Concept\b|What Is\b)/iu.test(text);
 
     if (key === "Day 3" && block.heading && authoredDayThreePartB(text)) {
       // An explicit Part B heading is an authored programme boundary, not a
@@ -367,7 +369,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     }
 
     if (!inAnswers) {
-      const blockChoices = multiLineCheckboxGroup(block);
+      const blockChoices = block.kind === "table" ? null : multiLineCheckboxGroup(block);
       if (blockChoices) {
         const previous = blocks[index - 1]?.text.replace(/\s+/g, " ").trim() || "";
         const prompt = /journey continues/i.test(previous) ? "Choose your next Lab" : previous || "Choose one";
@@ -376,7 +378,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         continue;
       }
 
-      const inlineChoices = (!block.lines || block.lines.length <= 1)
+      const inlineChoices = block.kind !== "table" && (!block.lines || block.lines.length <= 1)
         ? inlineCheckboxGroup(text) ?? namedInlineChoice(text)
         : null;
       if (inlineChoices) {
@@ -438,7 +440,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
 
       if (block.kind === "table") { html.push(handbookBlockHtml(block)); continue; }
 
-      const questions = block.heading ? [] : handbookQuestionPrompts(block.lines?.join("\n") || block.text);
+      const questions = block.heading || narrativeSection ? [] : handbookQuestionPrompts(block.lines?.join("\n") || block.text);
       if (questions.length) {
         const optionRows: string[] = [];
         let cursor = index + 1;
@@ -476,7 +478,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
       }
 
       const imperative = block.heading ? "" : handbookImperativePrompt(text);
-      if (imperative) {
+      if (imperative && !narrativeSection && !handbookFieldCue(blocks[index + 1]?.text ?? "")) {
         html.push(handbookBlockHtml(block));
         html.push(handbookTextarea(nextSourceKey(imperative), imperative));
         continue;
@@ -496,6 +498,9 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         const sourceKey = nextSourceKey(label);
         const short = /_{3,}|\/\s*(?:7|10|100)\b|%\s*$|^(?:date|signed|effective from day|confidence|my rating|shift)\s*:/i.test(text);
         html.push(short ? handbookShortControl(sourceKey, label, text) : handbookTextarea(sourceKey, label));
+        // A labelled writing space and its underline are one authored response.
+        // Keep the first field identity; the underline is print formatting.
+        while (/^[_—–.\s-]{3,}$/.test(blocks[index + 1]?.text ?? "")) index += 1;
         continue;
       }
     }
@@ -583,51 +588,6 @@ function programmePage(key: PageKey, body: SourceBlock[]): ManufacturedProgramme
   };
 }
 
-function balancedProgrammePages(blocks: SourceBlock[], sourceLabel: string) {
-  const usable = blocks.filter((block) => block.html.trim());
-  if (usable.length < 26) {
-    throw new Error(sourceLabel + ": I could read the document, but it is too short to build the full BIS learning journey.");
-  }
-
-  const candidates = usable
-    .map((block, index) => ({ block, index }))
-    .filter(({ block, index }) =>
-      index > 0 &&
-      block.heading &&
-      block.text.length >= 3 &&
-      block.text.length <= 120 &&
-      !sectionNoise.test(block.text),
-    )
-    .map(({ index }) => index);
-
-  const totalWeight = usable.reduce((sum, block) => sum + Math.max(1, block.text.length), 0);
-  const cumulative: number[] = [];
-  let running = 0;
-  for (const block of usable) {
-    running += Math.max(1, block.text.length);
-    cumulative.push(running);
-  }
-
-  const boundaries = [0];
-  for (let page = 1; page < PAGE_KEYS.length; page += 1) {
-    const target = (totalWeight * page) / PAGE_KEYS.length;
-    let targetIndex = cumulative.findIndex((weight) => weight >= target);
-    if (targetIndex < 0) targetIndex = usable.length - 1;
-    const minIndex = boundaries[boundaries.length - 1] + 1;
-    const maxIndex = usable.length - (PAGE_KEYS.length - page);
-    const nearby = candidates
-      .filter((index) => index >= minIndex && index <= maxIndex)
-      .sort((a, b) => Math.abs(a - targetIndex) - Math.abs(b - targetIndex))[0];
-    boundaries.push(Math.max(minIndex, Math.min(maxIndex, nearby ?? targetIndex)));
-  }
-
-  return PAGE_KEYS.map((key, index) => {
-    const start = boundaries[index];
-    const end = boundaries[index + 1] ?? usable.length;
-    return programmePage(key, usable.slice(start, end));
-  });
-}
-
 function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   const strictBoundaries: Array<{ key: PageKey; index: number }> = [];
   for (let index = 0; index < blocks.length; index += 1) {
@@ -670,14 +630,10 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   const found = new Map(boundaries.map((boundary) => [boundary.key, boundary.index]));
   const missing = PAGE_KEYS.filter((key) => !found.has(key));
   if (missing.length) {
-    if (boundaries.length >= 5) {
-      throw new Error(
-        sourceLabel + ": I found the BIS programme structure, but some programme positions are missing. " +
-        "Keep the authored headings Welcome, Day 1–10, Weekend and Certificate. Missing: " +
-        missing.join(", ") + ".",
-      );
-    }
-    return balancedProgrammePages(blocks, sourceLabel);
+    throw new Error(
+      sourceLabel + ": provide the authored Learning manuscript with Welcome, Day 1–10, Weekend and Certificate. " +
+      "Missing: " + missing.join(", ") + ". A Lab workbook cannot supply Learning content.",
+    );
   }
 
   const ordered = PAGE_KEYS.map((key) => ({ key, index: found.get(key)! }));
@@ -723,6 +679,19 @@ function splitRowsByKeys(lines: string[], headers: string[], keys: string[]) {
 function pseudoTableBlock(lines: string[]): SourceBlock | null {
   if (lines.length < 2) return null;
   const head = lines[0];
+  const scaleHeader = head.match(/^(?:Behaviour|Statement)\s+(Never\s+Rarely\s+Sometimes\s+Often\s+Always)$/i);
+  if (scaleHeader) {
+    const options = scaleHeader[1].split(/\s+/);
+    const rows = lines.slice(1).map((line) => {
+      const match = line.match(/^(.+?)\s+☐\s+☐\s+☐\s+☐\s+☐\s*$/u);
+      return match ? [match[1], ""] : null;
+    });
+    if (rows.length && rows.every(Boolean)) {
+      const tableRows = [[head.split(/\s+/)[0], "Your answer"], ...rows as string[][]];
+      return { text: lines.join(" "), heading: false, lines, kind: "table", tableRows,
+        responseColumns: [{ index: 1, type: "CATEGORICAL", options }], html: tableHtml(tableRows) };
+    }
+  }
 
   if (head === "Icon Meaning") {
     const rows = [["Icon", "Meaning"], ...lines.slice(1).map((line) => {
@@ -1191,6 +1160,16 @@ function standardMarkdownTableAt(
     cursor += 1;
   }
   if (rows.length < 2) return null;
+  // One row is one response to the authored frequency scale. Empty printable
+  // boxes are not five independent answers and must not become UI-only ticks.
+  if (/^(?:Behaviour|Statement)$/i.test(headers[0])
+    && headers.slice(1).join(" ") === "Never Rarely Sometimes Often Always"
+    && rows.slice(1).every(row => row.slice(1).every(cell => cell === "☐"))) {
+    const responseRows = [[headers[0], "Your answer"], ...rows.slice(1).map(row => [row[0], ""])];
+    return { block: { text: rows.map(row => row.join(" | ")).join("\n"), heading: false,
+      html: tableHtml(responseRows), tableRows: responseRows, kind: "table",
+      responseColumns: [{ index: 1, type: "CATEGORICAL", options: headers.slice(1) }] }, end: cursor };
+  }
 
   return {
     block: {
@@ -1210,16 +1189,17 @@ function markdownPseudoTableAt(
   index: number,
 ): { block: SourceBlock; end: number } | null {
   const head = cleanMarkdownAuthoredText(lines[index]?.trim() ?? "");
-  if (!["Icon Meaning", "Icon Level Meaning"].includes(head)) return null;
+  const scale = /^(?:Behaviour|Statement)\s+Never\s+Rarely\s+Sometimes\s+Often\s+Always$/i.test(head);
+  if (!["Icon Meaning", "Icon Level Meaning"].includes(head) && !scale) return null;
 
   const collected = [head];
   let cursor = index + 1;
-  while (cursor < lines.length && collected.length < 20) {
+  while (cursor < lines.length && collected.length < 100) {
     const trimmed = lines[cursor].trim();
     if (!trimmed) break;
     if (/^\s{0,3}#{1,4}\s+/.test(lines[cursor]) || strictProgrammePageKey(trimmed)) break;
     const cleaned = cleanMarkdownAuthoredText(trimmed.replace(/^[-*+]\s+/, ""));
-    if (!/^(?:📖|💭|✍️|✅|🏠|📂|🔎|⚡|🔬|🎯|🧪|📊|🤝|📌|🤔|🧠|🎭|🌱|📌|🔍|⚖️)\s+\S/u.test(cleaned)) break;
+    if (scale ? !/^.+?\s+☐\s+☐\s+☐\s+☐\s+☐\s*$/u.test(cleaned) : !authoredActivityHeading.test(cleaned)) break;
     collected.push(cleaned);
     cursor += 1;
   }
@@ -1325,7 +1305,7 @@ function markdownHeadingLike(raw: string, cleaned: string) {
     && cleaned === cleaned.toUpperCase()
     && !/[.!?]$/.test(cleaned);
   const named = /^(?:how to use this book|learning levels|your 10-day map|before you begin\b|a note on\b|quick check\b|activity\s+\d+\b|what is\b|the concept\b|one quiet minute\b|today'?s insight\b|your portfolio\b|tomorrow\b)/i.test(cleaned);
-  return boldOnly || upper || named;
+  return boldOnly || upper || named || (cleaned.length <= 130 && authoredActivityHeading.test(cleaned));
 }
 
 function markdownBlocks(markdown: string) {
@@ -1403,6 +1383,8 @@ function markdownBlocks(markdown: string) {
     }
 
     const trimmed = line.trim();
+    // Fences around an authored diagram are format delimiters, not prose.
+    if (/^`{3,}\s*$/.test(trimmed)) { flush(); continue; }
     if (!trimmed) {
       flush();
       continue;

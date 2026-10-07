@@ -1,0 +1,40 @@
+{
+  "status": "IN_REVIEW",
+  "compiler": "bis-content-compiler-9",
+  "mainBase": "d0334908b2ec5d6cf8a2fa3e75a98774968880d1",
+  "pages": 52,
+  "sources": [
+    {
+      "module": "TIM",
+      "path": "content/learning-sources/time-v1.0-authored.md",
+      "bytes": 479151,
+      "sha256": "706491b535deb8f64a4393a762e657f77b2773e3087640a719aa4248b99b245d",
+      "editions": [
+        "school",
+        "emerging_adult",
+        "workplace"
+      ]
+    },
+    {
+      "module": "TRU",
+      "path": "content/learning-sources/trust-school-v1.1-authored.md",
+      "bytes": 152539,
+      "sha256": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "editions": [
+        "school"
+      ]
+    }
+  ],
+  "missing": [
+    "TRU Emerging Adult Learning manuscript",
+    "TRU Workplace Learning manuscript"
+  ],
+  "preservation": "Original source and published version artifacts are retained. Learning content is never generated from Lab workbooks. The recent pasted Time School text has not been claimed byte-identical to the previous intake without a direct byte comparison.",
+  "checks": {
+    "acceptance": "667 PASS locally",
+    "source": "32 Lab packages and 4 authored Learning editions PASS locally",
+    "browser": "RUNNING",
+    "studio": "RUNNING"
+  },
+  "release": "Unpublished; review and exact CI required."
+}

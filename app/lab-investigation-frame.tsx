@@ -53,12 +53,15 @@ export function LabInvestigationFrame({
         {investigations.map((item) => {
           const available = item.number <= Math.max(maxStep, step);
           const complete = item.number < maxStep;
+          const title = /^of\s+\d+$|^\d+\s*\/\s*9$|^investigation\s+\d+$/i.test(item.title.trim())
+            ? (item.standardStage ?? HABIT_LAB_STAGES.find(stage => stage.number === item.number))?.label ?? item.title
+            : item.title;
           return (
             <button
               key={item.number}
               type="button"
               disabled={!available}
-              aria-label={`Investigation ${item.number}: ${item.title}${complete ? ", completed" : ""}`}
+              aria-label={`Investigation ${item.number}: ${title}${complete ? ", completed" : ""}`}
               className={step === item.number ? "current" : complete ? "complete" : ""}
               onClick={() => onSelect(item.number)}
               aria-current={step === item.number ? "step" : undefined}
@@ -66,7 +69,7 @@ export function LabInvestigationFrame({
               <span>{complete ? <Check /> : item.number}</span>
               <div>
                 <small>{item.phase}</small>
-                <strong>{item.title}</strong>
+                <strong>{title}</strong>
               </div>
             </button>
           );
