@@ -1,0 +1,745 @@
+{
+  "schemaVersion": "1.0",
+  "sourceRegister": "content/curriculum/applied-commerce/source-register.json",
+  "lessonIndex": "content/curriculum/applied-commerce/lesson-index.json",
+  "purpose": "Trace the original Applied Commerce concept ancestry of every BIS Lab so teaching, evidence and reporting can share one curriculum source of truth.",
+  "interpretationBoundary": "An ancestry link identifies where a BIS concept is taught or developed in Applied Commerce. It does not by itself prove learner competence, official external-framework alignment or programme impact.",
+  "competencyDomains": [
+    "ACCOUNTABILITY",
+    "ADAPTATION",
+    "AGENCY",
+    "ASSET_THINKING",
+    "ATTENTION_MANAGEMENT",
+    "BEHAVIOURAL_INQUIRY",
+    "CAREER_READINESS",
+    "COLLABORATION",
+    "COMMUNICATION",
+    "CUSTOMER_ORIENTATION",
+    "DECISION_MAKING",
+    "ECONOMIC_LITERACY",
+    "ENTREPRENEURSHIP",
+    "ETHICS_RESPONSIBILITY",
+    "EVIDENCE_LITERACY",
+    "FINANCIAL_CAPABILITY",
+    "GOAL_SETTING",
+    "INNOVATION_PROBLEM_SOLVING",
+    "LEADERSHIP",
+    "LEARNING_AGILITY",
+    "LONG_TERM_THINKING",
+    "META_LEARNING",
+    "NEGOTIATION",
+    "OPPORTUNITY_RECOGNITION",
+    "PERSISTENCE",
+    "PERSONAL_EFFECTIVENESS",
+    "PRIORITISATION",
+    "PROBLEM_SOLVING",
+    "REASONING",
+    "REFLECTION",
+    "RESILIENCE_ADAPTATION",
+    "RISK_MANAGEMENT",
+    "SELF_AWARENESS",
+    "SELF_MANAGEMENT",
+    "SOCIAL_AWARENESS",
+    "SYSTEMS_THINKING",
+    "TIME_ATTENTION_MANAGEMENT",
+    "TRANSFER",
+    "TRANSFERABLE_SKILLS",
+    "TRUST_COLLABORATION",
+    "VALUES_PURPOSE",
+    "VALUE_CREATION"
+  ],
+  "labs": [
+    {
+      "code": "HAB",
+      "title": "Habit Lab™",
+      "concept": "Habit recognition, loop awareness, identity, consistency, recovery and deliberate habit change.",
+      "competencyDomains": [
+        "SELF_AWARENESS",
+        "SELF_MANAGEMENT",
+        "BEHAVIOURAL_INQUIRY",
+        "ADAPTATION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L41",
+        "AC:G8:L42",
+        "AC:G8:L47",
+        "AC:G8:L48",
+        "AC:G8:L53",
+        "AC:G9:L35",
+        "AC:G9:L36",
+        "AC:G9:L50",
+        "AC:G9:L53"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "DEC",
+      "title": "Decision Lab™",
+      "concept": "Structured choice, alternatives, pressure, trade-offs and decision review.",
+      "competencyDomains": [
+        "DECISION_MAKING",
+        "AGENCY",
+        "REASONING",
+        "ADAPTATION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L46",
+        "AC:G9:L47",
+        "AC:G11:L28",
+        "AC:G12:L5"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "MON",
+      "title": "Money Lab™",
+      "concept": "Money beliefs, spending, budgeting, saving, investing and financial systems.",
+      "competencyDomains": [
+        "FINANCIAL_CAPABILITY",
+        "SELF_AWARENESS",
+        "SYSTEMS_THINKING",
+        "DECISION_MAKING"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L7",
+        "AC:G8:L30",
+        "AC:G8:L37",
+        "AC:G10:L17",
+        "AC:G10:L39",
+        "AC:G10:L49"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "IDN",
+      "title": "Identity Lab™",
+      "concept": "Identity, beliefs, efficacy, values and evidence of becoming.",
+      "competencyDomains": [
+        "SELF_AWARENESS",
+        "AGENCY",
+        "VALUES_PURPOSE",
+        "REFLECTION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L1",
+        "AC:G8:L2",
+        "AC:G8:L3",
+        "AC:G8:L4",
+        "AC:G8:L53",
+        "AC:G9:L2"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "ATT",
+      "title": "Attention Lab™",
+      "concept": "Attention allocation, distraction, friction, self-management and protection of focus.",
+      "competencyDomains": [
+        "SELF_MANAGEMENT",
+        "ATTENTION_MANAGEMENT",
+        "EVIDENCE_LITERACY",
+        "PERSONAL_EFFECTIVENESS"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L38",
+        "AC:G9:L39",
+        "AC:G9:L45",
+        "AC:G9:L48",
+        "AC:G11:L9"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "TIM",
+      "title": "Time Lab™",
+      "concept": "Time as a finite resource, actual allocation versus intention, prioritisation, protection and leverage.",
+      "competencyDomains": [
+        "TIME_ATTENTION_MANAGEMENT",
+        "SELF_MANAGEMENT",
+        "EVIDENCE_LITERACY",
+        "PRIORITISATION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L38",
+        "AC:G9:L39",
+        "AC:G9:L45",
+        "AC:G11:L9"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "RSK",
+      "title": "Risk Lab™",
+      "concept": "Risk identification, probability/consequence thinking, protection, rehearsal and response.",
+      "competencyDomains": [
+        "RISK_MANAGEMENT",
+        "DECISION_MAKING",
+        "SYSTEMS_THINKING",
+        "ADAPTATION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G10:L18",
+        "AC:G10:L45",
+        "AC:G10:L47",
+        "AC:G11:L48",
+        "AC:G12:L41",
+        "AC:G12:L50",
+        "AC:G12:L59"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "TRU",
+      "title": "Trust Lab™",
+      "concept": "Trust as repeated evidence, reliability, delegation, relationships and accountability.",
+      "competencyDomains": [
+        "TRUST_COLLABORATION",
+        "LEADERSHIP",
+        "COMMUNICATION",
+        "ACCOUNTABILITY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G10:L6",
+        "AC:G11:L9",
+        "AC:G11:L25",
+        "AC:G11:L64",
+        "AC:G12:L32"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "INF",
+      "title": "Influence Lab™",
+      "concept": "How people, messages, social pressure and reputation shape choices.",
+      "competencyDomains": [
+        "SOCIAL_AWARENESS",
+        "COMMUNICATION",
+        "DECISION_MAKING",
+        "ETHICS_RESPONSIBILITY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L47",
+        "AC:G10:L12",
+        "AC:G11:L26",
+        "AC:G12:L36"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "LDR",
+      "title": "Leadership Lab™",
+      "concept": "Self-leadership, emotional intelligence, team leadership, decisions, ethics and philosophy.",
+      "competencyDomains": [
+        "LEADERSHIP",
+        "SELF_MANAGEMENT",
+        "COMMUNICATION",
+        "ETHICS_RESPONSIBILITY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G11:L21",
+        "AC:G11:L22",
+        "AC:G11:L24",
+        "AC:G11:L25",
+        "AC:G11:L28",
+        "AC:G11:L33",
+        "AC:G11:L35"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "PUR",
+      "title": "Purpose Lab™",
+      "concept": "Values, direction, goals, life design and purposeful action.",
+      "competencyDomains": [
+        "VALUES_PURPOSE",
+        "GOAL_SETTING",
+        "AGENCY",
+        "LONG_TERM_THINKING"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L5",
+        "AC:G8:L6",
+        "AC:G9:L2",
+        "AC:G9:L37",
+        "AC:G10:L68",
+        "AC:G12:L80"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "RES",
+      "title": "Resilience Lab™",
+      "concept": "Recovery, resources, setbacks, restart plans and adaptive response.",
+      "competencyDomains": [
+        "RESILIENCE_ADAPTATION",
+        "SELF_MANAGEMENT",
+        "PROBLEM_SOLVING",
+        "AGENCY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L48",
+        "AC:G8:L49",
+        "AC:G8:L50",
+        "AC:G9:L40",
+        "AC:G9:L52"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "CAR",
+      "title": "Career Lab™",
+      "concept": "Career readiness, skills, job search, communication, networks and income pathways.",
+      "competencyDomains": [
+        "CAREER_READINESS",
+        "TRANSFERABLE_SKILLS",
+        "COMMUNICATION",
+        "AGENCY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L4",
+        "AC:G9:L7",
+        "AC:G12:L21",
+        "AC:G12:L23",
+        "AC:G12:L25",
+        "AC:G12:L32",
+        "AC:G12:L38"
+      ],
+      "bisSourceStatus": "SEPARATE_BIS_SOURCE_PRESENT",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "LCH",
+      "title": "Launch Lab™",
+      "concept": "Transition to adult responsibility, pathway choice, logistics, planning and launch.",
+      "competencyDomains": [
+        "AGENCY",
+        "CAREER_READINESS",
+        "FINANCIAL_CAPABILITY",
+        "LONG_TERM_THINKING"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G12:L1",
+        "AC:G12:L2",
+        "AC:G12:L6",
+        "AC:G12:L15",
+        "AC:G12:L68",
+        "AC:G12:L80"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "FAI",
+      "title": "Failure Lab™",
+      "concept": "Failure as evidence, lesson extraction, recovery and changed next action.",
+      "competencyDomains": [
+        "RESILIENCE_ADAPTATION",
+        "LEARNING_AGILITY",
+        "EVIDENCE_LITERACY",
+        "PROBLEM_SOLVING"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L15",
+        "AC:G8:L48",
+        "AC:G8:L49",
+        "AC:G8:L50",
+        "AC:G9:L42"
+      ],
+      "bisSourceStatus": "PENDING_BIS_SOURCE",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "GMN",
+      "title": "Growth Mindset Lab™",
+      "concept": "Beliefs about learnability, effort, strategy, feedback and improvement.",
+      "competencyDomains": [
+        "LEARNING_AGILITY",
+        "SELF_AWARENESS",
+        "RESILIENCE_ADAPTATION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L3",
+        "AC:G8:L50",
+        "AC:G9:L43",
+        "AC:G9:L44"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "GRT",
+      "title": "Grit Lab™",
+      "concept": "Sustained effort, perseverance, recovery and commitment over time.",
+      "competencyDomains": [
+        "PERSISTENCE",
+        "SELF_MANAGEMENT",
+        "RESILIENCE_ADAPTATION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L47",
+        "AC:G9:L41",
+        "AC:G9:L52",
+        "AC:G9:L53"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "ENT",
+      "title": "Entrepreneurship Lab™",
+      "concept": "Opportunity recognition, customer value, enterprise testing, planning and responsible action.",
+      "competencyDomains": [
+        "ENTREPRENEURSHIP",
+        "VALUE_CREATION",
+        "CUSTOMER_ORIENTATION",
+        "AGENCY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L6",
+        "AC:G9:L9",
+        "AC:G9:L10",
+        "AC:G9:L11",
+        "AC:G9:L14",
+        "AC:G9:L57",
+        "AC:G10:L5",
+        "AC:G12:L10"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "NEG",
+      "title": "Negotiation Lab™",
+      "concept": "Interests, value, communication, alternatives, boundaries and agreement.",
+      "competencyDomains": [
+        "NEGOTIATION",
+        "COMMUNICATION",
+        "DECISION_MAKING",
+        "SOCIAL_AWARENESS"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L29",
+        "AC:G9:L12",
+        "AC:G11:L27",
+        "AC:G12:L30"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "TEAM",
+      "title": "Team Lab™",
+      "concept": "Roles, coordination, contribution, shared responsibility and team effectiveness.",
+      "competencyDomains": [
+        "COLLABORATION",
+        "LEADERSHIP",
+        "COMMUNICATION",
+        "ACCOUNTABILITY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G10:L6",
+        "AC:G10:L7",
+        "AC:G11:L10",
+        "AC:G11:L25",
+        "AC:G11:L29"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "ETH",
+      "title": "Ethics Lab™",
+      "concept": "Values under pressure, fairness, consequences, red lines and responsible choice.",
+      "competencyDomains": [
+        "ETHICS_RESPONSIBILITY",
+        "DECISION_MAKING",
+        "SOCIAL_AWARENESS"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L19",
+        "AC:G9:L21",
+        "AC:G10:L65",
+        "AC:G10:L66",
+        "AC:G11:L33"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "FSF",
+      "title": "Future Self Lab™",
+      "concept": "Future-oriented identity, continuity, intention, uncertainty and reflection over time.",
+      "competencyDomains": [
+        "LONG_TERM_THINKING",
+        "SELF_AWARENESS",
+        "GOAL_SETTING",
+        "REFLECTION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L79",
+        "AC:G9:L34",
+        "AC:G10:L79",
+        "AC:G11:L79",
+        "AC:G12:L77"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "OPP",
+      "title": "Opportunity Lab™",
+      "concept": "Seeing needs, reframing problems, scanning context and acting on opportunity.",
+      "competencyDomains": [
+        "OPPORTUNITY_RECOGNITION",
+        "AGENCY",
+        "PROBLEM_SOLVING",
+        "ENTREPRENEURSHIP"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L9",
+        "AC:G9:L10",
+        "AC:G9:L56",
+        "AC:G9:L59",
+        "AC:G12:L22"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "COM",
+      "title": "Communication Lab™",
+      "concept": "Clear communication across presentation, professional, difficult and relational contexts.",
+      "competencyDomains": [
+        "COMMUNICATION",
+        "SOCIAL_AWARENESS",
+        "CAREER_READINESS"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L30",
+        "AC:G11:L26",
+        "AC:G11:L27",
+        "AC:G12:L24",
+        "AC:G12:L30",
+        "AC:G12:L32"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "SYS",
+      "title": "Systems Thinking™ Lab",
+      "concept": "Relationships, feedback, bottlenecks, leverage points, failure and redesign.",
+      "competencyDomains": [
+        "SYSTEMS_THINKING",
+        "PROBLEM_SOLVING",
+        "EVIDENCE_LITERACY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G10:L37",
+        "AC:G10:L38",
+        "AC:G10:L39",
+        "AC:G10:L40",
+        "AC:G11:L11"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "LTT",
+      "title": "Long-Term Thinking™ Lab",
+      "concept": "Compounding, delayed consequences, planning horizons, trade-offs and legacy.",
+      "competencyDomains": [
+        "LONG_TERM_THINKING",
+        "GOAL_SETTING",
+        "FINANCIAL_CAPABILITY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L46",
+        "AC:G10:L19",
+        "AC:G10:L43",
+        "AC:G11:L52",
+        "AC:G11:L61"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "ECO",
+      "title": "Economics for Humans™ Lab",
+      "concept": "Human-centred economic flows, work, value chains, local economies, power and leakage.",
+      "competencyDomains": [
+        "ECONOMIC_LITERACY",
+        "SYSTEMS_THINKING",
+        "SOCIAL_AWARENESS"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L35",
+        "AC:G9:L17",
+        "AC:G9:L19",
+        "AC:G9:L21",
+        "AC:G9:L24",
+        "AC:G9:L27"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "CUS",
+      "title": "Customer Thinking™ Lab",
+      "concept": "Customer needs, value proposition, pricing, evidence and responsible exchange.",
+      "competencyDomains": [
+        "CUSTOMER_ORIENTATION",
+        "VALUE_CREATION",
+        "COMMUNICATION",
+        "ENTREPRENEURSHIP"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L11",
+        "AC:G9:L12",
+        "AC:G10:L10",
+        "AC:G10:L12"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "INN",
+      "title": "Innovation Thinking™ Lab",
+      "concept": "Problem reframing, alternatives, experimentation, iteration and redesign.",
+      "competencyDomains": [
+        "INNOVATION_PROBLEM_SOLVING",
+        "AGENCY",
+        "SYSTEMS_THINKING",
+        "ADAPTATION"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L28",
+        "AC:G9:L10",
+        "AC:G9:L65",
+        "AC:G10:L37",
+        "AC:G10:L40"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "AST",
+      "title": "Asset Thinking™ Lab",
+      "concept": "Assets as productive capacity: skills, tools, intellectual property, financial and productive resources.",
+      "competencyDomains": [
+        "ASSET_THINKING",
+        "FINANCIAL_CAPABILITY",
+        "TRANSFERABLE_SKILLS",
+        "LONG_TERM_THINKING"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L7",
+        "AC:G9:L8",
+        "AC:G10:L9",
+        "AC:G10:L20",
+        "AC:G10:L21"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "FIN",
+      "title": "Financial Philosophy™ Lab",
+      "concept": "The beliefs, principles and definitions that govern money, wealth, enough and independence.",
+      "competencyDomains": [
+        "FINANCIAL_CAPABILITY",
+        "SELF_AWARENESS",
+        "VALUES_PURPOSE",
+        "LONG_TERM_THINKING"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L2",
+        "AC:G8:L7",
+        "AC:G8:L30",
+        "AC:G10:L49",
+        "AC:G10:L60",
+        "AC:G11:L41",
+        "AC:G12:L49"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "PEF",
+      "title": "Personal Effectiveness™ Lab",
+      "concept": "Goal-directed execution: initiative, priorities, discipline, time, friction and follow-through.",
+      "competencyDomains": [
+        "PERSONAL_EFFECTIVENESS",
+        "SELF_MANAGEMENT",
+        "GOAL_SETTING",
+        "AGENCY"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G8:L16",
+        "AC:G8:L18",
+        "AC:G9:L37",
+        "AC:G9:L38",
+        "AC:G9:L39",
+        "AC:G9:L45",
+        "AC:G10:L70"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "TRS",
+      "title": "Transferable Skills™ Lab",
+      "concept": "Portable skills that travel across school, enterprise, work and adult life.",
+      "competencyDomains": [
+        "TRANSFERABLE_SKILLS",
+        "COMMUNICATION",
+        "PROBLEM_SOLVING",
+        "CAREER_READINESS"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L7",
+        "AC:G9:L8",
+        "AC:G9:L65",
+        "AC:G11:L26",
+        "AC:G12:L34",
+        "AC:G12:L35"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    },
+    {
+      "code": "MTL",
+      "title": "Meta-Learning™ Lab",
+      "concept": "Learning how to notice, test, review, adapt and transfer learning across contexts.",
+      "competencyDomains": [
+        "META_LEARNING",
+        "EVIDENCE_LITERACY",
+        "REFLECTION",
+        "TRANSFER"
+      ],
+      "appliedCommerceAnchors": [
+        "AC:G9:L32",
+        "AC:G9:L53",
+        "AC:G10:L77",
+        "AC:G11:L13",
+        "AC:G11:L78",
+        "AC:G12:L73",
+        "AC:G12:L74"
+      ],
+      "bisSourceStatus": "BIS_VOLUME_SOURCE_BACKED",
+      "reportingIntent": "Use source-linked learning, application, observation, review and transfer evidence to describe progression without converting self-report into mastery."
+    }
+  ]
+}
