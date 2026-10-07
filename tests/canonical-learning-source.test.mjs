@@ -44,3 +44,33 @@ test("shared Learning adapter preserves first boundary for multi-part programme 
   assert.ok(adapter.includes("authoredDayThreePartB"));
   assert.ok(adapter.includes("AUTHORED_LAB_HANDOFF_START"));
 });
+
+
+test("Time Learning v2 is a separate instructional rebuild with authored evidence anchors", async () => {
+  const source = manifest.sources.find((item) => item.moduleCode === "TIM" && item.version === "2.0");
+  assert.ok(source);
+  assert.equal(source.sourcePath, "content/learning-sources/time-v2.0-authored.md");
+  assert.equal(source.provenance?.derivedFromSourceId, "TIM-LM-1.0");
+  assert.deepEqual(
+    source.editions.map((item) => item.deliveryEdition),
+    ["school", "emerging_adult", "workplace"],
+  );
+
+  const text = await readFile(source.sourcePath, "utf8");
+  for (const id of ["TIM-LM-2.0-S", "TIM-LM-2.0-EA", "TIM-LM-2.0-W"]) {
+    assert.ok(text.includes(id), `${id} missing from Time v2 canonical source`);
+  }
+  assert.equal((text.match(/Your 45-Minute Learning Route/g) ?? []).length, 30);
+  assert.equal((text.match(/Separate Facilitated Lab Experience/g) ?? []).length, 3);
+  assert.equal((text.match(/# Time Leverage and Protection/g) ?? []).length, 3);
+  assert.equal((text.match(/<!-- BIS:EVIDENCE /g) ?? []).length, 75);
+  assert.doesNotMatch(text, /TIM-LM-1\.0-(S|EA|W)/);
+});
+
+test("Learning adapter compiles authored evidence markers onto learner controls", async () => {
+  const adapter = await readFile("lib/content-source-adapters.ts", "utf8");
+  assert.ok(adapter.includes("BIS:EVIDENCE"));
+  assert.ok(adapter.includes("evidenceAnchor?: string"));
+  assert.ok(adapter.includes("data-evidence-anchor"));
+  assert.ok(adapter.includes("consumeEvidenceAnchor"));
+});
