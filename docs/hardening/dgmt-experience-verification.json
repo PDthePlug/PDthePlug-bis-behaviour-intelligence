@@ -1,7 +1,7 @@
 {
   "date": "2026-10-07",
   "scope": "Public BIS role explorer, DGMT first-view refinement, desktop and customer-language hardening",
-  "codeCommit": "9cff4fcc974cd5e0f86768453f073c64ef3c3486",
+  "codeCommit": "e285a78388c27d4fa3ba41111e8da72d1da409cc",
   "productionDataAccessed": false,
   "databaseMigrations": false,
   "emailSent": false,
