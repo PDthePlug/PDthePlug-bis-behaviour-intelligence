@@ -3751,12 +3751,6 @@ TIM-LM-2.0-S | School Edition | The Time Investigation Handbook
 
 ---
 
----
-
-**END OF TIME LAB — SCHOOL EDITION**
-
----
-
 
 
 # TIME LAB™
@@ -7526,12 +7520,6 @@ Applied Commerce®
 Behaviour Comes Before Results
 
 TIM-LM-2.0-EA | Emerging Adult Edition | The Time Investigation Handbook
-
----
-
-**END OF TIME LAB — EMERGING ADULT EDITION**
-
----
 
 ---
 
@@ -11352,3 +11340,5 @@ Behaviour Comes Before Results
 TIM-LM-2.0-W | Workplace Edition | The Time Investigation Handbook
 
 ---
+
+**END OF TIME LAB — WORKPLACE EDITION**
