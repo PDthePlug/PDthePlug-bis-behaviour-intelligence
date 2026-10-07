@@ -2,10 +2,10 @@
   "schemaVersion": "time-instructional-blueprint:2",
   "labCode": "TIM",
   "title": "Time Lab",
-  "status": "AUTHORED_REBUILD_IN_VERIFICATION",
+  "status": "AUTHORED_REBUILD_VERIFIED_SOURCE_READY",
   "sourceDependency": {
     "sourceId": "TIM-LM-2.0",
-    "status": "CANONICAL_SOURCE_PENDING_FINGERPRINT_VERIFICATION",
+    "status": "CANONICAL_SOURCE_VERIFIED",
     "priorImmutableSourceId": "TIM-LM-1.0",
     "note": "TIM-LM-2.0 is a new authored instructional version built on the verified curriculum architecture. TIM-LM-1.0 remains immutable."
   },
@@ -13,7 +13,7 @@
   "programmeShape": {
     "learningTouchpoints": 10,
     "standardLearningMinutes": 45,
-    "day1SourceException": "Existing authored source currently specifies 60 minutes; rebuild should resolve this against the 45-minute standard rather than silently truncating content.",
+    "day1SourceException": "TIM-LM-1.0 specified 60 minutes on Day 1; TIM-LM-2.0 resolves the learning session to the 45-minute instructional standard without altering the immutable v1 source.",
     "day3LabBoundary": "Day 3 includes one 45-minute learning-to-Lab bridge plus a separate facilitated Phase A experience. The existing authored source specifies a 90-minute Part B; preserve that separation.",
     "realWorldWindow": "Seven-day investigation as defined by the authored Time source/runtime contract."
   },
