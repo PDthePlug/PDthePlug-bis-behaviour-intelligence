@@ -177,6 +177,7 @@ export function CommercialIntelligencePanel({
       setError(null);
       return next;
     } catch (err) {
+      setData(null);
       if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
       setError(clientResponseMessage(err, "Commercial Intelligence could not load."));
       return null;
@@ -279,7 +280,7 @@ export function CommercialIntelligencePanel({
   }
 
   if (!data) {
-    return <div className={styles.error}>{error ?? "Commercial Intelligence is unavailable."}</div>;
+    return <div className={styles.error} role="alert"><p>{error ?? "Your commercial brief is unavailable."}</p><button className={styles.secondary} onClick={() => void load()}>Try again</button></div>;
   }
 
   const recommendations = displayRecommendations(data);

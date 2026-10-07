@@ -234,3 +234,37 @@ test("the commercial board includes production DRAFT_READY opportunities", async
   await expect(page.getByText("Draft Ready", { exact: true })).toBeVisible();
   await expect(page.getByText("Leap9 Participant Development", { exact: true })).toBeVisible();
 });
+
+test('an empty Intelligence response offers recovery without rendering an invented brief', async ({ page }) => {
+  await mockCommercial(page);
+  let unavailable = true;
+  await page.route('**/api/commercial/intelligence', async route => {
+    if (route.request().method() === 'GET' && unavailable) { await route.fulfill({ json: null }); return; }
+    await route.fallback();
+  });
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/commercial?section=intelligence');
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+  await expect(page.getByText('Founder operating brief', { exact: true })).toHaveCount(0);
+  unavailable = false;
+  await page.getByRole('button', { name: 'Try again' }).click();
+  await expect(page.getByText('Founder operating brief', { exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('revoked Intelligence access clears the loaded recommendation and prepared draft', async ({ page }) => {
+  await mockCommercial(page);
+  await page.goto('/commercial?section=intelligence');
+  await expect(page.getByRole('button', { name: 'Prepare draft' })).toBeVisible();
+  await page.getByRole('button', { name: 'Prepare draft' }).click();
+  await expect(page.getByRole('heading', { name: 'Prepared outreach' })).toBeVisible();
+  await page.route('**/api/commercial/intelligence', async route => {
+    if (route.request().method() === 'POST') { await route.fulfill({ status: 403, json: { error: 'Your commercial access has ended.' } }); return; }
+    await route.fallback();
+  });
+  await page.getByRole('button', { name: 'Dismiss' }).click();
+  await expect(page.getByRole('alert')).toContainText('Your commercial access has ended.');
+  await expect(page.getByRole('heading', { name: 'Prepared outreach' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Approve / Accept' })).toHaveCount(0);
+});
