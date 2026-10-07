@@ -1085,3 +1085,64 @@
   .outcomes-question-patterns{padding:20px 18px}
   .question-pattern-grid{grid-template-columns:1fr}
 }
+
+
+/* UX consolidation pass: the page is the canvas; bounded surfaces are reserved
+   for information that benefits from grouping or comparison. */
+.programme-outcomes{
+  gap:32px;
+}
+.outcomes-insights,
+.outcomes-learning-journey,
+.outcomes-learning-checks,
+.outcomes-question-patterns,
+.outcomes-organisational-learning,
+.programme-decision-register{
+  padding:28px 0;
+  border:0;
+  border-top:1px solid var(--border);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.outcomes-insights{
+  border-top:0;
+  padding-top:8px;
+}
+.outcomes-section-heading{
+  margin-bottom:20px;
+}
+.outcomes-section-heading h2{
+  max-width:760px;
+}
+.outcomes-insight-grid article{
+  min-height:0;
+}
+.outcome-question-card{
+  min-height:0;
+  padding:22px;
+  border-radius:16px;
+  box-shadow:none;
+}
+.outcome-question-card h2{
+  font-size:27px;
+}
+.programme-decision-register{
+  scroll-margin-top:24px;
+}
+@media(max-width:700px){
+  .programme-outcomes{
+    gap:24px;
+  }
+  .outcomes-insights,
+  .outcomes-learning-journey,
+  .outcomes-learning-checks,
+  .outcomes-question-patterns,
+  .outcomes-organisational-learning,
+  .programme-decision-register{
+    padding:22px 0;
+  }
+  .outcome-question-card{
+    padding:20px 18px;
+  }
+}
