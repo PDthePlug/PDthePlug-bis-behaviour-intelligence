@@ -9,9 +9,9 @@ test('DGMT first view covers the full journey with evidence privacy and persiste
   page.on('request', request => { if (['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method())) writes.push(request.url()); });
   const checkLayout = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.goto('/experience/dgmt');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('See the programme move.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('From learning to action.');
   await expect(page.getByRole('link', { name: 'DGMT × BIS Programme Experience home' })).toBeVisible();
-  await expect(page.getByText('No account needed.', { exact: false })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Choose a role and explore' })).toBeVisible();
   await checkLayout();
   await page.screenshot({ path: testInfo.outputPath('dgmt-welcome.png'), fullPage: true });
   await page.getByRole('button', { name: 'Begin with Naledi' }).click();

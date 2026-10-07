@@ -39,7 +39,7 @@ function authErrorMessage(message: string) {
 function googleAuthErrorMessage(message: string) {
   const normalised = message.toLowerCase();
   if (normalised.includes("provider is not enabled") || normalised.includes("unsupported provider")) {
-    return "Google sign-in is still being configured for BIS. Use email and password for now or try again shortly.";
+    return "Google sign-in is unavailable right now. Continue with email and password.";
   }
   return "BIS could not start Google sign-in. Try again, or continue with email and password.";
 }
@@ -200,7 +200,8 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
       <section className="auth-card surface-card">
         <p className="eyebrow">{mode === "signin" ? "Welcome back" : "New to BIS"}</p>
         <h2>{mode === "signin" ? "Every habit tells a story." : "Create your BIS account."}</h2>
-        <p>{mode === "signin" ? "Let's discover yours." : "After you sign up, BIS will open the right version of your learning programme."}</p>
+        <p>{mode === "signin" ? "Let's discover yours." : "Create an account to begin your learning programme."}</p>
+        <Link className="auth-explore-link" href="/explore">Explore BIS without an account <ArrowRight size={16} /></Link>
         <div className="auth-mode" role="tablist" aria-label="Account action">
           <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "active" : ""} onClick={() => changeMode("signin")}>Sign in</button>
           <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "active" : ""} onClick={() => changeMode("signup")}>Create account</button>

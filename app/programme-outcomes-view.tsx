@@ -411,11 +411,13 @@ function Metric({
 
 export function ProgrammeOutcomesView({
   data,
+  reportHref,
   saving = false,
   act = async () => false,
   section = "all", onSectionChange, cohortId, onCohortChange,
 }: {
   data: SponsorSnapshot;
+  reportHref?: string;
   saving?: boolean;
   act?: StaffAction;
   section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void;
@@ -529,9 +531,9 @@ export function ProgrammeOutcomesView({
               ))}
             </select>
             <small>{dateRange(outcome)}</small>
-            <details className="programme-publication-details"><summary>Programme details</summary><p>Lab: {outcome.cohort.labCode} · Published version: {outcome.cohort.labVersion}</p></details>
+            <details className="programme-publication-details"><summary>Programme details</summary><p>{outcome.cohort.name} · {dateRange(outcome)}</p></details>
           </div>
-          <a className="outcomes-pdf-link" href={"/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id)}>
+          <a className="outcomes-pdf-link" href={reportHref ?? ("/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id))}>
             <Download aria-hidden="true" /> Download PDF
           </a>
         </div>
@@ -599,7 +601,7 @@ export function ProgrammeOutcomesView({
               </div>
 
               <EvidenceDisclosure title="Where these counts come from">
-                <p>Handbook activity counts learners with saved handbook progress. Lab answers count learners with at least one answered field in this programme’s Lab version; the total counts their answered fields.</p>
+                <p>Handbook activity counts learners with saved handbook progress. Lab answers count learners with at least one answered field in this programme’s Lab; the total counts their answered fields.</p>
                 <p>Lab answers include starting checks and reflections as well as real-world records. Answers marked “Prefer not to answer” are excluded. These counts show where records exist; they do not establish understanding, evidence quality or behaviour change.</p>
               </EvidenceDisclosure>
 

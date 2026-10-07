@@ -1,10 +1,12 @@
 "use client";
+import { usePlatformRouter as useRouter } from "@/components/platform-context";
+import { usePlatform } from "@/components/platform-context";
 
 import { BisMark } from "@/components/brand/bis-mark";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
-import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { PlatformLink as Link } from "@/components/platform-context";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
@@ -280,8 +282,8 @@ function splitDayThree(page: ProgrammePage) {
   };
 }
 
-async function loadProgramme(edition: Edition, code: string): Promise<HabitProgramme> {
-  const dynamic = await fetch(
+async function loadProgramme(edition: Edition, code: string, request: typeof fetch): Promise<HabitProgramme> {
+  const dynamic = await request(
     `/api/runtime-content?kind=LEARNING_MODULE&code=${encodeURIComponent(code)}&edition=${edition}&resolve=optional`,
     { cache: "no-store" },
   );
@@ -312,6 +314,7 @@ export function ProgrammePlayer({
   viewerMode?: ViewerMode;
   facilitatorContext?: FacilitatorContext;
 }) {
+  const { request } = usePlatform();
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const [moduleRuntime, setModuleRuntime] = useState<Runtime | null>(null);
@@ -345,7 +348,7 @@ export function ProgrammePlayer({
         let loaded: HabitProgramme;
 
         if (facilitatorMode && facilitatorContext) {
-          loaded = await loadProgramme(facilitatorContext.edition, moduleCode);
+          loaded = await loadProgramme(facilitatorContext.edition, moduleCode, request);
           learning = {
             profile: {
               displayName: facilitatorContext.cohortName,
@@ -368,7 +371,7 @@ export function ProgrammePlayer({
           };
           moduleLive = null;
         } else if (previewVersionId && previewEdition) {
-          const previewResponse = await fetch(
+          const previewResponse = await request(
             `/api/content-studio/preview?versionId=${encodeURIComponent(previewVersionId)}&artifact=${encodeURIComponent(`learning:${previewEdition}`)}`,
             { cache: "no-store", signal: controller.signal },
           );
@@ -408,11 +411,11 @@ export function ProgrammePlayer({
           };
           moduleLive = moduleCode === "HAB" ? live : null;
         } else {
-          const moduleRuntimePromise = loadLearningLabRuntime(moduleCode, fetch, controller.signal) as Promise<Runtime | null>;
+          const moduleRuntimePromise = loadLearningLabRuntime(moduleCode, request, controller.signal) as Promise<Runtime | null>;
 
           const [learningResponse, runtimeResponse, moduleRuntimeResult] = await Promise.all([
-            fetch(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
-            fetch("/api/profile", { cache: "no-store", signal: controller.signal }),
+            request(`/api/learning?lab=${moduleCode}`, { cache: "no-store", signal: controller.signal }),
+            request("/api/profile", { cache: "no-store", signal: controller.signal }),
             moduleRuntimePromise,
           ]);
           learning = (await learningResponse.json()) as LearningSnapshot & { error?: string };
@@ -424,7 +427,7 @@ export function ProgrammePlayer({
             ? await runtimeResponse.json() as Runtime
             : emptyRuntime();
           moduleLive = moduleRuntimeResult;
-          loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode);
+          loaded = await loadProgramme(learning.profile.deliveryEdition, moduleCode, request);
         }
 
         if (controller.signal.aborted) return;
@@ -466,7 +469,7 @@ export function ProgrammePlayer({
       }
     })();
     return () => controller.abort();
-  }, [facilitatorContext, facilitatorMode, moduleCode, previewEdition, previewVersionId]);
+  }, [request, facilitatorContext, facilitatorMode, moduleCode, previewEdition, previewVersionId]);
 
   useEffect(() => {
     if (!programme) return;
@@ -808,7 +811,7 @@ export function ProgrammePlayer({
     setSaveState("saving");
     const success = await queue.current.flush(async (items) => {
       try {
-        const response = await fetch("/api/learning", {
+        const response = await request("/api/learning", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ action: "saveWorkbookResponses", labCode: programme?.labCode ?? "HAB", contentReleaseId: release.id, items }),
@@ -825,7 +828,7 @@ export function ProgrammePlayer({
     setSaveState(success ? "saved" : "error");
     if (success) setError("");
     return success;
-  }, [mergeSnapshot, programme, readOnlyMode, release]);
+  }, [request, mergeSnapshot, programme, readOnlyMode, release]);
 
   // Capture document-wide links, including the shared shell outside this player.
   useEffect(() => {
@@ -1034,7 +1037,7 @@ export function ProgrammePlayer({
 
     let nextPageIndex: number | null = null;
     try {
-      const response = await fetch("/api/learning", {
+      const response = await request("/api/learning", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

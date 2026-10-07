@@ -21,16 +21,16 @@ const { calls } = await import(pathToFileURL(session).href);
 test.after(() => rm(dir, { recursive: true, force: true }));
 
 test('the fictional DGMT journey, report and video bypass session refresh precisely', async () => {
-  for (const path of ['/experience/dgmt', '/experience/dgmt/report', '/experience/dgmt-overview.mp4', '/experience/dgmt-overview.vtt', '/experience/leap9', '/experience/leap9/v2', '/experience/leap9/report']) {
+  for (const path of ['/explore', '/experience/dgmt', '/experience/dgmt/report', '/experience/dgmt-overview.mp4', '/experience/dgmt-overview.vtt', '/experience/leap9', '/experience/leap9/v2', '/experience/leap9/report']) {
     const response = await proxy(new NextRequest('https://bis.example' + path));
     assert.equal(response.headers.get('x-middleware-next'), '1');
     assert.equal(response.headers.get('cache-control'), 'no-store');
     assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow');
   }
   assert.equal(calls.length, 0);
-  for (const path of ['/experience', '/experience/dgmt/admin', '/experience/dgmt/report/private', '/api/staff', '/profile']) {
+  for (const path of ['/experience', '/explore/admin', '/api/explore', '/experience/dgmt/admin', '/experience/dgmt/report/private', '/api/staff', '/profile']) {
     const response = await proxy(new NextRequest('https://bis.example' + path));
     assert.equal(await response.text(), 'session boundary');
   }
-  assert.deepEqual(calls, ['/experience', '/experience/dgmt/admin', '/experience/dgmt/report/private', '/api/staff', '/profile']);
+  assert.deepEqual(calls, ['/experience', '/explore/admin', '/api/explore', '/experience/dgmt/admin', '/experience/dgmt/report/private', '/api/staff', '/profile']);
 });

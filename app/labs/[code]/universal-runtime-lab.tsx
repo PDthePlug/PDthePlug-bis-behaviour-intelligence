@@ -1,8 +1,10 @@
 "use client";
+import { usePlatformRouter as useRouter } from "@/components/platform-context";
+import { usePlatform } from "@/components/platform-context";
 
 import { useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { PlatformLink as Link } from "@/components/platform-context";
 import { ArrowRight, Check, Eye, LoaderCircle, LockKeyhole, Search, ShieldCheck } from "lucide-react";
 import { LabInvestigationFrame } from "@/app/lab-investigation-frame";
 import { Badge } from "@/components/ui/badge";
@@ -734,6 +736,7 @@ function UniversalInvestigationForm({
   act,
   onAdvance,
   previewMode = false,
+  exampleMode = false,
   returnToProgramme = false,
 }: {
   snapshot: Snapshot;
@@ -744,6 +747,7 @@ function UniversalInvestigationForm({
   act: (payload: Record<string, unknown>) => Promise<Snapshot | null>;
   onAdvance: (saved: Snapshot, step: number) => void;
   previewMode?: boolean;
+  exampleMode?: boolean;
   returnToProgramme?: boolean;
 }) {
   const [values, setValues] = useState<Record<string, string>>(() =>
@@ -1039,7 +1043,7 @@ function UniversalInvestigationForm({
           ))}
         </details>
       ) : null}
-      {isExperimentInvestigation && !previewMode && snapshot.enrolment ? <EvidenceImages key={`${snapshot.enrolment.id}:${step}`} enrollmentId={snapshot.enrolment.id} labCode={snapshot.definition.identity.code} investigation={step} evidenceFieldId={`${snapshot.definition.identity.code}.I${step}.OBSERVATION.IMAGE`} onBlockedChange={setAttachmentBlocked} /> : null}
+      {isExperimentInvestigation && !previewMode && !exampleMode && snapshot.enrolment ? <EvidenceImages key={`${snapshot.enrolment.id}:${step}`} enrollmentId={snapshot.enrolment.id} labCode={snapshot.definition.identity.code} investigation={step} evidenceFieldId={`${snapshot.definition.identity.code}.I${step}.OBSERVATION.IMAGE`} onBlockedChange={setAttachmentBlocked} /> : null}
       {error ? <p className="field-error">{error}</p> : null}
       {attemptedSubmit && !ready ? (
         <div className="universal-validation-note" role="alert">
@@ -1061,7 +1065,7 @@ function UniversalInvestigationForm({
         </section>
       ) : (
         <div className="step-footer">
-          <span><ShieldCheck /> {previewMode ? "Preview mode · test answers are not saved." : "Your responses save privately to this Lab."}</span>
+          <span><ShieldCheck /> {exampleMode ? "Example answers stay in this browser tab." : previewMode ? "Preview mode · test answers are not saved." : "Your responses save privately to this Lab."}</span>
           {step === 9 ? (
             <Button size="lg" disabled={saving || attachmentBlocked} onClick={() => void (async () => {
               if (experimentWindowClosed) {
@@ -1117,6 +1121,7 @@ export function UniversalRuntimeLab({
   labCode: string;
   previewVersionId?: string;
 }) {
+  const { request, example } = usePlatform();
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -1140,7 +1145,7 @@ export function UniversalRuntimeLab({
       try {
         let data: Snapshot & { error?: string };
         if (previewVersionId) {
-          const response = await fetch(
+          const response = await request(
             `/api/content-studio/preview?versionId=${encodeURIComponent(previewVersionId)}&artifact=${encodeURIComponent("lab:universal")}`,
             { cache: "no-store", signal: controller.signal },
           );
@@ -1169,7 +1174,7 @@ export function UniversalRuntimeLab({
             } : null,
           };
         } else {
-          const response = await fetch(`/api/universal-lab?lab=${encodeURIComponent(labCode)}`, { cache: "no-store", signal: controller.signal });
+          const response = await request(`/api/universal-lab?lab=${encodeURIComponent(labCode)}`, { cache: "no-store", signal: controller.signal });
           data = await response.json() as Snapshot & { error?: string };
           setUnavailable(response.status === 404);
           if (!response.ok) throw new Error(data.error ?? "The Lab could not be opened.");
@@ -1190,7 +1195,7 @@ export function UniversalRuntimeLab({
       }
     })();
     return () => controller.abort();
-  }, [labCode, previewVersionId, loadAttempt]);
+  }, [request, labCode, previewVersionId, loadAttempt]);
 
   const investigation = snapshot?.definition.investigations[step - 1];
 
@@ -1252,7 +1257,7 @@ export function UniversalRuntimeLab({
         return data;
       }
 
-      const response = await fetch("/api/universal-lab", {
+      const response = await request("/api/universal-lab", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ labCode, ...payload }),
@@ -1361,7 +1366,7 @@ export function UniversalRuntimeLab({
         saving={saving}
         error={error}
         act={act}
-        previewMode={previewMode}
+        previewMode={previewMode} exampleMode={example}
         returnToProgramme={Boolean(programmeReturnTo)}
         onAdvance={(saved, requested) => {
           const experimentStep =
