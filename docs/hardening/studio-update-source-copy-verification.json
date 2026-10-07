@@ -1,0 +1,69 @@
+{
+  "project": "lbmhkddrkhtmkcvfmumd",
+  "originalVersionId": "content:module:HAB:1.6",
+  "successorVersionId": "content:module:HAB:1.8",
+  "sourceCopy": "PASS: new immutable JSON paths; envelope version updated; original source bytes retained",
+  "preparationUi": "PASS: Process content; final check appears; publication remains disabled",
+  "creationBoundary": "Normal authenticated API with the shared next-safe-version calculation; retained 1.5 working update and failed 1.7 QA draft prevent default Edit from creating another version. Both were preserved.",
+  "authoredPageParity": [
+    {
+      "edition": "school",
+      "pages": 13,
+      "authoredPageParity": "PASS: all 13 page IDs, order, wording and field markup retained"
+    },
+    {
+      "edition": "emerging_adult",
+      "pages": 13,
+      "authoredPageParity": "PASS: all 13 page IDs, order, wording and field markup retained"
+    },
+    {
+      "edition": "workplace",
+      "pages": 13,
+      "authoredPageParity": "PASS: all 13 page IDs, order, wording and field markup retained"
+    }
+  ],
+  "regressionChecks": {
+    "tests": 5,
+    "result": "PASS",
+    "scope": "Three accepted Learning packages compile at the new version with exact page parity; canonical HAB Lab investigations/calculations/experiment preserved; wrong titles/versions/unsafe names denied; original mismatched upload still rejected."
+  },
+  "manualReview": {
+    "states": 6,
+    "screens": 12,
+    "scope": "All three Day 3 editions at 360/1280: opening and original response context; original 45-minute learning / separate 90-minute Lab context retained. Authored field labels/paragraphs intact. Full-page reading review remains open.",
+    "outstanding": [
+      "VISUAL-MENU retained as requested",
+      "VISUAL-SOURCE-TABLES scroll affordance and region naming",
+      "Exact whole-page and production role variants remain open"
+    ]
+  },
+  "actualPreviewWorkspace": {
+    "states": 9,
+    "result": "PASS",
+    "scope": "All three editions at 360/430/1280, Next/Previous, keyboard Mobile/Desktop, preview privacy boundary, WCAG/overflow/browser errors"
+  },
+  "historicalRollback": {
+    "result": "PASS",
+    "editions": 3,
+    "userInterface": "Real final check, explicit publish, refresh and restore confirmation",
+    "retention": "Original source/artifact hashes, learner responses and progress unchanged; successor and prior drafts retained",
+    "finalAvailability": "1.6 restored for all three editions",
+    "evidence": "studio-history-transition-verification.json"
+  },
+  "releaseStatus": "IN_BRANCH; FULL_CERTIFICATION_OPEN",
+  "actualLearningPreview": {
+    "states": 117,
+    "uniqueEditionWidthPages": 117,
+    "previewInputIsolation": 9,
+    "result": "PASS",
+    "artifactBinding": "Exact version 1.8; final transition checks the recorded artifact hashes",
+    "evidence": "studio-history-preview-verification.json"
+  },
+  "automatedChecks": {
+    "contract": "npm run verify",
+    "acceptance": 638,
+    "browser": 240,
+    "result": "PASS",
+    "followup": "Final stronger canonical Lab source-copy regression: 5 tests PASS; final certification scripts lint checked separately."
+  }
+}

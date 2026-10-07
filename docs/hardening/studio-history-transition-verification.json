@@ -1,0 +1,28 @@
+{
+  "project": "lbmhkddrkhtmkcvfmumd",
+  "itemId": "content:module:HAB",
+  "originalVersionId": "content:module:HAB:1.6",
+  "successorVersionId": "content:module:HAB:1.8",
+  "creation": "Normal authenticated API with the shared next-safe-version calculation; retained 1.5 working update and failed 1.7 QA draft prevent default Edit from creating another version. Both were preserved.",
+  "preparationUi": "PASS: Process content; final check appears; publication remains disabled",
+  "previewStates": 117,
+  "transitions": [
+    {
+      "transition": "PUBLISH_SUCCESSOR",
+      "editions": 3,
+      "userInterface": "PASS: final check, approval and explicit Publish",
+      "responseAndProgressRetention": "PASS"
+    },
+    {
+      "transition": "HISTORICAL_EDITION_ROLLBACK",
+      "editions": 3,
+      "userInterface": "PASS: restore confirmation after refresh",
+      "originalVersionRestored": "PASS",
+      "previousSourceAndArtifactHashesRetained": "PASS",
+      "responseAndProgressRetention": "PASS",
+      "successorRetained": "PASS"
+    }
+  ],
+  "finalAvailability": "Original 1.6 publication: all three editions",
+  "limitations": "Dedicated staging fixture; production authenticated publication and exact full-page manual certification remain open."
+}

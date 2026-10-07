@@ -21,13 +21,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/studio-history-table-scroll-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
       "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "VISUAL-SOURCE-TABLES: readable width, explicit mobile horizontal-scroll cue and source-table region names."
       ]
     },
     {
@@ -117,13 +119,15 @@
         "tests/browser/programme-journey.spec.ts",
         "tests/fixtures/handbook-response-identities.json",
         "docs/hardening/handbook-response-integrity.json",
-        "docs/hardening/product-experience-verification.json"
+        "docs/hardening/product-experience-verification.json",
+        "docs/hardening/studio-history-table-scroll-verification.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
       "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL CERTIFICATION OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
-        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
+        "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
+        "VISUAL-SOURCE-TABLES: readable width, explicit mobile horizontal-scroll cue and source-table region names."
       ]
     },
     {
@@ -213,10 +217,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -403,10 +408,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -627,10 +633,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -817,10 +824,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -1040,10 +1048,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1230,10 +1239,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -1454,10 +1464,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -1644,10 +1655,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -1868,10 +1880,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2058,10 +2071,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -2282,10 +2296,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2472,10 +2487,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -2697,10 +2713,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -2887,10 +2904,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -3112,10 +3130,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3307,10 +3326,11 @@
         "docs/hardening/product-experience-verification.json",
         "docs/hardening/document-review-reference-pages-20261006.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass. Follow-up shared correction: affected presentation regions inspected at representative mobile/desktop widths; complete corrected-page and populated live-role certification remain open.",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -3533,10 +3553,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -3723,10 +3744,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -3948,10 +3970,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4144,10 +4167,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -4369,10 +4393,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4566,10 +4591,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -4791,10 +4817,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -4987,10 +5014,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -5212,10 +5240,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5379,10 +5408,11 @@
         "tests/browser/reference-reading.spec.ts",
         "docs/hardening/reader-document-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -5410,10 +5440,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -5637,10 +5668,11 @@
         "docs/hardening/product-experience-verification.json",
         "docs/hardening/document-review-reference-pages-20261006.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "Full reference page manually inspected at 360/430/1280, sequential screenshots and complete reading text; identified defects remain open. Actual reference status and controls pass. Follow-up shared correction: affected presentation regions inspected at representative mobile/desktop widths; complete corrected-page and populated live-role certification remain open.",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -5805,10 +5837,11 @@
         "docs/hardening/reader-document-verification.json",
         "docs/hardening/choice-response-label-register.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "Complete corrected reference page visually inspected at 430px: 13 sequential screenshots plus full reading text; profile regions inspected at 360/1280. New checkpoint-marker and repeated choice-label defects remain open. No certification of populated/live bindings. Follow-up shared correction: affected presentation regions inspected at representative mobile/desktop widths; complete corrected-page and populated live-role certification remain open.",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -5836,10 +5869,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -6061,10 +6095,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES."
@@ -6228,10 +6263,11 @@
         "tests/browser/reference-reading.spec.ts",
         "docs/hardening/reader-document-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
@@ -6259,10 +6295,11 @@
         "docs/hardening/handbook-response-integrity.json",
         "docs/hardening/product-experience-verification.json",
         "tests/browser/reference-page-presentation.spec.ts",
-        "docs/hardening/reference-page-presentation-verification.json"
+        "docs/hardening/reference-page-presentation-verification.json",
+        "docs/hardening/reference-page-release.json"
       ],
       "manualVisualStatus": "PENDING; automated rendering is a separate check",
-      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_IN_BRANCH; FULL_CERTIFICATION_OPEN",
+      "releaseStatus": "PRIOR_CORRECTIONS_RETAINED; REFERENCE_PRESENTATION_RELEASED_PR134; FULL_CERTIFICATION_OPEN",
       "outstanding": [
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
