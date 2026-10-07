@@ -40,17 +40,7 @@ try {
   const compiled = [];
   for (const entry of manifest.sources ?? []) {
     const bytes = await readFile(new URL(`../${entry.sourcePath}`, import.meta.url));
-    assert.equal(
-      bytes.byteLength,
-      entry.uploadedBytes,
-      `${entry.moduleCode}: canonical Learning source byte length changed.`,
-    );
-    assert.equal(
-      sha256(bytes),
-      entry.uploadedSha256,
-      `${entry.moduleCode}: canonical Learning source fingerprint changed.`,
-    );
-
+    const computedSourceSha256 = sha256(bytes);
     const source = bytes.toString("utf8");
     const editions = entry.editions ?? [];
     const starts = editions.map((edition) => source.indexOf(edition.startMarker));
@@ -69,6 +59,16 @@ try {
       uploadedSha256: sha256(bytes),
       editions: computedEditions,
     }, null, 2));
+    assert.equal(
+      bytes.byteLength,
+      entry.uploadedBytes,
+      `${entry.moduleCode}: canonical Learning source byte length changed.`,
+    );
+    assert.equal(
+      computedSourceSha256,
+      entry.uploadedSha256,
+      `${entry.moduleCode}: canonical Learning source fingerprint changed.`,
+    );
     assert.ok(starts.every((offset) => offset >= 0), `${entry.moduleCode}: one or more authored editions are missing.`);
     assert.deepEqual([...starts].sort((a, b) => a - b), starts, `${entry.moduleCode}: authored editions changed order.`);
 
