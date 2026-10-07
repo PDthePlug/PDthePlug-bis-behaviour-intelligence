@@ -13,5 +13,5 @@
    Preserve the document scroll, accepted centre position and one trigger. */
 .canonical-menu-dock{position:static;display:block}
 .canonical-menu{max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
-.canonical-task,.staff-workspace-main{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
-:is(.canonical-task,.staff-workspace-main) :is(input,textarea,select,button,summary,a[href]){scroll-margin-block:76px}
+.canonical-task,.staff-workspace-main{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+:is(.canonical-task,.staff-workspace-main) :is(input,textarea,select,button,summary,a[href]){scroll-margin-block:90px}
