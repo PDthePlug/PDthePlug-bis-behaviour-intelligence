@@ -7,6 +7,7 @@ import { productionSession } from "./hardening-production-session.mjs";
 const group = JSON.parse(await readFile("/tmp/bis-production-takeover-group.json", "utf8"));
 if (!group.name.startsWith("BIS verification only 20261007")) throw new Error("The isolated QA cohort is required.");
 const output = process.env.BIS_PRODUCTION_HARDENING_OUTPUT || "/tmp/bis-production-takeover-live";
+const baseline = process.env.BIS_PRODUCTION_HARDENING_PHASE === "baseline";
 const axe = await readFile("/tmp/bis-hardening-axe.min.js", "utf8");
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ proxy: process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY } : undefined });
@@ -26,24 +27,31 @@ try {
     await session.browserState(storageState);
     const context = await browser.newContext({ storageState });
     const page = await context.newPage();
-    let failures = [];
+    let failures = [], cancelledPrefetches = [];
     page.on("pageerror", error => failures.push({ kind: "pageerror", message: error.message }));
     page.on("console", message => {
       if (message.type() === "error") failures.push({ kind: "console", message: message.text() });
     });
-    page.on("requestfailed", request => failures.push({ kind: "requestfailed", path: new URL(request.url()).pathname, error: request.failure()?.errorText }));
+    page.on("requestfailed", request => {
+      const path = new URL(request.url()).pathname, error = request.failure()?.errorText;
+      const event = { kind: "requestfailed", path, error };
+      if (error === "net::ERR_ABORTED" && request.method() === "GET" && !path.startsWith("/api/") && request.headers()["next-router-prefetch"] === "1") {
+        cancelledPrefetches.push({ ...event, disposition: "Expected cancelled Next.js speculative prefetch; explicit request-header proof" });
+      } else failures.push(event);
+    });
     page.on("response", response => {
       if (response.status() >= 400) failures.push({ kind: "http", status: response.status(), path: new URL(response.url()).pathname });
     });
     for (const width of [360, 430, 1280]) for (const route of routes) {
       failures = [];
+      cancelledPrefetches = [];
       await page.setViewportSize({ width, height: 900 });
       const response = await page.goto(session.base + route);
       await page.waitForLoadState("networkidle");
       if (role === "SYSTEM_ADMIN" && route.startsWith("/workspace")) {
         await page.getByLabel("Find a learner").fill("takeover-20261007-");
       }
-      if (role === "LEARNER" && route.includes("page=13")) {
+      if (!baseline && role === "LEARNER" && route.includes("page=13")) {
         await expect(page.getByRole("note", { name: "Certificate template" })).toBeVisible();
       }
       const trigger = page.getByRole("button", { name: /Open BIS menu/ });
@@ -72,7 +80,7 @@ try {
         await page.locator(".staff-workspace-header").screenshot({ path: `${output}/${screenshot}` });
       } else await page.screenshot({ path: `${output}/${screenshot}` });
       await page.reload(); await page.waitForLoadState("networkidle");
-      const row = { role, route, width, status: response.status(), overflow, violations, failures: [...failures], menu, disclosure, refresh: "PASS", screenshot,
+      const row = { role, route, width, phase: baseline ? "PRE_RELEASE_BASELINE; does not verify branch-only corrections" : "POST_RELEASE", status: response.status(), overflow, violations, failures: [...failures], cancelledPrefetches: [...cancelledPrefetches], menu, disclosure, refresh: "PASS", screenshot,
         manualReview: "PENDING; automated checks and capture do not establish whole-page visual review" };
       rows.push(row);
       await writeFile(`${output}/audit.json`, JSON.stringify(rows, null, 2) + "\n");

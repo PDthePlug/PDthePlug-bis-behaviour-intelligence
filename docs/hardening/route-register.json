@@ -1395,14 +1395,19 @@
         "docs/hardening/opportunity-coverage-20261006.md",
         "tests/browser/facilitator-record-meaning.spec.ts",
         "scripts/inspect-hardening-facilitator-records.mjs",
-        "docs/hardening/reader-document-verification.json"
+        "docs/hardening/reader-document-verification.json",
+        "tests/browser/safeguarding-accessibility.spec.ts",
+        "docs/hardening/production-takeover-browser-baseline.json",
+        "docs/hardening/production-takeover-role-baseline.json"
       ],
       "releaseStatus": "SHARED_CORRECTIONS_RELEASED_PR133; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "Shared floating Menu visual obstruction review: VISUAL-MENU.",
-        "Primary participant Lab/progamme position label: LANGUAGE-LAB-POSITION."
+        "Primary participant Lab/progamme position label: LANGUAGE-LAB-POSITION.",
+        "VISUAL-SAFEGUARDING: shared naming, contrast, reading-size and target corrections pending exact preview/live release.",
+        "Live baseline covers 57 representative states across all six roles; remaining variants stay UAT-ALL-STATES."
       ],
       "takeoverReview": {
         "observedAt": "2026-10-07",

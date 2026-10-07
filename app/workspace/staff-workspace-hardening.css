@@ -541,3 +541,11 @@
 .programme-publication-details summary{display:list-item;min-height:44px;padding-block:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .programme-publication-details p{margin:4px 0 0;overflow-wrap:anywhere}
 .ops-cohort-banner .programme-publication-details{color:#edf4ef}
+
+/* Category labels carry meaning at body-reading size and WCAG AA contrast. */
+.staff-workspace-shell .case-summary > span{color:#934437;font-size:14px;line-height:1.5}
+.staff-workspace-shell .safeguard-case-head span,
+.staff-workspace-shell .case-resolution > div{font-size:14px;line-height:1.5}
+.staff-workspace-shell .ops-safeguard-banner p:last-child{font-size:15px;line-height:1.6}
+.staff-workspace-shell .case-summary p{font-size:16px;line-height:1.6}
+.staff-workspace-shell :is(.case-actions,.case-resolution) button{min-height:44px}

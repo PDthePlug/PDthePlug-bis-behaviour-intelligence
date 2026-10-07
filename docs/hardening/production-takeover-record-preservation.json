@@ -1,9 +1,21 @@
 {
-  "observedAt": "2026-10-07T03:19:55.524530+00:00",
+  "observedAt": "2026-10-07T03:45:23.914231+00:00",
   "projectRef": "swmhsqivqaqwovojbceo",
   "baseline": "production-takeover-record-baseline.json",
   "comparedTables": 73,
   "excluded": "11 newly created QA account UUIDs, the synthetic cohort UUID, and its exact email prefix",
+  "derivedMetadataAddition": {
+    "id": "142d190d-75c2-4629-9fc3-a385e3873d43",
+    "labCode": "HAB",
+    "labVersion": "HANDBOOK-1.4",
+    "semanticFieldId": "HAB.WB.SCHOOL.DAY1.F6D2C1E598C",
+    "classificationStatus": "STRUCTURAL",
+    "evidenceClass": "UNCLASSIFIED",
+    "createdBy": "SYSTEM",
+    "createdAt": "2026-10-07 03:31:32.664459+00",
+    "reason": "Normal first QA workbook capture invoked the existing private.map_captured_evidence trigger. This adds source-field metadata without learner response content or a governed classification. Preserve the new traceable row and verify all original mapping rows against the baseline after excluding this exact addition.",
+    "originalRowReplacement": false
+  },
   "result": "PASS",
   "originalRowsReturned": false,
   "changes": [],

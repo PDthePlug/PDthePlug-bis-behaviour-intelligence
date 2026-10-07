@@ -21,13 +21,18 @@ ids = [row["id"] for row in fixture["accounts"]] + [group["id"]]
 if not all(re.fullmatch(r"[a-f0-9-]{36}", value) for value in ids):
     raise SystemExit("Invalid QA identity selector.")
 baseline = json.loads(pathlib.Path("docs/hardening/production-takeover-record-baseline.json").read_text())
+derived_path = pathlib.Path("docs/hardening/production-takeover-derived-mapping.json")
+derived = json.loads(derived_path.read_text()) if derived_path.exists() else None
+if derived and (not re.fullmatch(r"[a-f0-9-]{36}", derived["id"]) or derived["semanticFieldId"] != "HAB.WB.SCHOOL.DAY1.F6D2C1E598C" or derived["classificationStatus"] != "STRUCTURAL"):
+    raise SystemExit("Invalid independently reviewed QA-derived structural mapping.")
 selectors = "array[" + ",".join("'%" + value + "%'" for value in ids) + ",'%takeover-20261007-%']::text[]"
 queries = []
 for row in baseline["tables"]:
     name = row["relation"]
     if not re.fullmatch(r"[a-z_][a-z0-9_]*", name):
         raise SystemExit("Invalid baseline relation.")
-    queries.append(f"select '{name}' as relation, count(*)::integer as records, md5(coalesce(string_agg(md5(to_jsonb(t)::text), '' order by md5(to_jsonb(t)::text)),'')) as fingerprint from public.\"{name}\" t where not (to_jsonb(t)::text like any({selectors}))")
+    addition = f" or (t.id='{derived['id']}' and t.semantic_field_id='HAB.WB.SCHOOL.DAY1.F6D2C1E598C' and t.created_by='SYSTEM' and t.classification_status='STRUCTURAL')" if derived and name == "curriculum_evidence_mappings" else ""
+    queries.append(f"select '{name}' as relation, count(*)::integer as records, md5(coalesce(string_agg(md5(to_jsonb(t)::text), '' order by md5(to_jsonb(t)::text)),'')) as fingerprint from public.\"{name}\" t where not (to_jsonb(t)::text like any({selectors}){addition})")
 request = urllib.request.Request(
     "https://api.supabase.com/v1/projects/swmhsqivqaqwovojbceo/database/query",
     data=json.dumps({"query": " union all ".join(queries), "read_only": True}).encode(),
@@ -40,6 +45,7 @@ changes = [row for row in current if row != expected[row["relation"]]]
 report = {"observedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
           "projectRef": fixture["projectRef"], "baseline": "production-takeover-record-baseline.json",
           "comparedTables": len(current), "excluded": "11 newly created QA account UUIDs, the synthetic cohort UUID, and its exact email prefix",
+          "derivedMetadataAddition": derived,
           "result": "PASS" if not changes and len(current) == len(expected) else "REVIEW_REQUIRED",
           "originalRowsReturned": False, "changes": changes, "tables": current}
 pathlib.Path("docs/hardening/production-takeover-record-preservation.json").write_text(json.dumps(report, indent=2) + "\n")

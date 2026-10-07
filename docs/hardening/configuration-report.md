@@ -16,8 +16,8 @@ The earlier baseline below is retained as release history. Current exact invento
 | Auth return origins | Exact local callbacks; preview origins pending | Canonical www allowlist preserved | Staging-only frontend preview binding accepts only deployment-bound origins; production ignores it |
 | Email delivery | Default provider; no custom SMTP; 2 emails/hour | Same | Delivered recovery requires a real inbox; no delivery is claimed for synthetic invalid-domain accounts |
 | PostgreSQL | 17.11.0.002 | 17.6.1.166 | Read-only compatibility catalogue completed; backup/maintenance/rollback and owning-service review remain required |
-| Agency/Companion services | Absent | 23 preserved additional relations | Associated definitions and grants inventoried; user will identify service owner; no consolidation or deletion |
-| Production verification accounts | Separate 24 existing staging fixtures | 11 new authorised QA accounts; 6 synthetic learners | Normal application enrolment/role access; no staging records copied; original 73-table count/fingerprint comparison passes |
+| Agency/Companion services | Absent | 23 preserved additional relations | Associated definitions and grants inventoried; service owner remains unidentified after user reports being unsure; no consolidation or deletion |
+| Production verification accounts | Separate 24 existing staging fixtures | 11 new authorised QA accounts; 6 synthetic learners | Normal application enrolment/role access; no staging records copied; original 73-table count/fingerprint comparison passes; exact new structural mapping is separately recorded |
 
 The current published production definitions are also inventoried independently in `production-takeover-metric-register.json`: 32 Labs, 20 bound computed fields, and 135 explicitly UNBOUND indicator entries across 29 older version-1.0 Labs. The canonical/current-compiler register contains 283 calculations and no unbound indicators; it must not be used as evidence that production has those bindings. No accepted artifact or learner version is replaced to equalise the two. METRIC-LIVE-BINDINGS records the required governed source/version review.
 
