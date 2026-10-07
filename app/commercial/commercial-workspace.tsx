@@ -30,7 +30,7 @@ export function CommercialWorkspace({ identity, roles }: { identity: Identity; r
   const router = useRouter(), params = useSearchParams();
   type View = "intelligence" | "overview" | "pipeline" | "accounts" | "tasks" | "proposals";
   const requested = params.get("section");
-  const view: View = ["intelligence","overview","pipeline","accounts","tasks","proposals"].includes(requested ?? "") ? requested as View : "intelligence";
+  const view: View = ["intelligence","overview","pipeline","accounts","tasks","proposals"].includes(requested ?? "") ? requested as View : "overview";
   function setView(next: View) {router.push(`/commercial?section=${next}`, {scroll:false});}
   const [lane, setLane] = useState<"ALL" | Opportunity["lane"]>("ALL");
   const [selectedId, setSelectedId] = useState<string | null>(null);

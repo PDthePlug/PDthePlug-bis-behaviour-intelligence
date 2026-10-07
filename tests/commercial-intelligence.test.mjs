@@ -50,7 +50,8 @@ test("Commercial Intelligence keeps irreversible work behind human approval", as
 
   assert.match(route, /action === "decision"/);
   assert.match(route, /"APPROVED", "DISMISSED"/);
-  assert.match(route, /crm_generated_artifacts/);
+  assert.match(route, /bis_commit_commercial_run/);
+  assert.match(route, /bis_decide_commercial_recommendation/);
   assert.doesNotMatch(route, /sendEmail|sendWhatsapp|sendWhatsApp|markAsSent/);
   assert.match(route, /opportunity\.stage === "HOLD"/);
   assert.match(route, /RECIPIENT_COLLISION/);
@@ -70,7 +71,7 @@ test("Commercial Intelligence keeps irreversible work behind human approval", as
   assert.match(engine, /FOLLOW_UP/);
 });
 
-test("Commercial workspace opens on Intelligence and recognizes the live draft-ready stage", async () => {
+test("Commercial workspace preserves Overview entry and exposes Intelligence with the live draft-ready stage", async () => {
   const [workspace, api, env] = await Promise.all([
     source("app/commercial/commercial-workspace.tsx"),
     source("app/api/commercial/route.ts"),
@@ -78,7 +79,8 @@ test("Commercial workspace opens on Intelligence and recognizes the live draft-r
   ]);
 
   assert.match(workspace, /"intelligence".*"overview".*"pipeline"/s);
-  assert.match(workspace, /: "intelligence";/);
+  assert.match(workspace, /: "overview";/);
+  assert.match(workspace, /href:"\/commercial\?section=intelligence"/);
   assert.match(workspace, /DRAFT_READY/);
   assert.match(api, /"DRAFT_READY"/);
   assert.match(env, /AI_GATEWAY_API_KEY=/);

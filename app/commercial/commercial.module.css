@@ -49,7 +49,7 @@
 .intelligenceMetrics article{padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 3px 14px rgba(30,39,35,.025)}
 .intelligenceMetrics article>span{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .intelligenceMetrics article>strong{display:block;margin:7px 0 4px;color:var(--green);font-size:31px;line-height:1}
-.intelligenceMetrics article>small{color:#727b76;font-size:10px}
+.intelligenceMetrics article>small{color:#59675f;font-size:10px}
 .intelligenceGrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr);gap:16px;align-items:start}
 .intelligenceActions,.intelligenceAsk{min-width:0;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 6px 25px rgba(30,39,35,.04)}
 .intelligenceActions{padding:24px}
@@ -58,7 +58,7 @@
 .recommendationList{display:grid}
 .recommendationCard{padding:20px 0;border-top:1px solid #ece9e2}
 .recommendationTop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.recommendationTop>span:last-child{color:#8a908c;font-size:9px}
+.recommendationTop>span:last-child{color:#59675f;font-size:9px}
 .recommendationPriority{display:inline-flex;align-items:center;min-height:25px;padding:0 8px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
 .urgent{background:#fbe8e3;color:#8f3321}
 .high{background:#fff1db;color:#7b5419}
@@ -76,7 +76,7 @@
 .recommendationButtons button{min-height:35px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #d8d5ce;border-radius:9px;background:#fff;color:#44514b;padding:7px 10px;font-size:10px;font-weight:850}
 .recommendationButtons button:hover{border-color:#b8c6c0;color:var(--green)}
 .acceptButton{background:#e9f0ec!important;border-color:#cadbd3!important;color:#24513f!important}
-.dismissButton{background:#faf8f5!important;color:#757b78!important}
+.dismissButton{background:#faf8f5!important;color:#59675f!important}
 .intelligenceEmpty{display:flex;gap:12px;align-items:flex-start;padding:22px 0;border-top:1px solid #ece9e2;color:var(--green)}
 .intelligenceEmpty strong{display:block;margin-bottom:4px}
 .intelligenceEmpty p{margin:0;color:var(--muted);font-size:11px}
@@ -94,7 +94,7 @@
 .intelligenceAnswer{margin-top:16px;padding:15px;border:1px solid #d7e0dc;border-radius:12px;background:#f2f6f4;color:#31433c;white-space:pre-line;font-size:11px;line-height:1.65}
 .intelligenceGuardrail{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid #e7e4de;color:var(--green)}
 .intelligenceGuardrail strong{display:block;font-size:11px}
-.intelligenceGuardrail p{margin:4px 0 0;color:#7b817d;font-size:9px;line-height:1.5}
+.intelligenceGuardrail p{margin:4px 0 0;color:#59675f;font-size:9px;line-height:1.5}
 .draftReview{padding:26px;border:1px solid #d8d0c8;border-radius:22px;background:#fffdf9;box-shadow:0 12px 35px rgba(30,39,35,.06)}
 .draftReviewHead{display:flex;justify-content:space-between;gap:15px;align-items:start}
 .draftReviewHead h2{margin:5px 0 0;font-size:26px;letter-spacing:-.035em}
@@ -102,7 +102,7 @@
 .draftReview pre{margin:22px 0;padding:20px;border:1px solid #e4e0d9;border-radius:14px;background:#fff;color:#28342f;white-space:pre-wrap;font:400 13px/1.7 var(--font-sans,system-ui,sans-serif)}
 .draftReviewFoot{display:flex;justify-content:space-between;gap:14px;align-items:center;color:#7a6253;font-size:10px}
 .draftReviewFoot span{display:flex;align-items:center;gap:6px}
-.draftReviewFoot small{color:#858b87}
+.draftReviewFoot small{color:#59675f}
 
 @media(max-width:980px){
   .intelligenceHero{grid-template-columns:1fr}
@@ -137,3 +137,5 @@
 .empty a{display:inline-flex;align-items:center;min-height:44px;color:var(--green);text-decoration:underline;text-underline-offset:3px}
 
 .shell small,.eyebrow,.cardMeta>span:last-child,.lanePill,.nextAction span,.nextAction b,.detailGrid span,.tableHead,.formGrid label,.modalForm label,.rowButton span{font-size:12px}.filters button{min-height:44px}.board:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+
+.recommendationButtons button,.intelligenceRefresh,.intelligenceAsk form button,.askExamples button,.draftReviewHead button{min-height:44px}.draftReviewHead button{width:44px;height:44px}@media(prefers-reduced-motion:reduce){.spinning{animation:none}}

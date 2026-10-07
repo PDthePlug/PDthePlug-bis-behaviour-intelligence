@@ -153,7 +153,7 @@ async function mockCommercial(page: Page) {
     if (body.action === "refresh") {
       refreshed = true;
       refreshCount += 1;
-      await route.fulfill({ json: { ok: true } });
+      await route.fulfill({ json: { run: { id: "run-1" }, recommendations: [] } });
       return;
     }
     if (body.action === "ask") {
@@ -169,6 +169,7 @@ async function mockCommercial(page: Page) {
     if (body.action === "draft") {
       await route.fulfill({
         json: {
+          artifact: { id: "draft-1", status: "DRAFT" },
           draft: "Hello,\n\nFollowing our conversation, we made the BIS programme experience more tangible for Leap9.\n\nKind regards",
           provider: "AI_GATEWAY",
           model: "gpt-5.6-luna",
@@ -194,7 +195,7 @@ async function mockCommercial(page: Page) {
 test("Commercial Intelligence automatically prepares the daily founder brief and keeps sends human-controlled", async ({ page }) => {
   const state = await mockCommercial(page);
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/commercial");
+  await page.goto("/commercial?section=intelligence");
 
   await expect(page.getByRole("heading", { level: 1, name: "Commercial Intelligence." })).toBeVisible();
   await expect(page.getByText("Founder operating brief", { exact: true })).toBeVisible();

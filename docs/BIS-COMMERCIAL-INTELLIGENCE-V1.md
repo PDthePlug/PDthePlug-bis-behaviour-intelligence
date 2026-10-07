@@ -115,7 +115,7 @@ A future background scheduler can call a dedicated service-safe execution path o
 
 ## Experience
 
-The default Commercial workspace opens on **Commercial Intelligence**.
+The default Commercial workspace preserves **Overview**. Choose **Intelligence** from the workspace Menu to open the daily brief and approval queue.
 
 The founder sees:
 
@@ -161,3 +161,9 @@ The schema deliberately reserves room for:
 - WON → governed programme deployment handoff.
 
 Those capabilities should extend the same operating loop rather than create parallel commercial systems.
+
+## Hardening continuation
+
+The additional `20261007085251_bis_commercial_intelligence_atomic_operations.sql` migration preserves the established authenticated GLOBAL commercial-role predicate. Two `SECURITY INVOKER` RPCs commit a refresh/draft and its immutable evidence together, or commit a human decision with its audit record. A shared transaction lock serializes refreshes and decisions. Automatic refresh reuses an already complete same-fingerprint Johannesburg-day run; manual refresh explicitly produces a new run. Failed artifact, recommendation or approval writes roll back the entire operation and retain preceding open recommendations. Neither RPC sends messages or changes original CRM or learner records.
+
+PGlite tests exercise the actual migration, rollback after late failure, duplicate replacement failure, racing refresh/decision requests, draft holds, actor stamping, anonymous/unrelated/scoped/revoked/read-only denial and immutable evidence. Live staging role/RPC and exact branch CI verification remain release gates. Commercial transport errors use the shared response boundary; access denial clears loaded information. The new panel inherits readable secondary text, 44px controls, visible focus and reduced-motion handling.

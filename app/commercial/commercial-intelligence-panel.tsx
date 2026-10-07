@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import styles from "./commercial.module.css";
+import { readClientResponse, clientResponseDenied, clientResponseMessage } from "../../lib/client-response";
 
 type EvidenceItem = { label: string; value: string };
 type LiveRecommendation = {
@@ -96,9 +97,13 @@ async function intelligenceApi(payload?: Record<string, unknown>) {
     body: payload ? JSON.stringify(payload) : undefined,
     cache: "no-store",
   });
-  const body = await response.json();
-  if (!response.ok) throw new Error(body.error ?? "Commercial Intelligence request failed.");
-  return body;
+  return readClientResponse<Record<string, unknown>>(response, "The commercial request could not be completed. Try again.", body => {
+    if (!payload) return typeof body.canWrite === "boolean" && typeof body.needsRefresh === "boolean" && !!body.live && Array.isArray(body.recommendations);
+    if (payload.action === "ask") return typeof body.answer === "string";
+    if (payload.action === "draft") return typeof body.draft === "string" && !!body.artifact;
+    if (payload.action === "decision") return !!body.recommendation;
+    return !!body.run && Array.isArray(body.recommendations);
+  });
 }
 
 function shortTime(value: string | null | undefined) {
@@ -167,12 +172,13 @@ export function CommercialIntelligencePanel({
 
   const load = useCallback(async () => {
     try {
-      const next = (await intelligenceApi()) as IntelligenceSnapshot;
+      const next = (await intelligenceApi()) as unknown as IntelligenceSnapshot;
       setData(next);
       setError(null);
       return next;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Commercial Intelligence could not load.");
+      if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
+      setError(clientResponseMessage(err, "Commercial Intelligence could not load."));
       return null;
     } finally {
       setLoading(false);
@@ -186,7 +192,8 @@ export function CommercialIntelligencePanel({
       const next = await load();
       if (next) setData(next);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The commercial sweep could not complete.");
+      if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
+      setError(clientResponseMessage(err, "The commercial sweep could not complete."));
     } finally {
       setRefreshing(false);
     }
@@ -195,7 +202,8 @@ export function CommercialIntelligencePanel({
   useEffect(() => {
     let cancelled = false;
     void intelligenceApi()
-      .then((next: IntelligenceSnapshot) => {
+      .then((body) => {
+        const next = body as unknown as IntelligenceSnapshot;
         if (cancelled) return;
         setData(next);
         setError(null);
@@ -207,7 +215,7 @@ export function CommercialIntelligencePanel({
       })
       .catch((err) => {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Commercial Intelligence could not load.");
+        setError(clientResponseMessage(err, "Commercial Intelligence could not load."));
         setLoading(false);
       });
     return () => {
@@ -221,10 +229,11 @@ export function CommercialIntelligencePanel({
     setAsking(true);
     try {
       const result = await intelligenceApi({ action: "ask", question: question.trim() });
-      setAnswer(result.answer);
+      setAnswer(String(result.answer));
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Commercial Intelligence could not answer that.");
+      if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
+      setError(clientResponseMessage(err, "Commercial Intelligence could not answer that."));
     } finally {
       setAsking(false);
     }
@@ -236,7 +245,8 @@ export function CommercialIntelligencePanel({
       await intelligenceApi({ action: "decision", recommendationId: item.id, decision });
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The recommendation could not be updated.");
+      if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
+      setError(clientResponseMessage(err, "The recommendation could not be updated."));
     }
   }
 
@@ -252,12 +262,13 @@ export function CommercialIntelligencePanel({
       });
       setDraft({
         title: purpose === "FOLLOW_UP_DRAFT" ? "Prepared follow-up" : "Prepared outreach",
-        content: result.draft,
-        provider: result.provider,
+        content: String(result.draft),
+        provider: String(result.provider),
       });
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The draft could not be prepared.");
+      if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
+      setError(clientResponseMessage(err, "The draft could not be prepared."));
     } finally {
       setDraftingId(null);
     }
