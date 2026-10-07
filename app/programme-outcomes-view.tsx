@@ -312,10 +312,6 @@ function programmeDesignInsights(outcome: SponsorOutcome) {
   return buildProgrammeReport(outcome).insights.map(item => ({ kicker: item.domain === "support" ? "Support follow-up" : item.id === "adaptation" ? "Adaptation" : item.id === "next-programme" ? "For the next programme" : item.domain === "behaviour" ? "How confident can we be?" : "Programme evidence", title: item.title, body: `${item.observation} ${item.action} ${item.boundary}` }));
 }
 
-function organisationActions(outcome: SponsorOutcome) {
-  return buildProgrammeReport(outcome).insights.map(item => ({ title: item.title, body: item.action, source: item.observation }));
-}
-
 type StaffAction = (payload: Record<string, unknown>) => Promise<boolean>;
 
 function programmeDecisionSignal(kicker: string) {
@@ -545,7 +541,6 @@ export function ProgrammeOutcomesView({
               ))}
             </select>
             <small>{dateRange(outcome)}</small>
-            <details className="programme-publication-details"><summary>Programme details</summary><p>{outcome.cohort.name} · {dateRange(outcome)}</p></details>
           </div>
           <a className="outcomes-pdf-link" href={reportHref ?? ("/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id))}>
             <Download aria-hidden="true" /> Download PDF
@@ -1072,26 +1067,7 @@ export function ProgrammeOutcomesView({
           ) : null}
 
           {metrics ? <>
-          <section hidden={section !== "all" && section !== "decisions"} className="outcomes-actions">
-            <div className="outcomes-section-heading">
-              <div>
-                <p className="eyebrow">Worth exploring</p>
-                <h2>What can the organisation do with this information?</h2>
-              </div>
-              <Lightbulb />
-            </div>
-            <div className="outcomes-action-grid">
-              {organisationActions(outcome).map((action) => (
-                <article key={action.title}>
-                  <span>{action.source}</span>
-                  <h3>{action.title}</h3>
-                  <p>{action.body}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          {outcome.deepAnalysis && !outcome.deepAnalysis.suppressed && outcome.deepAnalysis.experimentLandscape ? (
+                    {outcome.deepAnalysis && !outcome.deepAnalysis.suppressed && outcome.deepAnalysis.experimentLandscape ? (
             <details hidden={section !== "all" && section !== "evidence"} className="outcomes-deeper-analysis">
               <summary>
                 <div className="deeper-summary-icon"><Layers3 /></div>
