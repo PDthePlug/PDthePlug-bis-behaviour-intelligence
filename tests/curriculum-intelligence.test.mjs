@@ -178,3 +178,23 @@ test("builds a chronological progression history rather than a pre/post score on
   );
   assert.equal("rawResponse" in timeline.current, false);
 });
+
+test("classifies report products by audience without upgrading evidence strength", async () => {
+  const reports = await readJson("content/curriculum/reporting/report-product-classification.json");
+  assert.deepEqual(reports.products.map((product) => product.id), [
+    "LEARNER_PROGRESS",
+    "FACILITATOR_SUPPORT",
+    "PROGRAMME_COMPETENCY_PROGRESS",
+    "SPONSOR_OUTCOMES",
+    "EVIDENCE_PORTFOLIO_PATHWAY",
+  ]);
+
+  const sponsor = reports.products.find((product) => product.id === "SPONSOR_OUTCOMES");
+  assert.ok(sponsor.mustNotInclude.includes("private workbook responses"));
+  assert.ok(sponsor.mustNotClaim.some((claim) => /durable capability/i.test(claim)));
+
+  const programme = reports.products.find((product) => product.id === "PROGRAMME_COMPETENCY_PROGRESS");
+  assert.ok(programme.mustNotClaim.some((claim) => /self-report/i.test(claim)));
+  assert.match(reports.governingRule, /never upgrades the strength/i);
+});
+
