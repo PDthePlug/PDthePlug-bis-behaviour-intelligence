@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-07",
+  "scope": "Account-free DGMT programme experience, shared Leap9 hardening and fixed illustrative reports",
+  "productionDataAccessed": false,
+  "databaseMigrations": false,
+  "emailSent": false,
+  "acceptance": {
+    "passed": 667,
+    "failed": 0
+  },
+  "runtime": "passed",
+  "lint": "passed",
+  "typecheck": "passed",
+  "canonicalSourceAudits": "passed",
+  "optimizedBuild": "passed",
+  "browser": {
+    "status": "running",
+    "viewports": [
+      360,
+      430,
+      1280
+    ],
+    "fullSuiteExpected": 285
+  },
+  "anonymousBuiltApp": {
+    "dgmtPage": 200,
+    "video": 200,
+    "captions": 200,
+    "authenticatedExperience": 307,
+    "staffApi": 401
+  },
+  "limitations": [
+    "The simulation uses a shortened, fixed Habit example; it is not a published Universal enrolment.",
+    "Content Studio, enrolment and safeguarding are described rather than exercised by this public walkthrough.",
+    "This release does not establish a DGMT partnership, competence, employment outcomes or programme impact."
+  ]
+}

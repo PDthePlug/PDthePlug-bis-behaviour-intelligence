@@ -332,7 +332,7 @@ class ReportDocument {
   }
 }
 
-export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date(), options: { illustrative?: boolean; leap9Experience?: boolean } = {}) {
+export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date(), options: { illustrative?: boolean; leap9Experience?: boolean; experienceOrganisation?: "Leap9" | "DGMT" } = {}) {
   const report = buildProgrammeReport(outcome);
   const canvas = new ReportDocument(report, options.illustrative === true, generatedAt);
   canvas.section("Behaviour Intelligence Series™", "Programme Results Report", report.profile.name);
@@ -353,9 +353,10 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   }
   // The public experience uses its own fixed sample and a concise sponsor view.
   // Live reports continue to use authorised aggregates and privacy gates above.
-  if (options.illustrative && options.leap9Experience) {
-    canvas.section("Programme outcomes", "From intention to follow-through", "What Leap9 can learn from the example, and what BIS should check next.");
-    for (const item of sponsorFindings()) {
+  if (options.illustrative && (options.leap9Experience || options.experienceOrganisation)) {
+    const organisation = options.experienceOrganisation ?? "Leap9";
+    canvas.section("Programme outcomes", "From intention to follow-through", `What ${organisation} can learn from the example, and what BIS should check next.`);
+    for (const item of sponsorFindings(undefined, organisation)) {
       canvas.ensure(180);
       canvas.paragraph(item.title, { size: 13, font: "bold" });
       canvas.paragraph(item.observation, { font: "bold" });
@@ -374,7 +375,7 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
       canvas.paragraph("This comparison uses the same question before and after, for the participants with both answers. A rise means they report feeling more in control; it does not certify competence or job readiness.");
     }
     canvas.paragraph("What to check next", { font: "bold" });
-    canvas.paragraph("BIS should review a relevant practical task with an agreed assessment rubric, then follow up to see whether the behaviour holds in a new situation. Leap9 can provide the practice opportunity; programme design and evidence quality remain BIS’s responsibility.");
+    canvas.paragraph(`BIS should review a relevant practical task with an agreed assessment rubric, then follow up to see whether the behaviour holds in a new situation. ${organisation === "Leap9" ? "Leap9 can provide the practice opportunity" : "DGMT can explore a practice context with a delivery partner"}; programme design and evidence quality remain BIS’s responsibility.`);
     canvas.paragraph("How the example was prepared", { font: "bold" });
     canvas.paragraph("Twenty varied fictional participant records supply the page and report. Some show more frequent use of the plan, some less, and some too few observations. Visitor practice answers do not change these cohort records. No private learner reflection appears in this report.");
     canvas.paragraph("Prepared by P.D. · Applied Commerce®", { color: C.muted });

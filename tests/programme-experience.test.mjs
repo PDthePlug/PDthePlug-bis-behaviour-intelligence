@@ -44,3 +44,19 @@ test('participant meaning follows edits and does not equate perceived control wi
   assert.match(explainExperience({ ...initialExperience, post: 4 }).control, /stayed at 4\/10/);
   assert.match(explainExperience(initialExperience).control, /does not measure job readiness/);
 });
+
+test('restored sharing cannot resurrect a hidden or empty facilitator review', () => {
+  const hidden = restoreExperience(JSON.stringify({version:1,state:{shared:false,attested:true,note:'Old private review'}}));
+  assert.equal(hidden.attested, false);
+  assert.equal(hidden.note, '');
+  const blank = restoreExperience(JSON.stringify({version:1,state:{shared:true,attested:true,note:'  '}}));
+  assert.equal(blank.attested, false);
+});
+
+test('DGMT findings reuse the fixed evidence with an appropriate partner context', () => {
+  const findings = sponsorFindings(illustrativeCohort, 'DGMT');
+  assert.deepEqual(findings.map(row => row.observation), sponsorFindings().map(row => row.observation));
+  assert.ok(findings.every(row => !row.action.includes('Leap9')));
+  assert.match(findings[0].action, /DGMT/);
+  assert.match(findings[2].limit, /does not certify competence/);
+});
