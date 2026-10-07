@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-07",
+  "scope": "My BIS growth, journey, evidence, feedback and work; development-led group reporting; initial founder commercial workflows and workspace hardening",
+  "productionDatabaseChanged": false,
+  "databaseMigrations": false,
+  "externalMessagesSent": false,
+  "focusedBrowserMatrix": {
+    "passed": 69,
+    "viewports": [
+      360,
+      430,
+      1280
+    ],
+    "finalDevelopmentLayoutPassed": 3
+  },
+  "dataIntegrity": "Local PostgreSQL checks preserve original draft wording and author, audited append-only revisions, rollback and wrong-role denials.",
+  "scheduledPreparation": {
+    "route": "/api/commercial/intelligence/sweep",
+    "scheduleUtc": "0 5 * * *",
+    "localTime": "07:00 Africa/Johannesburg",
+    "enabledByDefault": false,
+    "authorization": "Scheduling secret plus an authenticated dedicated account, normal role checks and RLS. No service-role key.",
+    "credentialsConfigured": false,
+    "productionRunExecuted": false
+  },
+  "releaseGate": {
+    "command": "npm run verify",
+    "source": "The final pull request checks are authoritative."
+  },
+  "limits": [
+    "The release completes the initial founder operating workflow over recorded CRM information. External research, commercial terms/proposal generation and delivery handoff remain subsequent integrations.",
+    "Daily background preparation and trusted record-change webhooks require explicit account/secret configuration. The interactive daily brief works independently."
+  ]
+}

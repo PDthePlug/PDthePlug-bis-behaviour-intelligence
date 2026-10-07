@@ -677,8 +677,8 @@ export function ContentStudio() {
       <section className="content-studio-hero">
         <div>
           <p className="eyebrow">Content Studio</p>
-          <h1>Choose a BIS title and add the content that is ready.</h1>
-          <p>You do not need all three learning editions at once. Upload School, Emerging Adult or Workplace whenever each one is ready. Learners only see an edition after you preview, approve and publish it.</p>
+          <h1>Prepare your next BIS programme.</h1>
+          <p>Choose a title and add whichever learning edition is ready. Preview it before you approve and publish.</p>
         </div>
         <ShieldCheck />
       </section>
@@ -699,8 +699,8 @@ export function ContentStudio() {
           <div className="content-studio-section-title">
             <div>
               <p className="eyebrow">Volume intake</p>
-              <h2>Audit a complete BIS volume before migration</h2>
-              <p>The source stays unchanged. BIS splits the Word document into individual Lab drafts, runs the Habit Lab standard and reports what must be strengthened before approval.</p>
+              <h2>Check a complete BIS volume</h2>
+              <p>Check the Labs in your Word document and see what needs attention before you approve them.</p>
             </div>
             <ClipboardCheck />
           </div>
@@ -711,7 +711,7 @@ export function ContentStudio() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">Volume 1 · 12 Labs</SelectItem>
-                  <SelectItem value="2">Volume 2 · 10 source-backed Labs</SelectItem>
+                  <SelectItem value="2">Volume 2 · 10 Labs</SelectItem>
                   <SelectItem value="3">Volume 3 · 10 Labs</SelectItem>
                 </SelectContent>
               </Select>

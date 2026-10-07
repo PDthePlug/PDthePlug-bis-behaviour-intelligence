@@ -68,3 +68,12 @@ test('anonymous, unrelated, scoped, revoked and read-only identities cannot crea
  await db.exec('reset role;set role anon');await assert.rejects(commit());
  await db.exec('reset role;set role authenticated'); assert.equal(await count('crm_agent_runs'),0,'RLS hides rows from the unrelated identity');
 });
+
+test('a reviewed draft is a new saved artifact and retains the original wording and author',async()=>{
+ const spec={...run,run_type:'DRAFT'};const original=await commit([],{artifact_type:'OUTREACH_DRAFT',opportunity_id:opp,title:'Initial message',content:'Initial programme-specific wording.'},false,spec);
+ const revised=await commit([],{artifact_type:'OUTREACH_DRAFT',opportunity_id:opp,title:'Reviewed message',content:'Reviewed programme-specific wording.'},false,{...spec,provider:'HUMAN',summary:`Revision of draft ${original.artifact.id}`});
+ assert.notEqual(original.artifact.id,revised.artifact.id);assert.equal(await count('crm_generated_artifacts'),2);
+ const saved=(await db.query('select content,created_by from crm_generated_artifacts where id=$1',[original.artifact.id])).rows[0];
+ assert.equal(saved.content,'Initial programme-specific wording.');assert.equal(saved.created_by,'qa@example.invalid');
+ assert.equal(revised.artifact.content,'Reviewed programme-specific wording.');assert.equal(revised.artifact.status,'DRAFT');
+});

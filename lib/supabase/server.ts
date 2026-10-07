@@ -32,6 +32,12 @@ export async function withSupabaseRequest<T>(work: () => Promise<T>) {
   return requestStorage.run(client, work);
 }
 
+// Server-owned automation uses an authenticated account client with the same
+// identity and RLS checks as a browser request, never a privileged service key.
+export async function withAuthenticatedSupabaseClient<T>(client: SupabaseClient, work: () => Promise<T>) {
+  return requestStorage.run(client, work);
+}
+
 export function requestSupabaseClient() {
   const client = requestStorage.getStore();
   if (!client) {

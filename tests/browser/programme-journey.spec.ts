@@ -131,7 +131,7 @@ test("learning closes the loop with the learner evidence portfolio after Lab com
   await learningService(page, "complete");
   await page.goto("/learn?page=2");
   await expect(page.getByRole("heading", { name: "Your evidence record is ready." })).toBeVisible();
-  await expect(page.getByRole("link", { name: "View my evidence portfolio" })).toHaveAttribute("href", "/profile#evidence-portfolio");
+  await expect(page.getByRole("link", { name: "View My BIS" })).toHaveAttribute("href", "/portfolio");
 });
 
 

@@ -25,7 +25,7 @@ test('sign-in opens a keyboard accessible role explorer and actual learning save
  await response.fill('A quick change is saved before switching roles.');
  await page.getByLabel('Choose your view').selectOption('facilitator');await expect(page.locator('.facilitator-workspace')).toBeVisible();
  await page.getByLabel('Choose your view').selectOption('learner');await page.getByRole('button',{name:'Learning',exact:true}).click();await map.locator('summary').click();await map.getByRole('button',{name:/Day 1 Concept Studio/}).click();await expect(response).toHaveValue('A quick change is saved before switching roles.');
- await response.fill('A quick tab change also keeps the response.');await page.getByRole('button',{name:'Evidence Portfolio',exact:true}).click();await expect(page).toHaveURL(/screen=portfolio/);await page.goBack();await expect(response).toHaveValue('A quick tab change also keeps the response.');
+ await response.fill('A quick tab change also keeps the response.');await page.getByRole('button',{name:'My BIS',exact:true}).click();await expect(page).toHaveURL(/screen=portfolio/);await page.goBack();await expect(response).toHaveValue('A quick tab change also keeps the response.');
  await layout(page);
  await page.screenshot({path:info.outputPath('learning.png'),fullPage:true});verify();
 });
@@ -46,7 +46,7 @@ test('actual Lab and portfolio keep responses private until shared and support f
  await expect(page.getByText('PRIVATE_EXAMPLE_RESPONSE',{exact:true})).toHaveCount(0);
  await expect(page.getByRole('heading',{name:'No shared evidence awaiting review'})).toBeVisible();
  await page.getByLabel('Choose your view').selectOption('learner');
- await page.getByRole('button',{name:'Evidence Portfolio',exact:true}).click();
+ await page.getByRole('button',{name:'My BIS',exact:true}).click();
  await page.locator('.portfolio-lab-group>summary').click();
  await page.locator('.portfolio-responses>summary').click();
  await expect(page.getByText('PRIVATE_EXAMPLE_RESPONSE',{exact:true})).toBeVisible();

@@ -553,22 +553,13 @@ export function ProgrammeOutcomesView({
         </div>
       </section>
 
-      <section hidden={section !== "all" && section !== "overview"} className="outcomes-context">
-        <Metric label="Learners" value={outcome.participantCount} />
-        <Metric
-          label="Completion"
-          value={metrics ? percent(metrics.completionContext.completionRate) : flow?.totals?.completed === null || flow?.totals?.completed === undefined ? "Unavailable" : `${flow.totals.completed} completed`}
-          detail="Across this programme"
-        />
-      </section>
-
       {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
         <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-competency-picture">
           <div className="outcomes-section-heading">
             <div>
               <p className="eyebrow">Development picture</p>
               <h2>What learners are developing</h2>
-              <p>These are the programme capabilities for which the group has enough mapped evidence to describe a current development stage. Counts support the story; they are not the story by themselves.</p>
+              <p>See the capabilities learners can demonstrate in programme tasks and the practice to offer next.</p>
             </div>
             <Compass />
           </div>
@@ -579,13 +570,13 @@ export function ProgrammeOutcomesView({
               return <article key={competency.competencyId} className="outcomes-competency-card">
                 <div className="outcomes-competency-card-head">
                   <h3>{competency.title}</h3>
-                  <span>{highest?.label ?? "Evidence developing"}</span>
+                  <span>{highest ? `Recorded: ${highest.label}` : "Evidence developing"}</span>
                 </div>
                 <p>{competency.reportableParticipants === null
                   ? "Some mapped development evidence is present, but the contributing count is hidden for privacy."
                   : competency.reportableParticipants === 0
-                    ? "There is not enough mapped evidence to describe development in this area yet."
-                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have enough mapped evidence to describe their current development in this area.`}</p>
+                    ? "There is not enough recorded work to describe development in this area yet."
+                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have enough recorded work to describe their current development in this area.`}</p>
                 {visibleStages.length ? <div className="outcomes-competency-stages" aria-label={`${competency.title} evidence stages`}>
                   {competency.distribution.map((stage) => <span key={stage.code} className={(stage.count ?? 0) > 0 ? "is-active" : ""}>
                     <b>{stage.label}</b>
@@ -619,6 +610,15 @@ export function ProgrammeOutcomesView({
           </EvidenceDisclosure>
         </section>
       ) : null}
+
+      <section hidden={section !== "all" && section !== "overview"} className="outcomes-context">
+        <Metric label="Learners" value={outcome.participantCount} />
+        <Metric
+          label="Completion"
+          value={metrics ? percent(metrics.completionContext.completionRate) : flow?.totals?.completed === null || flow?.totals?.completed === undefined ? "Unavailable" : `${flow.totals.completed} completed`}
+          detail="Across this programme"
+        />
+      </section>
 
       {flow && report.status === "AVAILABLE" ? <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-evidence-flow">
         <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>

@@ -186,7 +186,7 @@ export function PortfolioWorkspace() {
     const label = evidenceTitle(record);
 
     return (
-      <li key={record.id} className="evidence-entry">
+      <li key={record.id} id={`my-bis-record-${record.id}`} className="evidence-entry" tabIndex={-1}>
         <div className="evidence-entry-header">
           {eligible ? (
             <label>
@@ -266,6 +266,9 @@ export function PortfolioWorkspace() {
         <h1>Your growth, evidence and feedback</h1>
         <p>See what your recorded work is beginning to show, where you can practise next, and the evidence behind it.</p>
       </header>
+      <nav className="portfolio-area-navigation" aria-label="My BIS areas">
+        {[["growth", "My Growth"], ["journey", "My Journey"], ["evidence", "My Evidence"], ["feedback", "My Feedback"], ["work", "My Work"]].map(([id, label]) => <a key={id} href={`#my-bis-${id}`}>{label}</a>)}
+      </nav>
       <div className="evidence-actions">
         <a className="evidence-button" download={example ? "BIS-example-evidence.txt" : undefined} href={example ? "data:text/plain;charset=utf-8," + encodeURIComponent("BIS · Example evidence report\nFictional practice from this browser tab.\n\n" + records.map(record => `${evidenceTitle(record)}\n${evidenceWording(record.value)}`).join("\n\n")) : "/api/evidence-engine?view=learnerReport"}>
           Download report
@@ -289,7 +292,7 @@ export function PortfolioWorkspace() {
 
       <EvidenceState {...development} retry={() => void development.load()} />
       {development.data ? (
-        <section className="portfolio-growth" aria-labelledby="my-bis-growth-heading">
+        <section id="my-bis-growth" className="portfolio-growth" aria-labelledby="my-bis-growth-heading">
           <div className="portfolio-section-heading">
             <div>
               <p className="eyebrow">Living development picture</p>
@@ -309,13 +312,18 @@ export function PortfolioWorkspace() {
                     {area.sourceLabs.length ? <small>Seen in {area.sourceLabs.map(labTitle).join(", ")}</small> : null}
                   </div>
                   <p>{area.summary}</p>
-                  <p className="portfolio-growth-signal">{area.growth}</p>
                   {area.nextStep ? <p className="portfolio-growth-next"><strong>Practise next:</strong> {area.nextStep}</p> : null}
+                  <details className="portfolio-growth-framework">
+                    <summary>What supports this picture</summary>
+                    <p>{area.growth}</p>
+                    <p>{area.evidenceCount} recorded evidence {area.evidenceCount === 1 ? "item" : "items"} support this area.</p>
+                    <a href="#my-bis-evidence">View your evidence</a>
+                  </details>
                   {area.externalFrameworkAreas.length ? (
                     <details className="portfolio-growth-framework">
                       <summary>Related curriculum competencies</summary>
                       <p>{area.externalFrameworkAreas.join(" · ")}</p>
-                      <small>These are mapped areas of relevance, not external certification.</small>
+                      <small>These competencies relate to your work; they do not certify achievement.</small>
                     </details>
                   ) : null}
                 </article>
@@ -323,15 +331,25 @@ export function PortfolioWorkspace() {
             </div>
           ) : (
             <div className="evidence-empty">
-              <h3>Your profile is waiting for mapped evidence</h3>
-              <p>Complete programme activities as usual. BIS will only add a development statement when the curriculum mapping and recorded evidence support it.</p>
+              <h3>Your growth picture starts with your work</h3>
+              <p>Keep completing your programme activities. Your profile will show what you can demonstrate when there is enough recorded work to support it.</p>
             </div>
           )}
           <p className="evidence-meta portfolio-growth-boundary">{development.data.profile.boundary}</p>
         </section>
       ) : null}
 
-      <section className="portfolio-evidence-heading">
+      <section id="my-bis-journey" className="portfolio-personal-area" aria-labelledby="my-bis-journey-heading">
+        <p className="eyebrow">My Journey</p><h2 id="my-bis-journey-heading">Your learning in motion</h2>
+        <EvidenceState {...overview} retry={() => void overview.load()} />
+        {overview.data && !allLabs.length ? <p>Your first Lab will appear here when you begin.</p> : null}
+        <ol className="portfolio-journey-list">{allLabs.map(item => <li key={item.enrolmentId}>
+          <div><strong>{item.title}</strong><span>{item.status === "COMPLETED" ? "Completed" : "In progress"}{item.startedAt ? ` · Started ${date(item.startedAt)}` : ""}{item.completedAt ? ` · Finished ${date(item.completedAt)}` : ""}</span></div>
+          <Link href={`/labs/${item.labCode.toLowerCase()}`}>{item.intelligence.nextAction.label}</Link>
+        </li>)}</ol>
+      </section>
+
+      <section id="my-bis-evidence" className="portfolio-evidence-heading">
         <p className="eyebrow">My evidence</p>
         <h2>The record behind your profile</h2>
         <p>Your original work, revisions, real-world tests and facilitator feedback stay available here so you can see what each development statement is based on.</p>
@@ -474,6 +492,32 @@ export function PortfolioWorkspace() {
         </button>
       </div>
       {showCalculations ? <CalculationHistory /> : null}
+
+      <section id="my-bis-feedback" className="portfolio-personal-area" aria-labelledby="my-bis-feedback-heading">
+        <p className="eyebrow">My Feedback</p><h2 id="my-bis-feedback-heading">Conversations that help you grow</h2>
+        <EvidenceState {...sharing} retry={() => void sharing.load()} />
+        {sharing.data && !reviews ? <p>Feedback will appear after your facilitator reviews work you choose to share.</p> : null}
+        {sharing.data?.submissions.filter(submission => submission.reviews.length).map(submission => <article className="portfolio-feedback-entry" key={submission.id}>
+          <h3>{submission.title}</h3><p>{submission.reviews[0].feedback}</p>
+          {!submission.current || submission.revoked_at ? <small>This feedback relates to an earlier shared record.</small> : null}
+          <details><summary>Review history</summary><AssessmentHistory submission={submission} rubrics={sharing.data!.rubrics} /></details>
+        </article>)}
+      </section>
+
+      <section id="my-bis-work" className="portfolio-personal-area" aria-labelledby="my-bis-work-heading">
+        <p className="eyebrow">My Work</p><h2 id="my-bis-work-heading">What you have made and recorded</h2>
+        <p className="evidence-meta">Your saved responses and tasks. History filters apply here too.</p>
+        {timeline.data && !records.some(record => record.status === "ACTIVE") ? <p>Your saved work will appear as you complete programme activities.</p> : null}
+        <div className="portfolio-work-list">{records.filter(record => record.status === "ACTIVE").map(record => <article key={record.id}>
+          <strong>{evidenceTitle(record)}</strong><small>{labTitle(record.lab_code)} · {date(record.occurred_at)}</small>
+          <a href={`#my-bis-record-${record.id}`} onClick={() => {
+            const target = document.getElementById(`my-bis-record-${record.id}`);
+            for (let parent = target?.parentElement; parent; parent = parent.parentElement) if (parent instanceof HTMLDetailsElement) parent.open = true;
+            target?.focus({ preventScroll: true });
+          }}>Open saved work</a>
+        </article>)}</div>
+        {hasMore && records.length ? <button type="button" className="secondary" disabled={paging} onClick={() => void olderRecords()}>{paging ? "Loading…" : "Load earlier work"}</button> : null}
+      </section>
 
       <details className="portfolio-sharing" open={selectedRecords.length > 0 ? true : undefined}>
         <summary>Share for review{selectedRecords.length ? ` · ${selectedRecords.length} selected` : ""}</summary>
