@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen, FlaskConical } from "lucide-react";
 import {
   BIS_MODULES,
   BIS_PRODUCT_SCOPE,
@@ -122,7 +122,12 @@ export function ModuleLibrary({ mode }: { mode: LibraryMode }) {
 
           const body = (
             <>
+              <div className="bis-module-card-top">
+                <span>{String(item.global).padStart(2, "0")}</span>
+                {mode === "learning" ? <BookOpen aria-hidden="true" /> : <FlaskConical aria-hidden="true" />}
+              </div>
               <div className="bis-module-card-copy">
+                <small>Volume {item.volume} · {mode === "learning" ? "Handbook" : "Lab"} {item.position}</small>
                 <h3>{item.title}</h3>
               </div>
               <div className="bis-module-card-foot">
