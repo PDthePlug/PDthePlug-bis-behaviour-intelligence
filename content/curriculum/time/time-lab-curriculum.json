@@ -1,0 +1,738 @@
+{
+  "schemaVersion": "1.0",
+  "status": "CURRICULUM_ARCHITECTURE_CANDIDATE",
+  "labCode": "TIM",
+  "title": "Time Lab™",
+  "programmeDays": 10,
+  "guidedSessionMinutes": 45,
+  "labPhaseAMinutes": 90,
+  "experimentDays": 7,
+  "instructionalStandard": {
+    "lessonCycle": [
+      "DISCOVER",
+      "EXPLAIN",
+      "APPLY",
+      "REVIEW"
+    ],
+    "programmeCycle": [
+      "DISCOVER",
+      "EXPLAIN",
+      "APPLY",
+      "INVESTIGATE",
+      "REVIEW",
+      "TRANSFER"
+    ],
+    "rule": "Discovery precedes formal explanation when the concept is meant to be revealed through investigation."
+  },
+  "sourceAncestry": [
+    "AC:G9:L38",
+    "AC:G9:L39",
+    "AC:G9:L45",
+    "AC:G11:L9",
+    "BIS:TIM:I1-I9"
+  ],
+  "competencies": [
+    {
+      "id": "TIM.C1",
+      "label": "Observe actual time and attention allocation",
+      "definition": "Uses a record or trace to compare intended time use with what actually happened.",
+      "domain": "TIME_ATTENTION_MANAGEMENT"
+    },
+    {
+      "id": "TIM.C2",
+      "label": "Distinguish observation from interpretation",
+      "definition": "Separates what was recorded from the story, judgement or explanation attached to it.",
+      "domain": "EVIDENCE_LITERACY"
+    },
+    {
+      "id": "TIM.C3",
+      "label": "Prioritise what matters",
+      "definition": "Uses importance, urgency, cost and personal purpose to identify what should receive protected time.",
+      "domain": "PRIORITISATION"
+    },
+    {
+      "id": "TIM.C4",
+      "label": "Form a testable explanation of a time pattern",
+      "definition": "Builds a bounded working explanation involving context, attention, friction or environmental pulls and states what would challenge it.",
+      "domain": "BEHAVIOURAL_INQUIRY"
+    },
+    {
+      "id": "TIM.C5",
+      "label": "Design a workable time experiment",
+      "definition": "Defines one small rule or response, a realistic boundary, a prediction, a restart plan and a failure signal.",
+      "domain": "SELF_MANAGEMENT"
+    },
+    {
+      "id": "TIM.C6",
+      "label": "Apply and record the method in real life",
+      "definition": "Attempts the chosen response in suitable real-world opportunities and records outcomes without treating a missed opportunity as failure.",
+      "domain": "PERSONAL_EFFECTIVENESS"
+    },
+    {
+      "id": "TIM.C7",
+      "label": "Review evidence and adapt",
+      "definition": "Compares prediction, action and outcome; identifies uncertainty; and makes a justified adjustment.",
+      "domain": "ADAPTATION"
+    },
+    {
+      "id": "TIM.C8",
+      "label": "Transfer the method",
+      "definition": "Applies the inquiry method to a new time or attention situation and explains what transfers and what changes.",
+      "domain": "TRANSFER"
+    }
+  ],
+  "days": [
+    {
+      "day": 1,
+      "title": "Where did the time go?",
+      "phase": "DISCOVER",
+      "purpose": "Create a discrepancy between the learner's time story and observable traces before teaching a time-management model.",
+      "teaching": [
+        "Time is finite, but the first teaching task is noticing rather than optimisation.",
+        "A behavioural pattern is something that happens; it is not a character label."
+      ],
+      "sourceRefs": [
+        "AC:G9:L38",
+        "BIS:TIM:I1"
+      ],
+      "competencies": [
+        "TIM.C1"
+      ],
+      "beats": [
+        {
+          "label": "Reconnect and prediction",
+          "minutes": 5
+        },
+        {
+          "label": "Story: the person with no time",
+          "minutes": 8
+        },
+        {
+          "label": "Discover from a real trace",
+          "minutes": 8
+        },
+        {
+          "label": "Pair compare: story vs record",
+          "minutes": 7
+        },
+        {
+          "label": "Personal application",
+          "minutes": 10
+        },
+        {
+          "label": "Review and carry-forward observation",
+          "minutes": 7
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D1.OBSERVATION",
+          "kind": "BASELINE",
+          "reportClass": "STARTING_POINT",
+          "description": "One bounded record of where time or attention went, plus what the learner expected."
+        }
+      ],
+      "facilitatorFocus": "Do not diagnose the learner. Make the discrepancy visible and leave the explanation open."
+    },
+    {
+      "day": 2,
+      "title": "Thinking like an investigator",
+      "phase": "DISCOVER_EXPLAIN",
+      "purpose": "Teach evidence discipline so the learner can investigate time without confusing judgement with observation.",
+      "teaching": [
+        "Memory, intention and records are different evidence sources.",
+        "Observation describes what happened; interpretation proposes why.",
+        "Useful evidence is specific enough to test or revisit."
+      ],
+      "sourceRefs": [
+        "AC:G9:L38",
+        "AC:G9:L39",
+        "BIS:TIM:I2"
+      ],
+      "competencies": [
+        "TIM.C1",
+        "TIM.C2"
+      ],
+      "beats": [
+        {
+          "label": "Retrieve yesterday's observation",
+          "minutes": 5
+        },
+        {
+          "label": "Discover: two descriptions of the same event",
+          "minutes": 7
+        },
+        {
+          "label": "Explain observation vs interpretation",
+          "minutes": 8
+        },
+        {
+          "label": "Quick discrimination check",
+          "minutes": 5
+        },
+        {
+          "label": "Convert judgements into observations",
+          "minutes": 10
+        },
+        {
+          "label": "Prepare evidence capture",
+          "minutes": 6
+        },
+        {
+          "label": "Review",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D2.LEARNING_CHECK",
+          "kind": "LEARNING_CHECK",
+          "reportClass": "LEARNING",
+          "description": "Distinguishes observation from interpretation in a worked example."
+        },
+        {
+          "id": "TIM.D2.CONTEXT",
+          "kind": "CONTEXT",
+          "reportClass": "STARTING_POINT",
+          "description": "Names one real time situation to investigate."
+        }
+      ],
+      "facilitatorFocus": "Correct evidence language, not personality. 'I am lazy' is not an observation."
+    },
+    {
+      "day": 3,
+      "title": "Build the investigation",
+      "phase": "INVESTIGATE",
+      "purpose": "Bridge learning into the 90-minute Time Lab Phase A, where the learner maps the pattern, forms an explanation and designs the experiment.",
+      "teaching": [
+        "A useful investigation needs a specific situation, a working explanation, a prediction and a test.",
+        "Prediction creates something that later evidence can disagree with."
+      ],
+      "sourceRefs": [
+        "AC:G9:L38",
+        "AC:G9:L39",
+        "BIS:TIM:I1",
+        "BIS:TIM:I2",
+        "BIS:TIM:I3",
+        "BIS:TIM:I4",
+        "BIS:TIM:I5",
+        "BIS:TIM:I6"
+      ],
+      "competencies": [
+        "TIM.C1",
+        "TIM.C2",
+        "TIM.C3",
+        "TIM.C4",
+        "TIM.C5"
+      ],
+      "beats": [
+        {
+          "label": "Recall the evidence rule",
+          "minutes": 5
+        },
+        {
+          "label": "Discover the pattern boundary",
+          "minutes": 7
+        },
+        {
+          "label": "Explain hypothesis and prediction",
+          "minutes": 8
+        },
+        {
+          "label": "Worked investigation example",
+          "minutes": 8
+        },
+        {
+          "label": "Prepare my question and test",
+          "minutes": 10
+        },
+        {
+          "label": "Handover to Lab",
+          "minutes": 7
+        }
+      ],
+      "separateLabPhaseAMinutes": 90,
+      "labPhaseAOutcome": "Time Lab Investigations 1–6 produce the time map, cost, personal equation/falsification test, contract, prediction, restart plan and failure signal. Formal post-discovery explanation remains for Day 4.",
+      "learnerEvidence": [
+        {
+          "id": "TIM.D3.PREDICTION",
+          "kind": "PREDICTION",
+          "reportClass": "STARTING_POINT",
+          "description": "A testable prediction linked to the chosen pattern."
+        },
+        {
+          "id": "TIM.D3.PLAN",
+          "kind": "PLAN",
+          "reportClass": "GUIDED_APPLICATION",
+          "description": "A bounded time experiment with rule, protection, restart and failure signal."
+        }
+      ],
+      "facilitatorFocus": "Keep the 45-minute bridge separate from the 90-minute Lab. Do not pre-empt the Lab revelation."
+    },
+    {
+      "day": 4,
+      "title": "What the investigation revealed",
+      "phase": "EXPLAIN",
+      "purpose": "Give formal language to patterns the learner has already encountered in the Lab.",
+      "teaching": [
+        "Time use is often shaped by attention, cues, friction and environmental pulls.",
+        "A time leak is a repeated allocation with a meaningful cost, not any leisure or rest.",
+        "Priority and protection are design choices, not moral scores."
+      ],
+      "sourceRefs": [
+        "AC:G9:L38",
+        "AC:G9:L39",
+        "AC:G9:L45",
+        "AC:G11:L9",
+        "BIS:TIM:I3",
+        "BIS:TIM:I4"
+      ],
+      "competencies": [
+        "TIM.C2",
+        "TIM.C3",
+        "TIM.C4"
+      ],
+      "beats": [
+        {
+          "label": "Reconnect to my Lab map",
+          "minutes": 5
+        },
+        {
+          "label": "Discover patterns across examples",
+          "minutes": 6
+        },
+        {
+          "label": "Explain attention, friction and leaks",
+          "minutes": 10
+        },
+        {
+          "label": "Quick check",
+          "minutes": 4
+        },
+        {
+          "label": "Apply concepts to my own map",
+          "minutes": 10
+        },
+        {
+          "label": "Challenge my explanation",
+          "minutes": 6
+        },
+        {
+          "label": "Review",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D4.EXPLANATION",
+          "kind": "LEARNING_CHECK",
+          "reportClass": "LEARNING",
+          "description": "Explains one personal pattern using evidence and distinguishes what is observed from what is inferred."
+        },
+        {
+          "id": "TIM.D4.GUIDED_APPLICATION",
+          "kind": "GUIDED_APPLICATION",
+          "reportClass": "GUIDED_APPLICATION",
+          "description": "Applies the formal model to the learner's existing time map."
+        }
+      ],
+      "facilitatorFocus": "Explanation should feel like recognition: name what the learner has already seen."
+    },
+    {
+      "day": 5,
+      "title": "Evidence, not guilt",
+      "phase": "APPLY_REVIEW",
+      "purpose": "Teach honest experiment recording and perform the first evidence checkpoint.",
+      "teaching": [
+        "An opportunity, an attempt, an outcome and a missed/no-opportunity day are different records.",
+        "Evidence quality matters more than looking successful.",
+        "One observation can update a method without proving a stable change."
+      ],
+      "sourceRefs": [
+        "AC:G9:L51",
+        "AC:G9:L53",
+        "BIS:TIM:I7"
+      ],
+      "competencies": [
+        "TIM.C2",
+        "TIM.C6",
+        "TIM.C7"
+      ],
+      "beats": [
+        {
+          "label": "Check experiment position",
+          "minutes": 5
+        },
+        {
+          "label": "Discover: three misleading records",
+          "minutes": 6
+        },
+        {
+          "label": "Explain evidence categories",
+          "minutes": 8
+        },
+        {
+          "label": "Classify examples",
+          "minutes": 5
+        },
+        {
+          "label": "Review my first observations",
+          "minutes": 10
+        },
+        {
+          "label": "Adjust recording method if needed",
+          "minutes": 7
+        },
+        {
+          "label": "Carry forward",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D5.EVIDENCE_QUALITY",
+          "kind": "LEARNING_CHECK",
+          "reportClass": "LEARNING",
+          "description": "Correctly distinguishes opportunity, attempt, outcome and no-opportunity."
+        },
+        {
+          "id": "TIM.D5.CHECKPOINT",
+          "kind": "INTERPRETATION",
+          "reportClass": "REVIEW_ADAPTATION",
+          "description": "First bounded review of experiment evidence; method adjustment only if evidence supports it."
+        }
+      ],
+      "facilitatorFocus": "Do not turn adherence into virtue. Protect honest records, including failure and no opportunity."
+    },
+    {
+      "day": 6,
+      "title": "When the plan meets real life",
+      "phase": "APPLY_REVIEW",
+      "purpose": "Use weekend/field evidence to diagnose barriers and make one justified adjustment.",
+      "teaching": [
+        "Barriers are information about the design and context.",
+        "Restarting is part of self-management.",
+        "Environment can reduce the amount of willpower required."
+      ],
+      "sourceRefs": [
+        "AC:G8:L48",
+        "AC:G8:L49",
+        "AC:G9:L39",
+        "AC:G9:L45",
+        "AC:G9:L52",
+        "BIS:TIM:I7"
+      ],
+      "competencies": [
+        "TIM.C5",
+        "TIM.C6",
+        "TIM.C7"
+      ],
+      "beats": [
+        {
+          "label": "Return with field evidence",
+          "minutes": 5
+        },
+        {
+          "label": "Compare worked/failed examples",
+          "minutes": 7
+        },
+        {
+          "label": "Explain friction, environment and restart",
+          "minutes": 7
+        },
+        {
+          "label": "Diagnose one barrier",
+          "minutes": 8
+        },
+        {
+          "label": "Revise one part of the method",
+          "minutes": 9
+        },
+        {
+          "label": "Peer/facilitator pressure-test",
+          "minutes": 5
+        },
+        {
+          "label": "Carry forward",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D6.REVISION",
+          "kind": "REVISION",
+          "reportClass": "REVIEW_ADAPTATION",
+          "description": "One evidence-linked change to the rule, environment, first step or restart plan."
+        }
+      ],
+      "facilitatorFocus": "A revision must point to evidence. Avoid changing the goal simply to improve the percentage."
+    },
+    {
+      "day": 7,
+      "title": "Protecting what matters",
+      "phase": "WIDEN",
+      "purpose": "Widen from one time leak to prioritisation, focus protection and age-appropriate leverage without abandoning the experiment.",
+      "teaching": [
+        "Urgent and important are not the same.",
+        "Protection can include scheduling, boundaries, batching, elimination or delegation where appropriate.",
+        "Leverage changes how effort is allocated but does not remove accountability."
+      ],
+      "sourceRefs": [
+        "AC:G9:L38",
+        "AC:G11:L9",
+        "BIS:TIM:I7"
+      ],
+      "competencies": [
+        "TIM.C3",
+        "TIM.C6"
+      ],
+      "beats": [
+        {
+          "label": "Retrieve what matters",
+          "minutes": 5
+        },
+        {
+          "label": "Discover: urgent vs important conflict",
+          "minutes": 6
+        },
+        {
+          "label": "Explain priority and protection options",
+          "minutes": 8
+        },
+        {
+          "label": "Quick check",
+          "minutes": 4
+        },
+        {
+          "label": "Apply to a real upcoming demand",
+          "minutes": 10
+        },
+        {
+          "label": "Final field application plan",
+          "minutes": 8
+        },
+        {
+          "label": "Review",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D7.APPLICATION",
+          "kind": "GUIDED_APPLICATION",
+          "reportClass": "GUIDED_APPLICATION",
+          "description": "Uses priority/protection reasoning on a new real demand."
+        },
+        {
+          "id": "TIM.D7.FIELD",
+          "kind": "OBSERVATION",
+          "reportClass": "REAL_WORLD_APPLICATION",
+          "description": "Final experiment opportunity/outcome is recorded outside the teaching example."
+        }
+      ],
+      "facilitatorFocus": "Do not present busyness as achievement or rest as waste. The test is alignment with what matters."
+    },
+    {
+      "day": 8,
+      "title": "What does the evidence support?",
+      "phase": "REVIEW",
+      "purpose": "Close the seven-day test and teach bounded interpretation of the learner's evidence.",
+      "teaching": [
+        "Rates require honest denominators and clearly defined opportunities.",
+        "Prediction and outcome can differ without either being a moral failure.",
+        "Evidence supports a bounded conclusion; it does not define the person or prove lasting change."
+      ],
+      "sourceRefs": [
+        "AC:G9:L53",
+        "AC:G10:L52",
+        "BIS:TIM:I8"
+      ],
+      "competencies": [
+        "TIM.C2",
+        "TIM.C6",
+        "TIM.C7"
+      ],
+      "beats": [
+        {
+          "label": "Close the experiment record",
+          "minutes": 5
+        },
+        {
+          "label": "Discover: same percentage, different evidence",
+          "minutes": 6
+        },
+        {
+          "label": "Explain denominator and comparison",
+          "minutes": 8
+        },
+        {
+          "label": "Check the calculation/claim",
+          "minutes": 5
+        },
+        {
+          "label": "Compare prediction with evidence",
+          "minutes": 9
+        },
+        {
+          "label": "Write bounded conclusion",
+          "minutes": 8
+        },
+        {
+          "label": "Review",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D8.OUTCOME",
+          "kind": "OUTCOME",
+          "reportClass": "REAL_WORLD_APPLICATION",
+          "description": "Experiment counts/rate with provenance to recorded opportunities."
+        },
+        {
+          "id": "TIM.D8.REVIEW",
+          "kind": "INTERPRETATION",
+          "reportClass": "REVIEW_ADAPTATION",
+          "description": "Evidence-backed conclusion, uncertainty and next adjustment."
+        }
+      ],
+      "facilitatorFocus": "Ask 'what does this evidence support?' before 'did you improve?'"
+    },
+    {
+      "day": 9,
+      "title": "The meta-time skill",
+      "phase": "TRANSFER",
+      "purpose": "Make the method portable beyond the original time pattern.",
+      "teaching": [
+        "The deeper skill is noticing, investigating, testing and adjusting.",
+        "Near transfer keeps much of the context the same; farther transfer changes the situation.",
+        "Transfer is demonstrated by a new application, not by saying 'I can use this anywhere'."
+      ],
+      "sourceRefs": [
+        "AC:G9:L32",
+        "AC:G9:L53",
+        "AC:G11:L13",
+        "BIS:TIM:I8",
+        "BIS:TIM:I9"
+      ],
+      "competencies": [
+        "TIM.C7",
+        "TIM.C8"
+      ],
+      "beats": [
+        {
+          "label": "Reconstruct the method from memory",
+          "minutes": 6
+        },
+        {
+          "label": "Discover a new context",
+          "minutes": 6
+        },
+        {
+          "label": "Explain transfer and meta-skill",
+          "minutes": 7
+        },
+        {
+          "label": "Choose a second situation",
+          "minutes": 7
+        },
+        {
+          "label": "Apply the method to the new situation",
+          "minutes": 10
+        },
+        {
+          "label": "Compare what transfers/changes",
+          "minutes": 5
+        },
+        {
+          "label": "Review",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D9.TRANSFER",
+          "kind": "TRANSFER",
+          "reportClass": "TRANSFER",
+          "description": "Applies the method to a new time/attention context and explains what changed."
+        }
+      ],
+      "facilitatorFocus": "Do not count a transfer intention as transfer evidence; require a concrete new application."
+    },
+    {
+      "day": 10,
+      "title": "Show what you can now do",
+      "phase": "INTEGRATE",
+      "purpose": "Demonstrate the method, compare starting and later evidence, build a useful portfolio narrative and identify the next pathway.",
+      "teaching": [
+        "Progress is described through the strongest available evidence, not a single score.",
+        "Self-report, task performance, real-world evidence and transfer answer different questions.",
+        "The learner's next step follows from the evidence gap, not from a personality label."
+      ],
+      "sourceRefs": [
+        "AC:G8:L80",
+        "AC:G9:L55",
+        "AC:G11:L78",
+        "AC:G12:L73",
+        "AC:G12:L74",
+        "BIS:TIM:I9"
+      ],
+      "competencies": [
+        "TIM.C1",
+        "TIM.C2",
+        "TIM.C3",
+        "TIM.C4",
+        "TIM.C5",
+        "TIM.C6",
+        "TIM.C7",
+        "TIM.C8"
+      ],
+      "beats": [
+        {
+          "label": "Retrieve the full method",
+          "minutes": 5
+        },
+        {
+          "label": "Demonstrate on an unseen scenario",
+          "minutes": 8
+        },
+        {
+          "label": "Compare starting/later evidence",
+          "minutes": 7
+        },
+        {
+          "label": "Complete Behaviour Profile",
+          "minutes": 8
+        },
+        {
+          "label": "Portfolio growth narrative",
+          "minutes": 7
+        },
+        {
+          "label": "Transfer/pathway plan",
+          "minutes": 6
+        },
+        {
+          "label": "Close",
+          "minutes": 4
+        }
+      ],
+      "learnerEvidence": [
+        {
+          "id": "TIM.D10.DEMONSTRATION",
+          "kind": "ASSESSED_TASK",
+          "reportClass": "GUIDED_APPLICATION",
+          "description": "Demonstrates the inquiry method on a new scenario using an authored rubric."
+        },
+        {
+          "id": "TIM.D10.PORTFOLIO",
+          "kind": "PORTFOLIO_SYNTHESIS",
+          "reportClass": "LONGITUDINAL_PORTFOLIO",
+          "description": "Source-linked synthesis of starting point, application, evidence review, adaptation and transfer without repeating private raw responses."
+        }
+      ],
+      "facilitatorFocus": "The close should tell the learner what the evidence shows, what remains open and what to practise next."
+    }
+  ],
+  "reportingBoundary": "This blueprint creates evidence opportunities. It does not convert completion, self-report or one experiment into a durable competency claim. Competency progression is classified only from qualifying source-linked evidence."
+}
