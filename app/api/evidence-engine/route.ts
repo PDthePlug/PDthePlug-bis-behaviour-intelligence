@@ -5,6 +5,11 @@ import { requestSupabaseClient } from "@/lib/supabase/server";
 import { learnerEvidencePortfolio } from "@/lib/learner-evidence";
 import type { EvidenceRecord, AssessmentWorkspace } from "@/lib/evidence-engine";
 import templates from "@/lib/authored-assessment-rubrics.json";
+import competencyFramework from "@/content/curriculum/applied-commerce/competency-framework.json";
+import competencyCrosswalk from "@/content/curriculum/external-frameworks/dbe-basic-education-competency-crosswalk.json";
+import labAncestry from "@/content/curriculum/applied-commerce/lab-ancestry.json";
+import timeCompetencyMap from "@/content/curriculum/time/time-competency-evidence-map.json";
+import { buildLearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
 import type { AssessmentReport, CurriculumMapping } from "@/lib/evidence-engine";
 const headers = { "cache-control": "private, no-store" };
 const id = z.string().min(1).max(200);
@@ -46,6 +51,24 @@ async function get(request: Request) {
    const {data,error}=await selection;if(error)throw error;
    const portfolio=await learnerEvidencePortfolio(identity.id),labels=new Map(portfolio.flatMap(lab=>lab.metrics.map(metric=>[`${lab.enrolmentId}:${metric.code}`,metric.label] as const)));
    return Response.json({records:data.map(record=>({...record,label:labels.get(`${record.enrolment_id}:${record.code}`)??"Calculated measure"}))},{headers});
+  }
+  if(view==="developmentProfile") {
+   const records:EvidenceRecord[]=[];let before:string|null=null,beforeId:string|null=null;
+   for(let page=0;page<1000;page++) {
+    const batch=await rpc("bis_evidence_timeline",{p_before:before,p_before_id:beforeId,p_limit:100}) as EvidenceRecord[];
+    records.push(...batch);if(batch.length<100)break;
+    before=batch.at(-1)!.occurred_at;beforeId=batch.at(-1)!.id;
+    if(page===999)throw new Error("Development profile capacity exceeded");
+   }
+   const profile=buildLearnerDevelopmentProfile({
+    learnerId:identity.id,
+    records,
+    competencies:competencyFramework.competencies,
+    externalCrosswalk:competencyCrosswalk,
+    labAncestry:labAncestry.labs,
+    authoredBindings:timeCompetencyMap.bindings,
+   });
+   return Response.json({profile},{headers});
   }
   if(view==="learnerReport") {
    const records:EvidenceRecord[]=[];let before:string|null=null,beforeId:string|null=null;
