@@ -129,7 +129,12 @@ async function post(request: Request) {
   if(body.action==="map"||body.action==="rubric") {
    const roles=await getRoles(identity);
    if(!roles.includes("SYSTEM_ADMIN")) return Response.json({error:"Administrator access is required."},{status:403,headers});
-   if(body.action==="map") await rpc("bis_approve_evidence_mapping",{p_previous:body.previousId,p_class:body.evidenceClass,p_purpose:body.purpose,p_outcome:body.outcome,p_competency:body.competency,p_source:body.source});
+   if(body.action==="map") {
+    const requestedCompetency=body.competency.trim().toLowerCase();
+    const competency=competencyFramework.competencies.find(item=>item.id.toLowerCase()===requestedCompetency||item.title.toLowerCase()===requestedCompetency);
+    if(!competency) return Response.json({error:"Choose a recognised BIS development area."},{status:400,headers});
+    await rpc("bis_approve_evidence_mapping",{p_previous:body.previousId,p_class:body.evidenceClass,p_purpose:body.purpose,p_outcome:body.outcome,p_competency:competency.id,p_source:body.source});
+   }
    else {
     const template=templates.find(t=>t.labCode===body.templateCode);
     if(!template) return Response.json({error:"Choose an authored rubric."},{status:400,headers});
