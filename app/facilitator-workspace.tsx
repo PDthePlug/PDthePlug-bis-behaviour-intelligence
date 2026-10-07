@@ -319,19 +319,13 @@ export function FacilitatorWorkspace({
               </Link>
             </div>
           </section>
-          <section className="ops-metrics facilitator-group-summary" aria-label="Group summary">
-            <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
-            <article><Activity /><span>In real-world practice</span><strong>{experiments}</strong></article>
-            <article><ClipboardCheck /><span>Ready to reflect</span><strong>{reviewReady}</strong></article>
-            <article><ShieldAlert /><span>Could use a check-in</span><strong>{attention.length}</strong></article>
-          </section>
           {competencySummary?.status === "AVAILABLE" && competencySummary.competencies.length ? (
             <section className="surface-card ops-section facilitator-development-picture">
               <div className="section-title">
                 <div>
                   <p className="eyebrow">Development picture</p>
                   <h2>What this group is learning to do</h2>
-                  <p>These areas come from mapped programme tasks and recorded evidence. They show the strongest stage the available work supports, not fixed ability or a learner ranking.</p>
+                  <p>See what the group can currently demonstrate and where another practice opportunity could help.</p>
                 </div>
                 <Compass />
               </div>
@@ -342,13 +336,16 @@ export function FacilitatorWorkspace({
                   return <article key={competency.competencyId} className="facilitator-competency-card">
                     <div>
                       <h3>{competency.title}</h3>
-                      <span>{highest?.label ?? "Evidence developing"}</span>
+                      <span>{highest ? `Recorded: ${highest.label}` : "Evidence developing"}</span>
                     </div>
                     <p>{competency.reportableParticipants === null
                       ? "The group has some evidence in this area, but the count is hidden for privacy."
                       : competency.reportableParticipants === 0
                         ? "There is not enough mapped evidence to describe group development here yet."
                         : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} currently have enough mapped evidence to describe development in this area.`}</p>
+                    <div className="facilitator-competency-stages" aria-label={`${competency.title} development stages`}>
+                      {competency.distribution.map(stage => <span key={stage.code}><b>{stage.label}</b><small>{stage.suppressed ? "Hidden for privacy" : stage.count ?? "Unavailable"}</small></span>)}
+                    </div>
                     {competency.externalFrameworkAreas.length ? <small>Related curriculum areas: {competency.externalFrameworkAreas.join(" · ")}</small> : null}
                     <p className="facilitator-competency-next"><strong>Next useful question:</strong> {competency.nextQuestion}</p>
                   </article>;
@@ -375,6 +372,12 @@ export function FacilitatorWorkspace({
               </li>)}</ul>
             </EvidenceDisclosure>) : <EvidenceDisclosure title="No check-in suggestions yet"><p>The available progress records do not indicate a check-in. This does not mean that nobody needs support.</p></EvidenceDisclosure>}
             <ProgrammeReportGraphic chart={brief.chart} />
+          </section>
+          <section className="ops-metrics facilitator-group-summary" aria-label="Group summary">
+            <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
+            <article><Activity /><span>In real-world practice</span><strong>{experiments}</strong></article>
+            <article><ClipboardCheck /><span>Ready to reflect</span><strong>{reviewReady}</strong></article>
+            <article><ShieldAlert /><span>Could use a check-in</span><strong>{attention.length}</strong></article>
           </section>
           {learningChecks && learningChecks.signalsRecorded === 0 ? <EvidenceDisclosure title="Learning checks have no responses yet"><p>Understanding and requests for another example will appear here after learners answer a lesson check.</p></EvidenceDisclosure> : learningChecks ? (
             <section className="surface-card ops-section facilitator-learning-checks">

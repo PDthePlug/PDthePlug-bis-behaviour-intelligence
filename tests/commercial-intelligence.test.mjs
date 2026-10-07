@@ -42,15 +42,16 @@ test("Commercial Intelligence schema is isolated, auditable and write-gated", as
 });
 
 test("Commercial Intelligence keeps irreversible work behind human approval", async () => {
-  const [route, ai, engine] = await Promise.all([
+  const [route, ai, engine, sweep] = await Promise.all([
     source("app/api/commercial/intelligence/route.ts"),
     source("lib/commercial-ai.ts"),
     source("lib/commercial-intelligence.ts"),
+    source("lib/commercial-sweep.ts"),
   ]);
 
   assert.match(route, /action === "decision"/);
   assert.match(route, /"APPROVED", "DISMISSED"/);
-  assert.match(route, /bis_commit_commercial_run/);
+  assert.match(route + sweep, /bis_commit_commercial_run/);
   assert.match(route, /bis_decide_commercial_recommendation/);
   assert.doesNotMatch(route, /sendEmail|sendWhatsapp|sendWhatsApp|markAsSent/);
   assert.match(route, /opportunity\.stage === "HOLD"/);

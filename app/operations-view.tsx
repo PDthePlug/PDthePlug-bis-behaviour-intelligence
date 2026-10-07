@@ -389,6 +389,14 @@ function AdminPanel({ data, identity, saving, act, section = "all" }: { data: No
 
   return (
     <div className="ops-stack">
+      <section hidden={section !== "all" && section !== "overview"} className="surface-card ops-section admin-next-actions">
+        <div className="section-title"><div><p className="eyebrow">Today’s programme work</p><h2>Help the next session run smoothly</h2></div><ClipboardCheck /></div>
+        <div className="admin-action-grid">
+          <a href="/workspace?view=admin&section=groups"><strong>Prepare a group</strong><span>Set the facilitator, participants and dates.</span></a>
+          <a href="/workspace?view=admin&section=access"><strong>Check people’s access</strong><span>Help someone open the right workspace.</span></a>
+          <a href="/content-studio"><strong>Prepare programme content</strong><span>Review what learners will see next.</span></a>
+        </div>
+      </section>
       <section hidden={section !== "all" && section !== "overview"} className="ops-metrics">
         <article><UserCog /><span>Learners in BIS</span><strong>{data.metrics.learners}</strong></article>
         <article><ClipboardCheck /><span>Labs completed</span><strong>{data.metrics.completed}</strong></article>

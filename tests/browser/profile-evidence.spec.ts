@@ -51,7 +51,7 @@ test("Profile is an identity home and My BIS growth has its own destination", as
   await page.screenshot({ path: `outputs/BIS-profile-${testInfo.project.name}.png` });
   await expect(page.getByRole("link", { name: /My experience/ })).toHaveAttribute("href", "/experience");
   await expect(page.getByRole("link", { name: /Settings/ })).toHaveAttribute("href", "/settings");
-  await expect(page.getByRole("link", { name: /My growth & evidence/ })).toHaveAttribute("href", "/portfolio");
+  await expect(page.getByRole("link", { name: /My BIS/ })).toHaveAttribute("href", "/portfolio");
   await expect(page.getByRole("link", { name: /Learning/ })).toHaveAttribute("href", "/learn");
 
   await expect(page.getByRole("heading", { name: "Your evidence portfolio" })).toHaveCount(0);
@@ -188,7 +188,7 @@ test("My BIS opens with growth first and keeps Lab evidence collapsed until requ
   await expect(page.getByRole("heading", { name: "Your growth", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Behaviour change and self-management", exact: true })).toBeVisible();
   await expect(page.getByText("Applies", { exact: true })).toBeVisible();
-  await expect(page.getByText("Habit Lab", { exact: true })).toBeVisible();
+  await expect(page.locator(".portfolio-lab-copy strong").filter({ hasText: "Habit Lab" })).toBeVisible();
   await expect(page.getByText("I changed the cue before the routine started.")).toBeHidden();
   await mkdir("outputs", { recursive: true });
   await page.screenshot({ path: `outputs/BIS-portfolio-${testInfo.project.name}.png` });
@@ -205,5 +205,11 @@ test("My BIS opens with growth first and keeps Lab evidence collapsed until requ
   await page.locator(".portfolio-responses > summary").click();
   await expect(page.getByText("I changed the cue before the routine started.")).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "Select evidence: My transfer evidence" })).toBeVisible();
+  for (const label of ["My Growth", "My Journey", "My Evidence", "My Feedback", "My Work"]) await expect(page.getByRole("navigation", { name: "My BIS areas" }).getByRole("link", { name: label, exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "My Feedback", exact: true }).click();
+  await expect(page.locator("#my-bis-feedback")).toContainText("You changed the cue; test it in another situation.");
+  await page.getByRole("link", { name: "My Work", exact: true }).click();
+  await page.getByRole("link", { name: "Open saved work", exact: true }).click();
+  await expect(page.locator("#my-bis-record-evidence")).toBeFocused();
   await expectNoHorizontalOverflow(page);
 });

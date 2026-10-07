@@ -83,3 +83,20 @@ test('facilitator learning percentages state their response denominator and self
  await expect(basis).toBeVisible();
  await verify();
 });
+
+test('development leads group views while small stage counts stay hidden', async ({ page }, info) => {
+ const verify=observe(page);
+ const competencySummary={status:'AVAILABLE',participantCount:20,minimumReportableCohortSize:5,minimumReportableCellSize:3,reportClassification:{id:'COHORT_LEARNING_REPORT'},boundary:'Stages describe recorded programme work, not permanent ability.',competencies:[{competencyId:'AC03',title:'Goals, planning and prioritisation',reportableParticipants:3,distribution:[{code:'NOT_YET_EVIDENCED',label:'Not yet evidenced',count:17},{code:'APPLY',label:'Applies',count:3},{code:'TEST_AND_REVISE',label:'Tests and revises',count:null,suppressed:true}],externalFrameworkAreas:['Accountability'],nextQuestion:'Offer another chance to test and review a small plan.'}]};
+ let suppressed=false;
+ await page.route('**/api/staff',r=>r.fulfill({json:{...base,facilitator:{...base.facilitator,cohorts:[{...cohort,competencySummary}]},sponsor:{cohorts:[{...outcome,competencySummary:suppressed?{...competencySummary,status:'SUPPRESSED',competencies:[]}:competencySummary}]}}}));
+ await page.route('**/api/class-operations?**',r=>r.fulfill({json:{sessions:[],attendance:[]}}));
+ await page.goto('/staff-shell?view=facilitator&group=group');
+ const group=page.locator('.facilitator-development-picture');await expect(group).toContainText('Goals, planning and prioritisation');await expect(group).toContainText('Hidden for privacy');
+ expect((await group.boundingBox())!.y).toBeLessThan((await page.locator('.facilitator-group-summary').boundingBox())!.y);
+ await page.screenshot({path:info.outputPath('facilitator-development.png'),fullPage:true});
+ await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ const owner=page.locator('.outcomes-competency-picture');await expect(owner).toContainText('Offer another chance to test and review a small plan.');await expect(owner).toContainText('Hidden');
+ expect((await owner.boundingBox())!.y).toBeLessThan((await page.locator('.outcomes-context').boundingBox())!.y);
+ await page.screenshot({path:info.outputPath('programme-development.png'),fullPage:true});
+ suppressed=true;await page.reload();await expect(page.locator('.outcomes-competency-picture')).toHaveCount(0);await expect(page.getByText('Development picture is hidden for privacy', {exact:true})).toBeVisible();await verify();
+});

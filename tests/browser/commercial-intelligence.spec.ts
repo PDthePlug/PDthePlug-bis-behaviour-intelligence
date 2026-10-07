@@ -98,8 +98,10 @@ const liveRecommendation = {
   requiresApproval: true,
 };
 
-function intelligenceState(refreshed: boolean, dismissed = false) {
+function intelligenceState(refreshed: boolean, dismissed = false, artifacts: Array<{ id: string; opportunity_id: string; artifact_type: string; title: string; content: string; status: string; created_at: string; created_by: string }> = []) {
   return {
+    artifacts,
+    opportunityBriefs: [{ id: "opp-1", name: "Leap9 Participant Development", organisation: "Leap9", stage: "DRAFT_READY", brief: "Programme fit: recorded commercial case. Access: verified Programme Lead. Next step: review the outreach." }],
     canWrite: true,
     aiConfigured: true,
     needsRefresh: !refreshed,
@@ -139,6 +141,7 @@ async function mockCommercial(page: Page) {
   let refreshed = false;
   let dismissed = false;
   let refreshCount = 0;
+  const artifacts: Array<{ id: string; opportunity_id: string; artifact_type: string; title: string; content: string; status: string; created_at: string; created_by: string }> = [];
 
   await page.route("**/api/commercial", async route => {
     await route.fulfill({ json: commercialSnapshot });
@@ -146,7 +149,7 @@ async function mockCommercial(page: Page) {
 
   await page.route("**/api/commercial/intelligence", async route => {
     if (route.request().method() === "GET") {
-      await route.fulfill({ json: intelligenceState(refreshed, dismissed) });
+      await route.fulfill({ json: intelligenceState(refreshed, dismissed, artifacts) });
       return;
     }
     const body = route.request().postDataJSON();
@@ -167,6 +170,7 @@ async function mockCommercial(page: Page) {
       return;
     }
     if (body.action === "draft") {
+      artifacts.unshift({ id: "draft-1", opportunity_id: "opp-1", artifact_type: "OUTREACH_DRAFT", title: "Leap9 outreach draft", content: "Hello, we prepared the Leap9 experience.", status: "DRAFT", created_at: "2026-10-07T00:00:00Z", created_by: "staff@local.invalid" });
       await route.fulfill({
         json: {
           artifact: { id: "draft-1", status: "DRAFT" },
@@ -176,6 +180,10 @@ async function mockCommercial(page: Page) {
         },
       });
       return;
+    }
+    if (body.action === "reviseDraft") {
+      artifacts.unshift({ ...artifacts[0], id: "draft-2", title: "Reviewed Leap9 draft", content: body.content });
+      await route.fulfill({ json: { artifact: artifacts[0], draft: body.content, provider: "HUMAN" } }); return;
     }
     if (body.action === "decision") {
       dismissed = body.decision === "DISMISSED";
@@ -275,4 +283,28 @@ test('revoked Intelligence access clears the loaded recommendation and prepared 
   await expect(page.getByRole('main').getByRole('alert')).toContainText('Your commercial access has ended.');
   await expect(page.getByRole('heading', { name: 'Prepared outreach' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Approve / Accept' })).toHaveCount(0);
+});
+
+
+test("saved commercial drafts can be reopened and revised without replacing earlier work", async ({ page }) => {
+  await mockCommercial(page);
+  await page.goto("/commercial?section=intelligence");
+  await page.getByRole("button", { name: "Prepare draft", exact: true }).click();
+  await expect(page.getByLabel("Prepared message")).toBeVisible();
+  await page.getByRole("button", { name: "Close prepared draft" }).click();
+  await page.reload();
+  await page.getByRole("button", { name: "Review saved draft", exact: true }).click();
+  await page.getByLabel("Prepared message").fill("A revised, programme-specific message prepared for review.");
+  await page.getByRole("button", { name: "Save reviewed draft", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("earlier draft remains");
+  await page.getByRole("button", { name: "Close prepared draft" }).click();
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Review saved draft", exact: true })).toHaveCount(2);
+  await page.getByRole("button", { name: "Review saved draft", exact: true }).first().click();
+  await expect(page.getByLabel("Prepared message")).toHaveValue("A revised, programme-specific message prepared for review.");
+  await expect(page.getByText("Draft only · nothing has been sent", { exact: false })).toBeVisible();
+  await page.getByRole("button", { name: "Close prepared draft" }).click();
+  await page.locator("summary").filter({ hasText: "Leap9 · Leap9 Participant Development" }).click();
+  await expect(page.locator("details").filter({ hasText: "Leap9 · Leap9 Participant Development" })).toContainText("Access: verified Programme Lead");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });

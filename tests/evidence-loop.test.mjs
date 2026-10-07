@@ -24,7 +24,7 @@ test("Phase B exposes a deterministic handback from experiment to review to port
   assert.match(habitRuntime, /onReviewReady=\{\(\) => \{ setStep\(8\)/);
   assert.match(habitRuntime, /updated && programmeReturnTo/);
   assert.match(programme, /Phase B complete · Evidence Review/);
-  assert.match(programme, /View my evidence portfolio/);
+  assert.match(programme, /View My BIS/);
   assert.match(programme, /Review my evidence/);
 });
 
