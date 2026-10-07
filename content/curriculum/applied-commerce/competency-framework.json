@@ -1,0 +1,374 @@
+{
+  "schemaVersion": "applied-commerce-competency-framework:1",
+  "status": "INTERNAL_CURRICULUM_FRAMEWORK",
+  "title": "Applied Commerce Competency Framework",
+  "purpose": "A deterministic curriculum-to-evidence layer for BIS. It defines what a learner may be shown to be progressing in, what evidence can support that statement, and what the system must not infer.",
+  "sourceBasis": [
+    "Applied Commerce Grades 8–12 canonical learner books",
+    "Applied Commerce Assessment Checkpoint Guide · 4 October 2026",
+    "BIS canonical evidence classes and nine-stage Lab architecture"
+  ],
+  "externalAlignment": {
+    "status": "NOT_CERTIFIED",
+    "statement": "This framework is derived from Applied Commerce source material. It is not itself an official DBE assessment instrument, CAPS certification, qualification framework, or psychometric model.",
+    "futureWork": "Any external competency-framework crosswalk must be separately source-verified and versioned."
+  },
+  "progressionModel": {
+    "unit": "competency",
+    "rule": "Never collapse a learner into one global maturity score. Progression is reported per competency and only to the highest level supported by traceable evidence.",
+    "levels": [
+      {
+        "level": 0,
+        "code": "NOT_YET_EVIDENCED",
+        "label": "Not yet evidenced",
+        "meaning": "The available record does not support a statement about this competency.",
+        "minimumEvidence": []
+      },
+      {
+        "level": 1,
+        "code": "NOTICE",
+        "label": "Notices",
+        "meaning": "Identifies or observes a relevant pattern, feature, condition or distinction.",
+        "minimumEvidence": [
+          "LEARNING_CHECK or CONTEXT or OBSERVATION"
+        ]
+      },
+      {
+        "level": 2,
+        "code": "EXPLAIN",
+        "label": "Explains",
+        "meaning": "Explains the concept, relationship, reasoning or limitation in a way that can be reviewed.",
+        "minimumEvidence": [
+          "LEARNING_CHECK or INTERPRETATION",
+          "traceable authored task"
+        ]
+      },
+      {
+        "level": 3,
+        "code": "APPLY",
+        "label": "Applies",
+        "meaning": "Uses the concept in a task, plan, simulation or authentic situation.",
+        "minimumEvidence": [
+          "PLAN or OUTCOME or governed task evidence"
+        ],
+        "boundary": "Simulation supports application-under-conditions, not proof that a real-world action occurred."
+      },
+      {
+        "level": 4,
+        "code": "TEST_AND_REVISE",
+        "label": "Tests and revises",
+        "meaning": "Makes a prediction or plan, gathers evidence, compares what happened and makes a justified revision.",
+        "minimumEvidence": [
+          "PREDICTION",
+          "OBSERVATION",
+          "INTERPRETATION",
+          "revision evidence"
+        ]
+      },
+      {
+        "level": 5,
+        "code": "TRANSFER",
+        "label": "Transfers",
+        "meaning": "Adapts the competency to a meaningfully different context and explains what carries over, what changes and what remains uncertain.",
+        "minimumEvidence": [
+          "TRANSFER",
+          "second-context task or observation"
+        ],
+        "boundary": "One transfer task is evidence of demonstrated transfer in that task, not permanent mastery."
+      }
+    ]
+  },
+  "commonPortfolioRubric": {
+    "provenance": "Applied Commerce Assessment Checkpoint Guide",
+    "status": "PROPOSED_LOCAL_TOOL",
+    "scoreRange": [
+      0,
+      4
+    ],
+    "criteria": [
+      {
+        "id": "PURPOSE_UNDERSTANDING",
+        "label": "Purpose and understanding",
+        "question": "What are you trying to do, and why?"
+      },
+      {
+        "id": "EVIDENCE_ASSUMPTIONS",
+        "label": "Evidence and assumptions",
+        "question": "What supports this claim, and what remains uncertain?"
+      },
+      {
+        "id": "REASONING_CHOICES",
+        "label": "Reasoning and choices",
+        "question": "Why this choice rather than another?"
+      },
+      {
+        "id": "ACTION_ADAPTATION",
+        "label": "Action and adaptation",
+        "question": "What happened, and what changed because of it?"
+      },
+      {
+        "id": "COMMUNICATION_REVIEW",
+        "label": "Communication and review",
+        "question": "Can another reader follow your next step and limitation?"
+      }
+    ],
+    "descriptors": [
+      {
+        "score": 0,
+        "label": "No assessable evidence"
+      },
+      {
+        "score": 1,
+        "label": "Emerging"
+      },
+      {
+        "score": 2,
+        "label": "Developing"
+      },
+      {
+        "score": 3,
+        "label": "Secure"
+      },
+      {
+        "score": 4,
+        "label": "Well substantiated"
+      }
+    ],
+    "warning": "Rubric scores concern reviewed work. They do not measure learner worth, wealth, personality, future success or permanent capability."
+  },
+  "competencies": [
+    {
+      "id": "AC-C01",
+      "title": "Self-knowledge and identity",
+      "definition": "Recognises how beliefs, values, experience and repeated action shape self-understanding without turning a single response into a fixed identity label.",
+      "sourceExamples": [
+        "AC.G8.L01",
+        "AC.G8.L02",
+        "AC.G8.L53",
+        "AC.G9.L02",
+        "AC.G9.L35"
+      ]
+    },
+    {
+      "id": "AC-C02",
+      "title": "Agency and initiative",
+      "definition": "Identifies what is within reach, takes purposeful action, and adapts when permission, systems or first attempts do not produce the intended result.",
+      "sourceExamples": [
+        "AC.G8.L03",
+        "AC.G8.L15",
+        "AC.G8.L16",
+        "AC.G9.L01",
+        "AC.G9.L09",
+        "AC.G9.L10"
+      ]
+    },
+    {
+      "id": "AC-C03",
+      "title": "Evidence and accurate thinking",
+      "definition": "Separates observation from assumption, records traceable evidence, tests claims and states uncertainty or limits.",
+      "sourceExamples": [
+        "AC.G8.L17",
+        "AC.G8.L25",
+        "AC.G8.L38",
+        "AC.G9.L27",
+        "AC.G10.L37",
+        "AC.G12.L59",
+        "AC.G12.L60"
+      ]
+    },
+    {
+      "id": "AC-C04",
+      "title": "Behaviour change and self-management",
+      "definition": "Observes repeated behaviour, designs manageable changes, follows through, recovers from setbacks and revises the method using evidence.",
+      "sourceExamples": [
+        "AC.G8.L18",
+        "AC.G8.L41",
+        "AC.G8.L42",
+        "AC.G8.L47",
+        "AC.G8.L48",
+        "AC.G8.L49",
+        "AC.G9.L35",
+        "AC.G9.L36",
+        "AC.G9.L39",
+        "AC.G9.L45",
+        "AC.G9.L50",
+        "AC.G9.L53"
+      ]
+    },
+    {
+      "id": "AC-C05",
+      "title": "Goals, planning and prioritisation",
+      "definition": "Turns intentions into specific priorities, sequences, schedules, first actions and review points while recognising trade-offs.",
+      "sourceExamples": [
+        "AC.G8.L05",
+        "AC.G8.L06",
+        "AC.G8.L11",
+        "AC.G8.L56",
+        "AC.G9.L37",
+        "AC.G9.L38",
+        "AC.G12.L15"
+      ]
+    },
+    {
+      "id": "AC-C06",
+      "title": "Decision and judgement",
+      "definition": "Compares alternatives, consequences, constraints and trade-offs; explains why one choice is preferred and what could change the decision.",
+      "sourceExamples": [
+        "AC.G8.L08",
+        "AC.G8.L17",
+        "AC.G8.L32",
+        "AC.G9.L46",
+        "AC.G10.L18",
+        "AC.G11.L28",
+        "AC.G12.L05",
+        "AC.G12.L55"
+      ]
+    },
+    {
+      "id": "AC-C07",
+      "title": "Value creation and enterprise",
+      "definition": "Identifies needs, connects skills and resources to useful solutions, tests value propositions and learns from customer or market evidence.",
+      "sourceExamples": [
+        "AC.G8.L13",
+        "AC.G8.L27",
+        "AC.G8.L28",
+        "AC.G9.L05",
+        "AC.G9.L06",
+        "AC.G9.L07",
+        "AC.G9.L09",
+        "AC.G9.L11",
+        "AC.G10.L02",
+        "AC.G10.L05",
+        "AC.G10.L10"
+      ]
+    },
+    {
+      "id": "AC-C08",
+      "title": "Financial capability and resource stewardship",
+      "definition": "Tracks, plans and reasons about money and other resources, including spending, saving, income, investment, debt and protection.",
+      "sourceExamples": [
+        "AC.G8.L07",
+        "AC.G8.L09",
+        "AC.G8.L37",
+        "AC.G8.L38",
+        "AC.G10.L17",
+        "AC.G10.L23",
+        "AC.G10.L29",
+        "AC.G12.L04",
+        "AC.G12.L41"
+      ]
+    },
+    {
+      "id": "AC-C09",
+      "title": "Systems and strategic thinking",
+      "definition": "Maps connected parts, feedback, dependencies and leverage points; predicts ripple effects and redesigns weak systems.",
+      "sourceExamples": [
+        "AC.G10.L37",
+        "AC.G10.L38",
+        "AC.G10.L39",
+        "AC.G10.L40",
+        "AC.G11.L11",
+        "AC.G11.L14"
+      ]
+    },
+    {
+      "id": "AC-C10",
+      "title": "Risk, resilience and protection",
+      "definition": "Identifies uncertainty, capacity, downside, support and failure signals; prepares responses and revises plans after tests or setbacks.",
+      "sourceExamples": [
+        "AC.G8.L15",
+        "AC.G8.L48",
+        "AC.G8.L49",
+        "AC.G9.L40",
+        "AC.G10.L18",
+        "AC.G10.L45",
+        "AC.G11.L08",
+        "AC.G12.L41",
+        "AC.G12.L54",
+        "AC.G12.L58",
+        "AC.G12.L59"
+      ]
+    },
+    {
+      "id": "AC-C11",
+      "title": "Communication, influence and negotiation",
+      "definition": "Communicates purpose and value clearly, listens, asks useful questions, negotiates responsibly and recognises social influence.",
+      "sourceExamples": [
+        "AC.G8.L04",
+        "AC.G8.L29",
+        "AC.G8.L31",
+        "AC.G9.L30",
+        "AC.G9.L47",
+        "AC.G11.L26",
+        "AC.G11.L27",
+        "AC.G12.L24",
+        "AC.G12.L30"
+      ]
+    },
+    {
+      "id": "AC-C12",
+      "title": "Collaboration, leadership and ethical responsibility",
+      "definition": "Works with others, leads self and teams, considers people affected by decisions, and takes responsibility for delegated or amplified action.",
+      "sourceExamples": [
+        "AC.G8.L19",
+        "AC.G11.L10",
+        "AC.G11.L21",
+        "AC.G11.L22",
+        "AC.G11.L24",
+        "AC.G11.L25",
+        "AC.G11.L33",
+        "AC.G11.L34"
+      ]
+    },
+    {
+      "id": "AC-C13",
+      "title": "Career and life navigation",
+      "definition": "Builds and revises realistic pathways through learning, work, enterprise and adult transitions using evidence, relationships and next actions.",
+      "sourceExamples": [
+        "AC.G9.L73",
+        "AC.G12.L06",
+        "AC.G12.L07",
+        "AC.G12.L09",
+        "AC.G12.L21",
+        "AC.G12.L22",
+        "AC.G12.L23",
+        "AC.G12.L25",
+        "AC.G12.L38"
+      ]
+    },
+    {
+      "id": "AC-C14",
+      "title": "Long-term thinking, leverage and legacy",
+      "definition": "Reasons across longer horizons, compounding effects and leverage; balances present action with future consequences and responsibility.",
+      "sourceExamples": [
+        "AC.G8.L45",
+        "AC.G8.L46",
+        "AC.G10.L19",
+        "AC.G11.L02",
+        "AC.G11.L04",
+        "AC.G11.L09",
+        "AC.G11.L13",
+        "AC.G11.L61",
+        "AC.G11.L69"
+      ]
+    },
+    {
+      "id": "AC-C15",
+      "title": "Transfer, reflection and meta-learning",
+      "definition": "Reviews evidence, names what changed, carries learning into a different context and identifies the next question or practice need.",
+      "sourceExamples": [
+        "AC.G8.L20",
+        "AC.G8.L60",
+        "AC.G8.L64",
+        "AC.G8.L77",
+        "AC.G9.L32",
+        "AC.G9.L54",
+        "AC.G10.L16",
+        "AC.G11.L20",
+        "AC.G12.L60",
+        "AC.G12.L62",
+        "AC.G12.L77"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "applied-commerce-source-manifest:2",
+  "product": "Applied Commerce®",
+  "framework": "Myah Life Design Framework™",
+  "ingestedAt": "2026-10-07",
+  "role": "Canonical curriculum ancestry beneath BIS learning, competency and reporting architecture",
+  "books": [
+    {
+      "grade": 8,
+      "title": "Applied Commerce Grade 8",
+      "version": "11.0 — Checkpoint Revision October 2026",
+      "pages": 263,
+      "lessonCount": 80,
+      "integrity": "PASS"
+    },
+    {
+      "grade": 9,
+      "title": "Grade 9 Learner's Book Applied Commerce",
+      "version": "14.1 — DBE Prototype Edition (Language Tightened)",
+      "pages": 312,
+      "lessonCount": 75,
+      "integrity": "PASS"
+    },
+    {
+      "grade": 10,
+      "title": "Applied Commerce Grade 10",
+      "version": "14.0 — Checkpoint Revision October 2026",
+      "pages": 249,
+      "lessonCount": 80,
+      "integrity": "PASS"
+    },
+    {
+      "grade": 11,
+      "title": "Applied Commerce Grade 11",
+      "version": "15.0 — System Architect Edition",
+      "pages": 304,
+      "lessonCount": 80,
+      "integrity": "PASS"
+    },
+    {
+      "grade": 12,
+      "title": "Applied Commerce Grade 12",
+      "version": "16.0 — System Architect Edition",
+      "pages": 291,
+      "lessonCount": 80,
+      "integrity": "PASS"
+    }
+  ],
+  "totals": {
+    "learnerBookPages": 1419,
+    "lessons": 395
+  },
+  "assessmentCompanion": {
+    "title": "Applied Commerce Assessment Checkpoint Guide",
+    "versionDate": "4 October 2026",
+    "role": "Working assessment companion for portfolio evidence and local rubric design",
+    "officialInstrument": false
+  },
+  "evidenceDoctrine": [
+    "Start with the learning outcome and the task; record what the work actually demonstrates.",
+    "Written explanation, simulation, observed action and prediction are different evidence types.",
+    "A completed page is not proof of independent behaviour.",
+    "Assess thinking and process, not household wealth, access to resources, disclosure, or outcomes outside the learner's control.",
+    "A simulation can demonstrate reasoning under stated conditions but cannot demonstrate that a real-world action occurred."
+  ],
+  "developmentalArc": [
+    {
+      "grade": 8,
+      "stage": "OBSERVER",
+      "coreShift": "Notice identity, beliefs, choices, habits and evidence."
+    },
+    {
+      "grade": 9,
+      "stage": "CHALLENGER",
+      "coreShift": "Turn noticing into agency, value creation, self-management and purposeful action."
+    },
+    {
+      "grade": 10,
+      "stage": "STRATEGIST",
+      "coreShift": "Design systems, trace consequences, test assumptions and rebuild weak structures."
+    },
+    {
+      "grade": 11,
+      "stage": "ARCHITECT",
+      "coreShift": "Use leverage and leadership responsibly across longer horizons."
+    },
+    {
+      "grade": 12,
+      "stage": "OPERATOR",
+      "coreShift": "Apply, protect, integrate and review plans in adult-facing contexts."
+    }
+  ],
+  "externalAlignment": {
+    "status": "NOT_CERTIFIED",
+    "sourceClaim": "The learner books state that they support DBE curriculum strengthening and develop knowledge, skills, attitudes and values described in the DBE Basic Education Competency Framework.",
+    "implementationRule": "Do not label BIS or Applied Commerce reports as DBE-certified, CAPS-aligned or officially approved without a separate verified mapping and approval process."
+  }
+}

@@ -1,0 +1,837 @@
+{
+  "schemaVersion": "time-instructional-blueprint:2",
+  "labCode": "TIM",
+  "title": "Time Lab",
+  "status": "REFERENCE_IMPLEMENTATION_PENDING_AUTHORED_REBUILD",
+  "sourceDependency": {
+    "pr": 137,
+    "sourceId": "TIM-LM-1.0",
+    "status": "SOURCE_READY_PENDING_MERGE",
+    "note": "PR137 remains the canonical authored-source ingestion lane. This blueprint is intentionally on a separate clean-main architecture branch and does not overwrite that source."
+  },
+  "instructionalStandard": "bis-instructional-standard:1",
+  "programmeShape": {
+    "learningTouchpoints": 10,
+    "standardLearningMinutes": 45,
+    "day1SourceException": "Existing authored source currently specifies 60 minutes; rebuild should resolve this against the 45-minute standard rather than silently truncating content.",
+    "day3LabBoundary": "Day 3 includes one 45-minute learning-to-Lab bridge plus a separate facilitated Phase A experience. The existing authored source specifies a 90-minute Part B; preserve that separation.",
+    "realWorldWindow": "Seven-day investigation as defined by the authored Time source/runtime contract."
+  },
+  "competencyTargets": [
+    {
+      "competencyId": "AC-C03",
+      "role": "PRIMARY",
+      "expectedCeiling": "TEST_AND_REVISE"
+    },
+    {
+      "competencyId": "AC-C04",
+      "role": "PRIMARY",
+      "expectedCeiling": "TEST_AND_REVISE"
+    },
+    {
+      "competencyId": "AC-C05",
+      "role": "PRIMARY",
+      "expectedCeiling": "TRANSFER"
+    },
+    {
+      "competencyId": "AC-C09",
+      "role": "SUPPORTING",
+      "expectedCeiling": "APPLY"
+    },
+    {
+      "competencyId": "AC-C14",
+      "role": "SUPPORTING",
+      "expectedCeiling": "APPLY"
+    },
+    {
+      "competencyId": "AC-C15",
+      "role": "PRIMARY",
+      "expectedCeiling": "TRANSFER"
+    }
+  ],
+  "appliedCommerceAncestry": [
+    "AC.G8.L38",
+    "AC.G8.L56",
+    "AC.G9.L38",
+    "AC.G9.L39",
+    "AC.G10.L37",
+    "AC.G10.L39",
+    "AC.G10.L40",
+    "AC.G11.L09",
+    "AC.G12.L58",
+    "AC.G12.L59",
+    "AC.G12.L60"
+  ],
+  "reportDesign": {
+    "prePostRule": "Compare only same-family learning/competency tasks or authored measures. A control feeling shift is self-report context, not proof of skill gain.",
+    "learnerNarrativeFields": [
+      "startingPoint",
+      "conceptsLearned",
+      "evidenceOfApplication",
+      "whatTheExperimentShowed",
+      "revision",
+      "transfer",
+      "currentLimit",
+      "nextAction"
+    ],
+    "competencyNarrativeRule": "For each mapped competency: state the highest evidence-supported progression level, cite the evidence class/anchor, state the limitation, then name the next evidence needed.",
+    "sponsorAggregateRule": "Aggregate only reportable, privacy-safe competency/task evidence. Never expose personal time patterns or private reflections."
+  },
+  "days": [
+    {
+      "day": 1,
+      "title": "Seeing Time",
+      "job": "CREATE_RELEVANCE",
+      "concepts": [
+        "AC-CON-015",
+        "AC-CON-021",
+        "AC-CON-029"
+      ],
+      "competencies": [
+        "AC-C03",
+        "AC-C05"
+      ],
+      "knowledgeOutcome": "Time use can be investigated through records; the story 'I have no time' is different from evidence of where time and attention went.",
+      "capabilityOutcome": "Identify one personally relevant time moment and distinguish remembered time from a recordable event.",
+      "evidence": [
+        {
+          "class": "BASELINE",
+          "anchor": "TIM.D1.TIME_STORY",
+          "job": "starting account of the problem"
+        },
+        {
+          "class": "CONTEXT",
+          "anchor": "TIM.D1.TIME_MOMENT",
+          "job": "one bounded context for later investigation"
+        },
+        {
+          "class": "LEARNING_CHECK",
+          "anchor": "TIM.D1.RECORD_VS_STORY",
+          "job": "check distinction between claim and record"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–5",
+          "move": "RETRIEVE",
+          "detail": "What does 'not enough time' usually mean in ordinary life?"
+        },
+        {
+          "minutes": "5–12",
+          "move": "DISCOVER",
+          "detail": "Contrast a busy-feeling story with a simple recorded day."
+        },
+        {
+          "minutes": "12–19",
+          "move": "EXPLAIN",
+          "detail": "Introduce record, allocation and time moment; do not yet reveal the full Time Pause."
+        },
+        {
+          "minutes": "19–23",
+          "move": "CHECK",
+          "detail": "Classify examples as story, observation or unknown."
+        },
+        {
+          "minutes": "23–34",
+          "move": "APPLY",
+          "detail": "Learner reconstructs one recent time moment."
+        },
+        {
+          "minutes": "34–40",
+          "move": "EVIDENCE",
+          "detail": "Choose the one moment that is safe and useful to investigate."
+        },
+        {
+          "minutes": "40–45",
+          "move": "REVIEW_CARRY",
+          "detail": "State what is known, what is guessed and what to notice tomorrow."
+        }
+      ],
+      "facilitatorMove": "Use the contrast between felt busyness and a record to create curiosity; do not moralise screen use or productivity.",
+      "carryForward": "Bring one observed time moment or short record into Day 2."
+    },
+    {
+      "day": 2,
+      "title": "Thinking Like an Investigator",
+      "job": "BUILD_FIRST_MENTAL_MODEL",
+      "concepts": [
+        "AC-CON-012",
+        "AC-CON-015",
+        "AC-CON-054"
+      ],
+      "competencies": [
+        "AC-C03",
+        "AC-C15"
+      ],
+      "knowledgeOutcome": "Memory, observation and interpretation answer different questions; evidence becomes stronger when recorded close to the event.",
+      "capabilityOutcome": "Convert judgements about time into reviewable observations and state what remains unknown.",
+      "evidence": [
+        {
+          "class": "LEARNING_CHECK",
+          "anchor": "TIM.D2.OBSERVATION_CLASSIFICATION",
+          "job": "evidence reasoning check"
+        },
+        {
+          "class": "INTERPRETATION",
+          "anchor": "TIM.D2.CLAIM_LIMIT",
+          "job": "learner states what a record can and cannot show"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–5",
+          "move": "RETRIEVE",
+          "detail": "Return to yesterday's time moment."
+        },
+        {
+          "minutes": "5–11",
+          "move": "DISCOVER",
+          "detail": "Compare two accounts of the same event: judgement vs record."
+        },
+        {
+          "minutes": "11–19",
+          "move": "EXPLAIN",
+          "detail": "Observation, interpretation, evidence proximity and uncertainty."
+        },
+        {
+          "minutes": "19–23",
+          "move": "CHECK",
+          "detail": "Classify four statements."
+        },
+        {
+          "minutes": "23–33",
+          "move": "APPLY",
+          "detail": "Rewrite personal judgements as observable statements."
+        },
+        {
+          "minutes": "33–39",
+          "move": "EVIDENCE",
+          "detail": "Create one clean observation and one open question."
+        },
+        {
+          "minutes": "39–45",
+          "move": "REVIEW_CARRY",
+          "detail": "Explain why the observation is stronger than the original story."
+        }
+      ],
+      "facilitatorMove": "Keep asking 'What did you actually observe?' and 'What are you adding to the record?'",
+      "carryForward": "Carry a clean observation and open question into the Day 3 Lab bridge."
+    },
+    {
+      "day": 3,
+      "title": "Prepare the Time Investigation",
+      "job": "PREPARE_LAB_HANDOVER",
+      "concepts": [
+        "AC-CON-029",
+        "AC-CON-030",
+        "AC-CON-052",
+        "AC-CON-054"
+      ],
+      "competencies": [
+        "AC-C03",
+        "AC-C04",
+        "AC-C05"
+      ],
+      "knowledgeOutcome": "A behavioural investigation needs a bounded situation, a prediction, a safe response to test and a clear record; the method is not the same as the explanation.",
+      "capabilityOutcome": "Prepare a personal investigation question, prediction and smallest safe test without being told what the evidence is supposed to prove.",
+      "evidence": [
+        {
+          "class": "PREDICTION",
+          "anchor": "TIM.D3.PREDICTION",
+          "job": "pre-registered expectation"
+        },
+        {
+          "class": "PLAN",
+          "anchor": "TIM.D3.TEST_PLAN",
+          "job": "experiment design"
+        },
+        {
+          "class": "SUPPORT_SIGNAL",
+          "anchor": "TIM.D3.READINESS",
+          "job": "facilitator readiness/safety check"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "FACILITATOR_SUPPORT_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–5",
+          "move": "RETRIEVE",
+          "detail": "Observation and open question."
+        },
+        {
+          "minutes": "5–12",
+          "move": "DISCOVER",
+          "detail": "Show why an unbounded promise such as 'manage time better' cannot be tested."
+        },
+        {
+          "minutes": "12–20",
+          "move": "EXPLAIN",
+          "detail": "Teach investigation mechanics: situation, prediction, smallest response, evidence window. Do not give the final causal explanation."
+        },
+        {
+          "minutes": "20–30",
+          "move": "APPLY",
+          "detail": "Draft personal test on one time moment."
+        },
+        {
+          "minutes": "30–38",
+          "move": "EVIDENCE",
+          "detail": "Record prediction and plan before the test."
+        },
+        {
+          "minutes": "38–43",
+          "move": "CHECK",
+          "detail": "Readiness, feasibility, privacy and no-opportunity logic."
+        },
+        {
+          "minutes": "43–45",
+          "move": "HANDOVER",
+          "detail": "Explain the separate Lab Phase A session and return path."
+        }
+      ],
+      "facilitatorMove": "Treat the Time Pause as an investigation protocol at this point, not as proof of why the learner's pattern occurs.",
+      "carryForward": "Separate facilitated Lab Phase A follows this 45-minute session; it may deepen Mapping, Equation and Contract but must preserve the pre-registered prediction."
+    },
+    {
+      "day": 4,
+      "title": "What the Time Pattern Revealed",
+      "job": "INTERPRET_LAB_REVELATION",
+      "concepts": [
+        "AC-CON-021",
+        "AC-CON-022",
+        "AC-CON-029",
+        "AC-CON-030",
+        "AC-CON-037"
+      ],
+      "competencies": [
+        "AC-C03",
+        "AC-C04",
+        "AC-C09"
+      ],
+      "knowledgeOutcome": "Time patterns can involve triggers, attention pulls, start friction, environmental cues, repeated routines and small leaks; these are explanations to test, not labels.",
+      "capabilityOutcome": "Use formal concepts to explain the learner's own mapped pattern while naming alternative explanations.",
+      "evidence": [
+        {
+          "class": "INTERPRETATION",
+          "anchor": "TIM.D4.WORKING_EXPLANATION",
+          "job": "first formal explanation after Lab discovery"
+        },
+        {
+          "class": "LEARNING_CHECK",
+          "anchor": "TIM.D4.CONCEPT_DISCRIMINATION",
+          "job": "distinguish trigger, leak, friction and condition"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–6",
+          "move": "RETRIEVE",
+          "detail": "What did the Lab make visible that the learner did not see on Day 1?"
+        },
+        {
+          "minutes": "6–13",
+          "move": "DISCOVER",
+          "detail": "Compare two mapped time moments with different mechanisms."
+        },
+        {
+          "minutes": "13–22",
+          "move": "EXPLAIN",
+          "detail": "Name trigger, pull, leak, start friction, smallest first step and environmental protection."
+        },
+        {
+          "minutes": "22–26",
+          "move": "CHECK",
+          "detail": "Choose the best explanation for short cases and explain why."
+        },
+        {
+          "minutes": "26–36",
+          "move": "APPLY",
+          "detail": "Annotate the learner's own map with formal concepts."
+        },
+        {
+          "minutes": "36–41",
+          "move": "EVIDENCE",
+          "detail": "Write a working explanation plus one competing explanation."
+        },
+        {
+          "minutes": "41–45",
+          "move": "REVIEW_CARRY",
+          "detail": "Identify what real-world evidence would separate the explanations."
+        }
+      ],
+      "facilitatorMove": "Make explanation feel like recognition of what the learner already encountered, not a lecture detached from the Lab.",
+      "carryForward": "Watch the next eligible moments for evidence that supports or weakens the working explanation."
+    },
+    {
+      "day": 5,
+      "title": "Evidence Studio",
+      "job": "BUILD_PERSONAL_MODEL",
+      "concepts": [
+        "AC-CON-015",
+        "AC-CON-026",
+        "AC-CON-052",
+        "AC-CON-054"
+      ],
+      "competencies": [
+        "AC-C03",
+        "AC-C04"
+      ],
+      "knowledgeOutcome": "Eligible opportunity, missed response, partial response and no opportunity are different records; honest denominators matter more than a flattering rate.",
+      "capabilityOutcome": "Record early experiment evidence accurately and diagnose evidence-quality problems without changing history.",
+      "evidence": [
+        {
+          "class": "OBSERVATION",
+          "anchor": "TIM.D5.EARLY_OBSERVATIONS",
+          "job": "real-world test records"
+        },
+        {
+          "class": "INTERPRETATION",
+          "anchor": "TIM.D5.EVIDENCE_QUALITY_REVIEW",
+          "job": "record-quality review"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "EVIDENCE_PORTFOLIO",
+        "FACILITATOR_SUPPORT_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–5",
+          "move": "RETRIEVE",
+          "detail": "Return to prediction and first observations."
+        },
+        {
+          "minutes": "5–11",
+          "move": "DISCOVER",
+          "detail": "Compare honest no-opportunity data with a misleading perfect record."
+        },
+        {
+          "minutes": "11–19",
+          "move": "EXPLAIN",
+          "detail": "Opportunity denominator, missingness, partial response and evidence integrity."
+        },
+        {
+          "minutes": "19–23",
+          "move": "CHECK",
+          "detail": "Classify sample tracker rows."
+        },
+        {
+          "minutes": "23–33",
+          "move": "APPLY",
+          "detail": "Review own rows without editing what happened."
+        },
+        {
+          "minutes": "33–39",
+          "move": "EVIDENCE",
+          "detail": "Resolve recording ambiguity and mark unknowns."
+        },
+        {
+          "minutes": "39–45",
+          "move": "REVIEW_CARRY",
+          "detail": "State what early evidence can and cannot show."
+        }
+      ],
+      "facilitatorMove": "Reward accurate recording, including failure and no opportunity; never reward 'good-looking' data.",
+      "carryForward": "Continue the real-world test through the scheduled window."
+    },
+    {
+      "day": 6,
+      "title": "Apply Under Real Conditions",
+      "job": "APPLY_IN_REAL_LIFE",
+      "concepts": [
+        "AC-CON-023",
+        "AC-CON-026",
+        "AC-CON-030",
+        "AC-CON-037"
+      ],
+      "competencies": [
+        "AC-C04",
+        "AC-C05"
+      ],
+      "knowledgeOutcome": "A planned response must survive ordinary conditions; environment, capacity and first-step size can change follow-through.",
+      "capabilityOutcome": "Use the planned response in real eligible moments and record what happened without retrospective score-making.",
+      "evidence": [
+        {
+          "class": "OBSERVATION",
+          "anchor": "TIM.D6.REAL_WORLD_APPLICATION",
+          "job": "authentic-context application"
+        },
+        {
+          "class": "OUTCOME",
+          "anchor": "TIM.D6.RESPONSE_RESULT",
+          "job": "what happened after planned response"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "EVIDENCE_PORTFOLIO"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–5",
+          "move": "RETRIEVE",
+          "detail": "What is the plan, exactly?"
+        },
+        {
+          "minutes": "5–10",
+          "move": "DISCOVER",
+          "detail": "One case where the same plan works in one condition and fails in another."
+        },
+        {
+          "minutes": "10–17",
+          "move": "EXPLAIN",
+          "detail": "Condition dependence, smallest first step and environmental support."
+        },
+        {
+          "minutes": "17–21",
+          "move": "CHECK",
+          "detail": "Which condition should change first?"
+        },
+        {
+          "minutes": "21–31",
+          "move": "APPLY",
+          "detail": "Rehearse next eligible moment."
+        },
+        {
+          "minutes": "31–38",
+          "move": "EVIDENCE",
+          "detail": "Review authentic observations already captured."
+        },
+        {
+          "minutes": "38–45",
+          "move": "REVIEW_CARRY",
+          "detail": "Name one condition to watch, not yet a permanent change to the contract."
+        }
+      ],
+      "facilitatorMove": "Keep the focus on applying the pre-registered method; do not rescue the learner by rewriting the experiment every day.",
+      "carryForward": "Collect the next observations with condition notes where relevant."
+    },
+    {
+      "day": 7,
+      "title": "Experiment Clinic",
+      "job": "DIAGNOSE_AND_ADAPT",
+      "concepts": [
+        "AC-CON-011",
+        "AC-CON-026",
+        "AC-CON-032",
+        "AC-CON-052"
+      ],
+      "competencies": [
+        "AC-C04",
+        "AC-C10",
+        "AC-C15"
+      ],
+      "knowledgeOutcome": "A barrier is information about conditions, resources or design; a justified adjustment differs from moving the goalposts.",
+      "capabilityOutcome": "Compare successful and unsuccessful opportunities, diagnose one barrier and make one traceable adjustment.",
+      "evidence": [
+        {
+          "class": "INTERPRETATION",
+          "anchor": "TIM.D7.BARRIER_DIAGNOSIS",
+          "job": "comparison of evidence"
+        },
+        {
+          "class": "PLAN",
+          "anchor": "TIM.D7.JUSTIFIED_ADJUSTMENT",
+          "job": "versioned experiment adjustment"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT",
+        "FACILITATOR_SUPPORT_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–6",
+          "move": "RETRIEVE",
+          "detail": "Select one worked and one difficult opportunity."
+        },
+        {
+          "minutes": "6–12",
+          "move": "DISCOVER",
+          "detail": "Side-by-side comparison reveals condition differences."
+        },
+        {
+          "minutes": "12–19",
+          "move": "EXPLAIN",
+          "detail": "Barrier vs failure; capacity vs avoidance; legitimate adjustment vs result-chasing."
+        },
+        {
+          "minutes": "19–23",
+          "move": "CHECK",
+          "detail": "Judge whether sample adjustments preserve the test."
+        },
+        {
+          "minutes": "23–34",
+          "move": "APPLY",
+          "detail": "Diagnose own evidence."
+        },
+        {
+          "minutes": "34–40",
+          "move": "EVIDENCE",
+          "detail": "Record one justified adjustment with reason."
+        },
+        {
+          "minutes": "40–45",
+          "move": "REVIEW_CARRY",
+          "detail": "Predict what the adjustment should change."
+        }
+      ],
+      "facilitatorMove": "Ask for evidence before accepting a diagnosis; preserve the original plan and adjustment history.",
+      "carryForward": "Run the adjusted response through the remaining window and keep the original prediction available for final review."
+    },
+    {
+      "day": 8,
+      "title": "Time Leverage and Protection",
+      "job": "ADD_FINAL_MAJOR_LAYER",
+      "concepts": [
+        "AC-CON-028",
+        "AC-CON-036",
+        "AC-CON-038",
+        "AC-CON-047",
+        "AC-CON-052"
+      ],
+      "competencies": [
+        "AC-C05",
+        "AC-C09",
+        "AC-C14"
+      ],
+      "knowledgeOutcome": "Managing one time moment is different from redesigning a time system; priority, batching, elimination, delegation, automation and protection can change the system but also create costs and responsibilities.",
+      "capabilityOutcome": "Identify one leverage point in a time system, predict its ripple effect and choose an age/context-appropriate intervention.",
+      "evidence": [
+        {
+          "class": "LEARNING_CHECK",
+          "anchor": "TIM.D8.LEVERAGE_REASONING",
+          "job": "systems/time leverage understanding"
+        },
+        {
+          "class": "PLAN",
+          "anchor": "TIM.D8.LEVERAGE_PLAN",
+          "job": "bounded leverage-point application"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–5",
+          "move": "RETRIEVE",
+          "detail": "What has the experiment changed at the moment level?"
+        },
+        {
+          "minutes": "5–12",
+          "move": "DISCOVER",
+          "detail": "Contrast trying harder with redesigning a weekly system."
+        },
+        {
+          "minutes": "12–21",
+          "move": "EXPLAIN",
+          "detail": "Priority, batching, elimination, systematisation, automation, delegation and accountability."
+        },
+        {
+          "minutes": "21–25",
+          "move": "CHECK",
+          "detail": "Choose leverage methods appropriate to cases."
+        },
+        {
+          "minutes": "25–35",
+          "move": "APPLY",
+          "detail": "Map one weekly system and find a leverage point."
+        },
+        {
+          "minutes": "35–40",
+          "move": "EVIDENCE",
+          "detail": "Predict a ripple and name a risk or cost."
+        },
+        {
+          "minutes": "40–45",
+          "move": "REVIEW_CARRY",
+          "detail": "Choose whether this is a future transfer test, not a mid-experiment rewrite."
+        }
+      ],
+      "facilitatorMove": "Broaden capability without implying every learner can delegate, automate or remove structural obligations.",
+      "carryForward": "Bring the completed seven-day record and leverage idea to evidence review."
+    },
+    {
+      "day": 9,
+      "title": "Evidence Review and Transfer",
+      "job": "INTEGRATE_MODEL",
+      "concepts": [
+        "AC-CON-012",
+        "AC-CON-029",
+        "AC-CON-052",
+        "AC-CON-053",
+        "AC-CON-054"
+      ],
+      "competencies": [
+        "AC-C03",
+        "AC-C04",
+        "AC-C15"
+      ],
+      "knowledgeOutcome": "A useful conclusion compares prediction with observation, explains uncertainty, preserves counter-evidence and asks whether the method travels.",
+      "capabilityOutcome": "Review the full record, revise the original explanation and apply the method to a second time pattern without claiming universal success.",
+      "evidence": [
+        {
+          "class": "INTERPRETATION",
+          "anchor": "TIM.D9.FINAL_REVIEW",
+          "job": "prediction-versus-observation review"
+        },
+        {
+          "class": "TRANSFER",
+          "anchor": "TIM.D9.SECOND_PATTERN",
+          "job": "near/far transfer task"
+        },
+        {
+          "class": "OUTCOME",
+          "anchor": "TIM.D9.COMPARABLE_MEASURES",
+          "job": "defined deterministic measures where authored"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT",
+        "EVIDENCE_PORTFOLIO",
+        "LONGITUDINAL_PATHWAY_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–6",
+          "move": "RETRIEVE",
+          "detail": "Return to Day 3 prediction before seeing calculated results."
+        },
+        {
+          "minutes": "6–13",
+          "move": "DISCOVER",
+          "detail": "Prediction and observation can agree, partly agree or disagree."
+        },
+        {
+          "minutes": "13–20",
+          "move": "EXPLAIN",
+          "detail": "Denominator, prediction accuracy, adherence/reclaim only where authored, uncertainty and counter-evidence."
+        },
+        {
+          "minutes": "20–24",
+          "move": "CHECK",
+          "detail": "What can each result legitimately support?"
+        },
+        {
+          "minutes": "24–34",
+          "move": "APPLY",
+          "detail": "Complete evidence review and revise working explanation."
+        },
+        {
+          "minutes": "34–40",
+          "move": "TRANSFER",
+          "detail": "Map a second time pattern using the same investigation method."
+        },
+        {
+          "minutes": "40–45",
+          "move": "REVIEW_CARRY",
+          "detail": "State what transferred and what changed."
+        }
+      ],
+      "facilitatorMove": "Do not turn a rate into a grade. Require the learner to compare the result with source evidence and limitations.",
+      "carryForward": "Prepare one evidence-backed explanation and one next practice for Day 10 demonstration."
+    },
+    {
+      "day": 10,
+      "title": "Demonstrate, Integrate and Hand Off",
+      "job": "DEMONSTRATE_AND_HANDOFF",
+      "concepts": [
+        "AC-CON-027",
+        "AC-CON-053",
+        "AC-CON-054",
+        "AC-CON-060"
+      ],
+      "competencies": [
+        "AC-C03",
+        "AC-C04",
+        "AC-C05",
+        "AC-C15"
+      ],
+      "knowledgeOutcome": "The programme closes by integrating what was learned, what was demonstrated, what remains uncertain and what the learner can transfer next.",
+      "capabilityOutcome": "Teach back the investigation method, assemble a concise evidence portfolio, demonstrate transfer and set a next real-world action.",
+      "evidence": [
+        {
+          "class": "LEARNING_CHECK",
+          "anchor": "TIM.D10.TEACH_BACK",
+          "job": "post learning demonstration comparable to defined starting task where applicable"
+        },
+        {
+          "class": "TRANSFER",
+          "anchor": "TIM.D10.TRANSFER_DEMONSTRATION",
+          "job": "final transfer evidence"
+        },
+        {
+          "class": "INTERPRETATION",
+          "anchor": "TIM.D10.PROFILE_NARRATIVE",
+          "job": "learner-owned evidence-backed summary"
+        },
+        {
+          "class": "PLAN",
+          "anchor": "TIM.D10.NEXT_ACTION",
+          "job": "next pathway"
+        }
+      ],
+      "reportingContribution": [
+        "LEARNER_PROGRESS_REPORT",
+        "COMPETENCY_EVIDENCE_REPORT",
+        "EVIDENCE_PORTFOLIO",
+        "LONGITUDINAL_PATHWAY_REPORT"
+      ],
+      "minutes": [
+        {
+          "minutes": "0–5",
+          "move": "RETRIEVE",
+          "detail": "One sentence: what did Day 1 not yet explain?"
+        },
+        {
+          "minutes": "5–12",
+          "move": "DEMONSTRATE",
+          "detail": "Teach back the investigation method using a fresh short case."
+        },
+        {
+          "minutes": "12–24",
+          "move": "PORTFOLIO",
+          "detail": "Select evidence anchors: starting point, plan, observation, review, transfer."
+        },
+        {
+          "minutes": "24–34",
+          "move": "TRANSFER",
+          "detail": "Explain how the method changes in another context and one limitation."
+        },
+        {
+          "minutes": "34–41",
+          "move": "REFLECT",
+          "detail": "Write evidence-backed progress narrative; no identity score."
+        },
+        {
+          "minutes": "41–45",
+          "move": "HANDOFF",
+          "detail": "Set next action/review date and close the Lab-to-learning loop."
+        }
+      ],
+      "facilitatorMove": "Protect demonstration and transfer time; do not add new major theory.",
+      "carryForward": "Portfolio and competency summaries become report-ready only after provenance/assessment checks."
+    }
+  ]
+}

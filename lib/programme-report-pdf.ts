@@ -338,7 +338,8 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   canvas.section("Behaviour Intelligence Series™", "Programme Results Report", report.profile.name);
   if (options.illustrative) canvas.paragraph("ILLUSTRATIVE SIMULATION - FICTIONAL DATA - NOT MEASURED PROGRAMME RESULTS", { font: "bold", color: C.blue });
   canvas.table(["Programme profile", "Reporting context"], [
-    ["Programme group", report.profile.name], ["Lab", `${report.profile.labCode} · ${report.profile.labVersion}`],
+    ["Programme group", report.profile.name], ["Report classification", report.reportClassification.label],
+    ["Lab", `${report.profile.labCode} · ${report.profile.labVersion}`],
     ["Programme period", `${report.period.startsOn ?? "Start date not recorded"} - ${report.period.endsOn ?? "End date not recorded"}`],
     ["Report date", generatedAt.toISOString().slice(0, 10)], ["Eligible participants", String(report.participantCount ?? "Unavailable")],
     ["Facilitated programme", "Ten purposeful facilitated touchpoints. Page activity is reported separately from attendance; held-session totals are not supplied in this report."],
@@ -417,7 +418,7 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   canvas.paragraph("Individual answers, private reflections, personal experiment wording, support messages and Companion conversations are excluded. Small groups and unavailable values stay hidden; unavailable values are not zero. No hidden value is reconstructed by subtraction.");
   canvas.paragraph("What this report does not claim", { font: "bold" });
   canvas.paragraph(report.boundary + " Coverage is not improvement. A reviewed task does not prove newly acquired or lasting capability, and a missing record does not explain a participant's reasons.");
-  canvas.paragraph(`Report model: ${report.modelVersion} · Minimum group: ${report.minimumReportableCohortSize}`, { size: 8, color: C.muted });
+  canvas.paragraph(`Report class: ${report.reportClassification.label} · Report model: ${report.modelVersion} · Minimum group: ${report.minimumReportableCohortSize}`, { size: 8, color: C.muted });
   return canvas.finish();
 }
 
