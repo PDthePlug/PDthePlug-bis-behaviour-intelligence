@@ -145,3 +145,18 @@ This branch does not:
 - manufacture the missing Failure Lab source.
 
 The next implementation step after this architecture passes verification is to compile the Time curriculum blueprint into a governed Time learning-module source/version and connect the new competency evidence contracts to the existing portfolio/report aggregation path.
+
+## Report products are also classified
+
+`content/curriculum/reporting/report-product-classification.json` separates the evidence model from the audience-facing report product:
+
+- `LEARNER_PROGRESS`
+- `FACILITATOR_SUPPORT`
+- `PROGRAMME_COMPETENCY_PROGRESS`
+- `SPONSOR_OUTCOMES`
+- `EVIDENCE_PORTFOLIO_PATHWAY`
+
+Each product declares permitted evidence, prohibited claims and its privacy boundary. The governing rule is that changing the audience never upgrades the strength of the evidence. A self-report remains a self-report in a sponsor report; a single real-world observation remains a bounded observation in a learner portfolio.
+
+The curriculum intelligence layer also exposes a chronological competency timeline. This allows reports to describe the evidence journey from introduced through application, review and transfer rather than reducing change to a pre/post percentage.
+
