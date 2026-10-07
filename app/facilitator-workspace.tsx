@@ -151,25 +151,25 @@ function needsAttention(learner: ProgressRow) {
 
 function evidencePosition(learner: ProgressRow) {
   const experiment = learner.experiment;
-  if (!experiment) return learner.enrolment?.experimentStartedAt ? "Experiment started · evidence counts not available" : "No experiment evidence yet";
+  if (!experiment) return learner.enrolment?.experimentStartedAt ? "Practice started · detail not available" : "No real-world practice recorded yet";
   const opportunities = experiment.opportunityCount ?? 0;
   const threshold = experiment.minimumEvidenceThreshold ?? 3;
-  if (opportunities >= threshold) return "Minimum opportunity count reached";
-  if (opportunities > 0) return "Opportunities recorded";
-  if ((experiment.recordedDays ?? 0) > 0) return "Observations recorded · no opportunity recorded";
-  return "First observation pending";
+  if (opportunities >= threshold) return "Enough real-world situations recorded for review";
+  if (opportunities > 0) return "Real-world situations recorded";
+  if ((experiment.recordedDays ?? 0) > 0) return "Observations recorded · no suitable situation yet";
+  return "Waiting for the first observation";
 }
 
 function observedStrengths(learner: ProgressRow) {
   const strengths: string[] = [];
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
-  if (step >= 4) strengths.push("Reached the mapping activity");
-  if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Experiment start recorded");
+  if (step >= 4) strengths.push("Mapped the pattern they are investigating");
+  if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Started the real-world practice period");
   if ((experiment?.recordedDays ?? 0) >= 3) strengths.push(`${experiment!.recordedDays} observation days recorded`);
-  if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push(`${experiment!.opportunityCount} opportunities recorded`);
-  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Minimum opportunity count reached");
-  if (learner.enrolment?.status === "COMPLETED") strengths.push("Lab marked complete");
+  if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push(`${experiment!.opportunityCount} suitable real-world situations recorded`);
+  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Enough real-world situations recorded for a review");
+  if (learner.enrolment?.status === "COMPLETED") strengths.push("Completed the Lab");
   return strengths.slice(0, 4);
 }
 
@@ -452,9 +452,9 @@ export function FacilitatorWorkspace({
                 <Badge variant="outline">{position(selected)}</Badge>
               </div>
               <section className="ops-metrics participant-detail-metrics">
-                <article><ClipboardCheck /><span>Investigation</span><strong>{selected.enrolment?.currentInvestigation ?? 0}/9</strong></article>
-                <article><Activity /><span>Recorded days</span><strong>{selected.experiment?.recordedDays ?? "Not available"}</strong></article>
-                <article><Users /><span>Opportunities</span><strong>{selected.experiment?.opportunityCount ?? "Not available"}</strong></article>
+                <article><ClipboardCheck /><span>Lab step</span><strong>{selected.enrolment?.currentInvestigation ?? 0}/9</strong></article>
+                <article><Activity /><span>Observation days</span><strong>{selected.experiment?.recordedDays ?? "Not available"}</strong></article>
+                <article><Users /><span>Real situations</span><strong>{selected.experiment?.opportunityCount ?? "Not available"}</strong></article>
                 <article><Activity /><span>Last activity</span><strong className="metric-date">{formatDate(selected.lastActivityAt)}</strong></article>
               </section>
             </section>
@@ -468,12 +468,12 @@ export function FacilitatorWorkspace({
                 <small>Investigation {selected.enrolment?.currentInvestigation ?? 0} of 9</small>
               </article>
               <article className="surface-card participant-signal-card">
-                <p className="eyebrow">Evidence position</p>
+                <p className="eyebrow">Practice evidence</p>
                 <h3>{evidencePosition(selected)}</h3>
                 {selected.experiment ? <><div className="participant-signal-track">
                   <span style={{ width: `${Math.min(100, ((selected.experiment?.opportunityCount ?? 0) / Math.max(1, selected.experiment?.minimumEvidenceThreshold ?? 3)) * 100)}%` }} />
                 </div>
-                <small>{selected.experiment?.opportunityCount ?? "Not available"} of {selected.experiment?.minimumEvidenceThreshold ?? 3} minimum real-world opportunities</small></> : <small>Evidence counts are not available for this view.</small>}
+                <small>{selected.experiment?.opportunityCount ?? "Not available"} of {selected.experiment?.minimumEvidenceThreshold ?? 3} real-world situations needed for this Lab review</small></> : <small>Evidence counts are not available for this view.</small>}
               </article>
             </section>
 
