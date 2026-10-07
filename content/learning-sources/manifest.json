@@ -39,6 +39,35 @@
         }
       ],
       "slug": "time"
+    },
+    {
+      "moduleCode": "TRU",
+      "moduleTitle": "Trust Lab™",
+      "volume": 1,
+      "handbook": 8,
+      "version": "1.1",
+      "sourcePath": "content/learning-sources/trust-school-v1.1-authored.md",
+      "sourceFormat": "MARKDOWN",
+      "uploadedName": "tru-school-pasted.md",
+      "uploadedBytes": 152539,
+      "uploadedSha256": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "editions": [
+        {
+          "deliveryEdition": "school",
+          "sourceId": "TRU-LM-1.1-S",
+          "sha256": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+          "startMarker": "TRUST LAB™\n\nSchool Edition"
+        }
+      ],
+      "slug": "trust",
+      "provenance": {
+        "origin": "Existing owner-uploaded Content Studio Learning manuscript; authenticated read-only retrieval",
+        "productionSourceVersionId": "content:module:TRU:1.2",
+        "storagePath": "sources/content:module:TRU:1.0/school/tru-school-pasted.md",
+        "observedAt": "2026-10-07",
+        "authoritativeKind": "LEARNING_MODULE",
+        "otherEditions": "Not present in the observed production snapshot; never derive missing Learning editions from Lab workbooks."
+      }
     }
   ]
 }

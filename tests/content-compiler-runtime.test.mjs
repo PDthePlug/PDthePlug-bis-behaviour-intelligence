@@ -111,7 +111,8 @@ test("Word PDF HTML Markdown and ZIP learning sources can be manufactured into P
   for (const format of ["DOCX", "PDF", "HTML", "MARKDOWN", "ZIP"]) {
     assert.ok(adapters.includes('sourceFormat === "' + format + '"'));
   }
-  assert.match(adapters, /balancedProgrammePages/);
+  assert.doesNotMatch(adapters, /balancedProgrammePages/);
+  assert.match(adapters, /A Lab workbook cannot supply Learning content/);
   assert.match(adapters, /strictProgrammePageKey/);
   assert.match(adapters, /INVESTIGATION\\s\+\)\?CERTIFICATE|INVESTIGATION/);
   assert.match(adapters, /DAY\\s\+\(10\|\[1-9\]\).*OF\\s\+10/);

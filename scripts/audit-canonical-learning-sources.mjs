@@ -26,7 +26,8 @@ function sha256(value) {
 }
 
 function countLine(source, value) {
-  return source.split("\n").filter((line) => line.trim() === value).length;
+  const heading = value.replace(/^#+\s*/, "");
+  return source.split("\n").filter((line) => line.trim().replace(/^#+\s*/, "") === heading).length;
 }
 
 const tools = await loadContentTools();
@@ -60,7 +61,7 @@ try {
         edition.sha256,
         `${entry.moduleCode}/${edition.deliveryEdition}: authored edition fingerprint changed.`,
       );
-      assert.ok(section.includes(`**Volume ${entry.volume} — Handbook ${entry.handbook}**`), `${entry.moduleCode}/${edition.deliveryEdition}: handbook identity missing.`);
+      assert.ok(section.includes(`Volume ${entry.volume} — Handbook ${entry.handbook}`), `${entry.moduleCode}/${edition.deliveryEdition}: handbook identity missing.`);
       assert.ok(section.includes(`Version ${entry.version} — Learner Edition`), `${entry.moduleCode}/${edition.deliveryEdition}: authored version missing.`);
       assert.ok(section.includes(edition.sourceId), `${entry.moduleCode}/${edition.deliveryEdition}: source ID ${edition.sourceId} missing.`);
 
@@ -113,13 +114,13 @@ try {
 
       const dayThree = programme.treatment.pages.find((page) => page.key === "Day 3");
       assert.ok(dayThree, `${entry.moduleCode}/${edition.deliveryEdition}: Day 3 missing after compile.`);
-      assert.match(dayThree.html, /The Time Pause/i, `${entry.moduleCode}/${edition.deliveryEdition}: Day 3 Part A was lost.`);
-      assert.match(dayThree.html, /Your Experiment Begins/i, `${entry.moduleCode}/${edition.deliveryEdition}: Day 3 Part B was lost.`);
+      assert.match(dayThree.html, /DAY\s+3\s*[—-]\s*PART\s+A/i, `${entry.moduleCode}/${edition.deliveryEdition}: Day 3 Part A was lost.`);
+      assert.match(dayThree.html, /DAY\s+3\s*[—-]\s*PART\s+B/i, `${entry.moduleCode}/${edition.deliveryEdition}: Day 3 Part B was lost.`);
       assert.ok(dayThree.labHandoff?.startMarker && dayThree.labHandoff?.endMarker, `${entry.moduleCode}/${edition.deliveryEdition}: governed Lab handoff markers missing.`);
       assert.equal(dayThree.labHandoff?.source, "AUTHORED", `${entry.moduleCode}/${edition.deliveryEdition}: authored Part B boundary was not retained as the Lab handoff.`);
       const handoffIndex = dayThree.html.indexOf(dayThree.labHandoff.startMarker);
-      const partAIndex = dayThree.html.search(/The Time Pause/i);
-      const partBIndex = dayThree.html.search(/Your Experiment Begins/i);
+      const partAIndex = dayThree.html.search(/DAY\s+3\s*[—-]\s*PART\s+A/i);
+      const partBIndex = dayThree.html.search(/DAY\s+3\s*[—-]\s*PART\s+B/i);
       assert.ok(partAIndex >= 0 && handoffIndex > partAIndex, `${entry.moduleCode}/${edition.deliveryEdition}: Lab handoff must follow Part A.`);
       assert.ok(partBIndex >= 0 && handoffIndex < partBIndex, `${entry.moduleCode}/${edition.deliveryEdition}: Lab handoff must precede Part B.`);
 

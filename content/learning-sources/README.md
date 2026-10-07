@@ -27,7 +27,13 @@ The existing built-in Learning packages are:
 - IDN — Identity
 - ATT — Attention
 
-This directory is for the remaining authored Learning modules as they are supplied. It does not activate any module by itself.\n\nCurrent canonical intake:\n- TIM — Time Lab™ v1.0 — School, Emerging Adult and Workplace editions — source-ready, not yet learner-live.
+This directory is for authored Learning modules as they are supplied. It does not activate any module by itself.
+
+Current canonical intake:
+- TIM — Time Lab™ v1.0 — School, Emerging Adult and Workplace editions — source-ready, not yet learner-live.
+- TRU — Trust Lab™ authored v1.1 School manuscript — recovered byte-for-byte from its existing owner-uploaded Content Studio source, with the recorded hash verified. Published artifact v1.2 remains preserved. Emerging Adult and Workplace manuscripts must be located and fingerprinted before they can be compiled; a Lab workbook is never their substitute.
+
+Learning retains its ten-touchpoint ProgrammePlayer and Lab retains its nine-stage Universal Lab v2 runtime. Both use the shared `learner-document` presentation. Sharing the visual system does not turn a Learning manuscript into Lab investigations or generate Learning wording from Lab workbooks.
 
 ## Processing contract
 

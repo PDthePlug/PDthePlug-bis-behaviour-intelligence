@@ -265,6 +265,17 @@ export async function sha256Hex(bytes: Uint8Array) {
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
 }
 
+/** Verify an immutable upload before adapting or compiling its content. Older
+ * uploads without a hash receive their first fingerprint, never a replacement. */
+export async function verifiedSourceHash(bytes: Uint8Array, recorded: { sourceHash?: string | null; sourceBytes?: number | null }) {
+  const hash = await sha256Hex(bytes);
+  if ((recorded.sourceHash && recorded.sourceHash !== hash)
+    || (recorded.sourceBytes != null && recorded.sourceBytes !== bytes.byteLength)) {
+    throw new Error("The uploaded manuscript no longer matches its original record. Upload the intended source as a new draft; the original record has been preserved.");
+  }
+  return hash;
+}
+
 export function validateContentSource(
   kind: ContentKind,
   code: string,

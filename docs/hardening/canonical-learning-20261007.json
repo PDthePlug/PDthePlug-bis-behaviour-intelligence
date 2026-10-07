@@ -1,0 +1,45 @@
+{
+  "status": "IN_REVIEW",
+  "compiler": "bis-content-compiler-9",
+  "mainBase": "cef3959acacbe25ec29352d00a359e4c93f8fabd",
+  "pages": 52,
+  "sources": [
+    {
+      "module": "TIM",
+      "path": "content/learning-sources/time-v1.0-authored.md",
+      "bytes": 479151,
+      "sha256": "706491b535deb8f64a4393a762e657f77b2773e3087640a719aa4248b99b245d",
+      "editions": [
+        "school",
+        "emerging_adult",
+        "workplace"
+      ]
+    },
+    {
+      "module": "TRU",
+      "path": "content/learning-sources/trust-school-v1.1-authored.md",
+      "bytes": 152539,
+      "sha256": "da87c9e8a11e0bf3f56463cabe711931f67bd80a6cf3c222ab1204d31c1a9ac0",
+      "editions": [
+        "school"
+      ]
+    }
+  ],
+  "missing": [
+    "TRU Emerging Adult Learning manuscript",
+    "TRU Workplace Learning manuscript"
+  ],
+  "preservation": "Original source and published version artifacts are retained. Learning content is never generated from Lab workbooks. The recent pasted Time School text has not been claimed byte-identical to the previous intake without a direct byte comparison.",
+  "checks": {
+    "acceptance": "671 PASS on preceding ac1594d exact CI; final outline change awaiting checks",
+    "source": "32 Lab packages and 4 authored Learning editions PASS locally",
+    "browser": "294 PASS on preceding ac1594d exact CI; final outline disclosure checks pending",
+    "studio": "RUNNING",
+    "ci": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/actions/runs/37598761278"
+  },
+  "release": "Unpublished; review and exact CI required.",
+  "editorialReview": [
+    "Time Day 6 introduces five tracked days but illustrates seven; Day 7 concluding count does not include its last recorded full pause; Day 8 examples contradict full-pause counts and denominators. Original authored wording is preserved pending editorial correction.",
+    "The programme frame has a 45-minute guided-learning target while the authored Day 1 outline specifies 60 minutes. The distinct source duration is preserved, not silently rewritten."
+  ]
+}

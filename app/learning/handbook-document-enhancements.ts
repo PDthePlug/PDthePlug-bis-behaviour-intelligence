@@ -1682,9 +1682,27 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
   restoreUnpairedProfileTables(root);
   restoreParagraphBulletLists(root);
   discloseWeekendContext(root, pageId);
+  // The printed overview repeats the publication header. Keep its authored
+  // objectives and resources available without putting another large panel
+  // between the learner and the first reading. Never fold response controls
+  // or safety guidance into this passive disclosure.
+  root.querySelectorAll<HTMLElement>(".handbook-source-callout").forEach(outline => {
+    if (outline.closest("details") || outline.querySelector("input,textarea,select,button")) return;
+    const text = normalise(outline.textContent ?? "");
+    if (!/^TODAY(?:\s*[—–-]\s*PART\s+[AB])?\s*TIME:/i.test(text)
+      || !/BY THE END OF TODAY,?\s+YOU WILL:/i.test(text)
+      || !/YOU WILL NEED:/i.test(text)) return;
+    const details = document.createElement("details");
+    details.className = "learner-document-disclosure handbook-session-details";
+    const summary = document.createElement("summary");
+    const duration = /TIME:\s*(\d+\s*minutes)/i.exec(text)?.[1];
+    summary.textContent = `Session outline${duration ? ` · ${duration}` : ""}`;
+    outline.before(details);
+    details.append(summary, outline);
+  });
   // Printed cover matter belongs behind the reading canvas. Keep the original
   // nodes and publisher trace; only internal production notes leave the display.
-  const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2")]
+  const welcome = [...root.querySelectorAll<HTMLElement>("h1,h2,h3,h4")]
     .find(heading => normalise(heading.textContent ?? "").toUpperCase() === "WELCOME");
   if (welcome && !root.querySelector(".handbook-publication-details")) {
     const cover = document.createRange();
@@ -1716,12 +1734,16 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
 
   // The publication header already supplies the day and title. Keep the source
   // elements intact so this never changes the text used for response identities.
+  if (pageId.endsWith(".WELCOME") && welcome) {
+    welcome.classList.add("handbook-repeated-heading");
+    welcome.hidden = true;
+  }
   const titleKey = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
   if (context.pageTitle) {
-    for (const heading of [...root.querySelectorAll<HTMLElement>("h1,h2,.day-kicker")].slice(0, 3)) {
+    for (const heading of [...root.querySelectorAll<HTMLElement>("h1,h2,h3,h4,.day-kicker")].slice(0, 3)) {
       const value = normalise(heading.textContent ?? "");
       if (titleKey(value) === titleKey(context.pageTitle)
-        || (context.programmeDay && value === `DAY ${context.programmeDay} OF 10`)
+        || (context.programmeDay && new RegExp(`^DAY ${context.programmeDay}(?: OF 10)?$`, "i").test(value))
         || (pageId.endsWith(".WEEKEND") && /^(?:WEEKEND|Field Experiment)$/i.test(value))
         || (pageId.endsWith(".CERTIFICATE") && /^CERTIFICATE$/i.test(value))) {
         heading.classList.add("handbook-repeated-heading");

@@ -21,6 +21,7 @@ import {
   nextContentVersion,
   copyPublishedPackageVersion,
   sha256Hex,
+  verifiedSourceHash,
   validateContentSource,
   type ContentKind,
   type ContentSourceFormat,
@@ -364,6 +365,10 @@ async function postHandler(request: Request) {
       if (list.error || !list.data.some((entry) => sourceStoragePath.endsWith(`/${entry.name}`))) {
         throw new Error("The uploaded source could not be confirmed.");
       }
+      const uploaded = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(sourceStoragePath);
+      if (uploaded.error || !uploaded.data) throw new Error("The uploaded manuscript could not be opened.");
+      const uploadedBytes = new Uint8Array(await uploaded.data.arrayBuffer());
+      const uploadedHash = await verifiedSourceHash(uploadedBytes, { sourceBytes });
 
       const id = `${versionId}:source:${sourceKey}`;
       const now = new Date().toISOString();
@@ -376,7 +381,7 @@ async function postHandler(request: Request) {
         sourceFormat,
         fileName: sourceFileName,
         storagePath: sourceStoragePath,
-        sourceHash: null,
+        sourceHash: uploadedHash,
         sourceBytes,
         mimeType,
         createdBy: identity.id,
@@ -388,7 +393,7 @@ async function postHandler(request: Request) {
           sourceFormat,
           fileName: sourceFileName,
           storagePath: sourceStoragePath,
-          sourceHash: null,
+          sourceHash: uploadedHash,
           sourceBytes,
           mimeType,
           updatedAt: now,
@@ -467,7 +472,7 @@ async function postHandler(request: Request) {
             const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(source.storagePath);
             if (download.error || !download.data) throw new Error(`${edition}: source file could not be opened.`);
             const bytes = new Uint8Array(await download.data.arrayBuffer());
-            const sourceHash = await sha256Hex(bytes);
+            const sourceHash = await verifiedSourceHash(bytes, source);
             await db.update(contentSourceFiles).set({ sourceHash, sourceBytes: bytes.byteLength, updatedAt: new Date().toISOString() }).where(eq(contentSourceFiles.id, source.id));
             const adapted = await adaptLearningSource(
               bytes,
@@ -484,7 +489,7 @@ async function postHandler(request: Request) {
           const download = await requestSupabaseClient().storage.from(CONTENT_STUDIO_BUCKET).download(source.storagePath);
           if (download.error || !download.data) throw new Error("Lab source file could not be opened.");
           const bytes = new Uint8Array(await download.data.arrayBuffer());
-          const sourceHash = await sha256Hex(bytes);
+          const sourceHash = await verifiedSourceHash(bytes, source);
           await db.update(contentSourceFiles).set({ sourceHash, sourceBytes: bytes.byteLength, updatedAt: new Date().toISOString() }).where(eq(contentSourceFiles.id, source.id));
           const adapted = await adaptLabSource(
             bytes,
