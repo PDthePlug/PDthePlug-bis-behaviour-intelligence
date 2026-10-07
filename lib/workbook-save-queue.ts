@@ -7,6 +7,7 @@ export type WorkbookEdit = {
   checkId?: string;
   checkKind?: string;
   privacyClass?: string;
+  evidenceAnchor?: string;
 };
 
 /** One writer per workbook. Acknowledgements only clear the exact revision sent. */
@@ -36,6 +37,7 @@ export class WorkbookSaveQueue {
             checkId,
             checkKind,
             privacyClass,
+            evidenceAnchor,
           }) => ({
             semanticFieldId,
             semanticStepId,
@@ -45,6 +47,7 @@ export class WorkbookSaveQueue {
             checkId,
             checkKind,
             privacyClass,
+            evidenceAnchor,
           })));
           for (const item of batch) {
             if (this.pending.get(item.semanticFieldId)?.revision === item.revision) {
