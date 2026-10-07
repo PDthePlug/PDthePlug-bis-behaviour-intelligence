@@ -465,3 +465,53 @@ test("Time curriculum semantic graph remains internally consistent", async () =>
     );
   }
 });
+
+
+test("authored evidence ceilings constrain competency promotion", () => {
+  const explainCappedAtNotice = highestSupportedProgression([
+    {
+      id: "limited-explanation",
+      competencyId: "AC-C03",
+      class: "INTERPRETATION",
+      provenanceStatus: "VERIFIED",
+      contextId: "time",
+      maxProgression: "NOTICE",
+    },
+  ]);
+  assert.equal(explainCappedAtNotice.code, "NOTICE");
+
+  const transferCappedAtApply = highestSupportedProgression([
+    {
+      id: "foundation",
+      competencyId: "AC-C15",
+      class: "LEARNING_CHECK",
+      provenanceStatus: "VERIFIED",
+      contextId: "time-primary",
+      maxProgression: "APPLY",
+    },
+    {
+      id: "limited-transfer",
+      competencyId: "AC-C15",
+      class: "TRANSFER",
+      provenanceStatus: "VERIFIED",
+      contextId: "time-secondary",
+      secondContext: true,
+      maxProgression: "APPLY",
+    },
+  ]);
+  assert.equal(transferCappedAtApply.code, "APPLY");
+  assert.match(transferCappedAtApply.rationale, /authored evidence mapping limits/i);
+});
+
+test("legacy verified evidence without an authored ceiling keeps existing progression behaviour", () => {
+  const result = highestSupportedProgression([
+    {
+      id: "legacy-interpretation",
+      competencyId: "AC-C03",
+      class: "INTERPRETATION",
+      provenanceStatus: "VERIFIED",
+      contextId: "legacy",
+    },
+  ]);
+  assert.equal(result.code, "EXPLAIN");
+});
