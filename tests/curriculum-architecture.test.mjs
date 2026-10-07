@@ -413,3 +413,13 @@ test("transfer tasks cannot become transfer evidence from completion alone", asy
   const mapped = bindEvidenceToCompetencies({ events: answered, bindings: evidenceMap.bindings });
   assert.equal(highestSupportedProgression(mapped).code, "NOT_YET_EVIDENCED");
 });
+
+
+test("Time blueprint declares every competency used by its daily sequence", async () => {
+  const blueprint = await json("content/curriculum/time/time-instructional-blueprint-v2.json");
+  const declared = new Set(blueprint.competencyTargets.map(item => item.competencyId));
+  const used = new Set(blueprint.days.flatMap(day => day.competencies ?? []));
+  const missing = [...used].filter(id => !declared.has(id));
+  assert.deepEqual(missing, []);
+  assert.ok(declared.has("AC-C10"));
+});
