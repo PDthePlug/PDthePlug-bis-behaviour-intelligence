@@ -1,3 +1,4 @@
+import type { BisReportClassification } from "./report-classification.mjs";
 export type EvidencePortfolioAnchor = {
   id: "BASELINE" | "PHASE_A" | "EXPERIMENT" | "REVIEW" | "PROFILE";
   label: string;
@@ -26,6 +27,7 @@ export type EvidencePortfolioMetric = {
 };
 
 export type EvidencePortfolioLab = {
+  reportClassification: BisReportClassification;
   enrolmentId: string;
   labCode: string;
   labVersion: string;

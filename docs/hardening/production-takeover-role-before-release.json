@@ -1,0 +1,102 @@
+{
+  "observedAt": "2026-10-07T03:16:42.448Z",
+  "groupId": "3f232f57-a493-4aa0-aa3a-59e14b1ee6f4",
+  "rows": [
+    {
+      "role": "LEARNER",
+      "route": "/api/bis?scope=profile",
+      "status": 200
+    },
+    {
+      "role": "LEARNER",
+      "route": "/api/staff",
+      "status": 403,
+      "expectedDenial": true
+    },
+    {
+      "role": "LEARNER",
+      "route": "/api/content-studio",
+      "status": 403,
+      "expectedDenial": true
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/api/bis?scope=profile",
+      "status": 200
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/api/staff",
+      "status": 200,
+      "isolatedCohortScope": "PASS"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/api/content-studio",
+      "status": 403,
+      "expectedDenial": true
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/api/bis?scope=profile",
+      "status": 200
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/api/staff",
+      "status": 200,
+      "isolatedCohortScope": "PASS"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/api/content-studio",
+      "status": 403,
+      "expectedDenial": true
+    },
+    {
+      "role": "PROGRAMME_OWNER",
+      "route": "/api/bis?scope=profile",
+      "status": 200
+    },
+    {
+      "role": "PROGRAMME_OWNER",
+      "route": "/api/staff",
+      "status": 200,
+      "isolatedCohortScope": "PASS"
+    },
+    {
+      "role": "PROGRAMME_OWNER",
+      "route": "/api/content-studio",
+      "status": 403,
+      "expectedDenial": true
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/api/bis?scope=profile",
+      "status": 200
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/api/staff",
+      "status": 200,
+      "isolatedCohortScope": "GLOBAL_ROLE; original records not captured"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/api/bis?scope=profile",
+      "status": 200
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/api/staff",
+      "status": 200,
+      "isolatedCohortScope": "GLOBAL_ROLE; original records not captured"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/api/content-studio",
+      "status": 403,
+      "expectedDenial": true
+    }
+  ]
+}

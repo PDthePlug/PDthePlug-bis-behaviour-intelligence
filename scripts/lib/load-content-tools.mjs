@@ -28,5 +28,6 @@ export async function loadContentTools() {
   const adapter = await import(pathToFileURL(join(temp, "content-source-adapters.mjs")).href);
   const compiler = await import(pathToFileURL(join(temp, "content-compiler.mjs")).href);
   const uat = await import(pathToFileURL(join(temp, "content-uat.mjs")).href);
-  return { ...adapter, ...compiler, ...uat, dispose: () => rm(temp, { recursive: true, force: true }) };
+  const studio = await import(pathToFileURL(join(temp, "content-studio.mjs")).href);
+  return { ...studio, ...adapter, ...compiler, ...uat, dispose: () => rm(temp, { recursive: true, force: true }) };
 }

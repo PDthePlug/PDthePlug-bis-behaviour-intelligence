@@ -15,8 +15,9 @@ const defaultRoleRoutes = {
 };
 const roleRoutes=process.env.BIS_HARDENING_PAGE_MATRIX_FILE?JSON.parse(await readFile(process.env.BIS_HARDENING_PAGE_MATRIX_FILE,"utf8")):defaultRoleRoutes;
 const output=process.env.BIS_HARDENING_PAGE_AUDIT_FILE||"/tmp/bis-hardening-page-audit.json";
+const evidenceRoot=process.env.BIS_HARDENING_PAGE_EVIDENCE_DIR||`${output}.screens`;
 const rows=[];
-await mkdir("/tmp/bis-hardening-evidence/pages",{recursive:true});
+await mkdir(`${evidenceRoot}/pages`,{recursive:true});
 try {
  for(const [role,routes] of Object.entries(roleRoutes)) {
   let storageState;
@@ -35,8 +36,8 @@ try {
    const accessibility=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:"tag",values:["wcag2a","wcag2aa","wcag21aa"]}});return result.violations.map(item=>({id:item.id,impact:item.impact,description:item.description,nodes:item.nodes.map(node=>({target:node.target,summary:node.failureSummary}))}));});
    const geometry=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-innerWidth,unlabelled:[...document.querySelectorAll("textarea,input:not([type=hidden]),select")].filter(element=>!element.labels?.length&&!element.getAttribute("aria-label")&&!element.getAttribute("aria-labelledby")).map(element=>element.outerHTML.slice(0,150))}));
    const screenshot=`pages/${role}-${rows.length}-${width}.png`;
-   await page.screenshot({path:`/tmp/bis-hardening-evidence/${screenshot}`,fullPage:true});
-   const row={role,route,width,status:response?.status(),finalPath:new URL(page.url()).pathname+new URL(page.url()).search,headings:await page.getByRole("heading").allTextContents(),...geometry,accessibility,errors:[...errors],screenshot};
+   await page.screenshot({path:`${evidenceRoot}/${screenshot}`,fullPage:true});
+   const row={role,route,width,status:response?.status(),finalPath:new URL(page.url()).pathname+new URL(page.url()).search,headings:await page.getByRole("heading").allTextContents(),...geometry,accessibility,errors:[...errors],screenshot,evidenceRoot};
    rows.push(row);await writeFile(output,JSON.stringify(rows,null,2));
    console.log({role,route,width,status:row.status,overflow:row.overflow,unlabelled:row.unlabelled.length,accessibility:accessibility.map(v=>v.id),errors:errors.length});
   }

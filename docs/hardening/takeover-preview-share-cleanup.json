@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-10-07T04:46:53.694290+00:00",
+  "protectionUnchanged": true,
+  "shares": [
+    {
+      "deployment": "dpl_EYw88nxHjqLyh96MVCbtiWKwkzgL",
+      "revocationResponse": "404 link no longer exists; subsequent request 302 and no protection cookie issued"
+    },
+    {
+      "deployment": "dpl_6QLsgDxY8r47TjRj2ip3WrS8xqAh",
+      "revocationResponse": "PASS revoked; subsequent request 302 and no protection cookie issued",
+      "recaptureShare": "Reissued only to recover two overwritten temporary captures; now revoked without regeneration"
+    }
+  ],
+  "secretsExported": false
+}

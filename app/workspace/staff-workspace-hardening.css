@@ -295,7 +295,7 @@
 .staff-workspace-shell a:focus-visible,
 .staff-gate button:focus-visible,
 .staff-gate a:focus-visible{
-  outline:3px solid color-mix(in srgb,var(--teal) 48%,white);
+  outline:3px solid var(--teal);
   outline-offset:3px;
 }
 
@@ -537,3 +537,15 @@
 }
 .staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) .eyebrow{color:#c5ddd4}
 .staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) [data-slot="badge"]{color:#eef6f2;background:#ffffff14;border-color:#ffffff40}
+.programme-publication-details{margin-top:8px;color:#40594c;font-size:.875rem;line-height:1.5}
+.programme-publication-details summary{display:list-item;min-height:44px;padding-block:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.programme-publication-details p{margin:4px 0 0;overflow-wrap:anywhere}
+.ops-cohort-banner .programme-publication-details{color:#edf4ef}
+
+/* Category labels carry meaning at body-reading size and WCAG AA contrast. */
+.staff-workspace-shell .case-summary > span{color:#934437;font-size:14px;line-height:1.5}
+.staff-workspace-shell .safeguard-case-head span,
+.staff-workspace-shell .case-resolution > div{font-size:14px;line-height:1.5}
+.staff-workspace-shell .ops-safeguard-banner p:last-child{font-size:15px;line-height:1.6}
+.staff-workspace-shell .case-summary p{font-size:16px;line-height:1.6}
+.staff-workspace-shell :is(.case-actions,.case-resolution) button{min-height:44px}

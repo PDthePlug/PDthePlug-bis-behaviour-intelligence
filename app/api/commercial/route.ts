@@ -303,7 +303,7 @@ async function postHandler(request: Request) {
 
     if (action === "assignCommercialRole") {
       if (!roles.includes("SYSTEM_ADMIN")) {
-        throw new AccessError("Only a BIS system administrator can assign commercial roles in 0.1.", 403);
+        throw new AccessError("Only a BIS system administrator can assign commercial roles.", 403);
       }
       const email = normalizeEmail(String(body.email ?? ""));
       const role = String(body.role ?? "");

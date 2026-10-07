@@ -1,0 +1,69 @@
+{
+  "observedAt": "2026-10-07T04:38:21.226Z",
+  "projectRef": "swmhsqivqaqwovojbceo",
+  "result": "PASS",
+  "scope": "Only 11 user-authorised takeover QA identities; no original staff assignments selected",
+  "reason": "Final release blocked by Vercel daily cap; temporary production privilege must not remain active",
+  "revokedAssignments": [
+    {
+      "id": "f42b9e25-0975-4d2e-9938-0f0865976f68",
+      "role": "FACILITATOR",
+      "scopeType": "COHORT"
+    },
+    {
+      "id": "ffd00e9c-46fe-485e-b419-56b449f7855a",
+      "role": "FACILITATOR",
+      "scopeType": "GLOBAL"
+    },
+    {
+      "id": "a1e245b8-bb87-45e5-a71f-6e0c85152306",
+      "role": "SPONSOR_VIEWER",
+      "scopeType": "COHORT"
+    },
+    {
+      "id": "5ef82654-b557-46ac-af9c-8592e8df9933",
+      "role": "PROGRAMME_OWNER",
+      "scopeType": "COHORT"
+    },
+    {
+      "id": "ddd45f9e-5165-4311-b772-ad5943b014d5",
+      "role": "SAFEGUARDING_OFFICER",
+      "scopeType": "GLOBAL"
+    },
+    {
+      "id": "41288816-a44b-4ac0-9570-9a937bf7f038",
+      "role": "SYSTEM_ADMIN",
+      "scopeType": "GLOBAL"
+    }
+  ],
+  "denials": [
+    {
+      "role": "FACILITATOR",
+      "status": 403,
+      "session": "Existing authenticated session; permissions re-evaluated after revocation"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "status": 403,
+      "session": "Existing authenticated session; permissions re-evaluated after revocation"
+    },
+    {
+      "role": "PROGRAMME_OWNER",
+      "status": 403,
+      "session": "Existing authenticated session; permissions re-evaluated after revocation"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "status": 403,
+      "session": "Existing authenticated session; permissions re-evaluated after revocation"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "status": 403,
+      "session": "Existing authenticated session; permissions re-evaluated after revocation"
+    }
+  ],
+  "qaAccountsAndEvidencePreserved": true,
+  "originalStaffAssignmentsModified": false,
+  "releaseSourceNotDeployed": true
+}

@@ -1,5 +1,32 @@
 # Staging and production configuration differences
 
+## Current takeover comparison — 7 October 2026
+
+The earlier baseline below is retained as release history. Current exact inventories are `staging-platform-takeover-20261007.json`, `production-platform-takeover-20261007.json` and `platform-takeover-differences-20261007.json`.
+
+| Area | Staging | Production | Current disposition |
+| --- | --- | --- | --- |
+| Relations / functions | 102 / 188 | 119 / 213 | Common definitions match except `private.can_write_commercial`; six CRM relations and two private functions belong to unmerged PR136 and are not promoted |
+| Policies / triggers | 126 / 35 | 144 / 36 | Sixteen staging commercial additions include fourteen policies/two triggers; production additions remain preserved |
+| Indexes / constraints | 331 / 393 | 389 / 464 | Staging has eighteen added CRM indexes/twenty-five constraints; production-only service definitions remain preserved |
+| Schemas / extensions / role settings / buckets | 10 / 5 / 9 / 2 | Same | Definitions/settings match; source and evidence buckets remain private |
+| Auth configuration | 243 settings inspected | 243 settings inspected | Six provider/origin differences enumerated with credential values omitted; production Google is intentionally enabled, staging Google disabled |
+| Password minimum | 8 | 8 | Reviewed management change aligns existing signup/reset forms; current passwords are not replaced |
+| Compromised-password protection | Disabled | Disabled | Enablement returned HTTP402 requiring Pro plan or above; billing was not changed |
+| Auth return origins | Exact local callbacks plus reviewed preview callback | Canonical www allowlist preserved | Staging-only frontend preview binding accepts only deployment-bound origins; production ignores it |
+| Email delivery | Default provider; no custom SMTP; 2 emails/hour | Same | Deployed preview return-origin parameters verified with the provider request intercepted; no email requested. Delivered recovery requires a real inbox; no delivery is claimed for synthetic invalid-domain accounts |
+| PostgreSQL | 17.11.0.002 | 17.6.1.166 | Read-only compatibility catalogue completed; backup/maintenance/rollback and owning-service review remain required |
+| Agency/Companion services | Absent | 23 preserved additional relations | Associated definitions and grants inventoried; service owner remains unidentified after user reports being unsure; no consolidation or deletion |
+| Production verification accounts | Separate 24 existing staging fixtures | 11 new authorised QA accounts; 6 synthetic learners | Normal application enrolment/role access; no staging records copied; original 73-table count/fingerprint comparison passes; exact new structural mapping is separately recorded |
+
+The current published production definitions are also inventoried independently in `production-takeover-metric-register.json`: 32 Labs, 20 bound computed fields, and 135 explicitly UNBOUND indicator entries across 29 older version-1.0 Labs. The canonical/current-compiler register contains 283 calculations and no unbound indicators; it must not be used as evidence that production has those bindings. No accepted artifact or learner version is replaced to equalise the two. METRIC-LIVE-BINDINGS records the required governed source/version review.
+
+The four temporary Edge endpoints retain their inspected closed implementations (HTTP410), versions, body hashes and JWT verification settings. Current source retrieval confirms the closed response bodies. The security advisors still flag the same four intentional authenticated definer functions and disabled compromised-password protection; role/owner boundaries remain required, not waived by the inventory.
+
+`auth-takeover-setting-review.json` records applied settings and the provider rejection. `auth-configuration-differences.json` gives every differing setting. `postgres-patch-compatibility-20261007.json` records compatibility checks without claiming an upgrade. `dns-takeover-verification-20261007.json` records the user's correction report alongside fresh resolver results: both public resolvers still return the two old website-builder addresses, and apex deep links still return 404. Canonical www is healthy.
+
+These provider settings are managed configuration rather than SQL schema migrations. Existing append-only publishing/scope migrations remain applied and preserved. None of the current presentation changes requires another database migration. Production-only services and staging's unmerged CRM changes must not be equalised by copying data, deleting objects or installing unreviewed definitions.
+
 Observed 2026-10-06. The baseline queries were read-only configuration inventories; no production data was copied, edited or replaced. A subsequent workflow regression required the append-only migration below.
 
 | Area | Staging | Production | Disposition |

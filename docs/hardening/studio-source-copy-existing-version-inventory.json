@@ -1,0 +1,82 @@
+{
+  "observedAt": "2026-10-06T23:01:22.808Z",
+  "queryScope": "Read-only unpublished JSON-source versions and recorded copy provenance; no source contents or learner data selected",
+  "staging": [
+    {
+      "id": "content:lab:DEC:4.2.2",
+      "status": "VALIDATED",
+      "version": "4.2.2",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    },
+    {
+      "id": "content:lab:DEC:4.2.3",
+      "status": "VALIDATED",
+      "version": "4.2.3",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    },
+    {
+      "id": "content:lab:HAB:4.5.3",
+      "status": "VALIDATED",
+      "version": "4.5.3",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    },
+    {
+      "id": "content:lab:IDN:1.0",
+      "status": "VALIDATED",
+      "version": "1.0",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    },
+    {
+      "id": "content:lab:MON:4.2.1",
+      "status": "VALIDATED",
+      "version": "4.2.1",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    },
+    {
+      "id": "content:module:HAB:1.7",
+      "status": "DRAFT",
+      "version": "1.7",
+      "json_sources": 3,
+      "sources_outside_version_path": 3,
+      "copied_from_version": "content:module:HAB:1.6"
+    }
+  ],
+  "production": [
+    {
+      "id": "content:lab:DEC:1.0",
+      "status": "DRAFT",
+      "version": "1.0",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    },
+    {
+      "id": "content:lab:HAB:1.0",
+      "status": "DRAFT",
+      "version": "1.0",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    },
+    {
+      "id": "content:lab:MON:1.0",
+      "status": "DRAFT",
+      "version": "1.0",
+      "json_sources": 1,
+      "sources_outside_version_path": 0,
+      "copied_from_version": null
+    }
+  ],
+  "interpretation": "No production unpublished JSON version has recorded copy provenance or a source outside its own version path. The one staging inherited-path copy is the retained failed 1.7 hardening fixture. Existing production drafts were not modified; other authoring validation remains separately open.",
+  "productionRecordsModified": false
+}

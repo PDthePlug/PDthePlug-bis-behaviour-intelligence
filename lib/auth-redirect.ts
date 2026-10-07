@@ -1,8 +1,13 @@
 export const BIS_PRODUCTION_ORIGIN = "https://www.bisportal.online";
 
-// The hosting alias is deliberately not an application origin. Only local
-// development may return to a different origin.
+// Production always returns to the canonical application. Staging may return
+// only to a preview origin explicitly bound by its deployment, or localhost.
 export function applicationOrigin(runtimeOrigin: string) {
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL === "https://lbmhkddrkhtmkcvfmumd.supabase.co" &&
+      [process.env.NEXT_PUBLIC_BIS_PREVIEW_ORIGIN, process.env.NEXT_PUBLIC_BIS_PREVIEW_BRANCH_ORIGIN].some(origin =>
+        Boolean(origin) && origin === runtimeOrigin && /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin!))) {
+    return runtimeOrigin;
+  }
   return /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i.test(runtimeOrigin)
     ? runtimeOrigin
     : BIS_PRODUCTION_ORIGIN;

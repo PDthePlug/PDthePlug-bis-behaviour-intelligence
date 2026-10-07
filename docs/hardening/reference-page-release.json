@@ -1,0 +1,35 @@
+{
+  "pullRequest": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/134",
+  "head": "4f7e1c68d02c1ae9e98aa2c60e7ee0fb299d0089",
+  "merge": "6ede3aba1e265dc3a9bc3d7e879e002e035f6e45",
+  "localChecks": {
+    "acceptance": 633,
+    "browser": 240,
+    "contract": "npm run verify",
+    "result": "PASS"
+  },
+  "ci": {
+    "run": 37540895180,
+    "result": "SUCCESS"
+  },
+  "preview": {
+    "deployment": "dpl_Eqevs27Qz7BFmC2PFqXMEW5q4SNU",
+    "state": "READY",
+    "actualStates": 42,
+    "result": "PASS",
+    "ownedShare": "REVOKED"
+  },
+  "production": {
+    "deployment": "dpl_FfjyvBqJp3vA4utqE3zyWtfEfYFF",
+    "canonical": "www.bisportal.online",
+    "state": "READY",
+    "publicLiveChecks": "PASS: 9 public browser states, HSTS, production identity and three anonymous protected-API denials; fresh run after releasing completed local audit servers",
+    "verification": "docs/hardening/reference-page-production-live.json"
+  },
+  "boundaries": [
+    "No source content or accepted field IDs changed.",
+    "No production database or learner records modified.",
+    "Menu retained; VISUAL-MENU remains documented.",
+    "Authenticated production role variants and whole-page manual certification remain open."
+  ]
+}

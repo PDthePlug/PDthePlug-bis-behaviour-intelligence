@@ -1,0 +1,86 @@
+{
+  "observedAt": "2026-10-07T03:05:44.409Z",
+  "projectRef": "lbmhkddrkhtmkcvfmumd",
+  "advisors": [
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "count": 4,
+      "findings": [
+        {
+          "detail": "Function `public.active_bis_lab_runtime(target_code text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/active_bis_lab_runtime`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "active_bis_lab_runtime",
+            "schema": "public",
+            "language": "sql",
+            "arguments": "target_code text",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-07T03:05:07.068Z"
+        },
+        {
+          "detail": "Function `public.bis_portfolio_lab_artifacts()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/bis_portfolio_lab_artifacts`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "bis_portfolio_lab_artifacts",
+            "schema": "public",
+            "language": "sql",
+            "arguments": "",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-07T03:05:07.068Z"
+        },
+        {
+          "detail": "Function `public.learner_bis_lab_runtime(target_code text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/learner_bis_lab_runtime`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "learner_bis_lab_runtime",
+            "schema": "public",
+            "language": "sql",
+            "arguments": "target_code text",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-07T03:05:07.068Z"
+        },
+        {
+          "detail": "Function `public.sponsor_cohort_question_patterns(target_cohort_id text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sponsor_cohort_question_patterns`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "sponsor_cohort_question_patterns",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "target_cohort_id text",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-07T03:05:07.068Z"
+        }
+      ]
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "title": "Leaked Password Protection Disabled",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Leaked password protection is currently disabled.",
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+      "count": 1,
+      "findings": [
+        {
+          "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+          "metadata": {
+            "type": "auth",
+            "entity": "Auth"
+          }
+        }
+      ]
+    }
+  ],
+  "boundary": "Definer warnings require verification of authenticated scope, not automatic privilege removal. Compromised-password protection is provider-gated on the Pro plan."
+}

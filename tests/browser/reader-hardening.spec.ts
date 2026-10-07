@@ -4,6 +4,56 @@ import { readFileSync } from "node:fs";
 
 const responseIdentities = JSON.parse(readFileSync(new URL("../fixtures/handbook-response-identities.json", import.meta.url), "utf8")) as Array<{ slug: string; edition: string; day: number; count: number; digest: string }>;
 
+test("source tables explain actual clipping, retain separate column names and scroll by keyboard", async ({ page }) => {
+  await page.goto("/reader-hardening");
+  await page.getByRole("combobox", { name: "Handbook", exact: true }).selectOption("habit-school");
+  await page.getByRole("combobox", { name: "Day", exact: true }).selectOption("3");
+  const root = page.locator('[data-specimen="habit-school"][data-day="3"]');
+  await expect(root.locator(".handbook-table-frame").first()).toBeVisible();
+  const regions = root.locator(".handbook-table-scroll");
+  for (const region of await regions.all()) {
+    const clipped = await region.evaluate(element => element.scrollWidth > element.clientWidth + 1);
+    const cue = region.locator("..").locator(":scope > .handbook-table-cue");
+    if (clipped) {
+      await expect(cue).toBeVisible();
+      await region.focus();
+      await page.keyboard.press("ArrowRight");
+      await expect.poll(() => region.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
+    } else await expect(cue).toBeHidden();
+    expect(await region.getAttribute("aria-label")).not.toContain("PartWhat");
+    expect(await region.getAttribute("aria-label")).not.toMatch(/📖|💭|✍/u);
+  }
+  await page.setViewportSize({ width: 1280, height: 900 });
+  for (const region of await regions.all()) {
+    if (await region.evaluate(element => element.scrollWidth <= element.clientWidth + 1)) {
+      await expect(region.locator("..").locator(":scope > .handbook-table-cue")).toBeHidden();
+    }
+  }
+  await page.getByRole("combobox", { name: "Day", exact: true }).selectOption("2");
+  await page.getByRole("combobox", { name: "Day", exact: true }).selectOption("3");
+  expect(await root.locator(".handbook-table-frame .handbook-table-frame").count()).toBe(0);
+});
+
+test("centred Menu has its own opaque chrome and restores keyboard focus during long reading", async ({ page }, info) => {
+  await page.goto("/reader-hardening");
+  const trigger = page.getByRole("button", { name: /Open BIS menu/ });
+  const dock = page.getByRole("navigation", { name: "BIS navigation", exact: true });
+  await page.locator(".prototype-document").evaluate(element => element.scrollIntoView({ block: "end" }));
+  await expect(dock).toBeVisible();
+  const geometry = await dock.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    const button = element.querySelector("button")!.getBoundingClientRect();
+    return { background: getComputedStyle(element).backgroundColor, centred: Math.abs((button.left + button.right) / 2 - innerWidth / 2), contained: button.top >= rect.top && button.bottom <= rect.bottom };
+  });
+  expect(geometry.background).toBe("rgb(250, 249, 246)");
+  expect(geometry.centred).toBeLessThanOrEqual(1);
+  expect(geometry.contained).toBe(true);
+  await trigger.focus(); await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "BIS learner menu" })).toBeVisible();
+  await page.keyboard.press("Escape"); await expect(trigger).toBeFocused();
+  await info.attach("menu-reading-chrome", { body: await page.screenshot(), contentType: "image/png" });
+});
+
 test("real handbook checks follow answers, stay unique after rerenders and restore on refresh", async ({ page }, info) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));

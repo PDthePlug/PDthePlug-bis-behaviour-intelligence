@@ -1,0 +1,113 @@
+[
+  {
+    "route": "/handbooks/att?page=7",
+    "role": "LEARNER",
+    "edition": "emerging_adult",
+    "width": 360,
+    "headings": [
+      "Field Experiment \u00b7 Days 4\u20135",
+      "WEEKEND",
+      "Field Experiment",
+      "What to do",
+      "\ud83d\udcd6 Two More Days",
+      "\ud83d\udcad Weekend Reflection",
+      "\u26a1 Micro-Execution"
+    ],
+    "screens": [
+      "360-00.png",
+      "360-01.png",
+      "360-02.png",
+      "360-03.png",
+      "360-04.png"
+    ],
+    "height": 3399,
+    "overflow": 0,
+    "accessibility": [],
+    "errors": [],
+    "referenceView": true,
+    "responseStatus": "Reference view \u00b7 you can read this page, but cannot add responses yet",
+    "listStyles": [
+      {
+        "type": "UL",
+        "style": "disc",
+        "items": 5
+      }
+    ],
+    "experimentDisclosure": "PASS; source context retained; no response controls folded",
+    "manualReview": "Affected presentation regions manually inspected on representative mobile/desktop screenshots; full-page/role certification remains open."
+  },
+  {
+    "route": "/handbooks/att?page=7",
+    "role": "LEARNER",
+    "edition": "emerging_adult",
+    "width": 430,
+    "headings": [
+      "Field Experiment \u00b7 Days 4\u20135",
+      "WEEKEND",
+      "Field Experiment",
+      "What to do",
+      "\ud83d\udcd6 Two More Days",
+      "\ud83d\udcad Weekend Reflection",
+      "\u26a1 Micro-Execution"
+    ],
+    "screens": [
+      "430-00.png",
+      "430-01.png",
+      "430-02.png",
+      "430-03.png",
+      "430-04.png"
+    ],
+    "height": 3225,
+    "overflow": 0,
+    "accessibility": [],
+    "errors": [],
+    "referenceView": true,
+    "responseStatus": "Reference view \u00b7 you can read this page, but cannot add responses yet",
+    "listStyles": [
+      {
+        "type": "UL",
+        "style": "disc",
+        "items": 5
+      }
+    ],
+    "experimentDisclosure": "PASS; source context retained; no response controls folded",
+    "manualReview": "Affected presentation regions manually inspected on representative mobile/desktop screenshots; full-page/role certification remains open."
+  },
+  {
+    "route": "/handbooks/att?page=7",
+    "role": "LEARNER",
+    "edition": "emerging_adult",
+    "width": 1280,
+    "headings": [
+      "Field Experiment \u00b7 Days 4\u20135",
+      "WEEKEND",
+      "Field Experiment",
+      "What to do",
+      "\ud83d\udcd6 Two More Days",
+      "\ud83d\udcad Weekend Reflection",
+      "\u26a1 Micro-Execution"
+    ],
+    "screens": [
+      "1280-00.png",
+      "1280-01.png",
+      "1280-02.png",
+      "1280-03.png",
+      "1280-04.png"
+    ],
+    "height": 3119,
+    "overflow": 0,
+    "accessibility": [],
+    "errors": [],
+    "referenceView": true,
+    "responseStatus": "Reference view \u00b7 you can read this page, but cannot add responses yet",
+    "listStyles": [
+      {
+        "type": "UL",
+        "style": "disc",
+        "items": 5
+      }
+    ],
+    "experimentDisclosure": "PASS; source context retained; no response controls folded",
+    "manualReview": "Affected presentation regions manually inspected on representative mobile/desktop screenshots; full-page/role certification remains open."
+  }
+]

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { enhanceHandbookDocument, syncHandbookLearningChecks } from "../../../../../app/learning/handbook-document-enhancements";
+import { enhanceHandbookDocument, observeHandbookTables, syncHandbookLearningChecks } from "../../../../../app/learning/handbook-document-enhancements";
 import type { HabitProgramme } from "../../../../../lib/programme-handbook";
 
 export default function Page() {
@@ -29,6 +29,7 @@ export default function Page() {
       field.addEventListener("input", () => sessionStorage.setItem(field.dataset.fieldId!, field.value));
     }
     syncHandbookLearningChecks(root.current);
+    return observeHandbookTables(root.current);
   }, [current, handbook]);
   return <main className="prototype-player">
     {error ? <p role="alert">{error}</p> : null}

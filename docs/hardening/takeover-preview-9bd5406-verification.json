@@ -1,0 +1,747 @@
+{
+  "observedAt": "2026-10-07",
+  "deploymentId": "dpl_EYw88nxHjqLyh96MVCbtiWKwkzgL",
+  "sourceCommit": "9bd5406192a4feb2318727be4db2d0e6840c059e",
+  "environment": "staging, verified before fixture credentials",
+  "autoPreviewDeployments": "disabled as requested",
+  "deployment": "one manual source preview; READY",
+  "states": [
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-0-360.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-1-360.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/hab?page=4",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/habit?section=learn&module=HAB&page=4",
+      "headings": [
+        "Habit Lab \u00b7 Phase A",
+        "YOU WILL NEED:",
+        "\ud83d\udcd6 The Boy Who Kept Losing R20",
+        "\ud83d\udcd6 Something Else Begins",
+        "\ud83d\udcad Pause and Reflect",
+        "\ud83d\udcd6 What Sipho Didn't See",
+        "\ud83d\udcd6 The Second Pattern",
+        "\ud83d\udcd6 What Sipho Understood",
+        "Continue into Habit Lab\u2122.",
+        "\u26a1 Micro-Execution \u2014 This Week",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Mindset",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Behaviour",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Agency",
+        "\ud83c\udfe0 Try This at Home",
+        "\u2705 Checkpoint",
+        "\ud83d\udccc Carry Forward \u2192 Day 4"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-2-360.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/hab?page=13",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/habit?section=learn&module=HAB&page=13",
+      "headings": [
+        "Habit Investigation Certificate"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-3-360.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-4-360.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-5-430.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-6-430.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/hab?page=4",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/habit?section=learn&module=HAB&page=4",
+      "headings": [
+        "Habit Lab \u00b7 Phase A",
+        "YOU WILL NEED:",
+        "\ud83d\udcd6 The Boy Who Kept Losing R20",
+        "\ud83d\udcd6 Something Else Begins",
+        "\ud83d\udcad Pause and Reflect",
+        "\ud83d\udcd6 What Sipho Didn't See",
+        "\ud83d\udcd6 The Second Pattern",
+        "\ud83d\udcd6 What Sipho Understood",
+        "Continue into Habit Lab\u2122.",
+        "\u26a1 Micro-Execution \u2014 This Week",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Mindset",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Behaviour",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Agency",
+        "\ud83c\udfe0 Try This at Home",
+        "\u2705 Checkpoint",
+        "\ud83d\udccc Carry Forward \u2192 Day 4"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-7-430.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/hab?page=13",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/habit?section=learn&module=HAB&page=13",
+      "headings": [
+        "Habit Investigation Certificate"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-8-430.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-9-430.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-10-1280.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-11-1280.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/hab?page=4",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/habit?section=learn&module=HAB&page=4",
+      "headings": [
+        "Habit Lab \u00b7 Phase A",
+        "YOU WILL NEED:",
+        "\ud83d\udcd6 The Boy Who Kept Losing R20",
+        "\ud83d\udcd6 Something Else Begins",
+        "\ud83d\udcad Pause and Reflect",
+        "\ud83d\udcd6 What Sipho Didn't See",
+        "\ud83d\udcd6 The Second Pattern",
+        "\ud83d\udcd6 What Sipho Understood",
+        "Continue into Habit Lab\u2122.",
+        "\u26a1 Micro-Execution \u2014 This Week",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Mindset",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Behaviour",
+        "\ud83d\udcc2 Portfolio Anchor \u2014 Agency",
+        "\ud83c\udfe0 Try This at Home",
+        "\u2705 Checkpoint",
+        "\ud83d\udccc Carry Forward \u2192 Day 4"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-12-1280.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/hab?page=13",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/habit?section=learn&module=HAB&page=13",
+      "headings": [
+        "Habit Investigation Certificate"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-13-1280.png"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-14-1280.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-15-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-16-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-17-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-18-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-19-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-20-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=cohort&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-21-1280.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-22-1280.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-23-1280.png"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator&section=support",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-24-360.png"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator&section=support",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-25-430.png"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator&section=support",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=support",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-26-1280.png"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-27-360.png"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-28-430.png"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-29-1280.png"
+    }
+  ],
+  "result": "PASS_AUTOMATED; 30 states have zero WCAG violations, overflow, unlabelled fields or browser HTTP/page errors",
+  "boundary": "Verifies 9bd5406 only. User subsequently expanded Profile/workspace scope; pending later source changes are not certified by this preview.",
+  "ci": {
+    "runId": 37569261813,
+    "result": "PASS",
+    "acceptance": 661,
+    "browser": 252
+  },
+  "readerRegions": [
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 360,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-360.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 360,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-360.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 430,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-430.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 430,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-430.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 1280,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": false,
+          "keyboardScroll": "NOT_NEEDED"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": false,
+          "keyboardScroll": "NOT_NEEDED"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-1280.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 1280,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-1280.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    }
+  ],
+  "readerManualReview": "Actual mobile 360/430 and desktop 1280 table/certificate regions: preserved authored cells, cue only when clipped, keyboard scroll, readable certificate template notice and document rhythm. One immediate-after-scroll 430 table capture shows displaced header/footer compositing; final region capture must wait for settled frames and independently verify Menu viewport containment. These regions do not close every exact page variant."
+}

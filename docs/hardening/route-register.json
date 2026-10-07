@@ -1,6 +1,6 @@
 {
   "baseCommit": "d8ca307ae455024b5816240d4db08f0dddd6bf73",
-  "generatedAt": "2026-10-06T21:21:28.470Z",
+  "generatedAt": "2026-10-07T02:50:56.716Z",
   "routes": [
     {
       "route": "/api/bis",
@@ -87,9 +87,11 @@
       "correction": "Retained separate role check and customer-safe failures",
       "verification": [
         "tests/browser/workspace-consolidation.spec.ts",
-        "scripts/certify-hardening-role-variants.mjs"
+        "scripts/certify-hardening-role-variants.mjs",
+        "docs/hardening/takeover-commercial-correction-verification.json",
+        "tests/browser/commercial-reading.spec.ts"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "ACCEPTED_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -115,17 +117,19 @@
         "../../../../lib/supabase/server"
       ],
       "problem": "Preview must be current/version-bound without live learner persistence",
-      "correction": "135 actual Lab previews; preserved explicit preview isolation",
+      "correction": "135 actual Lab previews; preserved explicit preview isolation Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/content-preview-uat.test.mjs",
         "scripts/inspect-hardening-previews.mjs",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -153,21 +157,25 @@
         "../../../lib/supabase/server",
         "../../../lib/lab-factory-capabilities.mjs"
       ],
-      "problem": "Immutable sources, preparation, fingerprint UAT and atomic publishing",
-      "correction": "Normal API staging versions/publishing; no bypass of editorial REVIEW; old identities preserved; explicit whole-module unpublish closes the retained global fallback without deleting immutable versions or learning history",
+      "problem": "Immutable sources, preparation, fingerprint UAT and atomic publishing; published JSON source copies retained the prior package version and could not prepare",
+      "correction": "Normal API staging versions/publishing; no bypass of editorial REVIEW; old identities preserved; explicit whole-module unpublish closes the retained global fallback without deleting immutable versions or learning history; branch correction gives copied JSON its own immutable object and updated envelope version, preserving all authored content and strict validation Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/content-studio.test.mjs",
         "tests/content-publication-transaction.test.mjs",
         "scripts/prepare-hardening-staging.mjs",
         "scripts/certify-hardening-publication.mjs",
         "scripts/certify-hardening-learning-publication.mjs",
-        "docs/hardening/migration-review.md"
+        "docs/hardening/migration-review.md",
+        "tests/content-source-version-copy.test.mjs",
+        "scripts/certify-hardening-learning-history.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -190,17 +198,19 @@
         "../../../../lib/supabase/server"
       ],
       "problem": "Canonical volume inventory/checksums and preparation review",
-      "correction": "All three canonical volume hashes checked; 32 Labs/14 REVIEW notes registered",
+      "correction": "All three canonical volume hashes checked; 32 Labs/14 REVIEW notes registered Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "scripts/map-hardening-metrics.mjs",
         "tests/bis-volume-migration.test.mjs",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION."
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -607,9 +617,11 @@
       "verification": [
         "tests/ui-components.test.mjs",
         "tests/browser/workspace-consolidation.spec.ts",
-        "scripts/certify-hardening-role-variants.mjs"
+        "scripts/certify-hardening-role-variants.mjs",
+        "docs/hardening/takeover-commercial-correction-verification.json",
+        "tests/browser/commercial-reading.spec.ts"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "ACCEPTED_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -627,21 +639,40 @@
         "@/lib/supabase/require-user",
         "./content-studio"
       ],
-      "problem": "Governed authoring must preserve versions, fingerprints and editorial review; edition badge contrast",
-      "correction": "Preserved source/compile/final-check/approval/explicit publication; badge contrast corrected; reviewed candidates remain unpublished",
+      "problem": "Governed authoring must preserve versions, fingerprints and editorial review; edition badge contrast; published JSON source copies retained the prior package version and could not prepare",
+      "correction": "Preserved source/compile/final-check/approval/explicit publication; badge contrast corrected; reviewed candidates remain unpublished; branch correction gives copied JSON its own immutable object and updated envelope version, preserving all authored content and strict validation Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/browser/content-studio-recovery.spec.ts",
         "tests/content-publication-transaction.test.mjs",
         "scripts/prepare-hardening-staging.mjs",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "tests/content-source-version-copy.test.mjs",
+        "scripts/certify-hardening-learning-history.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
-      ]
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Shared Menu presentation and Learning preview table/certificate changes need exact-version regression; retained copied-source correction already released.",
+        "correction": "Shared visual primitives apply to immutable previews; prior three-edition preparation/publish/rollback proof retained. No production content republished.",
+        "verification": [
+          "studio-history-certification-20261006.md",
+          "takeover-continuation-20261007.md"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/content-studio/preview/[versionId]",
@@ -656,18 +687,20 @@
         "./preview-workspace"
       ],
       "problem": "Preview/final-check workflow must be bound to exact artifacts",
-      "correction": "Preserved fingerprint and version workflow; no editorial waiver",
+      "correction": "Preserved fingerprint and version workflow; no editorial waiver Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "tests/content-preview-uat.test.mjs",
         "tests/browser/content-studio-recovery.spec.ts",
-        "scripts/certify-hardening-publication.mjs"
+        "scripts/certify-hardening-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -684,23 +717,24 @@
         "@/app/canonical-adaptive-shell"
       ],
       "problem": "New source packages must use shared renderer without individual page repair",
-      "correction": "135 real Lab preview screens across five packages, nine stages and three widths; preserved authored controls and shared canvas; Learning uses the canonical shell with accurate stage labels and readable captions; 117 real Learning preview states clean",
+      "correction": "135 real Lab preview screens across five packages, nine stages and three widths; preserved authored controls and shared canvas; Learning uses the canonical shell with accurate stage labels and readable captions; 117 real Learning preview states clean Actual staging 1.8 historical Learning edition rollback verified: all three 1.6 editions restored; authored pages, prior sources/artifacts and learner responses/progress preserved.",
       "verification": [
         "scripts/inspect-hardening-previews.mjs",
         "tests/risk-lab-factory-proof.test.mjs",
         "tests/identity-lab-factory-reuse.test.mjs",
         "scripts/certify-hardening-publication.mjs",
         "scripts/inspect-hardening-learning-preview.mjs",
-        "scripts/certify-hardening-learning-publication.mjs"
+        "scripts/certify-hardening-learning-publication.mjs",
+        "docs/hardening/studio-update-source-copy-verification.json",
+        "docs/hardening/studio-history-transition-verification.json"
       ],
       "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
-        "UAT-STUDIO: actual Learning publication (Lab rollback/unpublish/republish now verified); CONTENT-REPETITION.",
-        "Actual historical edition rollback requires a second governed edition version; first-publication rollback denial verified, multi-version transaction covered by database tests.",
         "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
-        "Shared floating Menu visual obstruction review: VISUAL-MENU."
+        "Shared floating Menu visual obstruction review: VISUAL-MENU.",
+        "UAT-STUDIO: complete remaining authoring / edition / role variants and CONTENT-REPETITION review; actual historical Learning edition rollback is now verified in staging."
       ]
     },
     {
@@ -810,9 +844,11 @@
       "correction": "Preserved controlled choice; failed-save test verifies request plus restored edition",
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
-        "scripts/certify-hardening-learning.mjs"
+        "scripts/certify-hardening-learning.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -840,7 +876,21 @@
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "CONFIG-AUTH / AUTH-RECOVERY: delivered provider flow and full management settings."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Staging preview callback resolves to production canonical host instead of its own bound staging origin.",
+        "correction": "Exact deployment-bound staging origin; production canonical return and callback security unchanged.",
+        "verification": [
+          "tests/production-domain.test.mjs",
+          "auth-configuration-differences.json",
+          "auth-takeover-setting-review.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/habit-lab/experiment",
@@ -932,7 +982,7 @@
         "@/app/habit/programme-entry"
       ],
       "problem": "Uniform continuous reading canvas; response/check ordering, settings and source preservation",
-      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module. Current shared follow-up restores source list markers, accurate reference-only response status and Identity/Attention profile label/value table relationships without creating answers. Profile/reference/list corrections released PR133. Shared reference-page metadata/list/choice-label follow-up is verified in the current branch.",
+      "correction": "Shared primitives retained; day-three actions require a governed Universal Lab; failed loading retries the same module/query; retained static serverless assets no longer depend on self-fetch Product iteration in branch: Shared presentation fixes duplicate headings, session metadata, decorative markers, preparation labels and inaccurate empty-page save wording. Orientation cover context and internal production notes are now separated from the learning opening; shared title/section semantics corrected. All 195 variants / 5,957 controls compare exactly against the accepted enhancement module. Current shared follow-up restores source list markers, accurate reference-only response status and Identity/Attention profile label/value table relationships without creating answers. Profile/reference/list corrections released PR133. Shared reference-page metadata/list/choice-label follow-up released PR134 after 633 acceptance, 240 browser and 42 actual protected-preview checks.",
       "verification": [
         "tests/browser/reader-hardening.spec.ts",
         "scripts/certify-hardening-learning.mjs",
@@ -953,7 +1003,21 @@
         "Customer language/reading review of every accepted authored page, including edition-specific session metadata and decorative heading markers: LANGUAGE-AUTHORED.",
         "Shared floating Menu visual obstruction review: VISUAL-MENU.",
         "Approved profile source bindings remain unresolved: CONTENT-PROFILE-BINDINGS."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Weak clipped-column guidance, concatenated accessible names, certificate wording ambiguous as an award, Menu competing with scrolling text.",
+        "correction": "Shared conditional table guidance, cleaned section/column names, observer lifecycle, explicit certificate-template note and reserved Menu chrome; authored text/fields/relationships unchanged.",
+        "verification": [
+          "tests/browser/reader-hardening.spec.ts",
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-continuation-20261007.md"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/labs/[code]",
@@ -1144,9 +1208,11 @@
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
-        "scripts/certify-hardening-evidence.mjs"
+        "scripts/certify-hardening-evidence.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1168,9 +1234,11 @@
       "correction": "Retained accepted profile structure and collapsed evidence history",
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
-        "tests/profile-settings-api.test.mjs"
+        "tests/profile-settings-api.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1247,7 +1315,20 @@
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "CONFIG-AUTH / AUTH-RECOVERY: delivered provider flow and full management settings."
-      ]
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Recovery return origin must stay in staging for an explicitly bound preview; live delivery incomplete.",
+        "correction": "Shared trusted staging-origin callback handling; provider minimum aligns eight-character forms; production canonical configuration preserved.",
+        "verification": [
+          "tests/production-domain.test.mjs",
+          "auth-takeover-setting-review.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     },
     {
       "route": "/settings",
@@ -1266,9 +1347,11 @@
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/reader-hardening.spec.ts",
-        "scripts/certify-hardening-learning.mjs"
+        "scripts/certify-hardening-learning.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1326,15 +1409,36 @@
         "docs/hardening/opportunity-coverage-20261006.md",
         "tests/browser/facilitator-record-meaning.spec.ts",
         "scripts/inspect-hardening-facilitator-records.mjs",
-        "docs/hardening/reader-document-verification.json"
+        "docs/hardening/reader-document-verification.json",
+        "tests/browser/safeguarding-accessibility.spec.ts",
+        "docs/hardening/production-takeover-browser-baseline.json",
+        "docs/hardening/production-takeover-role-baseline.json",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "SHARED_CORRECTIONS_RELEASED_PR133; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
         "Shared floating Menu visual obstruction review: VISUAL-MENU.",
-        "Primary participant Lab/progamme position label: LANGUAGE-LAB-POSITION."
-      ]
+        "Primary participant Lab/progamme position label: LANGUAGE-LAB-POSITION.",
+        "VISUAL-SAFEGUARDING: shared naming, contrast, reading-size and target corrections pending exact preview/live release.",
+        "Live baseline covers 57 representative states across all six roles; remaining variants stay UAT-ALL-STATES."
+      ],
+      "takeoverReview": {
+        "observedAt": "2026-10-07",
+        "problem": "Primary Lab progress labelled programme position; publication metadata competes with group reading; Menu text overlap.",
+        "correction": "Lab progress label; native Programme details disclosure with dark-banner contrast and visible marker; opaque centred Menu chrome.",
+        "verification": [
+          "tests/browser/staff-evidence-engine.spec.ts",
+          "production-takeover-role-baseline.json",
+          "production-takeover-record-preservation.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "See open-findings.md and existing route outstanding states; this correction does not certify every route/role state."
+        ]
+      }
     }
   ],
   "coverageBoundary": "48 patterns inventoried and individually dispositioned. REVIEWED_PARTIAL is not whole-route certification. Real staging/preview/state measurements are added in verification-evidence.json; see open-findings.md for release and remaining scope. Correction merges are recorded separately from full route certification; CONFIG-DNS and VISUAL-MENU remain open. Current product corrections and their dynamic 195-page inventory are separately recorded in productIterations; no whole-route certification claimed.",
@@ -1366,6 +1470,12 @@
       "evidence": "docs/hardening/product-experience-verification.json",
       "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL_CERTIFICATION_OPEN",
       "applicationHead": "6fd70aae1c372f1ea1784b14a79ecced5dd939f3"
+    },
+    {
+      "date": "2026-10-07",
+      "scope": "PR141 source release plus all profile/workspace families; shared commercial follow-up",
+      "evidence": "docs/hardening/takeover-production-47a4df1-verification.json",
+      "releaseStatus": "PR141_RELEASED; COMMERCIAL_FOLLOWUP_PENDING; FULL_CERTIFICATION_OPEN"
     }
   ]
 }

@@ -2,6 +2,12 @@
 
 Status: **ongoing**. This register is a release record for verified corrections and an explicit list of remaining certification work. A successful build or deployment does not close the whole hardening pass.
 
+Current takeover: [7 October continuation](takeover-continuation-20261007.md) on `hardening/takeover-completion-20261007`, updated with main PR137. The fresh configuration exports, dedicated production QA role checks, original-record fingerprints and remaining provider/editorial dependencies are recorded separately from prior releases. Whole-pass certification remains open.
+
+The branch also includes main PR139. `lab-page-register.json` expands the 32 actual published versions into 288 investigation pages and 32 baseline/consent states. `production-takeover-metric-register.json` separates live bindings from the canonical-source compiler register; its 135 unbound indicator findings remain explicit. Neither page inventory nor source compilation substitutes for manual live review.
+
+Latest continuation: [Content Studio immutable-update and historical Learning rollback certification](studio-history-certification-20261006.md), including 117 exact-version page states, nine preview workspace states, preserved sources/responses/progress, and the released [PR134 reference-page presentation evidence](reference-page-release.json). Mobile source-table affordance and remaining role/configuration findings stay explicit.
+
 Baseline: `d8ca307ae455024b5816240d4db08f0dddd6bf73` (#126). Isolated branch: `hardening/production-readiness-20261006`. Application corrections: `b0aee73`, `75bf471`, `9aa717e`, `6835a04`, `e6c3c2e`, `958e2cd`, `f9ff382`, `87e1a65`. No production learner records, source files, content activations or database definitions were replaced with staging data.
 
 ## System map

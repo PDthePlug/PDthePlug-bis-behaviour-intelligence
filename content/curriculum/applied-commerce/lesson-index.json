@@ -1,0 +1,1649 @@
+{
+  "schemaVersion": "applied-commerce-lesson-index:2",
+  "generatedAt": "2026-10-07",
+  "purpose": "Complete grade-and-lesson traceability index for the five canonical Applied Commerce learner books. Authored lesson titles and prose remain in the source books; this file deliberately does not retype or paraphrase them.",
+  "ingestionStatus": "COMPLETE_STRUCTURAL_INDEX",
+  "totals": {
+    "grades": 5,
+    "learnerBookPages": 1419,
+    "lessons": 395
+  },
+  "sourceBoundary": {
+    "canonicalAuthorship": "Pride D. Mpofu / Applied Commerce®",
+    "rawSourceCopiedIntoRepository": false,
+    "officialAlignmentStatus": "NOT_CERTIFIED",
+    "note": "The canonical learner books remain the authored record. Grade/lesson references here are stable curriculum locators, not replacements for source prose."
+  },
+  "grades": [
+    {
+      "grade": 8,
+      "sourceTitle": "Applied Commerce Grade 8",
+      "sourceVersion": "11.0 — Checkpoint Revision October 2026",
+      "sourcePages": 263,
+      "lessonCount": 80,
+      "integrity": "PASS",
+      "lessonRefs": [
+        {
+          "lesson": 1,
+          "ref": "AC.G8.L01"
+        },
+        {
+          "lesson": 2,
+          "ref": "AC.G8.L02"
+        },
+        {
+          "lesson": 3,
+          "ref": "AC.G8.L03"
+        },
+        {
+          "lesson": 4,
+          "ref": "AC.G8.L04"
+        },
+        {
+          "lesson": 5,
+          "ref": "AC.G8.L05"
+        },
+        {
+          "lesson": 6,
+          "ref": "AC.G8.L06"
+        },
+        {
+          "lesson": 7,
+          "ref": "AC.G8.L07"
+        },
+        {
+          "lesson": 8,
+          "ref": "AC.G8.L08"
+        },
+        {
+          "lesson": 9,
+          "ref": "AC.G8.L09"
+        },
+        {
+          "lesson": 10,
+          "ref": "AC.G8.L10"
+        },
+        {
+          "lesson": 11,
+          "ref": "AC.G8.L11"
+        },
+        {
+          "lesson": 12,
+          "ref": "AC.G8.L12"
+        },
+        {
+          "lesson": 13,
+          "ref": "AC.G8.L13"
+        },
+        {
+          "lesson": 14,
+          "ref": "AC.G8.L14"
+        },
+        {
+          "lesson": 15,
+          "ref": "AC.G8.L15"
+        },
+        {
+          "lesson": 16,
+          "ref": "AC.G8.L16"
+        },
+        {
+          "lesson": 17,
+          "ref": "AC.G8.L17"
+        },
+        {
+          "lesson": 18,
+          "ref": "AC.G8.L18"
+        },
+        {
+          "lesson": 19,
+          "ref": "AC.G8.L19"
+        },
+        {
+          "lesson": 20,
+          "ref": "AC.G8.L20"
+        },
+        {
+          "lesson": 21,
+          "ref": "AC.G8.L21"
+        },
+        {
+          "lesson": 22,
+          "ref": "AC.G8.L22"
+        },
+        {
+          "lesson": 23,
+          "ref": "AC.G8.L23"
+        },
+        {
+          "lesson": 24,
+          "ref": "AC.G8.L24"
+        },
+        {
+          "lesson": 25,
+          "ref": "AC.G8.L25"
+        },
+        {
+          "lesson": 26,
+          "ref": "AC.G8.L26"
+        },
+        {
+          "lesson": 27,
+          "ref": "AC.G8.L27"
+        },
+        {
+          "lesson": 28,
+          "ref": "AC.G8.L28"
+        },
+        {
+          "lesson": 29,
+          "ref": "AC.G8.L29"
+        },
+        {
+          "lesson": 30,
+          "ref": "AC.G8.L30"
+        },
+        {
+          "lesson": 31,
+          "ref": "AC.G8.L31"
+        },
+        {
+          "lesson": 32,
+          "ref": "AC.G8.L32"
+        },
+        {
+          "lesson": 33,
+          "ref": "AC.G8.L33"
+        },
+        {
+          "lesson": 34,
+          "ref": "AC.G8.L34"
+        },
+        {
+          "lesson": 35,
+          "ref": "AC.G8.L35"
+        },
+        {
+          "lesson": 36,
+          "ref": "AC.G8.L36"
+        },
+        {
+          "lesson": 37,
+          "ref": "AC.G8.L37"
+        },
+        {
+          "lesson": 38,
+          "ref": "AC.G8.L38"
+        },
+        {
+          "lesson": 39,
+          "ref": "AC.G8.L39"
+        },
+        {
+          "lesson": 40,
+          "ref": "AC.G8.L40"
+        },
+        {
+          "lesson": 41,
+          "ref": "AC.G8.L41"
+        },
+        {
+          "lesson": 42,
+          "ref": "AC.G8.L42"
+        },
+        {
+          "lesson": 43,
+          "ref": "AC.G8.L43"
+        },
+        {
+          "lesson": 44,
+          "ref": "AC.G8.L44"
+        },
+        {
+          "lesson": 45,
+          "ref": "AC.G8.L45"
+        },
+        {
+          "lesson": 46,
+          "ref": "AC.G8.L46"
+        },
+        {
+          "lesson": 47,
+          "ref": "AC.G8.L47"
+        },
+        {
+          "lesson": 48,
+          "ref": "AC.G8.L48"
+        },
+        {
+          "lesson": 49,
+          "ref": "AC.G8.L49"
+        },
+        {
+          "lesson": 50,
+          "ref": "AC.G8.L50"
+        },
+        {
+          "lesson": 51,
+          "ref": "AC.G8.L51"
+        },
+        {
+          "lesson": 52,
+          "ref": "AC.G8.L52"
+        },
+        {
+          "lesson": 53,
+          "ref": "AC.G8.L53"
+        },
+        {
+          "lesson": 54,
+          "ref": "AC.G8.L54"
+        },
+        {
+          "lesson": 55,
+          "ref": "AC.G8.L55"
+        },
+        {
+          "lesson": 56,
+          "ref": "AC.G8.L56"
+        },
+        {
+          "lesson": 57,
+          "ref": "AC.G8.L57"
+        },
+        {
+          "lesson": 58,
+          "ref": "AC.G8.L58"
+        },
+        {
+          "lesson": 59,
+          "ref": "AC.G8.L59"
+        },
+        {
+          "lesson": 60,
+          "ref": "AC.G8.L60"
+        },
+        {
+          "lesson": 61,
+          "ref": "AC.G8.L61"
+        },
+        {
+          "lesson": 62,
+          "ref": "AC.G8.L62"
+        },
+        {
+          "lesson": 63,
+          "ref": "AC.G8.L63"
+        },
+        {
+          "lesson": 64,
+          "ref": "AC.G8.L64"
+        },
+        {
+          "lesson": 65,
+          "ref": "AC.G8.L65"
+        },
+        {
+          "lesson": 66,
+          "ref": "AC.G8.L66"
+        },
+        {
+          "lesson": 67,
+          "ref": "AC.G8.L67"
+        },
+        {
+          "lesson": 68,
+          "ref": "AC.G8.L68"
+        },
+        {
+          "lesson": 69,
+          "ref": "AC.G8.L69"
+        },
+        {
+          "lesson": 70,
+          "ref": "AC.G8.L70"
+        },
+        {
+          "lesson": 71,
+          "ref": "AC.G8.L71"
+        },
+        {
+          "lesson": 72,
+          "ref": "AC.G8.L72"
+        },
+        {
+          "lesson": 73,
+          "ref": "AC.G8.L73"
+        },
+        {
+          "lesson": 74,
+          "ref": "AC.G8.L74"
+        },
+        {
+          "lesson": 75,
+          "ref": "AC.G8.L75"
+        },
+        {
+          "lesson": 76,
+          "ref": "AC.G8.L76"
+        },
+        {
+          "lesson": 77,
+          "ref": "AC.G8.L77"
+        },
+        {
+          "lesson": 78,
+          "ref": "AC.G8.L78"
+        },
+        {
+          "lesson": 79,
+          "ref": "AC.G8.L79"
+        },
+        {
+          "lesson": 80,
+          "ref": "AC.G8.L80"
+        }
+      ]
+    },
+    {
+      "grade": 9,
+      "sourceTitle": "Grade 9 Learner's Book Applied Commerce",
+      "sourceVersion": "14.1 — DBE Prototype Edition (Language Tightened)",
+      "sourcePages": 312,
+      "lessonCount": 75,
+      "integrity": "PASS",
+      "lessonRefs": [
+        {
+          "lesson": 1,
+          "ref": "AC.G9.L01"
+        },
+        {
+          "lesson": 2,
+          "ref": "AC.G9.L02"
+        },
+        {
+          "lesson": 3,
+          "ref": "AC.G9.L03"
+        },
+        {
+          "lesson": 4,
+          "ref": "AC.G9.L04"
+        },
+        {
+          "lesson": 5,
+          "ref": "AC.G9.L05"
+        },
+        {
+          "lesson": 6,
+          "ref": "AC.G9.L06"
+        },
+        {
+          "lesson": 7,
+          "ref": "AC.G9.L07"
+        },
+        {
+          "lesson": 8,
+          "ref": "AC.G9.L08"
+        },
+        {
+          "lesson": 9,
+          "ref": "AC.G9.L09"
+        },
+        {
+          "lesson": 10,
+          "ref": "AC.G9.L10"
+        },
+        {
+          "lesson": 11,
+          "ref": "AC.G9.L11"
+        },
+        {
+          "lesson": 12,
+          "ref": "AC.G9.L12"
+        },
+        {
+          "lesson": 13,
+          "ref": "AC.G9.L13"
+        },
+        {
+          "lesson": 14,
+          "ref": "AC.G9.L14"
+        },
+        {
+          "lesson": 15,
+          "ref": "AC.G9.L15"
+        },
+        {
+          "lesson": 16,
+          "ref": "AC.G9.L16"
+        },
+        {
+          "lesson": 17,
+          "ref": "AC.G9.L17"
+        },
+        {
+          "lesson": 18,
+          "ref": "AC.G9.L18"
+        },
+        {
+          "lesson": 19,
+          "ref": "AC.G9.L19"
+        },
+        {
+          "lesson": 20,
+          "ref": "AC.G9.L20"
+        },
+        {
+          "lesson": 21,
+          "ref": "AC.G9.L21"
+        },
+        {
+          "lesson": 22,
+          "ref": "AC.G9.L22"
+        },
+        {
+          "lesson": 23,
+          "ref": "AC.G9.L23"
+        },
+        {
+          "lesson": 24,
+          "ref": "AC.G9.L24"
+        },
+        {
+          "lesson": 25,
+          "ref": "AC.G9.L25"
+        },
+        {
+          "lesson": 26,
+          "ref": "AC.G9.L26"
+        },
+        {
+          "lesson": 27,
+          "ref": "AC.G9.L27"
+        },
+        {
+          "lesson": 28,
+          "ref": "AC.G9.L28"
+        },
+        {
+          "lesson": 29,
+          "ref": "AC.G9.L29"
+        },
+        {
+          "lesson": 30,
+          "ref": "AC.G9.L30"
+        },
+        {
+          "lesson": 31,
+          "ref": "AC.G9.L31"
+        },
+        {
+          "lesson": 32,
+          "ref": "AC.G9.L32"
+        },
+        {
+          "lesson": 33,
+          "ref": "AC.G9.L33"
+        },
+        {
+          "lesson": 34,
+          "ref": "AC.G9.L34"
+        },
+        {
+          "lesson": 35,
+          "ref": "AC.G9.L35"
+        },
+        {
+          "lesson": 36,
+          "ref": "AC.G9.L36"
+        },
+        {
+          "lesson": 37,
+          "ref": "AC.G9.L37"
+        },
+        {
+          "lesson": 38,
+          "ref": "AC.G9.L38"
+        },
+        {
+          "lesson": 39,
+          "ref": "AC.G9.L39"
+        },
+        {
+          "lesson": 40,
+          "ref": "AC.G9.L40"
+        },
+        {
+          "lesson": 41,
+          "ref": "AC.G9.L41"
+        },
+        {
+          "lesson": 42,
+          "ref": "AC.G9.L42"
+        },
+        {
+          "lesson": 43,
+          "ref": "AC.G9.L43"
+        },
+        {
+          "lesson": 44,
+          "ref": "AC.G9.L44"
+        },
+        {
+          "lesson": 45,
+          "ref": "AC.G9.L45"
+        },
+        {
+          "lesson": 46,
+          "ref": "AC.G9.L46"
+        },
+        {
+          "lesson": 47,
+          "ref": "AC.G9.L47"
+        },
+        {
+          "lesson": 48,
+          "ref": "AC.G9.L48"
+        },
+        {
+          "lesson": 49,
+          "ref": "AC.G9.L49"
+        },
+        {
+          "lesson": 50,
+          "ref": "AC.G9.L50"
+        },
+        {
+          "lesson": 51,
+          "ref": "AC.G9.L51"
+        },
+        {
+          "lesson": 52,
+          "ref": "AC.G9.L52"
+        },
+        {
+          "lesson": 53,
+          "ref": "AC.G9.L53"
+        },
+        {
+          "lesson": 54,
+          "ref": "AC.G9.L54"
+        },
+        {
+          "lesson": 55,
+          "ref": "AC.G9.L55"
+        },
+        {
+          "lesson": 56,
+          "ref": "AC.G9.L56"
+        },
+        {
+          "lesson": 57,
+          "ref": "AC.G9.L57"
+        },
+        {
+          "lesson": 58,
+          "ref": "AC.G9.L58"
+        },
+        {
+          "lesson": 59,
+          "ref": "AC.G9.L59"
+        },
+        {
+          "lesson": 60,
+          "ref": "AC.G9.L60"
+        },
+        {
+          "lesson": 61,
+          "ref": "AC.G9.L61"
+        },
+        {
+          "lesson": 62,
+          "ref": "AC.G9.L62"
+        },
+        {
+          "lesson": 63,
+          "ref": "AC.G9.L63"
+        },
+        {
+          "lesson": 64,
+          "ref": "AC.G9.L64"
+        },
+        {
+          "lesson": 65,
+          "ref": "AC.G9.L65"
+        },
+        {
+          "lesson": 66,
+          "ref": "AC.G9.L66"
+        },
+        {
+          "lesson": 67,
+          "ref": "AC.G9.L67"
+        },
+        {
+          "lesson": 68,
+          "ref": "AC.G9.L68"
+        },
+        {
+          "lesson": 69,
+          "ref": "AC.G9.L69"
+        },
+        {
+          "lesson": 70,
+          "ref": "AC.G9.L70"
+        },
+        {
+          "lesson": 71,
+          "ref": "AC.G9.L71"
+        },
+        {
+          "lesson": 72,
+          "ref": "AC.G9.L72"
+        },
+        {
+          "lesson": 73,
+          "ref": "AC.G9.L73"
+        },
+        {
+          "lesson": 74,
+          "ref": "AC.G9.L74"
+        },
+        {
+          "lesson": 75,
+          "ref": "AC.G9.L75"
+        }
+      ]
+    },
+    {
+      "grade": 10,
+      "sourceTitle": "Applied Commerce Grade 10",
+      "sourceVersion": "14.0 — Checkpoint Revision October 2026",
+      "sourcePages": 249,
+      "lessonCount": 80,
+      "integrity": "PASS",
+      "lessonRefs": [
+        {
+          "lesson": 1,
+          "ref": "AC.G10.L01"
+        },
+        {
+          "lesson": 2,
+          "ref": "AC.G10.L02"
+        },
+        {
+          "lesson": 3,
+          "ref": "AC.G10.L03"
+        },
+        {
+          "lesson": 4,
+          "ref": "AC.G10.L04"
+        },
+        {
+          "lesson": 5,
+          "ref": "AC.G10.L05"
+        },
+        {
+          "lesson": 6,
+          "ref": "AC.G10.L06"
+        },
+        {
+          "lesson": 7,
+          "ref": "AC.G10.L07"
+        },
+        {
+          "lesson": 8,
+          "ref": "AC.G10.L08"
+        },
+        {
+          "lesson": 9,
+          "ref": "AC.G10.L09"
+        },
+        {
+          "lesson": 10,
+          "ref": "AC.G10.L10"
+        },
+        {
+          "lesson": 11,
+          "ref": "AC.G10.L11"
+        },
+        {
+          "lesson": 12,
+          "ref": "AC.G10.L12"
+        },
+        {
+          "lesson": 13,
+          "ref": "AC.G10.L13"
+        },
+        {
+          "lesson": 14,
+          "ref": "AC.G10.L14"
+        },
+        {
+          "lesson": 15,
+          "ref": "AC.G10.L15"
+        },
+        {
+          "lesson": 16,
+          "ref": "AC.G10.L16"
+        },
+        {
+          "lesson": 17,
+          "ref": "AC.G10.L17"
+        },
+        {
+          "lesson": 18,
+          "ref": "AC.G10.L18"
+        },
+        {
+          "lesson": 19,
+          "ref": "AC.G10.L19"
+        },
+        {
+          "lesson": 20,
+          "ref": "AC.G10.L20"
+        },
+        {
+          "lesson": 21,
+          "ref": "AC.G10.L21"
+        },
+        {
+          "lesson": 22,
+          "ref": "AC.G10.L22"
+        },
+        {
+          "lesson": 23,
+          "ref": "AC.G10.L23"
+        },
+        {
+          "lesson": 24,
+          "ref": "AC.G10.L24"
+        },
+        {
+          "lesson": 25,
+          "ref": "AC.G10.L25"
+        },
+        {
+          "lesson": 26,
+          "ref": "AC.G10.L26"
+        },
+        {
+          "lesson": 27,
+          "ref": "AC.G10.L27"
+        },
+        {
+          "lesson": 28,
+          "ref": "AC.G10.L28"
+        },
+        {
+          "lesson": 29,
+          "ref": "AC.G10.L29"
+        },
+        {
+          "lesson": 30,
+          "ref": "AC.G10.L30"
+        },
+        {
+          "lesson": 31,
+          "ref": "AC.G10.L31"
+        },
+        {
+          "lesson": 32,
+          "ref": "AC.G10.L32"
+        },
+        {
+          "lesson": 33,
+          "ref": "AC.G10.L33"
+        },
+        {
+          "lesson": 34,
+          "ref": "AC.G10.L34"
+        },
+        {
+          "lesson": 35,
+          "ref": "AC.G10.L35"
+        },
+        {
+          "lesson": 36,
+          "ref": "AC.G10.L36"
+        },
+        {
+          "lesson": 37,
+          "ref": "AC.G10.L37"
+        },
+        {
+          "lesson": 38,
+          "ref": "AC.G10.L38"
+        },
+        {
+          "lesson": 39,
+          "ref": "AC.G10.L39"
+        },
+        {
+          "lesson": 40,
+          "ref": "AC.G10.L40"
+        },
+        {
+          "lesson": 41,
+          "ref": "AC.G10.L41"
+        },
+        {
+          "lesson": 42,
+          "ref": "AC.G10.L42"
+        },
+        {
+          "lesson": 43,
+          "ref": "AC.G10.L43"
+        },
+        {
+          "lesson": 44,
+          "ref": "AC.G10.L44"
+        },
+        {
+          "lesson": 45,
+          "ref": "AC.G10.L45"
+        },
+        {
+          "lesson": 46,
+          "ref": "AC.G10.L46"
+        },
+        {
+          "lesson": 47,
+          "ref": "AC.G10.L47"
+        },
+        {
+          "lesson": 48,
+          "ref": "AC.G10.L48"
+        },
+        {
+          "lesson": 49,
+          "ref": "AC.G10.L49"
+        },
+        {
+          "lesson": 50,
+          "ref": "AC.G10.L50"
+        },
+        {
+          "lesson": 51,
+          "ref": "AC.G10.L51"
+        },
+        {
+          "lesson": 52,
+          "ref": "AC.G10.L52"
+        },
+        {
+          "lesson": 53,
+          "ref": "AC.G10.L53"
+        },
+        {
+          "lesson": 54,
+          "ref": "AC.G10.L54"
+        },
+        {
+          "lesson": 55,
+          "ref": "AC.G10.L55"
+        },
+        {
+          "lesson": 56,
+          "ref": "AC.G10.L56"
+        },
+        {
+          "lesson": 57,
+          "ref": "AC.G10.L57"
+        },
+        {
+          "lesson": 58,
+          "ref": "AC.G10.L58"
+        },
+        {
+          "lesson": 59,
+          "ref": "AC.G10.L59"
+        },
+        {
+          "lesson": 60,
+          "ref": "AC.G10.L60"
+        },
+        {
+          "lesson": 61,
+          "ref": "AC.G10.L61"
+        },
+        {
+          "lesson": 62,
+          "ref": "AC.G10.L62"
+        },
+        {
+          "lesson": 63,
+          "ref": "AC.G10.L63"
+        },
+        {
+          "lesson": 64,
+          "ref": "AC.G10.L64"
+        },
+        {
+          "lesson": 65,
+          "ref": "AC.G10.L65"
+        },
+        {
+          "lesson": 66,
+          "ref": "AC.G10.L66"
+        },
+        {
+          "lesson": 67,
+          "ref": "AC.G10.L67"
+        },
+        {
+          "lesson": 68,
+          "ref": "AC.G10.L68"
+        },
+        {
+          "lesson": 69,
+          "ref": "AC.G10.L69"
+        },
+        {
+          "lesson": 70,
+          "ref": "AC.G10.L70"
+        },
+        {
+          "lesson": 71,
+          "ref": "AC.G10.L71"
+        },
+        {
+          "lesson": 72,
+          "ref": "AC.G10.L72"
+        },
+        {
+          "lesson": 73,
+          "ref": "AC.G10.L73"
+        },
+        {
+          "lesson": 74,
+          "ref": "AC.G10.L74"
+        },
+        {
+          "lesson": 75,
+          "ref": "AC.G10.L75"
+        },
+        {
+          "lesson": 76,
+          "ref": "AC.G10.L76"
+        },
+        {
+          "lesson": 77,
+          "ref": "AC.G10.L77"
+        },
+        {
+          "lesson": 78,
+          "ref": "AC.G10.L78"
+        },
+        {
+          "lesson": 79,
+          "ref": "AC.G10.L79"
+        },
+        {
+          "lesson": 80,
+          "ref": "AC.G10.L80"
+        }
+      ]
+    },
+    {
+      "grade": 11,
+      "sourceTitle": "Applied Commerce Grade 11",
+      "sourceVersion": "15.0 — System Architect Edition",
+      "sourcePages": 304,
+      "lessonCount": 80,
+      "integrity": "PASS",
+      "lessonRefs": [
+        {
+          "lesson": 1,
+          "ref": "AC.G11.L01"
+        },
+        {
+          "lesson": 2,
+          "ref": "AC.G11.L02"
+        },
+        {
+          "lesson": 3,
+          "ref": "AC.G11.L03"
+        },
+        {
+          "lesson": 4,
+          "ref": "AC.G11.L04"
+        },
+        {
+          "lesson": 5,
+          "ref": "AC.G11.L05"
+        },
+        {
+          "lesson": 6,
+          "ref": "AC.G11.L06"
+        },
+        {
+          "lesson": 7,
+          "ref": "AC.G11.L07"
+        },
+        {
+          "lesson": 8,
+          "ref": "AC.G11.L08"
+        },
+        {
+          "lesson": 9,
+          "ref": "AC.G11.L09"
+        },
+        {
+          "lesson": 10,
+          "ref": "AC.G11.L10"
+        },
+        {
+          "lesson": 11,
+          "ref": "AC.G11.L11"
+        },
+        {
+          "lesson": 12,
+          "ref": "AC.G11.L12"
+        },
+        {
+          "lesson": 13,
+          "ref": "AC.G11.L13"
+        },
+        {
+          "lesson": 14,
+          "ref": "AC.G11.L14"
+        },
+        {
+          "lesson": 15,
+          "ref": "AC.G11.L15"
+        },
+        {
+          "lesson": 16,
+          "ref": "AC.G11.L16"
+        },
+        {
+          "lesson": 17,
+          "ref": "AC.G11.L17"
+        },
+        {
+          "lesson": 18,
+          "ref": "AC.G11.L18"
+        },
+        {
+          "lesson": 19,
+          "ref": "AC.G11.L19"
+        },
+        {
+          "lesson": 20,
+          "ref": "AC.G11.L20"
+        },
+        {
+          "lesson": 21,
+          "ref": "AC.G11.L21"
+        },
+        {
+          "lesson": 22,
+          "ref": "AC.G11.L22"
+        },
+        {
+          "lesson": 23,
+          "ref": "AC.G11.L23"
+        },
+        {
+          "lesson": 24,
+          "ref": "AC.G11.L24"
+        },
+        {
+          "lesson": 25,
+          "ref": "AC.G11.L25"
+        },
+        {
+          "lesson": 26,
+          "ref": "AC.G11.L26"
+        },
+        {
+          "lesson": 27,
+          "ref": "AC.G11.L27"
+        },
+        {
+          "lesson": 28,
+          "ref": "AC.G11.L28"
+        },
+        {
+          "lesson": 29,
+          "ref": "AC.G11.L29"
+        },
+        {
+          "lesson": 30,
+          "ref": "AC.G11.L30"
+        },
+        {
+          "lesson": 31,
+          "ref": "AC.G11.L31"
+        },
+        {
+          "lesson": 32,
+          "ref": "AC.G11.L32"
+        },
+        {
+          "lesson": 33,
+          "ref": "AC.G11.L33"
+        },
+        {
+          "lesson": 34,
+          "ref": "AC.G11.L34"
+        },
+        {
+          "lesson": 35,
+          "ref": "AC.G11.L35"
+        },
+        {
+          "lesson": 36,
+          "ref": "AC.G11.L36"
+        },
+        {
+          "lesson": 37,
+          "ref": "AC.G11.L37"
+        },
+        {
+          "lesson": 38,
+          "ref": "AC.G11.L38"
+        },
+        {
+          "lesson": 39,
+          "ref": "AC.G11.L39"
+        },
+        {
+          "lesson": 40,
+          "ref": "AC.G11.L40"
+        },
+        {
+          "lesson": 41,
+          "ref": "AC.G11.L41"
+        },
+        {
+          "lesson": 42,
+          "ref": "AC.G11.L42"
+        },
+        {
+          "lesson": 43,
+          "ref": "AC.G11.L43"
+        },
+        {
+          "lesson": 44,
+          "ref": "AC.G11.L44"
+        },
+        {
+          "lesson": 45,
+          "ref": "AC.G11.L45"
+        },
+        {
+          "lesson": 46,
+          "ref": "AC.G11.L46"
+        },
+        {
+          "lesson": 47,
+          "ref": "AC.G11.L47"
+        },
+        {
+          "lesson": 48,
+          "ref": "AC.G11.L48"
+        },
+        {
+          "lesson": 49,
+          "ref": "AC.G11.L49"
+        },
+        {
+          "lesson": 50,
+          "ref": "AC.G11.L50"
+        },
+        {
+          "lesson": 51,
+          "ref": "AC.G11.L51"
+        },
+        {
+          "lesson": 52,
+          "ref": "AC.G11.L52"
+        },
+        {
+          "lesson": 53,
+          "ref": "AC.G11.L53"
+        },
+        {
+          "lesson": 54,
+          "ref": "AC.G11.L54"
+        },
+        {
+          "lesson": 55,
+          "ref": "AC.G11.L55"
+        },
+        {
+          "lesson": 56,
+          "ref": "AC.G11.L56"
+        },
+        {
+          "lesson": 57,
+          "ref": "AC.G11.L57"
+        },
+        {
+          "lesson": 58,
+          "ref": "AC.G11.L58"
+        },
+        {
+          "lesson": 59,
+          "ref": "AC.G11.L59"
+        },
+        {
+          "lesson": 60,
+          "ref": "AC.G11.L60"
+        },
+        {
+          "lesson": 61,
+          "ref": "AC.G11.L61"
+        },
+        {
+          "lesson": 62,
+          "ref": "AC.G11.L62"
+        },
+        {
+          "lesson": 63,
+          "ref": "AC.G11.L63"
+        },
+        {
+          "lesson": 64,
+          "ref": "AC.G11.L64"
+        },
+        {
+          "lesson": 65,
+          "ref": "AC.G11.L65"
+        },
+        {
+          "lesson": 66,
+          "ref": "AC.G11.L66"
+        },
+        {
+          "lesson": 67,
+          "ref": "AC.G11.L67"
+        },
+        {
+          "lesson": 68,
+          "ref": "AC.G11.L68"
+        },
+        {
+          "lesson": 69,
+          "ref": "AC.G11.L69"
+        },
+        {
+          "lesson": 70,
+          "ref": "AC.G11.L70"
+        },
+        {
+          "lesson": 71,
+          "ref": "AC.G11.L71"
+        },
+        {
+          "lesson": 72,
+          "ref": "AC.G11.L72"
+        },
+        {
+          "lesson": 73,
+          "ref": "AC.G11.L73"
+        },
+        {
+          "lesson": 74,
+          "ref": "AC.G11.L74"
+        },
+        {
+          "lesson": 75,
+          "ref": "AC.G11.L75"
+        },
+        {
+          "lesson": 76,
+          "ref": "AC.G11.L76"
+        },
+        {
+          "lesson": 77,
+          "ref": "AC.G11.L77"
+        },
+        {
+          "lesson": 78,
+          "ref": "AC.G11.L78"
+        },
+        {
+          "lesson": 79,
+          "ref": "AC.G11.L79"
+        },
+        {
+          "lesson": 80,
+          "ref": "AC.G11.L80"
+        }
+      ]
+    },
+    {
+      "grade": 12,
+      "sourceTitle": "Applied Commerce Grade 12",
+      "sourceVersion": "16.0 — System Architect Edition",
+      "sourcePages": 291,
+      "lessonCount": 80,
+      "integrity": "PASS",
+      "lessonRefs": [
+        {
+          "lesson": 1,
+          "ref": "AC.G12.L01"
+        },
+        {
+          "lesson": 2,
+          "ref": "AC.G12.L02"
+        },
+        {
+          "lesson": 3,
+          "ref": "AC.G12.L03"
+        },
+        {
+          "lesson": 4,
+          "ref": "AC.G12.L04"
+        },
+        {
+          "lesson": 5,
+          "ref": "AC.G12.L05"
+        },
+        {
+          "lesson": 6,
+          "ref": "AC.G12.L06"
+        },
+        {
+          "lesson": 7,
+          "ref": "AC.G12.L07"
+        },
+        {
+          "lesson": 8,
+          "ref": "AC.G12.L08"
+        },
+        {
+          "lesson": 9,
+          "ref": "AC.G12.L09"
+        },
+        {
+          "lesson": 10,
+          "ref": "AC.G12.L10"
+        },
+        {
+          "lesson": 11,
+          "ref": "AC.G12.L11"
+        },
+        {
+          "lesson": 12,
+          "ref": "AC.G12.L12"
+        },
+        {
+          "lesson": 13,
+          "ref": "AC.G12.L13"
+        },
+        {
+          "lesson": 14,
+          "ref": "AC.G12.L14"
+        },
+        {
+          "lesson": 15,
+          "ref": "AC.G12.L15"
+        },
+        {
+          "lesson": 16,
+          "ref": "AC.G12.L16"
+        },
+        {
+          "lesson": 17,
+          "ref": "AC.G12.L17"
+        },
+        {
+          "lesson": 18,
+          "ref": "AC.G12.L18"
+        },
+        {
+          "lesson": 19,
+          "ref": "AC.G12.L19"
+        },
+        {
+          "lesson": 20,
+          "ref": "AC.G12.L20"
+        },
+        {
+          "lesson": 21,
+          "ref": "AC.G12.L21"
+        },
+        {
+          "lesson": 22,
+          "ref": "AC.G12.L22"
+        },
+        {
+          "lesson": 23,
+          "ref": "AC.G12.L23"
+        },
+        {
+          "lesson": 24,
+          "ref": "AC.G12.L24"
+        },
+        {
+          "lesson": 25,
+          "ref": "AC.G12.L25"
+        },
+        {
+          "lesson": 26,
+          "ref": "AC.G12.L26"
+        },
+        {
+          "lesson": 27,
+          "ref": "AC.G12.L27"
+        },
+        {
+          "lesson": 28,
+          "ref": "AC.G12.L28"
+        },
+        {
+          "lesson": 29,
+          "ref": "AC.G12.L29"
+        },
+        {
+          "lesson": 30,
+          "ref": "AC.G12.L30"
+        },
+        {
+          "lesson": 31,
+          "ref": "AC.G12.L31"
+        },
+        {
+          "lesson": 32,
+          "ref": "AC.G12.L32"
+        },
+        {
+          "lesson": 33,
+          "ref": "AC.G12.L33"
+        },
+        {
+          "lesson": 34,
+          "ref": "AC.G12.L34"
+        },
+        {
+          "lesson": 35,
+          "ref": "AC.G12.L35"
+        },
+        {
+          "lesson": 36,
+          "ref": "AC.G12.L36"
+        },
+        {
+          "lesson": 37,
+          "ref": "AC.G12.L37"
+        },
+        {
+          "lesson": 38,
+          "ref": "AC.G12.L38"
+        },
+        {
+          "lesson": 39,
+          "ref": "AC.G12.L39"
+        },
+        {
+          "lesson": 40,
+          "ref": "AC.G12.L40"
+        },
+        {
+          "lesson": 41,
+          "ref": "AC.G12.L41"
+        },
+        {
+          "lesson": 42,
+          "ref": "AC.G12.L42"
+        },
+        {
+          "lesson": 43,
+          "ref": "AC.G12.L43"
+        },
+        {
+          "lesson": 44,
+          "ref": "AC.G12.L44"
+        },
+        {
+          "lesson": 45,
+          "ref": "AC.G12.L45"
+        },
+        {
+          "lesson": 46,
+          "ref": "AC.G12.L46"
+        },
+        {
+          "lesson": 47,
+          "ref": "AC.G12.L47"
+        },
+        {
+          "lesson": 48,
+          "ref": "AC.G12.L48"
+        },
+        {
+          "lesson": 49,
+          "ref": "AC.G12.L49"
+        },
+        {
+          "lesson": 50,
+          "ref": "AC.G12.L50"
+        },
+        {
+          "lesson": 51,
+          "ref": "AC.G12.L51"
+        },
+        {
+          "lesson": 52,
+          "ref": "AC.G12.L52"
+        },
+        {
+          "lesson": 53,
+          "ref": "AC.G12.L53"
+        },
+        {
+          "lesson": 54,
+          "ref": "AC.G12.L54"
+        },
+        {
+          "lesson": 55,
+          "ref": "AC.G12.L55"
+        },
+        {
+          "lesson": 56,
+          "ref": "AC.G12.L56"
+        },
+        {
+          "lesson": 57,
+          "ref": "AC.G12.L57"
+        },
+        {
+          "lesson": 58,
+          "ref": "AC.G12.L58"
+        },
+        {
+          "lesson": 59,
+          "ref": "AC.G12.L59"
+        },
+        {
+          "lesson": 60,
+          "ref": "AC.G12.L60"
+        },
+        {
+          "lesson": 61,
+          "ref": "AC.G12.L61"
+        },
+        {
+          "lesson": 62,
+          "ref": "AC.G12.L62"
+        },
+        {
+          "lesson": 63,
+          "ref": "AC.G12.L63"
+        },
+        {
+          "lesson": 64,
+          "ref": "AC.G12.L64"
+        },
+        {
+          "lesson": 65,
+          "ref": "AC.G12.L65"
+        },
+        {
+          "lesson": 66,
+          "ref": "AC.G12.L66"
+        },
+        {
+          "lesson": 67,
+          "ref": "AC.G12.L67"
+        },
+        {
+          "lesson": 68,
+          "ref": "AC.G12.L68"
+        },
+        {
+          "lesson": 69,
+          "ref": "AC.G12.L69"
+        },
+        {
+          "lesson": 70,
+          "ref": "AC.G12.L70"
+        },
+        {
+          "lesson": 71,
+          "ref": "AC.G12.L71"
+        },
+        {
+          "lesson": 72,
+          "ref": "AC.G12.L72"
+        },
+        {
+          "lesson": 73,
+          "ref": "AC.G12.L73"
+        },
+        {
+          "lesson": 74,
+          "ref": "AC.G12.L74"
+        },
+        {
+          "lesson": 75,
+          "ref": "AC.G12.L75"
+        },
+        {
+          "lesson": 76,
+          "ref": "AC.G12.L76"
+        },
+        {
+          "lesson": 77,
+          "ref": "AC.G12.L77"
+        },
+        {
+          "lesson": 78,
+          "ref": "AC.G12.L78"
+        },
+        {
+          "lesson": 79,
+          "ref": "AC.G12.L79"
+        },
+        {
+          "lesson": 80,
+          "ref": "AC.G12.L80"
+        }
+      ]
+    }
+  ]
+}

@@ -86,6 +86,33 @@ function object(value: unknown): Record<string, unknown> | null {
     : null;
 }
 
+/** Carry an approved JSON source into a new immutable version. Authored content
+ * and stable field/page identities stay intact; only envelope version changes.
+ * Uploaded packages still pass the compiler's strict version checks unchanged.
+ */
+export function copyPublishedPackageVersion(
+  bytes: Uint8Array,
+  expectedCode: string,
+  previousVersion: string,
+  nextVersion: string,
+) {
+  const payload = object(JSON.parse(new TextDecoder().decode(bytes)));
+  const identity = object(payload?.identity);
+  if (!payload || (text(identity?.code) || text(payload.labCode)) !== expectedCode) {
+    throw new Error("The published source does not match this BIS title.");
+  }
+  const versions = [identity?.version, payload.contentVersion].filter(value => value !== undefined);
+  if (!versions.length || versions.some(value => text(value) !== previousVersion)) {
+    throw new Error("The published source does not match its recorded version.");
+  }
+  if (!/^[0-9A-Za-z][0-9A-Za-z._-]{0,31}$/.test(nextVersion) || nextVersion === previousVersion) {
+    throw new Error("Choose a new safe version for the editable update.");
+  }
+  if (identity?.version !== undefined) identity.version = nextVersion;
+  if (payload.contentVersion !== undefined) payload.contentVersion = nextVersion;
+  return new TextEncoder().encode(JSON.stringify(payload));
+}
+
 function array(value: unknown) {
   return Array.isArray(value) ? value : [];
 }

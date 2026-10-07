@@ -17,7 +17,9 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 252 journeys took 9.8 minutes before the complete profile/workspace additions.
+    # Keep every release check; allow the expanded matrix to finish on slower runners.
+    timeout-minutes: 20
     env:
       NEXT_PUBLIC_SUPABASE_URL: https://bis-ci.invalid
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_not_a_credential

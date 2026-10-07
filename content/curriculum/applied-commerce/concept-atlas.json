@@ -1,0 +1,1204 @@
+{
+  "schemaVersion": "applied-commerce-concept-atlas:1",
+  "title": "Applied Commerce Concept Atlas",
+  "status": "CANONICAL_DERIVED_INDEX",
+  "purpose": "Trace the concepts underneath BIS back to Applied Commerce and make curriculum, teaching, evidence and reporting use the same semantic layer.",
+  "derivationRule": "Concepts are distilled from authored Applied Commerce material and indexed to grade/lesson locations. They do not replace source prose or Lab-specific authored measures.",
+  "externalAlignmentStatus": "NOT_CERTIFIED",
+  "evidenceSemantics": [
+    "BASELINE",
+    "CONTEXT",
+    "PREDICTION",
+    "PLAN",
+    "OBSERVATION",
+    "OUTCOME",
+    "INTERPRETATION",
+    "TRANSFER",
+    "LEARNING_CHECK",
+    "SUPPORT_SIGNAL"
+  ],
+  "concepts": [
+    {
+      "id": "AC-CON-001",
+      "title": "Identity and self-story",
+      "proposition": "Identity is shaped by beliefs, values, experience and repeated action; it is not a fixed score.",
+      "competencies": [
+        "AC-C01"
+      ],
+      "sources": [
+        "AC.G8.L01",
+        "AC.G8.L53",
+        "AC.G9.L35"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "INTERPRETATION"
+      ],
+      "transfer": "Use evidence from another context to test whether the self-story still fits."
+    },
+    {
+      "id": "AC-CON-002",
+      "title": "Beliefs as learned frames",
+      "proposition": "Beliefs can be inherited or learned without deliberate choice and can be examined rather than simply obeyed.",
+      "competencies": [
+        "AC-C01",
+        "AC-C03"
+      ],
+      "sources": [
+        "AC.G8.L02"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "INTERPRETATION"
+      ],
+      "transfer": "Identify a belief in a second domain and trace where it came from."
+    },
+    {
+      "id": "AC-CON-003",
+      "title": "Personal efficacy",
+      "proposition": "Capability can grow through action, practice and evidence of what one can learn or do.",
+      "competencies": [
+        "AC-C01",
+        "AC-C02"
+      ],
+      "sources": [
+        "AC.G8.L03"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "OUTCOME"
+      ],
+      "transfer": "Use a prior success as evidence when approaching a new but related challenge."
+    },
+    {
+      "id": "AC-CON-004",
+      "title": "Values as a decision compass",
+      "proposition": "Values matter when choices create tension or cost; stated values should be compared with actual decisions.",
+      "competencies": [
+        "AC-C01",
+        "AC-C06"
+      ],
+      "sources": [
+        "AC.G8.L33",
+        "AC.G9.L02"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "INTERPRETATION",
+        "OUTCOME"
+      ],
+      "transfer": "Apply the same value to a different trade-off and explain any change."
+    },
+    {
+      "id": "AC-CON-005",
+      "title": "Social influence",
+      "proposition": "Other people, groups and social cues shape choices; influence can be noticed and evaluated.",
+      "competencies": [
+        "AC-C01",
+        "AC-C11"
+      ],
+      "sources": [
+        "AC.G8.L04",
+        "AC.G8.L31",
+        "AC.G9.L47"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "LEARNING_CHECK"
+      ],
+      "transfer": "Recognise a different influence source and choose a response deliberately."
+    },
+    {
+      "id": "AC-CON-006",
+      "title": "Goals, intentions and direction",
+      "proposition": "A meaningful goal creates direction only when translated into specific choices, actions and review.",
+      "competencies": [
+        "AC-C05",
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G8.L05",
+        "AC.G8.L06",
+        "AC.G8.L11",
+        "AC.G9.L37"
+      ],
+      "evidence": [
+        "PLAN",
+        "LEARNING_CHECK"
+      ],
+      "transfer": "Re-plan the same goal after a constraint changes."
+    },
+    {
+      "id": "AC-CON-007",
+      "title": "Needs, wants and trade-offs",
+      "proposition": "Scarce resources require choices; needs, wants and priorities can shift with context and consequences.",
+      "competencies": [
+        "AC-C06",
+        "AC-C08"
+      ],
+      "sources": [
+        "AC.G8.L08",
+        "AC.G8.L32"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PLAN"
+      ],
+      "transfer": "Use the distinction in a new resource-constrained decision."
+    },
+    {
+      "id": "AC-CON-008",
+      "title": "Saving as a designed routine",
+      "proposition": "Saving is more reliable when the action, timing and system are designed rather than left to intention.",
+      "competencies": [
+        "AC-C04",
+        "AC-C08"
+      ],
+      "sources": [
+        "AC.G8.L09",
+        "AC.G8.L12",
+        "AC.G8.L44",
+        "AC.G8.L54"
+      ],
+      "evidence": [
+        "PLAN",
+        "OBSERVATION",
+        "OUTCOME"
+      ],
+      "transfer": "Adapt the saving routine when income timing or context changes."
+    },
+    {
+      "id": "AC-CON-009",
+      "title": "Money, exchange and value creation",
+      "proposition": "Money is connected to exchange and value created; tracing value clarifies where income comes from.",
+      "competencies": [
+        "AC-C07",
+        "AC-C08"
+      ],
+      "sources": [
+        "AC.G8.L07",
+        "AC.G8.L13",
+        "AC.G9.L17"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "INTERPRETATION"
+      ],
+      "transfer": "Trace value and payment in a different product, service or informal activity."
+    },
+    {
+      "id": "AC-CON-010",
+      "title": "Initiative",
+      "proposition": "Agency includes noticing a solvable problem and acting without waiting for perfect permission or conditions.",
+      "competencies": [
+        "AC-C02",
+        "AC-C07"
+      ],
+      "sources": [
+        "AC.G8.L16",
+        "AC.G9.L01",
+        "AC.G9.L10"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Take one bounded first action in a new problem context."
+    },
+    {
+      "id": "AC-CON-011",
+      "title": "Failure as information",
+      "proposition": "A failed attempt can provide evidence about assumptions, design or conditions when the learner examines what happened.",
+      "competencies": [
+        "AC-C02",
+        "AC-C10",
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G8.L15",
+        "AC.G8.L50",
+        "AC.G9.L42"
+      ],
+      "evidence": [
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Use evidence from a setback to revise a second attempt."
+    },
+    {
+      "id": "AC-CON-012",
+      "title": "Accurate thinking and consequence",
+      "proposition": "Choices should be distinguished from assumptions by examining evidence, alternatives and consequences.",
+      "competencies": [
+        "AC-C03",
+        "AC-C06"
+      ],
+      "sources": [
+        "AC.G8.L17",
+        "AC.G10.L11"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "INTERPRETATION"
+      ],
+      "transfer": "Evaluate a new claim and state what evidence would change the conclusion."
+    },
+    {
+      "id": "AC-CON-013",
+      "title": "Self-discipline through structure",
+      "proposition": "Self-discipline is supported by routines, constraints and repeatable structures rather than treated as a personality trait.",
+      "competencies": [
+        "AC-C04",
+        "AC-C05"
+      ],
+      "sources": [
+        "AC.G8.L18",
+        "AC.G9.L45"
+      ],
+      "evidence": [
+        "PLAN",
+        "OBSERVATION"
+      ],
+      "transfer": "Design a different structure for another repeated action."
+    },
+    {
+      "id": "AC-CON-014",
+      "title": "Skills, work and assets",
+      "proposition": "Skills can create value and can be developed, combined and deployed across work and enterprise contexts.",
+      "competencies": [
+        "AC-C07",
+        "AC-C13"
+      ],
+      "sources": [
+        "AC.G8.L23",
+        "AC.G8.L27",
+        "AC.G9.L07",
+        "AC.G9.L08"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Name how one skill transfers to a different task or role."
+    },
+    {
+      "id": "AC-CON-015",
+      "title": "Records make patterns visible",
+      "proposition": "Records reduce reliance on memory and make flows, patterns, gaps and change reviewable.",
+      "competencies": [
+        "AC-C03"
+      ],
+      "sources": [
+        "AC.G8.L25",
+        "AC.G8.L38",
+        "AC.G8.L39",
+        "AC.G9.L27"
+      ],
+      "evidence": [
+        "OBSERVATION"
+      ],
+      "transfer": "Use a record in another domain and compare it with prior recall."
+    },
+    {
+      "id": "AC-CON-016",
+      "title": "Income streams and reliability",
+      "proposition": "Income sources differ in effort, reliability, dependence and scalability; a stream should be evaluated, not merely counted.",
+      "competencies": [
+        "AC-C07",
+        "AC-C08"
+      ],
+      "sources": [
+        "AC.G8.L26",
+        "AC.G10.L04",
+        "AC.G10.L61",
+        "AC.G11.L46"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PLAN"
+      ],
+      "transfer": "Compare a new income source on reliability, control and cost."
+    },
+    {
+      "id": "AC-CON-017",
+      "title": "Opportunity recognition",
+      "proposition": "Problems, unmet needs and changing conditions can be investigated as possible opportunities rather than assumed to be opportunities.",
+      "competencies": [
+        "AC-C02",
+        "AC-C07"
+      ],
+      "sources": [
+        "AC.G8.L28",
+        "AC.G9.L09",
+        "AC.G9.L10"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "PLAN"
+      ],
+      "transfer": "Test whether a different observed need represents real demand."
+    },
+    {
+      "id": "AC-CON-018",
+      "title": "Pricing and negotiation",
+      "proposition": "Price is a decision shaped by cost, value, alternatives, constraints and conversation; negotiation requires reasoned boundaries.",
+      "competencies": [
+        "AC-C06",
+        "AC-C07",
+        "AC-C11"
+      ],
+      "sources": [
+        "AC.G8.L29",
+        "AC.G10.L10"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Negotiate or simulate a different exchange while protecting a stated boundary."
+    },
+    {
+      "id": "AC-CON-019",
+      "title": "Spending psychology and influence",
+      "proposition": "Spending is affected by emotion, social pressure, advertising and immediate reward, not only stated need.",
+      "competencies": [
+        "AC-C01",
+        "AC-C06",
+        "AC-C08"
+      ],
+      "sources": [
+        "AC.G8.L30",
+        "AC.G8.L31",
+        "AC.G9.L48"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "INTERPRETATION"
+      ],
+      "transfer": "Identify the pull behind a different purchase and design one friction point."
+    },
+    {
+      "id": "AC-CON-020",
+      "title": "Budgeting as allocation",
+      "proposition": "A budget makes priorities and trade-offs visible by allocating limited resources before or during use.",
+      "competencies": [
+        "AC-C05",
+        "AC-C08"
+      ],
+      "sources": [
+        "AC.G8.L37",
+        "AC.G8.L40",
+        "AC.G9.L61"
+      ],
+      "evidence": [
+        "PLAN",
+        "LEARNING_CHECK"
+      ],
+      "transfer": "Reallocate after income, costs or priorities change."
+    },
+    {
+      "id": "AC-CON-021",
+      "title": "Leakage and unnoticed accumulation",
+      "proposition": "Small repeated uses of resources can accumulate into meaningful loss; tracking makes leakage visible.",
+      "competencies": [
+        "AC-C03",
+        "AC-C08"
+      ],
+      "sources": [
+        "AC.G8.L38",
+        "AC.G9.L27"
+      ],
+      "evidence": [
+        "OBSERVATION",
+        "INTERPRETATION"
+      ],
+      "transfer": "Find and test one leakage pattern in money, time or attention."
+    },
+    {
+      "id": "AC-CON-022",
+      "title": "Habit loop",
+      "proposition": "Repeated behaviour can be examined through cues, routines and rewards rather than treated as character.",
+      "competencies": [
+        "AC-C04"
+      ],
+      "sources": [
+        "AC.G8.L41",
+        "AC.G8.L42"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "CONTEXT"
+      ],
+      "transfer": "Map the same loop structure in a different habit."
+    },
+    {
+      "id": "AC-CON-023",
+      "title": "Repetition and automaticity",
+      "proposition": "Repeated responses can become easier or more automatic; the conditions around repetition matter.",
+      "competencies": [
+        "AC-C04"
+      ],
+      "sources": [
+        "AC.G8.L42",
+        "AC.G8.L44",
+        "AC.G9.L36"
+      ],
+      "evidence": [
+        "OBSERVATION",
+        "OUTCOME"
+      ],
+      "transfer": "Repeat a small response in a new suitable context and compare friction."
+    },
+    {
+      "id": "AC-CON-024",
+      "title": "Accountability and social support",
+      "proposition": "Support structures and shared expectations can make follow-through easier without replacing personal responsibility.",
+      "competencies": [
+        "AC-C04",
+        "AC-C12"
+      ],
+      "sources": [
+        "AC.G8.L43",
+        "AC.G9.L62"
+      ],
+      "evidence": [
+        "PLAN",
+        "OBSERVATION"
+      ],
+      "transfer": "Test a different accountability arrangement and compare what changes."
+    },
+    {
+      "id": "AC-CON-025",
+      "title": "Small steps and compounding",
+      "proposition": "Small repeated actions can create larger cumulative effects over time; compounding also amplifies poor patterns.",
+      "competencies": [
+        "AC-C04",
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G8.L45",
+        "AC.G8.L46",
+        "AC.G10.L19"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PREDICTION",
+        "OBSERVATION"
+      ],
+      "transfer": "Project and then observe a small repeated action across a longer window."
+    },
+    {
+      "id": "AC-CON-026",
+      "title": "Consistency, setbacks and recovery",
+      "proposition": "Progress does not require perfection; recovery after disruption is part of a sustainable behaviour system.",
+      "competencies": [
+        "AC-C04",
+        "AC-C10"
+      ],
+      "sources": [
+        "AC.G8.L47",
+        "AC.G8.L48",
+        "AC.G8.L49"
+      ],
+      "evidence": [
+        "OBSERVATION",
+        "INTERPRETATION",
+        "OUTCOME"
+      ],
+      "transfer": "Use a restart plan after a different interruption."
+    },
+    {
+      "id": "AC-CON-027",
+      "title": "Identity through evidence",
+      "proposition": "Repeated actions create evidence about who a learner is becoming, but evidence should remain open to revision.",
+      "competencies": [
+        "AC-C01",
+        "AC-C04",
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G8.L53",
+        "AC.G8.L54",
+        "AC.G8.L55",
+        "AC.G8.L56"
+      ],
+      "evidence": [
+        "OBSERVATION",
+        "INTERPRETATION"
+      ],
+      "transfer": "Compare identity claims with a second body of behavioural evidence."
+    },
+    {
+      "id": "AC-CON-028",
+      "title": "Planning and prioritisation",
+      "proposition": "Planning converts priorities into ordered actions and protects what matters from lower-value demands.",
+      "competencies": [
+        "AC-C05"
+      ],
+      "sources": [
+        "AC.G8.L56",
+        "AC.G9.L38",
+        "AC.G12.L15"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Reprioritise under a new deadline or constraint."
+    },
+    {
+      "id": "AC-CON-029",
+      "title": "Time audit and attention allocation",
+      "proposition": "Time use becomes investigable when activity is recorded; attention allocation, not memory alone, reveals where time went.",
+      "competencies": [
+        "AC-C03",
+        "AC-C04",
+        "AC-C05"
+      ],
+      "sources": [
+        "AC.G8.L38",
+        "AC.G9.L38"
+      ],
+      "evidence": [
+        "OBSERVATION",
+        "INTERPRETATION"
+      ],
+      "transfer": "Run a second audit in another context and compare memory with record."
+    },
+    {
+      "id": "AC-CON-030",
+      "title": "Start friction and procrastination",
+      "proposition": "Delay can arise from fear, overwhelm, perfectionism, immediate reward or genuine lack of capacity; the intervention must match the cause.",
+      "competencies": [
+        "AC-C04",
+        "AC-C05",
+        "AC-C10"
+      ],
+      "sources": [
+        "AC.G9.L39"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "PREDICTION",
+        "OBSERVATION"
+      ],
+      "transfer": "Test a smaller first step or a condition change and compare what happened."
+    },
+    {
+      "id": "AC-CON-031",
+      "title": "Decision process",
+      "proposition": "A strong decision makes criteria, alternatives, trade-offs, evidence and consequences explicit.",
+      "competencies": [
+        "AC-C03",
+        "AC-C06"
+      ],
+      "sources": [
+        "AC.G9.L46",
+        "AC.G11.L28",
+        "AC.G12.L05"
+      ],
+      "evidence": [
+        "PLAN",
+        "INTERPRETATION"
+      ],
+      "transfer": "Use the same decision structure for a different choice."
+    },
+    {
+      "id": "AC-CON-032",
+      "title": "Resilience as internal and external resources",
+      "proposition": "Recovery depends on both internal capacities and external resources; barriers are not automatically evidence of weak character.",
+      "competencies": [
+        "AC-C02",
+        "AC-C10"
+      ],
+      "sources": [
+        "AC.G9.L40",
+        "AC.G12.L54",
+        "AC.G12.L58"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Audit resources for a different disruption and identify one support need."
+    },
+    {
+      "id": "AC-CON-033",
+      "title": "Growth mindset and revisable ability",
+      "proposition": "Learning can change capability, but growth claims should be tied to practice, feedback and evidence rather than slogans.",
+      "competencies": [
+        "AC-C02",
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G9.L43",
+        "AC.G9.L44"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Use feedback to revise performance in another task."
+    },
+    {
+      "id": "AC-CON-034",
+      "title": "Enterprise as value exchange",
+      "proposition": "Enterprise connects a real need, a customer, a useful offer, resources, costs and a way to learn from response.",
+      "competencies": [
+        "AC-C07",
+        "AC-C09"
+      ],
+      "sources": [
+        "AC.G9.L05",
+        "AC.G9.L06",
+        "AC.G9.L11",
+        "AC.G9.L14",
+        "AC.G10.L05"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Test the value proposition with a different customer or assumption."
+    },
+    {
+      "id": "AC-CON-035",
+      "title": "Value chains and community systems",
+      "proposition": "Products, services and money move through connected actors; benefits, dependencies and leakage can be traced.",
+      "competencies": [
+        "AC-C07",
+        "AC-C09"
+      ],
+      "sources": [
+        "AC.G9.L18",
+        "AC.G9.L19",
+        "AC.G9.L20",
+        "AC.G9.L21",
+        "AC.G9.L23",
+        "AC.G10.L38"
+      ],
+      "evidence": [
+        "OBSERVATION",
+        "INTERPRETATION"
+      ],
+      "transfer": "Map another chain and identify who depends on whom."
+    },
+    {
+      "id": "AC-CON-036",
+      "title": "Systems thinking",
+      "proposition": "Outcomes emerge from connected parts, relationships and feedback; changing one part can create wider effects.",
+      "competencies": [
+        "AC-C09"
+      ],
+      "sources": [
+        "AC.G10.L37",
+        "AC.G10.L38"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "INTERPRETATION"
+      ],
+      "transfer": "Map a different system and predict at least one ripple effect."
+    },
+    {
+      "id": "AC-CON-037",
+      "title": "Automation, defaults and friction",
+      "proposition": "A system can make desired actions easier and repeated decisions less dependent on willpower by changing defaults or friction.",
+      "competencies": [
+        "AC-C04",
+        "AC-C09"
+      ],
+      "sources": [
+        "AC.G10.L39",
+        "AC.G11.L09"
+      ],
+      "evidence": [
+        "PLAN",
+        "OBSERVATION"
+      ],
+      "transfer": "Create or simulate a default in a second repeated process."
+    },
+    {
+      "id": "AC-CON-038",
+      "title": "Leverage points",
+      "proposition": "Some points in a system produce disproportionate effects; leverage should be identified, tested and monitored for unintended consequences.",
+      "competencies": [
+        "AC-C09",
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G10.L37",
+        "AC.G10.L40",
+        "AC.G11.L14"
+      ],
+      "evidence": [
+        "PREDICTION",
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Test a different leverage point and compare ripple effects."
+    },
+    {
+      "id": "AC-CON-039",
+      "title": "Risk and return",
+      "proposition": "Potential gain and potential loss should be considered together; risk is not removed by optimism.",
+      "competencies": [
+        "AC-C06",
+        "AC-C10"
+      ],
+      "sources": [
+        "AC.G10.L18",
+        "AC.G11.L08",
+        "AC.G12.L41"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PLAN"
+      ],
+      "transfer": "Compare a second option on downside, uncertainty and response."
+    },
+    {
+      "id": "AC-CON-040",
+      "title": "Assets and liabilities",
+      "proposition": "Resources and commitments differ in whether they support or drain future capacity; classification depends on context and use.",
+      "competencies": [
+        "AC-C08",
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G10.L20",
+        "AC.G10.L21"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "INTERPRETATION"
+      ],
+      "transfer": "Classify a new item and explain the conditions under which the classification could change."
+    },
+    {
+      "id": "AC-CON-041",
+      "title": "Debt and credit",
+      "proposition": "Debt can be a tool or a trap depending on purpose, terms, affordability, risk and repayment capacity.",
+      "competencies": [
+        "AC-C06",
+        "AC-C08",
+        "AC-C10"
+      ],
+      "sources": [
+        "AC.G10.L23",
+        "AC.G10.L24",
+        "AC.G10.L25"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PLAN"
+      ],
+      "transfer": "Evaluate a different credit scenario and name the missing information."
+    },
+    {
+      "id": "AC-CON-042",
+      "title": "Investing and long horizons",
+      "proposition": "Investment decisions require purpose, risk, time horizon, assumptions, diversification and review rather than return chasing.",
+      "competencies": [
+        "AC-C08",
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G10.L17",
+        "AC.G10.L26",
+        "AC.G10.L27",
+        "AC.G10.L28",
+        "AC.G10.L30",
+        "AC.G11.L42"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "PLAN",
+        "INTERPRETATION"
+      ],
+      "transfer": "Compare another investment scenario with a different horizon or risk tolerance."
+    },
+    {
+      "id": "AC-CON-043",
+      "title": "Self-leadership and leadership",
+      "proposition": "Leadership begins with self-management and extends to decisions that affect other people.",
+      "competencies": [
+        "AC-C04",
+        "AC-C12"
+      ],
+      "sources": [
+        "AC.G11.L21",
+        "AC.G11.L22",
+        "AC.G11.L23",
+        "AC.G11.L25"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Lead or simulate a different team situation and review the effect on others."
+    },
+    {
+      "id": "AC-CON-044",
+      "title": "Communication and difficult conversations",
+      "proposition": "Useful communication combines clarity, listening, questions, boundaries and responsible handling of disagreement.",
+      "competencies": [
+        "AC-C11",
+        "AC-C12"
+      ],
+      "sources": [
+        "AC.G11.L26",
+        "AC.G11.L27",
+        "AC.G12.L30"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Adapt the message and listening approach to a different audience or tension."
+    },
+    {
+      "id": "AC-CON-045",
+      "title": "Influence and pressure",
+      "proposition": "Influence can change choices through social proof, authority, belonging, emotion or urgency; deliberate decisions require noticing the pressure.",
+      "competencies": [
+        "AC-C06",
+        "AC-C11"
+      ],
+      "sources": [
+        "AC.G8.L04",
+        "AC.G8.L31",
+        "AC.G9.L47"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "INTERPRETATION"
+      ],
+      "transfer": "Identify a different influence mechanism and choose a deliberate response."
+    },
+    {
+      "id": "AC-CON-046",
+      "title": "Ethics, trust and responsibility",
+      "proposition": "Trust is built or damaged through repeated choices, transparency, fairness and responsibility for consequences.",
+      "competencies": [
+        "AC-C06",
+        "AC-C12"
+      ],
+      "sources": [
+        "AC.G8.L19",
+        "AC.G10.L65",
+        "AC.G11.L33",
+        "AC.G11.L34"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Reason through a new ethical tension and state who bears the consequences."
+    },
+    {
+      "id": "AC-CON-047",
+      "title": "Time leverage",
+      "proposition": "Time can be multiplied through prioritisation, batching, systematisation, automation, delegation and elimination, while accountability remains.",
+      "competencies": [
+        "AC-C05",
+        "AC-C12",
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G9.L38",
+        "AC.G11.L09"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Apply one leverage method in a second context and review the cost or responsibility it creates."
+    },
+    {
+      "id": "AC-CON-048",
+      "title": "Delegation, teams and accountability",
+      "proposition": "Delegating a task changes who performs it but does not automatically remove responsibility for the system or outcome.",
+      "competencies": [
+        "AC-C11",
+        "AC-C12",
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G11.L09",
+        "AC.G11.L10",
+        "AC.G11.L25"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Delegate or simulate delegation of a different task and review quality, trust and accountability."
+    },
+    {
+      "id": "AC-CON-049",
+      "title": "Long-term thinking and legacy",
+      "proposition": "Present choices compound into future options and impact; longer horizons require explicit trade-offs and responsibility.",
+      "competencies": [
+        "AC-C14"
+      ],
+      "sources": [
+        "AC.G10.L19",
+        "AC.G11.L61",
+        "AC.G11.L62",
+        "AC.G11.L69"
+      ],
+      "evidence": [
+        "PREDICTION",
+        "PLAN",
+        "INTERPRETATION"
+      ],
+      "transfer": "Trace second-order consequences of a different present choice."
+    },
+    {
+      "id": "AC-CON-050",
+      "title": "Career navigation and opportunity pathways",
+      "proposition": "Career movement involves skills, evidence, relationships, communication, persistence and more than one possible pathway.",
+      "competencies": [
+        "AC-C13"
+      ],
+      "sources": [
+        "AC.G12.L06",
+        "AC.G12.L21",
+        "AC.G12.L22",
+        "AC.G12.L23",
+        "AC.G12.L25",
+        "AC.G12.L27",
+        "AC.G12.L35"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Build and test a next-step pathway in another role or learning route."
+    },
+    {
+      "id": "AC-CON-051",
+      "title": "Transition and launch",
+      "proposition": "A transition plan connects intention to logistics, resources, timing, risk, support and next actions in a real context.",
+      "competencies": [
+        "AC-C05",
+        "AC-C10",
+        "AC-C13"
+      ],
+      "sources": [
+        "AC.G12.L02",
+        "AC.G12.L05",
+        "AC.G12.L15",
+        "AC.G12.L63",
+        "AC.G12.L68"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Revise the plan after a changed assumption or new constraint."
+    },
+    {
+      "id": "AC-CON-052",
+      "title": "Protection, failure signals and recovery",
+      "proposition": "A robust plan states what could fail, what observable signal would reveal failure, and what response or support follows.",
+      "competencies": [
+        "AC-C03",
+        "AC-C10"
+      ],
+      "sources": [
+        "AC.G10.L40",
+        "AC.G12.L50",
+        "AC.G12.L54",
+        "AC.G12.L59",
+        "AC.G12.L60"
+      ],
+      "evidence": [
+        "PREDICTION",
+        "OBSERVATION",
+        "INTERPRETATION"
+      ],
+      "transfer": "Stress-test a second scenario and revise one assumption."
+    },
+    {
+      "id": "AC-CON-053",
+      "title": "Reflection, revision and transfer",
+      "proposition": "Learning becomes more useful when evidence is reviewed, an explanation is revised and the method is carried into another context.",
+      "competencies": [
+        "AC-C03",
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G8.L60",
+        "AC.G8.L64",
+        "AC.G9.L32",
+        "AC.G10.L16",
+        "AC.G11.L20",
+        "AC.G12.L60",
+        "AC.G12.L62"
+      ],
+      "evidence": [
+        "INTERPRETATION",
+        "TRANSFER"
+      ],
+      "transfer": "Demonstrate the method in a meaningfully different context and explain limits."
+    },
+    {
+      "id": "AC-CON-054",
+      "title": "Evidence types and uncertainty",
+      "proposition": "Predictions, plans, explanations, simulations, observations and outcomes answer different questions and must not be collapsed into one proof claim.",
+      "competencies": [
+        "AC-C03",
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G12.L59",
+        "AC.G12.L60"
+      ],
+      "evidence": [
+        "PREDICTION",
+        "PLAN",
+        "OBSERVATION",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Reclassify evidence from another task and state what each item can and cannot support."
+    },
+    {
+      "id": "AC-CON-055",
+      "title": "Iteration and innovation",
+      "proposition": "Improvement comes from identifying a gap, testing a response, learning from feedback and iterating rather than waiting for a perfect first solution.",
+      "competencies": [
+        "AC-C02",
+        "AC-C07",
+        "AC-C09",
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G9.L10",
+        "AC.G10.L05",
+        "AC.G10.L40"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME",
+        "INTERPRETATION"
+      ],
+      "transfer": "Run another small iteration and explain why the revision is justified."
+    },
+    {
+      "id": "AC-CON-056",
+      "title": "Customer thinking",
+      "proposition": "Value is judged in relation to a customer's need, context and alternatives; creator assumptions require testing.",
+      "competencies": [
+        "AC-C07"
+      ],
+      "sources": [
+        "AC.G9.L05",
+        "AC.G9.L11",
+        "AC.G10.L10",
+        "AC.G10.L12"
+      ],
+      "evidence": [
+        "CONTEXT",
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Interview, observe or simulate a different customer context and revise the offer."
+    },
+    {
+      "id": "AC-CON-057",
+      "title": "Professional communication and personal brand",
+      "proposition": "How work and capability are communicated affects access to opportunities; evidence should support the story being told.",
+      "competencies": [
+        "AC-C11",
+        "AC-C13"
+      ],
+      "sources": [
+        "AC.G12.L23",
+        "AC.G12.L24",
+        "AC.G12.L30",
+        "AC.G12.L31",
+        "AC.G12.L36",
+        "AC.G12.L37"
+      ],
+      "evidence": [
+        "PLAN",
+        "OUTCOME"
+      ],
+      "transfer": "Adapt the same evidence for a different professional audience."
+    },
+    {
+      "id": "AC-CON-058",
+      "title": "Economics, incentives and human behaviour",
+      "proposition": "Economic patterns reflect flows, constraints, incentives and human behaviour inside systems rather than isolated numbers.",
+      "competencies": [
+        "AC-C06",
+        "AC-C07",
+        "AC-C09"
+      ],
+      "sources": [
+        "AC.G8.L35",
+        "AC.G8.L36",
+        "AC.G9.L21",
+        "AC.G9.L24"
+      ],
+      "evidence": [
+        "OBSERVATION",
+        "INTERPRETATION"
+      ],
+      "transfer": "Explain a different local economic pattern using incentives and relationships."
+    },
+    {
+      "id": "AC-CON-059",
+      "title": "Transferable skills and adaptability",
+      "proposition": "A skill can create value across different roles when the learner can identify the underlying capability and adapt its use.",
+      "competencies": [
+        "AC-C13",
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G9.L07",
+        "AC.G12.L28",
+        "AC.G12.L34"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "TRANSFER"
+      ],
+      "transfer": "Demonstrate the same underlying skill in a different task."
+    },
+    {
+      "id": "AC-CON-060",
+      "title": "Meta-learning",
+      "proposition": "Learners improve learning by examining how they learn, using feedback, selecting strategies and reviewing what evidence shows.",
+      "competencies": [
+        "AC-C15"
+      ],
+      "sources": [
+        "AC.G8.L20",
+        "AC.G9.L32",
+        "AC.G10.L16",
+        "AC.G11.L20",
+        "AC.G12.L61",
+        "AC.G12.L77"
+      ],
+      "evidence": [
+        "LEARNING_CHECK",
+        "INTERPRETATION",
+        "TRANSFER"
+      ],
+      "transfer": "Choose a different learning strategy for a new task and compare results."
+    }
+  ]
+}

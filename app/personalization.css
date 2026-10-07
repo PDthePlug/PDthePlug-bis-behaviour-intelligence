@@ -43,8 +43,9 @@ html[data-bis-appearance="warm"] .canonical-shell {
   --canonical-line:#ddd4c5; --canonical-surface:#fffdf8; --canonical-muted:#6c685f;
   background:#f3efe6; color:#2b2b27;
 }
+html[data-bis-appearance="warm"] .canonical-menu-dock,
 html[data-bis-appearance="warm"] .canonical-topbar,
-html[data-bis-appearance="warm"] .canonical-menu { background:rgba(255,253,248,.97); }
+html[data-bis-appearance="warm"] .canonical-menu { background:rgb(255,253,248); }
 html[data-bis-appearance="warm"] .profile-card,
 html[data-bis-appearance="warm"] .settings-surface,
 html[data-bis-appearance="warm"] .portfolio-lab-group { background:#fffdf8; }
@@ -54,12 +55,13 @@ html[data-bis-appearance="dark"] .canonical-shell {
   --muted:#2a302c; --muted-foreground:#b4beb8; --border:#3b433e; --input:#46504a;
   --ink:#f4f3ee; --cream:#151917; --paper:#202522;
   --canonical-line:#39403c; --canonical-surface:#202522; --canonical-muted:#aeb8b2;
-  --learner-reading:#e7ebe8; --learner-secondary:#b4beb8; --learner-soft-line:#3b433e;
+  --learner-reading:#e7ebe8; --learner-secondary:#b4beb8; --learner-soft-line:#3b433e; --bis-focus-ring:#b7d8ca;
   background:#151917; color:#f4f3ee;
 }
+html[data-bis-appearance="dark"] .canonical-menu-dock,
 html[data-bis-appearance="dark"] .canonical-topbar,
 html[data-bis-appearance="dark"] .canonical-menu,
-html[data-bis-appearance="dark"] .canonical-mobile-guide { background:rgba(27,32,29,.97); color:#f4f3ee; }
+html[data-bis-appearance="dark"] .canonical-mobile-guide { background:rgb(27,32,29); color:#f4f3ee; }
 html[data-bis-appearance="dark"] .canonical-brand,
 html[data-bis-appearance="dark"] .profile-page,
 html[data-bis-appearance="dark"] .settings-page,
@@ -82,12 +84,13 @@ html[data-bis-appearance="dark"] .evidence-workspace button.secondary { backgrou
     --muted:#2a302c; --muted-foreground:#b4beb8; --border:#3b433e; --input:#46504a;
     --ink:#f4f3ee; --cream:#151917; --paper:#202522;
     --canonical-line:#39403c; --canonical-surface:#202522; --canonical-muted:#aeb8b2;
-    --learner-reading:#e7ebe8; --learner-secondary:#b4beb8; --learner-soft-line:#3b433e;
+    --learner-reading:#e7ebe8; --learner-secondary:#b4beb8; --learner-soft-line:#3b433e; --bis-focus-ring:#b7d8ca;
     background:#151917; color:#f4f3ee;
   }
+  html[data-bis-appearance="system"] .canonical-menu-dock,
   html[data-bis-appearance="system"] .canonical-topbar,
   html[data-bis-appearance="system"] .canonical-menu,
-  html[data-bis-appearance="system"] .canonical-mobile-guide { background:rgba(27,32,29,.97); color:#f4f3ee; }
+  html[data-bis-appearance="system"] .canonical-mobile-guide { background:rgb(27,32,29); color:#f4f3ee; }
   html[data-bis-appearance="system"] .profile-card,
   html[data-bis-appearance="system"] .settings-surface,
   html[data-bis-appearance="system"] .portfolio-lab-group,

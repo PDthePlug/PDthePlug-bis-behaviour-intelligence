@@ -137,7 +137,7 @@ function strictProgrammePageKey(value: string): PageKey | null {
   const cleaned = value.replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
   if (/^WELCOME$/i.test(cleaned)) return "Welcome";
   if (/^WEEKEND$/i.test(cleaned)) return "Weekend";
-  const day = cleaned.match(/^DAY\s+(10|[1-9])(?:\s+OF\s+10)?$/i);
+  const day = cleaned.match(/^DAY\s+(10|[1-9])(?:\s+OF\s+10)?(?:\s*-?\s*PART\s+[AB])?$/i);
   if (day) return ("Day " + day[1]) as PageKey;
   if (/^(?:[A-Z][A-Z0-9 &®™'()/-]+\s+)?(?:INVESTIGATION\s+)?CERTIFICATE$/u.test(cleaned.toUpperCase())) {
     return "Certificate";
@@ -341,6 +341,12 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     const text = block.text.replace(/\s+/g, " ").trim();
     if (!text) continue;
 
+    if (key === "Day 3" && block.heading && authoredDayThreePartB(text)) {
+      // An explicit Part B heading is an authored programme boundary, not a
+      // heuristic. Place the executable Lab handoff between Part A and Part B.
+      html.push(AUTHORED_LAB_HANDOFF_START, AUTHORED_LAB_HANDOFF_END);
+    }
+
     if (
       key !== "Welcome"
       && text === pageLabel
@@ -540,17 +546,40 @@ type ManufacturedProgrammePage = {
   label: string;
   html: string;
   experimentPosition?: string | null;
+  labHandoff?: {
+    startMarker: string;
+    endMarker: string;
+  };
 };
+
+const AUTHORED_LAB_HANDOFF_START = '<span data-bis-lab-handoff="start" aria-hidden="true"></span>';
+const AUTHORED_LAB_HANDOFF_END = '<span data-bis-lab-handoff="end" aria-hidden="true"></span>';
+
+function authoredDayThreePartB(value: string) {
+  return /^DAY\s+3(?:\s+OF\s+10)?\s*-\s*PART\s+B$/i.test(
+    value.replace(/[–—]/g, "-").replace(/\s+/g, " ").trim(),
+  );
+}
 
 function programmePage(key: PageKey, body: SourceBlock[]): ManufacturedProgrammePage {
   const label = programmeLabel(key, body);
   const html = renderHandbookPage(body, key, label);
   if (!html) throw new Error(key + " contains no authored content.");
+  const authoredHandoff =
+    key === "Day 3" &&
+    html.includes(AUTHORED_LAB_HANDOFF_START) &&
+    html.includes(AUTHORED_LAB_HANDOFF_END)
+      ? {
+          startMarker: AUTHORED_LAB_HANDOFF_START,
+          endMarker: AUTHORED_LAB_HANDOFF_END,
+        }
+      : undefined;
   return {
     key,
     label,
     html,
     experimentPosition: programmeExperimentPosition(body),
+    ...(authoredHandoff ? { labHandoff: authoredHandoff } : {}),
   };
 }
 
@@ -624,11 +653,18 @@ function pagesFromBlocks(blocks: SourceBlock[], sourceLabel: string) {
   }
 
   const boundaries: Array<{ key: PageKey; index: number }> = [];
+  const seenFallbackKeys = new Set<PageKey>();
   for (let index = 0; index < blocks.length; index += 1) {
     const block = blocks[index];
     if (!block.heading) continue;
     const key = canonicalPageKey(block.text);
-    if (key) boundaries.push({ key, index });
+    // A programme day may be authored in multiple parts (for example
+    // "DAY 3 — PART A" followed by "DAY 3 — PART B"). The first heading owns
+    // the canonical programme position so every authored part stays together.
+    if (key && !seenFallbackKeys.has(key)) {
+      boundaries.push({ key, index });
+      seenFallbackKeys.add(key);
+    }
   }
 
   const found = new Map(boundaries.map((boundary) => [boundary.key, boundary.index]));
@@ -1501,7 +1537,13 @@ function encodedPackage(
   version: string,
   edition: DeliveryEdition,
   metadata: AdaptMetadata,
-  pages: Array<{ key: PageKey; label: string; html: string; experimentPosition?: string | null }>,
+  pages: Array<{
+    key: PageKey;
+    label: string;
+    html: string;
+    experimentPosition?: string | null;
+    labHandoff?: { startMarker: string; endMarker: string };
+  }>,
   authority: string,
   subtitle?: string,
 ) {

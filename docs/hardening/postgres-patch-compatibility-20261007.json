@@ -1,0 +1,25 @@
+{
+  "documentation": "https://supabase.com/changelog/postgres-15-19-17-11-breaking-changes",
+  "checks": {
+    "staging": {
+      "ltreeIndexes": 0,
+      "invalidIndexes": 0,
+      "customEstimators": 0,
+      "applicationPgpFunctions": 0,
+      "exposedTablesWithoutRls": 0,
+      "metadataAuthorisationPolicies": 0,
+      "floatGistIndexes": 0
+    },
+    "production": {
+      "ltreeIndexes": 0,
+      "invalidIndexes": 0,
+      "customEstimators": 0,
+      "applicationPgpFunctions": 0,
+      "exposedTablesWithoutRls": 0,
+      "metadataAuthorisationPolicies": 0,
+      "floatGistIndexes": 0
+    }
+  },
+  "scope": "Read-only catalog detection; no secret data, upgrade, reindex or schema mutation",
+  "remaining": "Provider maintenance scheduling and backup/rollback readiness; external direct pgcrypto usage cannot be excluded by function catalog inspection"
+}

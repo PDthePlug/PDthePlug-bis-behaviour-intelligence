@@ -1,0 +1,43 @@
+{
+  "observedAt": "2026-10-07T04:52:40.891Z",
+  "result": "PASS",
+  "checks": [
+    {
+      "journey": "Fresh password sign-in and protected return",
+      "result": "PASS"
+    },
+    {
+      "journey": "Workbook response, understanding check and text-size refresh recovery",
+      "result": "PASS",
+      "fieldId": "HAB.WB.SCHOOL.DAY1.F6D2C1E598C",
+      "textSize": 20.8
+    },
+    {
+      "journey": "Source-defined Lab baseline persistence",
+      "result": "PASS",
+      "fields": [],
+      "version": "4.5.3"
+    },
+    {
+      "journey": "Source-defined Hook capture persistence",
+      "result": "PASS",
+      "fields": [],
+      "version": "4.5.3"
+    },
+    {
+      "journey": "Lab re-entry after capture",
+      "result": "PASS"
+    },
+    {
+      "journey": "FACILITATOR excludes private QA reflection",
+      "result": "PASS"
+    },
+    {
+      "journey": "SPONSOR_VIEWER excludes private QA reflection",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "calendarOverride": false,
+  "boundary": "Dedicated authorised QA learner only. Baseline and Hook are verified only if their checks pass; calendar-complete investigation and certificate issuance are not claimed."
+}
