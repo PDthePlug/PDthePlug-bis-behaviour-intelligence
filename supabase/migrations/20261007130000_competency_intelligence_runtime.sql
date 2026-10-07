@@ -67,8 +67,17 @@ begin
   select count(*)::integer
     into v_member_count
   from public.cohort_members m
+  join public.learners l on l.user_id = m.learner_user_id and l.status = 'ACTIVE'
   where m.cohort_id = target_cohort_id
-    and m.status = 'ACTIVE';
+    and m.status = 'ACTIVE'
+    and (
+      select cr.status
+      from public.consent_records cr
+      where cr.user_id = m.learner_user_id
+        and cr.consent_type = 'LEARNER_PRODUCT'
+      order by cr.created_at desc, cr.id desc
+      limit 1
+    ) = 'GRANTED';
 
   if v_member_count < 5 then
     return jsonb_build_object(
@@ -84,23 +93,17 @@ begin
   with members as (
     select m.learner_user_id as user_id
     from public.cohort_members m
+    join public.learners l on l.user_id = m.learner_user_id and l.status = 'ACTIVE'
     where m.cohort_id = target_cohort_id
       and m.status = 'ACTIVE'
-      and exists (
-        select 1
+      and (
+        select cr.status
         from public.consent_records cr
         where cr.user_id = m.learner_user_id
           and cr.consent_type = 'LEARNER_PRODUCT'
-          and cr.status = 'GRANTED'
-          and cr.id = (
-            select cr2.id
-            from public.consent_records cr2
-            where cr2.user_id = m.learner_user_id
-              and cr2.consent_type = 'LEARNER_PRODUCT'
-            order by cr2.created_at desc, cr2.id desc
-            limit 1
-          )
-      )
+        order by cr.created_at desc, cr.id desc
+        limit 1
+      ) = 'GRANTED'
   ),
   latest_mapping as (
     select distinct on (m.lab_code, m.lab_version, m.semantic_field_id)
