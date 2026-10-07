@@ -480,9 +480,9 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
           for (const question of questions) {
             const sourceKey = nextSourceKey(question);
             if (questions.length > 1) {
-              html.push('<label class="compiled-workbook-question"><span>' + escapeHtml(question) + "</span>" + handbookTextarea(sourceKey, question) + "</label>");
+              html.push('<label class="compiled-workbook-question"><span>' + escapeHtml(question) + "</span>" + handbookTextarea(sourceKey, question, consumeEvidenceAnchor()) + "</label>");
             } else {
-              html.push(handbookTextarea(sourceKey, question));
+              html.push(handbookTextarea(sourceKey, question, consumeEvidenceAnchor()));
             }
           }
         }
@@ -492,13 +492,13 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
       const imperative = block.heading ? "" : handbookImperativePrompt(text);
       if (imperative) {
         html.push(handbookBlockHtml(block));
-        html.push(handbookTextarea(nextSourceKey(imperative), imperative));
+        html.push(handbookTextarea(nextSourceKey(imperative), imperative, consumeEvidenceAnchor()));
         continue;
       }
 
       if (/^Dear Future Me,?$/i.test(text)) {
         html.push(handbookBlockHtml(block));
-        html.push(handbookTextarea(nextSourceKey("Letter to My Future Self"), "Letter to My Future Self"));
+        html.push(handbookTextarea(nextSourceKey("Letter to My Future Self"), "Letter to My Future Self", consumeEvidenceAnchor()));
         continue;
       }
 
@@ -509,7 +509,9 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         const label = stripped || previousQuestion || text;
         const sourceKey = nextSourceKey(label);
         const short = /_{3,}|\/\s*(?:7|10|100)\b|%\s*$|^(?:date|signed|effective from day|confidence|my rating|shift)\s*:/i.test(text);
-        html.push(short ? handbookShortControl(sourceKey, label, text) : handbookTextarea(sourceKey, label));
+        html.push(short
+          ? handbookShortControl(sourceKey, label, text, consumeEvidenceAnchor())
+          : handbookTextarea(sourceKey, label, consumeEvidenceAnchor()));
         continue;
       }
     }
