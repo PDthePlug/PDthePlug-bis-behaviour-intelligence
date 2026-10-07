@@ -10,7 +10,7 @@ import type { ComponentProps } from "react";
 const browserRequest: typeof fetch = (...args) => fetch(...args);
 const directHref = (href: string) => href;
 export type PlatformNavigationGuard = () => Promise<boolean>;
-const ignoreNavigationGuard = (_guard: PlatformNavigationGuard | null): void => undefined;
+const ignoreNavigationGuard: (guard: PlatformNavigationGuard | null) => void = () => undefined;
 export const PlatformContext = createContext({ request: browserRequest, href: directHref, example: false, registerNavigationGuard: ignoreNavigationGuard });
 export const usePlatform = () => useContext(PlatformContext);
 
