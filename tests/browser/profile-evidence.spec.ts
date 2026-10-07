@@ -42,7 +42,7 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(dimensions.documentWidth).toBeLessThanOrEqual(dimensions.viewportWidth);
 }
 
-test("Profile is an identity home and Evidence Portfolio has its own destination", async ({ page }, testInfo) => {
+test("Profile is an identity home and My BIS growth has its own destination", async ({ page }, testInfo) => {
   await profileService(page);
   await page.goto("/profile");
 
@@ -51,7 +51,7 @@ test("Profile is an identity home and Evidence Portfolio has its own destination
   await page.screenshot({ path: `outputs/BIS-profile-${testInfo.project.name}.png` });
   await expect(page.getByRole("link", { name: /My experience/ })).toHaveAttribute("href", "/experience");
   await expect(page.getByRole("link", { name: /Settings/ })).toHaveAttribute("href", "/settings");
-  await expect(page.getByRole("link", { name: /Evidence Portfolio/ })).toHaveAttribute("href", "/portfolio");
+  await expect(page.getByRole("link", { name: /My growth & evidence/ })).toHaveAttribute("href", "/portfolio");
   await expect(page.getByRole("link", { name: /Learning/ })).toHaveAttribute("href", "/learn");
 
   await expect(page.getByRole("heading", { name: "Your evidence portfolio" })).toHaveCount(0);
@@ -125,7 +125,7 @@ test("empty settings responses offer recovery and failed saves restore the saved
   await expect(page.getByRole("radio", { name: "School", exact: true })).toBeChecked();
 });
 
-test("Evidence Portfolio opens with Lab history collapsed and expands only on request", async ({ page }, testInfo) => {
+test("My BIS opens with growth first and keeps Lab evidence collapsed until requested", async ({ page }, testInfo) => {
   await profileService(page);
   const evidence = {
     id: "evidence",
@@ -155,13 +155,39 @@ test("Evidence Portfolio opens with Lab history collapsed and expands only on re
     await route.fulfill({
       json: view === "timeline"
         ? { records: [evidence], index: { years: [2026], labs: ["HAB"], record_count: 1 } }
-        : { groups: [], rubrics: [], submissions: [{ id: "submission", user_id: "learner", cohort_id: "group", title: "My transfer evidence", created_at: evidence.occurred_at, revoked_at: null, current: true, evidence: [evidence], reviews: [{ id: "review", created_at: evidence.occurred_at, disposition: "REVIEWED", feedback: "You changed the cue; test it in another situation.", criterion_scores: [] }] }] },
+        : view === "developmentProfile"
+          ? { profile: {
+              modelVersion: "bis-development-profile:1",
+              reportClassification: {},
+              status: "AVAILABLE",
+              title: "My BIS",
+              heading: "Your growth",
+              summary: "Your BIS profile currently has evidence across 1 development area.",
+              areas: [{
+                competencyId: "AC-C04",
+                title: "Behaviour change and self-management",
+                stageCode: "APPLY",
+                stageLabel: "Applies",
+                evidenceCount: 1,
+                sourceLabs: ["HAB"],
+                externalFrameworkAreas: ["Adaptability", "Accountability"],
+                summary: "Your recorded work shows that you have used this competency in a real situation.",
+                growth: "This is the highest level currently supported by your recorded work in defined BIS tasks.",
+                nextStep: "Test the plan, compare what happened with what you expected, and make one evidence-based adjustment.",
+                reportable: true,
+              }],
+              boundary: "This is a living picture of what your recorded programme work supports. It is not a personality label.",
+            } }
+          : { groups: [], rubrics: [], submissions: [{ id: "submission", user_id: "learner", cohort_id: "group", title: "My transfer evidence", created_at: evidence.occurred_at, revoked_at: null, current: true, evidence: [evidence], reviews: [{ id: "review", created_at: evidence.occurred_at, disposition: "REVIEWED", feedback: "You changed the cue; test it in another situation.", criterion_scores: [] }] }] },
     });
   });
 
   await page.route("**/api/evidence-portfolio", async route => route.fulfill({ json: { labs: [{ enrolmentId: "enrolment", labCode: "HAB", labVersion: "4.5.2", title: "Habit Lab", status: "COMPLETED", startedAt: "2026-10-01T10:00:00Z", completedAt: "2026-10-05T10:00:00Z", anchors: [{ id: "EXPERIMENT", label: "Real-world test", status: "RECORDED", lastRecordedAt: "2026-10-05T10:00:00Z" }], metrics: [{ code: "HAB.BEI06", label: "Observed adherence", value: "71%", provenanceStatus: "VERIFIED" }], intelligence: { nextAction: { label: "Revisit your evidence and transfer plan" } } }] } }));
   await page.goto("/portfolio");
-  await expect(page.getByRole("heading", { name: "Evidence Portfolio", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your growth, evidence and feedback", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your growth", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Behaviour change and self-management", exact: true })).toBeVisible();
+  await expect(page.getByText("Applies", { exact: true })).toBeVisible();
   await expect(page.getByText("Habit Lab", { exact: true })).toBeVisible();
   await expect(page.getByText("I changed the cue before the routine started.")).toBeHidden();
   await mkdir("outputs", { recursive: true });
