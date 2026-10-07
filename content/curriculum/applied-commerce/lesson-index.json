@@ -1,0 +1,1738 @@
+{
+  "schemaVersion": "1.0",
+  "source": "Applied Commerce Grades 8–12",
+  "lessonCount": 395,
+  "note": "Titles are source-indexing labels from the current authored books. Grade 9 source-authored competency mappings remain provenance metadata, not a claim of official curriculum approval.",
+  "grades": [
+    {
+      "grade": 8,
+      "lessonCount": 80,
+      "terms": [
+        {
+          "term": 1,
+          "lessons": [
+            {
+              "lesson": 1,
+              "title": "WHO AM I?"
+            },
+            {
+              "lesson": 2,
+              "title": "WHERE MY BELIEFS COME FROM"
+            },
+            {
+              "lesson": 3,
+              "title": "PERSONAL EFFICACY"
+            },
+            {
+              "lesson": 4,
+              "title": "HOW OTHERS SHAPE US"
+            },
+            {
+              "lesson": 5,
+              "title": "WHAT DO I WANT?"
+            },
+            {
+              "lesson": 6,
+              "title": "WHY GOALS MATTER"
+            },
+            {
+              "lesson": 7,
+              "title": "MEETING MONEY"
+            },
+            {
+              "lesson": 8,
+              "title": "NEEDS VS WANTS"
+            },
+            {
+              "lesson": 9,
+              "title": "INTRODUCTION TO SAVING"
+            },
+            {
+              "lesson": 10,
+              "title": "SAVING STORIES"
+            },
+            {
+              "lesson": 11,
+              "title": "MY FIRST SAVINGS GOAL"
+            },
+            {
+              "lesson": 12,
+              "title": "HOW TO SAVE SYSTEMATICALLY"
+            },
+            {
+              "lesson": 13,
+              "title": "WHERE MONEY COMES FROM"
+            },
+            {
+              "lesson": 14,
+              "title": "THE HABIT OF DOING MORE THAN PAID FOR"
+            },
+            {
+              "lesson": 15,
+              "title": "PROFITING FROM FAILURE"
+            },
+            {
+              "lesson": 16,
+              "title": "PERSONAL INITIATIVE"
+            },
+            {
+              "lesson": 17,
+              "title": "ACCURATE THINKING"
+            },
+            {
+              "lesson": 18,
+              "title": "SELF-DISCIPLINE"
+            },
+            {
+              "lesson": 19,
+              "title": "THE GOLDEN RULE WITH MONEY"
+            },
+            {
+              "lesson": 20,
+              "title": "TERM REVIEW AND PORTFOLIO"
+            }
+          ]
+        },
+        {
+          "term": 2,
+          "lessons": [
+            {
+              "lesson": 21,
+              "title": "WELCOME TO TERM 2 — MY RELATIONSHIP WITH RESOURCES"
+            },
+            {
+              "lesson": 22,
+              "title": "WHERE MONEY COMES FROM — DEEP DIVE"
+            },
+            {
+              "lesson": 23,
+              "title": "WORK AND VALUE REVISITED"
+            },
+            {
+              "lesson": 24,
+              "title": "EMMANUEL'S SPAZA SHOP — COSTS AND PROFIT"
+            },
+            {
+              "lesson": 25,
+              "title": "KEEPING RECORDS — JOURNALS"
+            },
+            {
+              "lesson": 26,
+              "title": "WHAT IS INCOME? — ACTIVE VS PASSIVE"
+            },
+            {
+              "lesson": 27,
+              "title": "SMALL WAYS TO EARN"
+            },
+            {
+              "lesson": 28,
+              "title": "CREATIVE WAYS TO EARN"
+            },
+            {
+              "lesson": 29,
+              "title": "THANDI'S MANGOES — PRICING AND NEGOTIATION"
+            },
+            {
+              "lesson": 30,
+              "title": "THE PSYCHOLOGY OF SPENDING"
+            },
+            {
+              "lesson": 31,
+              "title": "WHY WE BUY WHAT WE BUY"
+            },
+            {
+              "lesson": 32,
+              "title": "NEEDS VS WANTS REVISITED"
+            },
+            {
+              "lesson": 33,
+              "title": "KARABO'S CHOICE — VALUES AND SPENDING"
+            },
+            {
+              "lesson": 34,
+              "title": "VALUE VS PRICE"
+            },
+            {
+              "lesson": 35,
+              "title": "COMMUNITY ECONOMICS"
+            },
+            {
+              "lesson": 36,
+              "title": "THE CORNER OF HOPE AND MAIN"
+            },
+            {
+              "lesson": 37,
+              "title": "INTRODUCTION TO BUDGETING"
+            },
+            {
+              "lesson": 38,
+              "title": "THEMBA'S POCKET MONEY — TRACKING AND LEAKAGE"
+            },
+            {
+              "lesson": 39,
+              "title": "BUSISIWE'S NOTEBOOK — FAMILY TRACKING"
+            },
+            {
+              "lesson": 40,
+              "title": "BUILDING YOUR FIRST BUDGET AND TERM REFLECTION"
+            }
+          ]
+        },
+        {
+          "term": 3,
+          "lessons": [
+            {
+              "lesson": 41,
+              "title": "WHAT ARE HABITS?"
+            },
+            {
+              "lesson": 42,
+              "title": "HOW HABITS FORM"
+            },
+            {
+              "lesson": 43,
+              "title": "THE STOKVEL HABIT"
+            },
+            {
+              "lesson": 44,
+              "title": "SAVING AS ROUTINE"
+            },
+            {
+              "lesson": 45,
+              "title": "SMALL STEPS, BIG RESULTS"
+            },
+            {
+              "lesson": 46,
+              "title": "THE COMPOUND EFFECT"
+            },
+            {
+              "lesson": 47,
+              "title": "CONSISTENCY OVER PERFECTION"
+            },
+            {
+              "lesson": 48,
+              "title": "WHEN HABITS BREAK"
+            },
+            {
+              "lesson": 49,
+              "title": "RECOVERING FROM SETBACKS"
+            },
+            {
+              "lesson": 50,
+              "title": "LEARNING FROM MISTAKES"
+            },
+            {
+              "lesson": 51,
+              "title": "THE GARDENERS OF LIMPOPO"
+            },
+            {
+              "lesson": 52,
+              "title": "HABITS THAT FEED FAMILIES"
+            },
+            {
+              "lesson": 53,
+              "title": "HABITS AND IDENTITY"
+            },
+            {
+              "lesson": 54,
+              "title": "BECOMING A SAVER"
+            },
+            {
+              "lesson": 55,
+              "title": "BECOMING AN EARNER"
+            },
+            {
+              "lesson": 56,
+              "title": "BECOMING A PLANNER"
+            },
+            {
+              "lesson": 57,
+              "title": "PROJECT LAUNCH — MY HABIT TRACKER"
+            },
+            {
+              "lesson": 58,
+              "title": "TRACKING FOR 21 DAYS — WEEK 1 CHECK-IN"
+            },
+            {
+              "lesson": 59,
+              "title": "MID-PROJECT CHECK — WEEK 2 REVIEW"
+            },
+            {
+              "lesson": 60,
+              "title": "WHAT HABITS TAUGHT ME AND TERM REFLECTION"
+            }
+          ]
+        },
+        {
+          "term": 4,
+          "lessons": [
+            {
+              "lesson": 61,
+              "title": "REVIEW — WHO I AM WITH MONEY"
+            },
+            {
+              "lesson": 62,
+              "title": "REVIEW — MY RESOURCES"
+            },
+            {
+              "lesson": 63,
+              "title": "REVIEW — MY HABITS"
+            },
+            {
+              "lesson": 64,
+              "title": "PUTTING IT ALL TOGETHER"
+            },
+            {
+              "lesson": 65,
+              "title": "INTRODUCTION TO CAPSTONE"
+            },
+            {
+              "lesson": 66,
+              "title": "CHOOSING YOUR PROJECT"
+            },
+            {
+              "lesson": 67,
+              "title": "OPTION A — EARN AND SAVE PROJECT"
+            },
+            {
+              "lesson": 68,
+              "title": "OPTION B — FAMILY INTERVIEW PROJECT"
+            },
+            {
+              "lesson": 69,
+              "title": "OPTION C — COMMUNITY ECONOMICS PROJECT"
+            },
+            {
+              "lesson": 70,
+              "title": "PROJECT PLANNING"
+            },
+            {
+              "lesson": 71,
+              "title": "PROJECT EXECUTION — WEEK 1"
+            },
+            {
+              "lesson": 72,
+              "title": "PROJECT EXECUTION — WEEK 2 AND MID-PROJECT CHECK"
+            },
+            {
+              "lesson": 73,
+              "title": "PROJECT COMPLETION"
+            },
+            {
+              "lesson": 74,
+              "title": "PRESENTATION PREPARATION"
+            },
+            {
+              "lesson": 75,
+              "title": "CAPSTONE PRESENTATIONS — DAY 1"
+            },
+            {
+              "lesson": 76,
+              "title": "CAPSTONE PRESENTATIONS — DAY 2 AND CELEBRATION"
+            },
+            {
+              "lesson": 77,
+              "title": "CELEBRATION AND PROJECT REFLECTION"
+            },
+            {
+              "lesson": 78,
+              "title": "LOOKING BACK AT GRADE 8"
+            },
+            {
+              "lesson": 79,
+              "title": "LOOKING AHEAD TO GRADE 9"
+            },
+            {
+              "lesson": 80,
+              "title": "FINAL PORTFOLIO AND FAREWELL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": 9,
+      "lessonCount": 75,
+      "terms": [
+        {
+          "term": 1,
+          "lessons": [
+            {
+              "lesson": 1,
+              "title": "WHERE WE HAVE BEEN, WHERE WE ARE GOING"
+            },
+            {
+              "lesson": 2,
+              "title": "MY VALUES — THE COMPASS"
+            },
+            {
+              "lesson": 3,
+              "title": "MEETING ATLEHANG"
+            },
+            {
+              "lesson": 4,
+              "title": "THE WORLD OF WORK — TWO ECONOMIES"
+            },
+            {
+              "lesson": 5,
+              "title": "MAMA ROSE'S BACKYARD"
+            },
+            {
+              "lesson": 6,
+              "title": "WHAT IS ENTERPRISE?"
+            },
+            {
+              "lesson": 7,
+              "title": "SKILLS ARE ASSETS"
+            },
+            {
+              "lesson": 8,
+              "title": "MY SKILL INVENTORY — THE COMPOUND SKILL"
+            },
+            {
+              "lesson": 9,
+              "title": "THE ENTREPRENEUR'S EYE"
+            },
+            {
+              "lesson": 10,
+              "title": "PROBLEMS ARE OPPORTUNITIES"
+            },
+            {
+              "lesson": 11,
+              "title": "CUSTOMERS AND VALUE"
+            },
+            {
+              "lesson": 12,
+              "title": "PRICING YOUR WORK"
+            },
+            {
+              "lesson": 13,
+              "title": "THE GRANT OFFICE — DAY 3"
+            },
+            {
+              "lesson": 14,
+              "title": "PROJECT LAUNCH — MY ENTERPRISE PORTFOLIO"
+            },
+            {
+              "lesson": 15,
+              "title": "PROJECT WORKSHOP — PLANNING AND FEEDBACK"
+            },
+            {
+              "lesson": 16,
+              "title": "TERM REFLECTION AND PORTFOLIO"
+            }
+          ]
+        },
+        {
+          "term": 2,
+          "lessons": [
+            {
+              "lesson": 17,
+              "title": "WHERE MONEY COMES FROM — THE FIRST VALUE"
+            },
+            {
+              "lesson": 18,
+              "title": "FOLLOWING THE MONEY IN MY HOUSEHOLD"
+            },
+            {
+              "lesson": 19,
+              "title": "THE JOURNEY OF A LOAF OF BREAD"
+            },
+            {
+              "lesson": 20,
+              "title": "THE FULL STORY OF A PRODUCT"
+            },
+            {
+              "lesson": 21,
+              "title": "VALUE CHAINS — WHO BENEFITS?"
+            },
+            {
+              "lesson": 22,
+              "title": "EMPLOYERS AND EMPLOYEES — TWO ROLES, DIFFERENT RISKS"
+            },
+            {
+              "lesson": 23,
+              "title": "MAPPING MY COMMUNITY'S MONEY — PROJECT LAUNCH"
+            },
+            {
+              "lesson": 24,
+              "title": "THE TAXI RANK ECONOMY"
+            },
+            {
+              "lesson": 25,
+              "title": "MONEY IN, MONEY OUT"
+            },
+            {
+              "lesson": 26,
+              "title": "THE STOKVEL SYSTEM"
+            },
+            {
+              "lesson": 27,
+              "title": "THE LEAKAGE AUDIT"
+            },
+            {
+              "lesson": 28,
+              "title": "MID-PROJECT CHECK-IN"
+            },
+            {
+              "lesson": 29,
+              "title": "FINAL MAP AND ANALYSIS"
+            },
+            {
+              "lesson": 30,
+              "title": "PRESENTATIONS"
+            },
+            {
+              "lesson": 31,
+              "title": "COMMUNITY ACTION PLAN"
+            },
+            {
+              "lesson": 32,
+              "title": "LEARNING JOURNEY MAP"
+            },
+            {
+              "lesson": 33,
+              "title": "TERM REFLECTION"
+            },
+            {
+              "lesson": 34,
+              "title": "LETTER TO MY FUTURE SELF — TERM 2"
+            }
+          ]
+        },
+        {
+          "term": 3,
+          "lessons": [
+            {
+              "lesson": 35,
+              "title": "HABITS AND IDENTITY REVISITED"
+            },
+            {
+              "lesson": 36,
+              "title": "THE POWER OF TINY HABITS"
+            },
+            {
+              "lesson": 37,
+              "title": "SMART+ GOALS"
+            },
+            {
+              "lesson": 38,
+              "title": "TIME MANAGEMENT",
+              "authoredCompetencyMappings": [
+                {
+                  "subject": "LO",
+                  "topic": "Self-Management",
+                  "code": "LO-G9-T3-04",
+                  "competency": "Managing time effectively"
+                },
+                {
+                  "subject": "Bus Stud",
+                  "topic": "Time Management",
+                  "code": "BS-G9-T3-04",
+                  "competency": "Understanding time as a resource"
+                },
+                {
+                  "subject": "EMS",
+                  "topic": "Skills Development",
+                  "code": "EMS-G9-T3-04",
+                  "competency": "Understanding productivity"
+                }
+              ]
+            },
+            {
+              "lesson": 39,
+              "title": "PROCRASTINATION AND MOTIVATION"
+            },
+            {
+              "lesson": 40,
+              "title": "RESILIENCE — BOUNCING BACK"
+            },
+            {
+              "lesson": 41,
+              "title": "GRIT — PASSION AND PERSEVERANCE"
+            },
+            {
+              "lesson": 42,
+              "title": "LEARNING FROM FAILURE"
+            },
+            {
+              "lesson": 43,
+              "title": "GROWTH MINDSET — THE POWER OF YET"
+            },
+            {
+              "lesson": 44,
+              "title": "GROWTH MINDSET — IN PRACTICE"
+            },
+            {
+              "lesson": 45,
+              "title": "SELF-DISCIPLINE"
+            },
+            {
+              "lesson": 46,
+              "title": "DECISION MAKING"
+            },
+            {
+              "lesson": 47,
+              "title": "PEER PRESSURE AND CHOICES"
+            },
+            {
+              "lesson": 48,
+              "title": "DIGITAL HABITS AND MONEY"
+            },
+            {
+              "lesson": 49,
+              "title": "ONLINE SAFETY AND SCAMS"
+            },
+            {
+              "lesson": 50,
+              "title": "PROJECT LAUNCH — MY HABIT TRANSFORMATION"
+            },
+            {
+              "lesson": 51,
+              "title": "MIDPOINT CHECK-IN"
+            },
+            {
+              "lesson": 52,
+              "title": "OVERCOMING OBSTACLES"
+            },
+            {
+              "lesson": 53,
+              "title": "HABIT TRANSFORMATION — COMPLETION AND REFLECTION"
+            },
+            {
+              "lesson": 54,
+              "title": "TERM REFLECTION AND THE FORK IN THE ROAD"
+            }
+          ]
+        },
+        {
+          "term": 4,
+          "lessons": [
+            {
+              "lesson": 55,
+              "title": "LOOKING BACK — WHAT WE HAVE LEARNED THIS YEAR"
+            },
+            {
+              "lesson": 56,
+              "title": "MY PASSIONS AND MY COMMUNITY"
+            },
+            {
+              "lesson": 57,
+              "title": "INTRODUCTION TO SOCIAL ENTREPRENEURSHIP"
+            },
+            {
+              "lesson": 58,
+              "title": "PROJECT LAUNCH — MY COMMUNITY PROJECT (WITH HIGH-AGENCY CHALLENGE)"
+            },
+            {
+              "lesson": 59,
+              "title": "COMMUNITY NEEDS ASSESSMENT"
+            },
+            {
+              "lesson": 60,
+              "title": "PROJECT DESIGN"
+            },
+            {
+              "lesson": 61,
+              "title": "BUDGETING FOR YOUR PROJECT"
+            },
+            {
+              "lesson": 62,
+              "title": "PARTNERSHIPS AND SUPPORT"
+            },
+            {
+              "lesson": 63,
+              "title": "PROJECT EXECUTION — MAKING IT REAL"
+            },
+            {
+              "lesson": 64,
+              "title": "MID-PROJECT CHECK-IN"
+            },
+            {
+              "lesson": 65,
+              "title": "PROBLEM-SOLVING ON THE GO"
+            },
+            {
+              "lesson": 66,
+              "title": "PROJECT COMPLETION"
+            },
+            {
+              "lesson": 67,
+              "title": "STORYTELLING YOUR PROJECT"
+            },
+            {
+              "lesson": 68,
+              "title": "PRESENTATION PREPARATION"
+            },
+            {
+              "lesson": 69,
+              "title": "PROJECT PRESENTATIONS — DAY 1"
+            },
+            {
+              "lesson": 70,
+              "title": "PROJECT PRESENTATIONS — DAY 2"
+            },
+            {
+              "lesson": 71,
+              "title": "PROJECT REFLECTION — WHAT I LEARNED"
+            },
+            {
+              "lesson": 72,
+              "title": "WHAT WE LEARNED ABOUT OUR COMMUNITY"
+            },
+            {
+              "lesson": 73,
+              "title": "THE FORK IN THE ROAD — CHOOSING MY PATH"
+            },
+            {
+              "lesson": 74,
+              "title": "FINAL PORTFOLIO AND LETTER TO MY FUTURE SELF"
+            },
+            {
+              "lesson": 75,
+              "title": "FAREWELL TO GRADE 9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": 10,
+      "lessonCount": 80,
+      "terms": [
+        {
+          "term": 1,
+          "lessons": [
+            {
+              "lesson": 1,
+              "title": "WHERE WE HAVE BEEN, WHERE WE ARE GOING"
+            },
+            {
+              "lesson": 2,
+              "title": "VALUE REVISITED — THE KITCHEN THAT ALMOST BROKE"
+            },
+            {
+              "lesson": 3,
+              "title": "KARABO'S PAYSLIP — THE SYSTEM YOU DID NOT CHOOSE"
+            },
+            {
+              "lesson": 4,
+              "title": "INCOME — THE CONTROL SPECTRUM"
+            },
+            {
+              "lesson": 5,
+              "title": "THABO'S MICRO-ENTERPRISE — THE SYSTEM THAT ALMOST BROKE"
+            },
+            {
+              "lesson": 6,
+              "title": "SOLE PROPRIETORSHIP AND PARTNERSHIP — THE STRUCTURE THAT PROTECTS OR DESTROYS"
+            },
+            {
+              "lesson": 7,
+              "title": "COOPERATIVES — THE POWER AND THE PERIL"
+            },
+            {
+              "lesson": 8,
+              "title": "SCALING AND EFFICIENCY — THE SYSTEM THAT OUTGREW ITS FOUNDER"
+            },
+            {
+              "lesson": 9,
+              "title": "INTELLECTUAL PROPERTY — PROTECTING WHAT YOU BUILD"
+            },
+            {
+              "lesson": 10,
+              "title": "SERVICE BUSINESS AND PRICING — NAMING THE VALUE"
+            },
+            {
+              "lesson": 11,
+              "title": "COMPETITION, PESTLE, AND PORTER'S FIVE FORCES — THE MALL THAT CHANGED EVERYTHING"
+            },
+            {
+              "lesson": 12,
+              "title": "MARKETING AND BRANDING — THE TRUTH THAT SELLS"
+            },
+            {
+              "lesson": 13,
+              "title": "PROJECT LAUNCH — MY VALUE-CREATION PLAN"
+            },
+            {
+              "lesson": 14,
+              "title": "PROJECT WORKSHOP — PLANNING AND FEEDBACK"
+            },
+            {
+              "lesson": 15,
+              "title": "PROJECT PRESENTATIONS"
+            },
+            {
+              "lesson": 16,
+              "title": "TERM REFLECTION AND PORTFOLIO"
+            }
+          ]
+        },
+        {
+          "term": 2,
+          "lessons": [
+            {
+              "lesson": 17,
+              "title": "SAVING VS INVESTING — THE MONEY THAT JUST SAT THERE"
+            },
+            {
+              "lesson": 18,
+              "title": "RISK AND RETURN — THE TRADE YOU CANNOT ESCAPE"
+            },
+            {
+              "lesson": 19,
+              "title": "COMPOUND INTEREST — THE RULE OF 72 AND THE SEED GOGO MARIA PLANTED AT 73"
+            },
+            {
+              "lesson": 20,
+              "title": "ASSETS AND LIABILITIES — MR. PATEL'S DECISION"
+            },
+            {
+              "lesson": 21,
+              "title": "BUILDING YOUR ASSET BASE — THE SEWING MACHINE PRINCIPLE"
+            },
+            {
+              "lesson": 22,
+              "title": "COOPERATIVES AND COLLECTIVE INVESTING — THANDI'S GROWTH DECISION"
+            },
+            {
+              "lesson": 23,
+              "title": "DEBT — THE TOOL AND THE TRAP"
+            },
+            {
+              "lesson": 24,
+              "title": "MANAGING DEBT — THE TRAP OF THE MINIMUM PAYMENT"
+            },
+            {
+              "lesson": 25,
+              "title": "CREDIT SCORES — THE NUMBER THAT JUDGES YOU"
+            },
+            {
+              "lesson": 26,
+              "title": "INVESTMENT VEHICLES — ZINHLE'S PORTFOLIO MAP"
+            },
+            {
+              "lesson": 27,
+              "title": "ETFs, UNIT TRUSTS, AND RETAIL BONDS — TUMELO'S COMPARISON"
+            },
+            {
+              "lesson": 28,
+              "title": "REINVESTMENT AND GROWTH — MR. PATEL'S SECOND FACTORY"
+            },
+            {
+              "lesson": 29,
+              "title": "FINANCIAL PLANNING — ZINHLE'S FRAMEWORK"
+            },
+            {
+              "lesson": 30,
+              "title": "INVESTMENT STRATEGIES — THEMBA'S DOLLAR-COST AVERAGING"
+            },
+            {
+              "lesson": 31,
+              "title": "PROJECT LAUNCH — MY INVESTMENT PLAN"
+            },
+            {
+              "lesson": 32,
+              "title": "PROJECT WORKSHOP — RESEARCH"
+            },
+            {
+              "lesson": 33,
+              "title": "PROJECT WORKSHOP — PLANNING"
+            },
+            {
+              "lesson": 34,
+              "title": "PROJECT WORKSHOP — FEEDBACK"
+            },
+            {
+              "lesson": 35,
+              "title": "PROJECT PRESENTATIONS"
+            },
+            {
+              "lesson": 36,
+              "title": "TERM REFLECTION AND PORTFOLIO"
+            }
+          ]
+        },
+        {
+          "term": 3,
+          "lessons": [
+            {
+              "lesson": 37,
+              "title": "INTRODUCTION TO SYSTEMS THINKING"
+            },
+            {
+              "lesson": 38,
+              "title": "SUPPLY CHAINS AS SYSTEMS — THE BOTTLENECK"
+            },
+            {
+              "lesson": 39,
+              "title": "PERSONAL FINANCIAL SYSTEMS — YOUR MONEY AS A SYSTEM"
+            },
+            {
+              "lesson": 40,
+              "title": "DESIGNING YOUR FINANCIAL SYSTEM — THE LEVERAGE POINTS"
+            },
+            {
+              "lesson": 41,
+              "title": "THE TAX SYSTEM — A CONVERSATION OVER CHESS"
+            },
+            {
+              "lesson": 42,
+              "title": "TAX PLANNING — THE LEGAL ART OF KEEPING MORE"
+            },
+            {
+              "lesson": 43,
+              "title": "RETIREMENT — GOGO MARIA'S TABLE"
+            },
+            {
+              "lesson": 44,
+              "title": "RETIREMENT VEHICLES — THE FACTORY FLOOR"
+            },
+            {
+              "lesson": 45,
+              "title": "INSURANCE — THE BURNED GARAGE"
+            },
+            {
+              "lesson": 46,
+              "title": "TYPES OF INSURANCE — NALEDI AT THE TAXI RANK"
+            },
+            {
+              "lesson": 47,
+              "title": "ESTATE PLANNING — GOGO MARIA'S WILL"
+            },
+            {
+              "lesson": 48,
+              "title": "WILLS AND HEIRS — ADVOCATE DLAMINI AT MAMA ROSE'S KITCHEN"
+            },
+            {
+              "lesson": 49,
+              "title": "THE PSYCHOLOGY OF MONEY — MRS. NKOSI'S DELIVERY VISIT"
+            },
+            {
+              "lesson": 50,
+              "title": "PROJECT LAUNCH — MY FINANCIAL SYSTEM"
+            },
+            {
+              "lesson": 51,
+              "title": "PROJECT WORKSHOP — DESIGNING YOUR SYSTEM"
+            },
+            {
+              "lesson": 52,
+              "title": "PROJECT WORKSHOP — FEEDBACK AND REVISION"
+            },
+            {
+              "lesson": 53,
+              "title": "PROJECT PRESENTATIONS — DAY 1"
+            },
+            {
+              "lesson": 54,
+              "title": "PROJECT PRESENTATIONS — DAY 2"
+            },
+            {
+              "lesson": 55,
+              "title": "TERM REFLECTION"
+            },
+            {
+              "lesson": 56,
+              "title": "PORTFOLIO ASSEMBLY"
+            },
+            {
+              "lesson": 57,
+              "title": "LETTER TO MY FUTURE SELF — TERM 3"
+            },
+            {
+              "lesson": 58,
+              "title": "FAREWELL TO TERM 3"
+            }
+          ]
+        },
+        {
+          "term": 4,
+          "lessons": [
+            {
+              "lesson": 59,
+              "title": "REVIEW — WHERE WE HAVE BEEN"
+            },
+            {
+              "lesson": 60,
+              "title": "WHAT IS FINANCIAL INDEPENDENCE? — MYAH'S EQUATION"
+            },
+            {
+              "lesson": 61,
+              "title": "MULTIPLE INCOME STREAMS — THEMBA'S FOUR STREAMS AND THE ONE THAT FAILED"
+            },
+            {
+              "lesson": 62,
+              "title": "PASSIVE INCOME — ZOLA'S STORY"
+            },
+            {
+              "lesson": 63,
+              "title": "SCALING — THEMBA AND MR. PATEL ON THE FACTORY FLOOR"
+            },
+            {
+              "lesson": 64,
+              "title": "ENTREPRENEURSHIP VS EMPLOYMENT — THE FORK REVISITED"
+            },
+            {
+              "lesson": 65,
+              "title": "ETHICS AND MONEY — MR. MOLOI AT MAMA ROSE'S KITCHEN"
+            },
+            {
+              "lesson": 66,
+              "title": "SOCIALLY RESPONSIBLE INVESTING — ATLEHANG'S QUESTION"
+            },
+            {
+              "lesson": 67,
+              "title": "IMPACT INVESTING — THANDIWE'S STORY"
+            },
+            {
+              "lesson": 68,
+              "title": "LIFE DESIGN — MS. DANIELS' FINAL LESSON"
+            },
+            {
+              "lesson": 69,
+              "title": "CAPSTONE LAUNCH — MY FINANCIAL INDEPENDENCE PLAN"
+            },
+            {
+              "lesson": 70,
+              "title": "VISION AND GOALS WORKSHOP"
+            },
+            {
+              "lesson": 71,
+              "title": "INCOME AND INVESTING WORKSHOP"
+            },
+            {
+              "lesson": 72,
+              "title": "PROTECTION AND LONG TERM PLANNING WORKSHOP"
+            },
+            {
+              "lesson": 73,
+              "title": "FEEDBACK AND REVISION WORKSHOP"
+            },
+            {
+              "lesson": 74,
+              "title": "FINAL COMPILATION WORKSHOP"
+            },
+            {
+              "lesson": 75,
+              "title": "PROJECT PRESENTATIONS — DAY 1"
+            },
+            {
+              "lesson": 76,
+              "title": "PROJECT PRESENTATIONS — DAY 2 AND CELEBRATION"
+            },
+            {
+              "lesson": 77,
+              "title": "TERM REFLECTION"
+            },
+            {
+              "lesson": 78,
+              "title": "PORTFOLIO ASSEMBLY"
+            },
+            {
+              "lesson": 79,
+              "title": "LETTER TO MY FUTURE SELF — FINAL"
+            },
+            {
+              "lesson": 80,
+              "title": "FAREWELL TO GRADE 10"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": 11,
+      "lessonCount": 80,
+      "terms": [
+        {
+          "term": 1,
+          "lessons": [
+            {
+              "lesson": 1,
+              "title": "WELCOME TO GRADE 11 — THE LEVERAGE YEAR"
+            },
+            {
+              "lesson": 2,
+              "title": "WHAT IS LEVERAGE?"
+            },
+            {
+              "lesson": 3,
+              "title": "MYAH'S BIG QUESTION — THE POST-MATRIC VISION"
+            },
+            {
+              "lesson": 4,
+              "title": "TYPES OF LEVERAGE — DEEP DIVE"
+            },
+            {
+              "lesson": 5,
+              "title": "FINANCIAL LEVERAGE — MR. DLAMINI'S STORY"
+            },
+            {
+              "lesson": 6,
+              "title": "MR. DLAMINI ON PROPERTY LEVERAGE"
+            },
+            {
+              "lesson": 7,
+              "title": "CALCULATING LEVERAGE"
+            },
+            {
+              "lesson": 8,
+              "title": "RISK AND RETURN IN LEVERAGE — THEMBA'S LESSON"
+            },
+            {
+              "lesson": 9,
+              "title": "TIME LEVERAGE — THABO'S DELEGATION"
+            },
+            {
+              "lesson": 10,
+              "title": "PEOPLE LEVERAGE — THABO HIRES HIS FIRST EMPLOYEE"
+            },
+            {
+              "lesson": 11,
+              "title": "SYSTEMS LEVERAGE — MR. PATEL'S FACTORY"
+            },
+            {
+              "lesson": 12,
+              "title": "TECHNOLOGY LEVERAGE — THEMBA'S ONLINE STORE"
+            },
+            {
+              "lesson": 13,
+              "title": "KNOWLEDGE LEVERAGE — MYAH'S NOTEBOOKS"
+            },
+            {
+              "lesson": 14,
+              "title": "INTEGRATING THE SIX LEVERS — THE LEVERAGE MATRIX"
+            },
+            {
+              "lesson": 15,
+              "title": "PROJECT LAUNCH — MY LEVERAGE PLAN"
+            },
+            {
+              "lesson": 16,
+              "title": "PROJECT WORKSHOP — DESIGN AND FEEDBACK"
+            },
+            {
+              "lesson": 17,
+              "title": "PROJECT WORKSHOP — REFINEMENT"
+            },
+            {
+              "lesson": 18,
+              "title": "PROJECT PRESENTATIONS — DAY 1"
+            },
+            {
+              "lesson": 19,
+              "title": "PROJECT PRESENTATIONS — DAY 2 AND CELEBRATION"
+            },
+            {
+              "lesson": 20,
+              "title": "TERM REFLECTION AND PORTFOLIO"
+            }
+          ]
+        },
+        {
+          "term": 2,
+          "lessons": [
+            {
+              "lesson": 21,
+              "title": "WHAT IS LEADERSHIP?"
+            },
+            {
+              "lesson": 22,
+              "title": "LEADING YOURSELF FIRST"
+            },
+            {
+              "lesson": 23,
+              "title": "MYAH'S LEADERSHIP JOURNEY"
+            },
+            {
+              "lesson": 24,
+              "title": "EMOTIONAL INTELLIGENCE — MS. NKOSI'S LESSON"
+            },
+            {
+              "lesson": 25,
+              "title": "MS. NKOSI ON LEADING TEAMS"
+            },
+            {
+              "lesson": 26,
+              "title": "COMMUNICATION FOR LEADERS — LETHABO'S MISTAKE"
+            },
+            {
+              "lesson": 27,
+              "title": "DIFFICULT CONVERSATIONS — THABO'S TEST"
+            },
+            {
+              "lesson": 28,
+              "title": "DECISION-MAKING UNDER PRESSURE — EMMANUEL'S EMERGENCY"
+            },
+            {
+              "lesson": 29,
+              "title": "THANDI LEADS A COOPERATIVE — LEADING PEERS"
+            },
+            {
+              "lesson": 30,
+              "title": "LEADING THROUGH CHANGE — THE SPAZA SHOP TRANSFORMS"
+            },
+            {
+              "lesson": 31,
+              "title": "MENTORSHIP — LETHABO BECOMES THE TEACHER"
+            },
+            {
+              "lesson": 32,
+              "title": "THEMBA ON LEADERSHIP — THE REAL STORY"
+            },
+            {
+              "lesson": 33,
+              "title": "ETHICAL LEADERSHIP — MR. PATEL'S CHOICE"
+            },
+            {
+              "lesson": 34,
+              "title": "ADV. MKHIZE ON LEGAL LEADERSHIP"
+            },
+            {
+              "lesson": 35,
+              "title": "PROJECT LAUNCH — MY LEADERSHIP PHILOSOPHY"
+            },
+            {
+              "lesson": 36,
+              "title": "PROJECT WORKSHOP — REFINING YOUR PHILOSOPHY"
+            },
+            {
+              "lesson": 37,
+              "title": "PROJECT PRESENTATIONS — MY LEADERSHIP PHILOSOPHY — DAY 1"
+            },
+            {
+              "lesson": 38,
+              "title": "PROJECT PRESENTATIONS — DAY 2 AND CELEBRATION"
+            },
+            {
+              "lesson": 39,
+              "title": "TERM REFLECTION"
+            },
+            {
+              "lesson": 40,
+              "title": "PORTFOLIO ASSEMBLY AND LETTER TO FUTURE SELF"
+            }
+          ]
+        },
+        {
+          "term": 3,
+          "lessons": [
+            {
+              "lesson": 41,
+              "title": "WEALTH BEYOND MONEY — GOGO MARIA'S WISDOM"
+            },
+            {
+              "lesson": 42,
+              "title": "ADVANCED INVESTING — ZINHLE'S RETURN"
+            },
+            {
+              "lesson": 43,
+              "title": "PROPERTY INVESTMENT DEEP DIVE — MR. DLAMINI'S PORTFOLIO"
+            },
+            {
+              "lesson": 44,
+              "title": "BUSINESS GROWTH STRATEGIES — MS. NKOSI'S LESSON"
+            },
+            {
+              "lesson": 45,
+              "title": "SCALING A BUSINESS — THEMBA'S REAL STORY"
+            },
+            {
+              "lesson": 46,
+              "title": "CREATING MULTIPLE STREAMS AT SCALE — THEMBA'S CURRENT SYSTEM"
+            },
+            {
+              "lesson": 47,
+              "title": "TAX-EFFICIENT WEALTH BUILDING — ZINHLE'S SECOND LESSON"
+            },
+            {
+              "lesson": 48,
+              "title": "PROTECTING WEALTH — MR. PATEL ON RISK MANAGEMENT"
+            },
+            {
+              "lesson": 49,
+              "title": "IMPACT INVESTING — MYAH'S EXPLORATION"
+            },
+            {
+              "lesson": 50,
+              "title": "OFFSHORE INVESTING — WHY AND HOW"
+            },
+            {
+              "lesson": 51,
+              "title": "INTEGRATING THE WEALTH STRATEGIES — THE ARCHITECT'S SYNTHESIS"
+            },
+            {
+              "lesson": 52,
+              "title": "PROJECT LAUNCH — MY 10-YEAR WEALTH PLAN"
+            },
+            {
+              "lesson": 53,
+              "title": "PROJECT WORKSHOP — RESEARCH AND DESIGN"
+            },
+            {
+              "lesson": 54,
+              "title": "PROJECT WORKSHOP — DESIGN AND FEEDBACK"
+            },
+            {
+              "lesson": 55,
+              "title": "PROJECT PRESENTATIONS — MY 10-YEAR WEALTH PLAN — DAY 1"
+            },
+            {
+              "lesson": 56,
+              "title": "PROJECT PRESENTATIONS — DAY 2 AND CELEBRATION"
+            },
+            {
+              "lesson": 57,
+              "title": "TERM REFLECTION"
+            },
+            {
+              "lesson": 58,
+              "title": "PORTFOLIO ASSEMBLY"
+            },
+            {
+              "lesson": 59,
+              "title": "LETTER TO MY FUTURE SELF — TERM 3"
+            },
+            {
+              "lesson": 60,
+              "title": "FAREWELL TO TERM 3"
+            }
+          ]
+        },
+        {
+          "term": 4,
+          "lessons": [
+            {
+              "lesson": 61,
+              "title": "WHAT IS LEGACY? — MAMA ROSE'S WISDOM"
+            },
+            {
+              "lesson": 62,
+              "title": "THE FOUR DIMENSIONS OF LEGACY — MYAH'S FRAMEWORK"
+            },
+            {
+              "lesson": 63,
+              "title": "FINANCIAL LEGACY — MR. PATEL'S ESTATE"
+            },
+            {
+              "lesson": 64,
+              "title": "ADV. MKHIZE ON WILLS AND TRUSTS"
+            },
+            {
+              "lesson": 65,
+              "title": "VALUES LEGACY — GOGO MARIA'S LETTERS"
+            },
+            {
+              "lesson": 66,
+              "title": "GIVING BACK — THE RESPONSIBILITY OF WEALTH"
+            },
+            {
+              "lesson": 67,
+              "title": "SOCIAL LEGACY"
+            },
+            {
+              "lesson": 68,
+              "title": "ENVIRONMENTAL LEGACY"
+            },
+            {
+              "lesson": 69,
+              "title": "BALANCING PRESENT AND FUTURE"
+            },
+            {
+              "lesson": 70,
+              "title": "REVIEW — THE GRADE 11 JOURNEY"
+            },
+            {
+              "lesson": 71,
+              "title": "CAPSTONE LAUNCH — MY LIFE AND LEGACY PLAN"
+            },
+            {
+              "lesson": 72,
+              "title": "CAPSTONE WORKSHOP — INTEGRATION MAP"
+            },
+            {
+              "lesson": 73,
+              "title": "CAPSTONE WORKSHOP — TIMELINE AND ACCOUNTABILITY"
+            },
+            {
+              "lesson": 74,
+              "title": "CAPSTONE WORKSHOP — FEEDBACK AND REFINEMENT"
+            },
+            {
+              "lesson": 75,
+              "title": "CAPSTONE PRESENTATIONS — MY LIFE AND LEGACY PLAN — DAY 1"
+            },
+            {
+              "lesson": 76,
+              "title": "CAPSTONE PRESENTATIONS — DAY 2"
+            },
+            {
+              "lesson": 77,
+              "title": "TERM REFLECTION"
+            },
+            {
+              "lesson": 78,
+              "title": "PORTFOLIO ASSEMBLY"
+            },
+            {
+              "lesson": 79,
+              "title": "LETTER TO MY FUTURE SELF — GRADE 11 FINAL"
+            },
+            {
+              "lesson": 80,
+              "title": "FAREWELL TO GRADE 11"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": 12,
+      "lessonCount": 80,
+      "terms": [
+        {
+          "term": 1,
+          "lessons": [
+            {
+              "lesson": 1,
+              "title": "WELCOME TO GRADE 12 — THE LAUNCH YEAR"
+            },
+            {
+              "lesson": 2,
+              "title": "WHAT CHANGES AT 18? — ADV. MKHIZE AT MAMA ROSE'S KITCHEN"
+            },
+            {
+              "lesson": 3,
+              "title": "ADV. MKHIZE ON LEGAL ADULTHOOD — THE CONTRACTS YOU WILL SIGN"
+            },
+            {
+              "lesson": 4,
+              "title": "MANAGING YOUR OWN MONEY — MYAH'S FIRST ACCOUNT"
+            },
+            {
+              "lesson": 5,
+              "title": "MYAH'S FIRST BIG DECISION — THE DECISION MATRIX"
+            },
+            {
+              "lesson": 6,
+              "title": "PATHWAYS AFTER MATRIC — THE PANEL AT THE COMMUNITY HALL"
+            },
+            {
+              "lesson": 7,
+              "title": "UNIVERSITY APPLICATIONS — MYAH'S SPREADSHEET"
+            },
+            {
+              "lesson": 8,
+              "title": "BURSARIES, LOANS, AND FUNDING — ZINHLE'S ADVICE"
+            },
+            {
+              "lesson": 9,
+              "title": "GAP YEAR OPTIONS — SIPHO'S STORY"
+            },
+            {
+              "lesson": 10,
+              "title": "ENTREPRENEURSHIP AFTER SCHOOL — LETHABO'S DECISION"
+            },
+            {
+              "lesson": 11,
+              "title": "THEMBA ON FIRST-YEAR EXPERIENCE — THE REAL VERSION"
+            },
+            {
+              "lesson": 12,
+              "title": "ZINHLE ON STARTING WORK — THE FIRST JOB"
+            },
+            {
+              "lesson": 13,
+              "title": "MOVING OUT? THE COSTS OF LIVING INDEPENDENTLY"
+            },
+            {
+              "lesson": 14,
+              "title": "ROOMMATES AND SHARING — MYAH'S AGREEMENT TEMPLATE"
+            },
+            {
+              "lesson": 15,
+              "title": "PROJECT LAUNCH — MY POST-MATRIC TRANSITION PLAN"
+            },
+            {
+              "lesson": 16,
+              "title": "PROJECT WORKSHOP — FEEDBACK AND REVISION"
+            },
+            {
+              "lesson": 17,
+              "title": "PROJECT PRESENTATIONS — MY POST-MATRIC TRANSITION PLAN — DAY 1"
+            },
+            {
+              "lesson": 18,
+              "title": "PROJECT PRESENTATIONS — DAY 2"
+            },
+            {
+              "lesson": 19,
+              "title": "TERM REFLECTION"
+            },
+            {
+              "lesson": 20,
+              "title": "PORTFOLIO ASSEMBLY AND LETTER TO FUTURE SELF"
+            }
+          ]
+        },
+        {
+          "term": 2,
+          "lessons": [
+            {
+              "lesson": 21,
+              "title": "THE WORLD OF WORK — WHAT AWAITS YOU"
+            },
+            {
+              "lesson": 22,
+              "title": "THE HIDDEN JOB MARKET — NETWORKS AND RELATIONSHIPS"
+            },
+            {
+              "lesson": 23,
+              "title": "YOUR CV — THE MARKETING DOCUMENT"
+            },
+            {
+              "lesson": 24,
+              "title": "THE COVER LETTER — YOUR FIRST CONVERSATION"
+            },
+            {
+              "lesson": 25,
+              "title": "INTERVIEWS — THE QUESTIONS THEY WILL ASK"
+            },
+            {
+              "lesson": 26,
+              "title": "INTERVIEWS — THE QUESTIONS YOU SHOULD ASK"
+            },
+            {
+              "lesson": 27,
+              "title": "THEMBA ON JOB HUNTING — THE 15 APPLICATIONS"
+            },
+            {
+              "lesson": 28,
+              "title": "SIDE HUSTLES AND FREELANCING — THEMBA'S FIVE STREAMS"
+            },
+            {
+              "lesson": 29,
+              "title": "THE GIG ECONOMY — PROMISES AND TRAPS"
+            },
+            {
+              "lesson": 30,
+              "title": "PROFESSIONAL COMMUNICATION — EMAILS, MEETINGS, AND DIFFICULT CONVERSATIONS"
+            },
+            {
+              "lesson": 31,
+              "title": "PERSONAL BRANDING — WHO ARE YOU?"
+            },
+            {
+              "lesson": 32,
+              "title": "PROFESSIONAL NETWORKING — BUILDING RELATIONSHIPS THAT LAST"
+            },
+            {
+              "lesson": 33,
+              "title": "THE SIDE HUSTLE DEEP DIVE — FROM IDEA TO INCOME"
+            },
+            {
+              "lesson": 34,
+              "title": "FREELANCING — YOUR SKILLS, YOUR TERMS"
+            },
+            {
+              "lesson": 35,
+              "title": "MR. PATEL ON WHAT EMPLOYERS LOOK FOR"
+            },
+            {
+              "lesson": 36,
+              "title": "PERSONAL BRANDING DEEP DIVE — YOUR STORY, YOUR VOICE"
+            },
+            {
+              "lesson": 37,
+              "title": "MANAGING YOUR ONLINE REPUTATION"
+            },
+            {
+              "lesson": 38,
+              "title": "PROJECT LAUNCH — MY CAREER LAUNCH PLAN"
+            },
+            {
+              "lesson": 39,
+              "title": "PROJECT WORKSHOP — FEEDBACK AND REVISION"
+            },
+            {
+              "lesson": 40,
+              "title": "PROJECT PRESENTATIONS, TERM REFLECTION, AND LETTER TO FUTURE SELF"
+            }
+          ]
+        },
+        {
+          "term": 3,
+          "lessons": [
+            {
+              "lesson": 41,
+              "title": "WHAT IS RISK? — THE ADULT DEFINITION"
+            },
+            {
+              "lesson": 42,
+              "title": "INSURANCE DEEP DIVE — WHAT YOU ACTUALLY NEED"
+            },
+            {
+              "lesson": 43,
+              "title": "BUSINESS INSURANCE AND LIABILITY — THABO'S LESSON"
+            },
+            {
+              "lesson": 44,
+              "title": "ESTATE PLANNING — WILLS, TRUSTS, AND BENEFICIARIES"
+            },
+            {
+              "lesson": 45,
+              "title": "TRUSTS AND BENEFICIARY NOMINATIONS — THE DEEPER LAYER"
+            },
+            {
+              "lesson": 46,
+              "title": "INVESTMENT CONSOLIDATION — BRINGING IT ALL TOGETHER"
+            },
+            {
+              "lesson": 47,
+              "title": "FRAUD PREVENTION — THEMBA'S NEAR MISS"
+            },
+            {
+              "lesson": 48,
+              "title": "DIGITAL SECURITY — PROTECTING YOUR MONEY AND IDENTITY ONLINE"
+            },
+            {
+              "lesson": 49,
+              "title": "GOGO MARIA'S FINAL LESSON — WEALTH BEYOND MONEY"
+            },
+            {
+              "lesson": 50,
+              "title": "PROJECT LAUNCH — MY RISK AND PROTECTION PLAN"
+            },
+            {
+              "lesson": 51,
+              "title": "PROJECT WORKSHOP — FEEDBACK AND REVISION"
+            },
+            {
+              "lesson": 52,
+              "title": "PROJECT PRESENTATIONS AND INITIAL REFLECTION"
+            },
+            {
+              "lesson": 53,
+              "title": "FROM PRESENTATION TO ACTION"
+            },
+            {
+              "lesson": 54,
+              "title": "EMERGENCY RESPONSE REHEARSAL"
+            },
+            {
+              "lesson": 55,
+              "title": "CHECKING COMMITMENTS BEFORE YOU AGREE"
+            },
+            {
+              "lesson": 56,
+              "title": "DIGITAL PROTECTION PRACTICE"
+            },
+            {
+              "lesson": 57,
+              "title": "FRAUD RESPONSE AND HELP SEEKING"
+            },
+            {
+              "lesson": 58,
+              "title": "PROTECTING THE LIFE AROUND THE PLAN"
+            },
+            {
+              "lesson": 59,
+              "title": "TESTING THE PROTECTION PLAN"
+            },
+            {
+              "lesson": 60,
+              "title": "PROTECTION PORTFOLIO AND TERM HANDOFF"
+            }
+          ]
+        },
+        {
+          "term": 4,
+          "lessons": [
+            {
+              "lesson": 61,
+              "title": "REVIEW — THE GRADE 12 JOURNEY"
+            },
+            {
+              "lesson": 62,
+              "title": "INTEGRATION — CONNECTING ALL YOUR PLANS"
+            },
+            {
+              "lesson": 63,
+              "title": "MY TRANSITION PLAN — UPDATED"
+            },
+            {
+              "lesson": 64,
+              "title": "MY CAREER PLAN AND RISK PLAN — UPDATED"
+            },
+            {
+              "lesson": 65,
+              "title": "MY LEGACY VISION — UPDATED"
+            },
+            {
+              "lesson": 66,
+              "title": "MS. DANIELS' FINAL LESSON — THE WISDOM OF TWENTY YEARS"
+            },
+            {
+              "lesson": 67,
+              "title": "MAMA ROSE'S LAST VISIT"
+            },
+            {
+              "lesson": 68,
+              "title": "CAPSTONE LAUNCH — MY LIFE LAUNCH PLAN"
+            },
+            {
+              "lesson": 69,
+              "title": "CAPSTONE WORKSHOP — DRAFTING"
+            },
+            {
+              "lesson": 70,
+              "title": "CAPSTONE WORKSHOP — FEEDBACK AND REVISION"
+            },
+            {
+              "lesson": 71,
+              "title": "CAPSTONE PRESENTATIONS — MY LIFE LAUNCH PLAN — DAY 1"
+            },
+            {
+              "lesson": 72,
+              "title": "CAPSTONE PRESENTATIONS — DAY 2"
+            },
+            {
+              "lesson": 73,
+              "title": "REVIEW — THE GRADE 12 JOURNEY"
+            },
+            {
+              "lesson": 74,
+              "title": "INTEGRATION — CONNECTING ALL YOUR PLANS"
+            },
+            {
+              "lesson": 75,
+              "title": "MY TRANSITION PLAN — UPDATED"
+            },
+            {
+              "lesson": 76,
+              "title": "MY CAREER LAUNCH PLAN AND RISK PLAN — UPDATED"
+            },
+            {
+              "lesson": 77,
+              "title": "THE FIVE STAGES — MYAH'S ARC"
+            },
+            {
+              "lesson": 78,
+              "title": "GRATITUDE — THE PEOPLE WHO CARRIED ME"
+            },
+            {
+              "lesson": 79,
+              "title": "MS. DANIELS' FINAL LESSON"
+            },
+            {
+              "lesson": 80,
+              "title": "THE LIFE LAUNCH PLAN — FINAL CAPSTONE"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
