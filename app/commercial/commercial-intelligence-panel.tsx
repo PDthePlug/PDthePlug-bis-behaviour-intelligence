@@ -18,6 +18,7 @@ import styles from "./commercial.module.css";
 import { readClientResponse, clientResponseDenied, clientResponseMessage } from "../../lib/client-response";
 
 type EvidenceItem = { label: string; value: string };
+type SavedDraft = { id: string; opportunity_id: string; title: string; content: string; artifact_type: string; status: string; created_at: string; created_by: string };
 type LiveRecommendation = {
   signalKey: string;
   opportunityId: string;
@@ -74,6 +75,8 @@ type IntelligenceSnapshot = {
     input_fingerprint: string;
   };
   recommendations: StoredRecommendation[];
+  artifacts?: SavedDraft[];
+  opportunityBriefs?: Array<{ id: string; name: string; organisation: string; stage: string; brief: string }>;
 };
 
 type DisplayRecommendation = {
@@ -100,7 +103,7 @@ async function intelligenceApi(payload?: Record<string, unknown>) {
   return readClientResponse<Record<string, unknown>>(response, "The commercial request could not be completed. Try again.", body => {
     if (!payload) return typeof body.canWrite === "boolean" && typeof body.needsRefresh === "boolean" && !!body.live && Array.isArray(body.recommendations);
     if (payload.action === "ask") return typeof body.answer === "string";
-    if (payload.action === "draft") return typeof body.draft === "string" && !!body.artifact;
+    if (payload.action === "draft" || payload.action === "reviseDraft") return typeof body.draft === "string" && !!body.artifact;
     if (payload.action === "decision") return !!body.recommendation;
     return !!body.run && Array.isArray(body.recommendations);
   });
@@ -174,9 +177,17 @@ export function CommercialIntelligencePanel({
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [asking, setAsking] = useState(false);
-  const [draft, setDraft] = useState<null | { title: string; content: string; provider: string }>(null);
+  const [draft, setDraft] = useState<null | { id: string; title: string; content: string; savedContent: string; provider: string }>(null);
+  const [draftSaving, setDraftSaving] = useState(false);
+  const [draftNotice, setDraftNotice] = useState("");
+  const [decidingId, setDecidingId] = useState<string | null>(null);
+  const [reviewFilter, setReviewFilter] = useState("today");
   const [draftingId, setDraftingId] = useState<string | null>(null);
   const autoRefreshStarted = useRef(false);
+  const draftHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { if (draft?.id) { draftHeading.current?.focus({ preventScroll: true }); draftHeading.current?.scrollIntoView({ block: "start" }); } }, [draft?.id]);
+
+  function mayCloseDraft() { return !draft || draft.content === draft.savedContent || window.confirm("Discard your unsaved changes to this draft?"); }
 
   const load = useCallback(async () => {
     try {
@@ -249,18 +260,19 @@ export function CommercialIntelligencePanel({
   }
 
   async function decide(item: DisplayRecommendation, decision: "APPROVED" | "DISMISSED") {
-    if (!item.id) return;
+    if (!item.id || decidingId) return;
+    setDecidingId(item.id);
     try {
       await intelligenceApi({ action: "decision", recommendationId: item.id, decision });
       await load();
     } catch (err) {
       if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
       setError(clientResponseMessage(err, "The recommendation could not be updated."));
-    }
+    } finally { setDecidingId(null); }
   }
 
   async function prepareDraft(item: DisplayRecommendation) {
-    if (!item.opportunityId) return;
+    if (!item.opportunityId || !mayCloseDraft()) return;
     setDraftingId(item.opportunityId);
     try {
       const purpose = item.kind === "FOLLOW_UP" ? "FOLLOW_UP_DRAFT" : "OUTREACH_DRAFT";
@@ -270,10 +282,13 @@ export function CommercialIntelligencePanel({
         purpose,
       });
       setDraft({
+        id: String((result.artifact as { id: string }).id),
         title: purpose === "FOLLOW_UP_DRAFT" ? "Prepared follow-up" : "Prepared outreach",
         content: String(result.draft),
+        savedContent: String(result.draft),
         provider: String(result.provider),
       });
+      await load();
       setError(null);
     } catch (err) {
       if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
@@ -281,6 +296,20 @@ export function CommercialIntelligencePanel({
     } finally {
       setDraftingId(null);
     }
+  }
+
+  async function saveDraftRevision() {
+    if (!draft || draftSaving) return;
+    setDraftSaving(true); setDraftNotice("");
+    try {
+      const result = await intelligenceApi({ action: "reviseDraft", artifactId: draft.id, content: draft.content });
+      setDraft({ ...draft, id: String((result.artifact as { id: string }).id), savedContent: draft.content, provider: "HUMAN" });
+      setDraftNotice("Revision saved. The earlier draft remains in your history.");
+      await load();
+    } catch (err) {
+      if (clientResponseDenied(err)) { setData(null); setDraft(null); setAnswer(""); }
+      setError(clientResponseMessage(err, "Your revision could not be saved. Try again."));
+    } finally { setDraftSaving(false); }
   }
 
   if (loading && !data) {
@@ -294,7 +323,9 @@ export function CommercialIntelligencePanel({
   const recommendations = displayRecommendations(data);
   const summary = data.latestRun?.summary || data.live.summary;
   const lastRun = data.latestRun?.created_at;
-  const openRecommendations = recommendations.filter((item) => item.status === "OPEN").slice(0, 10);
+  const pendingRecommendations = recommendations.filter((item) => item.status === "OPEN");
+  const filteredRecommendations = pendingRecommendations.filter(item => reviewFilter === "today" || reviewFilter === "all" || (reviewFilter === "approval" && item.requiresApproval) || (reviewFilter === "followup" && ["FOLLOW_UP", "REPLY_DUE", "MEETING_FOLLOW_UP"].includes(item.kind)) || (reviewFilter === "research" && item.kind === "BUYER_VERIFICATION"));
+  const openRecommendations = reviewFilter === "today" ? filteredRecommendations.slice(0, 10) : filteredRecommendations;
 
   return (
     <div className={styles.intelligenceStack}>
@@ -306,12 +337,12 @@ export function CommercialIntelligencePanel({
             <Sparkles size={16} aria-hidden="true" />
             Founder operating brief
           </div>
-          <h2>{data.live.headline}</h2>
+          <h2>{recommendations.length && !pendingRecommendations.length ? "Today’s recommendations have been reviewed." : data.live.headline}</h2>
           <p className={styles.intelligenceSummary}>{summary}</p>
           <div className={styles.intelligenceStatusLine}>
             <span>
               <Bot size={14} aria-hidden="true" />
-              {data.aiConfigured ? "AI reasoning connected" : "Evidence engine active · AI key not connected"}
+              {data.aiConfigured ? "Suggestions prepared from your commercial history" : "Priorities prepared from your commercial records"}
             </span>
             <span>Last sweep: {shortTime(lastRun)}</span>
           </div>
@@ -336,42 +367,45 @@ export function CommercialIntelligencePanel({
       <section className={styles.intelligenceMetrics} aria-label="Commercial intelligence metrics">
         <article>
           <span>Do now</span>
-          <strong>{data.live.metrics.urgent}</strong>
+          <strong>{pendingRecommendations.filter(item => item.priority === "URGENT").length}</strong>
           <small>Immediate exceptions</small>
         </article>
         <article>
           <span>Needs approval</span>
-          <strong>{data.live.metrics.approvals}</strong>
+          <strong>{pendingRecommendations.filter(item => item.requiresApproval).length}</strong>
           <small>Human send / sequence decisions</small>
         </article>
         <article>
           <span>Research blockers</span>
-          <strong>{data.live.metrics.research}</strong>
+          <strong>{pendingRecommendations.filter(item => item.kind === "BUYER_VERIFICATION").length}</strong>
           <small>Buyer routes to verify</small>
         </article>
         <article>
           <span>Follow-ups</span>
-          <strong>{data.live.metrics.followUps}</strong>
+          <strong>{pendingRecommendations.filter(item => ["FOLLOW_UP", "REPLY_DUE", "MEETING_FOLLOW_UP"].includes(item.kind)).length}</strong>
           <small>Active conversations needing movement</small>
         </article>
       </section>
 
       <section className={styles.intelligenceGrid}>
         <div className={styles.intelligenceActions}>
+          <nav className={styles.filters} aria-label="Commercial actions">
+            {[["today", "Today"], ["approval", "Needs approval"], ["followup", "Follow-ups"], ["research", "Research"], ["all", "All actions"]].map(([value, label]) => <button key={value} type="button" aria-pressed={reviewFilter === value} className={reviewFilter === value ? styles.filterActive : undefined} onClick={() => setReviewFilter(value)}>{label}</button>)}
+          </nav>
           <div className={styles.intelligenceSectionHead}>
             <div>
               <span className={styles.eyebrow}>Next best actions</span>
               <h2>What deserves your attention</h2>
             </div>
-            <span className={styles.count}>{openRecommendations.length}</span>
+            <span className={styles.count}>{pendingRecommendations.length}</span>
           </div>
 
           {openRecommendations.length === 0 ? (
             <div className={styles.intelligenceEmpty}>
               <Check size={19} />
               <div>
-                <strong>No immediate commercial exceptions.</strong>
-                <p>The agent has not found an approval, research or follow-up issue that needs intervention.</p>
+                <strong>{pendingRecommendations.length ? "No actions in this view." : "No immediate commercial exceptions."}</strong>
+                <p>{pendingRecommendations.length ? "Choose another view to review your other actions." : "There are no actions needing your review right now."}</p>
               </div>
             </div>
           ) : (
@@ -414,11 +448,11 @@ export function CommercialIntelligencePanel({
                     <button type="button" onClick={() => onOpenOpportunity(item.opportunityId)}>
                       Open opportunity <ChevronRight size={14} />
                     </button>
-                    {["OUTREACH_APPROVAL", "OUTREACH_PREP", "FOLLOW_UP"].includes(item.kind) ? (
+                    {["OUTREACH_APPROVAL", "OUTREACH_PREP", "FOLLOW_UP", "REPLY_DUE", "MEETING_FOLLOW_UP"].includes(item.kind) ? (
                       <button
                         type="button"
                         onClick={() => void prepareDraft(item)}
-                        disabled={draftingId === item.opportunityId || !data.canWrite}
+                        disabled={!!draftingId || draftSaving || !data.canWrite}
                       >
                         <FileText size={14} />
                         {draftingId === item.opportunityId ? "Preparing…" : "Prepare draft"}
@@ -429,6 +463,7 @@ export function CommercialIntelligencePanel({
                         <button
                           type="button"
                           className={styles.acceptButton}
+                          disabled={!!decidingId}
                           onClick={() => void decide(item, "APPROVED")}
                         >
                           <Check size={14} /> {item.requiresApproval ? "Approve" : "Accept"}
@@ -436,6 +471,7 @@ export function CommercialIntelligencePanel({
                         <button
                           type="button"
                           className={styles.dismissButton}
+                          disabled={!!decidingId}
                           onClick={() => void decide(item, "DISMISSED")}
                         >
                           <X size={14} /> Dismiss
@@ -447,6 +483,7 @@ export function CommercialIntelligencePanel({
               ))}
             </div>
           )}
+          {reviewFilter === "today" && pendingRecommendations.length > 10 ? <p>Your ten highest-priority actions appear here. Choose All actions to review the remaining {pendingRecommendations.length - 10}.</p> : null}
         </div>
 
         <aside className={styles.intelligenceAsk}>
@@ -498,21 +535,41 @@ export function CommercialIntelligencePanel({
           <div className={styles.draftReviewHead}>
             <div>
               <span className={styles.eyebrow}>Human review required</span>
-              <h2>{draft.title}</h2>
+              <h2 tabIndex={-1} ref={draftHeading}>{draft.title}</h2>
             </div>
-            <button type="button" aria-label="Close prepared draft" onClick={() => setDraft(null)}>
+            <button type="button" disabled={draftSaving} aria-label="Close prepared draft" onClick={() => { if (mayCloseDraft()) setDraft(null); }}>
               <X size={17} />
             </button>
           </div>
-          <pre>{draft.content}</pre>
+          <label className={styles.draftEditor}>Review your message<textarea aria-label="Prepared message" value={draft.content} maxLength={20000} rows={10} onChange={event => setDraft({ ...draft, content: event.target.value })} /></label>
+          <div className={styles.recommendationButtons}>
+            <button type="button" disabled={draftSaving || !data.canWrite || !draft.content.trim()} onClick={() => void saveDraftRevision()}>{draftSaving ? "Saving…" : "Save reviewed draft"}</button>
+            <a download="BIS-reviewed-draft.txt" href={`data:text/plain;charset=utf-8,${encodeURIComponent(draft.content)}`}>Download message</a>
+          </div>
+          {draftNotice ? <p role="status">{draftNotice}</p> : null}
           <div className={styles.draftReviewFoot}>
             <span>
               <AlertTriangle size={15} /> Draft only · nothing has been sent
             </span>
-            <small>{draft.provider === "AI_GATEWAY" ? "AI-assisted" : "Safe fallback draft"}</small>
+            <small>{draft.provider === "AI_GATEWAY" ? "Prepared with assistance" : draft.provider === "HUMAN" ? "Reviewed by you" : "Prepared from your records"}</small>
           </div>
         </section>
       ) : null}
+
+      <section className={styles.savedDrafts} aria-labelledby="commercial-drafts-heading">
+        <div className={styles.intelligenceSectionHead}><div><span className={styles.eyebrow}>Draft and approval centre</span><h2 id="commercial-drafts-heading">Ready for your review</h2></div></div>
+        <p>Saved messages stay here when you return. Review the wording before using a message.</p>
+        {(data.artifacts ?? []).length ? <div className={styles.savedDraftList}>{data.artifacts!.map(item => <article key={item.id}>
+          <div><strong>{item.title}</strong><small>Prepared {shortTime(item.created_at)} · {item.status === "APPROVED" ? "Reviewed" : "Draft"}</small></div>
+          <button type="button" disabled={draftSaving || !!draftingId} onClick={() => { if (!mayCloseDraft()) return; setDraft({ id: item.id, title: item.title, content: item.content, savedContent: item.content, provider: "SAVED" }); setDraftNotice(""); }}>Review saved draft</button>
+        </article>)}</div> : <p>No saved messages yet. Choose Prepare draft on an opportunity to begin.</p>}
+      </section>
+
+      {(data.opportunityBriefs ?? []).length ? <section className={styles.savedDrafts} aria-labelledby="commercial-memory-heading">
+        <div className={styles.intelligenceSectionHead}><div><span className={styles.eyebrow}>Opportunity intelligence</span><h2 id="commercial-memory-heading">Your commercial memory</h2></div></div>
+        <p>Fit, access, timing and the next step, with the conversation behind them.</p>
+        {data.opportunityBriefs!.map(item => <details className={styles.memoryRecord} key={item.id}><summary>{item.organisation} · {item.name}</summary><p>{item.brief}</p><button type="button" onClick={() => onOpenOpportunity(item.id)}>Open opportunity <ChevronRight size={14} /></button></details>)}
+      </section> : null}
     </div>
   );
 }

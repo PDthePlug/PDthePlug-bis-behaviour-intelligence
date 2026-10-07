@@ -58,6 +58,8 @@ export type CommercialActivity = {
   activity_type: string;
   direction: string;
   occurred_at: string;
+  subject?: string | null;
+  body?: string | null;
 };
 
 export type CommercialIntelligenceInput = {
@@ -85,7 +87,10 @@ export type CommercialRecommendation = {
     | "RECIPIENT_COLLISION"
     | "PROPOSAL_ACTION"
     | "NEXT_ACTION"
-    | "PIPELINE_REVIEW";
+    | "PIPELINE_REVIEW"
+    | "MEETING_FOLLOW_UP"
+    | "TASK_OVERDUE"
+    | "REPLY_DUE";
   priority: RecommendationPriority;
   title: string;
   rationale: string;
@@ -140,7 +145,7 @@ function verifiedContacts(input: CommercialIntelligenceInput, opportunity: Comme
 
 function latestActivity(input: CommercialIntelligenceInput, opportunity: CommercialOpportunity) {
   const matching = input.activities
-    .filter((activity) => activity.opportunity_id === opportunity.id)
+    .filter((activity) => activity.opportunity_id === opportunity.id && activity.activity_type !== "NOTE")
     .map((activity) => ({ ...activity, date: parseDate(activity.occurred_at) }))
     .filter((activity) => activity.date)
     .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
@@ -213,6 +218,7 @@ function isLaunchReady(opportunity: CommercialOpportunity) {
 export function buildCommercialBrief(
   input: CommercialIntelligenceInput,
   now = new Date(),
+  decisions: Array<{ signal_key: string; status: string; evidence: unknown }> = [],
 ): CommercialBrief {
   const recommendations: CommercialRecommendation[] = [];
 
@@ -228,6 +234,8 @@ export function buildCommercialBrief(
     const overdueDays = dueDate ? dayDiff(dueDate, now) : null;
     const proposal = proposalState(input, opportunity);
     const base = priorityWeight(opportunity.priority) + waveWeight(opportunity.wave);
+    const outboundSinceReply = input.activities.filter(item => item.opportunity_id === opportunity.id && item.direction === "OUTBOUND" && ["EMAIL", "WHATSAPP", "LINKEDIN"].includes(item.activity_type))
+      .filter(item => !input.activities.some(reply => reply.opportunity_id === opportunity.id && reply.direction === "INBOUND" && (parseDate(reply.occurred_at)?.getTime() ?? 0) > (parseDate(item.occurred_at)?.getTime() ?? 0))).length;
 
     if (isSequenceHold(opportunity)) {
       recommendations.push(
@@ -348,7 +356,12 @@ export function buildCommercialBrief(
       }
     }
 
-    if (contactedStages.has(opportunity.stage) && activityAge !== null && activityAge >= 7) {
+    if (contactedStages.has(opportunity.stage) && activity?.direction === "INBOUND") {
+      recommendations.push(makeRecommendation(opportunity, orgName, "REPLY_DUE", `${orgName} has a recorded reply to review`,
+        "The latest recorded interaction is incoming. Check what they asked before preparing another follow-up.",
+        "Read the latest reply and prepare the response that answers it.", [{ label: "Last activity", value: activity.activity_type }, { label: "Received", value: activity.occurred_at }], 88 + base, 99, true));
+    } else if (contactedStages.has(opportunity.stage) && activityAge !== null && activityAge >= 3) {
+      const pause = outboundSinceReply >= 3 || activityAge >= 14;
       recommendations.push(
         makeRecommendation(
           opportunity,
@@ -356,13 +369,14 @@ export function buildCommercialBrief(
           "FOLLOW_UP",
           `${orgName} has been quiet for ${activityAge} days`,
           "The opportunity is already in an active commercial conversation but no recent CRM activity is recorded.",
-          activityAge >= 14
-            ? "Prepare a concise final follow-up or move the opportunity to Nurture."
+          pause
+            ? "Review whether to pause or nurture this conversation. Do not keep sending repeat follow-ups."
             : "Prepare the next context-aware follow-up for approval.",
           [
             { label: "Stage", value: opportunity.stage },
             { label: "Days since activity", value: String(activityAge) },
             { label: "Last activity", value: activity?.activity_type ?? "Recorded activity" },
+            { label: "Unanswered messages", value: String(outboundSinceReply) },
           ],
           70 + Math.min(activityAge, 25) + base,
           93,
@@ -370,6 +384,17 @@ export function buildCommercialBrief(
         ),
       );
     }
+
+    if (activity?.activity_type === "MEETING" && activityAge !== null && activityAge >= 1) {
+      recommendations.push(makeRecommendation(opportunity, orgName, "MEETING_FOLLOW_UP", `Close the loop after the ${orgName} meeting`,
+        "The most recent interaction is a meeting, with no later activity recorded.", "Review the meeting notes, record the agreed next action and prepare a follow-up.",
+        [{ label: "Meeting", value: activity.occurred_at }], 78 + base, 99, true));
+    }
+
+    const overdueTasks = input.tasks.filter(task => task.opportunity_id === opportunity.id && !["DONE", "CANCELLED"].includes(task.status) && parseDate(task.due_at) && parseDate(task.due_at)!.getTime() < now.getTime());
+    if (overdueTasks.length) recommendations.push(makeRecommendation(opportunity, orgName, "TASK_OVERDUE", `${orgName}: ${overdueTasks.length} overdue ${overdueTasks.length === 1 ? "task" : "tasks"}`,
+      "These tasks have passed their due date and remain open.", overdueTasks[0].title,
+      overdueTasks.map(task => ({ label: task.title, value: task.due_at ?? "" })), 72 + base, 99));
 
     if (overdueDays !== null && overdueDays > 0 && !isLaunchReady(opportunity)) {
       recommendations.push(
@@ -414,7 +439,7 @@ export function buildCommercialBrief(
         .sort((a, b) => b.score - a.score || b.confidence - a.confidence)
         .map((item) => [item.signalKey, item]),
     ).values(),
-  );
+  ).filter(item => !decisions.some(decision => ["APPROVED", "DISMISSED"].includes(decision.status) && decision.signal_key === item.signalKey && JSON.stringify(decision.evidence) === JSON.stringify(item.evidence)));
 
   const activeOpportunities = input.opportunities.filter((opportunity) => !inactiveStages.has(opportunity.stage)).length;
   const urgent = deduped.filter((item) => item.priority === "URGENT").length;
@@ -460,27 +485,43 @@ export function fingerprintCommercialInput(input: CommercialIntelligenceInput) {
         item.next_action_due,
         item.last_activity_at,
         item.updated_at,
+        item.commercial_thesis,
+        item.hold_reason,
+        item.organisation_id,
+        item.opportunity_name,
       ])
       .sort(),
     contacts: input.contacts
-      .map((item) => [item.id, item.organisation_id, item.verification_status, item.email])
+      .map((item) => [item.id, item.organisation_id, item.verification_status, item.email, item.full_name, item.job_title])
       .sort(),
     proposals: input.proposals
       .map((item) => [item.id, item.opportunity_id, item.status, item.sent_at])
       .sort(),
     tasks: input.tasks
-      .map((item) => [item.id, item.opportunity_id, item.status, item.due_at])
+      .map((item) => [item.id, item.opportunity_id, item.status, item.due_at, item.title])
       .sort(),
     activities: input.activities
-      .map((item) => [item.id, item.opportunity_id, item.activity_type, item.occurred_at])
+      .map((item) => [item.id, item.opportunity_id, item.activity_type, item.occurred_at, item.direction, item.subject, item.body])
       .sort(),
+    organisations: input.organisations.map(item => [item.id, item.name, item.research_status]).sort(),
   });
   return createHash("sha256").update(stable).digest("hex");
 }
 
-export function deterministicCommercialAnswer(question: string, brief: CommercialBrief) {
+export function deterministicCommercialAnswer(question: string, brief: CommercialBrief, input?: CommercialIntelligenceInput) {
   const normalized = question.trim().toLowerCase();
   const top = brief.recommendations.slice(0, 5);
+  if (input) {
+    const matches = input.opportunities.filter(item => normalized.includes(item.opportunity_name.toLowerCase()) || normalized.includes(organisationName(input, item).toLowerCase()));
+    if (matches.length) return matches.map(item => commercialOpportunityBrief(input, item, brief)).join("\n\n");
+    if (/strongest|not approached|unapproached|never contacted|not contacted|closest.*meeting/.test(normalized)) {
+      const unapproached = /not approached|unapproached|never contacted|not contacted/.test(normalized);
+      const candidates = input.opportunities.filter(item => !inactiveStages.has(item.stage) && !["NURTURE", "WATCHLIST"].includes(item.stage) && (!unapproached || !contactedStages.has(item.stage)))
+        .map(item => ({ item, contacts: verifiedContacts(input, item), rank: priorityWeight(item.priority) + waveWeight(item.wave) + (item.commercial_thesis ? 12 : 0) + (verifiedContacts(input, item).length ? 20 : 0) }))
+        .sort((a,b) => b.rank - a.rank || a.item.code.localeCompare(b.item.code)).slice(0,5);
+      return candidates.length ? ["These opportunities have the strongest recorded combination of priority, programme case and verified access. This is readiness to explore, not a forecast of a sale.", ...candidates.map(({item,contacts},index) => `${index+1}. ${organisationName(input,item)} · ${item.opportunity_name}\n${item.commercial_thesis ? "A programme case is recorded" : "The programme case still needs research"}; ${contacts.length ? "a verified direct contact is available" : "a direct contact still needs verification"}. Next: ${brief.recommendations.find(rec=>rec.opportunityId===item.id)?.recommendedAction ?? item.next_action ?? "Agree a next action and date."}`)].join("\n\n") : "No current opportunities match that request.";
+    }
+  }
 
   if (/today|focus|priority|next/.test(normalized)) {
     if (!top.length) return "There are no immediate commercial exceptions in the current CRM snapshot.";
@@ -512,4 +553,24 @@ export function deterministicCommercialAnswer(question: string, brief: Commercia
   }
 
   return `${brief.headline} ${brief.summary} Ask about today’s priorities, overdue follow-ups, buyer verification or approval-ready outreach for a narrower answer.`;
+}
+
+export function commercialOpportunityBrief(input: CommercialIntelligenceInput, opportunity: CommercialOpportunity, brief = buildCommercialBrief(input)) {
+  const contacts = verifiedContacts(input, opportunity);
+  const history = input.activities.filter(item => item.opportunity_id === opportunity.id).sort((a,b) => (parseDate(b.occurred_at)?.getTime() ?? 0) - (parseDate(a.occurred_at)?.getTime() ?? 0));
+  const tasks = input.tasks.filter(item => item.opportunity_id === opportunity.id && !["DONE", "CANCELLED"].includes(item.status));
+  const recommendations = brief.recommendations.filter(item => item.opportunityId === opportunity.id);
+  return [
+    `${organisationName(input, opportunity)} · ${opportunity.opportunity_name}`,
+    `Current conversation: ${opportunity.stage.toLowerCase().replaceAll("_", " ")}.`,
+    `Programme fit: ${opportunity.commercial_thesis || "No commercial case has been recorded yet."}`,
+    `Access: ${contacts.length ? contacts.map(item => [item.full_name || "Verified contact", item.job_title].filter(Boolean).join(" · ")).join("; ") : "No verified direct contact is recorded."}`,
+    `Timing: ${opportunity.next_action_due ? `Next action due ${opportunity.next_action_due}.` : "No next-action date recorded."}`,
+    `Next step: ${recommendations[0]?.recommendedAction ?? opportunity.next_action ?? "Agree one next action and a date."}`,
+    opportunity.stage === "HOLD" ? `On hold: ${opportunity.hold_reason || "Review the hold before considering contact."}` : null,
+    history.length ? `Recent commercial memory:\n${history.slice(0,5).map(item => `• ${item.occurred_at}: ${item.activity_type.toLowerCase()} (${item.direction.toLowerCase()})${item.subject ? ` · ${item.subject}` : ""}${item.body ? ` — ${item.body.slice(0,1000)}` : ""}`).join("\n")}` : "No conversation history has been recorded.",
+    tasks.length ? `Open commitments:\n${tasks.slice(0,5).map(task => `• ${task.title}${task.due_at ? ` · due ${task.due_at}` : ""}`).join("\n")}` : "No open commitments recorded.",
+    "Useful meeting question: What change should participants be able to demonstrate, and what would make a first delivery useful?",
+    "Prepared from the commercial record. Confirm missing facts before contacting anyone.",
+  ].filter(Boolean).join("\n\n");
 }

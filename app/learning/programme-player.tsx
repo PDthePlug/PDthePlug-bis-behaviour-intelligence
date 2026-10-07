@@ -1262,11 +1262,11 @@ export function ProgrammePlayer({
                     <p className="prototype-eyebrow">Lab complete</p>
                     <h3>Your evidence record is ready.</h3>
                     <p>
-                      BIS has connected your recorded evidence to the measures it can calculate. Your private wording stays in the Lab; the portfolio shows the evidence structure and derived results.
+                      Your recorded work and next steps are ready in My BIS. You choose which evidence to share for facilitator feedback.
                     </p>
                   </div>
-                  <Link className="prototype-btn soft" href="/profile#evidence-portfolio">
-                    View my evidence portfolio <ArrowRight />
+                  <Link className="prototype-btn soft" href="/portfolio">
+                    View My BIS <ArrowRight />
                   </Link>
                 </article>
               ) : labReviewReady && moduleLabIsLive ? (

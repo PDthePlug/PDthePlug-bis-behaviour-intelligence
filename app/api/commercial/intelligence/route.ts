@@ -3,16 +3,17 @@ import { AccessError } from "../../../../lib/bis-access";
 import { canWriteCommercial, requireCommercialIdentity } from "../../../../lib/commercial-access";
 import {
   answerCommercialQuestion,
-  buildAiFounderBrief,
   commercialAiConfigured,
   draftCommercialMessage,
 } from "../../../../lib/commercial-ai";
 import {
   buildCommercialBrief,
   deterministicCommercialAnswer,
-  type CommercialIntelligenceInput,
+  commercialOpportunityBrief,
 } from "../../../../lib/commercial-intelligence";
 import { requestSupabaseClient, withSupabaseRequest } from "../../../../lib/supabase/server";
+
+import { loadInput, loadRecentDecisions, createBriefRun } from "../../../../lib/commercial-sweep";
 
 export const dynamic = "force-dynamic";
 
@@ -33,42 +34,6 @@ function requireWrite(roles: string[]) {
   if (!canWriteCommercial(roles)) {
     throw new AccessError("This commercial role is read-only.", 403);
   }
-}
-
-async function loadInput(): Promise<CommercialIntelligenceInput> {
-  const supabase = requestSupabaseClient();
-  const [organisations, contacts, opportunities, proposals, tasks, activities] = await Promise.all([
-    supabase.from("crm_organisations").select("id,name,research_status").order("name"),
-    supabase
-      .from("crm_contacts")
-      .select("id,organisation_id,full_name,job_title,email,verification_status,is_primary")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("crm_opportunities")
-      .select("id,code,organisation_id,opportunity_name,lane,priority,stage,wave,commercial_thesis,proposal_status,contact_status,next_action,next_action_due,hold_reason,last_activity_at,updated_at")
-      .order("priority")
-      .order("updated_at", { ascending: false }),
-    supabase.from("crm_proposals").select("id,opportunity_id,status,frozen_at,sent_at"),
-    supabase.from("crm_tasks").select("id,opportunity_id,title,status,priority,due_at"),
-    supabase
-      .from("crm_activities")
-      .select("id,opportunity_id,activity_type,direction,occurred_at")
-      .order("occurred_at", { ascending: false })
-      .limit(500),
-  ]);
-
-  for (const result of [organisations, contacts, opportunities, proposals, tasks, activities]) {
-    if (result.error) throw new Error(result.error.message);
-  }
-
-  return {
-    organisations: organisations.data ?? [],
-    contacts: contacts.data ?? [],
-    opportunities: opportunities.data ?? [],
-    proposals: proposals.data ?? [],
-    tasks: tasks.data ?? [],
-    activities: activities.data ?? [],
-  };
 }
 
 async function loadLatestPersisted() {
@@ -107,55 +72,12 @@ function isSameCommercialDay(a: string, b: string) {
   return johannesburgDay(a) === johannesburgDay(b);
 }
 
-async function createBriefRun(args: {
-  input: CommercialIntelligenceInput;
-  runType: "MORNING_BRIEF" | "MANUAL_REFRESH";
-}) {
-  const supabase = requestSupabaseClient();
-  const brief = buildCommercialBrief(args.input);
-  let summary = brief.summary;
-  let provider = "DETERMINISTIC";
-  let model: string | null = null;
-
-  if (commercialAiConfigured()) {
-    try {
-      const ai = await buildAiFounderBrief(args.input, brief);
-      if (ai) {
-        summary = ai.text;
-        provider = "AI_GATEWAY";
-        model = ai.model;
-      }
-    } catch {
-      provider = "DETERMINISTIC_FALLBACK";
-    }
-  }
-
-  const recommendations = brief.recommendations.map(item => ({
-    opportunity_id: item.opportunityId, signal_key: item.signalKey, kind: item.kind,
-    priority: item.priority, title: item.title, rationale: item.rationale,
-    recommended_action: item.recommendedAction, evidence: item.evidence,
-    confidence: item.confidence, score: item.score, requires_approval: item.requiresApproval,
-  }));
-  const signals = brief.recommendations.slice(0, 100).map(item => ({
-    opportunity_id: item.opportunityId, signal_type: item.kind,
-    severity: item.priority === "MEDIUM" ? "ATTENTION" : item.priority === "LOW" ? "INFO" : item.priority,
-    signal_data: { signalKey: item.signalKey, title: item.title, evidence: item.evidence, confidence: item.confidence },
-  }));
-  const saved = await supabase.rpc("bis_commit_commercial_run", {
-    p_run: { run_type: args.runType, provider, model, summary, metrics: brief.metrics, input_fingerprint: brief.inputFingerprint },
-    p_recommendations: recommendations, p_signals: signals,
-    p_artifact: { artifact_type: "FOUNDER_BRIEF", title: "Founder commercial brief", content: summary },
-    p_reuse: args.runType === "MORNING_BRIEF",
-  });
-  if (saved.error) throw new Error(saved.error.message);
-  return { brief, ...saved.data, summary: saved.data.run.summary, provider: saved.data.run.provider, model: saved.data.run.model };
-}
-
 async function getHandler() {
   try {
     const { identity, roles } = await requireCommercialIdentity();
-    const [input, persisted] = await Promise.all([loadInput(), loadLatestPersisted()]);
-    const brief = buildCommercialBrief(input);
+    const [input, persisted, artifacts] = await Promise.all([loadInput(), loadLatestPersisted(), requestSupabaseClient().from("crm_generated_artifacts").select("id,opportunity_id,artifact_type,title,content,status,created_at,created_by").neq("artifact_type", "FOUNDER_BRIEF").order("created_at", { ascending: false }).limit(50)]);
+    if (artifacts.error) throw new Error(artifacts.error.message);
+    const brief = buildCommercialBrief(input, new Date(), await loadRecentDecisions());
     const now = new Date().toISOString();
     const needsRefresh =
       !persisted.run ||
@@ -170,6 +92,8 @@ async function getHandler() {
       latestRun: persisted.run,
       recommendations: persisted.recommendations,
       needsRefresh,
+      artifacts: artifacts.data ?? [],
+      opportunityBriefs: input.opportunities.map(opportunity => ({ id: opportunity.id, name: opportunity.opportunity_name, organisation: input.organisations.find(item => item.id === opportunity.organisation_id)?.name ?? "Organisation", stage: opportunity.stage, brief: commercialOpportunityBrief(input, opportunity, brief) })),
     });
   } catch (error) {
     return errorResponse(error);
@@ -201,7 +125,7 @@ async function postHandler(request: Request) {
 
       const input = await loadInput();
       const brief = buildCommercialBrief(input);
-      let answer = deterministicCommercialAnswer(question, brief);
+      let answer = deterministicCommercialAnswer(question, brief, input);
       let provider = "DETERMINISTIC";
       let model: string | null = null;
 
@@ -249,6 +173,28 @@ async function postHandler(request: Request) {
       return Response.json(saved.data);
     }
 
+    if (action === "reviseDraft") {
+      requireWrite(roles);
+      const id = String(body.artifactId ?? "");
+      const content = String(body.content ?? "").trim();
+      if (!id || !content || content.length > 20000) fail("Choose a saved draft and keep your revision under 20,000 characters.");
+      const original = await supabase.from("crm_generated_artifacts").select("id,opportunity_id,artifact_type,title").eq("id", id).maybeSingle();
+      if (original.error) throw new Error(original.error.message);
+      if (!original.data || !["OUTREACH_DRAFT", "FOLLOW_UP_DRAFT"].includes(original.data.artifact_type)) fail("This saved draft is unavailable for revision.");
+      const sourceDraft = original.data;
+      const input = await loadInput();
+      const opportunity = input.opportunities.find(item => item.id === sourceDraft.opportunity_id);
+      if (!opportunity || ["HOLD", "LOST", "WON"].includes(opportunity.stage)) fail("This opportunity is paused or closed. Review its stage before preparing contact.");
+      const brief = buildCommercialBrief(input);
+      if (brief.recommendations.some(item => item.opportunityId === opportunity.id && item.kind === "RECIPIENT_COLLISION")) fail("Resolve the recorded recipient overlap before revising outreach.");
+      const saved = await supabase.rpc("bis_commit_commercial_run", {
+        p_run: { run_type: "DRAFT", provider: "HUMAN", summary: `Revision of draft ${id}`, metrics: brief.metrics, input_fingerprint: brief.inputFingerprint },
+        p_artifact: { opportunity_id: opportunity.id, artifact_type: original.data.artifact_type, title: `Reviewed draft · ${opportunity.opportunity_name}`, content },
+      });
+      if (saved.error) throw new Error(saved.error.message);
+      return Response.json({ artifact: saved.data.artifact, draft: content, provider: "HUMAN" });
+    }
+
     if (action === "draft") {
       requireWrite(roles);
       const opportunityId = String(body.opportunityId ?? "");
@@ -259,6 +205,7 @@ async function postHandler(request: Request) {
       const opportunity = input.opportunities.find((item) => item.id === opportunityId);
       if (!opportunity) fail("The commercial opportunity could not be found.");
       if (opportunity.stage === "HOLD") fail("This opportunity is on HOLD and cannot be prepared for outreach.");
+      if (["LOST", "WON"].includes(opportunity.stage)) fail("This opportunity is closed. Review its stage before preparing outreach.");
 
       const brief = buildCommercialBrief(input);
       const collision = brief.recommendations.find(
@@ -266,6 +213,13 @@ async function postHandler(request: Request) {
       );
       if (collision) {
         fail("Resolve the recorded recipient or programme-sequencing hold before preparing outreach.");
+      }
+
+      if (purpose === "FOLLOW_UP_DRAFT") {
+        const outbound = input.activities.filter(item => item.opportunity_id === opportunityId && item.direction === "OUTBOUND" && ["EMAIL", "WHATSAPP", "LINKEDIN"].includes(item.activity_type));
+        const replies = input.activities.filter(item => item.opportunity_id === opportunityId && item.direction === "INBOUND");
+        const unanswered = outbound.filter(item => !replies.some(reply => new Date(reply.occurred_at) > new Date(item.occurred_at)));
+        if (unanswered.length >= 3) fail("Three messages are recorded without a later reply. Review whether to pause this conversation before preparing another follow-up.");
       }
 
       const organisation =

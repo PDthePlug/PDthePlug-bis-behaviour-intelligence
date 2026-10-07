@@ -1,0 +1,1 @@
+export function handleCommercialSchedule(config: { authorization: string | null; secret: string | undefined; enabled: boolean; accountConfigured: boolean }, sweep: () => Promise<{ run: { id: string }; reused?: boolean; recommendations: unknown[] }>): Promise<Response>;

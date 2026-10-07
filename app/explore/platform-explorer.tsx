@@ -25,7 +25,7 @@ const roles = [
   { id: "owner", label: "Programme owner", icon: ChartNoAxesCombined, action: "See programme results", result: "Review the evidence. Choose a useful next step.", screen: "overview" },
 ] as const;
 const tabs = {
-  learner: [["lab", "Habit Lab"], ["learn", "Learning"], ["portfolio", "Evidence Portfolio"]],
+  learner: [["lab", "Habit Lab"], ["learn", "Learning"], ["portfolio", "My BIS"]],
   facilitator: [["cohort", "Group"], ["participants", "Learners"], ["support", "Support"], ["review", "Review"]],
   owner: [["overview", "Overview"], ["learning", "Learning"], ["practice", "Practice"], ["decisions", "Decisions"]],
 };
