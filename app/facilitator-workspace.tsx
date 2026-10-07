@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Activity, BookOpen, Check, ClipboardCheck, ShieldAlert, Users } from "lucide-react";
+import { Activity, BookOpen, Check, ClipboardCheck, Compass, ShieldAlert, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
