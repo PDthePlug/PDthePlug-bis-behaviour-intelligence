@@ -1,4 +1,5 @@
 "use client";
+import { readClientResponse, clientResponseMessage } from "@/lib/client-response";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -180,13 +181,12 @@ export function OperationsView({ initialRoles, perspective = "facilitator", sect
     setError("");
     try {
       const response = await fetch("/api/staff", { cache: "no-store" });
-      const payload = await response.json();
+      if (sequence === requestSequence.current && (response.status === 401 || response.status === 403)) setData(null);
+      const payload = await readClientResponse<StaffSnapshot>(response, "The programme workspace could not open. Try again.", value => Array.isArray(value.roles) && Boolean(value.identity));
       if (sequence !== requestSequence.current) return;
-      if (response.status === 401 || response.status === 403) setData(null);
-      if (!response.ok) throw new Error(payload.error ?? "The operations workspace could not open.");
       setData(payload); setUpdatedAt(new Date().toLocaleTimeString("en-ZA"));
     } catch (cause) {
-      if (sequence === requestSequence.current) setError(cause instanceof Error ? cause.message : "The operations workspace could not open.");
+      if (sequence === requestSequence.current) setError(clientResponseMessage(cause, "The programme workspace could not open. Try again."));
     } finally {
       if (sequence === requestSequence.current) { setLoading(false); setRefreshing(false); }
     }
@@ -199,6 +199,7 @@ export function OperationsView({ initialRoles, perspective = "facilitator", sect
   }, [load]);
 
   async function act(payload: Record<string, unknown>) {
+    if (writing.current) return false;
     writing.current = true; ++requestSequence.current; setRefreshing(false);
     setSaving(true);
     setError("");
@@ -208,13 +209,12 @@ export function OperationsView({ initialRoles, perspective = "facilitator", sect
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json();
       if (response.status === 401 || response.status === 403) setData(null);
-      if (!response.ok) throw new Error(result.error ?? "That change could not be saved.");
+      const result = await readClientResponse<StaffSnapshot>(response, "That change could not be saved. Try again.", value => Array.isArray(value.roles) && Boolean(value.identity));
       setData(result); setUpdatedAt(new Date().toLocaleTimeString("en-ZA"));
       return true;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "That change could not be saved.");
+      setError(clientResponseMessage(cause, "That change could not be saved. Try again."));
       return false;
     } finally {
       writing.current = false; setSaving(false);
@@ -542,5 +542,5 @@ function SafeguardingPanel({ data, saving, act }: { data: NonNullable<StaffSnaps
   const [resolution, setResolution] = useState<Record<string, string>>({});
   const open = data.cases.filter((item) => item.status !== "RESOLVED");
   const resolved = data.cases.filter((item) => item.status === "RESOLVED");
-  return <div className="ops-stack"><section className="ops-safeguard-banner"><ShieldAlert /><div><p className="eyebrow">Safeguarding</p><h2>Reviewed by a person.</h2><p>BIS does not read private reflections to create risk scores or diagnoses. Safeguarding decisions are made by people.</p></div><Badge variant="outline">{open.length} open</Badge></section>{open.length === 0 ? <div className="ops-empty surface-card"><Check /><h2>No unresolved cases.</h2><p>New learner requests and facilitator referrals will appear here.</p></div> : <div className="safeguard-case-list">{open.map((item) => <article className="surface-card safeguard-case" key={item.id}><div className="safeguard-case-head"><div><p className="eyebrow">{label(item.sourceType)}</p><h2>{item.learner.displayName}</h2><span>{item.learner.email} · opened {formatDate(item.openedAt)}</span></div><Badge variant="outline">{label(item.status)}</Badge></div><div className="case-summary"><span>{label(item.category)}</span><p>{item.summary}</p></div>{item.status === "OPEN" ? <div className="case-actions"><Select value={severity[item.id] ?? "MODERATE"} onValueChange={(value) => setSeverity({ ...severity, [item.id]: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="LOW">Low</SelectItem><SelectItem value="MODERATE">Moderate</SelectItem><SelectItem value="HIGH">High</SelectItem><SelectItem value="IMMEDIATE">Immediate</SelectItem></SelectContent></Select><Button disabled={saving} onClick={() => void act({ action: "acknowledgeSafeguardingCase", caseId: item.id, severity: severity[item.id] ?? "MODERATE" })}>Acknowledge and assign to me</Button></div> : <div className="case-resolution"><div><Badge>{label(item.severity)}</Badge><span>Acknowledged {formatDate(item.acknowledgedAt)} · {item.assignedToEmail}</span></div><Textarea value={resolution[item.id] ?? ""} onChange={(event) => setResolution({ ...resolution, [item.id]: event.target.value })} placeholder="Resolution and handoff outcome…" /><Button disabled={saving || !(resolution[item.id] ?? "").trim()} onClick={() => void act({ action: "resolveSafeguardingCase", caseId: item.id, resolutionNote: resolution[item.id] })}>Resolve case</Button></div>}</article>)}</div>}{resolved.length > 0 && <section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Resolved</p><h2>Closed safeguarding records</h2></div><Check /></div><div className="ops-record-list">{resolved.map((item) => <div key={item.id}><span><strong>{item.learner.displayName}</strong><small>{label(item.category)} · resolved {formatDate(item.resolvedAt)}</small></span><Badge variant="outline">{label(item.severity)}</Badge></div>)}</div></section>}</div>;
+  return <div className="ops-stack"><section className="ops-safeguard-banner"><ShieldAlert /><div><p className="eyebrow">Safeguarding</p><h2>Reviewed by a person.</h2><p>BIS does not read private reflections to create risk scores or diagnoses. Safeguarding decisions are made by people.</p></div><Badge variant="outline">{open.length} open</Badge></section>{open.length === 0 ? <div className="ops-empty surface-card"><Check /><h2>No unresolved cases.</h2><p>New learner requests and facilitator referrals will appear here.</p></div> : <div className="safeguard-case-list">{open.map((item) => <article className="surface-card safeguard-case" key={item.id}><div className="safeguard-case-head"><div><p className="eyebrow">{label(item.sourceType)}</p><h2>{item.learner.displayName}</h2><span>{item.learner.email} · opened {formatDate(item.openedAt)}</span></div><Badge variant="outline">{label(item.status)}</Badge></div><div className="case-summary"><span>{label(item.category)}</span><p>{item.summary}</p></div>{item.status === "OPEN" ? <div className="case-actions"><Select value={severity[item.id] ?? "MODERATE"} onValueChange={(value) => setSeverity({ ...severity, [item.id]: value })}><SelectTrigger aria-label="Case severity"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="LOW">Low</SelectItem><SelectItem value="MODERATE">Moderate</SelectItem><SelectItem value="HIGH">High</SelectItem><SelectItem value="IMMEDIATE">Immediate</SelectItem></SelectContent></Select><Button disabled={saving} onClick={() => void act({ action: "acknowledgeSafeguardingCase", caseId: item.id, severity: severity[item.id] ?? "MODERATE" })}>Acknowledge and assign to me</Button></div> : <div className="case-resolution"><div><Badge>{label(item.severity)}</Badge><span>Acknowledged {formatDate(item.acknowledgedAt)} · {item.assignedToEmail}</span></div><Textarea aria-label="Resolution and handoff outcome" value={resolution[item.id] ?? ""} onChange={(event) => setResolution({ ...resolution, [item.id]: event.target.value })} placeholder="Resolution and handoff outcome…" /><Button disabled={saving || !(resolution[item.id] ?? "").trim()} onClick={() => void act({ action: "resolveSafeguardingCase", caseId: item.id, resolutionNote: resolution[item.id] })}>Resolve case</Button></div>}</article>)}</div>}{resolved.length > 0 && <section className="surface-card ops-section"><div className="section-title"><div><p className="eyebrow">Resolved</p><h2>Closed safeguarding records</h2></div><Check /></div><div className="ops-record-list">{resolved.map((item) => <div key={item.id}><span><strong>{item.learner.displayName}</strong><small>{label(item.category)} · resolved {formatDate(item.resolvedAt)}</small></span><Badge variant="outline">{label(item.severity)}</Badge></div>)}</div></section>}</div>;
 }

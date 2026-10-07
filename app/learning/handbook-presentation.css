@@ -69,6 +69,11 @@
   scrollbar-width: thin;
   scrollbar-color: #879b90 #f1f4f0;
 }
+.prototype-player .prototype-document .handbook-table-frame{margin:24px 0;scroll-margin-top:80px}
+.prototype-player .prototype-sequence-notice{scroll-margin-top:80px}
+.prototype-player .prototype-document .handbook-table-frame .handbook-table-scroll{margin:0}
+.prototype-player .prototype-document .handbook-table-cue{margin:0;padding:10px 14px;border:1px solid var(--handbook-rule);border-bottom:0;border-radius:12px 12px 0 0;background:#eef3ef;color:#284b3b;font-size:.875em;line-height:1.5}
+.prototype-player .prototype-document .handbook-table-cue:not([hidden])+.handbook-table-scroll{border-top-left-radius:0;border-top-right-radius:0}
 .prototype-player .prototype-document table {
   display: table;
   table-layout: auto;
@@ -227,6 +232,8 @@
   border-radius:14px;
   background:#fff;
 }
+.canonical-shell .prototype-player .prototype-learning-document .prototype-document .handbook-table-frame .handbook-table-scroll{margin:0}
+.canonical-shell .prototype-player .prototype-learning-document .prototype-document .handbook-table-cue:not([hidden])+.handbook-table-scroll{border-top-left-radius:0;border-top-right-radius:0}
 .canonical-shell .prototype-player .prototype-learning-document .prototype-document th{
   background:#eaf0eb;
   color:#2c433b;

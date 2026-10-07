@@ -1,4 +1,5 @@
 "use client";
+import { readClientResponse, clientResponseMessage, clientResponseDenied } from "@/lib/client-response";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -269,14 +270,14 @@ export function ContentStudio() {
     setError("");
     try {
       const response = await fetch("/api/content-studio", { cache: "no-store" });
-      const payload = await response.json() as StudioSnapshot & { error?: string };
-      if (!response.ok) throw new Error(payload.error ?? "Content Studio could not open.");
+      const payload = await readClientResponse<StudioSnapshot>(response, "Content Studio could not open. Try again.", value => Array.isArray(value.items) && Boolean(value.metrics));
       setData(payload);
       const first = BIS_MODULES.find((module) => payload.items.some((item) => item.code === module.code))
         ?? payload.items[0];
       setSelectedCode((current) => current || first?.code || "");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Content Studio could not open.");
+      if (clientResponseDenied(cause)) setData(null);
+      setError(clientResponseMessage(cause, "Content Studio could not open. Try again."));
     } finally {
       setLoading(false);
     }
@@ -305,13 +306,13 @@ export function ContentStudio() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json() as StudioSnapshot & { error?: string };
-      if (!response.ok) throw new Error(result.error ?? "That change could not be completed.");
+      const result = await readClientResponse<StudioSnapshot>(response, "That change could not be completed. Try again.", value => Array.isArray(value.items) && Boolean(value.metrics));
       setData(result);
       if (success) setMessage(success);
       return result;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "That change could not be completed.");
+      if (clientResponseDenied(cause)) setData(null);
+      setError(clientResponseMessage(cause, "That change could not be completed. Try again."));
       return null;
     } finally {
       setSaving(false);
@@ -337,8 +338,7 @@ export function ContentStudio() {
         method: "POST",
         body: form,
       });
-      const result = await response.json() as VolumeAuditResult & { error?: string };
-      if (!response.ok) throw new Error(result.error ?? "The BIS volume could not be audited.");
+      const result = await readClientResponse<VolumeAuditResult>(response, "The BIS volume could not be audited. Try again.", value => Array.isArray(value.labs) && Array.isArray(value.staged));
       setVolumeAuditResult(result);
       setMessage(
         result.stageRequested
@@ -347,7 +347,7 @@ export function ContentStudio() {
       );
       if (result.stageRequested) void load();
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The BIS volume could not be audited.");
+      setError(clientResponseMessage(cause, "The BIS volume could not be audited. Try again."));
     } finally {
       setAuditingVolume(false);
     }
@@ -538,7 +538,7 @@ export function ContentStudio() {
         cacheControl: "0",
         upsert: true,
       });
-      if (upload.error) throw new Error(upload.error.message || "The file could not be uploaded.");
+      if (upload.error) throw new Error("The file could not be uploaded.");
 
       const attached = await act({
         action: "attachSource",
@@ -562,8 +562,8 @@ export function ContentStudio() {
           : `${sourceKey.replace("_", " ")} edition added and the learner preview is ready to check.`,
       );
       if (!prepared) return;
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The file could not be uploaded.");
+    } catch {
+      setError("The file could not be uploaded. Check the file and try again.");
     } finally {
       setUploadingKey("");
       const input = fileInputs.current[key];

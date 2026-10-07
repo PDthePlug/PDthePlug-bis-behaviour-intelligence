@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-10-07T02:56:30.687235+00:00",
+  "projectRef": "lbmhkddrkhtmkcvfmumd",
+  "target": "staging",
+  "accountCount": 24,
+  "roles": [
+    "FACILITATOR",
+    "LEARNER",
+    "SAFEGUARDING_OFFICER",
+    "SPONSOR_VIEWER",
+    "SYSTEM_ADMIN"
+  ],
+  "operation": "Rotate existing dedicated QA passwords",
+  "originalLearnerEvidenceModified": false,
+  "adminKeyPersisted": false,
+  "credentialValuesExported": false,
+  "boundary": "Account creation does not prove email delivery. Production sponsor/owner access must be assigned only to the synthetic cohort.",
+  "roleResolution": "Existing assignments resolved by user ID or principal email; no grants changed"
+}

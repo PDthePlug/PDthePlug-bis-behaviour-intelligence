@@ -1,0 +1,24 @@
+{
+  "changes": [
+    {
+      "scope": "staging and production",
+      "setting": "password_min_length",
+      "before": 6,
+      "after": 8,
+      "reason": "Align provider with accepted eight-character account/reset forms; existing credentials remain usable"
+    },
+    {
+      "scope": "staging",
+      "setting": "uri_allow_list",
+      "before": "",
+      "after": "http://127.0.0.1:3200/auth/callback**,http://localhost:3000/auth/callback**",
+      "reason": "Exact localhost recovery callbacks; production allowlist preserved"
+    }
+  ],
+  "providerBlocked": {
+    "setting": "password_hibp_enabled",
+    "status": 402,
+    "reason": "Pro plan and above required in both projects; no subscription changed"
+  },
+  "productionDataModified": false
+}

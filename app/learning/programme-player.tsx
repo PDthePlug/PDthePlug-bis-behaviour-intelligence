@@ -25,7 +25,7 @@ import {
 import { BIS_MODULES, BIS_MODULE_TEMPLATE } from "../../lib/bis-catalogue";
 import { loadLearningLabRuntime, universalLearningKnownValues } from "../../lib/learning-lab-runtime.mjs";
 import { WorkbookSaveQueue } from "../../lib/workbook-save-queue";
-import { enhanceHandbookDocument, syncHandbookLearningChecks, type HandbookKnownValue } from "./handbook-document-enhancements";
+import { enhanceHandbookDocument, observeHandbookTables, syncHandbookLearningChecks, type HandbookKnownValue } from "./handbook-document-enhancements";
 import type { HabitProgramme, ProgrammePage } from "../../lib/programme-handbook";
 import {
   BIS_LAB_PHASE_A_MINUTES,
@@ -939,6 +939,7 @@ export function ProgrammePlayer({
     if (!page || section !== "learn" || learnMode !== "reader") return;
     const documentRoot = documentRef.current;
     if (!documentRoot || typeof MutationObserver === "undefined") return;
+    const stopTableObservation = observeHandbookTables(documentRoot);
 
     let repairQueued = false;
     const observer = new MutationObserver((mutations) => {
@@ -952,7 +953,7 @@ export function ProgrammePlayer({
     });
 
     observer.observe(documentRoot, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); stopTableObservation(); };
   }, [learnMode, page, restoreHandbookInteractions, section]);
 
   useEffect(() => {
@@ -1421,6 +1422,12 @@ export function ProgrammePlayer({
                         : "Your responses save automatically as you write"}
               {!readOnlyMode && saveState === "error" ? <button type="button" onClick={() => void saveDirtyResponses()}>Retry save</button> : null}
             </div>
+
+            {page.key === "Certificate" ? (
+              <section className="prototype-sequence-notice" role="note" aria-label="Certificate template">
+                <div><strong>Certificate template</strong><p>This page shows the certificate wording. Reviewing it does not award a certificate or confirm completion. Your facilitator confirms the programme requirements.</p></div>
+              </section>
+            ) : null}
 
             {labSequenceLocked && selected > dayThreeIndex ? (
               <section className="prototype-sequence-notice" role="note">

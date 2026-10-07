@@ -1,0 +1,2093 @@
+{
+  "buckets": {
+    "stagingOnly": [],
+    "productionOnly": [],
+    "changed": []
+  },
+  "indexes": {
+    "stagingOnly": [
+      {
+        "name": "public.crm_agent_runs_pkey",
+        "definition": "CREATE UNIQUE INDEX crm_agent_runs_pkey ON public.crm_agent_runs USING btree (id)"
+      },
+      {
+        "name": "public.crm_approvals_pkey",
+        "definition": "CREATE UNIQUE INDEX crm_approvals_pkey ON public.crm_approvals USING btree (id)"
+      },
+      {
+        "name": "public.crm_generated_artifacts_pkey",
+        "definition": "CREATE UNIQUE INDEX crm_generated_artifacts_pkey ON public.crm_generated_artifacts USING btree (id)"
+      },
+      {
+        "name": "public.crm_recommendations_pkey",
+        "definition": "CREATE UNIQUE INDEX crm_recommendations_pkey ON public.crm_recommendations USING btree (id)"
+      },
+      {
+        "name": "public.crm_recommendations_run_id_signal_key_key",
+        "definition": "CREATE UNIQUE INDEX crm_recommendations_run_id_signal_key_key ON public.crm_recommendations USING btree (run_id, signal_key)"
+      },
+      {
+        "name": "public.crm_research_sources_pkey",
+        "definition": "CREATE UNIQUE INDEX crm_research_sources_pkey ON public.crm_research_sources USING btree (id)"
+      },
+      {
+        "name": "public.crm_signal_events_pkey",
+        "definition": "CREATE UNIQUE INDEX crm_signal_events_pkey ON public.crm_signal_events USING btree (id)"
+      },
+      {
+        "name": "public.idx_crm_agent_runs_created_at",
+        "definition": "CREATE INDEX idx_crm_agent_runs_created_at ON public.crm_agent_runs USING btree (created_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_agent_runs_type_created",
+        "definition": "CREATE INDEX idx_crm_agent_runs_type_created ON public.crm_agent_runs USING btree (run_type, created_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_approvals_recommendation",
+        "definition": "CREATE INDEX idx_crm_approvals_recommendation ON public.crm_approvals USING btree (recommendation_id, created_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_generated_artifacts_opportunity",
+        "definition": "CREATE INDEX idx_crm_generated_artifacts_opportunity ON public.crm_generated_artifacts USING btree (opportunity_id, created_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_generated_artifacts_run",
+        "definition": "CREATE INDEX idx_crm_generated_artifacts_run ON public.crm_generated_artifacts USING btree (run_id)"
+      },
+      {
+        "name": "public.idx_crm_recommendations_opportunity",
+        "definition": "CREATE INDEX idx_crm_recommendations_opportunity ON public.crm_recommendations USING btree (opportunity_id, created_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_recommendations_status_score",
+        "definition": "CREATE INDEX idx_crm_recommendations_status_score ON public.crm_recommendations USING btree (status, score DESC, created_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_research_sources_opportunity",
+        "definition": "CREATE INDEX idx_crm_research_sources_opportunity ON public.crm_research_sources USING btree (opportunity_id, captured_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_research_sources_organisation",
+        "definition": "CREATE INDEX idx_crm_research_sources_organisation ON public.crm_research_sources USING btree (organisation_id, captured_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_signal_events_opportunity",
+        "definition": "CREATE INDEX idx_crm_signal_events_opportunity ON public.crm_signal_events USING btree (opportunity_id, detected_at DESC)"
+      },
+      {
+        "name": "public.idx_crm_signal_events_type",
+        "definition": "CREATE INDEX idx_crm_signal_events_type ON public.crm_signal_events USING btree (signal_type, detected_at DESC)"
+      }
+    ],
+    "productionOnly": [
+      {
+        "name": "private.bis_runtime_secrets_pkey",
+        "definition": "CREATE UNIQUE INDEX bis_runtime_secrets_pkey ON private.bis_runtime_secrets USING btree (name)"
+      },
+      {
+        "name": "public.agency_active_passport_unique",
+        "definition": "CREATE UNIQUE INDEX agency_active_passport_unique ON public.agency_credentials USING btree (actor_id, cohort_id, credential_type) WHERE (status <> 'revoked'::text)"
+      },
+      {
+        "name": "public.agency_attestation_attester_actor_idx",
+        "definition": "CREATE INDEX agency_attestation_attester_actor_idx ON public.agency_attestations USING btree (attester_actor_id)"
+      },
+      {
+        "name": "public.agency_attestation_attester_org_idx",
+        "definition": "CREATE INDEX agency_attestation_attester_org_idx ON public.agency_attestations USING btree (attester_organisation_id)"
+      },
+      {
+        "name": "public.agency_attestation_evidence_actor_unique",
+        "definition": "CREATE UNIQUE INDEX agency_attestation_evidence_actor_unique ON public.agency_attestations USING btree (evidence_id, attester_actor_id) WHERE (attester_actor_id IS NOT NULL)"
+      },
+      {
+        "name": "public.agency_attestation_evidence_idx",
+        "definition": "CREATE INDEX agency_attestation_evidence_idx ON public.agency_attestations USING btree (evidence_id)"
+      },
+      {
+        "name": "public.agency_attestations_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_attestations_pkey ON public.agency_attestations USING btree (id)"
+      },
+      {
+        "name": "public.agency_capabilities_code_key",
+        "definition": "CREATE UNIQUE INDEX agency_capabilities_code_key ON public.agency_capabilities USING btree (code)"
+      },
+      {
+        "name": "public.agency_capabilities_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_capabilities_pkey ON public.agency_capabilities USING btree (id)"
+      },
+      {
+        "name": "public.agency_claim_capability_idx",
+        "definition": "CREATE INDEX agency_claim_capability_idx ON public.agency_credential_claims USING btree (capability_id)"
+      },
+      {
+        "name": "public.agency_claim_credential_idx",
+        "definition": "CREATE INDEX agency_claim_credential_idx ON public.agency_credential_claims USING btree (credential_id)"
+      },
+      {
+        "name": "public.agency_claim_evidence_idx",
+        "definition": "CREATE INDEX agency_claim_evidence_idx ON public.agency_credential_claims USING btree (evidence_id)"
+      },
+      {
+        "name": "public.agency_claim_evidence_unique",
+        "definition": "CREATE UNIQUE INDEX agency_claim_evidence_unique ON public.agency_credential_claims USING btree (credential_id, capability_id, evidence_id)"
+      },
+      {
+        "name": "public.agency_cohort_memberships_cohort_id_actor_id_role_key",
+        "definition": "CREATE UNIQUE INDEX agency_cohort_memberships_cohort_id_actor_id_role_key ON public.agency_cohort_memberships USING btree (cohort_id, actor_id, role)"
+      },
+      {
+        "name": "public.agency_cohort_memberships_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_cohort_memberships_pkey ON public.agency_cohort_memberships USING btree (id)"
+      },
+      {
+        "name": "public.agency_cohort_programme_idx",
+        "definition": "CREATE INDEX agency_cohort_programme_idx ON public.agency_cohorts USING btree (programme_id)"
+      },
+      {
+        "name": "public.agency_cohorts_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_cohorts_pkey ON public.agency_cohorts USING btree (id)"
+      },
+      {
+        "name": "public.agency_consent_actor_idx",
+        "definition": "CREATE INDEX agency_consent_actor_idx ON public.agency_consents USING btree (actor_id)"
+      },
+      {
+        "name": "public.agency_consent_grantee_org_idx",
+        "definition": "CREATE INDEX agency_consent_grantee_org_idx ON public.agency_consents USING btree (grantee_organisation_id)"
+      },
+      {
+        "name": "public.agency_consents_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_consents_pkey ON public.agency_consents USING btree (id)"
+      },
+      {
+        "name": "public.agency_credential_actor_idx",
+        "definition": "CREATE INDEX agency_credential_actor_idx ON public.agency_credentials USING btree (actor_id)"
+      },
+      {
+        "name": "public.agency_credential_claims_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_credential_claims_pkey ON public.agency_credential_claims USING btree (id)"
+      },
+      {
+        "name": "public.agency_credential_cohort_idx",
+        "definition": "CREATE INDEX agency_credential_cohort_idx ON public.agency_credentials USING btree (cohort_id)"
+      },
+      {
+        "name": "public.agency_credentials_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_credentials_pkey ON public.agency_credentials USING btree (id)"
+      },
+      {
+        "name": "public.agency_credentials_sharing_slug_key",
+        "definition": "CREATE UNIQUE INDEX agency_credentials_sharing_slug_key ON public.agency_credentials USING btree (sharing_slug)"
+      },
+      {
+        "name": "public.agency_event_actor_idx",
+        "definition": "CREATE INDEX agency_event_actor_idx ON public.agency_events USING btree (actor_id, occurred_at DESC)"
+      },
+      {
+        "name": "public.agency_events_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_events_pkey ON public.agency_events USING btree (id)"
+      },
+      {
+        "name": "public.agency_evidence_actor_idx",
+        "definition": "CREATE INDEX agency_evidence_actor_idx ON public.agency_evidence_items USING btree (actor_id, captured_at DESC)"
+      },
+      {
+        "name": "public.agency_evidence_capability_idx",
+        "definition": "CREATE INDEX agency_evidence_capability_idx ON public.agency_evidence_items USING btree (capability_id)"
+      },
+      {
+        "name": "public.agency_evidence_cohort_idx",
+        "definition": "CREATE INDEX agency_evidence_cohort_idx ON public.agency_evidence_items USING btree (cohort_id, captured_at DESC)"
+      },
+      {
+        "name": "public.agency_evidence_experience_idx",
+        "definition": "CREATE INDEX agency_evidence_experience_idx ON public.agency_evidence_items USING btree (experience_id)"
+      },
+      {
+        "name": "public.agency_evidence_items_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_evidence_items_pkey ON public.agency_evidence_items USING btree (id)"
+      },
+      {
+        "name": "public.agency_experience_progress_experience_id_actor_id_key",
+        "definition": "CREATE UNIQUE INDEX agency_experience_progress_experience_id_actor_id_key ON public.agency_experience_progress USING btree (experience_id, actor_id)"
+      },
+      {
+        "name": "public.agency_experience_progress_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_experience_progress_pkey ON public.agency_experience_progress USING btree (id)"
+      },
+      {
+        "name": "public.agency_experiences_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_experiences_pkey ON public.agency_experiences USING btree (id)"
+      },
+      {
+        "name": "public.agency_experiences_programme_id_code_key",
+        "definition": "CREATE UNIQUE INDEX agency_experiences_programme_id_code_key ON public.agency_experiences USING btree (programme_id, code)"
+      },
+      {
+        "name": "public.agency_invitation_accepted_by_idx",
+        "definition": "CREATE INDEX agency_invitation_accepted_by_idx ON public.agency_invitations USING btree (accepted_by) WHERE (accepted_by IS NOT NULL)"
+      },
+      {
+        "name": "public.agency_invitation_cohort_idx",
+        "definition": "CREATE INDEX agency_invitation_cohort_idx ON public.agency_invitations USING btree (cohort_id, status)"
+      },
+      {
+        "name": "public.agency_invitation_created_by_idx",
+        "definition": "CREATE INDEX agency_invitation_created_by_idx ON public.agency_invitations USING btree (created_by)"
+      },
+      {
+        "name": "public.agency_invitation_email_idx",
+        "definition": "CREATE INDEX agency_invitation_email_idx ON public.agency_invitations USING btree (lower(email)) WHERE (email IS NOT NULL)"
+      },
+      {
+        "name": "public.agency_invitation_organisation_idx",
+        "definition": "CREATE INDEX agency_invitation_organisation_idx ON public.agency_invitations USING btree (organisation_id)"
+      },
+      {
+        "name": "public.agency_invitations_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_invitations_pkey ON public.agency_invitations USING btree (id)"
+      },
+      {
+        "name": "public.agency_invitations_token_hash_key",
+        "definition": "CREATE UNIQUE INDEX agency_invitations_token_hash_key ON public.agency_invitations USING btree (token_hash)"
+      },
+      {
+        "name": "public.agency_legacy_links_actor_idx",
+        "definition": "CREATE INDEX agency_legacy_links_actor_idx ON public.agency_legacy_links USING btree (actor_id, object_type)"
+      },
+      {
+        "name": "public.agency_legacy_links_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_legacy_links_pkey ON public.agency_legacy_links USING btree (id)"
+      },
+      {
+        "name": "public.agency_legacy_links_source_system_object_type_legacy_id_key",
+        "definition": "CREATE UNIQUE INDEX agency_legacy_links_source_system_object_type_legacy_id_key ON public.agency_legacy_links USING btree (source_system, object_type, legacy_id)"
+      },
+      {
+        "name": "public.agency_membership_actor_idx",
+        "definition": "CREATE INDEX agency_membership_actor_idx ON public.agency_cohort_memberships USING btree (actor_id, cohort_id)"
+      },
+      {
+        "name": "public.agency_org_membership_actor_idx",
+        "definition": "CREATE INDEX agency_org_membership_actor_idx ON public.agency_organisation_memberships USING btree (actor_id, organisation_id)"
+      },
+      {
+        "name": "public.agency_organisation_membershi_organisation_id_actor_id_role_key",
+        "definition": "CREATE UNIQUE INDEX agency_organisation_membershi_organisation_id_actor_id_role_key ON public.agency_organisation_memberships USING btree (organisation_id, actor_id, role)"
+      },
+      {
+        "name": "public.agency_organisation_memberships_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_organisation_memberships_pkey ON public.agency_organisation_memberships USING btree (id)"
+      },
+      {
+        "name": "public.agency_organisations_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_organisations_pkey ON public.agency_organisations USING btree (id)"
+      },
+      {
+        "name": "public.agency_profiles_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_profiles_pkey ON public.agency_profiles USING btree (id)"
+      },
+      {
+        "name": "public.agency_programme_owner_org_idx",
+        "definition": "CREATE INDEX agency_programme_owner_org_idx ON public.agency_programmes USING btree (owner_organisation_id)"
+      },
+      {
+        "name": "public.agency_programme_sponsor_org_idx",
+        "definition": "CREATE INDEX agency_programme_sponsor_org_idx ON public.agency_programmes USING btree (sponsor_organisation_id)"
+      },
+      {
+        "name": "public.agency_programmes_code_key",
+        "definition": "CREATE UNIQUE INDEX agency_programmes_code_key ON public.agency_programmes USING btree (code)"
+      },
+      {
+        "name": "public.agency_programmes_pkey",
+        "definition": "CREATE UNIQUE INDEX agency_programmes_pkey ON public.agency_programmes USING btree (id)"
+      },
+      {
+        "name": "public.agency_progress_actor_idx",
+        "definition": "CREATE INDEX agency_progress_actor_idx ON public.agency_experience_progress USING btree (actor_id, updated_at DESC)"
+      },
+      {
+        "name": "public.companion_auth_attempts_pkey",
+        "definition": "CREATE UNIQUE INDEX companion_auth_attempts_pkey ON public.companion_auth_attempts USING btree (attempt_key)"
+      },
+      {
+        "name": "public.companion_auth_attempts_updated_idx",
+        "definition": "CREATE INDEX companion_auth_attempts_updated_idx ON public.companion_auth_attempts USING btree (updated_at)"
+      },
+      {
+        "name": "public.companion_lab_responses_learner_id_cartridge_id_component_i_key",
+        "definition": "CREATE UNIQUE INDEX companion_lab_responses_learner_id_cartridge_id_component_i_key ON public.companion_lab_responses USING btree (learner_id, cartridge_id, component_id)"
+      },
+      {
+        "name": "public.companion_lab_responses_learner_idx",
+        "definition": "CREATE INDEX companion_lab_responses_learner_idx ON public.companion_lab_responses USING btree (learner_id, cartridge_id)"
+      },
+      {
+        "name": "public.companion_lab_responses_pkey",
+        "definition": "CREATE UNIQUE INDEX companion_lab_responses_pkey ON public.companion_lab_responses USING btree (id)"
+      },
+      {
+        "name": "public.companion_lab_responses_updated_idx",
+        "definition": "CREATE INDEX companion_lab_responses_updated_idx ON public.companion_lab_responses USING btree (updated_at DESC)"
+      },
+      {
+        "name": "public.companion_profiles_email_key",
+        "definition": "CREATE UNIQUE INDEX companion_profiles_email_key ON public.companion_profiles USING btree (email)"
+      },
+      {
+        "name": "public.companion_profiles_google_subject_key",
+        "definition": "CREATE UNIQUE INDEX companion_profiles_google_subject_key ON public.companion_profiles USING btree (google_subject)"
+      },
+      {
+        "name": "public.companion_profiles_pkey",
+        "definition": "CREATE UNIQUE INDEX companion_profiles_pkey ON public.companion_profiles USING btree (id)"
+      },
+      {
+        "name": "public.companion_profiles_session_id_key",
+        "definition": "CREATE UNIQUE INDEX companion_profiles_session_id_key ON public.companion_profiles USING btree (session_id)"
+      },
+      {
+        "name": "public.companion_profiles_updated_idx",
+        "definition": "CREATE INDEX companion_profiles_updated_idx ON public.companion_profiles USING btree (updated_at DESC)"
+      },
+      {
+        "name": "public.companion_progress_learner_id_lab_slug_key",
+        "definition": "CREATE UNIQUE INDEX companion_progress_learner_id_lab_slug_key ON public.companion_progress USING btree (learner_id, lab_slug)"
+      },
+      {
+        "name": "public.companion_progress_pkey",
+        "definition": "CREATE UNIQUE INDEX companion_progress_pkey ON public.companion_progress USING btree (id)"
+      },
+      {
+        "name": "public.companion_progress_updated_idx",
+        "definition": "CREATE INDEX companion_progress_updated_idx ON public.companion_progress USING btree (updated_at DESC)"
+      },
+      {
+        "name": "public.companion_reflections_learner_idx",
+        "definition": "CREATE INDEX companion_reflections_learner_idx ON public.companion_reflections USING btree (learner_id, created_at DESC)"
+      },
+      {
+        "name": "public.companion_reflections_pkey",
+        "definition": "CREATE UNIQUE INDEX companion_reflections_pkey ON public.companion_reflections USING btree (id)"
+      },
+      {
+        "name": "public.idx_crm_activities_contact",
+        "definition": "CREATE INDEX idx_crm_activities_contact ON public.crm_activities USING btree (contact_id)"
+      },
+      {
+        "name": "public.idx_crm_discovery_sessions_opportunity",
+        "definition": "CREATE INDEX idx_crm_discovery_sessions_opportunity ON public.crm_discovery_sessions USING btree (opportunity_id)"
+      },
+      {
+        "name": "public.idx_crm_tasks_opportunity",
+        "definition": "CREATE INDEX idx_crm_tasks_opportunity ON public.crm_tasks USING btree (opportunity_id)"
+      }
+    ],
+    "changed": []
+  },
+  "schemas": {
+    "stagingOnly": [],
+    "productionOnly": []
+  },
+  "policies": {
+    "stagingOnly": [
+      {
+        "cmd": "INSERT",
+        "name": "public.crm_agent_runs.crm_agent_runs_insert",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.crm_agent_runs.crm_agent_runs_read",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.has_commercial_access()",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.crm_approvals.crm_approvals_insert",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.crm_approvals.crm_approvals_read",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.has_commercial_access()",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.crm_generated_artifacts.crm_generated_artifacts_insert",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.crm_generated_artifacts.crm_generated_artifacts_read",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.has_commercial_access()",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.crm_recommendations.crm_recommendations_insert",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.crm_recommendations.crm_recommendations_read",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.has_commercial_access()",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "public.crm_recommendations.crm_recommendations_update",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.can_write_commercial()",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.crm_research_sources.crm_research_sources_insert",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.crm_research_sources.crm_research_sources_read",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.has_commercial_access()",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "public.crm_research_sources.crm_research_sources_update",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.can_write_commercial()",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.crm_signal_events.crm_signal_events_insert",
+        "check": "private.can_write_commercial()",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.crm_signal_events.crm_signal_events_read",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "private.has_commercial_access()",
+        "permissive": "PERMISSIVE"
+      }
+    ],
+    "productionOnly": [
+      {
+        "cmd": "INSERT",
+        "name": "public.agency_attestations.attestations_insert_facilitator",
+        "check": "((attester_actor_id = ( SELECT auth.uid() AS uid)) AND (attester_organisation_id IS NULL) AND (EXISTS ( SELECT 1\n   FROM agency_evidence_items e\n  WHERE ((e.id = agency_attestations.evidence_id) AND (e.actor_id <> ( SELECT auth.uid() AS uid)) AND private.agency_has_cohort_role(e.cohort_id, ARRAY['facilitator'::text])))))",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_attestations.attestations_select_owner_or_attester",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "((attester_actor_id = ( SELECT auth.uid() AS uid)) OR (EXISTS ( SELECT 1\n   FROM agency_evidence_items e\n  WHERE ((e.id = agency_attestations.evidence_id) AND ((e.actor_id = ( SELECT auth.uid() AS uid)) OR private.agency_has_cohort_role(e.cohort_id, ARRAY['facilitator'::text, 'auditor'::text]))))))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_capabilities.capabilities_select_authenticated",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "true",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_cohort_memberships.memberships_select_authorized",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "((actor_id = ( SELECT auth.uid() AS uid)) OR private.agency_has_cohort_role(cohort_id, ARRAY['facilitator'::text, 'auditor'::text]) OR (EXISTS ( SELECT 1\n   FROM (agency_cohorts c\n     JOIN agency_programmes p ON ((p.id = c.programme_id)))\n  WHERE ((c.id = agency_cohort_memberships.cohort_id) AND (p.owner_organisation_id IS NOT NULL) AND private.agency_is_organisation_operator(p.owner_organisation_id)))))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_cohorts.cohorts_select_authorized",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(private.agency_is_cohort_member(id) OR (EXISTS ( SELECT 1\n   FROM agency_programmes p\n  WHERE ((p.id = agency_cohorts.programme_id) AND (p.owner_organisation_id IS NOT NULL) AND private.agency_is_organisation_operator(p.owner_organisation_id)))))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "name": "public.agency_consents.consents_owner_only",
+        "check": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "public"
+        ],
+        "using": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.agency_credential_claims.credential_claims_insert_verified_self",
+        "check": "(EXISTS ( SELECT 1\n   FROM (agency_credentials c\n     JOIN agency_evidence_items e ON ((e.id = agency_credential_claims.evidence_id)))\n  WHERE ((c.id = agency_credential_claims.credential_id) AND (c.actor_id = ( SELECT auth.uid() AS uid)) AND (c.status = 'issued'::text) AND (e.actor_id = ( SELECT auth.uid() AS uid)) AND (e.cohort_id = c.cohort_id) AND (e.capability_id = agency_credential_claims.capability_id) AND (e.visibility = ANY (ARRAY['passport'::text, 'shared'::text])) AND (EXISTS ( SELECT 1\n           FROM agency_attestations a\n          WHERE ((a.evidence_id = e.id) AND (a.status = 'verified'::text)))))))",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_credential_claims.credential_claims_select_via_credential",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM agency_credentials c\n  WHERE ((c.id = agency_credential_claims.credential_id) AND ((c.actor_id = ( SELECT auth.uid() AS uid)) OR ((c.cohort_id IS NOT NULL) AND private.agency_has_cohort_role(c.cohort_id, ARRAY['facilitator'::text, 'auditor'::text]))))))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.agency_credentials.credentials_insert_verified_self",
+        "check": "((actor_id = ( SELECT auth.uid() AS uid)) AND (credential_type = 'capability_passport'::text) AND (status = 'issued'::text) AND (cohort_id IS NOT NULL) AND private.agency_has_cohort_role(cohort_id, ARRAY['learner'::text]) AND (EXISTS ( SELECT 1\n   FROM (agency_evidence_items e\n     JOIN agency_attestations a ON (((a.evidence_id = e.id) AND (a.status = 'verified'::text))))\n  WHERE ((e.actor_id = ( SELECT auth.uid() AS uid)) AND (e.cohort_id = agency_credentials.cohort_id) AND (e.capability_id IS NOT NULL) AND (e.visibility = ANY (ARRAY['passport'::text, 'shared'::text]))))))",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_credentials.credentials_select_owner_or_facilitator",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "((actor_id = ( SELECT auth.uid() AS uid)) OR ((cohort_id IS NOT NULL) AND private.agency_has_cohort_role(cohort_id, ARRAY['facilitator'::text, 'auditor'::text])))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.agency_events.events_insert_own",
+        "check": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_events.events_select_own",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.agency_evidence_items.evidence_insert_self",
+        "check": "((actor_id = ( SELECT auth.uid() AS uid)) AND private.agency_is_cohort_member(cohort_id))",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_evidence_items.evidence_select_owner_or_facilitator",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "((actor_id = ( SELECT auth.uid() AS uid)) OR private.agency_has_cohort_role(cohort_id, ARRAY['facilitator'::text, 'auditor'::text]))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "public.agency_evidence_items.evidence_update_self",
+        "check": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "public"
+        ],
+        "using": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.agency_experience_progress.progress_insert_self",
+        "check": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_experience_progress.progress_select_self_or_facilitator",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "((actor_id = ( SELECT auth.uid() AS uid)) OR (EXISTS ( SELECT 1\n   FROM (agency_experiences e\n     JOIN agency_cohorts c ON ((c.programme_id = e.programme_id)))\n  WHERE ((e.id = agency_experience_progress.experience_id) AND private.agency_has_cohort_role(c.id, ARRAY['facilitator'::text, 'auditor'::text])))))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "public.agency_experience_progress.progress_update_self",
+        "check": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "public"
+        ],
+        "using": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_experiences.experiences_select_authorized",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "((EXISTS ( SELECT 1\n   FROM agency_cohorts c\n  WHERE ((c.programme_id = agency_experiences.programme_id) AND private.agency_is_cohort_member(c.id)))) OR (EXISTS ( SELECT 1\n   FROM agency_programmes p\n  WHERE ((p.id = agency_experiences.programme_id) AND (p.owner_organisation_id IS NOT NULL) AND private.agency_is_organisation_operator(p.owner_organisation_id)))))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_invitations.invitations_operator_read",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "(private.agency_is_organisation_operator(organisation_id) OR (created_by = ( SELECT auth.uid() AS uid)))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "INSERT",
+        "name": "public.agency_legacy_links.legacy_links_owner_insert",
+        "check": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_legacy_links.legacy_links_owner_read",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "(actor_id = ( SELECT auth.uid() AS uid))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_organisation_memberships.org_memberships_self_or_operator",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "((actor_id = ( SELECT auth.uid() AS uid)) OR private.agency_is_organisation_operator(organisation_id))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_organisations.organisations_select_cohort_context",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "true",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_profiles.profiles_select_self",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "using": "(id = ( SELECT auth.uid() AS uid))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "UPDATE",
+        "name": "public.agency_profiles.profiles_update_self",
+        "check": "(id = ( SELECT auth.uid() AS uid))",
+        "roles": [
+          "public"
+        ],
+        "using": "(id = ( SELECT auth.uid() AS uid))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "SELECT",
+        "name": "public.agency_programmes.programmes_select_authorized",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "using": "((EXISTS ( SELECT 1\n   FROM agency_cohorts c\n  WHERE ((c.programme_id = agency_programmes.id) AND private.agency_is_cohort_member(c.id)))) OR ((owner_organisation_id IS NOT NULL) AND private.agency_is_organisation_operator(owner_organisation_id)))",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "name": "public.companion_auth_attempts.companion_auth_attempts_server_access",
+        "check": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "using": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "name": "public.companion_lab_responses.companion_lab_responses_server_access",
+        "check": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "using": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "name": "public.companion_profiles.companion_profiles_server_access",
+        "check": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "using": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "name": "public.companion_progress.companion_progress_server_access",
+        "check": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "using": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "permissive": "PERMISSIVE"
+      },
+      {
+        "cmd": "ALL",
+        "name": "public.companion_reflections.companion_reflections_server_access",
+        "check": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "using": "( SELECT private.bis_companion_api_authorized() AS bis_companion_api_authorized)",
+        "permissive": "PERMISSIVE"
+      }
+    ],
+    "changed": []
+  },
+  "triggers": {
+    "stagingOnly": [
+      {
+        "name": "public.crm_recommendations.crm_recommendations_immutable_evidence",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER crm_recommendations_immutable_evidence BEFORE UPDATE ON public.crm_recommendations FOR EACH ROW EXECUTE FUNCTION private.guard_crm_recommendation_update()"
+      },
+      {
+        "name": "public.crm_research_sources.crm_research_sources_immutable_provenance",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER crm_research_sources_immutable_provenance BEFORE UPDATE ON public.crm_research_sources FOR EACH ROW EXECUTE FUNCTION private.guard_crm_research_source_update()"
+      }
+    ],
+    "productionOnly": [
+      {
+        "name": "auth.users.agency_on_auth_user_created",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER agency_on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION agency_handle_new_auth_user()"
+      },
+      {
+        "name": "public.agency_events.agency_events_append_only_delete",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER agency_events_append_only_delete BEFORE DELETE ON public.agency_events FOR EACH ROW EXECUTE FUNCTION agency_prevent_event_mutation()"
+      },
+      {
+        "name": "public.agency_events.agency_events_append_only_update",
+        "enabled": "O",
+        "definition": "CREATE TRIGGER agency_events_append_only_update BEFORE UPDATE ON public.agency_events FOR EACH ROW EXECUTE FUNCTION agency_prevent_event_mutation()"
+      }
+    ],
+    "changed": []
+  },
+  "functions": {
+    "stagingOnly": [
+      {
+        "acl": "{postgres=X/postgres}",
+        "name": "private.guard_crm_recommendation_update()",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "definition": "bf38f2b8b353cbd454757af7cc4701dc"
+      },
+      {
+        "acl": "{postgres=X/postgres}",
+        "name": "private.guard_crm_research_source_update()",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "definition": "25b8c924d66e3ab4badc0b0eb55820bd"
+      }
+    ],
+    "productionOnly": [
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "name": "private.agency_accept_invitation_impl(p_token text)",
+        "config": [
+          "search_path=public, private, extensions"
+        ],
+        "definer": true,
+        "definition": "2be5787cd7cd0f1e558179ed811d37d1"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+        "name": "private.agency_has_cohort_role(target_cohort uuid, allowed_roles text[])",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": true,
+        "definition": "299cc0f56540814795597e9193beb42c"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+        "name": "private.agency_is_cohort_member(target_cohort uuid)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": true,
+        "definition": "0267681d46b784bc4ff045077c9b71e1"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,authenticated=X/postgres}",
+        "name": "private.agency_is_organisation_operator(target_organisation uuid)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": true,
+        "definition": "c4324e5699e3192aaceae50ba239a29d"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+        "name": "private.agency_preview_invitation_impl(p_token text)",
+        "config": [
+          "search_path=public, private, extensions"
+        ],
+        "definer": true,
+        "definition": "856826cb6c0af315945f8c4b6caff7e5"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+        "name": "private.agency_public_passport_impl(p_slug text)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": true,
+        "definition": "7e9da38c5a6a2c9e790539d5fb93fb25"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres}",
+        "name": "private.bis_companion_api_authorized()",
+        "config": [
+          "search_path=pg_catalog, private, extensions"
+        ],
+        "definer": true,
+        "definition": "d5c261f2860cec34cecbcbe9752735b7"
+      },
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_accept_invitation(p_token text)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "39f0307227c76847da88992a0bb1e5cc"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_attest_evidence(p_evidence_id uuid, p_status text, p_note text)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "fe635798368580ee63f3e81670178824"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_create_cohort(p_programme_id uuid, p_name text, p_edition text, p_starts_on date, p_ends_on date)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "43891afc48d9ec3b2cb1313f5208d4ca"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_create_evidence(p_cohort_id uuid, p_experience_id uuid, p_capability_id uuid, p_evidence_kind text, p_title text, p_description text, p_visibility text, p_source_ref text, p_metadata jsonb)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "01a54a0f994c45f19b678f370b4c7e04"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_create_invitation(p_cohort_id uuid, p_role text, p_email text, p_expires_days integer)",
+        "config": [
+          "search_path=public, private, extensions"
+        ],
+        "definer": false,
+        "definition": "f5566e11cad06d62a5a53c65dafebbe2"
+      },
+      {
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_handle_new_auth_user()",
+        "config": [
+          "search_path=public"
+        ],
+        "definer": true,
+        "definition": "d75b8c6ae004b9e98ed3277892c7764a"
+      },
+      {
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_has_cohort_role(target_cohort uuid, allowed_roles text[])",
+        "config": [
+          "search_path=public"
+        ],
+        "definer": true,
+        "definition": "9ba41618dceeb15f5c54bf35a7647417"
+      },
+      {
+        "acl": "{postgres=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_is_cohort_member(target_cohort uuid)",
+        "config": [
+          "search_path=public"
+        ],
+        "definer": true,
+        "definition": "1d1b1f34742d6e0f63d8c59057f1cbf8"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_issue_capability_passport(p_cohort_id uuid)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "cc5899d2a1d0c19f3559dca9c682cd14"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_list_promotable_bis_evidence(p_limit integer)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "e58e718c34403b19b0e6a623505758af"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_prevent_event_mutation()",
+        "config": [
+          "search_path=public"
+        ],
+        "definer": false,
+        "definition": "4ac5be49facb5be36aeefd978ca173d4"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_preview_invitation(p_token text)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "b0da88e33e17f54aaf35bf534fcb17c0"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_promote_bis_evidence(p_legacy_evidence_id text, p_cohort_id uuid, p_experience_id uuid, p_capability_id uuid, p_title text, p_description text, p_visibility text)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "6a57818b7e3c92401c552bcfc226a450"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_public_passport(p_slug text)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "07413bf6b2e706f604b1f060d8a2127b"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_revoke_invitation(p_invitation_id uuid)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "fc887acf8808078e703e0686d44739d1"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_set_passport_sharing(p_credential_id uuid, p_enabled boolean)",
+        "config": [
+          "search_path=public, private, extensions"
+        ],
+        "definer": false,
+        "definition": "ad234345a579051b3d4d10425595d717"
+      },
+      {
+        "acl": "{=X/postgres,postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.agency_sponsor_outcomes(p_cohort_id uuid)",
+        "config": [
+          "search_path=public, private"
+        ],
+        "definer": false,
+        "definition": "e2256666b2088aeca13e66db7c27f271"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "name": "public.bis_save_companion_reflection(p_reflection_id uuid, p_progress_id uuid, p_learner_id uuid, p_lab_slug text, p_step_key text, p_prompt text, p_response text, p_completed_steps integer, p_now bigint)",
+        "config": [
+          "search_path=pg_catalog, public"
+        ],
+        "definer": false,
+        "definition": "859f2544ed1d6f6e20ff1b3f08afdf16"
+      },
+      {
+        "acl": "{=X/supabase_realtime_admin,supabase_realtime_admin=X/supabase_realtime_admin,postgres=X/supabase_realtime_admin,dashboard_user=X/supabase_realtime_admin}",
+        "name": "realtime.list_changes_sync(publication name, slot_name name, max_changes integer, max_record_bytes integer)",
+        "config": [
+          "log_min_messages=fatal"
+        ],
+        "definer": false,
+        "definition": "fcbc1eeaa0bd65e2d79fa397fb6f5834"
+      },
+      {
+        "acl": "{=X/supabase_realtime_admin,supabase_realtime_admin=X/supabase_realtime_admin,postgres=X/supabase_realtime_admin,dashboard_user=X/supabase_realtime_admin}",
+        "name": "realtime.settled_changes(slot_name name, max_changes integer, VARIADIC opts text[])",
+        "config": null,
+        "definer": false,
+        "definition": "0460b15f876014713ccc4a997ebb3dbd"
+      }
+    ],
+    "changed": [
+      {
+        "name": "private.can_write_commercial()",
+        "staging": {
+          "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+          "name": "private.can_write_commercial()",
+          "config": [
+            "search_path=\"\""
+          ],
+          "definer": true,
+          "definition": "4fd7f4b932480c1db46156ecc3e65921"
+        },
+        "production": {
+          "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+          "name": "private.can_write_commercial()",
+          "config": [
+            "search_path=\"\""
+          ],
+          "definer": true,
+          "definition": "90f4c2b363d44af35e91594d7e02f99a"
+        }
+      }
+    ]
+  },
+  "relations": {
+    "stagingOnly": [
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=ar/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.crm_agent_runs",
+        "options": null,
+        "forceRls": false,
+        "definition": "9382d465a475831916f4a302ef99ef39"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=ar/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.crm_approvals",
+        "options": null,
+        "forceRls": false,
+        "definition": "523ea46e1300756c3b4f60d4d4f4297d"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=ar/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.crm_generated_artifacts",
+        "options": null,
+        "forceRls": false,
+        "definition": "ff97692ea74dbf9ea14306c93d31f0b3"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=arw/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.crm_recommendations",
+        "options": null,
+        "forceRls": false,
+        "definition": "670a4f45d10db3cc67a52b5592adeb42"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=arw/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.crm_research_sources",
+        "options": null,
+        "forceRls": false,
+        "definition": "7f86b9e790554c304e619e7e9d39d0a5"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,service_role=arwdDxtm/postgres,authenticated=ar/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.crm_signal_events",
+        "options": null,
+        "forceRls": false,
+        "definition": "4b476551d6016e336370dce43d7f06d6"
+      }
+    ],
+    "productionOnly": [
+      {
+        "acl": "{postgres=arwdDxtm/postgres}",
+        "rls": false,
+        "kind": "r",
+        "name": "private.bis_runtime_secrets",
+        "options": null,
+        "forceRls": false,
+        "definition": "2c10f6656c391f584fa1fa18fa704258"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_attestations",
+        "options": null,
+        "forceRls": false,
+        "definition": "4de2d758f9f3512180a44d7ac98fdb05"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_capabilities",
+        "options": null,
+        "forceRls": false,
+        "definition": "dcb12205460f1f932b4733e9a858c4a2"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_cohort_memberships",
+        "options": null,
+        "forceRls": false,
+        "definition": "d0933bd87c6b9817093b5b12a0362b19"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_cohorts",
+        "options": null,
+        "forceRls": false,
+        "definition": "16f0c7fe8b347c266d712b6e3b7b16f2"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_consents",
+        "options": null,
+        "forceRls": false,
+        "definition": "59123e1231882dddbffbfde8f1d6d651"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_credential_claims",
+        "options": null,
+        "forceRls": false,
+        "definition": "b689470510f0bccc3e915c74ae2acbf5"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_credentials",
+        "options": null,
+        "forceRls": false,
+        "definition": "24f02fe0c8831c53af75fc234bceb8f4"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_events",
+        "options": null,
+        "forceRls": false,
+        "definition": "4788bbb7d0767f3fa033380836d1d8b0"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_evidence_items",
+        "options": null,
+        "forceRls": false,
+        "definition": "f8ba9ac4e646645634900bfc54293ff7"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_experience_progress",
+        "options": null,
+        "forceRls": false,
+        "definition": "8fdb7fdc2e997e8d668a655ef253d1c1"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_experiences",
+        "options": null,
+        "forceRls": false,
+        "definition": "e0784afdda713c8262d145fcd795e018"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_invitations",
+        "options": null,
+        "forceRls": false,
+        "definition": "6d30cdd64c28ea2cba8c730d5a0f3460"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_legacy_links",
+        "options": null,
+        "forceRls": false,
+        "definition": "d590b827e041fe6fdef6950a7f7ad984"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_organisation_memberships",
+        "options": null,
+        "forceRls": false,
+        "definition": "bc8c580a87e2e46e56baa4db62f68beb"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_organisations",
+        "options": null,
+        "forceRls": false,
+        "definition": "61c15db7e4817a0c0bf70a29e6e198f7"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_profiles",
+        "options": null,
+        "forceRls": false,
+        "definition": "10b753e20461613b3649b456dbb6d373"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.agency_programmes",
+        "options": null,
+        "forceRls": false,
+        "definition": "eeeb2f9111b3d9a068a8831d535d110b"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.companion_auth_attempts",
+        "options": null,
+        "forceRls": false,
+        "definition": "c8fcc4d4999f3172e11206aa5513c397"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.companion_lab_responses",
+        "options": null,
+        "forceRls": false,
+        "definition": "8e83031e97165c3089e38ba0ab78936a"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.companion_profiles",
+        "options": null,
+        "forceRls": false,
+        "definition": "cdf84e11928ea4fc566a0dc2312ed34b"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.companion_progress",
+        "options": null,
+        "forceRls": false,
+        "definition": "8b8c3e6241cc97fba81e51551b8b498f"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "rls": true,
+        "kind": "r",
+        "name": "public.companion_reflections",
+        "options": null,
+        "forceRls": false,
+        "definition": "03f44d3915ff4190c43ebe976b42de14"
+      }
+    ],
+    "changed": []
+  },
+  "extensions": {
+    "stagingOnly": [],
+    "productionOnly": [],
+    "changed": []
+  },
+  "constraints": {
+    "stagingOnly": [
+      {
+        "name": "public.crm_agent_runs.crm_agent_runs_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.crm_agent_runs.crm_agent_runs_run_type_check",
+        "validated": true,
+        "definition": "CHECK ((run_type = ANY (ARRAY['MORNING_BRIEF'::text, 'MANUAL_REFRESH'::text, 'ASK'::text, 'DRAFT'::text])))"
+      },
+      {
+        "name": "public.crm_agent_runs.crm_agent_runs_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['COMPLETED'::text, 'FAILED'::text, 'PARTIAL'::text])))"
+      },
+      {
+        "name": "public.crm_approvals.crm_approvals_decision_check",
+        "validated": true,
+        "definition": "CHECK ((decision = ANY (ARRAY['APPROVED'::text, 'DISMISSED'::text])))"
+      },
+      {
+        "name": "public.crm_approvals.crm_approvals_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.crm_approvals.crm_approvals_recommendation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (recommendation_id) REFERENCES crm_recommendations(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "public.crm_generated_artifacts.crm_generated_artifacts_artifact_type_check",
+        "validated": true,
+        "definition": "CHECK ((artifact_type = ANY (ARRAY['OUTREACH_DRAFT'::text, 'FOLLOW_UP_DRAFT'::text, 'MEETING_BRIEF'::text, 'PROPOSAL_NOTES'::text, 'FOUNDER_BRIEF'::text])))"
+      },
+      {
+        "name": "public.crm_generated_artifacts.crm_generated_artifacts_opportunity_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (opportunity_id) REFERENCES crm_opportunities(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.crm_generated_artifacts.crm_generated_artifacts_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.crm_generated_artifacts.crm_generated_artifacts_run_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (run_id) REFERENCES crm_agent_runs(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.crm_generated_artifacts.crm_generated_artifacts_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['DRAFT'::text, 'APPROVED'::text, 'SUPERSEDED'::text])))"
+      },
+      {
+        "name": "public.crm_recommendations.crm_recommendations_confidence_check",
+        "validated": true,
+        "definition": "CHECK (((confidence >= 0) AND (confidence <= 100)))"
+      },
+      {
+        "name": "public.crm_recommendations.crm_recommendations_opportunity_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (opportunity_id) REFERENCES crm_opportunities(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.crm_recommendations.crm_recommendations_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.crm_recommendations.crm_recommendations_priority_check",
+        "validated": true,
+        "definition": "CHECK ((priority = ANY (ARRAY['URGENT'::text, 'HIGH'::text, 'MEDIUM'::text, 'LOW'::text])))"
+      },
+      {
+        "name": "public.crm_recommendations.crm_recommendations_run_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (run_id) REFERENCES crm_agent_runs(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "public.crm_recommendations.crm_recommendations_run_id_signal_key_key",
+        "validated": true,
+        "definition": "UNIQUE (run_id, signal_key)"
+      },
+      {
+        "name": "public.crm_recommendations.crm_recommendations_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['OPEN'::text, 'APPROVED'::text, 'DISMISSED'::text, 'EXECUTED'::text, 'EXPIRED'::text])))"
+      },
+      {
+        "name": "public.crm_research_sources.crm_research_sources_opportunity_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (opportunity_id) REFERENCES crm_opportunities(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.crm_research_sources.crm_research_sources_organisation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (organisation_id) REFERENCES crm_organisations(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.crm_research_sources.crm_research_sources_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.crm_research_sources.crm_research_sources_verification_status_check",
+        "validated": true,
+        "definition": "CHECK ((verification_status = ANY (ARRAY['UNVERIFIED'::text, 'VERIFIED'::text, 'STALE'::text, 'REJECTED'::text])))"
+      },
+      {
+        "name": "public.crm_signal_events.crm_signal_events_opportunity_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (opportunity_id) REFERENCES crm_opportunities(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.crm_signal_events.crm_signal_events_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.crm_signal_events.crm_signal_events_severity_check",
+        "validated": true,
+        "definition": "CHECK ((severity = ANY (ARRAY['INFO'::text, 'ATTENTION'::text, 'HIGH'::text, 'URGENT'::text])))"
+      }
+    ],
+    "productionOnly": [
+      {
+        "name": "private.bis_runtime_secrets.bis_runtime_secrets_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (name)"
+      },
+      {
+        "name": "private.bis_runtime_secrets.bis_runtime_secrets_secret_hash_check",
+        "validated": true,
+        "definition": "CHECK ((secret_hash ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "name": "public.agency_attestations.agency_attestations_attester_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (attester_actor_id) REFERENCES auth.users(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_attestations.agency_attestations_attester_organisation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (attester_organisation_id) REFERENCES agency_organisations(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_attestations.agency_attestations_attester_present",
+        "validated": true,
+        "definition": "CHECK (((attester_actor_id IS NOT NULL) OR (attester_organisation_id IS NOT NULL)))"
+      },
+      {
+        "name": "public.agency_attestations.agency_attestations_evidence_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (evidence_id) REFERENCES agency_evidence_items(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_attestations.agency_attestations_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_attestations.agency_attestations_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['pending'::text, 'verified'::text, 'rejected'::text])))"
+      },
+      {
+        "name": "public.agency_capabilities.agency_capabilities_code_key",
+        "validated": true,
+        "definition": "UNIQUE (code)"
+      },
+      {
+        "name": "public.agency_capabilities.agency_capabilities_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_cohort_memberships.agency_cohort_memberships_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_cohort_memberships.agency_cohort_memberships_cohort_id_actor_id_role_key",
+        "validated": true,
+        "definition": "UNIQUE (cohort_id, actor_id, role)"
+      },
+      {
+        "name": "public.agency_cohort_memberships.agency_cohort_memberships_cohort_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (cohort_id) REFERENCES agency_cohorts(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_cohort_memberships.agency_cohort_memberships_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_cohort_memberships.agency_cohort_memberships_role_check",
+        "validated": true,
+        "definition": "CHECK ((role = ANY (ARRAY['learner'::text, 'facilitator'::text, 'auditor'::text, 'sponsor'::text])))"
+      },
+      {
+        "name": "public.agency_cohort_memberships.agency_cohort_memberships_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['invited'::text, 'active'::text, 'completed'::text, 'withdrawn'::text])))"
+      },
+      {
+        "name": "public.agency_cohorts.agency_cohorts_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_cohorts.agency_cohorts_programme_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (programme_id) REFERENCES agency_programmes(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_cohorts.agency_cohorts_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'active'::text, 'completed'::text, 'archived'::text])))"
+      },
+      {
+        "name": "public.agency_consents.agency_consents_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_consents.agency_consents_grantee_organisation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (grantee_organisation_id) REFERENCES agency_organisations(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_consents.agency_consents_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_consents.agency_consents_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'revoked'::text, 'expired'::text])))"
+      },
+      {
+        "name": "public.agency_credential_claims.agency_credential_claims_capability_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (capability_id) REFERENCES agency_capabilities(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "public.agency_credential_claims.agency_credential_claims_credential_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (credential_id) REFERENCES agency_credentials(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_credential_claims.agency_credential_claims_evidence_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (evidence_id) REFERENCES agency_evidence_items(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_credential_claims.agency_credential_claims_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_credentials.agency_credentials_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_credentials.agency_credentials_cohort_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (cohort_id) REFERENCES agency_cohorts(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_credentials.agency_credentials_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_credentials.agency_credentials_sharing_slug_key",
+        "validated": true,
+        "definition": "UNIQUE (sharing_slug)"
+      },
+      {
+        "name": "public.agency_credentials.agency_credentials_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'issued'::text, 'revoked'::text])))"
+      },
+      {
+        "name": "public.agency_events.agency_events_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_events.agency_events_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_evidence_items.agency_evidence_items_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_evidence_items.agency_evidence_items_capability_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (capability_id) REFERENCES agency_capabilities(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_evidence_items.agency_evidence_items_cohort_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (cohort_id) REFERENCES agency_cohorts(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_evidence_items.agency_evidence_items_evidence_kind_check",
+        "validated": true,
+        "definition": "CHECK ((evidence_kind = ANY (ARRAY['reflection'::text, 'project'::text, 'observation'::text, 'assessment'::text, 'work_sample'::text])))"
+      },
+      {
+        "name": "public.agency_evidence_items.agency_evidence_items_experience_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (experience_id) REFERENCES agency_experiences(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_evidence_items.agency_evidence_items_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_evidence_items.agency_evidence_items_visibility_check",
+        "validated": true,
+        "definition": "CHECK ((visibility = ANY (ARRAY['private'::text, 'passport'::text, 'shared'::text])))"
+      },
+      {
+        "name": "public.agency_experience_progress.agency_experience_progress_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_experience_progress.agency_experience_progress_experience_id_actor_id_key",
+        "validated": true,
+        "definition": "UNIQUE (experience_id, actor_id)"
+      },
+      {
+        "name": "public.agency_experience_progress.agency_experience_progress_experience_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (experience_id) REFERENCES agency_experiences(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_experience_progress.agency_experience_progress_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_experience_progress.agency_experience_progress_progress_percent_check",
+        "validated": true,
+        "definition": "CHECK (((progress_percent >= 0) AND (progress_percent <= 100)))"
+      },
+      {
+        "name": "public.agency_experience_progress.agency_experience_progress_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['not_started'::text, 'available'::text, 'in_progress'::text, 'complete'::text, 'locked'::text])))"
+      },
+      {
+        "name": "public.agency_experiences.agency_experiences_experience_kind_check",
+        "validated": true,
+        "definition": "CHECK ((experience_kind = ANY (ARRAY['reader'::text, 'lab'::text, 'applied_challenge'::text, 'review'::text, 'fieldwork'::text])))"
+      },
+      {
+        "name": "public.agency_experiences.agency_experiences_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_experiences.agency_experiences_programme_id_code_key",
+        "validated": true,
+        "definition": "UNIQUE (programme_id, code)"
+      },
+      {
+        "name": "public.agency_experiences.agency_experiences_programme_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (programme_id) REFERENCES agency_programmes(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_accepted_by_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (accepted_by) REFERENCES auth.users(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_cohort_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (cohort_id) REFERENCES agency_cohorts(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_created_by_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_organisation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (organisation_id) REFERENCES agency_organisations(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_role_check",
+        "validated": true,
+        "definition": "CHECK ((role = ANY (ARRAY['learner'::text, 'facilitator'::text, 'auditor'::text, 'sponsor'::text])))"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['pending'::text, 'accepted'::text, 'revoked'::text, 'expired'::text])))"
+      },
+      {
+        "name": "public.agency_invitations.agency_invitations_token_hash_key",
+        "validated": true,
+        "definition": "UNIQUE (token_hash)"
+      },
+      {
+        "name": "public.agency_legacy_links.agency_legacy_links_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_legacy_links.agency_legacy_links_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_legacy_links.agency_legacy_links_source_system_object_type_legacy_id_key",
+        "validated": true,
+        "definition": "UNIQUE (source_system, object_type, legacy_id)"
+      },
+      {
+        "name": "public.agency_organisation_memberships.agency_organisation_membershi_organisation_id_actor_id_role_key",
+        "validated": true,
+        "definition": "UNIQUE (organisation_id, actor_id, role)"
+      },
+      {
+        "name": "public.agency_organisation_memberships.agency_organisation_memberships_actor_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_organisation_memberships.agency_organisation_memberships_organisation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (organisation_id) REFERENCES agency_organisations(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_organisation_memberships.agency_organisation_memberships_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_organisation_memberships.agency_organisation_memberships_role_check",
+        "validated": true,
+        "definition": "CHECK ((role = ANY (ARRAY['owner'::text, 'operator'::text])))"
+      },
+      {
+        "name": "public.agency_organisation_memberships.agency_organisation_memberships_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'revoked'::text])))"
+      },
+      {
+        "name": "public.agency_organisations.agency_organisations_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_profiles.agency_profiles_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.agency_profiles.agency_profiles_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_programmes.agency_programmes_code_key",
+        "validated": true,
+        "definition": "UNIQUE (code)"
+      },
+      {
+        "name": "public.agency_programmes.agency_programmes_owner_organisation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (owner_organisation_id) REFERENCES agency_organisations(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_programmes.agency_programmes_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.agency_programmes.agency_programmes_sponsor_organisation_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (sponsor_organisation_id) REFERENCES agency_organisations(id) ON DELETE SET NULL"
+      },
+      {
+        "name": "public.agency_programmes.agency_programmes_status_check",
+        "validated": true,
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'active'::text, 'completed'::text, 'archived'::text])))"
+      },
+      {
+        "name": "public.companion_auth_attempts.companion_auth_attempts_attempts_check",
+        "validated": true,
+        "definition": "CHECK ((attempts >= 0))"
+      },
+      {
+        "name": "public.companion_auth_attempts.companion_auth_attempts_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (attempt_key)"
+      },
+      {
+        "name": "public.companion_lab_responses.companion_lab_responses_learner_id_cartridge_id_component_i_key",
+        "validated": true,
+        "definition": "UNIQUE (learner_id, cartridge_id, component_id)"
+      },
+      {
+        "name": "public.companion_lab_responses.companion_lab_responses_learner_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (learner_id) REFERENCES companion_profiles(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.companion_lab_responses.companion_lab_responses_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_email_check",
+        "validated": true,
+        "definition": "CHECK ((email = lower(email)))"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_email_key",
+        "validated": true,
+        "definition": "UNIQUE (email)"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_first_name_check",
+        "validated": true,
+        "definition": "CHECK (((char_length(first_name) >= 2) AND (char_length(first_name) <= 60)))"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_google_subject_key",
+        "validated": true,
+        "definition": "UNIQUE (google_subject)"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_passcode_iterations_check",
+        "validated": true,
+        "definition": "CHECK (((passcode_iterations >= 100000) AND (passcode_iterations <= 2000000)))"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_session_id_key",
+        "validated": true,
+        "definition": "UNIQUE (session_id)"
+      },
+      {
+        "name": "public.companion_profiles.companion_profiles_surname_check",
+        "validated": true,
+        "definition": "CHECK (((char_length(surname) >= 2) AND (char_length(surname) <= 60)))"
+      },
+      {
+        "name": "public.companion_progress.companion_progress_completed_steps_check",
+        "validated": true,
+        "definition": "CHECK (((completed_steps >= 0) AND (completed_steps <= 99)))"
+      },
+      {
+        "name": "public.companion_progress.companion_progress_learner_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (learner_id) REFERENCES companion_profiles(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.companion_progress.companion_progress_learner_id_lab_slug_key",
+        "validated": true,
+        "definition": "UNIQUE (learner_id, lab_slug)"
+      },
+      {
+        "name": "public.companion_progress.companion_progress_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.companion_reflections.companion_reflections_learner_id_fkey",
+        "validated": true,
+        "definition": "FOREIGN KEY (learner_id) REFERENCES companion_profiles(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "public.companion_reflections.companion_reflections_pkey",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "public.companion_reflections.companion_reflections_response_check",
+        "validated": true,
+        "definition": "CHECK ((char_length(response) <= 4000))"
+      }
+    ],
+    "changed": []
+  },
+  "roleSettings": {
+    "stagingOnly": [],
+    "productionOnly": [],
+    "changed": []
+  },
+  "schemaGrants": {
+    "stagingOnly": [],
+    "productionOnly": [],
+    "changed": [
+      {
+        "name": "private",
+        "staging": {
+          "acl": "{postgres=UC/postgres,authenticated=U/postgres}",
+          "name": "private"
+        },
+        "production": {
+          "acl": "{postgres=UC/postgres,authenticated=U/postgres,anon=U/postgres}",
+          "name": "private"
+        }
+      }
+    ]
+  }
+}

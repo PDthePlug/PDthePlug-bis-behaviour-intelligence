@@ -283,7 +283,7 @@ export function PortfolioWorkspace() {
         <div><dt>Labs</dt><dd>{allLabs.length}</dd></div>
         <div><dt>Completed</dt><dd>{allLabs.filter(item => item.status === "COMPLETED").length}</dd></div>
         <div><dt>Real-world tests</dt><dd>{allLabs.filter(item => item.anchors.some(anchor => anchor.id === "EXPERIMENT" && anchor.status === "RECORDED")).length}</dd></div>
-        <div><dt>Reviews</dt><dd>{reviews}</dd></div>
+        <div><dt>Reviews</dt><dd>{sharing.data ? reviews : sharing.loading ? "Loading…" : "Unavailable"}</dd></div>
       </dl> : null}
       <details className="portfolio-tools"><summary>Filter history</summary>      <div className="evidence-filters">
         <label>

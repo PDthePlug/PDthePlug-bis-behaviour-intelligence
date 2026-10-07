@@ -1,0 +1,370 @@
+{
+  "scope": "Read-only public row counts and aggregate row fingerprints before user-authorised QA account creation; no learner values returned",
+  "tables": [
+    {
+      "relation": "agency_attestations",
+      "records": 1,
+      "fingerprint": "46bf68855bd09accf5471eb2f857e111"
+    },
+    {
+      "relation": "agency_capabilities",
+      "records": 5,
+      "fingerprint": "ff73be209343a31f7ac431411a87e734"
+    },
+    {
+      "relation": "agency_cohort_memberships",
+      "records": 2,
+      "fingerprint": "05f00c0faabdedc58f7ef35ef473b8b0"
+    },
+    {
+      "relation": "agency_cohorts",
+      "records": 2,
+      "fingerprint": "b157eeaecd5c00899a32625d958da05e"
+    },
+    {
+      "relation": "agency_consents",
+      "records": 1,
+      "fingerprint": "047f4a1923c1783520ca6333bdf0c2fc"
+    },
+    {
+      "relation": "agency_credential_claims",
+      "records": 1,
+      "fingerprint": "61c8106b049693e6a12ea981ff8222ad"
+    },
+    {
+      "relation": "agency_credentials",
+      "records": 1,
+      "fingerprint": "b1d62594494db3123e186fa6fbee0b8f"
+    },
+    {
+      "relation": "agency_events",
+      "records": 11,
+      "fingerprint": "a7814c6bf838d47e1c9aaf7016a4a70f"
+    },
+    {
+      "relation": "agency_evidence_items",
+      "records": 2,
+      "fingerprint": "a046eaf82d68fa1343c6e42968a07e49"
+    },
+    {
+      "relation": "agency_experience_progress",
+      "records": 4,
+      "fingerprint": "5ac0593105d845f9a05e428197884505"
+    },
+    {
+      "relation": "agency_experiences",
+      "records": 11,
+      "fingerprint": "187448bb12ce9a71a280e9a50daa8e0c"
+    },
+    {
+      "relation": "agency_invitations",
+      "records": 2,
+      "fingerprint": "7ca12fe8c6ebdf73246f93868723c2b2"
+    },
+    {
+      "relation": "agency_legacy_links",
+      "records": 2,
+      "fingerprint": "4fe935ad5597ea5fafe309cfc775ae11"
+    },
+    {
+      "relation": "agency_organisation_memberships",
+      "records": 1,
+      "fingerprint": "77421003dd05abd9204e1002ffb6c5a1"
+    },
+    {
+      "relation": "agency_organisations",
+      "records": 1,
+      "fingerprint": "778656371dfda69bfdf29de7dbeb5ebc"
+    },
+    {
+      "relation": "agency_profiles",
+      "records": 18,
+      "fingerprint": "791fc2030a73188412c0741cf648c00e"
+    },
+    {
+      "relation": "agency_programmes",
+      "records": 1,
+      "fingerprint": "dfece5097497aca62154442b42f1d906"
+    },
+    {
+      "relation": "assessment_rubric_versions",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "audit_events",
+      "records": 967,
+      "fingerprint": "5598601935515098fbec9de453974f6e"
+    },
+    {
+      "relation": "certificate_awards",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "cohort_members",
+      "records": 21,
+      "fingerprint": "8f4b5bb2c5c656e8974664fec9c48081"
+    },
+    {
+      "relation": "cohort_participant_invites",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "companion_auth_attempts",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "companion_lab_responses",
+      "records": 127,
+      "fingerprint": "c01aec7f33b05e3a55127672b02a48c4"
+    },
+    {
+      "relation": "companion_profiles",
+      "records": 1,
+      "fingerprint": "bf9c5deafc9c962ba67fbd3031594717"
+    },
+    {
+      "relation": "companion_progress",
+      "records": 1,
+      "fingerprint": "d40135d13d421a3dda5c9de204195f67"
+    },
+    {
+      "relation": "companion_reflections",
+      "records": 3,
+      "fingerprint": "e9030712899adad32e464c4eaddbedbf"
+    },
+    {
+      "relation": "companion_turns",
+      "records": 6,
+      "fingerprint": "8b3a4adb02431cde65ce282ccbab01f0"
+    },
+    {
+      "relation": "consent_records",
+      "records": 22,
+      "fingerprint": "423e0b59d0eedeb3521f43681749a790"
+    },
+    {
+      "relation": "content_activation_uat",
+      "records": 8,
+      "fingerprint": "ad859ae6fcf9a0251afadaa8b8676b97"
+    },
+    {
+      "relation": "content_edition_activations",
+      "records": 5,
+      "fingerprint": "2efd479716618708fcdab4064e6fe238"
+    },
+    {
+      "relation": "content_library_items",
+      "records": 69,
+      "fingerprint": "d282f1b8a3305b35f59d6a2bdf295700"
+    },
+    {
+      "relation": "content_library_versions",
+      "records": 54,
+      "fingerprint": "5537d9a8d81718c21dc76a6704c9355e"
+    },
+    {
+      "relation": "content_releases",
+      "records": 19,
+      "fingerprint": "515165e540ecde4f959a5783aa4df566"
+    },
+    {
+      "relation": "content_runtime_activations",
+      "records": 40,
+      "fingerprint": "1e9db372ef8da4e6ed5700656651eaf9"
+    },
+    {
+      "relation": "content_runtime_artifacts",
+      "records": 40,
+      "fingerprint": "f98a515f5d291f1d553e034af717a83a"
+    },
+    {
+      "relation": "content_source_files",
+      "records": 45,
+      "fingerprint": "cd4006a9e87d092559eb7b76965e18c5"
+    },
+    {
+      "relation": "crm_activities",
+      "records": 278,
+      "fingerprint": "683c140fb9be5a55064963c06dfd7158"
+    },
+    {
+      "relation": "crm_audit_events",
+      "records": 1,
+      "fingerprint": "ee30c2adefda8740c1219aac2a58696f"
+    },
+    {
+      "relation": "crm_contacts",
+      "records": 82,
+      "fingerprint": "7c197fe427df8c5ba91258d59832f7d2"
+    },
+    {
+      "relation": "crm_discovery_sessions",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "crm_opportunities",
+      "records": 71,
+      "fingerprint": "9a815cc89251b8a76a202fd021aafc3e"
+    },
+    {
+      "relation": "crm_organisations",
+      "records": 37,
+      "fingerprint": "be5459d63f84b18ef153e98b2d645032"
+    },
+    {
+      "relation": "crm_proposals",
+      "records": 8,
+      "fingerprint": "7932d3e994b0e5bf69518cbe0bfa4d90"
+    },
+    {
+      "relation": "crm_tasks",
+      "records": 14,
+      "fingerprint": "d3b0d79acf6d43cad6db83ffc256f005"
+    },
+    {
+      "relation": "curriculum_evidence_mappings",
+      "records": 1009,
+      "fingerprint": "132de51c7526b2d7294e7d9f79d00134"
+    },
+    {
+      "relation": "evidence_assessments",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "evidence_records",
+      "records": 1201,
+      "fingerprint": "1dc86b02c2593a551870b6534f09ca8b"
+    },
+    {
+      "relation": "evidence_submissions",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "experiment_checkpoints",
+      "records": 1,
+      "fingerprint": "136c4bea003855c5499198fcc1e0fdf6"
+    },
+    {
+      "relation": "experiment_events",
+      "records": 87,
+      "fingerprint": "663d56155052e400c914c671068265e9"
+    },
+    {
+      "relation": "experiment_parameter_versions",
+      "records": 1,
+      "fingerprint": "3ec72cdb33b29f3be02fc44f18e0411f"
+    },
+    {
+      "relation": "experiments",
+      "records": 17,
+      "fingerprint": "d720df9523eb5ce806aff2673571b378"
+    },
+    {
+      "relation": "facilitator_notes",
+      "records": 4,
+      "fingerprint": "1b9e7a21df21e76e3466af9a9fb7f2e6"
+    },
+    {
+      "relation": "facilitator_sessions",
+      "records": 1,
+      "fingerprint": "aa5ecbae131da38b212b87158afcb969"
+    },
+    {
+      "relation": "handbook_progress",
+      "records": 249,
+      "fingerprint": "0b9895a64f694bbae8d59786c3735ba7"
+    },
+    {
+      "relation": "hypotheses",
+      "records": 1,
+      "fingerprint": "24097f64a0d50388c207990ac80a92d5"
+    },
+    {
+      "relation": "lab_assignments",
+      "records": 2,
+      "fingerprint": "9ec5a1f1d6d98d8355a4b025925f533a"
+    },
+    {
+      "relation": "lab_enrollments",
+      "records": 68,
+      "fingerprint": "50b7810cf0a9cc76c18129fc17a1a0cc"
+    },
+    {
+      "relation": "learners",
+      "records": 33,
+      "fingerprint": "70f61076ec67415cfe6d3e4de3caab92"
+    },
+    {
+      "relation": "measurement_history",
+      "records": 239,
+      "fingerprint": "6a07e524cb5798e5ea638ed5749bc531"
+    },
+    {
+      "relation": "measurement_sources",
+      "records": 144,
+      "fingerprint": "33f685b5500e6b21fb276896d35149ee"
+    },
+    {
+      "relation": "measurement_values",
+      "records": 239,
+      "fingerprint": "551fe755a10331b6b38ef9cedac4c908"
+    },
+    {
+      "relation": "memory_items",
+      "records": 1,
+      "fingerprint": "fc77a43d58e00f53adac389511d828b1"
+    },
+    {
+      "relation": "notification_preferences",
+      "records": 1,
+      "fingerprint": "ed8a0c820dc41ddcc6b3b75fda254438"
+    },
+    {
+      "relation": "pilot_cohorts",
+      "records": 2,
+      "fingerprint": "1be5279add6e41dde6c965d2ea29cfb6"
+    },
+    {
+      "relation": "pilot_events",
+      "records": 82,
+      "fingerprint": "4c68c484449c8064b9c0b6f35555dc36"
+    },
+    {
+      "relation": "programme_decisions",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "question_analysis_registry",
+      "records": 310,
+      "fingerprint": "343335adeb98cc4bf4a27a0147ce8b63"
+    },
+    {
+      "relation": "responses",
+      "records": 1188,
+      "fingerprint": "4fe690c53e77cc47bfc6d444c2b9eb25"
+    },
+    {
+      "relation": "role_assignments",
+      "records": 41,
+      "fingerprint": "a957a944d0764963b0113797d2945a97"
+    },
+    {
+      "relation": "safeguarding_cases",
+      "records": 8,
+      "fingerprint": "5b86d10f83e771ad8cf52d4f8245d7b9"
+    },
+    {
+      "relation": "session_attendance",
+      "records": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+  ]
+}

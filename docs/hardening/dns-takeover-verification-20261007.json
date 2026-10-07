@@ -1,0 +1,74 @@
+{
+  "observedAt": "2026-10-07T04:21:30.198746+00:00",
+  "userReport": "DNS corrected",
+  "records": [
+    {
+      "resolver": "Google",
+      "answers": [
+        {
+          "name": "bisportal.online.",
+          "type": 1,
+          "TTL": 600,
+          "data": "216.198.79.1"
+        },
+        {
+          "name": "bisportal.online.",
+          "type": 1,
+          "TTL": 600,
+          "data": "13.248.243.5"
+        },
+        {
+          "name": "bisportal.online.",
+          "type": 1,
+          "TTL": 600,
+          "data": "76.223.105.230"
+        }
+      ],
+      "status": 0
+    },
+    {
+      "resolver": "Cloudflare",
+      "answers": [
+        {
+          "name": "bisportal.online",
+          "type": 1,
+          "TTL": 600,
+          "data": "76.223.105.230"
+        },
+        {
+          "name": "bisportal.online",
+          "type": 1,
+          "TTL": 600,
+          "data": "13.248.243.5"
+        },
+        {
+          "name": "bisportal.online",
+          "type": 1,
+          "TTL": 600,
+          "data": "216.198.79.1"
+        }
+      ],
+      "status": 0
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "finalUrl": "https://bisportal.online/"
+    },
+    {
+      "path": "/sign-in",
+      "status": 404,
+      "finalUrl": "https://bisportal.online/sign-in"
+    },
+    {
+      "path": "/forgot-password",
+      "status": 404,
+      "finalUrl": "https://bisportal.online/forgot-password"
+    },
+    {
+      "path": "/handbooks/hab",
+      "status": 404,
+      "finalUrl": "https://bisportal.online/handbooks/hab"
+    }
+  ]
+}

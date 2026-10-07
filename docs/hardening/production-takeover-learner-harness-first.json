@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-10-07T03:32:02.614Z",
+  "checks": [
+    {
+      "journey": "Fresh password sign-in and protected return",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "calendarOverride": false,
+  "boundary": "Dedicated authorised QA learner only. Baseline and Hook are verified; calendar-complete investigation and certificate issuance are not claimed.",
+  "result": "HARNESS_FAILURE",
+  "failure": "Playwright input check intercepted by its styled visible label; use real keyboard activation and recheck persistence. No product regression inferred from the selector failure.",
+  "supersededBy": "production-takeover-learner-journey.json"
+}

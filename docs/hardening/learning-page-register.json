@@ -417,7 +417,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "HAB:emerging_adult:HAB.PROGRAMME.WELCOME",
@@ -833,7 +845,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "HAB:workplace:HAB.PROGRAMME.WELCOME",
@@ -1248,7 +1272,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "DEC:school:DEC.PROGRAMME.WELCOME",
@@ -1664,7 +1700,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "DEC:emerging_adult:DEC.PROGRAMME.WELCOME",
@@ -2080,7 +2128,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "DEC:workplace:DEC.PROGRAMME.WELCOME",
@@ -2496,7 +2556,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "MON:school:MON.PROGRAMME.WELCOME",
@@ -2913,7 +2985,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "MON:emerging_adult:MON.PROGRAMME.WELCOME",
@@ -3336,7 +3420,19 @@
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "MON:workplace:MON.PROGRAMME.WELCOME",
@@ -3753,7 +3849,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "IDN:school:IDN.PROGRAMME.WELCOME",
@@ -4176,7 +4284,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "IDN:emerging_adult:IDN.PROGRAMME.WELCOME",
@@ -4600,7 +4720,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "IDN:workplace:IDN.PROGRAMME.WELCOME",
@@ -5023,7 +5155,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "ATT:school:ATT.PROGRAMME.WELCOME",
@@ -5449,7 +5593,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "ATT:emerging_adult:ATT.PROGRAMME.WELCOME",
@@ -5878,7 +6034,19 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     },
     {
       "id": "ATT:workplace:ATT.PROGRAMME.WELCOME",
@@ -6304,10 +6472,42 @@
         "Manual reading/language review for this exact page and edition.",
         "Assigned-facilitator variant and production live verification remain within UAT-ALL-STATES and LIVE-ROLES.",
         "LANGUAGE-CERTIFICATE-STATE: template/issued workflow and confirmed completion require canonical review."
-      ]
+      ],
+      "takeoverReview": {
+        "problem": "Authored completion wording needs an explicit template-versus-award distinction.",
+        "correction": "Shared Certificate template note; source wording and response controls unchanged.",
+        "verification": [
+          "tests/browser/programme-journey.spec.ts",
+          "takeover-staging-page-verification-20261007.json"
+        ],
+        "releaseStatus": "IN_BRANCH; EXACT PREVIEW / LIVE VERIFICATION PENDING",
+        "outstanding": [
+          "Achievement/issuance variants remain separate from page review."
+        ]
+      }
     }
   ],
-  "generatedAt": "2026-10-06T21:21:28.412Z",
+  "generatedAt": "2026-10-07T02:50:56.903Z",
   "coverageBoundary": "195 accepted source page/edition variants. Source inventory and fixture rendering do not imply every live publication, role or state has been manually reviewed.",
-  "productIteration": "docs/hardening/product-experience-20261006.md"
+  "productIteration": "docs/hardening/product-experience-20261006.md",
+  "sourceReadyManuscripts": [
+    {
+      "module": "TIM",
+      "source": "content/learning-sources/time-v1.0-authored.md",
+      "sourceHash": "706491b535deb8f64a4393a762e657f77b2773e3087640a719aa4248b99b245d",
+      "sourceVersion": "1.0",
+      "editions": [
+        "school",
+        "emerging_adult",
+        "workplace"
+      ],
+      "compiledPages": 39,
+      "verification": "scripts/audit-canonical-learning-sources.mjs; tests/canonical-learning-source.test.mjs",
+      "releaseStatus": "SOURCE_READY; UNPUBLISHED",
+      "outstanding": [
+        "Content Studio final check and explicit publication remain required.",
+        "Responsive manual review of the new authored source in the shared Learning renderer remains open."
+      ]
+    }
+  ]
 }

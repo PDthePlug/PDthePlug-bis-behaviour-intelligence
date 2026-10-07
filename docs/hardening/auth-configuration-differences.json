@@ -1,0 +1,47 @@
+{
+  "observedAt": "2026-10-07T02:59:33.739010+00:00",
+  "comparedSettings": 243,
+  "differences": [
+    {
+      "setting": "external_google_client_id",
+      "staging": null,
+      "production": "946588651616-82fkp6m3jper1ru3ts67bnth5ns592h8.apps.googleusercontent.com",
+      "valuesDiffer": true
+    },
+    {
+      "setting": "external_google_enabled",
+      "staging": false,
+      "production": true,
+      "valuesDiffer": true
+    },
+    {
+      "setting": "external_google_secret",
+      "staging": null,
+      "production": {
+        "valueOmitted": true,
+        "configured": true
+      },
+      "valuesDiffer": true
+    },
+    {
+      "setting": "external_google_skip_nonce_check",
+      "staging": null,
+      "production": false,
+      "valuesDiffer": true
+    },
+    {
+      "setting": "site_url",
+      "staging": "http://localhost:3000",
+      "production": "https://www.bisportal.online",
+      "valuesDiffer": true
+    },
+    {
+      "setting": "uri_allow_list",
+      "staging": "",
+      "production": "https://www.bisportal.online/auth/callback**,https://www.bisportal.online",
+      "valuesDiffer": true
+    }
+  ],
+  "configurationModified": false,
+  "boundary": "Provider credentials and SMTP identities/templates omitted; comparisons performed in memory. Recovery delivery requires a real approved inbox."
+}

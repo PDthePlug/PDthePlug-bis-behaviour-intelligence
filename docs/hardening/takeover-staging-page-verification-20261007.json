@@ -1,0 +1,3820 @@
+{
+  "observedAt": "2026-10-07T03:24:51.258906+00:00",
+  "branchCodeCommit": "62f7406",
+  "backend": "BIS Staging",
+  "matrix": [
+    {
+      "role": "LEARNER",
+      "route": "/",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "headings": [
+        "Good to see you, fullscope-20261006-01.",
+        "Orientation",
+        "Your evidence record is ready."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-0-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "headings": [
+        "Good to see you, fullscope-20261006-01.",
+        "Orientation",
+        "Your evidence record is ready."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-1-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-2-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs",
+      "headings": [
+        "Lab library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-3-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "headings": [
+        "The Experiment",
+        "Record one real moment",
+        "Did I do it?",
+        "Notes"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-4-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/mon",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "headings": [
+        "Money Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-5-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/rsk",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/rsk",
+      "headings": [
+        "Risk Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-6-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/zzz",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/zzz",
+      "headings": [
+        "Lab unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-7-360.png",
+      "failureDisposition": "Unknown Lab diagnostic; deliberate 404",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=1",
+      "headings": [
+        "Orientation",
+        "WELCOME",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP",
+        "WEEK 1 \u2014 FOUNDATION",
+        "WEEK 2 \u2014 EVIDENCE"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-8-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/mon",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/mon?page=1",
+      "headings": [
+        "Orientation \u00b7 Money & Privacy",
+        "WELCOME",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP",
+        "A NOTE ON MONEY IN THIS LAB",
+        "A NOTE ON PRIVACY"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-9-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/rsk",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/rsk",
+      "headings": [
+        "Programme unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-10-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "headings": [
+        "Orientation \u00b7 Identity, Safety & Assessment",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON IDENTITY",
+        "The Safe Investigation Boundary",
+        "How You Are Assessed",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-11-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "headings": [
+        "Orientation \u00b7 Attention, Safety & Privacy",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON ATTENTION",
+        "The Safe Investigation Boundary",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-12-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-13-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/hab",
+      "width": 360,
+      "status": 404,
+      "finalPath": "/learning/hab",
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/learning/hab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-14-360.png",
+      "failureDisposition": "Not a supported route; /learning/habit is the compatibility entry",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/habit",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-15-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-16-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab/experiment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "headings": [
+        "The Experiment",
+        "Record one real moment",
+        "Did I do it?",
+        "Notes"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-17-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/decision",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/dec",
+      "headings": [
+        "Lab unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-18-360.png",
+      "failureDisposition": "Documented staging static/unpublished DEC; production is dynamic",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/money",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "headings": [
+        "Money Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-19-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-20-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-21-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/portfolio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/portfolio",
+      "headings": [
+        "Evidence Portfolio"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-22-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-23-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/commercial",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Commercial access is restricted."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-24-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/workspace",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace",
+      "headings": [
+        "Workspace unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/staff"
+        }
+      ],
+      "screenshot": "pages/LEARNER-25-360.png",
+      "failureDisposition": "Learner staff-role denial",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "headings": [
+        "Good to see you, fullscope-20261006-01.",
+        "Orientation",
+        "Your evidence record is ready."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-26-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "headings": [
+        "Good to see you, fullscope-20261006-01.",
+        "Orientation",
+        "Your evidence record is ready."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-27-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-28-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs",
+      "headings": [
+        "Lab library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-29-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "headings": [
+        "The Experiment",
+        "Record one real moment",
+        "Did I do it?",
+        "Notes"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-30-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/mon",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "headings": [
+        "Money Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-31-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/rsk",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/rsk",
+      "headings": [
+        "Risk Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-32-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/zzz",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/zzz",
+      "headings": [
+        "Lab unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-33-430.png",
+      "failureDisposition": "Unknown Lab diagnostic; deliberate 404",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=1",
+      "headings": [
+        "Orientation",
+        "WELCOME",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP",
+        "WEEK 1 \u2014 FOUNDATION",
+        "WEEK 2 \u2014 EVIDENCE"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-34-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/mon",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/mon?page=1",
+      "headings": [
+        "Orientation \u00b7 Money & Privacy",
+        "WELCOME",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP",
+        "A NOTE ON MONEY IN THIS LAB",
+        "A NOTE ON PRIVACY"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-35-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/rsk",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/rsk",
+      "headings": [
+        "Programme unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-36-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "headings": [
+        "Orientation \u00b7 Identity, Safety & Assessment",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON IDENTITY",
+        "The Safe Investigation Boundary",
+        "How You Are Assessed",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-37-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "headings": [
+        "Orientation \u00b7 Attention, Safety & Privacy",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON ATTENTION",
+        "The Safe Investigation Boundary",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-38-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-39-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/hab",
+      "width": 430,
+      "status": 404,
+      "finalPath": "/learning/hab",
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/learning/hab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-40-430.png",
+      "failureDisposition": "Not a supported route; /learning/habit is the compatibility entry",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/habit",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-41-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-42-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab/experiment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "headings": [
+        "The Experiment",
+        "Record one real moment",
+        "Did I do it?",
+        "Notes"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-43-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/decision",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/dec",
+      "headings": [
+        "Lab unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-44-430.png",
+      "failureDisposition": "Documented staging static/unpublished DEC; production is dynamic",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/money",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "headings": [
+        "Money Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-45-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-46-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-47-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/portfolio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/portfolio",
+      "headings": [
+        "Evidence Portfolio"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-48-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-49-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/commercial",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Commercial access is restricted."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-50-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/workspace",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace",
+      "headings": [
+        "Workspace unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/staff"
+        }
+      ],
+      "screenshot": "pages/LEARNER-51-430.png",
+      "failureDisposition": "Learner staff-role denial",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "headings": [
+        "Good to see you, fullscope-20261006-01.",
+        "Orientation",
+        "Your evidence record is ready."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-52-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/habit?page=1",
+      "headings": [
+        "Good to see you, fullscope-20261006-01.",
+        "Orientation",
+        "Your evidence record is ready."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-53-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learn",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-54-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs",
+      "headings": [
+        "Lab library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-55-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/hab?step=7",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "headings": [
+        "The Experiment",
+        "Record one real moment",
+        "Did I do it?",
+        "Notes"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-56-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/mon",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "headings": [
+        "Money Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-57-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/rsk",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/rsk",
+      "headings": [
+        "Risk Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-58-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/labs/zzz",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/zzz",
+      "headings": [
+        "Lab unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-59-1280.png",
+      "failureDisposition": "Unknown Lab diagnostic; deliberate 404",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/dec",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/dec?page=1",
+      "headings": [
+        "Orientation",
+        "WELCOME",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP",
+        "WEEK 1 \u2014 FOUNDATION",
+        "WEEK 2 \u2014 EVIDENCE"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-60-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/mon",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/mon?page=1",
+      "headings": [
+        "Orientation \u00b7 Money & Privacy",
+        "WELCOME",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP",
+        "A NOTE ON MONEY IN THIS LAB",
+        "A NOTE ON PRIVACY"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-61-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/rsk",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/rsk",
+      "headings": [
+        "Programme unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-62-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/idn",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/idn?page=1",
+      "headings": [
+        "Orientation \u00b7 Identity, Safety & Assessment",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON IDENTITY",
+        "The Safe Investigation Boundary",
+        "How You Are Assessed",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-63-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/handbooks/att",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/handbooks/att?page=1",
+      "headings": [
+        "Orientation \u00b7 Attention, Safety & Privacy",
+        "WELCOME",
+        "BEFORE YOU BEGIN \u2014 A NOTE ON ATTENTION",
+        "The Safe Investigation Boundary",
+        "A Note on Privacy",
+        "HOW TO USE THIS BOOK",
+        "Learning Levels",
+        "\ud83d\udd2c Analyse I can break things down and see connections",
+        "YOUR 10-DAY MAP"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-64-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-65-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/hab",
+      "width": 1280,
+      "status": 404,
+      "finalPath": "/learning/hab",
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/learning/hab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-66-1280.png",
+      "failureDisposition": "Not a supported route; /learning/habit is the compatibility entry",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/learning/habit",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/learn",
+      "headings": [
+        "Learning library.",
+        "Core Identity & Behaviour",
+        "Habit Lab\u2122",
+        "Decision Lab\u2122",
+        "Money Lab\u2122",
+        "Identity Lab\u2122",
+        "Attention Lab\u2122",
+        "Time Lab\u2122",
+        "Risk Lab\u2122",
+        "Trust Lab\u2122",
+        "Influence Lab\u2122",
+        "Leadership Lab\u2122",
+        "Purpose Lab\u2122",
+        "Resilience Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-67-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab",
+      "headings": [
+        "The Profile",
+        "I am becoming someone who",
+        "Habit Investigated",
+        "Biggest Trigger",
+        "Reward I Was Seeking",
+        "Cost I Was Ignoring",
+        "Risk Factors",
+        "My Equation",
+        "Confidence (Pre \u2192 Post)",
+        "Habit Control (Pre \u2192 Post)",
+        "Next Habit to Investigate",
+        "One Sentence That Describes Me Now",
+        "Your Behaviour Profile",
+        "Letter to My Future Self",
+        "Letter to My Future Self",
+        "YOUR JOURNEY CONTINUES",
+        "What I observed",
+        "What changed",
+        "What remains uncertain",
+        "What I will test next",
+        "Habit Lab\u2122"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-68-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/habit-lab/experiment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/hab?step=7",
+      "headings": [
+        "The Experiment",
+        "Record one real moment",
+        "Did I do it?",
+        "Notes"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-69-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/decision",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/dec",
+      "headings": [
+        "Lab unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/api/universal-lab"
+        }
+      ],
+      "screenshot": "pages/LEARNER-70-1280.png",
+      "failureDisposition": "Documented staging static/unpublished DEC; production is dynamic",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/money",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/labs/mon",
+      "headings": [
+        "Money Lab\u2122",
+        "Before you begin"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-71-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/settings",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/settings",
+      "headings": [
+        "Settings",
+        "Appearance"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-72-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/profile",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/profile",
+      "headings": [
+        "fullscope-20261006-01",
+        "My BIS",
+        "Account"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-73-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/portfolio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/portfolio",
+      "headings": [
+        "Evidence Portfolio"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-74-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/experience",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience",
+      "headings": [
+        "My experience"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-75-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/commercial",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Commercial access is restricted."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/LEARNER-76-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "LEARNER",
+      "route": "/workspace",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace",
+      "headings": [
+        "Workspace unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/staff"
+        }
+      ],
+      "screenshot": "pages/LEARNER-77-1280.png",
+      "failureDisposition": "Learner staff-role denial",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".programme-publication-details > summary"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.78 (foreground color: #40594c, background color: #17313b, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-78-360.png",
+      "accessibilityDisposition": "Superseded by corrected dark-banner disclosure; matching repeat has no violations",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-79-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-80-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".programme-publication-details > summary"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.78 (foreground color: #40594c, background color: #17313b, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-81-360.png",
+      "accessibilityDisposition": "Superseded by corrected dark-banner disclosure; matching repeat has no violations",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".programme-publication-details > summary"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.78 (foreground color: #40594c, background color: #17313b, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-82-360.png",
+      "accessibilityDisposition": "Superseded by corrected dark-banner disclosure; matching repeat has no violations",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".programme-publication-details > summary"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.78 (foreground color: #40594c, background color: #17313b, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-83-360.png",
+      "accessibilityDisposition": "Superseded by corrected dark-banner disclosure; matching repeat has no violations",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".programme-publication-details > summary"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.78 (foreground color: #40594c, background color: #17313b, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-84-360.png",
+      "accessibilityDisposition": "Superseded by corrected dark-banner disclosure; matching repeat has no violations",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/content-studio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Content Studio unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/content-studio"
+        }
+      ],
+      "screenshot": "pages/FACILITATOR-85-360.png",
+      "failureDisposition": "Facilitator publishing-role denial",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "headings": [
+        "Opening your dashboard\u2026"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-86-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-87-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-88-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-89-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-90-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-91-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-92-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/content-studio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Content Studio unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/content-studio"
+        }
+      ],
+      "screenshot": "pages/FACILITATOR-93-430.png",
+      "failureDisposition": "Facilitator publishing-role denial",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-94-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=participants",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=participants",
+      "headings": [
+        "Learners",
+        "20 learners"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-95-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=review",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=review",
+      "headings": [
+        "Review",
+        "Shared evidence review",
+        "No shared evidence awaiting review"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-96-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-97-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-98-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-99-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-100-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/content-studio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Content Studio unavailable"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 403,
+          "path": "/api/content-studio"
+        }
+      ],
+      "screenshot": "pages/FACILITATOR-101-1280.png",
+      "failureDisposition": "Facilitator publishing-role denial",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-102-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-103-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Evidence & outcomes",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-104-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Reports",
+        "Assessment reports"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-105-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Programme decisions",
+        "What did the organisation decide?",
+        "SYNTHETIC-HARDENING-OWNER 1791302422090: keep observation review available",
+        "SYNTHETIC-HARDENING-OWNER 1791290081440: keep observation review available"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-106-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-107-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-108-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Evidence & outcomes",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-109-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Reports",
+        "Assessment reports"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-110-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Programme decisions",
+        "What did the organisation decide?",
+        "SYNTHETIC-HARDENING-OWNER 1791302422090: keep observation review available",
+        "SYNTHETIC-HARDENING-OWNER 1791290081440: keep observation review available"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-111-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=overview&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-112-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=journey&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Results",
+        "What the group evidence is telling us",
+        "Participants are beginning their real-world tests",
+        "What participants say about their understanding",
+        "What has been recorded so far",
+        "BEI-01-Pre",
+        "How certain are you?",
+        "How certain are you?",
+        "Predicted adherence",
+        "BEI-07-Post",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-113-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=evidence&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Evidence & outcomes",
+        "From learner evidence to programme results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-114-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=reports&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Reports",
+        "Assessment reports"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-115-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SPONSOR_VIEWER",
+      "route": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes&section=decisions&group=a652342a-07e3-4850-8d03-2dc130d38919",
+      "headings": [
+        "Programme decisions",
+        "What did the organisation decide?",
+        "SYNTHETIC-HARDENING-OWNER 1791302422090: keep observation review available",
+        "SYNTHETIC-HARDENING-OWNER 1791290081440: keep observation review available"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SPONSOR_VIEWER-116-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "headings": [
+        "Administration",
+        "Real-world opportunities",
+        "Learner progress",
+        "How BIS reaches and protects results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-117-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "headings": [
+        "Administration",
+        "Manage access"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-118-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "headings": [
+        "Administration",
+        "Create a group",
+        "Add people to a group"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-119-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "headings": [
+        "Administration",
+        "Curriculum evidence and rubrics",
+        "ATT.WB.CHECK.14GFGK3.SIGNAL",
+        "Enable an authored rubric",
+        "Enabled rubric versions"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-120-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-121-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Partnerships, pipeline and execution.",
+        "Wave 1",
+        "What is actually moving?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-122-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "headings": [
+        "Administration",
+        "Real-world opportunities",
+        "Learner progress",
+        "How BIS reaches and protects results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-123-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "headings": [
+        "Administration",
+        "Manage access"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-124-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "headings": [
+        "Administration",
+        "Create a group",
+        "Add people to a group"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-125-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "headings": [
+        "Administration",
+        "Curriculum evidence and rubrics",
+        "ATT.WB.CHECK.14GFGK3.SIGNAL",
+        "Enable an authored rubric",
+        "Enabled rubric versions"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-126-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-127-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Partnerships, pipeline and execution.",
+        "Wave 1",
+        "What is actually moving?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-128-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=overview",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=overview",
+      "headings": [
+        "Administration",
+        "Real-world opportunities",
+        "Learner progress",
+        "How BIS reaches and protects results"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-129-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=access",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=access",
+      "headings": [
+        "Administration",
+        "Manage access"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-130-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=groups",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=groups",
+      "headings": [
+        "Administration",
+        "Create a group",
+        "Add people to a group"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-131-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/workspace?view=admin&section=assessment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin&section=assessment",
+      "headings": [
+        "Administration",
+        "Curriculum evidence and rubrics",
+        "ATT.WB.CHECK.14GFGK3.SIGNAL",
+        "Enable an authored rubric",
+        "Enabled rubric versions"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-132-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/content-studio",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/content-studio",
+      "headings": [
+        "Choose a BIS title and add the content that is ready.",
+        "What are you updating?",
+        "Habit Lab Learning Module",
+        "Published to learners",
+        "Version history",
+        "See it exactly as the learner will.",
+        "See it exactly as the learner will."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-133-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SYSTEM_ADMIN",
+      "route": "/commercial",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/commercial",
+      "headings": [
+        "Partnerships, pipeline and execution.",
+        "Wave 1",
+        "What is actually moving?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SYSTEM_ADMIN-134-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-135-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=outcomes",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-136-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-137-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=outcomes",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-138-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=facilitator",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-139-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "SAFEGUARDING_OFFICER",
+      "route": "/workspace?view=outcomes",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=outcomes",
+      "headings": [
+        "Reviewed by a person.",
+        "No unresolved cases."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/SAFEGUARDING_OFFICER-140-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "headings": [
+        "Behaviour comes before results.",
+        "Every habit tells a story."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-141-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "headings": [
+        "Continue your journey.",
+        "Reset your password."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-142-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/reset-password",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/sign-in?next=%2Freset-password",
+      "headings": [
+        "Behaviour comes before results.",
+        "Every habit tells a story."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-143-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience/leap9",
+      "headings": [
+        "From learning to evidence.",
+        "Try the learning.",
+        "Support the person.",
+        "Understand the group.",
+        "A shortened experience of a longer journey"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-144-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9/v2",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/experience/leap9/v2",
+      "headings": [
+        "See the programme move.",
+        "What happens after the room?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-145-360.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/qa-handbooks",
+      "width": 360,
+      "status": 404,
+      "finalPath": "/qa-handbooks",
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/qa-handbooks"
+        }
+      ],
+      "screenshot": "pages/PUBLIC-146-360.png",
+      "failureDisposition": "Preview-only fixture disabled outside allowed fixture environment",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "headings": [
+        "Behaviour comes before results.",
+        "Every habit tells a story."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-147-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "headings": [
+        "Continue your journey.",
+        "Reset your password."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-148-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/reset-password",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/sign-in?next=%2Freset-password",
+      "headings": [
+        "Behaviour comes before results.",
+        "Every habit tells a story."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-149-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience/leap9",
+      "headings": [
+        "From learning to evidence.",
+        "Try the learning.",
+        "Support the person.",
+        "Understand the group.",
+        "A shortened experience of a longer journey"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-150-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9/v2",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/experience/leap9/v2",
+      "headings": [
+        "See the programme move.",
+        "What happens after the room?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-151-430.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/qa-handbooks",
+      "width": 430,
+      "status": 404,
+      "finalPath": "/qa-handbooks",
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/qa-handbooks"
+        }
+      ],
+      "screenshot": "pages/PUBLIC-152-430.png",
+      "failureDisposition": "Preview-only fixture disabled outside allowed fixture environment",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/sign-in",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/sign-in",
+      "headings": [
+        "Behaviour comes before results.",
+        "Every habit tells a story."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-153-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/forgot-password",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/forgot-password",
+      "headings": [
+        "Continue your journey.",
+        "Reset your password."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-154-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/reset-password",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/sign-in?next=%2Freset-password",
+      "headings": [
+        "Behaviour comes before results.",
+        "Every habit tells a story."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-155-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience/leap9",
+      "headings": [
+        "From learning to evidence.",
+        "Try the learning.",
+        "Support the person.",
+        "Understand the group.",
+        "A shortened experience of a longer journey"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-156-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/experience/leap9/v2",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/experience/leap9/v2",
+      "headings": [
+        "See the programme move.",
+        "What happens after the room?"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/PUBLIC-157-1280.png",
+      "manualReview": "Automated capture; full route/state review remains open"
+    },
+    {
+      "role": "PUBLIC",
+      "route": "/qa-handbooks",
+      "width": 1280,
+      "status": 404,
+      "finalPath": "/qa-handbooks",
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [
+        {
+          "kind": "http",
+          "status": 404,
+          "path": "/qa-handbooks"
+        }
+      ],
+      "screenshot": "pages/PUBLIC-158-1280.png",
+      "failureDisposition": "Preview-only fixture disabled outside allowed fixture environment",
+      "manualReview": "Automated capture; full route/state review remains open"
+    }
+  ],
+  "correctedBannerRepeat": [
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-0-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-1-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-2-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-3-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 360,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-4-360.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-5-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-6-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "headings": [
+        "Opening your dashboard\u2026"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-7-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-8-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 430,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-9-430.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=class",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=class",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-10-1280.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=learning",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=learning",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-11-1280.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=experiment",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=experiment",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-12-1280.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=facilitator&section=notes",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=facilitator&section=notes",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-13-1280.png"
+    },
+    {
+      "role": "FACILITATOR",
+      "route": "/workspace?view=admin",
+      "width": 1280,
+      "status": 200,
+      "finalPath": "/workspace?view=admin",
+      "headings": [
+        "Group",
+        "BIS hardening synthetic cohort 20261006",
+        "Where a check-in could help",
+        "Where your group is in the Lab",
+        "Where learners want more support",
+        "Where the group is now",
+        "Opportunities recorded",
+        "Latest learner movement"
+      ],
+      "overflow": 0,
+      "unlabelled": [],
+      "accessibility": [],
+      "errors": [],
+      "screenshot": "pages/FACILITATOR-14-1280.png"
+    }
+  ],
+  "readerTableCertificate": [
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 360,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-360.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 360,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-360.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 430,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": true,
+          "keyboardScroll": "PASS"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-430.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 430,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-430.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=4",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 1280,
+      "tables": [
+        {
+          "name": "What Sipho Didn't See \u2014 scroll horizontally if needed",
+          "clipped": false,
+          "keyboardScroll": "NOT_NEEDED"
+        },
+        {
+          "name": "The Second Pattern \u2014 scroll horizontally if needed",
+          "clipped": false,
+          "keyboardScroll": "NOT_NEEDED"
+        }
+      ],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "4-1280.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    },
+    {
+      "route": "/handbooks/hab?page=13",
+      "role": "LEARNER",
+      "target": "staging",
+      "width": 1280,
+      "tables": [],
+      "accessibility": [],
+      "overflow": 0,
+      "errors": [],
+      "refresh": "PASS",
+      "screenshot": "13-1280.png",
+      "manualReview": "PENDING; capture is separate from visual review"
+    }
+  ],
+  "boundary": "Earlier failed captures retained and explicitly superseded. Automated accessibility/geometry is separate from manual whole-page review. Synthetic fixture data only."
+}

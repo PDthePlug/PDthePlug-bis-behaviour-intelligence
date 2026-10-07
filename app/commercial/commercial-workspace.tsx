@@ -1,4 +1,5 @@
 "use client";
+import { readClientResponse, clientResponseMessage, clientResponseDenied } from "@/lib/client-response";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -21,7 +22,7 @@ const laneQuestion: Record<string, string> = { SCHOOL: "What happens after learn
 
 function pretty(value: string) { return value.toLowerCase().split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" "); }
 function shortDate(value: string | null) { if (!value) return "—"; return new Intl.DateTimeFormat("en-ZA", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value)); }
-async function api(action?: Record<string, unknown>) { const response = await fetch("/api/commercial", { method: action ? "POST" : "GET", headers: action ? { "Content-Type": "application/json" } : undefined, body: action ? JSON.stringify(action) : undefined, cache: "no-store" }); const body = await response.json(); if (!response.ok) throw new Error(body.error ?? "Commercial request failed."); return body; }
+async function api(action?: Record<string, unknown>) { const response = await fetch("/api/commercial", { method: action ? "POST" : "GET", headers: action ? { "Content-Type": "application/json" } : undefined, body: action ? JSON.stringify(action) : undefined, cache: "no-store" }); return readClientResponse<Snapshot>(response, action ? "The commercial update could not be saved. Try again." : "The commercial workspace could not open. Try again.", action ? undefined : value => ["organisations","contacts","opportunities","proposals","tasks","activities","controlledStages"].every(field => Array.isArray(value[field])) && Boolean(value.metrics)); }
 
 export function CommercialWorkspace({ identity, roles }: { identity: Identity; roles: string[] }) {
   const [data, setData] = useState<Snapshot | null>(null);
@@ -38,15 +39,15 @@ export function CommercialWorkspace({ identity, roles }: { identity: Identity; r
   const [showNewOpportunity, setShowNewOpportunity] = useState(false);
   const [showNewOrganisation, setShowNewOrganisation] = useState(false);
 
-  async function refresh() { setLoading(true); try { const next = (await api()) as Snapshot; setData(next); setError(null); } catch (err) { setError(err instanceof Error ? err.message : "Could not load commercial data."); } finally { setLoading(false); } }
+  async function refresh() { setLoading(true); try { const next = (await api()) as Snapshot; setData(next); setError(null); } catch (err) { if (clientResponseDenied(err)) setData(null); setError(clientResponseMessage(err, "The commercial workspace could not open. Try again.")); } finally { setLoading(false); } }
   useEffect(() => {
     let cancelled=false;
-    void api().then(next=>{if(!cancelled){setData(next as Snapshot);setError(null);}}).catch(err=>{if(!cancelled)setError(err instanceof Error?err.message:"Could not load commercial data.");}).finally(()=>{if(!cancelled)setLoading(false);});
+    void api().then(next=>{if(!cancelled){setData(next as Snapshot);setError(null);}}).catch(err=>{if(!cancelled){if(clientResponseDenied(err))setData(null);setError(clientResponseMessage(err, "The commercial workspace could not open. Try again."));}}).finally(()=>{if(!cancelled)setLoading(false);});
     return ()=>{cancelled=true;};
   }, []);
   const selected = data?.opportunities.find((item) => item.id === selectedId) ?? null;
   const filtered = useMemo(() => data?.opportunities.filter((item) => lane === "ALL" || item.lane === lane) ?? [], [data, lane]);
-  async function mutate(payload: Record<string, unknown>) { setBusy(true); try { await api(payload); await refresh(); return true; } catch (err) { setError(err instanceof Error ? err.message : "The update failed."); return false; } finally { setBusy(false); } }
+  async function mutate(payload: Record<string, unknown>) { setBusy(true); try { await api(payload); await refresh(); return true; } catch (err) { if (clientResponseDenied(err)) setData(null); setError(clientResponseMessage(err, "The commercial update could not be saved. Try again.")); return false; } finally { setBusy(false); } }
 
   return <div className={styles.shell}>
     <main className={styles.main}>

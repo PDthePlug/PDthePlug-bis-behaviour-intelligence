@@ -41,6 +41,20 @@ async function learningService(page: Page, state: "due" | "recorded" | "review" 
   } }));
 }
 
+test("certificate reading remains a labelled template even when the review is saved", async ({ page }) => {
+  await learningService(page, "complete");
+  const reader = structuredClone(programme);
+  reader.treatment.pages[1] = { ...reader.treatment.pages[1], key: "Certificate", label: "Certificate", programmeDay: null, html: "<h1>Certificate</h1><p>This certifies that the learner has completed the programme.</p>" };
+  await page.route("**/api/runtime-content**", route => route.fulfill({ json: { payload: reader } }));
+  await page.goto("/learn?section=learn&page=2");
+  const note = page.getByRole("note", { name: "Certificate template" });
+  await expect(note).toContainText("Reviewing it does not award a certificate or confirm completion.");
+  await expect(page.getByText("This certifies that the learner has completed the programme.")).toBeVisible();
+  await page.getByRole("button", { name: "Complete & continue", exact: true }).click();
+  await expect(note).toBeVisible();
+  await page.reload(); await expect(note).toBeVisible();
+});
+
 test("reader gives one title and reports save state only for responses that exist", async ({ page }) => {
   await learningService(page, "recorded");
   const reader = structuredClone(programme);

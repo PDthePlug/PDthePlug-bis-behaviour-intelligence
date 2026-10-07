@@ -528,7 +528,8 @@ export function ProgrammeOutcomesView({
                 </option>
               ))}
             </select>
-            <small>{outcome.cohort.labCode} · {outcome.cohort.labVersion} · {dateRange(outcome)}</small>
+            <small>{dateRange(outcome)}</small>
+            <details className="programme-publication-details"><summary>Programme details</summary><p>Lab: {outcome.cohort.labCode} · Published version: {outcome.cohort.labVersion}</p></details>
           </div>
           <a className="outcomes-pdf-link" href={"/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id)}>
             <Download aria-hidden="true" /> Download PDF

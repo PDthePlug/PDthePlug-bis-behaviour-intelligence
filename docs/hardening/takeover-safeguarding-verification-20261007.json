@@ -1,0 +1,37 @@
+{
+  "observedAt": "2026-10-07T03:57:50Z",
+  "route": "/workspace?view=facilitator&section=support",
+  "role": "SAFEGUARDING_OFFICER",
+  "target": "Shared OperationsView inside StaffWorkspaceShell; normal browser harness with synthetic API cases",
+  "productionCasesWritten": false,
+  "checks": [
+    "Named severity control and keyboard option selection",
+    "Exact acknowledgement case/severity payload",
+    "Named resolution and exact intended resolution payload",
+    "Actual computed category foreground/background contrast >=4.5",
+    "No horizontal page overflow"
+  ],
+  "states": [
+    {
+      "width": 360,
+      "result": "PASS",
+      "manualCaseBodyReview": "PASS: category, summary, identity/context, actions and resolution remain legible and grouped; mobile wrapping retained",
+      "chromeReview": "Full-page attachment relocates fixed chrome when current scroll is captured; it does not certify whole-page fixed navigation geometry."
+    },
+    {
+      "width": 430,
+      "result": "PASS",
+      "manualCaseBodyReview": "PASS: category, summary, identity/context, actions and resolution remain legible and grouped; mobile wrapping retained",
+      "chromeReview": "Full-page attachment relocates fixed chrome when current scroll is captured; it does not certify whole-page fixed navigation geometry."
+    },
+    {
+      "width": 1280,
+      "result": "PASS",
+      "manualCaseBodyReview": "PASS: category, summary, identity/context, actions and resolution remain legible and grouped; mobile wrapping retained",
+      "chromeReview": "Full-page attachment relocates fixed chrome when current scroll is captured; it does not certify whole-page fixed navigation geometry."
+    }
+  ],
+  "automatedResult": "3 Playwright journeys PASS",
+  "releaseStatus": "BRANCH_CORRECTION; exact protected preview and live release verification pending",
+  "evidence": "tests/browser/safeguarding-accessibility.spec.ts; final Playwright HTML report and attachments; /tmp/bis-safeguarding-controls-final.log"
+}

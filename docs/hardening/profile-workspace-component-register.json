@@ -1,0 +1,561 @@
+{
+  "observedAt": "2026-10-07",
+  "scope": "All active profile surfaces and workspace/staff section families, including demonstrations and commercial workspace. Component/section audit supplements exact route/Learning/Lab registers; it does not close remaining variants.",
+  "entries": [
+    {
+      "route": "/profile",
+      "role": "All signed-in identities",
+      "component": "app/profile/profile-dashboard.tsx; app/profile/profile.css",
+      "problem": "Missing learner profile appeared to mean School; failed detail refresh had no retry; commercial-only role had no workspace route; long identity and install disclosure need review.",
+      "correction": "BRANCH: no invented edition; named loading/error/retry; exact-role programme/commercial links; identity wrapping; shared install styling and no empty installed disclosure.",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/profile-settings-api.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final real preview/live states for all roles, themes and long names."
+      ]
+    },
+    {
+      "route": "/settings",
+      "role": "Learner; staff without learner profile",
+      "component": "app/settings/settings-panel.tsx; app/settings/use-profile-settings.tsx",
+      "problem": "Null profile enabled default preference writes that the server rejects; retries had a short target.",
+      "correction": "BRANCH: distinguish no learner profile from service failure; disable unowned setting writes and offer learner setup; preserve saved-value rollback and serial saves; 44px recovery targets.",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/profile-settings-api.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Live preference save/refresh for remaining appearance/accent/reading combinations."
+      ]
+    },
+    {
+      "route": "/experience",
+      "role": "Learner; staff without learner profile",
+      "component": "app/experience/experience-panel.tsx",
+      "problem": "No learner profile falsely selected the School radio.",
+      "correction": "BRANCH: no selected context until saved profile exists; shared setup guidance and disabled writes.",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/profile-settings-api.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Remaining true production edition changes; QA-only records may be changed, not original learners."
+      ]
+    },
+    {
+      "route": "/profile#account",
+      "role": "All signed-in identities",
+      "component": "components/pwa/install-card.tsx; components/pwa/pwa-provider.tsx",
+      "problem": "Install content depended on removed legacy card styles; installed mode left an empty disclosure.",
+      "correction": "BRANCH: scoped readable disclosure styling; installed state hides entire install disclosure; accepted online-save guidance and sign-out retained.",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/profile-settings-api.test.mjs",
+        "tests/pwa-privacy.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Actual standalone Android/iOS install and sign-out variants."
+      ]
+    },
+    {
+      "route": "/api/profile",
+      "role": "Authenticated owner only",
+      "component": "app/api/profile/route.ts",
+      "problem": "Preferences must remain owner-scoped; malformed/unsupported writes and missing ownership must stay denied.",
+      "correction": "Accepted validation, private/no-store JSON failures and exact-owner updates retained.",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/profile-settings-api.test.mjs"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Live original-user operations are not authorised QA substitutes; dedicated QA only."
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "role": "Learner owner",
+      "component": "app/portfolio/portfolio-workspace.tsx",
+      "problem": "History, calculations, missing results and shared reviews must keep source, version and privacy distinct. Incomplete evidence payload can crash consumers.",
+      "correction": "BRANCH: shared transport errors stay human; required response arrays are checked before rendering; existing collapsed Lab groups, filters, explicit sharing and retained calculation sources stay intact. Review counts remain unavailable rather than showing zero when their source has not loaded.",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/measurement-history.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final preview/live history paging, all source versions, revoked sharing, photo and downloads."
+      ]
+    },
+    {
+      "route": "/portfolio",
+      "role": "Learner owner",
+      "component": "app/portfolio/calculation-history.tsx",
+      "problem": "History, calculations, missing results and shared reviews must keep source, version and privacy distinct. Incomplete evidence payload can crash consumers.",
+      "correction": "BRANCH: shared transport errors stay human; required response arrays are checked before rendering; existing collapsed Lab groups, filters, explicit sharing and retained calculation sources stay intact. Review counts remain unavailable rather than showing zero when their source has not loaded.",
+      "verification": [
+        "tests/browser/profile-evidence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/measurement-history.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final preview/live history paging, all source versions, revoked sharing, photo and downloads."
+      ]
+    },
+    {
+      "route": "/handbooks/[code]?page=12",
+      "role": "Learner; facilitator reference",
+      "component": "app/learning/handbook-document-enhancements.ts; app/learner-document-system.css",
+      "problem": "Six exact accepted Attention/Identity source sections have unpaired profile labels without approved answer bindings.",
+      "correction": "Accepted shared semantic table recovery retained. One missing-value caption; original zero/negative/resolved values and response identities preserved. No answer/metric invented.",
+      "verification": [
+        "tests/browser/profile-table-recovery.spec.ts",
+        "docs/hardening/profile-structure-register.json",
+        "docs/hardening/handbook-response-integrity.json"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Approved exact source/value/unit bindings remain PROFILE-STRUCTURE; other editions and populated production states stay open."
+      ]
+    },
+    {
+      "route": "/labs/[code]?step=9",
+      "role": "Learner owner; versioned enrolment",
+      "component": "app/labs/[code]/universal-runtime-lab.tsx; lib/universal-lab-v2.mjs",
+      "problem": "Every profile projection must reference named source input/calculation; old publications have explicitly unbound indicators.",
+      "correction": "Accepted canonical profile renderer and provenance kept; unavailable bindings remain unavailable, preserving historical enrolments.",
+      "verification": [
+        "tests/browser/lab-journey.spec.ts",
+        "tests/universal-calculation-integrity.test.mjs",
+        "docs/hardening/production-takeover-metric-register.json"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "135 published-version indicator bindings need governed source/version review; full manual profile interpretation across 32 Labs."
+      ]
+    },
+    {
+      "route": "/experience/leap9",
+      "role": "Public demonstrator/participant; facilitator/sponsor perspectives",
+      "component": "app/experience/programme-experience.tsx",
+      "problem": "Evidence profile is an experience-specific demonstration; must not be confused with production learner evidence or inferred capability.",
+      "correction": "Accepted local demonstration, consent and report boundaries retained.",
+      "verification": [
+        "tests/browser/programme-experience.spec.ts",
+        "tests/browser/programme-experience-v2.spec.ts"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Final actual mobile/desktop visual and empty/re-entry demonstrator states; never claim fixture outputs as production outcomes."
+      ]
+    },
+    {
+      "route": "/experience/leap9/v2",
+      "role": "Public demonstrator/participant; facilitator/sponsor perspectives",
+      "component": "app/experience/programme-experience-v2.tsx",
+      "problem": "Evidence profile is an experience-specific demonstration; must not be confused with production learner evidence or inferred capability.",
+      "correction": "Accepted local demonstration, consent and report boundaries retained.",
+      "verification": [
+        "tests/browser/programme-experience.spec.ts",
+        "tests/browser/programme-experience-v2.spec.ts"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Final actual mobile/desktop visual and empty/re-entry demonstrator states; never claim fixture outputs as production outcomes."
+      ]
+    },
+    {
+      "route": "/workspace",
+      "role": "Facilitator, safeguarding officer, sponsor, programme owner, operator",
+      "component": "app/workspace/staff-workspace-shell.tsx; components/workspace-menu.tsx",
+      "problem": "An empty/unreadable response exposed decoder wording; entry had no retry. Privacy cover, role destinations, browser history and focus must persist.",
+      "correction": "BRANCH: human load failure and keyboard retry; malformed session never grants a workspace; existing visibility/inactivity cover, centred Menu and exact role routing retained.",
+      "verification": [
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/staff-workspace-hardening.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Every actual role/section final preview and post-release check; current shell and child each request staff snapshot, a future scoped session optimisation should remove duplication without weakening freshness."
+      ]
+    },
+    {
+      "route": "/workspace?view=facilitator&section=cohort",
+      "role": "Assigned facilitator",
+      "component": "app/facilitator-workspace.tsx",
+      "problem": "Large cohorts need compact scanning, focused support and chosen evidence; private responses must stay excluded.",
+      "correction": "Accepted compact roster, filters and participant detail retained; branch Lab progress scope, secondary publication details, shared transport recovery and body-reading hierarchy kept.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/browser/facilitator-record-meaning.spec.ts",
+        "docs/hardening/takeover-staging-page-verification-20261007.json"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "All assigned-group and empty/loaded/error/long-roster states in final preview/live; investigation progress is not learning achievement."
+      ]
+    },
+    {
+      "route": "/workspace?view=facilitator&section=participants",
+      "role": "Assigned facilitator",
+      "component": "app/facilitator-workspace.tsx",
+      "problem": "Large cohorts need compact scanning, focused support and chosen evidence; private responses must stay excluded.",
+      "correction": "Accepted compact roster, filters and participant detail retained; branch Lab progress scope, secondary publication details, shared transport recovery and body-reading hierarchy kept.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/browser/facilitator-record-meaning.spec.ts",
+        "docs/hardening/takeover-staging-page-verification-20261007.json"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "All assigned-group and empty/loaded/error/long-roster states in final preview/live; investigation progress is not learning achievement."
+      ]
+    },
+    {
+      "route": "/workspace?view=facilitator&section=support",
+      "role": "Assigned facilitator",
+      "component": "app/facilitator-workspace.tsx",
+      "problem": "Large cohorts need compact scanning, focused support and chosen evidence; private responses must stay excluded.",
+      "correction": "Accepted compact roster, filters and participant detail retained; branch Lab progress scope, secondary publication details, shared transport recovery and body-reading hierarchy kept.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/browser/facilitator-record-meaning.spec.ts",
+        "docs/hardening/takeover-staging-page-verification-20261007.json"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "All assigned-group and empty/loaded/error/long-roster states in final preview/live; investigation progress is not learning achievement."
+      ]
+    },
+    {
+      "route": "/workspace?view=facilitator&section=review",
+      "role": "Assigned facilitator",
+      "component": "app/facilitator-workspace.tsx",
+      "problem": "Large cohorts need compact scanning, focused support and chosen evidence; private responses must stay excluded.",
+      "correction": "Accepted compact roster, filters and participant detail retained; branch Lab progress scope, secondary publication details, shared transport recovery and body-reading hierarchy kept.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/browser/facilitator-record-meaning.spec.ts",
+        "docs/hardening/takeover-staging-page-verification-20261007.json"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "All assigned-group and empty/loaded/error/long-roster states in final preview/live; investigation progress is not learning achievement."
+      ]
+    },
+    {
+      "route": "/workspace?view=facilitator&section=cohort",
+      "role": "Assigned facilitator",
+      "component": "app/facilitator-class-operations.tsx",
+      "problem": "Empty/malformed class response exposed decoder errors; old error remained after a successful refresh.",
+      "correction": "BRANCH: shape-checked class records and human retry messages; refresh clears old error; accepted dates, attendance, factual preparation, stale-write expectations and privacy retained.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/staff-evidence-engine.test.mjs",
+        "tests/client-response.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Actual all ten touchpoint states, stale-edit conflicts and high-volume attendance on synthetic group."
+      ]
+    },
+    {
+      "route": "/workspace?view=facilitator&section=review",
+      "role": "Assigned facilitator; learner-selected evidence only",
+      "component": "app/facilitator-assessment.tsx; app/evidence-engine-client.tsx",
+      "problem": "Incomplete response could crash review consumers; network errors should explain recovery; unsupported rubrics must not imply marks.",
+      "correction": "BRANCH: shared array validation/recovery and revoked-data clearing; authored criteria, totals, acknowledgement, current sharing scope and revision history retained.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/staff-evidence-contracts.test.mjs",
+        "tests/client-response.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final review/queue empty, loaded, role denial and stale-review states; never infer capability from coverage alone."
+      ]
+    },
+    {
+      "route": "/workspace?view=facilitator&section=support",
+      "role": "Safeguarding officer",
+      "component": "app/operations-view.tsx:SafeguardingPanel",
+      "problem": "Three live baseline sizes expose unnamed case severity selectors and low-contrast category text. Case details were very small.",
+      "correction": "BRANCH: named severity/resolution; AA category contrast; body-readable context and >=44px actions. Real original cases remain untouched.",
+      "verification": [
+        "tests/browser/safeguarding-accessibility.spec.ts",
+        "docs/hardening/takeover-safeguarding-verification-20261007.json",
+        "docs/hardening/production-takeover-browser-baseline.json"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final synthetic populated preview and read-only production accessibility recheck; case contents must never enter audit artifacts."
+      ]
+    },
+    {
+      "route": "/workspace?view=outcomes&section=overview",
+      "role": "Scoped sponsor/programme owner; decisions owner-only",
+      "component": "app/programme-outcomes-view.tsx; app/programme-report-graphics.tsx",
+      "problem": "Sponsor summaries must be useful without private narrative, small-cell leakage or prescribed programme redesign. Empty cohort and no evidence differ.",
+      "correction": "Accepted privacy thresholds, source/interpretation limits and descriptive reporting kept; branch metadata disclosure and shared evidence response recovery retained.",
+      "verification": [
+        "tests/browser/programme-intelligence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/programme-outcomes.test.mjs",
+        "tests/programme-owner-cohort-access.test.mjs"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Final exact-group/institution report scope, CSV/PDF, low-cell suppression, owner decisions and all graphic zero/missing/source states."
+      ]
+    },
+    {
+      "route": "/workspace?view=outcomes&section=learning",
+      "role": "Scoped sponsor/programme owner; decisions owner-only",
+      "component": "app/programme-outcomes-view.tsx; app/programme-report-graphics.tsx",
+      "problem": "Sponsor summaries must be useful without private narrative, small-cell leakage or prescribed programme redesign. Empty cohort and no evidence differ.",
+      "correction": "Accepted privacy thresholds, source/interpretation limits and descriptive reporting kept; branch metadata disclosure and shared evidence response recovery retained.",
+      "verification": [
+        "tests/browser/programme-intelligence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/programme-outcomes.test.mjs",
+        "tests/programme-owner-cohort-access.test.mjs"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Final exact-group/institution report scope, CSV/PDF, low-cell suppression, owner decisions and all graphic zero/missing/source states."
+      ]
+    },
+    {
+      "route": "/workspace?view=outcomes&section=evidence",
+      "role": "Scoped sponsor/programme owner; decisions owner-only",
+      "component": "app/programme-outcomes-view.tsx; app/programme-report-graphics.tsx",
+      "problem": "Sponsor summaries must be useful without private narrative, small-cell leakage or prescribed programme redesign. Empty cohort and no evidence differ.",
+      "correction": "Accepted privacy thresholds, source/interpretation limits and descriptive reporting kept; branch metadata disclosure and shared evidence response recovery retained.",
+      "verification": [
+        "tests/browser/programme-intelligence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/programme-outcomes.test.mjs",
+        "tests/programme-owner-cohort-access.test.mjs"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Final exact-group/institution report scope, CSV/PDF, low-cell suppression, owner decisions and all graphic zero/missing/source states."
+      ]
+    },
+    {
+      "route": "/workspace?view=outcomes&section=reports",
+      "role": "Scoped sponsor/programme owner; decisions owner-only",
+      "component": "app/programme-outcomes-view.tsx; app/programme-report-graphics.tsx",
+      "problem": "Sponsor summaries must be useful without private narrative, small-cell leakage or prescribed programme redesign. Empty cohort and no evidence differ.",
+      "correction": "Accepted privacy thresholds, source/interpretation limits and descriptive reporting kept; branch metadata disclosure and shared evidence response recovery retained.",
+      "verification": [
+        "tests/browser/programme-intelligence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/programme-outcomes.test.mjs",
+        "tests/programme-owner-cohort-access.test.mjs"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Final exact-group/institution report scope, CSV/PDF, low-cell suppression, owner decisions and all graphic zero/missing/source states."
+      ]
+    },
+    {
+      "route": "/workspace?view=outcomes&section=decisions",
+      "role": "Scoped sponsor/programme owner; decisions owner-only",
+      "component": "app/programme-outcomes-view.tsx; app/programme-report-graphics.tsx",
+      "problem": "Sponsor summaries must be useful without private narrative, small-cell leakage or prescribed programme redesign. Empty cohort and no evidence differ.",
+      "correction": "Accepted privacy thresholds, source/interpretation limits and descriptive reporting kept; branch metadata disclosure and shared evidence response recovery retained.",
+      "verification": [
+        "tests/browser/programme-intelligence.spec.ts",
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/programme-outcomes.test.mjs",
+        "tests/programme-owner-cohort-access.test.mjs"
+      ],
+      "releaseStatus": "ACCEPTED_PRESENTATION_RETAINED; CERTIFICATION_PARTIAL",
+      "outstanding": [
+        "Final exact-group/institution report scope, CSV/PDF, low-cell suppression, owner decisions and all graphic zero/missing/source states."
+      ]
+    },
+    {
+      "route": "/workspace?view=admin&section=overview",
+      "role": "System administrator",
+      "component": "app/operations-view.tsx; app/assessment-governance.tsx",
+      "problem": "Operator needs compact summaries, collapsed learner detail and safe explicit role/source actions; invalid snapshot must not render a usable administration view.",
+      "correction": "BRANCH: shared response validation, recovery and serial write guard; accepted 100-learner scanning/filter retention, roles, one-request group setup and source approval acknowledgement retained.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/access-boundaries.test.mjs",
+        "tests/client-response.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
+      ]
+    },
+    {
+      "route": "/workspace?view=admin&section=groups",
+      "role": "System administrator",
+      "component": "app/operations-view.tsx; app/assessment-governance.tsx",
+      "problem": "Operator needs compact summaries, collapsed learner detail and safe explicit role/source actions; invalid snapshot must not render a usable administration view.",
+      "correction": "BRANCH: shared response validation, recovery and serial write guard; accepted 100-learner scanning/filter retention, roles, one-request group setup and source approval acknowledgement retained.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/access-boundaries.test.mjs",
+        "tests/client-response.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
+      ]
+    },
+    {
+      "route": "/workspace?view=admin&section=access",
+      "role": "System administrator",
+      "component": "app/operations-view.tsx; app/assessment-governance.tsx",
+      "problem": "Operator needs compact summaries, collapsed learner detail and safe explicit role/source actions; invalid snapshot must not render a usable administration view.",
+      "correction": "BRANCH: shared response validation, recovery and serial write guard; accepted 100-learner scanning/filter retention, roles, one-request group setup and source approval acknowledgement retained.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/access-boundaries.test.mjs",
+        "tests/client-response.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
+      ]
+    },
+    {
+      "route": "/workspace?view=admin&section=assessment",
+      "role": "System administrator",
+      "component": "app/operations-view.tsx; app/assessment-governance.tsx",
+      "problem": "Operator needs compact summaries, collapsed learner detail and safe explicit role/source actions; invalid snapshot must not render a usable administration view.",
+      "correction": "BRANCH: shared response validation, recovery and serial write guard; accepted 100-learner scanning/filter retention, roles, one-request group setup and source approval acknowledgement retained.",
+      "verification": [
+        "tests/browser/staff-evidence-engine.spec.ts",
+        "tests/access-boundaries.test.mjs",
+        "tests/client-response.test.mjs"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
+      ]
+    },
+    {
+      "route": "/content-studio",
+      "role": "System administrator",
+      "component": "app/content-studio/content-studio.tsx; app/content-studio/preview/[versionId]/preview-workspace.tsx",
+      "problem": "Malformed load/action response could expose decoder text; UI must not imply source-ready equals published.",
+      "correction": "BRANCH: human snapshot/action/volume-audit/upload failure and revoked-data clearing; accepted immutable copying, three-edition preview, sign-off, approval, explicit publish/rollback retained.",
+      "verification": [
+        "docs/hardening/takeover-learning-preview-verification-20261007.json",
+        "tests/content-studio.test.mjs",
+        "tests/browser/content-studio-recovery.spec.ts"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "Final current-head Studio preview and remaining exact authoring/upload/volume-audit state variants; production publication is not authorised merely to exercise UI."
+      ]
+    },
+    {
+      "route": "/commercial?section=overview",
+      "role": "Commercial admin/lead/research/read-only; system administrator",
+      "component": "app/commercial/commercial-workspace.tsx",
+      "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "verification": [
+        "docs/hardening/takeover-staging-page-verification-20261007.json",
+        "tests/role-routed-reporting.test.mjs",
+        "tests/client-response.test.mjs",
+        "tests/browser/profile-workspace-recovery.spec.ts"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
+      ]
+    },
+    {
+      "route": "/commercial?section=pipeline",
+      "role": "Commercial admin/lead/research/read-only; system administrator",
+      "component": "app/commercial/commercial-workspace.tsx",
+      "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "verification": [
+        "docs/hardening/takeover-staging-page-verification-20261007.json",
+        "tests/role-routed-reporting.test.mjs",
+        "tests/client-response.test.mjs",
+        "tests/browser/profile-workspace-recovery.spec.ts"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
+      ]
+    },
+    {
+      "route": "/commercial?section=accounts",
+      "role": "Commercial admin/lead/research/read-only; system administrator",
+      "component": "app/commercial/commercial-workspace.tsx",
+      "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "verification": [
+        "docs/hardening/takeover-staging-page-verification-20261007.json",
+        "tests/role-routed-reporting.test.mjs",
+        "tests/client-response.test.mjs",
+        "tests/browser/profile-workspace-recovery.spec.ts"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
+      ]
+    },
+    {
+      "route": "/commercial?section=tasks",
+      "role": "Commercial admin/lead/research/read-only; system administrator",
+      "component": "app/commercial/commercial-workspace.tsx",
+      "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "verification": [
+        "docs/hardening/takeover-staging-page-verification-20261007.json",
+        "tests/role-routed-reporting.test.mjs",
+        "tests/client-response.test.mjs",
+        "tests/browser/profile-workspace-recovery.spec.ts"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
+      ]
+    },
+    {
+      "route": "/commercial?section=proposals",
+      "role": "Commercial admin/lead/research/read-only; system administrator",
+      "component": "app/commercial/commercial-workspace.tsx",
+      "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "verification": [
+        "docs/hardening/takeover-staging-page-verification-20261007.json",
+        "tests/role-routed-reporting.test.mjs",
+        "tests/client-response.test.mjs",
+        "tests/browser/profile-workspace-recovery.spec.ts"
+      ],
+      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "outstanding": [
+        "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
+      ]
+    }
+  ]
+}
