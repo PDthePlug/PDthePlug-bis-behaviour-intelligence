@@ -124,7 +124,7 @@ export function ProfileDashboard({
 
           <Link href="/portfolio" className="profile-row">
             <span className="profile-row-copy">
-              <strong>Evidence Portfolio</strong>
+              <strong>My growth & evidence</strong>
             </span>
             <ChevronRight aria-hidden="true" />
           </Link>

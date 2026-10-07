@@ -69,7 +69,7 @@ test("compact participant rows drill into facilitator-safe progress detail", asy
   assert.match(facilitator, /participant-roster-row/);
   assert.match(facilitator, /learner: learner\.userId/);
   assert.match(facilitator, /Open learner/);
-  for (const field of ["Investigation", "Recorded days", "Opportunities", "Last activity", "Evidence position", "Recorded activity", "Where support may help", "Support history"]) {
+  for (const field of ["Lab step", "Observation days", "Real situations", "Last activity", "Practice evidence", "Recorded activity", "Where support may help", "Support history"]) {
     assert.match(facilitator, new RegExp(field));
   }
   for (const privateField of ["targetPattern", "targetCondition", "alternativeBehaviour", "expectedReward", "hypothesis", "Companion"]) {
@@ -132,11 +132,11 @@ test("learner-only profiles do not advertise staff access", async () => {
 test("participant activity labels describe records without unsupported behavioural conclusions", async () => {
   const facilitator = await source("app/facilitator-workspace.tsx");
   for (const strength of [
-    "Reached the mapping activity",
-    "Experiment start recorded",
+    "Mapped the pattern they are investigating",
+    "Started the real-world practice period",
     "observation days recorded",
-    "opportunities recorded",
-    "Minimum opportunity count reached",
+    "suitable real-world situations recorded",
+    "Enough real-world situations recorded for a review",
   ]) {
     assert.match(facilitator, new RegExp(strength));
   }

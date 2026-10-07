@@ -38,6 +38,20 @@ export type SponsorOutcome = {
   minimumReportableCohortSize: number;
   evidenceFlow?: ProgrammeEvidenceFlow | null;
   assessmentSummary?: import("@/lib/evidence-engine").AssessmentReport["cohorts"][number] | null;
+  competencySummary?: null | {
+    status: "AVAILABLE" | "SUPPRESSED";
+    participantCount: number;
+    boundary: string;
+    competencies: Array<{
+      competencyId: string;
+      title: string;
+      reportableParticipants: number | null;
+      participantsWithRecordedProgression: number | null;
+      externalFrameworkAreas: string[];
+      nextQuestion: string;
+      distribution: Array<{ code: string; label: string; count: number | null; denominator?: number; suppressed?: boolean }>;
+    }>;
+  };
   metrics: null | {
     completionContext: { completed: number; completionRate: number | null };
     action: {
@@ -512,7 +526,7 @@ export function ProgrammeOutcomesView({
       <section className="outcomes-hero">
         <div>
           <p className="eyebrow">Programme</p>
-          <h1>{({overview:"Results",learning:"Learning journey",evidence:"Evidence & outcomes",decisions:"Programme decisions",reports:"Reports"} as Record<string,string>)[section] ?? "Results"}</h1>
+          <h1>{({overview:"Results",learning:"Learning journey",evidence:"Development & evidence",decisions:"Programme decisions",reports:"Reports"} as Record<string,string>)[section] ?? "Results"}</h1>
         </div>
         <div className="outcomes-hero-actions">
           <div className="outcomes-cohort-picker">
@@ -546,6 +560,49 @@ export function ProgrammeOutcomesView({
         />
       </section>
 
+      {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
+        <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-competency-picture">
+          <div className="outcomes-section-heading">
+            <div>
+              <p className="eyebrow">Development picture</p>
+              <h2>What learners are developing</h2>
+              <p>These are the programme capabilities for which the group has enough mapped evidence to describe a current development stage. Counts support the story; they are not the story by themselves.</p>
+            </div>
+            <Compass />
+          </div>
+          <div className="outcomes-competency-grid">
+            {outcome.competencySummary.competencies.map((competency) => {
+              const visibleStages = competency.distribution.filter((stage) => (stage.count ?? 0) > 0);
+              const highest = visibleStages.at(-1);
+              return <article key={competency.competencyId} className="outcomes-competency-card">
+                <div className="outcomes-competency-card-head">
+                  <h3>{competency.title}</h3>
+                  <span>{highest?.label ?? "Evidence developing"}</span>
+                </div>
+                <p>{competency.reportableParticipants === null
+                  ? "Some mapped development evidence is present, but the contributing count is hidden for privacy."
+                  : competency.reportableParticipants === 0
+                    ? "There is not enough mapped evidence to describe development in this area yet."
+                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have enough mapped evidence to describe their current development in this area.`}</p>
+                {visibleStages.length ? <div className="outcomes-competency-stages" aria-label={`${competency.title} evidence stages`}>
+                  {competency.distribution.map((stage) => <span key={stage.code} className={(stage.count ?? 0) > 0 ? "is-active" : ""}>
+                    <b>{stage.label}</b>
+                    <small>{stage.suppressed ? "Hidden" : stage.count ?? "—"}</small>
+                  </span>)}
+                </div> : null}
+                {competency.externalFrameworkAreas.length ? <p className="outcomes-competency-framework"><strong>Relevant curriculum areas:</strong> {competency.externalFrameworkAreas.join(" · ")}</p> : null}
+                <p className="outcomes-competency-next"><strong>Next development question:</strong> {competency.nextQuestion}</p>
+              </article>;
+            })}
+          </div>
+          <p className="outcome-muted">{outcome.competencySummary.boundary}</p>
+        </section>
+      ) : outcome.competencySummary?.status === "SUPPRESSED" ? (
+        <EvidenceDisclosure hidden={section !== "all" && section !== "overview" && section !== "evidence"} title="Development picture is hidden for privacy">
+          <p>Competency patterns appear only when the programme group and each visible result meet the minimum privacy thresholds.</p>
+        </EvidenceDisclosure>
+      ) : null}
+
       {report.status === "AVAILABLE" ? (
         <section hidden={section !== "all" && section !== "overview"} className="outcomes-insights">
           <div className="outcomes-section-heading">
@@ -565,7 +622,7 @@ export function ProgrammeOutcomesView({
         <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>
         <div className="journey-activity-strip">
           <Metric label="Responses recorded" value={flow.totals?.recordedResponses ?? "Hidden for privacy"} />
-          <Metric label="Measures with source evidence" value={flow.totals?.anchoredMeasures ?? "Hidden for privacy"} />
+          <Metric label="Evidence-backed measures" value={flow.totals?.anchoredMeasures ?? "Hidden for privacy"} />
           <Metric label="Started real-world test" value={flow.totals?.startedExperiment ?? "Hidden for privacy"} />
           <Metric label="Completed Lab" value={flow.totals?.completed ?? "Hidden for privacy"} />
         </div>

@@ -11,6 +11,7 @@ import {
   type AssessmentWorkspace,
 } from "@/lib/evidence-engine";
 import type { EvidencePortfolioLab } from "@/lib/evidence-portfolio.mjs";
+import type { LearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
 import { explainPortfolioMeasures } from "@/lib/evidence-portfolio.mjs";
 import Link from "next/link";
 import { BIS_MODULES } from "@/lib/bis-catalogue";
@@ -82,6 +83,7 @@ export function PortfolioWorkspace() {
   const timeline = useEvidenceData<Timeline>(query);
   const sharing = useEvidenceData<AssessmentWorkspace>("view=learnerWorkspace");
   const overview = useEvidenceData<{ labs: EvidencePortfolioLab[] }>("", "/api/evidence-portfolio");
+  const development = useEvidenceData<{ profile: LearnerDevelopmentProfile }>("view=developmentProfile");
   const extra = older.query === query ? older.records : [];
   const records = [...(timeline.data?.records ?? []), ...extra];
   const hasMore = older.query === query ? older.hasMore : (timeline.data?.records.length ?? 0) === 60;
@@ -257,7 +259,11 @@ export function PortfolioWorkspace() {
 
   return (
     <main className="evidence-workspace portfolio-workspace">
-      <h1>Evidence Portfolio</h1>
+      <header className="portfolio-hero">
+        <p className="eyebrow">My BIS</p>
+        <h1>Your growth, evidence and feedback</h1>
+        <p>See what your recorded work is beginning to show, where you can practise next, and the evidence behind it.</p>
+      </header>
       <div className="evidence-actions">
         <a className="evidence-button" href="/api/evidence-engine?view=learnerReport">
           Download report
@@ -265,25 +271,76 @@ export function PortfolioWorkspace() {
         <button
           className="secondary"
           type="button"
-          disabled={timeline.loading || sharing.loading}
+          disabled={timeline.loading || sharing.loading || development.loading}
           onClick={() => {
             setOlder({ query: "", records: [], hasMore: true });
             resetSelection();
             void timeline.load();
             void sharing.load();
             void overview.load();
+            void development.load();
           }}
         >
           Refresh
         </button>
       </div>
 
+      <EvidenceState {...development} retry={() => void development.load()} />
+      {development.data ? (
+        <section className="portfolio-growth" aria-labelledby="my-bis-growth-heading">
+          <div className="portfolio-section-heading">
+            <div>
+              <p className="eyebrow">Living development picture</p>
+              <h2 id="my-bis-growth-heading">{development.data.profile.heading}</h2>
+            </div>
+          </div>
+          <p className="portfolio-growth-intro">{development.data.profile.summary}</p>
+          {development.data.profile.areas.length ? (
+            <div className="portfolio-growth-grid">
+              {development.data.profile.areas.map((area) => (
+                <article className="portfolio-growth-card" key={area.competencyId}>
+                  <div className="portfolio-growth-card-head">
+                    <div>
+                      <h3>{area.title}</h3>
+                      <span className={area.reportable ? "portfolio-stage is-evidenced" : "portfolio-stage"}>{area.stageLabel}</span>
+                    </div>
+                    {area.sourceLabs.length ? <small>Seen in {area.sourceLabs.map(labTitle).join(", ")}</small> : null}
+                  </div>
+                  <p>{area.summary}</p>
+                  <p className="portfolio-growth-signal">{area.growth}</p>
+                  {area.nextStep ? <p className="portfolio-growth-next"><strong>Practise next:</strong> {area.nextStep}</p> : null}
+                  {area.externalFrameworkAreas.length ? (
+                    <details className="portfolio-growth-framework">
+                      <summary>Related curriculum competencies</summary>
+                      <p>{area.externalFrameworkAreas.join(" · ")}</p>
+                      <small>These are mapped areas of relevance, not external certification.</small>
+                    </details>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="evidence-empty">
+              <h3>Your profile is waiting for mapped evidence</h3>
+              <p>Complete programme activities as usual. BIS will only add a development statement when the curriculum mapping and recorded evidence support it.</p>
+            </div>
+          )}
+          <p className="evidence-meta portfolio-growth-boundary">{development.data.profile.boundary}</p>
+        </section>
+      ) : null}
+
+      <section className="portfolio-evidence-heading">
+        <p className="eyebrow">My evidence</p>
+        <h2>The record behind your profile</h2>
+        <p>Your original work, revisions, real-world tests and facilitator feedback stay available here so you can see what each development statement is based on.</p>
+      </section>
+
       <EvidenceState {...overview} retry={() => void overview.load()} />
       {overview.data ? <dl className="portfolio-overview">
         <div><dt>Labs</dt><dd>{allLabs.length}</dd></div>
         <div><dt>Completed</dt><dd>{allLabs.filter(item => item.status === "COMPLETED").length}</dd></div>
         <div><dt>Real-world tests</dt><dd>{allLabs.filter(item => item.anchors.some(anchor => anchor.id === "EXPERIMENT" && anchor.status === "RECORDED")).length}</dd></div>
-        <div><dt>Reviews</dt><dd>{sharing.data ? reviews : sharing.loading ? "Loading…" : "Unavailable"}</dd></div>
+        <div><dt>Facilitator reviews</dt><dd>{sharing.data ? reviews : sharing.loading ? "Loading…" : "Unavailable"}</dd></div>
       </dl> : null}
       <details className="portfolio-tools"><summary>Filter history</summary>      <div className="evidence-filters">
         <label>

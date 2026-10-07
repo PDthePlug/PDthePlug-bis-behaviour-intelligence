@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Activity, BookOpen, Check, ClipboardCheck, ShieldAlert, Users } from "lucide-react";
+import { Activity, BookOpen, Check, ClipboardCheck, Compass, ShieldAlert, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,6 +89,20 @@ type Cohort = {
       note?: string;
     };
   };
+  competencySummary?: null | {
+    status: "AVAILABLE" | "SUPPRESSED";
+    participantCount: number;
+    boundary: string;
+    competencies: Array<{
+      competencyId: string;
+      title: string;
+      reportableParticipants: number | null;
+      participantsWithRecordedProgression: number | null;
+      externalFrameworkAreas: string[];
+      nextQuestion: string;
+      distribution: Array<{ code: string; label: string; count: number | null; suppressed?: boolean }>;
+    }>;
+  };
 };
 
 type FacilitatorData = {
@@ -137,25 +151,25 @@ function needsAttention(learner: ProgressRow) {
 
 function evidencePosition(learner: ProgressRow) {
   const experiment = learner.experiment;
-  if (!experiment) return learner.enrolment?.experimentStartedAt ? "Experiment started · evidence counts not available" : "No experiment evidence yet";
+  if (!experiment) return learner.enrolment?.experimentStartedAt ? "Practice started · detail not available" : "No real-world practice recorded yet";
   const opportunities = experiment.opportunityCount ?? 0;
   const threshold = experiment.minimumEvidenceThreshold ?? 3;
-  if (opportunities >= threshold) return "Minimum opportunity count reached";
-  if (opportunities > 0) return "Opportunities recorded";
-  if ((experiment.recordedDays ?? 0) > 0) return "Observations recorded · no opportunity recorded";
-  return "First observation pending";
+  if (opportunities >= threshold) return "Enough real-world situations recorded for review";
+  if (opportunities > 0) return "Real-world situations recorded";
+  if ((experiment.recordedDays ?? 0) > 0) return "Observations recorded · no suitable situation yet";
+  return "Waiting for the first observation";
 }
 
 function observedStrengths(learner: ProgressRow) {
   const strengths: string[] = [];
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
-  if (step >= 4) strengths.push("Reached the mapping activity");
-  if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Experiment start recorded");
+  if (step >= 4) strengths.push("Mapped the pattern they are investigating");
+  if (experiment || learner.enrolment?.experimentStartedAt) strengths.push("Started the real-world practice period");
   if ((experiment?.recordedDays ?? 0) >= 3) strengths.push(`${experiment!.recordedDays} observation days recorded`);
-  if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push(`${experiment!.opportunityCount} opportunities recorded`);
-  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Minimum opportunity count reached");
-  if (learner.enrolment?.status === "COMPLETED") strengths.push("Lab marked complete");
+  if ((experiment?.opportunityCount ?? 0) >= 2) strengths.push(`${experiment!.opportunityCount} suitable real-world situations recorded`);
+  if (experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) strengths.push("Enough real-world situations recorded for a review");
+  if (learner.enrolment?.status === "COMPLETED") strengths.push("Completed the Lab");
   return strengths.slice(0, 4);
 }
 
@@ -164,12 +178,12 @@ function supportFocus(learner: ProgressRow) {
   const focus: string[] = [];
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
-  if (step <= 3) focus.push("Build learning momentum");
-  if (step >= 6 && !experiment && !learner.enrolment?.experimentStartedAt) focus.push("Move from planning to the first real-world test");
-  if (experiment && (experiment.recordedDays ?? 0) < 3) focus.push("Build observation consistency");
-  if (experiment && (experiment.opportunityCount ?? 0) === 0) focus.push("Ask what situations were available and what has been recorded");
-  if (experiment && (experiment.opportunityCount ?? 0) > 0 && (experiment.opportunityCount ?? 0) < (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Collect enough repeat evidence for a stronger review");
-  if (step >= 8 && experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Review what changed, what stayed the same and what should be tested next");
+  if (step <= 3) focus.push("Connect the current concept to one concrete example before moving on");
+  if (step >= 6 && !experiment && !learner.enrolment?.experimentStartedAt) focus.push("Help turn the plan into one small first real-world action");
+  if (experiment && (experiment.recordedDays ?? 0) < 3) focus.push("Encourage another observation before drawing a conclusion");
+  if (experiment && (experiment.opportunityCount ?? 0) === 0) focus.push("Ask what real situations were available and whether the test needs adjusting");
+  if (experiment && (experiment.opportunityCount ?? 0) > 0 && (experiment.opportunityCount ?? 0) < (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Help record another comparable situation before reviewing the pattern");
+  if (step >= 8 && experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Review what changed, what stayed the same and what they would test next");
   return focus.slice(0, 3);
 }
 
@@ -253,6 +267,7 @@ export function FacilitatorWorkspace({
     checkInGroups.set(key, [...(checkInGroups.get(key) ?? []), item]);
   });
   const learningChecks = cohort.learningChecks ?? null;
+  const competencySummary = cohort.competencySummary ?? null;
   const participantNotes = selected ? data.notes.filter((item) => item.learnerUserId === selected.userId) : [];
   const participantReferrals = selected ? data.referrals.filter((item) => item.learnerUserId === selected.userId) : [];
 
@@ -303,10 +318,46 @@ export function FacilitatorWorkspace({
           </section>
           <section className="ops-metrics facilitator-group-summary" aria-label="Group summary">
             <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
-            <article><Activity /><span>Experiments started</span><strong>{experiments}</strong></article>
-            <article><ClipboardCheck /><span>Review stage</span><strong>{reviewReady}</strong></article>
-            <article><ShieldAlert /><span>Needs attention</span><strong>{attention.length}</strong></article>
+            <article><Activity /><span>In real-world practice</span><strong>{experiments}</strong></article>
+            <article><ClipboardCheck /><span>Ready to reflect</span><strong>{reviewReady}</strong></article>
+            <article><ShieldAlert /><span>Could use a check-in</span><strong>{attention.length}</strong></article>
           </section>
+          {competencySummary?.status === "AVAILABLE" && competencySummary.competencies.length ? (
+            <section className="surface-card ops-section facilitator-development-picture">
+              <div className="section-title">
+                <div>
+                  <p className="eyebrow">Development picture</p>
+                  <h2>What this group is learning to do</h2>
+                  <p>These areas come from mapped programme tasks and recorded evidence. They show the strongest stage the available work supports, not fixed ability or a learner ranking.</p>
+                </div>
+                <Compass />
+              </div>
+              <div className="facilitator-competency-grid">
+                {competencySummary.competencies.map((competency) => {
+                  const visibleStages = competency.distribution.filter((stage) => (stage.count ?? 0) > 0);
+                  const highest = visibleStages.at(-1);
+                  return <article key={competency.competencyId} className="facilitator-competency-card">
+                    <div>
+                      <h3>{competency.title}</h3>
+                      <span>{highest?.label ?? "Evidence developing"}</span>
+                    </div>
+                    <p>{competency.reportableParticipants === null
+                      ? "The group has some evidence in this area, but the count is hidden for privacy."
+                      : competency.reportableParticipants === 0
+                        ? "There is not enough mapped evidence to describe group development here yet."
+                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} currently have enough mapped evidence to describe development in this area.`}</p>
+                    {competency.externalFrameworkAreas.length ? <small>Related curriculum areas: {competency.externalFrameworkAreas.join(" · ")}</small> : null}
+                    <p className="facilitator-competency-next"><strong>Next useful question:</strong> {competency.nextQuestion}</p>
+                  </article>;
+                })}
+              </div>
+              <p className="ops-helper">{competencySummary.boundary}</p>
+            </section>
+          ) : competencySummary?.status === "SUPPRESSED" ? (
+            <EvidenceDisclosure title="Development picture will appear as the group grows">
+              <p>Group competency patterns are hidden until the minimum privacy threshold is met. Individual support can still use the learner’s permitted progress records.</p>
+            </EvidenceDisclosure>
+          ) : null}
           <section className="programme-intelligence-section">
             <p className="eyebrow">Your next session</p><h2>Where a check-in could help</h2>
             <p>These suggestions use recorded progress and observation counts. Ask participants what support would be useful; the records do not explain their reasons.</p>
@@ -401,9 +452,9 @@ export function FacilitatorWorkspace({
                 <Badge variant="outline">{position(selected)}</Badge>
               </div>
               <section className="ops-metrics participant-detail-metrics">
-                <article><ClipboardCheck /><span>Investigation</span><strong>{selected.enrolment?.currentInvestigation ?? 0}/9</strong></article>
-                <article><Activity /><span>Recorded days</span><strong>{selected.experiment?.recordedDays ?? "Not available"}</strong></article>
-                <article><Users /><span>Opportunities</span><strong>{selected.experiment?.opportunityCount ?? "Not available"}</strong></article>
+                <article><ClipboardCheck /><span>Lab step</span><strong>{selected.enrolment?.currentInvestigation ?? 0}/9</strong></article>
+                <article><Activity /><span>Observation days</span><strong>{selected.experiment?.recordedDays ?? "Not available"}</strong></article>
+                <article><Users /><span>Real situations</span><strong>{selected.experiment?.opportunityCount ?? "Not available"}</strong></article>
                 <article><Activity /><span>Last activity</span><strong className="metric-date">{formatDate(selected.lastActivityAt)}</strong></article>
               </section>
             </section>
@@ -417,12 +468,12 @@ export function FacilitatorWorkspace({
                 <small>Investigation {selected.enrolment?.currentInvestigation ?? 0} of 9</small>
               </article>
               <article className="surface-card participant-signal-card">
-                <p className="eyebrow">Evidence position</p>
+                <p className="eyebrow">Practice evidence</p>
                 <h3>{evidencePosition(selected)}</h3>
                 {selected.experiment ? <><div className="participant-signal-track">
                   <span style={{ width: `${Math.min(100, ((selected.experiment?.opportunityCount ?? 0) / Math.max(1, selected.experiment?.minimumEvidenceThreshold ?? 3)) * 100)}%` }} />
                 </div>
-                <small>{selected.experiment?.opportunityCount ?? "Not available"} of {selected.experiment?.minimumEvidenceThreshold ?? 3} minimum real-world opportunities</small></> : <small>Evidence counts are not available for this view.</small>}
+                <small>{selected.experiment?.opportunityCount ?? "Not available"} of {selected.experiment?.minimumEvidenceThreshold ?? 3} real-world situations needed for this Lab review</small></> : <small>Evidence counts are not available for this view.</small>}
               </article>
             </section>
 
