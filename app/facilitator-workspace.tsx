@@ -341,8 +341,8 @@ export function FacilitatorWorkspace({
                     <p>{competency.reportableParticipants === null
                       ? "The group has some evidence in this area, but the count is hidden for privacy."
                       : competency.reportableParticipants === 0
-                        ? "There is not enough mapped evidence to describe group development here yet."
-                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} currently have enough mapped evidence to describe development in this area.`}</p>
+                        ? "There is not enough recorded work to describe group development here yet."
+                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} currently have enough recorded work to describe development in this area.`}</p>
                     <div className="facilitator-competency-stages" aria-label={`${competency.title} development stages`}>
                       {competency.distribution.map(stage => <span key={stage.code}><b>{stage.label}</b><small>{stage.suppressed ? "Hidden for privacy" : stage.count ?? "Unavailable"}</small></span>)}
                     </div>

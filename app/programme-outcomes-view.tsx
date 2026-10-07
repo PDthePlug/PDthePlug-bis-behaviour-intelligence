@@ -575,8 +575,8 @@ export function ProgrammeOutcomesView({
                 <p>{competency.reportableParticipants === null
                   ? "Some mapped development evidence is present, but the contributing count is hidden for privacy."
                   : competency.reportableParticipants === 0
-                    ? "There is not enough mapped evidence to describe development in this area yet."
-                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have enough mapped evidence to describe their current development in this area.`}</p>
+                    ? "There is not enough recorded work to describe development in this area yet."
+                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have enough recorded work to describe their current development in this area.`}</p>
                 {visibleStages.length ? <div className="outcomes-competency-stages" aria-label={`${competency.title} evidence stages`}>
                   {competency.distribution.map((stage) => <span key={stage.code} className={(stage.count ?? 0) > 0 ? "is-active" : ""}>
                     <b>{stage.label}</b>

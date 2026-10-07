@@ -323,7 +323,7 @@ export function PortfolioWorkspace() {
                     <details className="portfolio-growth-framework">
                       <summary>Related curriculum competencies</summary>
                       <p>{area.externalFrameworkAreas.join(" · ")}</p>
-                      <small>These are mapped areas of relevance, not external certification.</small>
+                      <small>These competencies relate to your work; they do not certify achievement.</small>
                     </details>
                   ) : null}
                 </article>
@@ -331,8 +331,8 @@ export function PortfolioWorkspace() {
             </div>
           ) : (
             <div className="evidence-empty">
-              <h3>Your profile is waiting for mapped evidence</h3>
-              <p>Complete programme activities as usual. BIS will only add a development statement when the curriculum mapping and recorded evidence support it.</p>
+              <h3>Your growth picture starts with your work</h3>
+              <p>Keep completing your programme activities. Your profile will show what you can demonstrate when there is enough recorded work to support it.</p>
             </div>
           )}
           <p className="evidence-meta portfolio-growth-boundary">{development.data.profile.boundary}</p>
