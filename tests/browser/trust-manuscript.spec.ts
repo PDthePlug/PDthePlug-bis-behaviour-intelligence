@@ -32,9 +32,9 @@ test("Trust manuscript uses the real shared reader without duplicate cover, fenc
   await expect(root.getByRole("heading", { name: "What Is Trust?", exact: true })).toBeVisible();
   const outline = root.locator("details.handbook-session-details").filter({ hasText: "Session outline" });
   await expect(outline).toHaveCount(1);
-  await expect(outline.locator("blockquote")).toBeHidden();
+  await expect(outline.locator(".handbook-source-callout")).toBeHidden();
   await outline.locator("summary").click();
-  await expect(outline.locator("blockquote")).toBeVisible();
+  await expect(outline.locator(".handbook-source-callout")).toBeVisible();
   await expect(outline).toContainText("YOU WILL NEED:");
   await outline.locator("summary").click();
   await expect(root.locator('textarea[aria-label="Your answer: 🧠 What Is Trust?"]')).toHaveCount(0);

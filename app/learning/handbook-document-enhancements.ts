@@ -1686,7 +1686,7 @@ function finishHandbookPresentation(root: HTMLElement, context: HandbookEnhancem
   // objectives and resources available without putting another large panel
   // between the learner and the first reading. Never fold response controls
   // or safety guidance into this passive disclosure.
-  root.querySelectorAll<HTMLElement>("blockquote.handbook-callout").forEach(outline => {
+  root.querySelectorAll<HTMLElement>(".handbook-source-callout").forEach(outline => {
     if (outline.closest("details") || outline.querySelector("input,textarea,select,button")) return;
     const text = normalise(outline.textContent ?? "");
     if (!/^TODAY(?:\s*[—–-]\s*PART\s+[AB])?\s*TIME:/i.test(text)
