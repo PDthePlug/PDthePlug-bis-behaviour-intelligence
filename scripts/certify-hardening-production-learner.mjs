@@ -37,7 +37,7 @@ try {
   const understanding = page.locator(`[data-formative-signal-for="${checkId}"]`).getByRole("radio", { name: "I understand this", exact: true });
   await understanding.focus(); await page.keyboard.press("Space");
   await expect(understanding).toBeChecked();
-  await expect(page.locator(".prototype-save-state")).toContainText("Workbook responses saved");
+  await expect(page.locator(".prototype-save-state")).toContainText("Your saved responses are up to date");
   await page.reload();
   await expect(page.locator(`[data-field-id="${fieldId}"]`)).toHaveValue(value);
   await expect(understanding).toBeChecked();

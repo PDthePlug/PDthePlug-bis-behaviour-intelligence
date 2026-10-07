@@ -1,9 +1,56 @@
 {
-  "observedAt": "2026-10-07T03:33:39.048Z",
-  "result": "FAIL",
+  "observedAt": "2026-10-07T03:35:03.591Z",
+  "result": "PASS",
   "checks": [
     {
       "journey": "Fresh password sign-in and protected return",
+      "result": "PASS"
+    },
+    {
+      "journey": "Workbook response, understanding check and text-size refresh recovery",
+      "result": "PASS",
+      "fieldId": "HAB.WB.SCHOOL.DAY1.F6D2C1E598C",
+      "textSize": 20.8
+    },
+    {
+      "journey": "Source-defined Lab baseline persistence",
+      "result": "PASS",
+      "fields": [
+        "HAB.I1.1GIBUZU",
+        "HAB.I1.75GPKE",
+        "HAB.I1.1OBWML0",
+        "HAB.I1.K40CPU",
+        "HAB.I1.2U3OVA",
+        "HAB.I1.FUDCYQ",
+        "HAB.I1.2AJVPE",
+        "HAB.I1.S1FBKY",
+        "HAB.I1.1J981U6",
+        "HAB.I1.1F7RDZ6",
+        "HAB.I1.1MYV9BK"
+      ],
+      "version": "4.5.3"
+    },
+    {
+      "journey": "Source-defined Hook capture persistence",
+      "result": "PASS",
+      "fields": [
+        "HAB.I1.1FG86CZ",
+        "HAB.I1.SEZJNX",
+        "HAB.I1.6OKCWP",
+        "HAB.I1.ACTION.UHSBKB"
+      ],
+      "version": "4.5.3"
+    },
+    {
+      "journey": "Lab re-entry after capture",
+      "result": "PASS"
+    },
+    {
+      "journey": "FACILITATOR excludes private QA reflection",
+      "result": "PASS"
+    },
+    {
+      "journey": "SPONSOR_VIEWER excludes private QA reflection",
       "result": "PASS"
     }
   ],

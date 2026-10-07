@@ -29,7 +29,7 @@ try {
    const group=page.locator(`[data-formative-signal-for="${checkId}"]`);
    await expect(group).toBeVisible();
    await group.getByText("I understand this",{exact:true}).click();
-   await expect(page.locator(".prototype-save-state")).toContainText("Workbook responses saved",{timeout:30000});
+   await expect(page.locator(".prototype-save-state")).toContainText("Your saved responses are up to date",{timeout:30000});
    await page.reload();
    await expect(page.locator(`[data-field-id="${fieldId}"]`)).toHaveValue(value,{timeout:30000});
    await expect(page.locator(`[data-formative-signal-for="${checkId}"]`).getByRole("radio",{name:"I understand this",exact:true})).toBeChecked();

@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-10-07T03:33:39.048Z",
+  "result": "HARNESS_FAILURE",
+  "checks": [
+    {
+      "journey": "Fresh password sign-in and protected return",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "calendarOverride": false,
+  "boundary": "Dedicated authorised QA learner only. Baseline and Hook are verified only if their checks pass; calendar-complete investigation and certificate issuance are not claimed.",
+  "failure": "Assertion used the superseded Workbook responses saved label. Production reached the accepted Your saved responses are up to date state; verify persisted response/check after refresh with the current contract.",
+  "supersededBy": "production-takeover-learner-journey.json"
+}
