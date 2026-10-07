@@ -87,9 +87,11 @@
       "correction": "Retained separate role check and customer-safe failures",
       "verification": [
         "tests/browser/workspace-consolidation.spec.ts",
-        "scripts/certify-hardening-role-variants.mjs"
+        "scripts/certify-hardening-role-variants.mjs",
+        "docs/hardening/takeover-commercial-correction-verification.json",
+        "tests/browser/commercial-reading.spec.ts"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "ACCEPTED_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES."
@@ -615,9 +617,11 @@
       "verification": [
         "tests/ui-components.test.mjs",
         "tests/browser/workspace-consolidation.spec.ts",
-        "scripts/certify-hardening-role-variants.mjs"
+        "scripts/certify-hardening-role-variants.mjs",
+        "docs/hardening/takeover-commercial-correction-verification.json",
+        "tests/browser/commercial-reading.spec.ts"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "ACCEPTED_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -645,9 +649,11 @@
         "tests/content-source-version-copy.test.mjs",
         "scripts/certify-hardening-learning-history.mjs",
         "docs/hardening/studio-update-source-copy-verification.json",
-        "docs/hardening/studio-history-transition-verification.json"
+        "docs/hardening/studio-history-transition-verification.json",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -838,9 +844,11 @@
       "correction": "Preserved controlled choice; failed-save test verifies request plus restored edition",
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
-        "scripts/certify-hardening-learning.mjs"
+        "scripts/certify-hardening-learning.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1200,9 +1208,11 @@
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
-        "scripts/certify-hardening-evidence.mjs"
+        "scripts/certify-hardening-evidence.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1224,9 +1234,11 @@
       "correction": "Retained accepted profile structure and collapsed evidence history",
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
-        "tests/profile-settings-api.test.mjs"
+        "tests/profile-settings-api.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1335,9 +1347,11 @@
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/reader-hardening.spec.ts",
-        "scripts/certify-hardening-learning.mjs"
+        "scripts/certify-hardening-learning.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "CORRECTIONS_MERGED; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1398,9 +1412,11 @@
         "docs/hardening/reader-document-verification.json",
         "tests/browser/safeguarding-accessibility.spec.ts",
         "docs/hardening/production-takeover-browser-baseline.json",
-        "docs/hardening/production-takeover-role-baseline.json"
+        "docs/hardening/production-takeover-role-baseline.json",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "docs/hardening/profile-workspace-component-register.json"
       ],
-      "releaseStatus": "SHARED_CORRECTIONS_RELEASED_PR133; CERTIFICATION_PARTIAL",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; CERTIFICATION_PARTIAL",
       "outstanding": [
         "Production authenticated verification: LIVE-ROLES (public surfaces excluded).",
         "All remaining state/role variants and manual visual coverage: UAT-ALL-STATES.",
@@ -1454,6 +1470,12 @@
       "evidence": "docs/hardening/product-experience-verification.json",
       "releaseStatus": "CORRECTIONS_RELEASED_PR130; FULL_CERTIFICATION_OPEN",
       "applicationHead": "6fd70aae1c372f1ea1784b14a79ecced5dd939f3"
+    },
+    {
+      "date": "2026-10-07",
+      "scope": "PR141 source release plus all profile/workspace families; shared commercial follow-up",
+      "evidence": "docs/hardening/takeover-production-47a4df1-verification.json",
+      "releaseStatus": "PR141_RELEASED; COMMERCIAL_FOLLOWUP_PENDING; FULL_CERTIFICATION_OPEN"
     }
   ]
 }

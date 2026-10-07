@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-10-07T04:38:34.828478+00:00",
+  "observedAt": "2026-10-07T03:45:23.914231+00:00",
   "projectRef": "swmhsqivqaqwovojbceo",
   "baseline": "production-takeover-record-baseline.json",
   "comparedTables": 73,
@@ -16,30 +16,9 @@
     "reason": "Normal first QA workbook capture invoked the existing private.map_captured_evidence trigger. This adds source-field metadata without learner response content or a governed classification. Preserve the new traceable row and verify all original mapping rows against the baseline after excluding this exact addition.",
     "originalRowReplacement": false
   },
-  "result": "REVIEW_REQUIRED",
+  "result": "PASS",
   "originalRowsReturned": false,
-  "changes": [
-    {
-      "relation": "audit_events",
-      "records": 976,
-      "fingerprint": "7f630d4776086d4e6b251f8565a2cc3c"
-    },
-    {
-      "relation": "handbook_progress",
-      "records": 251,
-      "fingerprint": "811736965fc69af9b450b44cf62c39de"
-    },
-    {
-      "relation": "learners",
-      "records": 33,
-      "fingerprint": "5d3874687ccb466a0b3f1abcd4999f0e"
-    },
-    {
-      "relation": "role_assignments",
-      "records": 41,
-      "fingerprint": "acf1a18d05fab8d83037cd805746ab0e"
-    }
-  ],
+  "changes": [],
   "tables": [
     {
       "relation": "agency_attestations",
@@ -133,8 +112,8 @@
     },
     {
       "relation": "audit_events",
-      "records": 976,
-      "fingerprint": "7f630d4776086d4e6b251f8565a2cc3c"
+      "records": 967,
+      "fingerprint": "5598601935515098fbec9de453974f6e"
     },
     {
       "relation": "certificate_awards",
@@ -318,8 +297,8 @@
     },
     {
       "relation": "handbook_progress",
-      "records": 251,
-      "fingerprint": "811736965fc69af9b450b44cf62c39de"
+      "records": 249,
+      "fingerprint": "0b9895a64f694bbae8d59786c3735ba7"
     },
     {
       "relation": "hypotheses",
@@ -339,7 +318,7 @@
     {
       "relation": "learners",
       "records": 33,
-      "fingerprint": "5d3874687ccb466a0b3f1abcd4999f0e"
+      "fingerprint": "70f61076ec67415cfe6d3e4de3caab92"
     },
     {
       "relation": "measurement_history",
@@ -394,7 +373,7 @@
     {
       "relation": "role_assignments",
       "records": 41,
-      "fingerprint": "acf1a18d05fab8d83037cd805746ab0e"
+      "fingerprint": "a957a944d0764963b0113797d2945a97"
     },
     {
       "relation": "safeguarding_cases",

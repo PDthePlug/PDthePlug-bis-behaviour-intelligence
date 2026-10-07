@@ -1,0 +1,98 @@
+{
+  "observedAt": "2026-10-07T04:40:53.059261+00:00",
+  "lastPassingComparison": {
+    "observedAt": "2026-10-07T03:45:23.914231+00:00",
+    "result": "PASS",
+    "tables": 73
+  },
+  "latestComparison": "REVIEW_REQUIRED",
+  "scope": "Read-only aggregate counts/fingerprints; no original learner values, staff emails, row values or narrative returned",
+  "differences": [
+    {
+      "relation": "audit_events",
+      "beforeRecords": 967,
+      "afterRecords": 976,
+      "fingerprintChanged": true
+    },
+    {
+      "relation": "handbook_progress",
+      "beforeRecords": 249,
+      "afterRecords": 251,
+      "fingerprintChanged": true
+    },
+    {
+      "relation": "learners",
+      "beforeRecords": 33,
+      "afterRecords": 33,
+      "fingerprintChanged": true
+    },
+    {
+      "relation": "role_assignments",
+      "beforeRecords": 41,
+      "afterRecords": 41,
+      "fingerprintChanged": true
+    }
+  ],
+  "auditSinceLastPass": [
+    {
+      "action": "PROGRAMME_REPORT_EXPORTED",
+      "object_type": "PILOT_COHORT",
+      "qa_identity_in_record": true,
+      "first_at": "2026-10-07 03:45:43.311149+00",
+      "last_at": "2026-10-07 03:45:43.311149+00",
+      "records": 1
+    },
+    {
+      "action": "HANDBOOK_PROGRESS_SAVED",
+      "object_type": "CONTENT_RELEASE",
+      "qa_identity_in_record": false,
+      "first_at": "2026-10-07 04:04:48.703061+00",
+      "last_at": "2026-10-07 04:37:47.191883+00",
+      "records": 2
+    },
+    {
+      "action": "PROGRAMME_REPORT_EXPORTED",
+      "object_type": "PILOT_COHORT",
+      "qa_identity_in_record": false,
+      "first_at": "2026-10-07 04:17:16.09789+00",
+      "last_at": "2026-10-07 04:17:16.09789+00",
+      "records": 1
+    },
+    {
+      "action": "STAFF_ROLE_REVOKED",
+      "object_type": "ROLE_ASSIGNMENT",
+      "qa_identity_in_record": false,
+      "first_at": "2026-10-07 04:27:11.025999+00",
+      "last_at": "2026-10-07 04:27:11.025999+00",
+      "records": 1
+    },
+    {
+      "action": "STAFF_ROLE_ASSIGNED",
+      "object_type": "ROLE_ASSIGNMENT",
+      "qa_identity_in_record": false,
+      "first_at": "2026-10-07 04:27:18.201491+00",
+      "last_at": "2026-10-07 04:28:51.216462+00",
+      "records": 6
+    },
+    {
+      "action": "STAFF_ROLE_REVOKED",
+      "object_type": "ROLE_ASSIGNMENT",
+      "qa_identity_in_record": true,
+      "first_at": "2026-10-07 04:38:10.496707+00",
+      "last_at": "2026-10-07 04:38:18.680587+00",
+      "records": 6
+    },
+    {
+      "action": "HANDBOOK_RESPONSE_SAVED",
+      "object_type": "LEARNING_RESPONSE",
+      "qa_identity_in_record": false,
+      "first_at": "2026-10-07 04:39:52.69433+00",
+      "last_at": "2026-10-07 04:39:52.69433+00",
+      "records": 1
+    }
+  ],
+  "interpretation": "Live non-QA activity occurred after the passing baseline. New audit rows and learner progress, learner preference and access fingerprints cannot be certified unchanged. This does not assert every change has been attributed to an audit action. QA privilege cleanup selected only exact authorised QA emails. Do not restore the old baseline or widen QA exclusions to suppress live activity.",
+  "originalDataRestoredOrDeleted": false,
+  "qaExclusionExpanded": false,
+  "result": "REVIEW_REQUIRED_LIVE_ACTIVITY; fresh release comparison remains open"
+}

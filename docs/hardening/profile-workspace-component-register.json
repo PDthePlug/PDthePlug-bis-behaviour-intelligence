@@ -11,9 +11,10 @@
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/profile-workspace-recovery.spec.ts",
-        "tests/profile-settings-api.test.mjs"
+        "tests/profile-settings-api.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final real preview/live states for all roles, themes and long names."
       ]
@@ -27,9 +28,10 @@
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/profile-workspace-recovery.spec.ts",
-        "tests/profile-settings-api.test.mjs"
+        "tests/profile-settings-api.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Live preference save/refresh for remaining appearance/accent/reading combinations."
       ]
@@ -43,9 +45,10 @@
       "verification": [
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/profile-workspace-recovery.spec.ts",
-        "tests/profile-settings-api.test.mjs"
+        "tests/profile-settings-api.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Remaining true production edition changes; QA-only records may be changed, not original learners."
       ]
@@ -60,9 +63,10 @@
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/profile-workspace-recovery.spec.ts",
         "tests/profile-settings-api.test.mjs",
-        "tests/pwa-privacy.test.mjs"
+        "tests/pwa-privacy.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Actual standalone Android/iOS install and sign-out variants."
       ]
@@ -93,9 +97,10 @@
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/browser/profile-workspace-recovery.spec.ts",
-        "tests/measurement-history.test.mjs"
+        "tests/measurement-history.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final preview/live history paging, all source versions, revoked sharing, photo and downloads."
       ]
@@ -110,9 +115,10 @@
         "tests/browser/profile-evidence.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/browser/profile-workspace-recovery.spec.ts",
-        "tests/measurement-history.test.mjs"
+        "tests/measurement-history.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final preview/live history paging, all source versions, revoked sharing, photo and downloads."
       ]
@@ -188,9 +194,10 @@
       "verification": [
         "tests/browser/profile-workspace-recovery.spec.ts",
         "tests/browser/staff-evidence-engine.spec.ts",
-        "tests/staff-workspace-hardening.test.mjs"
+        "tests/staff-workspace-hardening.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Every actual role/section final preview and post-release check; current shell and child each request staff snapshot, a future scoped session optimisation should remove duplication without weakening freshness."
       ]
@@ -268,9 +275,10 @@
       "verification": [
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/staff-evidence-engine.test.mjs",
-        "tests/client-response.test.mjs"
+        "tests/client-response.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Actual all ten touchpoint states, stale-edit conflicts and high-volume attendance on synthetic group."
       ]
@@ -284,9 +292,10 @@
       "verification": [
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/staff-evidence-contracts.test.mjs",
-        "tests/client-response.test.mjs"
+        "tests/client-response.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final review/queue empty, loaded, role denial and stale-review states; never infer capability from coverage alone."
       ]
@@ -300,9 +309,10 @@
       "verification": [
         "tests/browser/safeguarding-accessibility.spec.ts",
         "docs/hardening/takeover-safeguarding-verification-20261007.json",
-        "docs/hardening/production-takeover-browser-baseline.json"
+        "docs/hardening/production-takeover-browser-baseline.json",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final synthetic populated preview and read-only production accessibility recheck; case contents must never enter audit artifacts."
       ]
@@ -401,9 +411,10 @@
       "verification": [
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/access-boundaries.test.mjs",
-        "tests/client-response.test.mjs"
+        "tests/client-response.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
       ]
@@ -417,9 +428,10 @@
       "verification": [
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/access-boundaries.test.mjs",
-        "tests/client-response.test.mjs"
+        "tests/client-response.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
       ]
@@ -433,9 +445,10 @@
       "verification": [
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/access-boundaries.test.mjs",
-        "tests/client-response.test.mjs"
+        "tests/client-response.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
       ]
@@ -449,9 +462,10 @@
       "verification": [
         "tests/browser/staff-evidence-engine.spec.ts",
         "tests/access-boundaries.test.mjs",
-        "tests/client-response.test.mjs"
+        "tests/client-response.test.mjs",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final empty/high-volume states and synthetic role grant/revoke; original learner detail must not be captured."
       ]
@@ -465,9 +479,10 @@
       "verification": [
         "docs/hardening/takeover-learning-preview-verification-20261007.json",
         "tests/content-studio.test.mjs",
-        "tests/browser/content-studio-recovery.spec.ts"
+        "tests/browser/content-studio-recovery.spec.ts",
+        "docs/hardening/takeover-production-47a4df1-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PR141_RELEASED; PRINCIPAL_LIVE_VARIANTS_VERIFIED; FULL_VARIANTS_OPEN",
       "outstanding": [
         "Final current-head Studio preview and remaining exact authoring/upload/volume-audit state variants; production publication is not authorised merely to exercise UI."
       ]
@@ -477,14 +492,17 @@
       "role": "Commercial admin/lead/research/read-only; system administrator",
       "component": "app/commercial/commercial-workspace.tsx",
       "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
-      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved. FOLLOWUP: shared secondary-text contrast, keyboard/focus/control sizing and clear empty states; no record/permission changes.",
       "verification": [
         "docs/hardening/takeover-staging-page-verification-20261007.json",
         "tests/role-routed-reporting.test.mjs",
         "tests/client-response.test.mjs",
-        "tests/browser/profile-workspace-recovery.spec.ts"
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "tests/browser/commercial-reading.spec.ts",
+        "docs/hardening/takeover-commercial-correction-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PRIOR_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
       ]
@@ -494,14 +512,17 @@
       "role": "Commercial admin/lead/research/read-only; system administrator",
       "component": "app/commercial/commercial-workspace.tsx",
       "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
-      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved. FOLLOWUP: shared secondary-text contrast, keyboard/focus/control sizing and clear empty states; no record/permission changes.",
       "verification": [
         "docs/hardening/takeover-staging-page-verification-20261007.json",
         "tests/role-routed-reporting.test.mjs",
         "tests/client-response.test.mjs",
-        "tests/browser/profile-workspace-recovery.spec.ts"
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "tests/browser/commercial-reading.spec.ts",
+        "docs/hardening/takeover-commercial-correction-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PRIOR_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
       ]
@@ -511,14 +532,17 @@
       "role": "Commercial admin/lead/research/read-only; system administrator",
       "component": "app/commercial/commercial-workspace.tsx",
       "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
-      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved. FOLLOWUP: shared secondary-text contrast, keyboard/focus/control sizing and clear empty states; no record/permission changes.",
       "verification": [
         "docs/hardening/takeover-staging-page-verification-20261007.json",
         "tests/role-routed-reporting.test.mjs",
         "tests/client-response.test.mjs",
-        "tests/browser/profile-workspace-recovery.spec.ts"
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "tests/browser/commercial-reading.spec.ts",
+        "docs/hardening/takeover-commercial-correction-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PRIOR_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
       ]
@@ -528,14 +552,17 @@
       "role": "Commercial admin/lead/research/read-only; system administrator",
       "component": "app/commercial/commercial-workspace.tsx",
       "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
-      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved. FOLLOWUP: shared secondary-text contrast, keyboard/focus/control sizing and clear empty states; no record/permission changes.",
       "verification": [
         "docs/hardening/takeover-staging-page-verification-20261007.json",
         "tests/role-routed-reporting.test.mjs",
         "tests/client-response.test.mjs",
-        "tests/browser/profile-workspace-recovery.spec.ts"
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "tests/browser/commercial-reading.spec.ts",
+        "docs/hardening/takeover-commercial-correction-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PRIOR_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
       ]
@@ -545,14 +572,17 @@
       "role": "Commercial admin/lead/research/read-only; system administrator",
       "component": "app/commercial/commercial-workspace.tsx",
       "problem": "Malformed transport failure exposed parser wording; role-eligible commercial staff had no Profile entry. Staging CRM changes from unmerged PR136 cannot be promoted.",
-      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved.",
+      "correction": "BRANCH: exact existing-role Profile entry; human commercial transport errors, shape-checked reads and revoked-data clearing. Current CRM architecture and production definitions preserved. FOLLOWUP: shared secondary-text contrast, keyboard/focus/control sizing and clear empty states; no record/permission changes.",
       "verification": [
         "docs/hardening/takeover-staging-page-verification-20261007.json",
         "tests/role-routed-reporting.test.mjs",
         "tests/client-response.test.mjs",
-        "tests/browser/profile-workspace-recovery.spec.ts"
+        "tests/browser/profile-workspace-recovery.spec.ts",
+        "docs/hardening/takeover-production-47a4df1-verification.json",
+        "tests/browser/commercial-reading.spec.ts",
+        "docs/hardening/takeover-commercial-correction-verification.json"
       ],
-      "releaseStatus": "BRANCH_CHANGES_PENDING_FINAL_PREVIEW_AND_LIVE",
+      "releaseStatus": "PRIOR_FUNCTIONALITY_RETAINED; COMMERCIAL_VISUAL_FOLLOWUP_PENDING_RELEASE",
       "outstanding": [
         "All actual view/error/long-table/read-only states on final preview; no unmerged commercial schema promotion."
       ]

@@ -17,7 +17,7 @@ const roleRoutes = {
   FACILITATOR: ["cohort", "participants", "support", "review"].map(section => `/workspace?view=facilitator&section=${section}&group=${group.id}`),
   SPONSOR_VIEWER: ["overview", "learning", "evidence", "reports"].map(section => `/workspace?view=outcomes&section=${section}&group=${group.id}`),
   PROGRAMME_OWNER: ["overview", "learning", "evidence", "reports", "decisions"].map(section => `/workspace?view=outcomes&section=${section}&group=${group.id}`),
-  SYSTEM_ADMIN: ["overview", "groups", "access", "assessment"].map(section => `/workspace?view=admin&section=${section}`).concat(["/content-studio"]),
+  SYSTEM_ADMIN: ["overview", "groups", "access", "assessment"].map(section => `/workspace?view=admin&section=${section}`).concat(["/content-studio", ...["overview", "pipeline", "accounts", "tasks", "proposals"].map(section => `/commercial?section=${section}`)]),
   SAFEGUARDING_OFFICER: ["/workspace?view=facilitator&section=support"],
 };
 if (!baseline) for (const role of Object.keys(roleRoutes)) roleRoutes[role] = [...new Set(["/profile", "/settings", "/experience", ...roleRoutes[role]])];
@@ -50,7 +50,8 @@ try {
       const response = await page.goto(session.base + route);
       await page.waitForLoadState("networkidle");
       if (role === "SYSTEM_ADMIN" && route.startsWith("/workspace")) {
-        await page.getByLabel("Find a learner").fill("takeover-20261007-");
+        const learnerFilter = page.getByLabel("Find a learner");
+        if (await learnerFilter.isVisible()) await learnerFilter.fill("takeover-20261007-");
       }
       if (!baseline && role === "LEARNER" && route.includes("page=13")) {
         await expect(page.getByRole("note", { name: "Certificate template" })).toBeVisible();
@@ -74,11 +75,12 @@ try {
       await page.addScriptTag({ content: axe });
       const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] } })).violations.map(item => ({ id: item.id, targets: item.nodes.map(node => node.target) })));
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const screenshot = `${role}-${rows.length}-${width}.png`;
       // Global operator/safeguarding surfaces can contain real records. Their
       // chrome is captured alone; API scope and keyboard behaviour are separate checks.
-      if (["SYSTEM_ADMIN", "SAFEGUARDING_OFFICER"].includes(role) && route.startsWith("/workspace")) {
-        await page.locator(".staff-workspace-header").screenshot({ path: `${output}/${screenshot}` });
+      if (["SYSTEM_ADMIN", "SAFEGUARDING_OFFICER"].includes(role) && (route.startsWith("/workspace") || route.startsWith("/commercial"))) {
+        await page.locator(route.startsWith("/commercial") ? "main > header" : ".staff-workspace-header").screenshot({ path: `${output}/${screenshot}` });
       } else await page.screenshot({ path: `${output}/${screenshot}` });
       await page.reload(); await page.waitForLoadState("networkidle");
       const row = { role, route, width, phase: baseline ? "PRE_RELEASE_BASELINE; does not verify branch-only corrections" : "POST_RELEASE", status: response.status(), overflow, violations, failures: [...failures], cancelledPrefetches: [...cancelledPrefetches], menu, disclosure, refresh: "PASS", screenshot,
