@@ -89,6 +89,20 @@ type Cohort = {
       note?: string;
     };
   };
+  competencySummary?: null | {
+    status: "AVAILABLE" | "SUPPRESSED";
+    participantCount: number;
+    boundary: string;
+    competencies: Array<{
+      competencyId: string;
+      title: string;
+      reportableParticipants: number | null;
+      participantsWithRecordedProgression: number | null;
+      externalFrameworkAreas: string[];
+      nextQuestion: string;
+      distribution: Array<{ code: string; label: string; count: number | null; suppressed?: boolean }>;
+    }>;
+  };
 };
 
 type FacilitatorData = {
@@ -164,12 +178,12 @@ function supportFocus(learner: ProgressRow) {
   const focus: string[] = [];
   const step = learner.enrolment?.currentInvestigation ?? 0;
   const experiment = learner.experiment;
-  if (step <= 3) focus.push("Build learning momentum");
-  if (step >= 6 && !experiment && !learner.enrolment?.experimentStartedAt) focus.push("Move from planning to the first real-world test");
-  if (experiment && (experiment.recordedDays ?? 0) < 3) focus.push("Build observation consistency");
-  if (experiment && (experiment.opportunityCount ?? 0) === 0) focus.push("Ask what situations were available and what has been recorded");
-  if (experiment && (experiment.opportunityCount ?? 0) > 0 && (experiment.opportunityCount ?? 0) < (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Collect enough repeat evidence for a stronger review");
-  if (step >= 8 && experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Review what changed, what stayed the same and what should be tested next");
+  if (step <= 3) focus.push("Connect the current concept to one concrete example before moving on");
+  if (step >= 6 && !experiment && !learner.enrolment?.experimentStartedAt) focus.push("Help turn the plan into one small first real-world action");
+  if (experiment && (experiment.recordedDays ?? 0) < 3) focus.push("Encourage another observation before drawing a conclusion");
+  if (experiment && (experiment.opportunityCount ?? 0) === 0) focus.push("Ask what real situations were available and whether the test needs adjusting");
+  if (experiment && (experiment.opportunityCount ?? 0) > 0 && (experiment.opportunityCount ?? 0) < (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Help record another comparable situation before reviewing the pattern");
+  if (step >= 8 && experiment && (experiment.opportunityCount ?? 0) >= (experiment.minimumEvidenceThreshold ?? 3)) focus.push("Review what changed, what stayed the same and what they would test next");
   return focus.slice(0, 3);
 }
 
@@ -253,6 +267,7 @@ export function FacilitatorWorkspace({
     checkInGroups.set(key, [...(checkInGroups.get(key) ?? []), item]);
   });
   const learningChecks = cohort.learningChecks ?? null;
+  const competencySummary = cohort.competencySummary ?? null;
   const participantNotes = selected ? data.notes.filter((item) => item.learnerUserId === selected.userId) : [];
   const participantReferrals = selected ? data.referrals.filter((item) => item.learnerUserId === selected.userId) : [];
 
@@ -303,10 +318,46 @@ export function FacilitatorWorkspace({
           </section>
           <section className="ops-metrics facilitator-group-summary" aria-label="Group summary">
             <article><Users /><span>Learners</span><strong>{participants.length}</strong></article>
-            <article><Activity /><span>Experiments started</span><strong>{experiments}</strong></article>
-            <article><ClipboardCheck /><span>Review stage</span><strong>{reviewReady}</strong></article>
-            <article><ShieldAlert /><span>Needs attention</span><strong>{attention.length}</strong></article>
+            <article><Activity /><span>In real-world practice</span><strong>{experiments}</strong></article>
+            <article><ClipboardCheck /><span>Ready to reflect</span><strong>{reviewReady}</strong></article>
+            <article><ShieldAlert /><span>Could use a check-in</span><strong>{attention.length}</strong></article>
           </section>
+          {competencySummary?.status === "AVAILABLE" && competencySummary.competencies.length ? (
+            <section className="surface-card ops-section facilitator-development-picture">
+              <div className="section-title">
+                <div>
+                  <p className="eyebrow">Development picture</p>
+                  <h2>What this group is learning to do</h2>
+                  <p>These areas come from mapped programme tasks and recorded evidence. They show the strongest stage the available work supports, not fixed ability or a learner ranking.</p>
+                </div>
+                <Compass />
+              </div>
+              <div className="facilitator-competency-grid">
+                {competencySummary.competencies.map((competency) => {
+                  const visibleStages = competency.distribution.filter((stage) => (stage.count ?? 0) > 0);
+                  const highest = visibleStages.at(-1);
+                  return <article key={competency.competencyId} className="facilitator-competency-card">
+                    <div>
+                      <h3>{competency.title}</h3>
+                      <span>{highest?.label ?? "Evidence developing"}</span>
+                    </div>
+                    <p>{competency.reportableParticipants === null
+                      ? "The group has some evidence in this area, but the count is hidden for privacy."
+                      : competency.reportableParticipants === 0
+                        ? "There is not enough mapped evidence to describe group development here yet."
+                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} currently have enough mapped evidence to describe development in this area.`}</p>
+                    {competency.externalFrameworkAreas.length ? <small>Related curriculum areas: {competency.externalFrameworkAreas.join(" · ")}</small> : null}
+                    <p className="facilitator-competency-next"><strong>Next useful question:</strong> {competency.nextQuestion}</p>
+                  </article>;
+                })}
+              </div>
+              <p className="ops-helper">{competencySummary.boundary}</p>
+            </section>
+          ) : competencySummary?.status === "SUPPRESSED" ? (
+            <EvidenceDisclosure title="Development picture will appear as the group grows">
+              <p>Group competency patterns are hidden until the minimum privacy threshold is met. Individual support can still use the learner’s permitted progress records.</p>
+            </EvidenceDisclosure>
+          ) : null}
           <section className="programme-intelligence-section">
             <p className="eyebrow">Your next session</p><h2>Where a check-in could help</h2>
             <p>These suggestions use recorded progress and observation counts. Ask participants what support would be useful; the records do not explain their reasons.</p>
