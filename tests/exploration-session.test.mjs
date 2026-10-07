@@ -50,3 +50,7 @@ test('selected shared evidence can be reviewed; a revision removes the previous 
  resumed.execute('learner','/api/universal-lab',{action:'saveInvestigation',investigation:1,items:items.map(item=>item.semanticFieldId===prompt.id?{...item,value:'Revised fictional observation'}:item)});
  assert.equal((await(await resumed.request('facilitator','/api/evidence-engine?view=workspace')).json()).submissions.length,0);
 });
+
+test('My BIS uses the current development profile without inventing mapped competence',async()=>{
+ const session=create();const response=await session.request('learner','/api/evidence-engine?view=developmentProfile');assert.equal(response.status,200);const {profile}=await response.json();assert.equal(profile.heading,'Your growth');assert.equal(profile.status,'LIMITED_EVIDENCE');assert.deepEqual(profile.areas,[]);assert.doesNotMatch(profile.summary+profile.boundary,/source-backed|P3/);assert.equal((await session.request('owner','/api/evidence-engine?view=developmentProfile')).status,403);
+});

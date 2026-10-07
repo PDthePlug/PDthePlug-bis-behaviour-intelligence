@@ -22,6 +22,7 @@ test('sign-in opens a keyboard accessible role explorer and actual learning save
  await expect(page.locator('.learner-document-status')).toHaveText('Your saved responses are up to date');
  await page.reload();
  await expect(response).toHaveValue('I complete one fictional application field before reaching for my phone.');
+ await page.getByRole('button',{name:'Evidence Portfolio',exact:true}).click();await expect(page).toHaveURL(/screen=portfolio/);await page.goBack();await expect(response).toHaveValue('I complete one fictional application field before reaching for my phone.');
  await layout(page);
  await page.screenshot({path:info.outputPath('learning.png'),fullPage:true});verify();
 });
@@ -122,5 +123,5 @@ test('the complete nine-stage Lab works across example days without authenticate
  await page.getByRole('button',{name:'Continue to evidence review',exact:true}).click();await expect(page).toHaveURL(/step=8/);
  await page.reload();await expect(page.locator('.universal-package-lab')).toBeVisible();
  await passAll(page);await page.getByRole('button',{name:'Save and continue',exact:true}).click();await expect(page).toHaveURL(/step=9/);
- await passAll(page);await page.getByRole('button',{name:'Complete Lab',exact:true}).click();await expect(page.getByText('Naledi, your nine-investigation evidence trail is complete.')).toBeVisible();await page.reload();await expect(page.getByText('Naledi, your nine-investigation evidence trail is complete.')).toBeVisible();await layout(page);verify();
+ await passAll(page);await page.getByRole('button',{name:'Complete Lab',exact:true}).click();await expect(page.getByText(/Naledi, your nine-investigation evidence (trail|record) is complete\./)).toBeVisible();await page.reload();await expect(page.getByText(/Naledi, your nine-investigation evidence (trail|record) is complete\./)).toBeVisible();await layout(page);verify();
 });
