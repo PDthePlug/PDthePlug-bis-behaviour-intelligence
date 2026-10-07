@@ -58,3 +58,25 @@ export function progressionDelta(
   preStage: CompetencyProgressStage,
   postStage: CompetencyProgressStage,
 ): number | null;
+
+export function buildCompetencyTimeline(input?: {
+  competencyId?: string;
+  label?: string;
+  introduced?: boolean;
+  evidence?: Array<CompetencyEvidenceEvent & { at?: string }>;
+}): {
+  competencyId: string;
+  label: string;
+  initialStage: CompetencyProgressStage;
+  currentStage: CompetencyProgressStage;
+  progressionDelta: number | null;
+  transitions: Array<{
+    from: CompetencyProgressStage;
+    to: CompetencyProgressStage;
+    at: string | null;
+    evidenceRefs: string[];
+    sourceRefs: string[];
+  }>;
+  current: ReturnType<typeof buildCompetencyProgressSummary>;
+};
+
