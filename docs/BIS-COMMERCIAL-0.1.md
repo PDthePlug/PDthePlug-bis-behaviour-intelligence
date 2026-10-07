@@ -113,7 +113,11 @@ Apply these migrations after the existing BIS production migration:
 
 The selected BIS Production Supabase project now has these migrations applied. The remaining 0.1 release gate is application-level verification of the protected `/commercial` route and its authenticated mutations on the deployment produced from this branch.
 
-## Commercial Intelligence\n\nThe founder operating layer is now specified in [`BIS-COMMERCIAL-INTELLIGENCE-V1.md`](./BIS-COMMERCIAL-INTELLIGENCE-V1.md). It keeps this CRM as the commercial system of record and adds auditable prioritisation, guarded AI preparation and human approval rather than replacing the existing data model.\n\n## Future milestones
+## Commercial Intelligence
+
+The founder operating layer is specified in [`BIS-COMMERCIAL-INTELLIGENCE-V1.md`](./BIS-COMMERCIAL-INTELLIGENCE-V1.md). It keeps this CRM as the commercial system of record and adds auditable prioritisation, guarded AI preparation and human approval rather than replacing the existing data model.
+
+## Future milestones
 
 ### 0.2 — Discovery + Pathway Builder
 

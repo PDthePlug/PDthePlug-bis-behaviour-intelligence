@@ -195,8 +195,9 @@ async function mockCommercial(page: Page) {
 test("Commercial Intelligence automatically prepares the daily founder brief and keeps sends human-controlled", async ({ page }) => {
   const state = await mockCommercial(page);
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/commercial?section=intelligence");
-
+  await page.goto("/commercial");
+  await expect(page.getByRole("heading", { level: 1, name: "Partnerships, pipeline and execution." })).toBeVisible();
+  await page.getByRole("button", { name: "Commercial Intelligence", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Commercial Intelligence." })).toBeVisible();
   await expect(page.getByText("Founder operating brief", { exact: true })).toBeVisible();
   await expect.poll(() => state.refreshCount).toBe(1);
