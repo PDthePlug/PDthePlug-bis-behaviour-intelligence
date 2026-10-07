@@ -1,0 +1,26 @@
+{
+  "observedAt": "2026-10-07T09:18:47.027258+00:00",
+  "projectRef": "lbmhkddrkhtmkcvfmumd",
+  "result": "PASS",
+  "operations": [
+    "complete refresh",
+    "same-day automatic reuse",
+    "late artifact failure rollback",
+    "human decision plus audit",
+    "second decision rejection",
+    "actor stamping",
+    "draft plus artifact",
+    "wrong learner role denial"
+  ],
+  "fixturePreservation": "All fixture and recommendation changes rolled back in the same real PostgreSQL transaction. No original values returned.",
+  "publicFunctions": [
+    {
+      "name": "bis_commit_commercial_run",
+      "securityDefiner": false
+    },
+    {
+      "name": "bis_decide_commercial_recommendation",
+      "securityDefiner": false
+    }
+  ]
+}

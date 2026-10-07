@@ -33,6 +33,9 @@ import type { Identity, StaffRole } from "../../../lib/bis-access";
 import { requestSupabaseClient } from "../../../lib/supabase/server";
 import { LAB_VERSION } from "../../../lib/habit-lab";
 import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib/programme-report-pdf";
+import competencyFramework from "@/content/curriculum/applied-commerce/competency-framework.json";
+import competencyCrosswalk from "@/content/curriculum/external-frameworks/dbe-basic-education-competency-crosswalk.json";
+import { decorateCohortCompetencySummary } from "@/lib/development-profile.mjs";
 
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -330,14 +333,29 @@ async function facilitatorSnapshot(identity: Identity) {
     .where(inArray(facilitatorNotes.cohortId, cohortIds))
     .orderBy(desc(facilitatorNotes.createdAt));
   const client = requestSupabaseClient();
-  const learningCheckEntries = await Promise.all(
-    cohorts.map(async (cohort) => {
-      const result = await client.rpc("facilitator_cohort_learning_checks", { target_cohort_id: cohort.id });
-      if (result.error) throw new Error(result.error.message);
-      return [cohort.id, result.data ?? null] as const;
-    }),
-  );
+  const [learningCheckEntries, competencyEntries] = await Promise.all([
+    Promise.all(
+      cohorts.map(async (cohort) => {
+        const result = await client.rpc("facilitator_cohort_learning_checks", { target_cohort_id: cohort.id });
+        if (result.error) throw new Error(result.error.message);
+        return [cohort.id, result.data ?? null] as const;
+      }),
+    ),
+    Promise.all(
+      cohorts.map(async (cohort) => {
+        const result = await client.rpc("bis_cohort_competency_summary", { target_cohort_id: cohort.id });
+        const summary = result.error || !result.data
+          ? null
+          : decorateCohortCompetencySummary(result.data as Record<string, unknown>, {
+              competencies: competencyFramework.competencies,
+              externalCrosswalk: competencyCrosswalk,
+            });
+        return [cohort.id, summary] as const;
+      }),
+    ),
+  ]);
   const learningChecks = new Map(learningCheckEntries);
+  const competencySummaries = new Map(competencyEntries);
 
   const referrals = await db
     .select({
@@ -359,6 +377,7 @@ async function facilitatorSnapshot(identity: Identity) {
       ...cohort,
       memberIds: members.filter((member) => member.cohortId === cohort.id).map((member) => member.learnerUserId),
       learningChecks: learningChecks.get(cohort.id) ?? null,
+      competencySummary: competencySummaries.get(cohort.id) ?? null,
     })),
     learners: progress,
     notes,
@@ -415,7 +434,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, assessmentResult, decisions] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, assessmentResult, competencyResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
@@ -424,6 +443,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       client.rpc("sponsor_cohort_question_patterns", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_evidence_flow", { target_cohort_id: cohortId }),
       client.rpc("bis_assessment_report", { p_cohort: cohortId }),
+      client.rpc("bis_cohort_competency_summary", { target_cohort_id: cohortId }),
       db
         .select()
         .from(programmeDecisions)
@@ -450,6 +470,12 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
         organisationLearning: organisationLearningResult.data ?? null,
         learningChecks: learningChecksResult.data ?? null,
         questionPatterns: questionPatternsResult.data ?? null,
+        competencySummary: competencyResult.error || !competencyResult.data
+          ? null
+          : decorateCohortCompetencySummary(competencyResult.data as Record<string, unknown>, {
+              competencies: competencyFramework.competencies,
+              externalCrosswalk: competencyCrosswalk,
+            }),
         decisionRegister: {
           canManage: await canManageProgrammeCohort(identity, roles, cohortId),
           decisions,
@@ -508,9 +534,9 @@ async function staffSnapshot(identity: Identity, roles: string[]) {
     identity,
     roles,
     privacyBoundary: {
-      facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes", "aggregate formative learning-check support signals"],
+      facilitatorCanSee: ["learner identity", "lab progress", "experiment completion counts", "staff-authored support notes", "aggregate formative learning-check support signals", "privacy-safe group competency development"],
       facilitatorCannotSee: ["learner answers", "hypothesis wording", "experiment notes", "Companion conversations", "memory items"],
-      sponsorCanSee: ["aggregate programme outcomes", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness", "aggregate formative learning-check signals", "governed structured question patterns", "organisation-authored programme decisions and review outcomes"],
+      sponsorCanSee: ["aggregate programme outcomes", "privacy-safe competency development", "evidence sufficiency", "prediction calibration", "experiment attempts", "aggregate support demand", "generalised experiment themes", "programme-day progress", "structured learning patterns", "pre/post group shifts", "aggregate system opportunity signals", "programme transition points", "aggregate support-response status", "aggregate adaptation signals", "cross-cohort comparison readiness", "aggregate formative learning-check signals", "governed structured question patterns", "organisation-authored programme decisions and review outcomes"],
       sponsorCannotSee: ["learner identity", "individual answer content", "reflection text", "experiment notes", "support request wording"],
       safeguardingAccess: "Case details require the explicit SAFEGUARDING_OFFICER role.",
     },

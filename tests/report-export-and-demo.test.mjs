@@ -80,7 +80,7 @@ test("PDF engine includes reusable professional report primitives", async () => 
   assert.match(pdf, /DejaVuSerif-Bold/);
   assert.match(pdf, /Behaviour Intelligence Series/);
   assert.match(pdf, /GROUP-LEVEL REPORT/);
-  assert.match(pdf, /What the programme results are showing/);
+  assert.match(pdf, /What learners are developing/);
   assert.match(pdf, /What may be worth exploring next/);
 
 });

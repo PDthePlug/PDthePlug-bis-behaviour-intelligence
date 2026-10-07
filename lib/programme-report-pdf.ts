@@ -188,7 +188,7 @@ const fonts = {
 const PAGE_W = 595.28, PAGE_H = 841.89, MARGIN = 48, WIDTH = PAGE_W - MARGIN * 2;
 const BOTTOM = PAGE_H - 72;
 const C = { ink: "#193038", blue: "#315d82", muted: "#51616b", line: "#dce2e4", pale: "#edf2f5", secondary: "#91aec4" };
-const domainLabels: Record<string, string> = { application: "Real-world practice", engagement: "Learning journey", understanding: "Participant-reported understanding", behaviour: "Behaviour in practice", support: "Human support", capability: "Reviewed task evidence", coverage: "How much information we have", context: "Programme context", delivery: "What the programme can learn" };
+const domainLabels: Record<string, string> = { application: "Real-world practice", engagement: "Learning journey", understanding: "Participant-reported understanding", behaviour: "Behaviour in practice", support: "Human support", capability: "Capability development", coverage: "How much information we have", context: "Programme context", delivery: "What the programme can learn" };
 
 class ReportDocument {
   readonly doc: PDFKit.PDFDocument;
@@ -381,12 +381,16 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     canvas.paragraph("Prepared by P.D. · Applied Commerce®", { color: C.muted });
     return canvas.finish();
   }
-  canvas.section("Executive summary", "What the programme results are showing", "KEY FINDINGS · Recorded participation, practice and evidence, with questions for programme review.");
-  for (const item of report.insights.slice(0, 3)) canvas.finding(item, true);
+  canvas.section("Executive summary", "What learners are developing", "KEY FINDINGS · Development first, with participation and evidence underneath the interpretation.");
+  const developmentFindings = report.insights.filter(item => item.id.startsWith("competency-evidence-"));
+  const executiveFindings = [...developmentFindings, ...report.insights.filter(item => !item.id.startsWith("competency-evidence-"))].slice(0, 3);
+  for (const item of executiveFindings) canvas.finding(item, true);
   if (!report.insights.length) canvas.paragraph("No reportable finding is available yet. Review the permitted records and delivery calendar before drawing a conclusion.");
   canvas.paragraph(report.boundary, { color: C.muted });
-  canvas.section("Progress and programme context", "Participation and recorded activity", "Each graphic answers a programme question. Counts describe recorded milestones rather than a verified nested funnel.");
-  for (const chart of report.charts) canvas.chart(chart);
+  canvas.section("Development and programme context", "What the evidence supports", "Development charts come first when competency evidence is available. Participation and activity counts remain supporting context rather than a score of the learner.");
+  const developmentCharts = report.charts.filter(item => item.id.startsWith("competency-"));
+  const supportingCharts = report.charts.filter(item => !item.id.startsWith("competency-"));
+  for (const chart of [...developmentCharts, ...supportingCharts]) canvas.chart(chart);
   const unavailable: string[] = [];
   canvas.page();
   for (const domain of ["engagement", "understanding", "application", "behaviour", "capability", "support", "context", "coverage", "delivery"]) {

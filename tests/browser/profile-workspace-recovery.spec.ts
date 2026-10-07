@@ -73,7 +73,8 @@ test("an incomplete evidence response remains unavailable until refreshed", asyn
   await page.route("**/api/evidence-portfolio", route => route.fulfill({ json: { labs: [] } }));
   await page.route("**/api/evidence-engine?**", route => {
     const view = new URL(route.request().url()).searchParams.get("view");
-    return route.fulfill({ json: view === "timeline" ? available ? { records: [], index: { years: [], labs: [], record_count: 0 } } : { records: [] } : { groups: [], rubrics: [], submissions: [] } });
+    const developmentProfile = { profile: { modelVersion: "bis-development-profile:1", reportClassification: {}, status: "LIMITED_EVIDENCE", title: "My BIS", heading: "Your growth", summary: "Your BIS profile will grow as source-backed evidence is recorded.", areas: [], boundary: "This is a living picture of what your recorded programme work supports." } };
+    return route.fulfill({ json: view === "timeline" ? available ? { records: [], index: { years: [], labs: [], record_count: 0 } } : { records: [] } : view === "developmentProfile" ? developmentProfile : { groups: [], rubrics: [], submissions: [] } });
   });
   await page.goto("/portfolio");
   await expect(page.locator(".error-banner").filter({ hasText: "Evidence is unavailable. Please try again." })).toBeVisible();

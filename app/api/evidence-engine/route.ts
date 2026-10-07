@@ -5,6 +5,11 @@ import { requestSupabaseClient } from "@/lib/supabase/server";
 import { learnerEvidencePortfolio } from "@/lib/learner-evidence";
 import type { EvidenceRecord, AssessmentWorkspace } from "@/lib/evidence-engine";
 import templates from "@/lib/authored-assessment-rubrics.json";
+import competencyFramework from "@/content/curriculum/applied-commerce/competency-framework.json";
+import competencyCrosswalk from "@/content/curriculum/external-frameworks/dbe-basic-education-competency-crosswalk.json";
+import labAncestry from "@/content/curriculum/applied-commerce/lab-ancestry.json";
+import timeCompetencyMap from "@/content/curriculum/time/time-competency-evidence-map.json";
+import { buildLearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
 import type { AssessmentReport, CurriculumMapping } from "@/lib/evidence-engine";
 const headers = { "cache-control": "private, no-store" };
 const id = z.string().min(1).max(200);
@@ -46,6 +51,24 @@ async function get(request: Request) {
    const {data,error}=await selection;if(error)throw error;
    const portfolio=await learnerEvidencePortfolio(identity.id),labels=new Map(portfolio.flatMap(lab=>lab.metrics.map(metric=>[`${lab.enrolmentId}:${metric.code}`,metric.label] as const)));
    return Response.json({records:data.map(record=>({...record,label:labels.get(`${record.enrolment_id}:${record.code}`)??"Calculated measure"}))},{headers});
+  }
+  if(view==="developmentProfile") {
+   const records:EvidenceRecord[]=[];let before:string|null=null,beforeId:string|null=null;
+   for(let page=0;page<1000;page++) {
+    const batch=await rpc("bis_evidence_timeline",{p_before:before,p_before_id:beforeId,p_limit:100}) as EvidenceRecord[];
+    records.push(...batch);if(batch.length<100)break;
+    before=batch.at(-1)!.occurred_at;beforeId=batch.at(-1)!.id;
+    if(page===999)throw new Error("Development profile capacity exceeded");
+   }
+   const profile=buildLearnerDevelopmentProfile({
+    learnerId:identity.id,
+    records,
+    competencies:competencyFramework.competencies,
+    externalCrosswalk:competencyCrosswalk,
+    labAncestry:labAncestry.labs,
+    authoredBindings:timeCompetencyMap.bindings,
+   });
+   return Response.json({profile},{headers});
   }
   if(view==="learnerReport") {
    const records:EvidenceRecord[]=[];let before:string|null=null,beforeId:string|null=null;
@@ -106,7 +129,12 @@ async function post(request: Request) {
   if(body.action==="map"||body.action==="rubric") {
    const roles=await getRoles(identity);
    if(!roles.includes("SYSTEM_ADMIN")) return Response.json({error:"Administrator access is required."},{status:403,headers});
-   if(body.action==="map") await rpc("bis_approve_evidence_mapping",{p_previous:body.previousId,p_class:body.evidenceClass,p_purpose:body.purpose,p_outcome:body.outcome,p_competency:body.competency,p_source:body.source});
+   if(body.action==="map") {
+    const requestedCompetency=body.competency.trim().toLowerCase();
+    const competency=competencyFramework.competencies.find(item=>item.id.toLowerCase()===requestedCompetency||item.title.toLowerCase()===requestedCompetency);
+    if(!competency) return Response.json({error:"Choose a recognised BIS development area."},{status:400,headers});
+    await rpc("bis_approve_evidence_mapping",{p_previous:body.previousId,p_class:body.evidenceClass,p_purpose:body.purpose,p_outcome:body.outcome,p_competency:competency.id,p_source:body.source});
+   }
    else {
     const template=templates.find(t=>t.labCode===body.templateCode);
     if(!template) return Response.json({error:"Choose an authored rubric."},{status:400,headers});
