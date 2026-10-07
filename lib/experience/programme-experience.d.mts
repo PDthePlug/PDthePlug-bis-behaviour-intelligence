@@ -13,4 +13,4 @@ export const illustrativeParticipants: readonly IllustrativeParticipant[];
 export const illustrativeCohort: IllustrativeCohort;
 export function cohortEvidence(rows?: readonly IllustrativeParticipant[]): IllustrativeCohort;
 export function explainExperience(state: ExperienceState): { followThrough: string; nextStep: string; control: string };
-export function sponsorFindings(): Array<{ title: string; observation: string; meaning: string; action: string; basis: string; limit: string }>;
+export function sponsorFindings(cohort?: IllustrativeCohort, organisation?: string): Array<{ title: string; observation: string; meaning: string; action: string; basis: string; limit: string }>;

@@ -15,6 +15,8 @@ import "../../../../app/portfolio/portfolio.css";
 import { HarnessShell } from "./harness-shell";
 import "../../../../app/evidence-engine.css";
 
+export const metadata = { icons: { icon: "/favicon.svg" } };
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <html lang="en"><body className="antialiased"><HarnessShell>{children}</HarnessShell></body></html>;
 }
