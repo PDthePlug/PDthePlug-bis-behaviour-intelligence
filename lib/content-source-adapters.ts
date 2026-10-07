@@ -1137,6 +1137,7 @@ function markdownPipeCells(line: string) {
 function standardMarkdownTableAt(
   lines: string[],
   index: number,
+  learningFrequencyTables = false,
 ): { block: SourceBlock; end: number } | null {
   const headerLine = lines[index]?.trim() ?? "";
   const dividerLine = lines[index + 1]?.trim() ?? "";
@@ -1162,7 +1163,7 @@ function standardMarkdownTableAt(
   if (rows.length < 2) return null;
   // One row is one response to the authored frequency scale. Empty printable
   // boxes are not five independent answers and must not become UI-only ticks.
-  if (/^(?:Behaviour|Statement)$/i.test(headers[0])
+  if (learningFrequencyTables && /^(?:Behaviour|Statement)$/i.test(headers[0])
     && headers.slice(1).join(" ") === "Never Rarely Sometimes Often Always"
     && rows.slice(1).every(row => row.slice(1).every(cell => cell === "☐"))) {
     const responseRows = [[headers[0], "Your answer"], ...rows.slice(1).map(row => [row[0], ""])];
@@ -1308,7 +1309,7 @@ function markdownHeadingLike(raw: string, cleaned: string) {
   return boldOnly || upper || named || (cleaned.length <= 130 && authoredActivityHeading.test(cleaned));
 }
 
-function markdownBlocks(markdown: string) {
+function markdownBlocks(markdown: string, learningFrequencyTables = false) {
   const blocks: SourceBlock[] = [];
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
   let paragraph: string[] = [];
@@ -1342,7 +1343,7 @@ function markdownBlocks(markdown: string) {
       continue;
     }
 
-    const standardTable = standardMarkdownTableAt(lines, index);
+    const standardTable = standardMarkdownTableAt(lines, index, learningFrequencyTables);
     if (standardTable) {
       flush();
       blocks.push(standardTable.block);
@@ -1593,7 +1594,7 @@ export async function adaptLearningSource(
   }
 
   if (sourceFormat === "MARKDOWN") {
-    const blocks = markdownBlocks(new TextDecoder().decode(bytes));
+    const blocks = markdownBlocks(new TextDecoder().decode(bytes), true);
     return encodedPackage(
       code,
       version,
