@@ -62,7 +62,7 @@ type LearningSnapshot = {
   progress: Progress[];
   workbookResponses: Record<
     string,
-    { value: string; semanticStepId: string; sourceFieldKey: string; updatedAt: string }
+    { value: string; semanticStepId: string; sourceFieldKey: string; evidenceAnchor?: string; updatedAt: string }
   >;
 };
 type Runtime = {
@@ -988,6 +988,7 @@ export function ProgrammePlayer({
       checkId: target.dataset.checkId,
       checkKind: target.dataset.checkKind,
       privacyClass: target.dataset.privacyClass,
+      evidenceAnchor: target.dataset.evidenceAnchor,
     });
     setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: value }));
     setSaveState("dirty");

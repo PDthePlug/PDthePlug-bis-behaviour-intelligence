@@ -27,7 +27,11 @@ The existing built-in Learning packages are:
 - IDN — Identity
 - ATT — Attention
 
-This directory is for the remaining authored Learning modules as they are supplied. It does not activate any module by itself.\n\nCurrent canonical intake:\n- TIM — Time Lab™ v1.0 — School, Emerging Adult and Workplace editions — source-ready, not yet learner-live.
+This directory is for the remaining authored Learning modules as they are supplied. It does not activate any module by itself.
+
+Current canonical intake:
+- TIM — Time Lab™ v1.0 — immutable original authored source — School, Emerging Adult and Workplace editions.
+- TIM — Time Lab™ v2.0 — curriculum-architecture instructional rebuild — School, Emerging Adult and Workplace editions — source verified and source-ready; not yet learner-live.
 
 ## Processing contract
 

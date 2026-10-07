@@ -39,6 +39,51 @@
         }
       ],
       "slug": "time"
+    },
+    {
+      "moduleCode": "TIM",
+      "moduleTitle": "Time Lab™",
+      "volume": 1,
+      "handbook": 6,
+      "version": "2.0",
+      "sourcePath": "content/learning-sources/time-v2.0-authored.md",
+      "sourceFormat": "MARKDOWN",
+      "uploadedName": "Time Lab v2 instructional rebuild",
+      "uploadedBytes": 370452,
+      "uploadedSha256": "427aa9cfa5d9d2693443acdc60c1c384f22f766333c35f58a168143d926b8742",
+      "editions": [
+        {
+          "deliveryEdition": "school",
+          "sourceId": "TIM-LM-2.0-S",
+          "startLine": 1,
+          "endLine": 3755,
+          "sha256": "850fcdfa6c58379b26c531e6f52e200431975bf4e71e19e508fc3b5cb62aaf7f",
+          "startMarker": "# TIME LAB™\n\n## School Edition"
+        },
+        {
+          "deliveryEdition": "emerging_adult",
+          "sourceId": "TIM-LM-2.0-EA",
+          "startLine": 3756,
+          "endLine": 7531,
+          "sha256": "c228fb7069e0890289f6863eaa77866204362219eb029db6dc85607e241dada8",
+          "startMarker": "# TIME LAB™\n\n## Emerging Adult Edition"
+        },
+        {
+          "deliveryEdition": "workplace",
+          "sourceId": "TIM-LM-2.0-W",
+          "startLine": 7532,
+          "endLine": 11345,
+          "sha256": "9d6162593ae247048f44aded3d9aff68183f242e24ae1f159d8b4373d7f50d45",
+          "startMarker": "# TIME LAB™\n\n## Workplace Edition"
+        }
+      ],
+      "slug": "time",
+      "provenance": {
+        "derivedFromSourceId": "TIM-LM-1.0",
+        "curriculumBlueprint": "content/curriculum/time/time-instructional-blueprint-v2.json",
+        "facilitatorGuide": "content/curriculum/time/time-facilitator-guide-v2.md",
+        "rule": "New authored version; TIM-LM-1.0 remains immutable."
+      }
     }
   ]
 }

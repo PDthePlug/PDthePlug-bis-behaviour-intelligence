@@ -49,4 +49,4 @@ The highest state is constrained by evidence type and provenance. A simulation m
 
 `time/time-instructional-blueprint-v2.json` is the first end-to-end reference. It keeps Day 3 as a 45-minute learning-to-Lab bridge and preserves the separate facilitated Lab Phase A experience. Formal explanation follows discovery; the seven-day investigation supplies evidence that later teaching reviews and deepens.
 
-PR137 remains the authored Time source-ingestion lane. This architecture branch started from the same clean `main` and deliberately does not overwrite that source.
+PR137 established and merged the immutable TIM-LM-1.0 authored Time baseline. TIM-LM-2.0 is a separate verified instructional rebuild that preserves v1 and remains governed/source-ready rather than learner-live.
