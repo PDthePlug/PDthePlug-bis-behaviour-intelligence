@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Classify BIS report products by audience, permitted evidence, permitted claims and privacy boundary.",
+  "products": [
+    {
+      "id": "LEARNER_PROGRESS",
+      "audience": "learner",
+      "purpose": "Explain the learner's evidence-backed progression, what changed, what remains open and the next practice/pathway.",
+      "mayInclude": [
+        "own starting-point summaries",
+        "learning evidence",
+        "application evidence",
+        "real-world evidence",
+        "review/adaptation",
+        "transfer",
+        "competency progression stage",
+        "next evidence opportunity"
+      ],
+      "mustNotClaim": [
+        "personality type",
+        "potential prediction",
+        "causal programme impact",
+        "durable competence from one cycle"
+      ],
+      "privacy": "Learner-owned; may use the learner's own evidence, but default presentation should synthesise rather than replay every raw response."
+    },
+    {
+      "id": "FACILITATOR_SUPPORT",
+      "audience": "facilitator",
+      "purpose": "Show where facilitation, clarification, access or experiment support is needed.",
+      "mayInclude": [
+        "participation state",
+        "aggregate learning-check signals",
+        "task/evidence completion state",
+        "approved competency stage where the evidence contract permits it",
+        "safeguarding/escalation signals through existing governed routes"
+      ],
+      "mustNotInclude": [
+        "private workbook response text",
+        "sponsor-only commercial data"
+      ],
+      "mustNotClaim": [
+        "personality",
+        "motivation as a trait",
+        "competence inferred from attendance"
+      ],
+      "privacy": "Need-to-know operational view."
+    },
+    {
+      "id": "PROGRAMME_COMPETENCY_PROGRESS",
+      "audience": "programme owner",
+      "purpose": "Show how the cohort is progressing across the programme's authored competency map.",
+      "mayInclude": [
+        "privacy-safe stage distributions",
+        "evidence coverage",
+        "application/transfer rates with honest denominators",
+        "common next-pathway needs",
+        "assessment/task evidence where approved"
+      ],
+      "mustNotInclude": [
+        "private learner wording",
+        "unapproved individual profiling"
+      ],
+      "mustNotClaim": [
+        "causal impact without design/evidence that supports it",
+        "skills gained from self-report alone"
+      ],
+      "privacy": "Cohort-first; individual drill-down only where role and evidence policy explicitly allow it."
+    },
+    {
+      "id": "SPONSOR_OUTCOMES",
+      "audience": "sponsor",
+      "purpose": "Explain what the programme delivered, what evidence was produced, what progression is supported and what remains uncertain.",
+      "mayInclude": [
+        "programme reach",
+        "evidence quality/coverage",
+        "approved competency progression aggregates",
+        "real-world application",
+        "review/adaptation",
+        "transfer",
+        "limitations and comparison to agreed success criteria"
+      ],
+      "mustNotInclude": [
+        "private workbook responses",
+        "unnecessary personal-level data"
+      ],
+      "mustNotClaim": [
+        "personality",
+        "individual potential",
+        "causality not supported by design",
+        "durable capability from a single short cycle"
+      ],
+      "privacy": "Aggregate and privacy-safe by default."
+    },
+    {
+      "id": "EVIDENCE_PORTFOLIO_PATHWAY",
+      "audience": "learner",
+      "purpose": "Assemble source-linked evidence of learning, application, review and transfer into a durable narrative of growth and next steps.",
+      "mayInclude": [
+        "selected learner-owned artefacts",
+        "competency progression summaries",
+        "evidence provenance",
+        "feedback/revision history",
+        "transfer examples",
+        "next pathway"
+      ],
+      "mustNotClaim": [
+        "that missing evidence equals inability",
+        "that one successful attempt proves mastery"
+      ],
+      "privacy": "Learner-owned portfolio; sharing is a separate governed action."
+    }
+  ],
+  "governingRule": "The same event may contribute to different report products only within each product's claim and privacy boundary. Report audience never upgrades the strength of the underlying evidence."
+}
