@@ -109,7 +109,6 @@ function isSameCommercialDay(a: string, b: string) {
 
 async function createBriefRun(args: {
   input: CommercialIntelligenceInput;
-  requestedBy: string;
   runType: "MORNING_BRIEF" | "MANUAL_REFRESH";
 }) {
   const supabase = requestSupabaseClient();
@@ -131,98 +130,25 @@ async function createBriefRun(args: {
     }
   }
 
-  const expired = await supabase
-    .from("crm_recommendations")
-    .update({ status: "EXPIRED", updated_at: new Date().toISOString() })
-    .eq("status", "OPEN");
-  if (expired.error) throw new Error(expired.error.message);
-
-  const run = await supabase
-    .from("crm_agent_runs")
-    .insert({
-      run_type: args.runType,
-      status: "COMPLETED",
-      provider,
-      model,
-      summary,
-      metrics: brief.metrics,
-      input_fingerprint: brief.inputFingerprint,
-      requested_by: args.requestedBy,
-    })
-    .select("*")
-    .single();
-  if (run.error) throw new Error(run.error.message);
-
-  const recommendationRows = brief.recommendations.map((item) => ({
-    run_id: run.data.id,
-    opportunity_id: item.opportunityId,
-    signal_key: item.signalKey,
-    kind: item.kind,
-    priority: item.priority,
-    title: item.title,
-    rationale: item.rationale,
-    recommended_action: item.recommendedAction,
-    evidence: item.evidence,
-    confidence: item.confidence,
-    score: item.score,
-    requires_approval: item.requiresApproval,
-    created_by: args.requestedBy,
+  const recommendations = brief.recommendations.map(item => ({
+    opportunity_id: item.opportunityId, signal_key: item.signalKey, kind: item.kind,
+    priority: item.priority, title: item.title, rationale: item.rationale,
+    recommended_action: item.recommendedAction, evidence: item.evidence,
+    confidence: item.confidence, score: item.score, requires_approval: item.requiresApproval,
   }));
-
-  let persistedRecommendations: Record<string, unknown>[] = [];
-  if (recommendationRows.length > 0) {
-    const inserted = await supabase
-      .from("crm_recommendations")
-      .insert(recommendationRows)
-      .select("*")
-      .order("score", { ascending: false });
-    if (inserted.error) throw new Error(inserted.error.message);
-    persistedRecommendations = inserted.data ?? [];
-
-    const signals = brief.recommendations.slice(0, 100).map((item) => ({
-      opportunity_id: item.opportunityId,
-      signal_type: item.kind,
-      severity:
-        item.priority === "URGENT"
-          ? "URGENT"
-          : item.priority === "HIGH"
-            ? "HIGH"
-            : item.priority === "MEDIUM"
-              ? "ATTENTION"
-              : "INFO",
-      signal_data: {
-        signalKey: item.signalKey,
-        title: item.title,
-        evidence: item.evidence,
-        confidence: item.confidence,
-      },
-    }));
-    const signalInsert = await supabase.from("crm_signal_events").insert(signals);
-    if (signalInsert.error) throw new Error(signalInsert.error.message);
-  }
-
-  if (summary) {
-    const artifact = await supabase.from("crm_generated_artifacts").insert({
-      run_id: run.data.id,
-      opportunity_id: null,
-      artifact_type: "FOUNDER_BRIEF",
-      title: "Founder commercial brief",
-      content: summary,
-      status: "DRAFT",
-      model,
-      created_by: args.requestedBy,
-    });
-    if (artifact.error) throw new Error(artifact.error.message);
-  }
-
-  return {
-    brief,
-    run: run.data,
-    recommendations: persistedRecommendations,
-    summary,
-    provider,
-    model,
-  };
+  const signals = brief.recommendations.slice(0, 100).map(item => ({
+    opportunity_id: item.opportunityId, signal_type: item.kind,
+    severity: item.priority === "MEDIUM" ? "ATTENTION" : item.priority === "LOW" ? "INFO" : item.priority,
+    signal_data: { signalKey: item.signalKey, title: item.title, evidence: item.evidence, confidence: item.confidence },
+  }));
+  const saved = await supabase.rpc("bis_commit_commercial_run", {
+    p_run: { run_type: args.runType, provider, model, summary, metrics: brief.metrics, input_fingerprint: brief.inputFingerprint },
+    p_recommendations: recommendations, p_signals: signals,
+    p_artifact: { artifact_type: "FOUNDER_BRIEF", title: "Founder commercial brief", content: summary },
+    p_reuse: args.runType === "MORNING_BRIEF",
+  });
+  if (saved.error) throw new Error(saved.error.message);
+  return { brief, ...saved.data, summary: saved.data.run.summary, provider: saved.data.run.provider, model: saved.data.run.model };
 }
 
 async function getHandler() {
@@ -263,7 +189,6 @@ async function postHandler(request: Request) {
       return Response.json(
         await createBriefRun({
           input,
-          requestedBy: identity.email,
           runType: body.mode === "manual" ? "MANUAL_REFRESH" : "MORNING_BRIEF",
         }),
       );
@@ -317,40 +242,11 @@ async function postHandler(request: Request) {
       if (!recommendationId) fail("Recommendation id is required.");
       if (!["APPROVED", "DISMISSED"].includes(decision)) fail("Choose approve or dismiss.");
 
-      const existing = await supabase
-        .from("crm_recommendations")
-        .select("*")
-        .eq("id", recommendationId)
-        .single();
-      if (existing.error) throw new Error(existing.error.message);
-      if (existing.data.status !== "OPEN") fail("This recommendation has already been decided.");
-
-      const updated = await supabase
-        .from("crm_recommendations")
-        .update({
-          status: decision,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", recommendationId)
-        .eq("status", "OPEN")
-        .select("*")
-        .single();
-      if (updated.error) throw new Error(updated.error.message);
-
-      const approval = await supabase.from("crm_approvals").insert({
-        recommendation_id: recommendationId,
-        decision,
-        decision_note: body.note ? String(body.note) : null,
-        proposed_action: {
-          kind: existing.data.kind,
-          recommendedAction: existing.data.recommended_action,
-          opportunityId: existing.data.opportunity_id,
-        },
-        decided_by: identity.email,
+      const saved = await supabase.rpc("bis_decide_commercial_recommendation", {
+        p_id: recommendationId, p_decision: decision, p_note: body.note ? String(body.note) : null,
       });
-      if (approval.error) throw new Error(approval.error.message);
-
-      return Response.json({ recommendation: updated.data });
+      if (saved.error) throw new Error(saved.error.message);
+      return Response.json(saved.data);
     }
 
     if (action === "draft") {
@@ -395,42 +291,14 @@ async function postHandler(request: Request) {
         }
       }
 
-      const run = await supabase
-        .from("crm_agent_runs")
-        .insert({
-          run_type: "DRAFT",
-          status: "COMPLETED",
-          provider,
-          model,
-          summary: `${purpose}: ${opportunity.opportunity_name}`,
-          metrics: brief.metrics,
-          input_fingerprint: brief.inputFingerprint,
-          requested_by: identity.email,
-        })
-        .select("*")
-        .single();
-      if (run.error) throw new Error(run.error.message);
-
-      const artifact = await supabase
-        .from("crm_generated_artifacts")
-        .insert({
-          run_id: run.data.id,
-          opportunity_id: opportunity.id,
-          artifact_type: purpose,
-          title:
-            purpose === "FOLLOW_UP_DRAFT"
-              ? `Follow-up draft · ${opportunity.opportunity_name}`
-              : `Outreach draft · ${opportunity.opportunity_name}`,
-          content: draft,
-          status: "DRAFT",
-          model,
-          created_by: identity.email,
-        })
-        .select("*")
-        .single();
-      if (artifact.error) throw new Error(artifact.error.message);
-
-      return Response.json({ draft, provider, model, artifact: artifact.data });
+      const saved = await supabase.rpc("bis_commit_commercial_run", {
+        p_run: { run_type: "DRAFT", provider, model, summary: `${purpose}: ${opportunity.opportunity_name}`,
+          metrics: brief.metrics, input_fingerprint: brief.inputFingerprint },
+        p_artifact: { opportunity_id: opportunity.id, artifact_type: purpose,
+          title: `${purpose === "FOLLOW_UP_DRAFT" ? "Follow-up" : "Outreach"} draft · ${opportunity.opportunity_name}`, content: draft },
+      });
+      if (saved.error) throw new Error(saved.error.message);
+      return Response.json({ draft, provider, model, artifact: saved.data.artifact });
     }
 
     fail("Unsupported Commercial Intelligence action.");

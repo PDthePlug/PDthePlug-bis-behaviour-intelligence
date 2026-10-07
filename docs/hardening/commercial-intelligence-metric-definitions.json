@@ -1,0 +1,25 @@
+{
+  "scope": "Commercial Intelligence; authorised commercial workspace only; no learner source data",
+  "source": "lib/commercial-intelligence.ts; six existing CRM record families",
+  "confidence": {
+    "source": "makeRecommendation confidence argument for the matched deterministic rule",
+    "calculation": "Fixed rule values: recipient collision 98; launch-ready outreach 96; frozen proposal buyer/outreach 94; thesis/qualified buyer verification 91; outreach preparation 90; follow-up 93; overdue/missing next action 99. No probability estimation or model confidence calculation.",
+    "interpretation": "Implementation rule confidence, not sales probability, conversion prediction or validated reliability",
+    "presentation": "Only in Why this action appears disclosure; existing stored value preserved"
+  },
+  "priority": {
+    "source": "Current opportunity priority, wave, stage, next-action date and most recent recorded activity",
+    "calculation": "HIGH/MEDIUM/LOW weights 18/10/4; WAVE_1/WAVE_2 weights 16/10. Rule base and capped overdue/activity age give score. URGENT >=94, HIGH >=80, MEDIUM >=60, otherwise LOW. Exact per-rule formulas remain in source.",
+    "meaning": "Order a review queue. It does not rank learners or predict a commercial outcome."
+  },
+  "counts": {
+    "urgent": "Number of deduplicated recommendations whose score maps to URGENT",
+    "approvals": "Number of recommendations flagged requiresApproval",
+    "research": "Number of BUYER_VERIFICATION recommendations",
+    "followUps": "Number of FOLLOW_UP recommendations",
+    "stale": "Number of NEXT_ACTION recommendations (overdue or missing next action)",
+    "activeOpportunities": "Opportunity count excluding WON, LOST and HOLD"
+  },
+  "evidence": "CRM state is a recorded claim, not independently observed customer intent. Verified contact means status VERIFIED plus a nonempty email in CRM; delivery is not verified. Missing recent activity means no recent CRM entry, not proof that no conversation happened. AI prose is separate interpretation and cannot send or change an opportunity.",
+  "privacy": "Only commercial record context enters this engine. No learner answers, private reflections, Companion conversations or programme sponsor reports are inputs."
+}

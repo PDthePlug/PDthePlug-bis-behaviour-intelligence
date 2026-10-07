@@ -153,7 +153,7 @@ async function mockCommercial(page: Page) {
     if (body.action === "refresh") {
       refreshed = true;
       refreshCount += 1;
-      await route.fulfill({ json: { ok: true } });
+      await route.fulfill({ json: { run: { id: "run-1" }, recommendations: [] } });
       return;
     }
     if (body.action === "ask") {
@@ -169,6 +169,7 @@ async function mockCommercial(page: Page) {
     if (body.action === "draft") {
       await route.fulfill({
         json: {
+          artifact: { id: "draft-1", status: "DRAFT" },
           draft: "Hello,\n\nFollowing our conversation, we made the BIS programme experience more tangible for Leap9.\n\nKind regards",
           provider: "AI_GATEWAY",
           model: "gpt-5.6-luna",
@@ -195,7 +196,6 @@ test("Commercial Intelligence automatically prepares the daily founder brief and
   const state = await mockCommercial(page);
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/commercial");
-
   await expect(page.getByRole("heading", { level: 1, name: "Partnerships, pipeline and execution." })).toBeVisible();
   await page.getByRole("button", { name: "Commercial Intelligence", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Commercial Intelligence." })).toBeVisible();
@@ -203,6 +203,14 @@ test("Commercial Intelligence automatically prepares the daily founder brief and
   await expect.poll(() => state.refreshCount).toBe(1);
   await expect(page.getByText("Leap9 is the clearest decision today: review the prepared outreach and decide whether to send.")).toBeVisible();
   await expect(page.getByText("Leap9 Participant Development is prepared for a human send decision")).toBeVisible();
+  await expect(page.getByText("96% confidence", { exact: true })).toHaveCount(0);
+  const explanation = page.locator("details").filter({ hasText: "Why this action appears" });
+  await explanation.locator("summary").click();
+  await expect(explanation).toContainText("Rule confidence: 96/100");
+  await expect(explanation).toContainText("does not measure the chance of a sale");
+  await expect(explanation).toContainText("Stage: Draft ready");
+  await expect(explanation).toContainText("Wave: Wave 1");
+  await explanation.locator("summary").click();
 
   await page.getByRole("button", { name: "Prepare draft" }).click();
   await expect(page.getByRole("heading", { name: "Prepared outreach" })).toBeVisible();
@@ -233,4 +241,38 @@ test("the commercial board includes production DRAFT_READY opportunities", async
   await page.goto("/commercial?section=pipeline");
   await expect(page.getByText("Draft Ready", { exact: true })).toBeVisible();
   await expect(page.getByText("Leap9 Participant Development", { exact: true })).toBeVisible();
+});
+
+test('an empty Intelligence response offers recovery without rendering an invented brief', async ({ page }) => {
+  await mockCommercial(page);
+  let unavailable = true;
+  await page.route('**/api/commercial/intelligence', async route => {
+    if (route.request().method() === 'GET' && unavailable) { await route.fulfill({ json: null }); return; }
+    await route.fallback();
+  });
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/commercial?section=intelligence');
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+  await expect(page.getByText('Founder operating brief', { exact: true })).toHaveCount(0);
+  unavailable = false;
+  await page.getByRole('button', { name: 'Try again' }).click();
+  await expect(page.getByText('Founder operating brief', { exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('revoked Intelligence access clears the loaded recommendation and prepared draft', async ({ page }) => {
+  await mockCommercial(page);
+  await page.goto('/commercial?section=intelligence');
+  await expect(page.getByRole('button', { name: 'Prepare draft' })).toBeVisible();
+  await page.getByRole('button', { name: 'Prepare draft' }).click();
+  await expect(page.getByRole('heading', { name: 'Prepared outreach' })).toBeVisible();
+  await page.route('**/api/commercial/intelligence', async route => {
+    if (route.request().method() === 'POST') { await route.fulfill({ status: 403, json: { error: 'Your commercial access has ended.' } }); return; }
+    await route.fallback();
+  });
+  await page.getByRole('button', { name: 'Dismiss' }).click();
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('Your commercial access has ended.');
+  await expect(page.getByRole('heading', { name: 'Prepared outreach' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Approve / Accept' })).toHaveCount(0);
 });
