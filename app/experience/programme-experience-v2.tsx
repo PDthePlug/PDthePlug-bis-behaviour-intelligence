@@ -259,7 +259,7 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                   {partner === 'dgmt' ? (
                     <section className="experience-v2-first-view" aria-label="BIS first view">
                       <div className="experience-v2-first-view-copy"><h2>BIS in 90 seconds</h2>
-                      <p>Watch how learning becomes practice. Then try it for yourself.</p>
+                      <p>Press play for a narrated walkthrough. Then try it for yourself.</p>
                       <div className="experience-v2-first-actions"><button type="button" className="experience-v2-primary" onClick={() => go(1)}>Try Naledi’s journey <ArrowRight size={17} /></button><a className="experience-v2-secondary" href="/explore">Choose a role and explore <ArrowRight size={17} /></a></div></div>
                       <video controls preload="none" poster="/experience/dgmt-overview.jpg" aria-label="BIS for DGMT: a short demonstration">
                         <source src="/experience/dgmt-overview.mp4" type="video/mp4" />
