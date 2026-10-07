@@ -1,4 +1,5 @@
 "use client";
+import { usePlatform } from "@/components/platform-context";
 
 import { useEffect, useRef, useState } from "react";
 import { useEvidenceData, EvidenceState } from "../evidence-engine-client";
@@ -13,7 +14,7 @@ import {
 import type { EvidencePortfolioLab } from "@/lib/evidence-portfolio.mjs";
 import type { LearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
 import { explainPortfolioMeasures } from "@/lib/evidence-portfolio.mjs";
-import Link from "next/link";
+import { PlatformLink as Link } from "@/components/platform-context";
 import { BIS_MODULES } from "@/lib/bis-catalogue";
 
 type Timeline = {
@@ -55,6 +56,7 @@ function practiceAreas(records: EvidenceRecord[]) {
 }
 
 export function PortfolioWorkspace() {
+  const { request, example } = usePlatform();
   const [showSubmissions, setShowSubmissions] = useState(false);
   const [showCalculations, setShowCalculations] = useState(false);
   const [year, setYear] = useState("");
@@ -139,7 +141,7 @@ export function PortfolioWorkspace() {
     setPageError("");
     const started = query;
     try {
-      const response = await fetch(
+      const response = await request(
         `/api/evidence-engine?${query}&before=${encodeURIComponent(last.occurred_at)}&beforeId=${encodeURIComponent(last.id)}`,
         { cache: "no-store" },
       );
@@ -265,7 +267,7 @@ export function PortfolioWorkspace() {
         <p>See what your recorded work is beginning to show, where you can practise next, and the evidence behind it.</p>
       </header>
       <div className="evidence-actions">
-        <a className="evidence-button" href="/api/evidence-engine?view=learnerReport">
+        <a className="evidence-button" download={example ? "BIS-example-evidence.txt" : undefined} href={example ? "data:text/plain;charset=utf-8," + encodeURIComponent("BIS · Example evidence report\nFictional practice from this browser tab.\n\n" + records.map(record => `${evidenceTitle(record)}\n${evidenceWording(record.value)}`).join("\n\n")) : "/api/evidence-engine?view=learnerReport"}>
           Download report
         </a>
         <button

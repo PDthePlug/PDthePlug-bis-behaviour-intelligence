@@ -1,4 +1,5 @@
 "use client";
+import { usePlatform } from "@/components/platform-context";
 import { readClientResponse, clientResponseMessage } from "@/lib/client-response";
 import {useCallback,useEffect,useRef,useState} from "react";
 const touchpoints=["Create relevance and introduce the problem","Build the first mental model","Prepare for the Lab handover","Interpret what the Lab revealed","Build the learner’s personal model","Apply the model in real life","Diagnose what happened","Introduce the final major conceptual layer","Integrate the whole model","Demonstrate change and transfer forward"];
@@ -10,18 +11,19 @@ function ClassSessionForm({current,saving,save,cohortId,day,date}:{current?:Sess
  return <form className="evidence-form" onSubmit={e=>{e.preventDefault();void save({action:"session",cohortId,day,date,status,note,expected:current?.updated_at??null});}}><label htmlFor="class-session-status">Session state<select id="class-session-status" value={status} disabled={saving} onChange={e=>setStatus(e.target.value)}><option value="PLANNED">Planned</option><option value="HELD">Held</option><option value="CANCELLED">Cancelled</option></select></label><label>Preparation and follow-up<textarea maxLength={2000} value={note} disabled={saving} onChange={e=>setNote(e.target.value)} placeholder="Materials, class plan and factual follow-up. Keep private learner responses and safeguarding details in their own workflows."/></label><button type="submit" disabled={saving||!date}>{saving?"Saving…":"Save class session"}</button></form>;
 }
 export function FacilitatorClassOperations({cohortId,participants}:{cohortId:string;participants:Array<{userId:string;displayName:string}>}) {
+  const { request: platformRequest } = usePlatform();
  const [data,setData]=useState<Snapshot|null>(null),[day,setDay]=useState(1),[date,setDate]=useState(()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Africa/Johannesburg",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())),[error,setError]=useState(""),[message,setMessage]=useState(""),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),writing=useRef(false),sequence=useRef(0);
  const load=useCallback(async(signal?:AbortSignal)=>{
   const request=++sequence.current;setLoading(true);setError("");
-  try{const response=await fetch(`/api/class-operations?cohortId=${encodeURIComponent(cohortId)}`,{cache:"no-store",signal});const result=await readClientResponse<Snapshot>(response,"Class records are unavailable. Try again.",value=>Array.isArray(value.sessions)&&Array.isArray(value.attendance));if(request===sequence.current&&!signal?.aborted)setData(result);}
+  try{const response=await platformRequest(`/api/class-operations?cohortId=${encodeURIComponent(cohortId)}`,{cache:"no-store",signal});const result=await readClientResponse<Snapshot>(response,"Class records are unavailable. Try again.",value=>Array.isArray(value.sessions)&&Array.isArray(value.attendance));if(request===sequence.current&&!signal?.aborted)setData(result);}
   catch(cause){if(request===sequence.current&&!signal?.aborted){setData(null);setError(clientResponseMessage(cause,"Class records are unavailable. Try again."));}}
   finally{if(request===sequence.current&&!signal?.aborted)setLoading(false);}
- },[cohortId]);
+ },[cohortId,platformRequest]);
  useEffect(()=>{const controller=new AbortController(),timer=setTimeout(()=>void load(controller.signal),0);return()=>{clearTimeout(timer);controller.abort();};},[load]);
  const current=data?.sessions.find(s=>s.programme_day===day&&s.session_date===date);
  async function save(body:Record<string,unknown>){
   if(writing.current)return;writing.current=true;setSaving(true);setError("");setMessage("");++sequence.current;
-  try{const response=await fetch("/api/class-operations",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});await readClientResponse(response,"The class update could not be saved. Try again.");setMessage("Class record saved.");await load();}
+  try{const response=await platformRequest("/api/class-operations",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});await readClientResponse(response,"The class update could not be saved. Try again.");setMessage("Class record saved.");await load();}
   catch(cause){setError(clientResponseMessage(cause,"The class update could not be saved. Try again."));}
   finally{writing.current=false;setSaving(false);}
  }

@@ -242,7 +242,7 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                 {step === 0 ? 'Designed for discussion' : steps[step].perspective + ' perspective'}
               </p>
               <h1 ref={heading} tabIndex={-1}>
-                {step === 0 ? 'See the programme move.' : steps[step].label}
+                {step === 0 ? (partner === 'dgmt' ? 'From learning to action.' : 'See the programme move.') : steps[step].label}
               </h1>
               <p className="experience-v2-purpose">{step === 0 ? 'Follow Naledi from learning to practice, facilitator feedback and programme outcomes.' : step === 1 ? 'A small first step towards completing a job application.' : step === 2 ? 'Did the plan hold up in daily life?' : step === 3 ? 'Who needs a conversation before the next session?' : step === 4 ? 'What Naledi tried, what happened and what to try next.' : 'What the evidence means for ' + config.organisation + '.'}</p>
             </div>
@@ -258,14 +258,15 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                 <>
                   {partner === 'dgmt' ? (
                     <section className="experience-v2-first-view" aria-label="BIS first view">
-                      <h2>BIS in 90 seconds</h2>
-                      <p>No account needed. See how learning becomes real-world practice and evidence, then explore the fictional journey below.</p>
+                      <div className="experience-v2-first-view-copy"><h2>BIS in 90 seconds</h2>
+                      <p>Watch how learning becomes practice. Then try it for yourself.</p>
+                      <div className="experience-v2-first-actions"><button type="button" className="experience-v2-primary" onClick={() => go(1)}>Try Naledi’s journey <ArrowRight size={17} /></button><a className="experience-v2-secondary" href="/explore">Choose a role and explore <ArrowRight size={17} /></a></div></div>
                       <video controls preload="none" poster="/experience/dgmt-overview.jpg" aria-label="BIS for DGMT: a short demonstration">
                         <source src="/experience/dgmt-overview.mp4" type="video/mp4" />
                         <track kind="captions" src="/experience/dgmt-overview.vtt" srcLang="en" label="English" default />
                         Your browser cannot play this demonstration. The transcript below covers the same journey.
                       </video>
-                      <p>Prepared for discussion with DGMT around making competencies practical and pathways to productivity. A participant keeps the original reflection; facilitators receive agreed support signals; programme owners see aggregate patterns and the limits of the evidence.</p>
+
                       <details><summary>Read the demonstration transcript</summary>
                         {dgmtDemonstration.map(slide => <section key={slide.stage}>
                           <h3>{slide.title}</h3>
@@ -275,7 +276,7 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                     </section>
                   ) : null}
 
-                  <section className="experience-v2-hero-panel">
+                  {partner === 'leap9' ? <section className="experience-v2-hero-panel">
                     <div>
                       <p className="experience-v2-kicker">{config.organisation} × Behaviour Intelligence</p>
                       <h2>What happens after the room?</h2>
@@ -288,7 +289,7 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                       <span>The question this experience answers</span>
                       <strong>How does learning become behaviour — and how can {config.organisation} see that without overreaching into the learner’s private world?</strong>
                     </div>
-                  </section>
+                  </section> : <div className="experience-v2-results-strip"><span><strong>Try a real task</strong> Learning → practice</span><span><strong>Keep the evidence</strong> What actually happened</span><span><strong>Choose the next step</strong> Support → results</span></div>}
 
                   <details className="experience-v2-touchpoints">
                     <summary>
@@ -373,7 +374,7 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                       'Keep the first action small enough to use on a difficult day.',
                     )}
 
-                    <details className="experience-v2-touchpoints"><summary>The full Habit Lab</summary><p>The full Lab adds a witness, restart plan, minimum version and failure signal. Day 3 prepares the handover into a separate 90-minute Lab session, followed by seven days of practice.</p><p>The full investigation follows nine stages: Hook → Pattern → Revelation → Mapping → Equation → Contract → Experiment → Evidence Review → Profile.</p><p>The live platform uses the Universal Lab for published investigations. This shortened Habit demonstration preserves the distinction between prediction, plan, observation and interpretation.</p></details>
+                    <details className="experience-v2-touchpoints"><summary>The full Habit Lab</summary><p>The full Lab adds a witness, restart plan, minimum version and failure signal. Day 3 prepares the handover into a separate 90-minute Lab session, followed by seven days of practice.</p><p>The full investigation follows nine stages: Hook → Pattern → Revelation → Mapping → Equation → Contract → Experiment → Evidence Review → Profile.</p><p>Keep what you expect, what you try and what happens separate. That makes the next step clearer.</p></details>
                   </section>
                 </>
               ) : null}
@@ -640,7 +641,7 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                     <div><dt>Enough observations for review</dt><dd>{illustrativeCohort.sufficient}</dd></div>
                   </dl></details>
                   {partner === 'dgmt' ? <section className="experience-v2-section">
-                    <h2>From a cohort pattern to a programme decision</h2>
+                    <h2>Choose the next useful step</h2>
                     <p>Five of twenty fictional participants requested support. The request tells us to offer a conversation; it does not diagnose a barrier or label a participant.</p>
                     <dl className="experience-v2-decision-example">
                       <div><dt>Decision to discuss</dt><dd>Agree a check-in before the next practical task.</dd></div>
@@ -650,8 +651,8 @@ export function ProgrammeExperienceV2({ partner = 'leap9' }: { partner?: Experie
                     <details className="experience-v2-touchpoints"><summary>How BIS supports programme delivery</summary>
                       <h3>Learning and Labs</h3><p>Ten purposeful facilitated touchpoints connect guided learning to a separate Lab, real-world practice and a final demonstration and transfer step. Learning checks support understanding; they do not substitute for behavioural observations.</p>
                       <h3>Evidence continuity</h3><p>The participant’s record keeps the original response distinct from measures and interpretation. Facilitator feedback follows the evidence that was shared, while organisation reports use aggregate findings and withhold small groups.</p>
-                      <h3>Content Studio</h3><p>Operators choose an existing BIS title, add the source and inspect a prepared preview. A final check and approval precede explicit publishing. Published learning and Lab versions remain traceable to their source.</p>
-                      <p>These delivery capabilities are described here. The public simulation does not create accounts, enrol participants, publish content or exercise safeguarding access.</p>
+                      <h3>Prepare a programme</h3><p>Choose a BIS title, check the learning experience and make approved content available to your group.</p>
+                      <p>Try the learning, Lab, facilitator and reporting screens in the role explorer. Use an example programme without creating an account.</p>
                     </details>
                   </section> : null}
                   <section className="experience-v2-report-card">

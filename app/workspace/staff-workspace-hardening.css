@@ -361,7 +361,10 @@
 }
 
 
-.facilitator-workspace{display:grid;gap:20px}
+.facilitator-workspace{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+.facilitator-workspace .ops-stack{grid-template-columns:minmax(0,1fr)}
+.facilitator-class-disclosure{min-width:0}
+.class-history button{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
 .facilitator-view-head{display:flex;align-items:end;justify-content:space-between;gap:24px}
 .facilitator-view-head h1{margin:2px 0 0;font:600 clamp(36px,5vw,54px)/.98 var(--font-serif);letter-spacing:-.04em}
 .facilitator-cohort-picker{width:min(360px,100%);display:grid;gap:6px}
@@ -535,8 +538,8 @@
   .facilitator-cohort-actions{width:100%;justify-content:flex-start}
   .facilitator-learner-experience-link{width:100%;justify-content:center}
 }
-.staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) .eyebrow{color:#c5ddd4}
-.staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) [data-slot="badge"]{color:#eef6f2;background:#ffffff14;border-color:#ffffff40}
+:is(.staff-workspace-shell,.bis-explorer) :is(.ops-cohort-banner,.ops-safeguard-banner) .eyebrow{color:#c5ddd4}
+:is(.staff-workspace-shell,.bis-explorer) :is(.ops-cohort-banner,.ops-safeguard-banner) [data-slot="badge"]{color:#eef6f2;background:#ffffff14;border-color:#ffffff40}
 .programme-publication-details{margin-top:8px;color:#40594c;font-size:.875rem;line-height:1.5}
 .programme-publication-details summary{display:list-item;min-height:44px;padding-block:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .programme-publication-details p{margin:4px 0 0;overflow-wrap:anywhere}

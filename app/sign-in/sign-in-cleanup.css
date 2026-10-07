@@ -20,3 +20,5 @@
     margin-top: 18px;
   }
 }
+
+.auth-explore-link{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;margin-top:18px;padding:10px 14px;border:1px solid #bfd0c9;border-radius:10px;background:#edf4f0;color:#173f35;font-size:13px;font-weight:650;text-decoration:none}.auth-explore-link:focus-visible{outline:3px solid #b15337;outline-offset:3px}

@@ -1,8 +1,10 @@
 "use client";
+import { usePlatform } from "@/components/platform-context";
+import { usePlatformRouter as useRouter } from "@/components/platform-context";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { PlatformLink as Link } from "@/components/platform-context";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Activity, BookOpen, Check, ClipboardCheck, Compass, ShieldAlert, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -196,6 +198,7 @@ export function FacilitatorWorkspace({
   saving: boolean;
   act: (payload: Record<string, unknown>) => Promise<boolean>;
 }) {
+  const { example } = usePlatform();
   const [supportLearnerId, setSupportLearnerId] = useState("");
   const [noteCategory, setNoteCategory] = useState("CHECK_IN");
   const [note, setNote] = useState("");
@@ -305,7 +308,7 @@ export function FacilitatorWorkspace({
       {section === "cohort" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
-            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>{moduleDefinition?.title ?? "Programme Lab"} · {participants.length} learners</p><details className="programme-publication-details"><summary>Programme details</summary><p>Lab: {cohort.labCode} · Published version: {cohort.labVersion}</p></details></div>
+            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>{moduleDefinition?.title ?? "Programme Lab"} · {participants.length} learners</p><details className="programme-publication-details"><summary>Programme details</summary><p>{cohort.name} · {participants.length} learners</p></details></div>
             <div className="facilitator-cohort-actions">
               <Badge variant="outline">{label(cohort.status)}</Badge>
               <Link
@@ -550,7 +553,7 @@ export function FacilitatorWorkspace({
                 <Button disabled={saving || !supportLearnerId || !note.trim()} onClick={async () => { if (await act({ action: "addFacilitatorNote", cohortId: cohort.id, learnerUserId: supportLearnerId, category: noteCategory, content: note })) setNote(""); }}>Save staff note</Button>
               </div>
             </div>
-            <div className="surface-card ops-section safeguard-referral">
+            {!example ? <div className="surface-card ops-section safeguard-referral">
               <div className="section-title"><div><p className="eyebrow">Safeguarding</p><h2>Refer a concern</h2></div><ShieldAlert /></div>
               <div className="ops-form-stack">
                 <label>Learner<Select value={supportLearnerId} onValueChange={setSupportLearnerId}><SelectTrigger><SelectValue placeholder="Choose learner" /></SelectTrigger><SelectContent>{participants.map((item) => <SelectItem key={item.userId} value={item.userId}>{item.displayName}</SelectItem>)}</SelectContent></Select></label>
@@ -558,7 +561,7 @@ export function FacilitatorWorkspace({
                 <label>Factual summary<Textarea value={referral} onChange={(event) => setReferral(event.target.value)} placeholder="Minimum necessary factual context…" /></label>
                 <Button disabled={saving || !supportLearnerId || !referral.trim()} onClick={async () => { if (await act({ action: "openSafeguardingCase", cohortId: cohort.id, learnerUserId: supportLearnerId, category: referralCategory, summary: referral })) setReferral(""); }}>Send to safeguarding</Button>
               </div>
-            </div>
+            </div> : <div className="surface-card ops-section"><h2>Safeguarding support</h2><p>In your own programme, you can refer a concern to the authorised safeguarding team.</p></div>}
           </section>
           <section className="surface-card ops-section">
             <div className="section-title"><div><p className="eyebrow">Recent support</p><h2>What the facilitator team has recorded</h2></div><ClipboardCheck /></div>

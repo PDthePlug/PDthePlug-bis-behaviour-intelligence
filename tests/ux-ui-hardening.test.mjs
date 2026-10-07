@@ -87,7 +87,7 @@ test("customer-facing language stays plain across learner, facilitator and organ
     source("lib/programme-report-pdf.ts"),
   ]);
 
-  assert.match(signIn, /BIS will open the right version of your learning programme/);
+  assert.match(signIn, /Create an account to begin your learning programme/);
   assert.match(profile, /Open programme workspace/);
   assert.match(player, /Seven-day real-world test/);
   assert.match(facilitator, /The recorded progress does not suggest a check-in/);

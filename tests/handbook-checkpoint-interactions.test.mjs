@@ -128,7 +128,7 @@ test("digital hardening removes orphan controls and upgrades paper-era interacti
 test("system-known values are module-scoped and do not reuse Habit evidence in other Labs", async () => {
   const player = await source("app/learning/programme-player.tsx");
 
-  assert.match(player, /loadLearningLabRuntime\(moduleCode, fetch, controller\.signal\)/);
+  assert.match(player, /loadLearningLabRuntime\(moduleCode, request, controller\.signal\)/);
   assert.match(await source("lib/learning-lab-runtime.mjs"), /\/api\/labs\?lab=/);
   assert.match(player, /moduleLive = moduleRuntimeResult/);
   assert.match(player, /const activeModuleRuntime = moduleRuntime/);
