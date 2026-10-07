@@ -818,16 +818,47 @@ function enhanceTables(root: HTMLElement, labCode: LabCode, pageId: string) {
     });
 
     if (table.parentElement?.classList.contains("handbook-table-scroll")) return;
+    const frame = document.createElement("div");
+    frame.className = "handbook-table-frame";
+    const cue = document.createElement("p");
+    cue.className = "handbook-table-cue";
+    cue.hidden = true;
+    cue.textContent = "More columns are available. Swipe across, or focus the table and use the arrow keys.";
     const wrapper = document.createElement("div");
     wrapper.className = "handbook-table-scroll";
     wrapper.tabIndex = 0;
     wrapper.setAttribute("role", "region");
-    const title = normalise(table.caption?.textContent ?? "") ||
-      normalise(table.querySelector("tr")?.textContent ?? "").slice(0, 120);
+    const heading = [...root.querySelectorAll("h2,h3,h4")].reverse().find(item =>
+      Boolean(item.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING));
+    const title = normalise(table.caption?.textContent ?? "") || learnerHeadingText(normalise(heading?.textContent ?? "")) ||
+      Array.from(table.rows[0]?.cells ?? [], cell => normalise(cell.textContent ?? "")).filter(Boolean).join(" · ").slice(0, 120);
     wrapper.setAttribute("aria-label", `${title || "Learning table"} — scroll horizontally if needed`);
-    table.parentElement?.insertBefore(wrapper, table);
+    table.parentElement?.insertBefore(frame, table);
+    frame.append(cue, wrapper);
     wrapper.append(table);
   });
+}
+
+/** Keep the scroll explanation accurate after resize, text-size changes or repairs. */
+export function observeHandbookTables(root: HTMLElement) {
+  const update = () => {
+    root.querySelectorAll<HTMLElement>(".handbook-table-frame").forEach(frame => {
+      const region = frame.querySelector<HTMLElement>(".handbook-table-scroll");
+      const cue = frame.querySelector<HTMLElement>(".handbook-table-cue");
+      if (region && cue) cue.hidden = region.scrollWidth <= region.clientWidth + 1;
+    });
+  };
+  const resize = new ResizeObserver(update);
+  const observe = () => {
+    resize.disconnect();
+    resize.observe(root);
+    root.querySelectorAll(".handbook-table-scroll,table").forEach(table => resize.observe(table));
+    update();
+  };
+  const mutation = new MutationObserver(observe);
+  mutation.observe(root, { childList: true, subtree: true });
+  observe();
+  return () => { resize.disconnect(); mutation.disconnect(); };
 }
 
 function findKnownValue(text: string, context: HandbookEnhancementContext) {

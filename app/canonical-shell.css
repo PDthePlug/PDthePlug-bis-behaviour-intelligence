@@ -5,6 +5,14 @@
 @media(prefers-reduced-motion:reduce){.canonical-menu,.canonical-mobile-guide summary svg:last-child{transition:none!important}}
 
 
-/* BIS navigation is the centred floating Menu used across the learner app.
+/* BIS navigation is the centred Menu used across the learner app.
    Do not add a competing top-right navigation control. */
 .canonical-menu-trigger{display:flex!important}
+
+/* Opaque product chrome keeps scrolling text out of the Menu's visual area.
+   Preserve the document scroll, accepted centre position and one trigger. */
+.canonical-menu-dock{position:fixed;z-index:92;inset:auto 0 0;display:flex;justify-content:center;padding:10px 12px max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--canonical-line,#dedad2);background:#faf9f6}
+.canonical-menu-dock .canonical-menu-trigger{position:static;transform:none;box-shadow:none}
+.canonical-menu{max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
+.canonical-task,.staff-workspace-main{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+:is(.canonical-task,.staff-workspace-main) :is(input,textarea,select,button,summary,a[href]){scroll-margin-block:90px}

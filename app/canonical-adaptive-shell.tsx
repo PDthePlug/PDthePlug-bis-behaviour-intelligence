@@ -166,6 +166,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         {children}
       </div>
 
+      <nav className="canonical-menu-dock" aria-label="BIS navigation">
       <button
         ref={triggerRef}
         type="button"
@@ -178,6 +179,7 @@ export function CanonicalAdaptiveShell({ children }: { children: React.ReactNode
         <Menu />
         <span>Menu</span>
       </button>
+      </nav>
 
       {menuOpen ? (
         <>

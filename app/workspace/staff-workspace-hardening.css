@@ -537,3 +537,7 @@
 }
 .staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) .eyebrow{color:#c5ddd4}
 .staff-workspace-shell :is(.ops-cohort-banner,.ops-safeguard-banner) [data-slot="badge"]{color:#eef6f2;background:#ffffff14;border-color:#ffffff40}
+.programme-publication-details{margin-top:8px;color:#40594c;font-size:.875rem;line-height:1.5}
+.programme-publication-details summary{display:list-item;min-height:44px;padding-block:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.programme-publication-details p{margin:4px 0 0;overflow-wrap:anywhere}
+.ops-cohort-banner .programme-publication-details{color:#edf4ef}

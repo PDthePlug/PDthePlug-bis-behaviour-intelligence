@@ -290,7 +290,7 @@ export function FacilitatorWorkspace({
       {section === "cohort" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
-            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>{moduleDefinition?.title ?? cohort.labCode} · {cohort.labVersion} · {participants.length} learners</p></div>
+            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>{moduleDefinition?.title ?? "Programme Lab"} · {participants.length} learners</p><details className="programme-publication-details"><summary>Programme details</summary><p>Lab: {cohort.labCode} · Published version: {cohort.labVersion}</p></details></div>
             <div className="facilitator-cohort-actions">
               <Badge variant="outline">{label(cohort.status)}</Badge>
               <Link
@@ -367,7 +367,7 @@ export function FacilitatorWorkspace({
 
           <section className="ops-two-column">
             <div className="surface-card ops-section">
-              <div className="section-title"><div><p className="eyebrow">Programme position</p><h2>Where the group is now</h2></div><Activity /></div>
+              <div className="section-title"><div><p className="eyebrow">Lab progress</p><h2>Where the group is now</h2></div><Activity /></div>
               <div className="opportunity-bands">
                 <div><span>Starting</span><strong>{progressBands.starting}</strong></div>
                 <div><span>Building</span><strong>{progressBands.building}</strong></div>
@@ -409,7 +409,7 @@ export function FacilitatorWorkspace({
             </section>
             <section className="participant-evidence-position">
               <article className="surface-card participant-signal-card">
-                <p className="eyebrow">Programme position</p>
+                <p className="eyebrow">Lab progress</p>
                 <h3>{position(selected)}</h3>
                 <div className="participant-signal-track">
                   <span style={{ width: `${Math.min(100, ((selected.enrolment?.currentInvestigation ?? 0) / 9) * 100)}%` }} />

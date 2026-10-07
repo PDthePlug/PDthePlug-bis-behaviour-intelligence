@@ -11,6 +11,8 @@ const productionSupabaseAcknowledgement =
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_BIS_ALLOW_PRODUCTION_SUPABASE: productionSupabaseAcknowledgement,
+    NEXT_PUBLIC_BIS_PREVIEW_ORIGIN: previewAuthOrigin(process.env.VERCEL_URL),
+    NEXT_PUBLIC_BIS_PREVIEW_BRANCH_ORIGIN: previewAuthOrigin(process.env.VERCEL_BRANCH_URL),
   },
   async redirects() {
     return ["bisportal.online", "bis-behaviour-intelligence.vercel.app"].map((host) => ({
@@ -55,5 +57,11 @@ const nextConfig: NextConfig = {
     "/programmes/[asset]": ["./public/programmes/chunks/**/*"],
   },
 };
+
+function previewAuthOrigin(host: string | undefined) {
+  return process.env.VERCEL_ENV === "preview" &&
+    process.env.NEXT_PUBLIC_SUPABASE_URL === "https://lbmhkddrkhtmkcvfmumd.supabase.co" &&
+    host && /^[a-z0-9-]+\.vercel\.app$/.test(host) ? `https://${host}` : "";
+}
 
 export default nextConfig;

@@ -18,6 +18,32 @@ test("all remote authentication origins resolve to www, with loopback developmen
   }
 });
 
+test("staging recovery returns only to explicitly bound preview origins and production ignores them", () => {
+  const names = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_BIS_PREVIEW_ORIGIN", "NEXT_PUBLIC_BIS_PREVIEW_BRANCH_ORIGIN"];
+  const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
+  try {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://lbmhkddrkhtmkcvfmumd.supabase.co";
+    process.env.NEXT_PUBLIC_BIS_PREVIEW_ORIGIN = "https://bis-preview-reviewed.vercel.app";
+    process.env.NEXT_PUBLIC_BIS_PREVIEW_BRANCH_ORIGIN = "https://bis-preview-branch.vercel.app";
+    for (const origin of [process.env.NEXT_PUBLIC_BIS_PREVIEW_ORIGIN, process.env.NEXT_PUBLIC_BIS_PREVIEW_BRANCH_ORIGIN]) {
+      assert.equal(new URL(recoveryRedirectUrl(origin)).origin, origin);
+    }
+    for (const origin of ["https://bis-preview-reviewed.vercel.app.evil.example", "https://another.vercel.app", "https://bis-preview-reviewed.vercel.app/"]) {
+      assert.equal(applicationOrigin(origin), canonical);
+    }
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://swmhsqivqaqwovojbceo.supabase.co";
+    assert.equal(applicationOrigin(process.env.NEXT_PUBLIC_BIS_PREVIEW_ORIGIN), canonical);
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://lbmhkddrkhtmkcvfmumd.supabase.co";
+    process.env.NEXT_PUBLIC_BIS_PREVIEW_ORIGIN = "https://untrusted.example";
+    assert.equal(applicationOrigin("https://untrusted.example"), canonical);
+  } finally {
+    for (const name of names) {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    }
+  }
+});
+
 test("local destinations survive without allowing external and browser-normalised redirects", () => {
   for (const path of ["/workspace", "/learn?edition=school", "/habit-lab/experiment#day-3", "/"]) {
     assert.equal(safeReturnPath(path), path);
