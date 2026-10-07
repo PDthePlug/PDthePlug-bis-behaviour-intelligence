@@ -109,11 +109,11 @@
 .bis-library-notice{margin:18px 0;color:#354844;font-size:15px;line-height:1.6}
 .bis-library-notice button{min-height:44px;padding:8px 16px;border:1px solid #bfcac4;border-radius:8px;background:white;color:#173f35;font:inherit;font-weight:650}
 .bis-module-card{
-  min-height:210px;
+  min-height:138px;
   padding:20px;
   display:grid;
-  grid-template-rows:auto 1fr auto;
-  gap:22px;
+  grid-template-rows:1fr auto;
+  gap:18px;
   border:1px solid #dedad2;
   border-radius:20px;
   background:#fff;
@@ -146,7 +146,7 @@ a.bis-module-card:hover{
   color:#557168;
 }
 .bis-module-card-copy{
-  align-self:end;
+  align-self:start;
 }
 .bis-module-card-copy small{
   color:#7a827e;
@@ -154,7 +154,7 @@ a.bis-module-card:hover{
   font-weight:800;
 }
 .bis-module-card-copy h3{
-  margin:7px 0 0;
+  margin:0;
   font:600 25px/1.08 var(--font-serif);
   letter-spacing:-.025em;
 }
