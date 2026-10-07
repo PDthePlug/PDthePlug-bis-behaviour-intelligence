@@ -159,6 +159,7 @@ type SourceBlock = {
   }>;
   lines?: string[];
   kind?: "paragraph" | "table";
+  evidenceAnchor?: string;
 };
 
 const sectionNoise = /^(big idea|why this matters|explanation|examples?|worked example|stop\s*&\s*check|checkpoint|common mistake|try it yourself|evidence connection|key words?|chapter summary|answers?|what to do|what happens next)$/i;
@@ -261,7 +262,7 @@ function handbookImperativePrompt(value: string) {
   return /^(?:write down|record)\b.{4,500}[.!]?$/i.test(text) ? text : "";
 }
 
-function handbookShortControl(sourceKey: string, label: string, raw = label) {
+function handbookShortControl(sourceKey: string, label: string, raw = label, evidenceAnchor?: string | null) {
   const lower = (label + " " + raw).toLowerCase();
   const attrs = [
     'class="response workbook-short-response"',
@@ -269,6 +270,7 @@ function handbookShortControl(sourceKey: string, label: string, raw = label) {
     'data-purpose="LEARNING_RESPONSE"',
     'data-privacy-class="P3"',
     'aria-label="' + escapeHtml(label || "Your answer") + '"',
+    ...(evidenceAnchor ? ['data-evidence-anchor="' + escapeHtml(evidenceAnchor) + '"'] : []),
   ];
   if (/\bdate\s*:/.test(lower)) {
     return "<input type=\"date\" " + attrs.join(" ") + " />";
@@ -283,21 +285,23 @@ function handbookShortControl(sourceKey: string, label: string, raw = label) {
   return "<input type=\"text\" " + attrs.join(" ") + " />";
 }
 
-function handbookTextarea(sourceKey: string, prompt: string) {
+function handbookTextarea(sourceKey: string, prompt: string, evidenceAnchor?: string | null) {
   return (
     '<textarea class="response compiled-workbook-response" rows="4" maxlength="20000"' +
     ' data-source-key="' + escapeHtml(sourceKey) + '"' +
     ' data-purpose="LEARNING_RESPONSE" data-privacy-class="P3"' +
+    (evidenceAnchor ? ' data-evidence-anchor="' + escapeHtml(evidenceAnchor) + '"' : "") +
     ' aria-label="' + escapeHtml("Your answer: " + prompt) + '"' +
     ' placeholder="Write your answer…"></textarea>'
   );
 }
 
-function handbookChoice(sourceKey: string, prompt: string, options: string[]) {
+function handbookChoice(sourceKey: string, prompt: string, options: string[], evidenceAnchor?: string | null) {
   return (
     '<select class="response workbook-choice-response"' +
     ' data-source-key="' + escapeHtml(sourceKey) + '"' +
     ' data-purpose="LEARNING_RESPONSE" data-privacy-class="P3"' +
+    (evidenceAnchor ? ' data-evidence-anchor="' + escapeHtml(evidenceAnchor) + '"' : "") +
     ' aria-label="' + escapeHtml("Your answer: " + prompt) + '">' +
     '<option value="">Choose…</option>' +
     options.map((option) => '<option value="' + escapeHtml(option) + '">' + escapeHtml(option) + "</option>").join("") +
@@ -328,6 +332,12 @@ function handbookBlockHtml(block: SourceBlock) {
 function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: string) {
   const html: string[] = [];
   let inAnswers = false;
+  let pendingEvidenceAnchor: string | null = null;
+  const consumeEvidenceAnchor = () => {
+    const anchor = pendingEvidenceAnchor;
+    pendingEvidenceAnchor = null;
+    return anchor;
+  };
   const occurrences = new Map<string, number>();
   const nextSourceKey = (prompt: string) => {
     const normalized = prompt.replace(/\s+/g, " ").trim();
@@ -339,6 +349,10 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
   for (let index = 0; index < blocks.length; index += 1) {
     const block = blocks[index];
     const text = block.text.replace(/\s+/g, " ").trim();
+    if (block.evidenceAnchor) {
+      pendingEvidenceAnchor = block.evidenceAnchor;
+      continue;
+    }
     if (!text) continue;
 
     if (key === "Day 3" && block.heading && authoredDayThreePartB(text)) {
@@ -372,7 +386,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         const previous = blocks[index - 1]?.text.replace(/\s+/g, " ").trim() || "";
         const prompt = /journey continues/i.test(previous) ? "Choose your next Lab" : previous || "Choose one";
         html.push("<p>" + escapeHtml(prompt) + "</p>");
-        html.push(handbookChoice(nextSourceKey(prompt), prompt, blockChoices));
+        html.push(handbookChoice(nextSourceKey(prompt), prompt, blockChoices, consumeEvidenceAnchor()));
         continue;
       }
 
@@ -382,7 +396,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
       if (inlineChoices) {
         const prompt = /^family$/i.test(inlineChoices.prompt) ? "Family of Protection" : inlineChoices.prompt;
         html.push("<p>" + escapeHtml(prompt) + "</p>");
-        html.push(handbookChoice(nextSourceKey(prompt), prompt, inlineChoices.options));
+        html.push(handbookChoice(nextSourceKey(prompt), prompt, inlineChoices.options, consumeEvidenceAnchor()));
         continue;
       }
 
@@ -401,8 +415,8 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
               if (spec && (spec.type === "CATEGORICAL" || !cell.replace(/[_—–.\s-]+/g, ""))) {
                 const prompt = rowLabel + " — " + label;
                 const control = spec.type === "CATEGORICAL"
-                  ? handbookChoice(nextSourceKey(prompt), prompt, spec.options ?? [])
-                  : handbookTextarea(nextSourceKey(prompt), prompt);
+                  ? handbookChoice(nextSourceKey(prompt), prompt, spec.options ?? [], consumeEvidenceAnchor())
+                  : handbookTextarea(nextSourceKey(prompt), prompt, consumeEvidenceAnchor());
                 return '<td data-label="' + escapeHtml(label) + '">' + control + "</td>";
               }
               return '<td data-label="' + escapeHtml(label) + '">' + escapeHtml(cell) + "</td>";
@@ -426,7 +440,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
               const label = header[cellIndex] ?? "";
               if (cellIndex === block.answerColumn && !cell.replace(/[_—–.\s-]+/g, "")) {
                 const prompt = rowLabel + " — " + label;
-                return '<td data-label="' + escapeHtml(label) + '">' + handbookTextarea(nextSourceKey(prompt), prompt) + "</td>";
+                return '<td data-label="' + escapeHtml(label) + '">' + handbookTextarea(nextSourceKey(prompt), prompt, consumeEvidenceAnchor()) + "</td>";
               }
               return '<td data-label="' + escapeHtml(label) + '">' + escapeHtml(cell) + "</td>";
             }).join("") + "</tr>";
@@ -451,7 +465,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
 
         html.push(handbookBlockHtml(block));
         if (questions.length === 1 && optionRows.length) {
-          html.push(handbookChoice(nextSourceKey(questions[0]), questions[0], optionRows));
+          html.push(handbookChoice(nextSourceKey(questions[0]), questions[0], optionRows, consumeEvidenceAnchor()));
           index = cursor - 1;
           continue;
         }
@@ -1403,6 +1417,18 @@ function markdownBlocks(markdown: string) {
     }
 
     const trimmed = line.trim();
+    const evidenceMarker = trimmed.match(/^<!--\s*BIS:EVIDENCE\s+([A-Z0-9._-]+)\s*-->$/i);
+    if (evidenceMarker) {
+      flush();
+      blocks.push({
+        text: evidenceMarker[1],
+        heading: false,
+        kind: "paragraph",
+        html: "",
+        evidenceAnchor: evidenceMarker[1],
+      });
+      continue;
+    }
     if (!trimmed) {
       flush();
       continue;
