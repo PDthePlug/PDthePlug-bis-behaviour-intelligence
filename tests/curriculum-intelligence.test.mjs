@@ -5,6 +5,7 @@ import {
   COMPETENCY_PROGRESSION,
   REPORT_EVIDENCE_CLASSIFICATIONS,
   buildCompetencyProgressSummary,
+  buildCompetencyTimeline,
   classifyCompetencyProgress,
 } from "../lib/curriculum-intelligence.mjs";
 
@@ -150,4 +151,30 @@ test("Time Lab is the first ten-day curriculum blueprint under the new instructi
   assert.ok(time.days[7].learnerEvidence.some((item) => item.reportClass === "REVIEW_ADAPTATION"));
   assert.ok(time.days[8].learnerEvidence.some((item) => item.reportClass === "TRANSFER"));
   assert.ok(time.days[9].learnerEvidence.some((item) => item.reportClass === "LONGITUDINAL_PORTFOLIO"));
+});
+
+
+test("builds a chronological progression history rather than a pre/post score only", () => {
+  const timeline = buildCompetencyTimeline({
+    competencyId: "TIM.C6",
+    label: "Apply and record the method in real life",
+    introduced: true,
+    evidence: [
+      sourceEvent("LEARNING_CHECK", { at: "2026-10-01T08:00:00Z", evidenceRefs: ["E:learn"] }),
+      sourceEvent("GUIDED_APPLICATION", { at: "2026-10-02T08:00:00Z", evidenceRefs: ["E:guided"] }),
+      sourceEvent("OBSERVATION", { at: "2026-10-04T08:00:00Z", evidenceRefs: ["E:field"] }),
+      sourceEvent("INTERPRETATION", { at: "2026-10-05T08:00:00Z", evidenceRefs: ["E:review"] }),
+      sourceEvent("REVISION", { at: "2026-10-05T08:05:00Z", evidenceRefs: ["E:revision"] }),
+      sourceEvent("TRANSFER", { at: "2026-10-06T08:00:00Z", evidenceRefs: ["E:transfer"] }),
+    ],
+  });
+
+  assert.equal(timeline.initialStage, "INTRODUCED");
+  assert.equal(timeline.currentStage, "TRANSFERRED");
+  assert.ok(timeline.progressionDelta > 0);
+  assert.deepEqual(
+    timeline.transitions.map((row) => row.to),
+    ["EXPLAINED", "APPLIED_WITH_SUPPORT", "TESTED_IN_CONTEXT", "REVIEWED_AND_ADAPTED", "TRANSFERRED"],
+  );
+  assert.equal("rawResponse" in timeline.current, false);
 });
