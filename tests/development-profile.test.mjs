@@ -50,8 +50,11 @@ test("My BIS turns authored evidence into a bounded development narrative withou
   assert.equal(transfer.stageCode, "TRANSFER");
   assert.ok(transfer.externalFrameworkAreas.includes("Metacognition"));
   assert.doesNotMatch(JSON.stringify(profile), /PRIVATE WORDING/);
-  assert.doesNotMatch(JSON.stringify(profile), /globalMaturityScore|personality score|diagnosis/i);
+  assert.equal(Object.prototype.hasOwnProperty.call(profile, "globalMaturityScore"), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(profile, "personalityScore"), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(profile, "diagnosis"), false);
   assert.match(profile.boundary, /not a personality label/i);
+  assert.match(profile.boundary, /diagnosis/i);
 });
 
 test("My BIS uses approved curriculum mappings but refuses structural guesses", async () => {
