@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-07",
+  "scope": "Account-free DGMT programme experience, shared Leap9 hardening and fixed illustrative reports",
+  "productionDataAccessed": false,
+  "databaseMigrations": false,
+  "emailSent": false,
+  "acceptance": {
+    "passed": 667,
+    "failed": 0
+  },
+  "runtime": "passed",
+  "lint": "passed",
+  "typecheck": "passed",
+  "canonicalSourceAudits": "passed",
+  "optimizedBuild": "passed",
+  "browser": {
+    "status": "passed",
+    "viewports": [
+      360,
+      430,
+      1280
+    ],
+    "builtAppFocusedPassed": 15,
+    "ciFullSuitePassed": 300,
+    "pinnedBrowserVisualComparisonsPassed": 3,
+    "pinnedBrowserVideoPlayback": "passed",
+    "localSystemChromium": "Full run uses Debian Chromium 151; the three existing Leadership Lab snapshots differ. The same 2644-pixel mismatch reproduces on unchanged main. All three snapshots pass with the pinned Playwright browser; no snapshots or thresholds were changed."
+  },
+  "anonymousBuiltApp": {
+    "dgmtPage": 200,
+    "video": 200,
+    "captions": 200,
+    "authenticatedExperience": 307,
+    "staffApi": 401
+  },
+  "limitations": [
+    "The simulation uses a shortened, fixed Habit example; it is not a published Universal enrolment.",
+    "Content Studio, enrolment and safeguarding are described rather than exercised by this public walkthrough.",
+    "This release does not establish a DGMT partnership, competence, employment outcomes or programme impact."
+  ],
+  "codeCommit": "7c3317e06a5b25b0f502890e3ed96fb1279b17a8",
+  "ci": {
+    "command": "npm run verify",
+    "status": "passed",
+    "acceptancePassed": 671,
+    "browserPassed": 300,
+    "failed": 0,
+    "url": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/actions/runs/37599115848",
+    "note": "GitHub validates the PR merge with current main, which includes additional Commercial Intelligence tests beyond the local checkout."
+  },
+  "media": {
+    "durationSeconds": 90,
+    "width": 1280,
+    "height": 720,
+    "bytes": 440058,
+    "captionLanguage": "en",
+    "transcript": "Shares the same fixed copy as the video generator",
+    "audio": "Text-led video without narration"
+  }
+}

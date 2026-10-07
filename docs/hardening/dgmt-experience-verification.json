@@ -1,60 +1,73 @@
 {
   "date": "2026-10-07",
-  "scope": "Account-free DGMT programme experience, shared Leap9 hardening and fixed illustrative reports",
+  "scope": "Public BIS role explorer, DGMT first-view refinement, desktop and customer-language hardening",
+  "codeCommit": "9cff4fcc974cd5e0f86768453f073c64ef3c3486",
   "productionDataAccessed": false,
   "databaseMigrations": false,
   "emailSent": false,
-  "acceptance": {
-    "passed": 667,
-    "failed": 0
+  "releaseVerification": {
+    "command": "npm run verify",
+    "resultSource": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/149/checks",
+    "note": "The PR checks and browser artifact are authoritative for the final merge. No checks or visual thresholds were weakened."
   },
-  "runtime": "passed",
-  "lint": "passed",
-  "typecheck": "passed",
-  "canonicalSourceAudits": "passed",
-  "optimizedBuild": "passed",
-  "browser": {
-    "status": "passed",
-    "viewports": [
+  "buildVerification": {
+    "runtime": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "acceptancePassed": 687,
+    "acceptanceFailed": 0,
+    "canonicalSourceAudits": "passed",
+    "optimizedBuild": "passed",
+    "retainedServerlessLearningPackages": 15
+  },
+  "browserCoverage": {
+    "matrixTests": 321,
+    "journeyViewports": [
       360,
       430,
       1280
     ],
-    "builtAppFocusedPassed": 15,
-    "ciFullSuitePassed": 300,
-    "pinnedBrowserVisualComparisonsPassed": 3,
-    "pinnedBrowserVideoPlayback": "passed",
-    "localSystemChromium": "Full run uses Debian Chromium 151; the three existing Leadership Lab snapshots differ. The same 2644-pixel mismatch reproduces on unchanged main. All three snapshots pass with the pinned Playwright browser; no snapshots or thresholds were changed."
+    "additionalDesktopWidths": [
+      1440,
+      1920
+    ],
+    "optimizedAppDGMTDesktopPassed": 3,
+    "optimizedAppExplorerDesktopPassed": 5,
+    "checks": [
+      "sign-in discovery and keyboard navigation",
+      "canonical handbook save, refresh and Back",
+      "complete nine-stage Lab and seven example days",
+      "private responses and selective evidence sharing",
+      "facilitator review and feedback persistence",
+      "class plans and attendance persistence",
+      "programme decisions and reset",
+      "fixed PDF report and captioned video playback",
+      "overflow, console errors and absence of authenticated API requests"
+    ]
   },
-  "anonymousBuiltApp": {
-    "dgmtPage": 200,
-    "video": 200,
-    "captions": 200,
-    "authenticatedExperience": 307,
-    "staffApi": 401
-  },
-  "limitations": [
-    "The simulation uses a shortened, fixed Habit example; it is not a published Universal enrolment.",
-    "Content Studio, enrolment and safeguarding are described rather than exercised by this public walkthrough.",
-    "This release does not establish a DGMT partnership, competence, employment outcomes or programme impact."
-  ],
-  "codeCommit": "7c3317e06a5b25b0f502890e3ed96fb1279b17a8",
-  "ci": {
-    "command": "npm run verify",
-    "status": "passed",
-    "acceptancePassed": 671,
-    "browserPassed": 300,
-    "failed": 0,
-    "url": "https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/actions/runs/37599115848",
-    "note": "GitHub validates the PR merge with current main, which includes additional Commercial Intelligence tests beyond the local checkout."
+  "anonymousOptimizedApp": {
+    "/explore": 200,
+    "/experience/dgmt": 200,
+    "/experience/dgmt-overview.mp4": 200,
+    "/experience/dgmt-overview.vtt": 200,
+    "/api/staff": 401,
+    "/api/universal-lab": 401,
+    "/api/evidence-engine?view=developmentProfile": 401
   },
   "media": {
     "durationSeconds": 90,
     "width": 1280,
     "height": 720,
-    "bytes": 440058,
+    "bytes": 429133,
     "captionLanguage": "en",
-    "transcript": "Shares the same fixed copy as the video generator",
+    "transcript": "Shares fixed copy with the video generator",
     "audio": "Text-led video without narration"
-  }
+  },
+  "limitations": [
+    "Practice uses fictional participants and stays in the current browser tab; programme findings use a separate fixed sample of twenty.",
+    "Photo uploads, safeguarding referrals, scored assessments and publishing require a signed-in programme.",
+    "The current My BIS profile is rendered without inventing curriculum mappings or competence claims for example answers.",
+    "This release does not establish a DGMT partnership, employment outcomes or programme impact."
+  ],
+  "initialDGMTEvidence": "docs/hardening/dgmt-experience-initial-verification.json"
 }

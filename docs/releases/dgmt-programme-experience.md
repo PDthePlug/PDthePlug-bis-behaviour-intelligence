@@ -26,4 +26,4 @@ With the browser harness running on port 3100, `node scripts/create-dgmt-demonst
 
 Browser coverage includes 360px, 430px and 1280px journeys, plus 1440px/1920px desktop review. Checks cover sign-in discovery, keyboard navigation, authored workbook saves, the complete Lab, example days, selective sharing and review, class planning/attendance, programme decisions, Back/refresh/reset, downloads, copy, overflow, console errors and absence of authenticated API requests. Unit tests cover canonical source origin, exact public routes, request rejection, Lab validation, persistence and fixed report separation.
 
-Final release evidence is recorded in `docs/hardening/dgmt-experience-verification.json` after verification. Earlier DGMT-only evidence is retained separately from the expanded explorer checks.
+Release scope and optimized-app evidence are recorded in `docs/hardening/dgmt-experience-verification.json`. PR #149 checks and its browser artifact provide the final full verification result. Earlier DGMT-only evidence is retained in `docs/hardening/dgmt-experience-initial-verification.json`.
