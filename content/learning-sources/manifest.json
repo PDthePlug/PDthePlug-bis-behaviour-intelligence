@@ -57,7 +57,7 @@
           "sourceId": "TIM-LM-2.0-S",
           "startLine": 1,
           "endLine": 3755,
-          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "850fcdfa6c58379b26c531e6f52e200431975bf4e71e19e508fc3b5cb62aaf7f",
           "startMarker": "# TIME LAB™\n\n## School Edition"
         },
         {
@@ -65,7 +65,7 @@
           "sourceId": "TIM-LM-2.0-EA",
           "startLine": 3756,
           "endLine": 7531,
-          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "c228fb7069e0890289f6863eaa77866204362219eb029db6dc85607e241dada8",
           "startMarker": "# TIME LAB™\n\n## Emerging Adult Edition"
         },
         {
@@ -73,7 +73,7 @@
           "sourceId": "TIM-LM-2.0-W",
           "startLine": 7532,
           "endLine": 11345,
-          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "9d6162593ae247048f44aded3d9aff68183f242e24ae1f159d8b4373d7f50d45",
           "startMarker": "# TIME LAB™\n\n## Workplace Edition"
         }
       ],
