@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "name": "Applied Commerce Grade 8–12 source register",
+  "ingestedOn": "2026-10-07",
+  "status": "STRUCTURED_COMPLETE",
+  "authority": "Current authored Applied Commerce learner books supplied by the product owner",
+  "purpose": "Canonical curriculum ancestry for BIS concept, competency, teaching and reporting design.",
+  "books": [
+    {
+      "grade": 8,
+      "title": "Applied Commerce Grade 8",
+      "version": "11.0 — Checkpoint Revision October 2026",
+      "lessonCount": 80,
+      "coreQuestion": "Who am I with money?",
+      "developmentalRole": "Observer",
+      "portfolioEmphasis": "Identity, resources, habits and capstone evidence."
+    },
+    {
+      "grade": 9,
+      "title": "Applied Commerce Grade 9",
+      "version": "14.1 — DBE Prototype Edition (Language Tightened)",
+      "lessonCount": 75,
+      "coreQuestion": "What kind of worker, earner, and creator am I becoming?",
+      "developmentalRole": "Challenger / agent",
+      "portfolioEmphasis": "Enterprise, community money, habit transformation, community project and path-forward evidence.",
+      "authoredCompetencyMapping": "The manuscript contains LO / Business Studies / EMS competency mappings in the mapped lesson sequence. These remain authored source metadata and are not represented as official DBE certification."
+    },
+    {
+      "grade": 10,
+      "title": "Applied Commerce Grade 10",
+      "version": "14.0 — Checkpoint Revision October 2026",
+      "lessonCount": 80,
+      "coreQuestion": "How do I build systems that last — and what happens when they fail?",
+      "developmentalRole": "Strategist",
+      "portfolioEmphasis": "Value creation, investing, financial systems and financial independence."
+    },
+    {
+      "grade": 11,
+      "title": "Applied Commerce Grade 11",
+      "version": "15.0 — System Architect Edition",
+      "lessonCount": 80,
+      "coreQuestion": "How can I achieve more with less — less time, less money, less effort?",
+      "developmentalRole": "Architect",
+      "portfolioEmphasis": "Leverage, leadership, wealth and legacy."
+    },
+    {
+      "grade": 12,
+      "title": "Applied Commerce Grade 12",
+      "version": "16.0 — System Architect Edition",
+      "lessonCount": 80,
+      "coreQuestion": "How do I launch into adulthood with evidence, purpose and protection?",
+      "developmentalRole": "Operator / launcher",
+      "portfolioEmphasis": "Transition, career launch, risk and protection, and integrated Life Launch."
+    }
+  ],
+  "ingestionContract": {
+    "lessonIndex": "All 395 lesson positions are indexed by grade, term and title.",
+    "competencyMetadata": "Only competency codes and meanings explicitly present in the authored source may be stored as source mappings.",
+    "interpretation": "BIS may derive an internal curriculum crosswalk from authored concepts, but derived BIS competencies must remain distinct from source-authored or external framework labels.",
+    "externalAlignment": "No official CAPS/DBE approval or equivalence is asserted by this register.",
+    "sourceIntegrity": "Do not change a source lesson merely to satisfy a BIS runtime or reporting model.",
+    "reporting": "A source ancestry link identifies where a concept is taught. It never proves learner competence by itself."
+  }
+}
