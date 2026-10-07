@@ -1,0 +1,1460 @@
+{
+  "schemaVersion": "bis-lab-ancestry:1",
+  "generatedAt": "2026-10-07",
+  "purpose": "Map every BIS Lab to the Applied Commerce concepts and lessons from which its intellectual ancestry can be traced. This ancestry does not replace the canonical BIS Lab manuscript or create new Lab measures.",
+  "rules": [
+    "Every current BIS catalogue Lab must appear exactly once.",
+    "Concept ancestry may be direct or supporting; Lab-specific measures remain governed by the authored Lab source.",
+    "Failure Lab remains planned until a canonical BIS source is supplied even though its Applied Commerce ancestry is identifiable.",
+    "External competency-framework alignment is not implied by ancestry."
+  ],
+  "labs": [
+    {
+      "labCode": "HAB",
+      "title": "Habit",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-022",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-023",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-024",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-025",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-026",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-027",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C04",
+        "AC-C03",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L41",
+        "AC.G8.L42",
+        "AC.G8.L57",
+        "AC.G8.L58",
+        "AC.G8.L59",
+        "AC.G8.L60",
+        "AC.G9.L35",
+        "AC.G9.L36",
+        "AC.G9.L50",
+        "AC.G9.L51",
+        "AC.G9.L52",
+        "AC.G9.L53"
+      ]
+    },
+    {
+      "labCode": "DEC",
+      "title": "Decision",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-004",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-006",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-012",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-031",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-039",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-054",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C06",
+        "AC-C03",
+        "AC-C05"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L17",
+        "AC.G9.L46",
+        "AC.G11.L28",
+        "AC.G12.L05"
+      ]
+    },
+    {
+      "labCode": "MON",
+      "title": "Money",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-007",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-008",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-009",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-019",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-020",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-021",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-039",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-042",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C08",
+        "AC-C06",
+        "AC-C03"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L07",
+        "AC.G8.L30",
+        "AC.G8.L37",
+        "AC.G8.L38",
+        "AC.G10.L17",
+        "AC.G10.L29"
+      ]
+    },
+    {
+      "labCode": "IDN",
+      "title": "Identity",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-001",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-002",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-003",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-004",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-005",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-027",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C01",
+        "AC-C03",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L01",
+        "AC.G8.L02",
+        "AC.G8.L03",
+        "AC.G8.L53",
+        "AC.G9.L02",
+        "AC.G9.L35"
+      ]
+    },
+    {
+      "labCode": "ATT",
+      "title": "Attention",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-005",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-015",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-019",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-021",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-029",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-030",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-037",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C03",
+        "AC-C04",
+        "AC-C05"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L31",
+        "AC.G8.L38",
+        "AC.G9.L38",
+        "AC.G9.L39",
+        "AC.G9.L48"
+      ]
+    },
+    {
+      "labCode": "TIM",
+      "title": "Time",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-015",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-021",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-028",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-029",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-030",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-037",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-047",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-054",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C05",
+        "AC-C03",
+        "AC-C04",
+        "AC-C14",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L38",
+        "AC.G8.L56",
+        "AC.G9.L38",
+        "AC.G9.L39",
+        "AC.G10.L37",
+        "AC.G10.L39",
+        "AC.G10.L40",
+        "AC.G11.L09",
+        "AC.G12.L58"
+      ]
+    },
+    {
+      "labCode": "RSK",
+      "title": "Risk",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-012",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-032",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-039",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-041",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-054",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C10",
+        "AC-C06",
+        "AC-C03"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G10.L18",
+        "AC.G11.L08",
+        "AC.G12.L41",
+        "AC.G12.L54",
+        "AC.G12.L59"
+      ]
+    },
+    {
+      "labCode": "TRU",
+      "title": "Trust",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-024",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-046",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-048",
+          "relation": "DIRECT"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C12",
+        "AC-C11",
+        "AC-C03"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L19",
+        "AC.G11.L27",
+        "AC.G11.L33"
+      ]
+    },
+    {
+      "labCode": "INF",
+      "title": "Influence",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-005",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-019",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-045",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-046",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C11",
+        "AC-C06",
+        "AC-C01"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L04",
+        "AC.G8.L31",
+        "AC.G9.L47"
+      ]
+    },
+    {
+      "labCode": "LDR",
+      "title": "Leadership",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-043",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-046",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-048",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C12",
+        "AC-C11",
+        "AC-C06"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G11.L21",
+        "AC.G11.L22",
+        "AC.G11.L24",
+        "AC.G11.L25",
+        "AC.G11.L28",
+        "AC.G11.L33"
+      ]
+    },
+    {
+      "labCode": "PUR",
+      "title": "Purpose",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-004",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-006",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-049",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-051",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C05",
+        "AC-C14",
+        "AC-C01"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L05",
+        "AC.G8.L06",
+        "AC.G9.L02",
+        "AC.G11.L61",
+        "AC.G12.L68"
+      ]
+    },
+    {
+      "labCode": "RES",
+      "title": "Resilience",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-011",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-026",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-030",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-032",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C10",
+        "AC-C04",
+        "AC-C02"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L48",
+        "AC.G8.L49",
+        "AC.G9.L40",
+        "AC.G12.L54",
+        "AC.G12.L58"
+      ]
+    },
+    {
+      "labCode": "CAR",
+      "title": "Career",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-014",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-050",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-057",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-059",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C13",
+        "AC-C11",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G9.L07",
+        "AC.G12.L21",
+        "AC.G12.L22",
+        "AC.G12.L23",
+        "AC.G12.L25",
+        "AC.G12.L35",
+        "AC.G12.L38"
+      ]
+    },
+    {
+      "labCode": "LCH",
+      "title": "Launch",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-006",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-031",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-050",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-051",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C13",
+        "AC-C05",
+        "AC-C10",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G12.L01",
+        "AC.G12.L05",
+        "AC.G12.L15",
+        "AC.G12.L38",
+        "AC.G12.L68",
+        "AC.G12.L80"
+      ]
+    },
+    {
+      "labCode": "FAI",
+      "title": "Failure",
+      "ancestryStatus": "CURRICULUM_ANCESTRY_READY_LAB_SOURCE_PENDING",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-011",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-026",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-033",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-055",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C02",
+        "AC-C10",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L15",
+        "AC.G8.L50",
+        "AC.G9.L42"
+      ]
+    },
+    {
+      "labCode": "GMN",
+      "title": "Growth Mindset",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-003",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-011",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-026",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-033",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-060",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C02",
+        "AC-C15",
+        "AC-C04"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G9.L43",
+        "AC.G9.L44"
+      ]
+    },
+    {
+      "labCode": "GRT",
+      "title": "Grit",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-013",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-025",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-026",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-032",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-049",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C04",
+        "AC-C10",
+        "AC-C14"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L47",
+        "AC.G9.L41",
+        "AC.G9.L45"
+      ]
+    },
+    {
+      "labCode": "ENT",
+      "title": "Entrepreneurship",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-010",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-014",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-017",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-018",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-034",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-055",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-056",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C07",
+        "AC-C02",
+        "AC-C09"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L27",
+        "AC.G8.L28",
+        "AC.G9.L05",
+        "AC.G9.L06",
+        "AC.G9.L09",
+        "AC.G9.L10",
+        "AC.G9.L11",
+        "AC.G10.L05"
+      ]
+    },
+    {
+      "labCode": "NEG",
+      "title": "Negotiation",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-004",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-018",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-031",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-046",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C11",
+        "AC-C06",
+        "AC-C12"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L29",
+        "AC.G11.L27"
+      ]
+    },
+    {
+      "labCode": "TEAM",
+      "title": "Team",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-024",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-043",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-046",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-048",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C12",
+        "AC-C11",
+        "AC-C14"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L04",
+        "AC.G11.L10",
+        "AC.G11.L25"
+      ]
+    },
+    {
+      "labCode": "ETH",
+      "title": "Ethics",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-004",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-012",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-031",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-046",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-049",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C12",
+        "AC-C06",
+        "AC-C14"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L19",
+        "AC.G10.L65",
+        "AC.G11.L33",
+        "AC.G11.L34"
+      ]
+    },
+    {
+      "labCode": "FSF",
+      "title": "Future Self",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-006",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-025",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-027",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-049",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-051",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C14",
+        "AC-C05",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L79",
+        "AC.G9.L34",
+        "AC.G10.L79",
+        "AC.G11.L79",
+        "AC.G12.L77"
+      ]
+    },
+    {
+      "labCode": "OPP",
+      "title": "Opportunity",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-010",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-017",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-035",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-055",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-058",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C07",
+        "AC-C02",
+        "AC-C09"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L28",
+        "AC.G9.L09",
+        "AC.G9.L10",
+        "AC.G12.L22"
+      ]
+    },
+    {
+      "labCode": "COM",
+      "title": "Communication",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-005",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-018",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-045",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-057",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C11",
+        "AC-C12",
+        "AC-C13"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G11.L26",
+        "AC.G11.L27",
+        "AC.G12.L24",
+        "AC.G12.L30"
+      ]
+    },
+    {
+      "labCode": "SYS",
+      "title": "Systems Thinking",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-035",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-036",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-037",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-038",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C09",
+        "AC-C03",
+        "AC-C10"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G10.L37",
+        "AC.G10.L38",
+        "AC.G10.L39",
+        "AC.G10.L40",
+        "AC.G11.L11"
+      ]
+    },
+    {
+      "labCode": "LTT",
+      "title": "Long-Term Thinking",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-025",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-038",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-039",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-042",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-049",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C14",
+        "AC-C06",
+        "AC-C10"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L46",
+        "AC.G10.L19",
+        "AC.G11.L52",
+        "AC.G11.L69"
+      ]
+    },
+    {
+      "labCode": "ECO",
+      "title": "Economics for Humans",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-009",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-016",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-019",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-035",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-058",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C09",
+        "AC-C07",
+        "AC-C06"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L35",
+        "AC.G8.L36",
+        "AC.G9.L17",
+        "AC.G9.L18",
+        "AC.G9.L21",
+        "AC.G9.L24"
+      ]
+    },
+    {
+      "labCode": "CUS",
+      "title": "Customer Thinking",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-017",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-018",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-034",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-055",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-056",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C07",
+        "AC-C03",
+        "AC-C06"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G9.L05",
+        "AC.G9.L11",
+        "AC.G10.L10",
+        "AC.G10.L12"
+      ]
+    },
+    {
+      "labCode": "INN",
+      "title": "Innovation Thinking",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-010",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-017",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-038",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-052",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-055",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C02",
+        "AC-C09",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G9.L10",
+        "AC.G10.L05",
+        "AC.G10.L40"
+      ]
+    },
+    {
+      "labCode": "AST",
+      "title": "Asset Thinking",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-014",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-037",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-038",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-040",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-047",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C14",
+        "AC-C08",
+        "AC-C09"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G9.L07",
+        "AC.G10.L20",
+        "AC.G10.L21",
+        "AC.G11.L09"
+      ]
+    },
+    {
+      "labCode": "FIN",
+      "title": "Financial Philosophy",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-004",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-007",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-008",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-019",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-020",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-039",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-042",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-046",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C08",
+        "AC-C06",
+        "AC-C01"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L02",
+        "AC.G8.L33",
+        "AC.G10.L49",
+        "AC.G10.L68",
+        "AC.G12.L49"
+      ]
+    },
+    {
+      "labCode": "PEF",
+      "title": "Personal Effectiveness",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-013",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-021",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-028",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-029",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-030",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-037",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-047",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C04",
+        "AC-C05",
+        "AC-C15"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L18",
+        "AC.G8.L56",
+        "AC.G9.L38",
+        "AC.G9.L39",
+        "AC.G9.L45",
+        "AC.G11.L09"
+      ]
+    },
+    {
+      "labCode": "TRS",
+      "title": "Transferable Skills",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-003",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-014",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-044",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-050",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-057",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-059",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C13",
+        "AC-C15",
+        "AC-C11"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G9.L07",
+        "AC.G12.L28",
+        "AC.G12.L34",
+        "AC.G12.L35"
+      ]
+    },
+    {
+      "labCode": "MTL",
+      "title": "Meta-Learning",
+      "ancestryStatus": "MAPPED",
+      "concepts": [
+        {
+          "conceptId": "AC-CON-011",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-015",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-033",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-053",
+          "relation": "DIRECT"
+        },
+        {
+          "conceptId": "AC-CON-054",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-059",
+          "relation": "SUPPORTING"
+        },
+        {
+          "conceptId": "AC-CON-060",
+          "relation": "SUPPORTING"
+        }
+      ],
+      "primaryCompetencies": [
+        "AC-C15",
+        "AC-C03",
+        "AC-C02"
+      ],
+      "directAppliedCommerceRefs": [
+        "AC.G8.L20",
+        "AC.G8.L60",
+        "AC.G9.L32",
+        "AC.G10.L16",
+        "AC.G11.L20",
+        "AC.G12.L60",
+        "AC.G12.L77"
+      ]
+    }
+  ]
+}

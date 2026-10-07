@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "bis-instructional-standard:1",
+  "title": "BIS Ten-Touchpoint Instructional Standard",
+  "status": "REFERENCE_STANDARD",
+  "purpose": "Make the ten-touchpoint programme a deliberate learning progression in which concepts are discovered, explained, applied, investigated, reviewed and transferred, and in which every meaningful learner action has a defined evidence/reporting job.",
+  "invariantProgrammeModel": [
+    {
+      "touchpoint": 1,
+      "job": "CREATE_RELEVANCE",
+      "phase": "DISCOVER",
+      "learnerShift": "From ordinary experience to a problem worth investigating."
+    },
+    {
+      "touchpoint": 2,
+      "job": "BUILD_FIRST_MENTAL_MODEL",
+      "phase": "DISCOVER_EXPLAIN",
+      "learnerShift": "From noticing to a first usable distinction or model."
+    },
+    {
+      "touchpoint": 3,
+      "job": "PREPARE_LAB_HANDOVER",
+      "phase": "APPLY_PREDICT",
+      "learnerShift": "From classroom model to a personal investigation question, prediction and safe plan.",
+      "boundary": "The 45-minute learning session prepares the handover. Live Lab Phase A remains a separate facilitated experience and is not collapsed into this session."
+    },
+    {
+      "touchpoint": 4,
+      "job": "INTERPRET_LAB_REVELATION",
+      "phase": "EXPLAIN",
+      "learnerShift": "From what the Lab surfaced to formal language that explains the learner's own evidence."
+    },
+    {
+      "touchpoint": 5,
+      "job": "BUILD_PERSONAL_MODEL",
+      "phase": "APPLY",
+      "learnerShift": "From general framework to a personal, evidence-linked working model."
+    },
+    {
+      "touchpoint": 6,
+      "job": "APPLY_IN_REAL_LIFE",
+      "phase": "INVESTIGATE",
+      "learnerShift": "From plan to observation in authentic context."
+    },
+    {
+      "touchpoint": 7,
+      "job": "DIAGNOSE_AND_ADAPT",
+      "phase": "REVIEW",
+      "learnerShift": "From result to diagnosis, barrier analysis and justified adjustment."
+    },
+    {
+      "touchpoint": 8,
+      "job": "ADD_FINAL_MAJOR_LAYER",
+      "phase": "DEEPEN_WIDEN",
+      "learnerShift": "From local technique to a broader conceptual layer that increases range."
+    },
+    {
+      "touchpoint": 9,
+      "job": "INTEGRATE_MODEL",
+      "phase": "TRANSFER",
+      "learnerShift": "From one investigated pattern to a second context and an integrated explanation."
+    },
+    {
+      "touchpoint": 10,
+      "job": "DEMONSTRATE_AND_HANDOFF",
+      "phase": "REVIEW_TRANSFER",
+      "learnerShift": "From completed programme to evidenced progress, limits, next practice and transfer forward.",
+      "boundary": "Day 10 is not another theory chapter."
+    }
+  ],
+  "fortyFiveMinuteGrammar": [
+    {
+      "minutes": "0–5",
+      "move": "RETRIEVE_RECONNECT",
+      "purpose": "Recover prior learning/evidence without reteaching the lesson."
+    },
+    {
+      "minutes": "5–11",
+      "move": "DISCOVER",
+      "purpose": "Create a dilemma, prediction, comparison, demonstration or evidence encounter."
+    },
+    {
+      "minutes": "11–19",
+      "move": "EXPLAIN",
+      "purpose": "Name only the concepts needed to make sense of the discovery."
+    },
+    {
+      "minutes": "19–23",
+      "move": "CHECK",
+      "purpose": "Use a discriminating learning check, not a recall-for-recall quiz."
+    },
+    {
+      "minutes": "23–33",
+      "move": "APPLY",
+      "purpose": "Move from worked example to guided or personal application."
+    },
+    {
+      "minutes": "33–39",
+      "move": "EVIDENCE_INVESTIGATION",
+      "purpose": "Work with traceable evidence, a prediction, plan, observation or governed task."
+    },
+    {
+      "minutes": "39–43",
+      "move": "REVIEW",
+      "purpose": "State what the evidence supports and what it does not yet support."
+    },
+    {
+      "minutes": "43–45",
+      "move": "CARRY_FORWARD",
+      "purpose": "Define the precise observation/action that makes tomorrow possible."
+    }
+  ],
+  "discoveryRule": {
+    "statement": "Do not reveal a formal explanatory model before the learner has encountered enough of the phenomenon for the explanation to mean something.",
+    "allowedBeforeDiscovery": [
+      "safety instructions",
+      "task mechanics",
+      "neutral observation protocol",
+      "definitions required to understand the task"
+    ],
+    "disallowedBeforeDiscovery": [
+      "the answer the investigation is designed to reveal",
+      "a finished interpretation presented as the learner's conclusion"
+    ]
+  },
+  "evidenceRule": {
+    "principle": "Minimum Question, Maximum Evidence",
+    "classes": [
+      "BASELINE",
+      "CONTEXT",
+      "PREDICTION",
+      "PLAN",
+      "OBSERVATION",
+      "OUTCOME",
+      "INTERPRETATION",
+      "TRANSFER",
+      "LEARNING_CHECK",
+      "SUPPORT_SIGNAL"
+    ],
+    "requirements": [
+      "Every learner-facing question has a downstream job.",
+      "Pre/post comparisons use the same construct, task family or explicitly comparable measure.",
+      "Prediction, plan, simulation, observation, outcome, interpretation and transfer remain distinct.",
+      "A reflection is not an observed outcome.",
+      "A completed lesson is not evidence of competency.",
+      "The highest competency progression level is constrained by evidence type, provenance and context."
+    ]
+  },
+  "dailyAcceptanceCriteria": [
+    "Knowledge change: what does the learner understand at minute 45 that was not available at minute 0?",
+    "Capability change: what can the learner now do, explain, test or review?",
+    "Evidence contribution: what traceable item, if any, was created and what can it support?",
+    "Reporting contribution: which report classification may use that evidence and under what boundary?",
+    "Carry-forward dependency: what must happen between this touchpoint and the next?"
+  ],
+  "facilitatorRole": [
+    "Create conditions for discovery rather than read the handbook aloud.",
+    "Surface misconceptions with discriminating questions.",
+    "Name concepts only when the learner has something meaningful to attach them to.",
+    "Protect evidence integrity and separate observation from interpretation.",
+    "Help the learner state uncertainty and limits.",
+    "Use private learner content only within authorised boundaries."
+  ]
+}

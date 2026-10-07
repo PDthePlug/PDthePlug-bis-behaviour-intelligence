@@ -1,0 +1,230 @@
+{
+  "schemaVersion": "external-competency-crosswalk:1",
+  "framework": {
+    "id": "DBE-BECF-2024",
+    "name": "Department of Basic Education · Basic Education Competency Framework",
+    "jurisdiction": "South Africa",
+    "status": "OFFICIAL_FRAMEWORK_REFERENCE",
+    "approvalContext": "DBE describes the framework as approved in 2024 for the national Curriculum Strengthening initiative.",
+    "sourceUrl": "https://www.education.gov.za/LinkClick.aspx?fileticket=oTJuR93ZIeU%3D&mid=14452&portalid=0&tabid=5591",
+    "retrievedAt": "2026-10-07",
+    "sourceBoundary": "This crosswalk references the DBE framework. It does not represent DBE approval, accreditation or certification of Applied Commerce or BIS."
+  },
+  "frameworkAreas": {
+    "knowledge": {
+      "definition": "What learners learn and understand, including declarative, conceptual and procedural knowledge within disciplines."
+    },
+    "skills": {
+      "definition": "How learners apply what they know.",
+      "foundational": [
+        "Literacy",
+        "Numeracy",
+        "Digital literacy"
+      ],
+      "transversal": [
+        "Critical thinking",
+        "Communication",
+        "Creativity",
+        "Collaboration",
+        "Metacognition"
+      ]
+    },
+    "characterAndAttitudes": {
+      "definition": "How learners think, feel and behave.",
+      "areas": [
+        "Resilience",
+        "Adaptability",
+        "Growth Mindset",
+        "Accountability",
+        "Curiosity"
+      ]
+    },
+    "values": {
+      "definition": "What learners consider important; values sit at the centre of the framework.",
+      "explicitlyReferenced": [
+        "Democracy",
+        "Equality",
+        "Social Justice and Equity"
+      ],
+      "note": "The source page refers back to the 2001 Manifesto on Values, Education and Democracy. This file does not infer a complete values taxonomy beyond the items explicitly named in the retrieved framework material."
+    },
+    "crossCuttingPriorities": [
+      "Education for Sustainable Development",
+      "Indigenous Knowledge Systems",
+      "Sustainable Livelihoods"
+    ]
+  },
+  "reportingLanguage": {
+    "allowed": [
+      "Evidence in this programme is mapped to the DBE Basic Education Competency Framework area: <area>.",
+      "The learner demonstrated programme evidence relevant to <area> in the defined task/context.",
+      "The programme creates opportunities to practise and evidence <area>."
+    ],
+    "prohibited": [
+      "The learner is DBE-certified in <area>.",
+      "BIS has officially assessed or certified DBE competency attainment.",
+      "A mapped response proves permanent mastery of a DBE competency."
+    ]
+  },
+  "mappings": [
+    {
+      "competencyId": "AC-C01",
+      "dbeAreas": [
+        "Metacognition",
+        "Growth Mindset"
+      ],
+      "relationship": "SUPPORTING",
+      "rationale": "Self-knowledge and revisable self-understanding support reflection on thinking/learning and openness to development."
+    },
+    {
+      "competencyId": "AC-C02",
+      "dbeAreas": [
+        "Curiosity",
+        "Accountability",
+        "Adaptability",
+        "Growth Mindset"
+      ],
+      "relationship": "DIRECT_SUPPORT",
+      "rationale": "Agency and initiative require purposeful self-direction, responsiveness and willingness to act/learn."
+    },
+    {
+      "competencyId": "AC-C03",
+      "dbeAreas": [
+        "Critical thinking",
+        "Metacognition"
+      ],
+      "relationship": "DIRECT",
+      "rationale": "Evidence evaluation, claim limits, observation and interpretation are direct critical-thinking and metacognitive practices."
+    },
+    {
+      "competencyId": "AC-C04",
+      "dbeAreas": [
+        "Accountability",
+        "Adaptability",
+        "Resilience",
+        "Growth Mindset",
+        "Metacognition"
+      ],
+      "relationship": "DIRECT_SUPPORT",
+      "rationale": "Behaviour change requires self-management, recovery, revision and reflection on one's own process."
+    },
+    {
+      "competencyId": "AC-C05",
+      "dbeAreas": [
+        "Accountability",
+        "Metacognition",
+        "Critical thinking"
+      ],
+      "relationship": "DIRECT_SUPPORT",
+      "rationale": "Planning and prioritisation require deliberate goal management, monitoring and trade-off reasoning."
+    },
+    {
+      "competencyId": "AC-C06",
+      "dbeAreas": [
+        "Critical thinking",
+        "Accountability"
+      ],
+      "relationship": "DIRECT",
+      "rationale": "Decision and judgement require evaluating evidence, alternatives, consequences and responsibility."
+    },
+    {
+      "competencyId": "AC-C07",
+      "dbeAreas": [
+        "Creativity",
+        "Critical thinking",
+        "Communication",
+        "Collaboration",
+        "Sustainable Livelihoods"
+      ],
+      "relationship": "DIRECT_SUPPORT",
+      "rationale": "Value creation and enterprise combine problem solving, idea generation, communication and sustainable economic participation."
+    },
+    {
+      "competencyId": "AC-C08",
+      "dbeAreas": [
+        "Numeracy",
+        "Critical thinking",
+        "Sustainable Livelihoods"
+      ],
+      "relationship": "DIRECT_SUPPORT",
+      "rationale": "Financial capability uses quantitative reasoning, evidence and resource stewardship."
+    },
+    {
+      "competencyId": "AC-C09",
+      "dbeAreas": [
+        "Critical thinking",
+        "Creativity",
+        "Metacognition",
+        "Education for Sustainable Development",
+        "Sustainable Livelihoods"
+      ],
+      "relationship": "DIRECT_SUPPORT",
+      "rationale": "Systems thinking analyses relationships, feedback, leverage and wider consequences."
+    },
+    {
+      "competencyId": "AC-C10",
+      "dbeAreas": [
+        "Resilience",
+        "Adaptability",
+        "Critical thinking",
+        "Accountability"
+      ],
+      "relationship": "DIRECT",
+      "rationale": "Risk, resilience and protection require recovery, responsive planning, judgement and responsibility."
+    },
+    {
+      "competencyId": "AC-C11",
+      "dbeAreas": [
+        "Communication",
+        "Collaboration",
+        "Critical thinking"
+      ],
+      "relationship": "DIRECT",
+      "rationale": "Communication, influence and negotiation require clear expression, listening, interaction and judgement."
+    },
+    {
+      "competencyId": "AC-C12",
+      "dbeAreas": [
+        "Collaboration",
+        "Communication",
+        "Accountability"
+      ],
+      "relationship": "DIRECT",
+      "rationale": "Leadership and ethical responsibility are evidenced through work with others, communication and responsibility for consequences."
+    },
+    {
+      "competencyId": "AC-C13",
+      "dbeAreas": [
+        "Adaptability",
+        "Growth Mindset",
+        "Communication",
+        "Sustainable Livelihoods"
+      ],
+      "relationship": "DIRECT_SUPPORT",
+      "rationale": "Career and life navigation require adjustment, development, professional communication and sustainable pathways."
+    },
+    {
+      "competencyId": "AC-C14",
+      "dbeAreas": [
+        "Critical thinking",
+        "Creativity",
+        "Accountability",
+        "Sustainable Livelihoods"
+      ],
+      "relationship": "SUPPORTING",
+      "rationale": "Long-horizon leverage and legacy reasoning require systems judgement, responsible design and future-oriented economic thinking."
+    },
+    {
+      "competencyId": "AC-C15",
+      "dbeAreas": [
+        "Metacognition",
+        "Adaptability",
+        "Growth Mindset",
+        "Critical thinking"
+      ],
+      "relationship": "DIRECT",
+      "rationale": "Transfer and meta-learning explicitly require reflection on learning, adaptation to new contexts and reasoned revision."
+    }
+  ],
+  "aggregationRule": "Sponsor/cohort reports may aggregate evidence against DBE-mapped areas only after the underlying BIS competency evidence is reportable, privacy thresholds are satisfied and the language remains 'mapped/relevant to' rather than 'certified attainment'."
+}
