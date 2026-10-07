@@ -9,7 +9,9 @@ import type { ComponentProps } from "react";
 // explorer supplies a closed, local example transport; it grants no access.
 const browserRequest: typeof fetch = (...args) => fetch(...args);
 const directHref = (href: string) => href;
-export const PlatformContext = createContext({ request: browserRequest, href: directHref, example: false });
+export type PlatformNavigationGuard = () => Promise<boolean>;
+const ignoreNavigationGuard = (_guard: PlatformNavigationGuard | null): void => undefined;
+export const PlatformContext = createContext({ request: browserRequest, href: directHref, example: false, registerNavigationGuard: ignoreNavigationGuard });
 export const usePlatform = () => useContext(PlatformContext);
 
 export function PlatformLink(props: ComponentProps<typeof NextLink>) {

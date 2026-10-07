@@ -22,7 +22,10 @@ test('sign-in opens a keyboard accessible role explorer and actual learning save
  await expect(page.locator('.learner-document-status')).toHaveText('Your saved responses are up to date');
  await page.reload();
  await expect(response).toHaveValue('I complete one fictional application field before reaching for my phone.');
- await page.getByRole('button',{name:'Evidence Portfolio',exact:true}).click();await expect(page).toHaveURL(/screen=portfolio/);await page.goBack();await expect(response).toHaveValue('I complete one fictional application field before reaching for my phone.');
+ await response.fill('A quick change is saved before switching roles.');
+ await page.getByLabel('Choose your view').selectOption('facilitator');await expect(page.locator('.facilitator-workspace')).toBeVisible();
+ await page.getByLabel('Choose your view').selectOption('learner');await page.getByRole('button',{name:'Learning',exact:true}).click();await map.locator('summary').click();await map.getByRole('button',{name:/Day 1 Concept Studio/}).click();await expect(response).toHaveValue('A quick change is saved before switching roles.');
+ await response.fill('A quick tab change also keeps the response.');await page.getByRole('button',{name:'Evidence Portfolio',exact:true}).click();await expect(page).toHaveURL(/screen=portfolio/);await page.goBack();await expect(response).toHaveValue('A quick tab change also keeps the response.');
  await layout(page);
  await page.screenshot({path:info.outputPath('learning.png'),fullPage:true});verify();
 });

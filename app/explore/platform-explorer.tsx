@@ -3,10 +3,10 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, BookOpen, Users, ChartNoAxesCombined } from "lucide-react";
 import { BisMark } from "@/components/brand/bis-mark";
-import { PlatformContext } from "@/components/platform-context";
+import { PlatformContext, type PlatformNavigationGuard } from "@/components/platform-context";
 import { createExplorationSession, explorationHref, explorationStorageKey } from "@/lib/experience/exploration-session.mjs";
 import { leap9IllustrativeReport } from "@/lib/experience/leap9-report";
 import type { SponsorSnapshot } from "../programme-outcomes-view";
@@ -43,6 +43,8 @@ export function PlatformExplorer({ content }: { content: Content }) {
   const [message, setMessage] = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
   const title = useRef<HTMLHeadingElement>(null);
+  const navigationGuard = useRef<PlatformNavigationGuard | null>(null);
+  const registerNavigationGuard = useCallback((guard: PlatformNavigationGuard | null) => { navigationGuard.current = guard; }, []);
 
   useEffect(() => {
     let history: unknown = [];
@@ -72,9 +74,10 @@ export function PlatformExplorer({ content }: { content: Content }) {
     }
     return response;
   }, [session, role]);
-  const context = useMemo(() => ({ request, href: explorationHref, example: true }), [request]);
+  const context = useMemo(() => ({ request, href: explorationHref, example: true, registerNavigationGuard }), [request, registerNavigationGuard]);
 
-  function navigate(id: Role, target: string) {
+  async function navigate(id: Role, target: string) {
+    if (navigationGuard.current && !await navigationGuard.current()) return;
     router.push(`/explore?role=${id}&${id === "facilitator" ? "section" : "screen"}=${target}`, { scroll: true });
     setMessage(""); setConfirmReset(false);
     requestAnimationFrame(() => title.current?.focus());
@@ -85,6 +88,7 @@ export function PlatformExplorer({ content }: { content: Content }) {
     catch (cause) { setMessage(cause instanceof Error ? cause.message : "That example could not be saved."); return false; }
   }
   function reset() {
+    navigationGuard.current = null;
     try { sessionStorage.removeItem(explorationStorageKey); } catch { /* Reset also clears memory. */ }
     setSession(createExplorationSession(content, leap9IllustrativeReport)); setRevision(value => value + 1); setInExperiment(false); setConfirmReset(false); setMessage("Example restarted.");
     if (role) navigate(role, tabs[role][0][0]);

@@ -314,7 +314,7 @@ export function ProgrammePlayer({
   viewerMode?: ViewerMode;
   facilitatorContext?: FacilitatorContext;
 }) {
-  const { request } = usePlatform();
+  const { request, registerNavigationGuard } = usePlatform();
   const [snapshot, setSnapshot] = useState<LearningSnapshot | null>(null);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const [moduleRuntime, setModuleRuntime] = useState<Runtime | null>(null);
@@ -829,6 +829,12 @@ export function ProgrammePlayer({
     if (success) setError("");
     return success;
   }, [request, mergeSnapshot, programme, readOnlyMode, release]);
+
+  // The example role switcher uses the same save boundary as workbook links.
+  useEffect(() => {
+    registerNavigationGuard(() => completing ? Promise.resolve(false) : saveDirtyResponses());
+    return () => registerNavigationGuard(null);
+  }, [completing, registerNavigationGuard, saveDirtyResponses]);
 
   // Capture document-wide links, including the shared shell outside this player.
   useEffect(() => {
