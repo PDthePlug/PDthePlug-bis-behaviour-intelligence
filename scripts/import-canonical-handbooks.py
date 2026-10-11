@@ -11,7 +11,7 @@ FAMILY=re.compile(r"(?:^|\s)(HABIT|DECISION|MONEY|ATTENTION|TIME|RISK|RESILIENCE
 EDITION=re.compile(r"^\s*(School|Emerging Adult|Workplace)\s+Edition\s*$",re.I)
 SLUGS={"HABIT":"habit","DECISION":"decision","MONEY":"money","ATTENTION":"attention","TIME":"time","RISK":"risk","RESILIENCE":"resilience","PURPOSE":"purpose","INFLUENCE":"influence","LEADERSHIP":"leadership"}
 AUDIENCES={"school":"school","emerging adult":"emerging_adult","workplace":"workplace"}
-def text(p): return "".join(run.text for run in p.runs)
+def text(p): return "".join((el.text or "") if el.tag.endswith("}t") else "\\t" if el.tag.endswith("}tab") else "\\n" if el.tag.endswith(("}br","}cr")) else "" for el in p._p.iter() if el.tag.endswith(("}t","}tab","}br","}cr")) )
 def body(doc):
  for child in doc.element.body.iterchildren():
   if isinstance(child,CT_P): yield "paragraph",Paragraph(child,doc)
