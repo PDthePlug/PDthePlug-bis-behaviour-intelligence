@@ -671,6 +671,7 @@ export function ContentStudio() {
           <p className="eyebrow">Content Studio</p>
           <h1>Choose a BIS title and add the content that is ready.</h1>
           <p>You do not need all three learning editions at once. Upload School, Emerging Adult or Workplace whenever each one is ready. Learners only see an edition after you preview, approve and publish it.</p>
+          <p>BIS keeps the version number for you. Start adding content when you are ready; the source stays editable until you prepare and review it.</p>
         </div>
         <ShieldCheck />
       </section>
@@ -908,7 +909,7 @@ export function ContentStudio() {
                   {actionPreviewHref && actionVersionCanPreview ? (
                     <Button asChild variant="outline">
                       <Link target="_blank" rel="noreferrer" href={actionPreviewHref}>
-                        <Eye /> Preview
+                        <Eye />Preview
                       </Link>
                     </Button>
                   ) : (
@@ -919,8 +920,11 @@ export function ContentStudio() {
                     disabled={saving || !actionVersion || !actionVersionCanPublish}
                     onClick={() => actionVersion && void publishVersion(actionVersion)}
                   >
-                    <PackageCheck />
-                    {offlinePublishedVersion && actionVersion?.id === offlinePublishedVersion.id ? "Republish" : "Publish"}
+                    {offlinePublishedVersion && actionVersion?.id === offlinePublishedVersion.id ? (
+                      <><PackageCheck /> Republish</>
+                    ) : (
+                      <><PackageCheck /> Publish</>
+                    )}
                   </Button>
 
                   {liveVersion ? (
@@ -974,6 +978,7 @@ export function ContentStudio() {
                   const review = uatDraft(entry);
                   const allChecks = CONTENT_UAT_CHECKS.every((check) => review.checklist[check.id] === true);
                   const finalCheckPassed = entry.uat?.status === "PASSED";
+                  const approvedFinalCheck = entry.status === "APPROVED" && finalCheckPassed;
 
                   return (
                     <article className="content-version-card" key={entry.id}>
@@ -1142,7 +1147,7 @@ export function ContentStudio() {
                               <h4>See it exactly as the learner will.</h4>
                               <p>Preview only the editions included in this version. Nothing entered in preview mode is saved to learner records.</p>
                             </div>
-                            <span data-tone={finalCheckPassed ? "good" : "neutral"}>
+                            <span data-tone={finalCheckPassed ? "good" : "neutral"} data-publish-gate={approvedFinalCheck ? "open" : "closed"}>
                               {finalCheckPassed ? <><Check /> Complete</> : <><ClipboardCheck /> To do</>}
                             </span>
                           </header>
@@ -1225,7 +1230,7 @@ export function ContentStudio() {
                               ? "Content processed. Preview it before publishing."
                               : "Lab processed. Preview it before publishing.",
                           )}>
-                            <RefreshCw /> {entry.compilerStatus === "COMPILED" ? "Process again" : "Process content"}
+                            <RefreshCw /> {staleCompilation ? "Prepare again" : entry.compilerStatus === "COMPILED" ? "Process again" : "Process content"}
                           </Button>
                         ) : null}
                         {["VALIDATED", "APPROVED"].includes(entry.status) ? (
