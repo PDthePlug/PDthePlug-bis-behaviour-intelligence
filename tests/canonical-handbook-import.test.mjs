@@ -11,6 +11,11 @@ if (!names.includes("manifest.json")) {
   const manifest = JSON.parse(await readFile(new URL("manifest.json", dir), "utf8"));
   test("manifest records immutable source provenance and all discovered editions", () => {
     assert.equal(manifest.source.preserved, true);
+    assert.equal(manifest.source.sha256, "1bfd88d11bf90ebbe3b7f40321740904e8a8065d3e5294978ffd8a2cbb2b356e");
+    assert.equal(manifest.editionCount, 30, "review source boundary changes rather than silently changing the catalogue");
+    assert.equal(manifest.editions.filter(e => e.sourceHeadingType === "malformed-prefix").length, 1);
+    assert.equal(manifest.editions.filter(e => e.family === "TIME").length, 4, "retain the duplicate/malformed Time boundary as source evidence");
+    assert.equal(manifest.editions.filter(e => e.family === "RISK").length, 2, "do not invent a missing Risk Workplace edition");
     assert.match(manifest.source.sha256, /^[a-f0-9]{64}$/);
     assert.equal(manifest.editionCount, manifest.editions.length);
     assert.equal(new Set(manifest.editions.map(e => `${e.family}:${e.audience}:${e.ordinalInFamily}`)).size, manifest.editions.length);
