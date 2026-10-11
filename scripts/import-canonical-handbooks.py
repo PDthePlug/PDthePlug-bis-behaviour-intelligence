@@ -25,7 +25,7 @@ def main():
  starts=[]
  for i,n in enumerate(nodes):
   if n["type"]=="paragraph":
-   m=FAMILY.match(n["text"])
+   m=FAMILY.search(n["text"])
    if m: starts.append((i,m.group(1),n["text"],"standard" if n["text"].strip()==m.group(1)+" LAB™" else "malformed-prefix"))
  if not starts: raise SystemExit("No handbook edition starts detected; no output written.")
  a.out.mkdir(parents=True,exist_ok=True);editions=[];source_copy=a.out/source.name;source_copy.write_bytes(raw)
