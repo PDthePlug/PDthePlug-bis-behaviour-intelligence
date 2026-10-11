@@ -945,7 +945,7 @@ export function ContentStudio() {
                     {actionVersion.status === "DRAFT"
                       ? "Prepare this update before previewing or publishing."
                       : actionVersion.uat?.status !== "PASSED"
-                        ? "Preview it and complete the final check before publishing."
+                        ? "Preview and complete the final check first, before publishing."
                         : actionVersion.runtimeStatus !== "READY" && actionVersion.runtimeStatus !== "LIVE"
                           ? "This version still needs preparation before it can go live."
                           : actionVersion.runtimeStatus === "LIVE"
