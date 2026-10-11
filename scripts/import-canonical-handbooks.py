@@ -28,7 +28,7 @@ def main():
    m=FAMILY.match(n["text"])
    if m: starts.append((i,m.group(1),n["text"],"standard" if n["text"].strip()==m.group(1)+" LAB™" else "malformed-prefix"))
  if not starts: raise SystemExit("No handbook edition starts detected; no output written.")
- a.out.mkdir(parents=True,exist_ok=True);editions=[]
+ a.out.mkdir(parents=True,exist_ok=True);editions=[];source_copy=a.out/source.name;source_copy.write_bytes(raw)
  for pos,(start,family,title,heading_type) in enumerate(starts):
   end=starts[pos+1][0] if pos+1<len(starts) else len(nodes);section=nodes[start:end];audience="unresolved"
   for n in section[:8]:
@@ -39,7 +39,7 @@ def main():
   pkg={"schemaVersion":"canonical-handbook/1","source":{"filename":source.name,"sha256":digest,"authority":"supplied-original-docx"},"edition":{"family":family,"slug":SLUGS[family],"audience":audience,"title":title,"ordinalInFamily":ordinal,"sourceHeadingType":heading_type},"blocks":section}
   (a.out/filename).write_text(json.dumps(pkg,ensure_ascii=False,separators=(",",":"))+"\n",encoding="utf-8")
   editions.append({"family":family,"slug":SLUGS[family],"audience":audience,"title":title,"ordinalInFamily":ordinal,"sourceHeadingType":heading_type,"asset":filename,"blockCount":len(section),"sourceStartBlock":start+1,"sourceEndBlock":end,"sourceSha256":digest})
- manifest={"schemaVersion":"canonical-handbook-manifest/1","source":{"filename":source.name,"bytes":len(raw),"sha256":digest,"preserved":True},"sourceBodyBlockCount":len(nodes),"editionCount":len(editions),"families":sorted(set(e["family"] for e in editions)),"audiences":sorted(set(e["audience"] for e in editions)),"editions":editions,"editorialFlags":["Unknown audience labels remain unresolved; do not infer them.","A heading with a nonstandard prefix is preserved and flagged, not silently corrected.","The original DOCX is never modified.","Word body order, paragraph text, table order and table-cell paragraph text are serialized without editorial rewriting.","Style/spacing cleanup belongs to the renderer; source content remains separate."]}
+ manifest={"schemaVersion":"canonical-handbook-manifest/1","source":{"filename":source.name,"bytes":len(raw),"sha256":digest,"preserved":True,"downloadAsset":source.name},"sourceBodyBlockCount":len(nodes),"editionCount":len(editions),"families":sorted(set(e["family"] for e in editions)),"audiences":sorted(set(e["audience"] for e in editions)),"editions":editions,"editorialFlags":["Unknown audience labels remain unresolved; do not infer them.","A heading with a nonstandard prefix is preserved and flagged, not silently corrected.","The original DOCX is never modified.","Word body order, paragraph text, table order and table-cell paragraph text are serialized without editorial rewriting.","Style/spacing cleanup belongs to the renderer; source content remains separate."]}
  (a.out/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
  print(json.dumps({"source":source.name,"sha256":digest,"bodyBlocks":len(nodes),"editionCount":len(editions),"families":manifest["families"],"audienceCounts":{x:sum(e["audience"]==x for e in editions) for x in manifest["audiences"]},"unresolvedAudienceCount":sum(e["audience"]=="unresolved" for e in editions)},ensure_ascii=False,indent=2))
 if __name__=="__main__": main()
