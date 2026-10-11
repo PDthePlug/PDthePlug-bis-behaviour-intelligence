@@ -1,5 +1,5 @@
-import "../../canonical-shell.css";
-import "../../learner-readability.css";
+import "../canonical-shell.css";
+import "../learner-readability.css";
 import "../learning/handbook-presentation.css";
 import "./universal-handbooks.css";
 
