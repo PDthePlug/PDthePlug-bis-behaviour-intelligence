@@ -59,6 +59,12 @@ function parseJson(value: string | null | undefined, fallback: unknown) {
   }
 }
 
+function canSeedFromPublishedVersion(version: { status: string; runtimeStatus: string | null }) {
+  const offlinePublished = version.status === "PUBLISHED" && version.runtimeStatus === "READY";
+  const livePublished = version.status === "PUBLISHED" && version.runtimeStatus === "LIVE";
+  return offlinePublished || livePublished;
+}
+
 function compilerIsCurrent(version: { compilerStatus?: string | null; compilerVersion?: string | null }) {
   return version.compilerStatus === "COMPILED" && version.compilerVersion === CONTENT_COMPILER_VERSION;
 }
@@ -257,8 +263,8 @@ async function postHandler(request: Request) {
         [sourceVersion] = await db.select().from(contentLibraryVersions)
           .where(and(eq(contentLibraryVersions.id, copyFromVersionId), eq(contentLibraryVersions.itemId, itemId)))
           .limit(1);
-        if (!sourceVersion || sourceVersion.status !== "PUBLISHED") {
-          throw new Error("Choose the currently published version to start an editable update.");
+        if (!sourceVersion || !canSeedFromPublishedVersion(sourceVersion)) {
+          throw new Error("Choose a published version, live or offline, to start an editable update.");
         }
       }
       const id = `${itemId}:${version}`;
