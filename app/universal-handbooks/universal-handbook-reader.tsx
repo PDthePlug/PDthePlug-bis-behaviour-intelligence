@@ -7,15 +7,17 @@ type Edition = { family:string; slug:string; audience:string; title:string; ordi
 type Manifest = { source:{filename:string;bytes:number;sha256:string;downloadAsset?:string}; editions:Edition[] };
 type Block = { id:string; type:"paragraph"|"table"; text?:string; style?:string|null; rows?:string[][][] };
 type Package = { edition:{family:string;audience:string;title:string;sourceHeadingType?:string}; blocks:Block[]; source:{sha256:string} };
+type RequestState = {key:string;status:"loading"}|{key:string;status:"ready";pkg:Package}|{key:string;status:"error";message:string};
 function audienceLabel(v:string){return v==="emerging_adult"?"Emerging Adult":v==="school"?"School":v==="workplace"?"Workplace":"Audience under review"}
 function sectionLabel(b:Block){const t=(b.text||"").trim();if(t.startsWith("---"))return t.replace(/^-+/,"").trim()||"Section";if(/^heading\s*\d/i.test(b.style||""))return t;if(/^(welcome|how to use this book|your 10-day map|before you begin|day\s*\d+[a-z]?(?:\s*[-—:].*)?|weekend|certificate|closing reflection)$/i.test(t))return t;return ""}
 export function UniversalHandbookReader({manifest}:{manifest:Manifest}){
  const [selectedKey,setSelectedKey]=useState(manifest.editions[0]?.asset||"");
- const [pkg,setPkg]=useState<Package|null>(null);const [loading,setLoading]=useState(false);const [error,setError]=useState("");const [navOpen,setNavOpen]=useState(false);
- const selected=manifest.editions.find(x=>x.asset===selectedKey)||manifest.editions[0];
- useEffect(()=>{if(!selected)return;const ctl=new AbortController();setLoading(true);setError("");setPkg(null);
- fetch("/handbooks/canonical/"+encodeURIComponent(selected.asset),{signal:ctl.signal,cache:"no-store"}).then(async r=>{if(!r.ok)throw new Error("This source package is not available yet. Re-run the canonical importer and rebuild.");return await r.json() as Package}).then(setPkg).catch(e=>{if(!ctl.signal.aborted)setError(e instanceof Error?e.message:"The handbook could not be opened.")}).finally(()=>{if(!ctl.signal.aborted)setLoading(false)});
- return ()=>ctl.abort()},[selectedKey,selected?.asset]);
+ const [request,setRequest]=useState<RequestState>({key:"",status:"loading"});const [navOpen,setNavOpen]=useState(false);
+ const selected=manifest.editions.find(x=>x.asset===selectedKey)||manifest.editions[0];const selectedAsset=selected?.asset||"";
+ useEffect(()=>{if(!selectedAsset)return;const ctl=new AbortController();
+ fetch("/handbooks/canonical/"+encodeURIComponent(selectedAsset),{signal:ctl.signal,cache:"no-store"}).then(async r=>{if(!r.ok)throw new Error("This source package is not available yet. Re-run the canonical importer and rebuild.");return await r.json() as Package}).then(value=>setRequest({key:selectedAsset,status:"ready",pkg:value})).catch(e=>{if(!ctl.signal.aborted)setRequest({key:selectedAsset,status:"error",message:e instanceof Error?e.message:"The handbook could not be opened."})});
+ return ()=>ctl.abort()},[selectedAsset]);
+ const currentRequest=request.key===selectedAsset?request:null;const pkg=currentRequest?.status==="ready"?currentRequest.pkg:null;const loading=!currentRequest||currentRequest.status==="loading";const error=currentRequest?.status==="error"?currentRequest.message:"";
  const sections=useMemo(()=> (pkg?.blocks||[]).map((block,index)=>({block,index,label:sectionLabel(block)})).filter(x=>x.label),[pkg]);
  function goTo(id:string){document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setNavOpen(false)}
  return <div className="canonical-shell universal-handbook">
