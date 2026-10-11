@@ -147,3 +147,23 @@ Still required:
 4. resolve the 18 unrendered source editions and the unmatched Identity package provenance;
 5. capture and inspect real player pages at desktop and mobile widths, including long passages, wide tables, Day 3 A/B, confidentiality reminders, response fields, navigation, focus states, and original-source access;
 6. rerun the package integrity tests and verify the final rendered payload after any changes.
+
+
+## Architecture clarification — canonical replacement editions
+
+**Updated decision from content owner, 2026-10-11:** The supplied Volume 1–3 handbook editions are the intended new working/final content sources for a new Universal Handbook Player. They are **not expected to match** the current Habit, Decision, Money, Identity, Attention, or other legacy player editions. The legacy players are to be retired after the universal player has been validated.
+
+Consequently, earlier checks that treat absent legacy topic packages or differences from legacy player text as failures of the new edition are superseded. Do not use the old player catalogue as the canonical source or require new editions to reproduce its text. Legacy implementations may be consulted only to identify reusable interaction patterns, accessibility behavior, or presentation components.
+
+### Correct quality gate
+
+1. Preserve each supplied original manuscript byte for byte as the canonical source artifact, with verified checksum and edition provenance.
+2. Build a source-derived content inventory for every edition in the three volumes. Record source order, heading/section boundaries, tables, prompts, instructions, activities, measures, examples, response spaces, confidentiality text, and end matter. Do not silently correct editorial anomalies; flag them for review.
+3. Compare the extracted structured content against the universal player's rendered output for **the same source edition**, not against legacy player packages. Report omissions, duplications, reordering, and materially changed wording/meaning with source locations and player locations.
+4. Apply the established BIS presentation system consistently: improve hierarchy, typography, spacing, table responsiveness, navigation, and accessibility without changing content meaning.
+5. Run real desktop and mobile browser checks on the universal player: navigation, long passages, tables, inputs, keyboard focus, overflow, responsive stacking, and access to the original source file.
+6. Retire legacy players only after all intended editions are present, source-to-render comparisons pass, and responsive/accessibility checks pass.
+
+The existing candidate mappings to legacy package IDs and the earlier 10-family-versus-5-family comparison are retained as historical audit notes only; they are **not** acceptance criteria for the universal handbook player.
+
+**Current status:** Architecture direction clarified; implementation and same-source rendered-output verification remain to be completed. The supplied Volume 1 DOCX has been checksum-verified in the working session but has not yet been confirmed committed to `content/sources/handbooks/volume-1.docx`.
