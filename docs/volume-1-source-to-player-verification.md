@@ -89,3 +89,61 @@ This order is the player's importer contract. It must be checked against each au
 4. For every in-scope edition, compare extracted source blocks with the compiled player payload in order. Report missing, duplicated, reordered, and materially changed text separately from intentional presentation transformations.
 5. Inspect representative and edge-case rendered sections at mobile and desktop widths, including long text, tables, prompts, scoring instruments, accessibility/keyboard flow, and the original-file link.
 6. Pass only when content checks are complete and every presentation difference is documented as meaning-preserving. Keep the original source binary unchanged.
+
+
+## Edition-to-player mapping pass — 2026-10-11
+
+This pass mapped the editions that can be matched by both topic and audience label. This is a **candidate mapping**, not proof of text equivalence.
+
+| Source handbook family | School source → player package | Emerging Adult source → player package | Workplace source → player package | Mapping status |
+|---|---|---|---|---|
+| Habit (HAB-LM-1.0-S / EA / WK) | `HAB / school`, v1.4 | `HAB / emerging_adult`, v1.4 | `HAB / workplace`, v1.4 | Candidate match; text-level diff pending |
+| Decision (DEC-LM-1.0-S / EA / WK) | `DEC / school`, v1.7 | `DEC / emerging_adult`, v1.7 | `DEC / workplace`, v1.7 | Candidate match; text-level diff pending |
+| Money (MON-LM-1.0-S / EA / WK) | `MON / school`, v1.2 | `MON / emerging_adult`, v1.2 | `MON / workplace`, v1.2 | Candidate match; text-level diff pending |
+| Attention (ATT-LM-1.0-S / EA / WK) | `ATT / school`, v1.0 | `ATT / emerging_adult`, v1.0 | `ATT / workplace`, v1.0 | Candidate match; text-level diff pending |
+| Identity | No matching Identity family found in the supplied manuscript edition-start inventory | No matching source edition | No matching source edition | Unmatched player content; source provenance required |
+| Time, Risk, Resilience, Purpose, Influence, Leadership | No current package for these families | No current package | No current package | Source editions have no current rendered counterpart |
+
+**Mapped candidates: 12 of the 30 source editions.** The remaining 18 source editions across six families do not have corresponding packages in the current 15-package player manifest. The three Identity packages have no matching source edition in this supplied manuscript. Do not infer that Identity is equivalent to another family.
+
+### Section-structure comparison
+
+The supplied source editions visibly contain distinct authored sections such as Welcome, How to Use This Book, Your 10-Day Map, Before You Begin, Day 1 through Day 10, split Day 3 parts, Weekend, certificate, and reminder/confidentiality material. Some editions include audience-specific confidentiality text and variations in the daily section labels. The player importer tests require 13 pages with a stable shell sequence from Welcome to Certificate. Therefore, comparing only page count or top-level page labels is insufficient: split day parts, map content, reminders, and within-page authored order must be compared inside the page HTML.
+
+**Not yet verified:** missing/duplicated/reordered/materially changed passage counts for the 12 candidate mappings. The player payloads are stored as base64-encoded gzip JSON. The repository exposes the payloads and an importer test that validates package integrity, page count, unique field IDs, and selected Habit handoff markers, but those checks are not a source-to-DOCX textual equivalence test. The supplied raw DOCX is not yet present in the repository at `content/sources/handbooks/volume-1.docx`, and the player manifest identifies a separate HTML source hash. As a result, this pass cannot honestly report a complete line/block diff.
+
+## Desktop and mobile presentation review
+
+### Static implementation review
+
+The player styles define responsive breakpoints at 900px and 700px (plus a 620px handoff adjustment). The shared handbook presentation stylesheet includes:
+- readable document typography (16px body text, 1.75 line height);
+- responsive heading sizes and scroll offsets for the fixed header;
+- mobile document padding and table-cell padding changes at 700px;
+- scroll wrappers / minimum-width handling for wide response tables;
+- visible focus outlines for inputs, textareas, selects, summaries, and table scrollers;
+- larger minimum input heights and responsive stacking for selected content structures.
+
+These are positive implementation signals, but CSS inspection alone cannot establish that actual content renders without clipping, horizontal overflow, awkward page breaks, missing sections, or broken interaction at real viewport sizes.
+
+### Browser visual checks
+
+**Not run / not passed.** The available browser screenshot/DOM audit path was unavailable in this session, and the authenticated handbook route cannot be certified from static repository files alone. No claim is made that live desktop or mobile screenshots have been inspected. The preview-only QA route in `app/qa-handbooks/page.tsx` is explicitly gated to Vercel preview and does not run in production.
+
+## Current gate decision
+
+**FAIL / BLOCKED — no source-to-player equivalence sign-off.**
+
+Completed in this pass:
+- enumerated 30 source edition starts across 10 handbook families;
+- mapped 12 topic/audience candidates to current package IDs and versions;
+- identified 18 source editions without player packages and 3 Identity packages without a matching source edition in this manuscript;
+- reviewed responsive stylesheet rules and the existing importer integrity test contract.
+
+Still required:
+1. place the exact source binary in the repository and reconcile it with the source hash currently referenced by the player manifest;
+2. run a deterministic text/block diff for each of the 12 candidate mappings, with source block IDs/locations and player page/field IDs;
+3. report exact missing, duplicate, reordered, and materially changed passages separately, including audience-specific variants;
+4. resolve the 18 unrendered source editions and the unmatched Identity package provenance;
+5. capture and inspect real player pages at desktop and mobile widths, including long passages, wide tables, Day 3 A/B, confidentiality reminders, response fields, navigation, focus states, and original-source access;
+6. rerun the package integrity tests and verify the final rendered payload after any changes.
