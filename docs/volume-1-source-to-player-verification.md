@@ -22,14 +22,14 @@ These hashes are not interchangeable. Do not treat the current player payload as
 
 ## Manuscript coverage inventory
 
-The supplied DOCX contains 30 edition starts across these 10 named handbook families:
+The supplied DOCX has 30 detected LAB™ heading boundaries across these 10 named handbook families. The boundaries do not currently form a clean 10 × 3 catalogue: Time has four boundaries (one malformed Workplace heading), while Risk has only two recognizable edition starts.
 
 - Habit — School, Emerging Adult, Workplace
 - Decision — School, Emerging Adult, Workplace
 - Money — School, Emerging Adult, Workplace
 - Attention — School, Emerging Adult, Workplace
-- Time — School, Emerging Adult, Workplace
-- Risk — School, Emerging Adult, Workplace
+- Time — School, Emerging Adult, Workplace, plus a second malformed-prefix Workplace boundary
+- Risk — School and Emerging Adult; no clearly titled Workplace boundary was detected
 - Resilience — School, Emerging Adult, Workplace
 - Purpose — School, Emerging Adult, Workplace
 - Influence — School, Emerging Adult, Workplace
@@ -110,7 +110,7 @@ This pass mapped the editions that can be matched by both topic and audience lab
 
 The supplied source editions visibly contain distinct authored sections such as Welcome, How to Use This Book, Your 10-Day Map, Before You Begin, Day 1 through Day 10, split Day 3 parts, Weekend, certificate, and reminder/confidentiality material. Some editions include audience-specific confidentiality text and variations in the daily section labels. The player importer tests require 13 pages with a stable shell sequence from Welcome to Certificate. Therefore, comparing only page count or top-level page labels is insufficient: split day parts, map content, reminders, and within-page authored order must be compared inside the page HTML.
 
-**Not yet verified:** missing/duplicated/reordered/materially changed passage counts for the 12 candidate mappings. The player payloads are stored as base64-encoded gzip JSON. The repository exposes the payloads and an importer test that validates package integrity, page count, unique field IDs, and selected Habit handoff markers, but those checks are not a source-to-DOCX textual equivalence test. The supplied raw DOCX is not yet present in the repository at `content/sources/handbooks/volume-1.docx`, and the player manifest identifies a separate HTML source hash. As a result, this pass cannot honestly report a complete line/block diff.
+**Not yet verified:** missing/duplicated/reordered/materially changed passage counts for the 12 candidate mappings. The player payloads are stored as base64-encoded gzip JSON. The repository exposes the payloads and an importer test that validates package integrity, page count, unique field IDs, and selected Habit handoff markers, but those checks are not a source-to-DOCX textual equivalence test. The supplied raw DOCX is not yet present in the repository at `content/sources/handbooks/volume-1.docx`, and the player manifest identifies a separate HTML source hash. A source-preserving DOCX importer has been added, but it has not yet been executed in repository CI because the original binary is not committed. As a result, this pass cannot honestly report a complete line/block diff.
 
 ## Desktop and mobile presentation review
 
