@@ -7,7 +7,7 @@ from docx.oxml.text.paragraph import CT_P
 from docx.oxml.table import CT_Tbl
 from docx.text.paragraph import Paragraph
 from docx.table import Table
-FAMILY=re.compile(r"^\s*(HABIT|DECISION|MONEY|ATTENTION|TIME|RISK|RESILIENCE|PURPOSE|INFLUENCE|LEADERSHIP)\s+LAB(?:™|\\b)",re.I)
+FAMILY=re.compile(r"^\s*(HABIT|DECISION|MONEY|ATTENTION|TIME|RISK|RESILIENCE|PURPOSE|INFLUENCE|LEADERSHIP)\s+LAB(?:™|\b)",re.I)
 EDITION=re.compile(r"^\s*(School|Emerging Adult|Workplace)\s+Edition\s*$",re.I)
 SLUGS={"HABIT":"habit","DECISION":"decision","MONEY":"money","ATTENTION":"attention","TIME":"time","RISK":"risk","RESILIENCE":"resilience","PURPOSE":"purpose","INFLUENCE":"influence","LEADERSHIP":"leadership"}
 AUDIENCES={"school":"school","emerging adult":"emerging_adult","workplace":"workplace"}
