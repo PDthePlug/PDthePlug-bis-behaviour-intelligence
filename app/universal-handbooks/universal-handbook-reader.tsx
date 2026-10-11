@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { ArrowLeft, BookOpen, ChevronRight, Download, ListTree, Menu, X } from "lucide-react";
 
 type Edition = { family:string; slug:string; audience:string; title:string; ordinalInFamily:number; sourceHeadingType?:string; asset:string; blockCount:number; sourceStartBlock:number; sourceEndBlock:number };
@@ -18,7 +19,7 @@ export function UniversalHandbookReader({manifest}:{manifest:Manifest}){
  const sections=useMemo(()=> (pkg?.blocks||[]).map((block,index)=>({block,index,label:sectionLabel(block)})).filter(x=>x.label),[pkg]);
  function goTo(id:string){document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setNavOpen(false)}
  return <div className="canonical-shell universal-handbook">
- <header className="uh-topbar"><a href="/learning" className="uh-back"><ArrowLeft size={16}/> Learning library</a><div className="uh-brand"><span><BookOpen size={17}/></span><div><strong>Universal Handbook Player</strong><small>Canonical manuscript reader</small></div></div><a className="uh-original" href={manifest.source.downloadAsset?"/handbooks/canonical/"+encodeURIComponent(manifest.source.downloadAsset):"#source-unavailable"} download><Download size={15}/> Original DOCX</a></header>
+ <header className="uh-topbar"><Link href="/learning" className="uh-back"><ArrowLeft size={16}/> Learning library</Link><div className="uh-brand"><span><BookOpen size={17}/></span><div><strong>Universal Handbook Player</strong><small>Canonical manuscript reader</small></div></div><a className="uh-original" href={manifest.source.downloadAsset?"/handbooks/canonical/"+encodeURIComponent(manifest.source.downloadAsset):"#source-unavailable"} download><Download size={15}/> Original DOCX</a></header>
  <main className="uh-main"><section className="uh-intro"><p className="uh-eyebrow">BEHAVIOUR INTELLIGENCE SERIES · VOLUME 1</p><h1>One reader. Every handbook.</h1><p>Rendered from the supplied manuscript. Typography and layout may improve readability; the source wording and sequence remain the authority.</p><div className="uh-source-meta"><span>Source SHA-256</span><code>{manifest.source.sha256}</code></div></section>
  <section className="uh-picker"><label htmlFor="uh-edition">Handbook edition</label><select id="uh-edition" value={selectedKey} onChange={e=>setSelectedKey(e.target.value)}>{manifest.editions.map(item=><option key={item.asset} value={item.asset}>{item.family+" · "+audienceLabel(item.audience)+(item.ordinalInFamily>1?" · source occurrence "+item.ordinalInFamily:"")}</option>)}</select>{selected&&<p>{selected.title}<span> · {selected.blockCount.toLocaleString()} source blocks</span></p>}</section>
  {selected?.sourceHeadingType==="malformed-prefix"&&<p className="uh-warning" role="note">Source heading needs editorial review. Its original text is retained below; the reader has not corrected it.</p>}
