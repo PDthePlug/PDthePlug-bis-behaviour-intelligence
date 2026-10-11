@@ -8,7 +8,7 @@ type Manifest = { source:{filename:string;bytes:number;sha256:string;downloadAss
 
 export default async function UniversalHandbooksPage() {
  let manifest:Manifest|null=null;
- try { manifest=JSON.parse(await readFile(path.join(process.cwd(),"public/handbooks/canonical/manifest.json"),"utf8")) as Manifest; } catch {}
+ try { manifest=JSON.parse(await readFile(path.join(process.cwd(),"public/handbooks/canonical/manifest.json"),"utf8")) as Manifest; } catch { /* Keep the source gate visible until canonical packages exist. */ }
  if(!manifest) return <main className="uh-gate"><p className="uh-eyebrow">BIS · SOURCE GATE</p><h1>Universal Handbook Player</h1><p>The reader shell is in place, but canonical source packages have not been generated in this deployment.</p><ol><li>Make the byte-identical supplied manuscript available to the source workspace.</li><li>Run the canonical DOCX importer to generate packages and the manifest.</li><li>Resolve source-boundary anomalies with the content owner, then run source-to-rendered checks.</li></ol><p>Legacy handbook packages are deliberately not used as a substitute.</p></main>;
  return <UniversalHandbookReader manifest={manifest}/>;
 }
