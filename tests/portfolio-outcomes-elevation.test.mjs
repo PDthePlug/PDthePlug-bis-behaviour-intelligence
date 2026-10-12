@@ -83,5 +83,5 @@ test("programme findings describe privacy-safe progression, not just current cou
   assert.ok(development);
   assert.match(development.title, /development and progression/i);
   assert.match(development.observation, /4 learners.*later mapped evidence supporting a higher defined stage/i);
-  assert.match(development.boundary, /not a claim that the programme caused change/i);
+  assert.match(development.boundary, /does not claim that the programme caused change/i);
 });
