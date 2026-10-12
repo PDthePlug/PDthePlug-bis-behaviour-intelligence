@@ -20,29 +20,34 @@ export function FacilitatorLearnerDevelopment({
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
-    setError("");
-    setProfile(null);
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      setError("");
+      setProfile(null);
 
-    void fetch(`/api/facilitator-development?cohortId=${encodeURIComponent(cohortId)}&learnerId=${encodeURIComponent(learnerId)}`, {
-      signal: controller.signal,
-      cache: "no-store",
-      credentials: "same-origin",
-    })
-      .then(async (response) => {
-        const body = await response.json() as { profile?: LearnerDevelopmentProfile; error?: string };
-        if (!response.ok || !body.profile) throw new Error(body.error ?? "Development snapshot unavailable");
-        setProfile(body.profile);
+      void fetch(`/api/facilitator-development?cohortId=${encodeURIComponent(cohortId)}&learnerId=${encodeURIComponent(learnerId)}`, {
+        signal: controller.signal,
+        cache: "no-store",
+        credentials: "same-origin",
       })
-      .catch((reason: unknown) => {
-        if (controller.signal.aborted) return;
-        setError(reason instanceof Error ? reason.message : "Development snapshot unavailable");
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
+        .then(async (response) => {
+          const body = await response.json() as { profile?: LearnerDevelopmentProfile; error?: string };
+          if (!response.ok || !body.profile) throw new Error(body.error ?? "Development snapshot unavailable");
+          setProfile(body.profile);
+        })
+        .catch((reason: unknown) => {
+          if (controller.signal.aborted) return;
+          setError(reason instanceof Error ? reason.message : "Development snapshot unavailable");
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setLoading(false);
+        });
+    }, 0);
 
-    return () => controller.abort();
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }, [cohortId, learnerId]);
 
   if (loading) {
