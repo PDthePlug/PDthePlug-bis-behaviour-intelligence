@@ -58,13 +58,16 @@ export function FirstLookClient() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(contextStorageKey);
-      if (isAudienceContext(stored)) setSelected(stored);
-    } catch {
-      // The gateway still works when browser storage is unavailable.
-    }
-    setReady(true);
+    const frame = requestAnimationFrame(() => {
+      try {
+        const stored = sessionStorage.getItem(contextStorageKey);
+        if (isAudienceContext(stored)) setSelected(stored);
+      } catch {
+        // The gateway still works when browser storage is unavailable.
+      }
+      setReady(true);
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   function choose(context: AudienceContext) {
