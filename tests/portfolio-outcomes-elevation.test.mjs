@@ -16,12 +16,17 @@ test("individual development projection is facilitator-only and excludes private
   const access = between(
     migration,
     "create or replace function private.can_view_facilitator_learner_development",
-    "create or replace function public.bis_facilitator_learner_development_evidence",
+    "create or replace function private.bis_facilitator_learner_development_evidence",
   );
   const projection = between(
     migration,
+    "create or replace function private.bis_facilitator_learner_development_evidence",
     "create or replace function public.bis_facilitator_learner_development_evidence",
-    "-- Replace the existing aggregate competency summary",
+  );
+  const publicWrapper = between(
+    migration,
+    "create or replace function public.bis_facilitator_learner_development_evidence",
+    "-- Extend the existing private aggregate competency implementation",
   );
 
   assert.match(access, /r\.role = 'FACILITATOR'/);
@@ -30,6 +35,17 @@ test("individual development projection is facilitator-only and excludes private
   assert.doesNotMatch(projection, /'value'\s*,\s*e\.value|e\.value\s+as/);
   assert.doesNotMatch(projection, /(?:from|join)\s+(?:public\.)?(?:companion_turns|memory_items|hypotheses|experiment_events)\b/i);
   assert.match(projection, /Response wording, reflections, hypotheses, experiment notes, Companion content and P3 evidence are excluded/);
+  assert.match(publicWrapper, /language sql/);
+  assert.doesNotMatch(publicWrapper, /security definer/i);
+  assert.match(publicWrapper, /select private\.bis_facilitator_learner_development_evidence/);
+});
+
+test("aggregate progression preserves the existing private implementation boundary and stays evidence-conservative", () => {
+  const aggregate = migration.slice(migration.indexOf("create or replace function private.bis_cohort_competency_summary"));
+  assert.doesNotMatch(migration, /create or replace function public\.bis_cohort_competency_summary/);
+  assert.match(aggregate, /when lm\.evidence_class in \('PLAN','OBSERVATION','OUTCOME'\) then 3/);
+  assert.doesNotMatch(aggregate, /when lm\.evidence_class = 'OUTCOME' then 4/);
+  assert.match(aggregate, /participantsWithRecordedProgression/);
 });
 
 test("facilitator API builds the same governed development model without widening roles", () => {
