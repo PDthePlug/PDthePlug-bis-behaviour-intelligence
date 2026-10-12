@@ -77,7 +77,7 @@ test('First Look report is neutral, aggregate-only and non-indexable', async ({ 
     for (const item of items) expect(item.transform[4] + item.width).toBeLessThanOrEqual(548);
     text += body;
   }
-  expect(text).toContain('Your organisation');
+  expect(text).toContain('BIS First Look');
   expect(text).toContain('5 of 12 participants');
   expect(text).not.toMatch(/DGMT|Leap9|Naledi|PRIVATE_FICTIONAL|REVISED_PRIVATE/);
   await pdf.cleanup();
