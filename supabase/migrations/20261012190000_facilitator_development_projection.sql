@@ -288,9 +288,7 @@ begin
       lm.competency,
       lm.evidence_class,
       case
-        when lm.evidence_class = 'TRANSFER' then 5
-        when lm.evidence_class = 'OUTCOME' then 4
-        when lm.evidence_class in ('PLAN','OBSERVATION') then 3
+        when lm.evidence_class in ('PLAN','OBSERVATION','OUTCOME') then 3
         when lm.evidence_class in ('LEARNING_CHECK','INTERPRETATION') then 2
         when lm.evidence_class in ('BASELINE','CONTEXT') then 1
         else 0
@@ -316,8 +314,7 @@ begin
       competency,
       bool_or(evidence_class = 'TRANSFER') as has_transfer,
       bool_or(evidence_class <> 'TRANSFER') as has_non_transfer,
-      bool_or(evidence_class = 'OUTCOME') as has_revise,
-      bool_or(evidence_class in ('PLAN','OBSERVATION')) as has_apply,
+      bool_or(evidence_class in ('PLAN','OBSERVATION','OUTCOME')) as has_apply,
       bool_or(evidence_class in ('LEARNING_CHECK','INTERPRETATION')) as has_explain,
       bool_or(evidence_class in ('BASELINE','CONTEXT','OBSERVATION','LEARNING_CHECK')) as has_notice
     from eligible
@@ -329,7 +326,6 @@ begin
       competency,
       case
         when has_transfer and has_non_transfer then 5
-        when has_revise then 4
         when has_apply then 3
         when has_explain then 2
         when has_notice then 1
