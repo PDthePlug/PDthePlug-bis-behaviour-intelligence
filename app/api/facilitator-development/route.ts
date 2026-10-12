@@ -2,6 +2,7 @@ import { withSupabaseRequest } from "@/db";
 import { customerSafeErrorResponse } from "@/lib/api-error-response";
 import { getRoles, identityFrom, requireAnyRole } from "@/lib/bis-access";
 import { requestSupabaseClient } from "@/lib/supabase/server";
+import { buildDevelopmentEvidence } from "@/lib/development-evidence.mjs";
 import { buildLearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
 import competencyFramework from "@/content/curriculum/applied-commerce/competency-framework.json";
 import competencyCrosswalk from "@/content/curriculum/external-frameworks/dbe-basic-education-competency-crosswalk.json";
@@ -51,9 +52,20 @@ async function getHandler(request: Request) {
       authoredBindings: timeCompetencyMap.bindings,
     });
 
+    // This projection has no assessment results. Do not promote record classes
+    // into capability judgements in the compatibility profile either.
+    profile.summary = "Permitted work is available for review by development area.";
+    profile.areas = profile.areas.map(area => ({ ...area,
+      stageCode: "NOT_ASSESSED", stageLabel: "Work available for review",
+      summary: "Recorded work is mapped to this development area; task quality has not been established by this view.",
+      growth: "Comparable assessed change is not available from these structural records.",
+      nextStep: "Review learner-selected work against the authored criteria before deciding the next practice.",
+    }));
+
     return Response.json({
       status: projection.status ?? profile.status,
       profile,
+      developmentEvidence: buildDevelopmentEvidence({ records, competencies: competencyFramework.competencies }),
       sourceBoundary: projection.boundary ?? null,
       privacy: {
         structuralOnly: true,

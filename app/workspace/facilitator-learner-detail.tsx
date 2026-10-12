@@ -128,14 +128,17 @@ export function FacilitatorLearnerDetail({ learnerId, requestedCohortId }: { lea
             </div>
             <Badge variant="outline">{position(learner)}</Badge>
           </div>
+          <details><summary>Programme participation and access</summary>
           <section className="ops-metrics participant-detail-metrics" aria-label="Operational context">
             <article><ClipboardCheck /><span>Programme position</span><strong>{learner.enrolment ? `${learner.enrolment.currentInvestigation}/9` : "Not started"}</strong></article>
             <article><Activity /><span>Real-world practice</span><strong className="metric-date">{practicePosition(learner)}</strong></article>
             <article><Users /><span>Observation days</span><strong>{learner.experiment?.recordedDays ?? "—"}</strong></article>
             <article><Activity /><span>Last activity</span><strong className="metric-date">{formatDate(learner.lastActivityAt)}</strong></article>
           </section>
-          <p className="participant-attribute-note">These operational records provide context. They are not the learner&apos;s development result.</p>
+          <p className="participant-attribute-note">These operational records provide context. They are not the learner&apos;s development result.</p></details>
         </section>
+
+
 
         <FacilitatorLearnerDevelopment cohortId={cohort.id} learnerId={learner.userId} displayName={learner.displayName} />
 
