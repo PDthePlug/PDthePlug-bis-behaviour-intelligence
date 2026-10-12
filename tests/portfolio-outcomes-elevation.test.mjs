@@ -28,7 +28,7 @@ test("individual development projection is facilitator-only and excludes private
   assert.doesNotMatch(access, /SPONSOR_VIEWER|PROGRAMME_OWNER/);
   assert.match(projection, /e\.sensitivity in \('P0','P1','P2'\)/);
   assert.doesNotMatch(projection, /'value'\s*,\s*e\.value|e\.value\s+as/);
-  assert.doesNotMatch(projection, /companion_turns|memory_items|hypotheses|experiment_events\.notes/);
+  assert.doesNotMatch(projection, /(?:from|join)\s+(?:public\.)?(?:companion_turns|memory_items|hypotheses|experiment_events)\b/i);
   assert.match(projection, /Response wording, reflections, hypotheses, experiment notes, Companion content and P3 evidence are excluded/);
 });
 
