@@ -3,6 +3,7 @@ import { leap9IllustrativeReport } from '@/lib/experience/leap9-report';
 
 export async function GET() {
   // Keep the public First Look report fictional, aggregate-only and isolated from live programme data.
+  // Use the renderer's generic aggregate path rather than a sponsor-specific report contract.
   const report = {
     ...leap9IllustrativeReport,
     cohort: {
@@ -11,10 +12,7 @@ export async function GET() {
       name: 'BIS First Look - Illustrative Programme Experience',
     },
   };
-  const pdf = await renderProgrammeOutcomePdf(report, new Date(), {
-    illustrative: true,
-    experienceOrganisation: 'Your organisation',
-  });
+  const pdf = await renderProgrammeOutcomePdf(report, new Date(), { illustrative: true });
   return new Response(new Uint8Array(pdf), {
     headers: {
       'Content-Type': 'application/pdf',
