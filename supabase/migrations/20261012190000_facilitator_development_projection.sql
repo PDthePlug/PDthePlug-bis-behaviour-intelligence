@@ -3,6 +3,10 @@
 -- exposing learner response wording, reflections, hypotheses, experiment notes,
 -- Companion content or P3 evidence. Also adds a privacy-safe cohort progression
 -- count so programme outcomes can describe development rather than activity alone.
+--
+-- Privilege architecture deliberately mirrors the existing BIS reporting pattern:
+-- public RPCs are SECURITY INVOKER wrappers, while privileged implementations live
+-- in the private schema and enforce their own caller/scope checks.
 
 create or replace function private.can_view_facilitator_learner_development(
   target_cohort_id text,
@@ -55,7 +59,7 @@ $$;
 revoke all on function private.can_view_facilitator_learner_development(text, text)
   from public, anon, authenticated;
 
-create or replace function public.bis_facilitator_learner_development_evidence(
+create or replace function private.bis_facilitator_learner_development_evidence(
   target_cohort_id text,
   target_learner_user_id text
 )
@@ -165,19 +169,36 @@ begin
 end
 $$;
 
+revoke all on function private.bis_facilitator_learner_development_evidence(text, text)
+  from public, anon;
+grant execute on function private.bis_facilitator_learner_development_evidence(text, text)
+  to authenticated, service_role;
+
+create or replace function public.bis_facilitator_learner_development_evidence(
+  target_cohort_id text,
+  target_learner_user_id text
+)
+returns jsonb
+language sql
+stable
+set search_path = ''
+as $$
+  select private.bis_facilitator_learner_development_evidence(target_cohort_id, target_learner_user_id);
+$$;
+
 revoke all on function public.bis_facilitator_learner_development_evidence(text, text)
   from public, anon;
 grant execute on function public.bis_facilitator_learner_development_evidence(text, text)
-  to authenticated;
+  to authenticated, service_role;
 
 comment on function public.bis_facilitator_learner_development_evidence(text, text) is
   'Facilitator-only structural development projection for one learner in an assigned cohort. Never returns response values or private content.';
 
--- Replace the existing aggregate competency summary with the same privacy gates,
--- while additionally reporting whether later mapped evidence broadens beyond a
--- learner's first supported stage. This is descriptive progression, not a claim
--- that the programme caused a change.
-create or replace function public.bis_cohort_competency_summary(target_cohort_id text)
+-- Extend the existing private aggregate competency implementation while preserving
+-- the established public SECURITY INVOKER wrapper public.bis_cohort_competency_summary(text).
+-- The additional progression signal reports whether later mapped evidence broadens
+-- beyond a learner's first supported stage. It is descriptive, not causal.
+create or replace function private.bis_cohort_competency_summary(target_cohort_id text)
 returns jsonb
 language plpgsql
 stable
@@ -267,7 +288,9 @@ begin
       lm.competency,
       lm.evidence_class,
       case
-        when lm.evidence_class in ('PLAN','OBSERVATION','OUTCOME') then 3
+        when lm.evidence_class = 'TRANSFER' then 5
+        when lm.evidence_class = 'OUTCOME' then 4
+        when lm.evidence_class in ('PLAN','OBSERVATION') then 3
         when lm.evidence_class in ('LEARNING_CHECK','INTERPRETATION') then 2
         when lm.evidence_class in ('BASELINE','CONTEXT') then 1
         else 0
@@ -293,7 +316,8 @@ begin
       competency,
       bool_or(evidence_class = 'TRANSFER') as has_transfer,
       bool_or(evidence_class <> 'TRANSFER') as has_non_transfer,
-      bool_or(evidence_class in ('PLAN','OBSERVATION','OUTCOME')) as has_apply,
+      bool_or(evidence_class = 'OUTCOME') as has_revise,
+      bool_or(evidence_class in ('PLAN','OBSERVATION')) as has_apply,
       bool_or(evidence_class in ('LEARNING_CHECK','INTERPRETATION')) as has_explain,
       bool_or(evidence_class in ('BASELINE','CONTEXT','OBSERVATION','LEARNING_CHECK')) as has_notice
     from eligible
@@ -305,6 +329,7 @@ begin
       competency,
       case
         when has_transfer and has_non_transfer then 5
+        when has_revise then 4
         when has_apply then 3
         when has_explain then 2
         when has_notice then 1
@@ -387,8 +412,8 @@ begin
 end
 $$;
 
-revoke all on function public.bis_cohort_competency_summary(text) from public, anon;
-grant execute on function public.bis_cohort_competency_summary(text) to authenticated;
+comment on function private.bis_cohort_competency_summary(text) is
+  'Privacy-safe BIS competency-development summary with aggregate evidence-supported progression. Never returns learner identity or response wording.';
 
 comment on function public.bis_cohort_competency_summary(text) is
-  'Privacy-safe BIS competency-development summary with aggregate evidence-supported progression. Never returns learner identity or response wording.';
+  'Public invoker wrapper for the privacy-safe BIS competency-development summary. Never returns learner identity or response wording.';
