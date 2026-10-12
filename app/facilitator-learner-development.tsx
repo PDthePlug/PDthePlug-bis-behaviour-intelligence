@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Compass, ShieldCheck } from "lucide-react";
 import type { LearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
+import type { DevelopmentEvidence } from "@/lib/development-evidence.mjs";
+import { DevelopmentEvidencePicture } from "./development-evidence-picture";
 import { EvidenceDisclosure } from "./evidence-disclosure";
 
 export function FacilitatorLearnerDevelopment({
@@ -15,6 +17,7 @@ export function FacilitatorLearnerDevelopment({
   displayName: string;
 }) {
   const [profile, setProfile] = useState<LearnerDevelopmentProfile | null>(null);
+  const [evidence, setEvidence] = useState<DevelopmentEvidence | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -24,6 +27,7 @@ export function FacilitatorLearnerDevelopment({
       setLoading(true);
       setError("");
       setProfile(null);
+      setEvidence(null);
 
       void fetch(`/api/facilitator-development?cohortId=${encodeURIComponent(cohortId)}&learnerId=${encodeURIComponent(learnerId)}`, {
         signal: controller.signal,
@@ -31,9 +35,10 @@ export function FacilitatorLearnerDevelopment({
         credentials: "same-origin",
       })
         .then(async (response) => {
-          const body = await response.json() as { profile?: LearnerDevelopmentProfile; error?: string };
+          const body = await response.json() as { profile?: LearnerDevelopmentProfile; developmentEvidence?: DevelopmentEvidence; error?: string };
           if (!response.ok || !body.profile) throw new Error(body.error ?? "Development snapshot unavailable");
           setProfile(body.profile);
+          setEvidence(body.developmentEvidence ?? null);
         })
         .catch((reason: unknown) => {
           if (controller.signal.aborted) return;
@@ -71,51 +76,16 @@ export function FacilitatorLearnerDevelopment({
     );
   }
 
-  const reportableAreas = profile.areas.filter((area) => area.reportable);
-
   return (
     <section className="surface-card ops-section facilitator-development-picture">
-      <div className="section-title">
-        <div>
-          <p className="eyebrow">Development snapshot</p>
-          <h2>What {displayName}&apos;s recorded work currently supports</h2>
-          <p>{profile.summary}</p>
-        </div>
-        <Compass />
-      </div>
-
-      {reportableAreas.length ? (
-        <div className="facilitator-competency-grid">
-          {profile.areas.map((area) => (
-            <article key={area.competencyId} className="facilitator-competency-card">
-              <div>
-                <h3>{area.title}</h3>
-                <span>{area.reportable ? area.stageLabel : "Evidence developing"}</span>
-              </div>
-              <p>{area.summary}</p>
-              <p><strong>Growth across recorded work:</strong> {area.growth}</p>
-              <p><strong>Evidence base:</strong> {area.evidenceCount} mapped record{area.evidenceCount === 1 ? "" : "s"}{area.sourceLabs.length ? ` across ${area.sourceLabs.join(" · ")}` : ""}.</p>
-              {area.externalFrameworkAreas.length ? (
-                <small>Related curriculum areas: {area.externalFrameworkAreas.join(" · ")}</small>
-              ) : null}
-              {area.nextStep ? (
-                <p className="facilitator-competency-next"><strong>Next useful practice:</strong> {area.nextStep}</p>
-              ) : null}
-            </article>
-          ))}
-        </div>
-      ) : (
-        <EvidenceDisclosure title="The development picture is still building">
-          <p>BIS does not yet have enough mapped, reviewable evidence to describe a development area for this learner.</p>
-          <p>That is an evidence state, not a judgement about ability.</p>
-        </EvidenceDisclosure>
-      )}
+      <div className="section-title"><div><p className="eyebrow">Learner development</p><h2>Where to support {displayName} next</h2></div><Compass /></div>
+      {evidence ? <DevelopmentEvidencePicture evidence={evidence} /> : <EvidenceDisclosure title="Evidence detail is not available yet"><p>The permitted evidence map could not be loaded. A submitted answer does not establish a demonstrated skill.</p></EvidenceDisclosure>}
 
       <div className="ops-boundary compact">
         <ShieldCheck />
         <div>
           <strong>Portfolio meaning without private content</strong>
-          <p>{profile.boundary}</p>
+          <p>Learning, practice, reviewed capability and transfer are different evidence claims.</p>
           <p>The facilitator receives structural development evidence only. Reflection wording, hypotheses, experiment notes, Companion conversations and P3 evidence remain private.</p>
         </div>
       </div>

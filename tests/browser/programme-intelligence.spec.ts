@@ -6,9 +6,9 @@ const base={identity:{id:'staff',email:'staff@local.invalid',displayName:'Staff'
 function observe(page:import('@playwright/test').Page){const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',e=>{if(e.type()==='error')errors.push(e.text());});return async()=>{expect(errors).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);};}
 test('programme report explains findings, preserves unavailable values and has accessible chart data',async({page},info)=>{
  const verify=observe(page);await page.route('**/api/staff',r=>r.fulfill({json:base}));await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
- await expect(page.getByText('3 of 20 participants have a recorded experiment start.',{exact:true})).toBeVisible();await expect(page.getByRole('heading',{name:'Systems Transfer Test',exact:true})).toBeVisible();
- await page.getByText('Progress and programme context',{exact:true}).click();const graphic=page.locator('figure').filter({has:page.getByRole('heading',{name:'Where participants are in the programme'})});await expect(graphic.locator('.programme-report-bar-row strong').filter({hasText:'Unavailable'})).toBeVisible();await graphic.getByText('View chart values and comparison basis').click();await expect(graphic.getByRole('row',{name:'Experiment start recorded 3 20 participants'})).toBeVisible();
- await page.getByText('What supports this finding?').first().click();await expect(page.getByText('A recorded start is not proof that an opportunity occurred or that behaviour improved.',{exact:true})).toBeVisible();await expect(page.getByText('Thandi Mokoena')).toHaveCount(0);
+ await expect(page.getByText('3 of 20 participants have a recorded experiment start.',{exact:true})).toBeHidden();await expect(page.getByRole('heading',{name:'Systems Transfer Test',exact:true})).toBeVisible();
+ await page.getByText('Progress and programme context',{exact:true}).click();await expect(page.getByText('3 of 20 participants have a recorded experiment start.',{exact:true})).toBeVisible();const graphic=page.locator('figure').filter({has:page.getByRole('heading',{name:'Where participants are in the programme'})});await expect(graphic.locator('.programme-report-bar-row strong').filter({hasText:'Unavailable'})).toBeVisible();await graphic.getByText('View chart values and comparison basis').click();await expect(graphic.getByRole('row',{name:'Experiment start recorded 3 20 participants'})).toBeVisible();
+ await page.locator('article').filter({has:page.getByRole('heading',{name:'Participants are beginning their real-world tests',exact:true})}).getByText('What supports this finding?').click();await expect(page.getByText('A recorded start is not proof that an opportunity occurred or that behaviour improved.',{exact:true})).toBeVisible();await expect(page.getByText('Thandi Mokoena')).toHaveCount(0);
  await page.screenshot({path:`test-results/intelligence-${info.project.name}.png`,fullPage:true});await verify();
 });
 
@@ -94,9 +94,36 @@ test('development leads group views while small stage counts stay hidden', async
  const group=page.locator('.facilitator-development-picture');await expect(group).toContainText('Goals, planning and prioritisation');await expect(group).toContainText('Hidden for privacy');
  expect((await group.boundingBox())!.y).toBeLessThan((await page.locator('.facilitator-group-summary').boundingBox())!.y);
  await page.screenshot({path:info.outputPath('facilitator-development.png'),fullPage:true});
- await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await page.goto('/staff-shell?view=outcomes&section=evidence&group=group');
  const owner=page.locator('.outcomes-competency-picture');await expect(owner).toContainText('Offer another chance to test and review a small plan.');await expect(owner).toContainText('Hidden');
- expect((await owner.boundingBox())!.y).toBeLessThan((await page.locator('.outcomes-context').boundingBox())!.y);
+ await expect(page.locator('.outcomes-context')).toBeHidden();
  await page.screenshot({path:info.outputPath('programme-development.png'),fullPage:true});
  suppressed=true;await page.reload();await expect(page.locator('.outcomes-competency-picture')).toHaveCount(0);await expect(page.getByText('Development picture is hidden for privacy', {exact:true})).toBeVisible();await verify();
+});
+
+test('facilitator evidence matrix supports the next conversation without interpreting private text', async ({ page }) => {
+ const verify = observe(page);
+ await page.route('**/api/staff',r=>r.fulfill({json:base}));
+ const { buildDevelopmentEvidence } = await import('../../lib/development-evidence.mjs');
+ const developmentEvidence = buildDevelopmentEvidence({competencies:[{id:'AC-C04',title:'Self-management'}],records:[{id:'plan',lab_code:'HAB',lab_version:'1',semantic_field_id:'HAB.PLAN',status:'ACTIVE',sensitivity:'P1',classification_status:'APPROVED',competency:'AC-C04',evidence_class:'PLAN',recorded_at:'2026-10-01T10:00:00Z',value:'PRIVATE SECRET'}]});
+ await page.route('**/api/facilitator-development?**',r=>r.fulfill({json:{profile:{areas:[],summary:'Evidence only',boundary:'Private'},developmentEvidence}}));
+ await page.goto('/staff-shell?view=facilitator&section=participants&group=group&learner=learner');
+ await expect(page.getByRole('heading',{name:'Where to support Thandi Mokoena next'})).toBeVisible();
+ await expect(page.getByText('A plan is present; recorded practice is not yet visible.',{exact:true})).toBeVisible();
+ await expect(page.getByRole('table',{name:'Evidence available by development area'})).toBeVisible();
+ await page.getByText('Evidence history and limits',{exact:true}).focus();await page.keyboard.press('Enter');
+ await expect(page.getByText('2026-10-01',{exact:true})).toBeVisible();
+ await expect(page.getByText('PRIVATE SECRET')).toHaveCount(0);
+ await expect(page.getByText('Programme participation and access',{exact:true})).toBeVisible();
+ await verify();
+});
+
+test('programme paired self-report graphic is visible with its sample and no inferred skill claim', async ({ page }) => {
+ const verify=observe(page);
+ const withPair={...outcome,learningSummary:{...outcome.learningSummary,learningJourney:{...outcome.learningSummary.learningJourney,skillShifts:[{id:'control',label:'Perceived control',pairedParticipants:10,averagePre:4,averagePost:6}]}}};
+ await page.route('**/api/staff',r=>r.fulfill({json:{...base,sponsor:{cohorts:[withPair]}}}));
+ await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await expect(page.getByRole('img',{name:'Perceived control: starting point 4, later check-in 6. Self-report, not assessed skill.'})).toBeVisible();
+ await expect(page.getByText('10 participants with both check-ins. Same reported measure; self-report, not assessed capability.',{exact:true})).toBeVisible();
+ await verify();
 });

@@ -3,6 +3,7 @@ import { AssessmentReports } from "./assessment-reports";
 import { EvidenceDisclosure } from "./evidence-disclosure";
 import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
 
+import { reportSections } from "@/lib/development-evidence.mjs";
 import { buildProgrammeReport } from "@/lib/programme-intelligence.mjs";
 import { ProgrammeReportGraphic } from "./programme-report-graphics";
 import "./programme-intelligence.css";
@@ -471,8 +472,8 @@ export function ProgrammeOutcomesView({
   const metrics = flow?.runtimeMode === "DYNAMIC" ? null : outcome.metrics;
   const decisionRegister = outcome.decisionRegister;
   const report = buildProgrammeReport(outcome);
+  const evidenceSections = reportSections(report);
   const pendingInsights = report.insights.filter(insight => insight.evidence.sample === 0 || insight.id === "practice-unavailable" || (insight.id === "evidence-coverage" && flow?.totals?.recordedResponses === 0 && flow?.totals?.anchoredMeasures === 0) || (insight.id === "next-programme" && outcome.organisationLearning?.comparison?.baselineOnly));
-  const currentInsights = report.insights.filter(insight => !pendingInsights.includes(insight));
   const renderInsight = (insight: (typeof report.insights)[number]) => <article key={insight.id}>
     <h3>{insight.title}</h3><p>{insight.observation}</p><p>{insight.interpretation}</p>
     <p className="programme-insight-action"><strong>Suggested next step</strong><br />{insight.action}</p>
@@ -554,12 +555,12 @@ export function ProgrammeOutcomesView({
       </section>
 
       {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
-        <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-competency-picture">
+        <section hidden={section !== "evidence"} className="outcomes-competency-picture">
           <div className="outcomes-section-heading">
             <div>
               <p className="eyebrow">Development picture</p>
               <h2>What learners are developing</h2>
-              <p>See the capabilities learners can demonstrate in programme tasks and the practice to offer next.</p>
+              <p>See which development areas have recorded work and what review or practice to offer next.</p>
             </div>
             <Compass />
           </div>
@@ -576,7 +577,7 @@ export function ProgrammeOutcomesView({
                   ? "Some mapped development evidence is present, but the contributing count is hidden for privacy."
                   : competency.reportableParticipants === 0
                     ? "There is not enough recorded work to describe development in this area yet."
-                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have enough recorded work to describe their current development in this area.`}</p>
+                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have work mapped to this development area. Task quality is reported separately.`}</p>
                 {visibleStages.length ? <div className="outcomes-competency-stages" aria-label={`${competency.title} evidence stages`}>
                   {competency.distribution.map((stage) => <span key={stage.code} className={(stage.count ?? 0) > 0 ? "is-active" : ""}>
                     <b>{stage.label}</b>
@@ -602,10 +603,17 @@ export function ProgrammeOutcomesView({
             <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
             <Lightbulb />
           </div>
-          {currentInsights.length ? <div className="outcomes-insight-grid">{currentInsights.map(renderInsight)}</div> : null}
+          {evidenceSections.filter(group => group.id !== "delivery").map(group => <section key={group.id} className="programme-evidence-domain">
+            <h3>{group.title}</h3>
+            {group.insights.length || group.charts.length ? <>
+              {group.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
+              <div className="outcomes-insight-grid">{group.insights.filter(item => !pendingInsights.includes(item)).map(renderInsight)}</div>
+            </> : <p className="outcome-muted">No reportable evidence in this category yet. It may be uncollected, unavailable or withheld for privacy.</p>}
+          </section>)}
           {pendingInsights.length ? <EvidenceDisclosure title="Evidence still developing"><div className="outcomes-insight-grid">{pendingInsights.map(renderInsight)}</div></EvidenceDisclosure> : null}
           <EvidenceDisclosure title="Progress and programme context">
-            {report.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
+            {evidenceSections.find(group => group.id === "delivery")?.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
+            <div className="outcomes-insight-grid">{evidenceSections.find(group => group.id === "delivery")?.insights.filter(item => !pendingInsights.includes(item)).map(renderInsight)}</div>
             <p>{report.boundary}</p>
           </EvidenceDisclosure>
         </section>

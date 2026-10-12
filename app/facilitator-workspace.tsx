@@ -324,8 +324,8 @@ export function FacilitatorWorkspace({
               <div className="section-title">
                 <div>
                   <p className="eyebrow">Development picture</p>
-                  <h2>What this group is learning to do</h2>
-                  <p>See what the group can currently demonstrate and where another practice opportunity could help.</p>
+                  <h2>Development evidence to review</h2>
+                  <p>See the work recorded for each development area and where review or practice could help.</p>
                 </div>
                 <Compass />
               </div>
@@ -342,8 +342,8 @@ export function FacilitatorWorkspace({
                       ? "The group has some evidence in this area, but the count is hidden for privacy."
                       : competency.reportableParticipants === 0
                         ? "There is not enough recorded work to describe group development here yet."
-                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} currently have enough recorded work to describe development in this area.`}</p>
-                    <div className="facilitator-competency-stages" aria-label={`${competency.title} development stages`}>
+                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} have work mapped to this area; this is not an assessment of capability.`}</p>
+                    <div className="facilitator-competency-stages" aria-label={`${competency.title} recorded evidence`}>
                       {competency.distribution.map(stage => <span key={stage.code}><b>{stage.label}</b><small>{stage.suppressed ? "Hidden for privacy" : stage.count ?? "Unavailable"}</small></span>)}
                     </div>
                     {competency.externalFrameworkAreas.length ? <small>Related curriculum areas: {competency.externalFrameworkAreas.join(" · ")}</small> : null}
