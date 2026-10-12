@@ -9,5 +9,9 @@ export const experiencePartners = {
     organisation: 'DGMT', path: '/experience/dgmt',
     storageKey: 'bis.programme-experience.dgmt.v1', reportPath: '/experience/dgmt/report',
   },
+  firstlook: {
+    organisation: 'Your organisation', path: '/experience/first-look',
+    storageKey: 'bis.programme-experience.first-look.v1', reportPath: '/experience/first-look/report',
+  },
 } as const;
 export type ExperiencePartner = keyof typeof experiencePartners;
