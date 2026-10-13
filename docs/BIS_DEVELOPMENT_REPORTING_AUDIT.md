@@ -59,7 +59,7 @@ This is a bounded reporting implementation and forensic inventory, not a validat
 
 Release requires the repository verification contract and an isolated staging check of the authenticated facilitator/cohort routes. Production is not a development backend. A draft pull request is the reviewable release unit until those checks pass.
 
-## Verification recorded for this change
+## Historical verification of PR #159 at submission
 
 - 709 acceptance tests passed, including new evidence-class, privacy, invalid-date, duplicate-record and no-opportunity regressions.
 - Lint and TypeScript passed.
@@ -72,6 +72,8 @@ Release requires the repository verification contract and an isolated staging ch
 
 PR #159 was merged on 12 October 2026. Its original verification record above describes that change at submission, not a completed release certification.
 
-The follow-up adds context visibility, immediate learner-switch isolation, unavailable-count handling, responsive evidence-table containment, full repeat-response partition suppression and a shared, non-repeating institutional PDF structure. The restored implementation passes 712 acceptance tests, lint, TypeScript, source audits, optimized build and 15 learning-package runtime checks. Focused evidence/calculation/PDF tests pass (15). The responsive reporting suite exercises 57 cases; full repository verification is still required.
+The follow-up adds context visibility, immediate learner-switch isolation, unavailable-count handling, responsive evidence-table containment, full repeat-response partition suppression and a shared, non-repeating institutional PDF structure. The restored implementation passes 712 acceptance tests, lint, TypeScript, source audits, optimized build and 15 learning-package runtime checks. Final focused reporting/evidence/calculation/PDF contracts pass (26). All 57 responsive reporting cases passed at 360px, 430px and 1280px in the full verification run. The wider browser run ended with 325 passes, 12 failures and two existing skips. Nine failures reproduce on unchanged main; the remaining three staff-menu assertions expect the deliberately retired overview duplication. The final focused rerun passed all 60 browser cases, including the corrected menu contract. A seven-page fictional PDF specimen was rendered and visually checked. The repository-wide release gate remains red.
 
 BIS Staging restore was rejected because both available active-project slots are occupied. No production learner data was used and no active application was paused. See `BIS_REPORT_CERTIFICATION.md` for the verification scope and remaining gates. All activity-level mappings and the remaining unpublished Lab measurement bindings remain provisional.
+
+Follow-up review: https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/161 (draft).

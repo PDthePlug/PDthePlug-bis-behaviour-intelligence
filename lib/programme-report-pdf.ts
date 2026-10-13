@@ -389,12 +389,14 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   for (const section of sections) {
     if (!section.insights.length && !section.charts.length) { unavailable.push(section.title); continue; }
     canvas.y += 18;
+    if (section.insights.length) canvas.ensure(Math.min(150 + canvas.findingHeight(section.insights[0]), BOTTOM - MARGIN));
+    else canvas.ensure(240);
     canvas.section(section.title, section.title, undefined, false);
     for (const insight of section.insights) canvas.finding(insight);
     for (const chart of section.charts) canvas.chart(chart);
   }
   canvas.section("Programme review", "What the programme can learn", "The evidence-linked questions alongside each finding support your team's review. They do not prescribe programme changes and remain separate from your saved decisions.", false);
-  if (report.decisions.length) canvas.section("Programme decisions", "What did the organisation decide to change?", "Recorded team decisions and their next review.");
+  if (report.decisions.length) canvas.section("Programme decisions", "What did the organisation decide to change?", "Recorded team decisions and their next review.", false);
   else canvas.paragraph("Programme decisions: No programme decision is recorded in this report.", { color: C.muted });
   for (const decision of report.decisions) {
     canvas.ensure(80); canvas.paragraph(decision.title, { font: "bold" });
@@ -404,7 +406,7 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     if (decision.reviewOutcome) canvas.paragraph(`Recorded review outcome: ${decision.reviewOutcome.toLowerCase().replaceAll("_", " ")}`);
     canvas.paragraph(`Status: ${decision.status === "REVIEWED" ? "Reviewed" : "Awaiting review"}${decision.reviewNote ? ` · ${decision.reviewNote}` : ""}`);
   }
-  canvas.section("Methodology and limitations", "How much information we have", "REPORTING NOTES · Descriptive evidence, reporting coverage and privacy.");
+  canvas.section("Methodology and limitations", "How much information we have", "REPORTING NOTES · Descriptive evidence, reporting coverage and privacy.", false);
   if (unavailable.length) canvas.paragraph(`Where the programme picture is still building: No reportable finding is supplied for ${unavailable.join(", ").toLowerCase()}. Information may be unrecorded, unsupported by this Lab's measures, or withheld for privacy. This is not a zero result.`);
   canvas.paragraph("What this report uses", { font: "bold" });
   canvas.paragraph("Authorised group aggregates of recorded programme activity, structured participant check-ins, real-world observations where defined by the Lab, and saved facilitator assessments of currently shared task evidence. The same report model supplies dashboard findings and PDF findings.");
