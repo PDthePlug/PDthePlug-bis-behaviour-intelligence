@@ -78,6 +78,8 @@ The conservative source-contract set currently contains **1,975 approved meaning
 
 The remaining **2,140 task or ambiguous source families** are not silently promoted. They remain fail-closed until their assessment meaning, rubric and claim authority are authored.
 
+These activity-family approvals are semantic/content-governance approvals for evidence meaning and competency relevance, not scientific validation of a scale or proof that every response reaches the ceiling. The regression suite verifies the exact family counts, Lab set, unique Lab/family keys and source hash used to seed this contract set.
+
 This is **not** a claim that all 34 BIS catalogue Labs have been contracted. The supplied source covers ten Lab titles. Other catalogue Labs require their canonical source before they can be activated under the same contract process.
 
 ## Five agents
