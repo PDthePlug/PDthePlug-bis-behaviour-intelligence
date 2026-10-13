@@ -245,3 +245,9 @@ test('Agent 5 adapter suppresses small and reconstructable competency cells befo
   assert.match(route, /runProgrammeInsightAgent/);
   assert.match(route, /reportable:\s*false/);
 });
+
+test('question-contract columns are migration-owned and do not rewrite unrelated application ORM schema', async () => {
+  const schema = await readFile(new URL('db/schema.ts', root), 'utf8');
+  assert.doesNotMatch(schema, /modelReviewPolicy:\s*text\("model_review_policy"\)/);
+  assert.doesNotMatch(schema, /contractId:\s*text\("contract_id"\)/);
+});
