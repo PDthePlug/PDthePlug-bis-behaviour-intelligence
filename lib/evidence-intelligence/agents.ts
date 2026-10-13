@@ -89,10 +89,17 @@ sourceNature is supplied by BIS and is immutable. Return that exact value; never
   });
   if (!result) return null;
 
+  const provenanceMismatch = result.output.sourceNature !== context.sourceNature;
   const output = ResponseInterpretationSchema.parse({
     ...result.output,
     sourceNature: context.sourceNature,
-    confidence: confidence(result.output.confidence),
+    uncertainties: provenanceMismatch
+      ? Array.from(new Set([
+          ...result.output.uncertainties,
+          "The model attempted to alter deterministic source provenance; the BIS source value was retained.",
+        ])).slice(0, 10)
+      : result.output.uncertainties,
+    confidence: confidence(provenanceMismatch ? Math.min(result.output.confidence, 0.5) : result.output.confidence),
   });
   return {
     agent: "RESPONSE_INTERPRETATION",
@@ -140,17 +147,20 @@ Use NOT_SUPPORTED when the response does not provide enough evidence.`,
   }
 
   const proposedStage = clampEvidenceStage(result.output.proposedStage, context.stageCeiling);
+  const stageOverclaim = proposedStage !== result.output.proposedStage;
+  const noCompetency = result.output.competencyIds.length === 0;
   const lowTrust = humanReviewRequired({
     confidence: result.output.confidence,
-    uncertainty: interpretation.uncertainties.length > 0,
+    uncertainty: interpretation.uncertainties.length > 0 || stageOverclaim,
     sensitivity: context.sensitivity,
   });
-  const evidenceStrength =
-    context.sourceNature === "SELF_REPORT" && result.output.evidenceStrength === "STRONG"
+  const evidenceStrength = noCompetency
+    ? "INSUFFICIENT"
+    : context.sourceNature === "SELF_REPORT" && result.output.evidenceStrength === "STRONG"
       ? "MODERATE"
       : result.output.evidenceStrength;
   const claimStatus =
-    result.output.claimStatus === "NOT_SUPPORTED"
+    result.output.claimStatus === "NOT_SUPPORTED" || noCompetency
       ? "NOT_SUPPORTED"
       : lowTrust
         ? "REVIEW_REQUIRED"
@@ -161,7 +171,10 @@ Use NOT_SUPPORTED when the response does not provide enough evidence.`,
     proposedStage,
     evidenceStrength,
     claimStatus,
-    confidence: confidence(result.output.confidence),
+    rationale: stageOverclaim
+      ? `${result.output.rationale} BIS clamped the proposed stage to the authored source ceiling.`
+      : result.output.rationale,
+    confidence: confidence(stageOverclaim ? Math.min(result.output.confidence, 0.5) : result.output.confidence),
   });
   return {
     agent: "EVIDENCE_CLASSIFICATION",
@@ -179,7 +192,7 @@ export async function runLongitudinalSynthesisAgent(args: {
   const evidence = args.evidence.map((item) => LongitudinalEvidenceItemSchema.parse(item));
   const scoped = evidence
     .filter((item) => item.competencyIds.includes(args.competencyId))
-    .filter((item) => item.reviewStatus !== "REJECTED")
+    .filter((item) => item.reviewStatus === "REVIEWED")
     .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
 
   if (scoped.length === 0) {
@@ -192,7 +205,7 @@ export async function runLongitudinalSynthesisAgent(args: {
         pattern: "INSUFFICIENT_EVIDENCE",
         highestSupportedStage: "NOT_YET_EVIDENCED",
         evidenceCount: 0,
-        synthesis: "No eligible evidence has been recorded for longitudinal interpretation.",
+        synthesis: "No reviewed evidence has been recorded for longitudinal interpretation.",
         supportingEvidenceIds: [],
         contradictoryEvidenceIds: [],
         confidence: 1,
@@ -217,8 +230,8 @@ export async function runLongitudinalSynthesisAgent(args: {
     agent: "LONGITUDINAL_SYNTHESIS",
     promptVersion: PROMPTS.longitudinal,
     schema: LongitudinalSynthesisSchema,
-    instructions: `Synthesize change over time for one authored competency using only derived evidence records.
-Do not infer a development trend from chronology alone. Consider evidence strength, source nature, review status and contradictions.
+    instructions: `Synthesize change over time for one authored competency using only reviewed derived evidence records.
+Do not infer a development trend from chronology alone. Consider evidence strength, source nature and contradictions.
 The highestSupportedStage may never exceed the strongest stage already present in the source records.
 TRANSFER_CANDIDATE is allowed only when at least one eligible source record is already classified as TRANSFER; never infer transfer merely from repetition.
 Do not claim causation, mastery or durable change.`,
@@ -238,29 +251,37 @@ Do not claim causation, mastery or durable change.`,
     ...result.output.contradictoryEvidenceIds,
   ].some((id) => !sourceIds.has(id));
   if (referencesUnknownEvidence) {
-    throw new Error("Longitudinal synthesis referenced evidence outside the supplied history.");
+    throw new Error("Longitudinal synthesis referenced evidence outside the supplied reviewed history.");
   }
 
   let highestSupportedStage = clampEvidenceStage(result.output.highestSupportedStage, maximumSourceStage);
+  const stageOverclaim = highestSupportedStage !== result.output.highestSupportedStage;
   const hasTransferSource = scoped.some((item) => item.stage === "TRANSFER");
-  const pattern =
-    result.output.pattern === "TRANSFER_CANDIDATE" && !hasTransferSource
-      ? "INCONSISTENT"
-      : result.output.pattern;
+  const transferOverclaim = result.output.pattern === "TRANSFER_CANDIDATE" && !hasTransferSource;
+  const pattern = transferOverclaim ? "INCONSISTENT" : result.output.pattern;
   if (!hasTransferSource && highestSupportedStage === "TRANSFER") {
     highestSupportedStage = maximumSourceStage;
   }
 
+  const reviewPattern = pattern === "REGRESSING" || pattern === "INCONSISTENT";
   const output = LongitudinalSynthesisSchema.parse({
     ...result.output,
     competencyId: args.competencyId,
     pattern,
     highestSupportedStage,
     evidenceCount: scoped.length,
-    confidence: confidence(result.output.confidence),
+    confidence: confidence(
+      stageOverclaim || transferOverclaim ? Math.min(result.output.confidence, 0.5) : result.output.confidence,
+    ),
     requiresHumanReview:
       result.output.requiresHumanReview ||
-      humanReviewRequired({ confidence: result.output.confidence, contradiction: result.output.contradictoryEvidenceIds.length > 0 }),
+      stageOverclaim ||
+      transferOverclaim ||
+      reviewPattern ||
+      humanReviewRequired({
+        confidence: result.output.confidence,
+        contradiction: result.output.contradictoryEvidenceIds.length > 0,
+      }),
   });
   return {
     agent: "LONGITUDINAL_SYNTHESIS",
@@ -279,7 +300,9 @@ export async function runQualityContradictionAgent(args: {
   const context = preparedContext(args.context);
   const interpretation = ResponseInterpretationSchema.parse(args.interpretation);
   const classification = EvidenceClassificationSchema.parse(args.classification);
-  const priorEvidence = args.priorEvidence.map((item) => LongitudinalEvidenceItemSchema.parse(item));
+  const priorEvidence = args.priorEvidence
+    .map((item) => LongitudinalEvidenceItemSchema.parse(item))
+    .filter((item) => item.reviewStatus === "REVIEWED");
   const allowed = new Set(context.allowedCompetencies.map((item) => item.id));
   const competencyWithinAuthoredScope = classification.competencyIds.every((id) => allowed.has(id));
   const stageWithinSourceLimits =
@@ -290,7 +313,7 @@ export async function runQualityContradictionAgent(args: {
     promptVersion: PROMPTS.quality,
     schema: QualityContradictionSchema,
     instructions: `Act as a conservative second-pass quality check.
-Test whether the proposed classification is actually supported by the interpretation and whether prior derived evidence creates a meaningful contradiction.
+Test whether the proposed classification is actually supported by the interpretation and whether prior reviewed evidence creates a meaningful contradiction.
 Do not reward agreement between agents. Look actively for overclaiming, source-provenance mismatch, hypothetical language, insufficient context, contradictory chronology and claims beyond the authored competency or stage ceiling.
 A contradiction is a reason for review, not proof that the learner is unreliable.`,
     input: {
@@ -336,7 +359,7 @@ A contradiction is a reason for review, not proof that the learner is unreliable
 }
 
 function containsProhibitedOutcomeLanguage(text: string) {
-  return /\b(caused|causes|proves?|mastered|certified|programme effect|because of BIS|due to BIS)\b/i.test(text);
+  return /\b(caused|causes|causal|proves?|mastered|mastery|certified|programme effect|because of BIS|due to BIS|led to|resulted in|BIS improved|BIS increased|BIS reduced)\b/i.test(text);
 }
 
 export async function runProgrammeInsightAgent(
