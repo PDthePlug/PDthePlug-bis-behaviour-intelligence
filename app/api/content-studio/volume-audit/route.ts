@@ -7,7 +7,7 @@ import {
 } from "../../../../lib/bis-access";
 import { customerSafeErrorResponse } from "../../../../lib/api-error-response";
 import { eq } from "../../../../db/query";
-import { getDb } from "../../../../db";
+import { getDb, withSupabaseRequest } from "../../../../db";
 import {
   contentActivationUat,
   contentLibraryItems,
@@ -43,7 +43,7 @@ function safeVersion(value: FormDataEntryValue | null) {
   return version;
 }
 
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   try {
     const identity = await requireSuperUser();
     const form = await request.formData();
@@ -263,4 +263,8 @@ export async function POST(request: Request) {
   } catch (error) {
     return errorResponse(error);
   }
+}
+
+export function POST(request: Request) {
+  return withSupabaseRequest(() => postHandler(request));
 }

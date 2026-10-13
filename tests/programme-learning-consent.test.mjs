@@ -6,9 +6,11 @@ create function private.can_view_sponsor_cohort(text) returns boolean language s
 grant usage on schema auth,private to authenticated;grant execute on function auth.uid(),private.can_view_sponsor_cohort(text) to authenticated;`);
 const base=await readFile(new URL('20260909000000_bis_production.sql',root),'utf8');
 for(const table of ['learners','consent_records','lab_enrollments','responses','pilot_cohorts','cohort_members','hypotheses','experiments','experiment_events','measurement_values','safeguarding_cases'])await db.exec(base.match(new RegExp(`create table public\\.${table} \\([\\s\\S]*?\\n\\);`,'i'))[0]);
-await db.exec("alter table responses add column lab_code text not null default 'HAB';alter table experiments add column lab_code text not null default 'HAB';create table handbook_progress(user_id text,lab_code text,semantic_step_id text,status text);");
+await db.exec("alter table responses add column lab_code text not null default 'HAB';alter table responses add column privacy_class text not null default 'P2';alter table experiments add column lab_code text not null default 'HAB';create table handbook_progress(user_id text,lab_code text,semantic_step_id text,status text);");
 const migration=(await readdir(root)).find(name=>name.endsWith('_programme_learning_consent_and_comparison_scope.sql'));assert.ok(migration);
 await db.exec(await readFile(new URL(migration,root),'utf8'));
+const privacyMigration=(await readdir(root)).find(name=>name.endsWith('_programme_learning_private_response_exclusion.sql'));assert.ok(privacyMigration);
+await db.exec(await readFile(new URL(privacyMigration,root),'utf8'));
 await db.exec("create table experiment_checkpoints(id text,user_id text,experiment_id text,status text,decision text,plan_changed boolean,created_at timestamptz,recorded_at timestamptz);" );
 for(const name of ['sponsor_cohort_learning_summary','sponsor_cohort_outcomes','sponsor_cohort_deeper_analysis','sponsor_cohort_organisational_learning']) await db.exec(`create function public.${name}(target_cohort_id text) returns jsonb language sql stable security invoker set search_path='' as $$select private.${name}(target_cohort_id)$$; revoke all on function public.${name}(text) from public,anon;grant execute on function public.${name}(text) to authenticated;`);
 test.after(()=>db.close());
@@ -27,6 +29,18 @@ test.beforeEach(async()=>{
  await db.exec('set role authenticated;');
 });
 const summary=async()=> (await db.query("select sponsor_cohort_learning_summary('group') as result")).rows[0].result;
+test('P3 values on recognised measure fields never enter means, baseline themes or response activity',async()=>{
+ const before=await summary();
+ await db.exec("reset role;");
+ for(let n=1;n<=10;n++)for(const [field,value] of [['HAB.CONTROL.PRE','99'],['HAB.CONTROL.POST','99'],['HAB.BASELINE.PROCRASTINATION','always']]){
+  await db.query("insert into responses(id,user_id,prompt_id,semantic_field_id,lab_code,lab_version,value,privacy_class,occurred_at,recorded_at) values($1,$2,'P3-fixture',$3,'HAB','1',$4,'P3',now(),now()+interval '1 day')",[`private-${n}-${field}`,`learner${n}`,field,value]);
+ }
+ await db.exec("set role authenticated;");const after=await summary();
+ assert.deepEqual(after.learningJourney.skillShifts,before.learningJourney.skillShifts);
+ assert.deepEqual(after.learningJourney.baselineThemes,before.learningJourney.baselineThemes);
+ assert.deepEqual(after.learningJourney.activity,before.learningJourney.activity);
+ assert.doesNotMatch(JSON.stringify(after),/99|P3-fixture/);
+});
 test('matched source-version responses produce a paired self-report and no private text or identities',async()=>{
  await db.exec("reset role;insert into responses(id,user_id,prompt_id,semantic_field_id,lab_code,lab_version,value,occurred_at) values('other-version','learner2','p','HAB.CONTROL.PRE','HAB','2','999',now()),('private','learner2','p','HAB.PRIVATE','HAB','1','SECRET PRIVATE REFLECTION',now());set role authenticated;");
  const result=await summary();assert.equal(result.participantCount,10);const control=result.learningJourney.skillShifts.find(x=>x.id==='perceived_control');assert.equal(control.pairedParticipants,7);assert.equal(control.averagePre,3);assert.equal(control.averagePost,4);assert.doesNotMatch(JSON.stringify(result),/999|SECRET|learner2|control2/);
