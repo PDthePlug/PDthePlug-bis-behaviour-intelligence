@@ -81,8 +81,10 @@ test('programme insight input accepts aggregates but rejects individual or raw r
   };
   assert.equal(programmeInsightInputIsAggregateOnly(aggregate), true);
   assert.equal(programmeInsightInputIsAggregateOnly({ ...aggregate, learnerUserId: 'learner1' }), false);
+  assert.equal(programmeInsightInputIsAggregateOnly({ ...aggregate, Learner_User_ID: 'learner1' }), false);
   assert.equal(programmeInsightInputIsAggregateOnly({ ...aggregate, nested: { response: 'private words' } }), false);
   assert.equal(programmeInsightInputIsAggregateOnly({ ...aggregate, nested: [{ learnerName: 'Student' }] }), false);
+  assert.equal(programmeInsightInputIsAggregateOnly({ ...aggregate, nested: [{ evidence_id: 'ev-private' }] }), false);
 });
 
 test('evidence fingerprints are deterministic for governed source metadata', () => {
@@ -104,6 +106,17 @@ test('API accepts only an evidence id and returns model output as non-reportable
   assert.match(route, /bis_evidence_agent_context/);
   assert.doesNotMatch(route, /requestSchema[\s\S]{0,500}learnerText/);
   assert.doesNotMatch(route, /SUPABASE_SERVICE_ROLE/);
+});
+
+test('programme agent rejects unsafe raw payloads before Zod can strip unknown fields', async () => {
+  const agents = await readFile(new URL('lib/evidence-intelligence/agents.ts', root), 'utf8');
+  const guard = agents.indexOf('programmeInsightInputIsAggregateOnly(rawAggregate)');
+  const parse = agents.indexOf('ProgrammeAggregateSchema.parse(rawAggregate)');
+  assert.ok(guard >= 0, 'aggregate-only raw-input guard must exist');
+  assert.ok(parse > guard, 'raw aggregate guard must run before schema parsing');
+  assert.match(agents, /reviewStatus === "REVIEWED"/);
+  assert.match(agents, /stageOverclaim/);
+  assert.match(agents, /provenanceMismatch/);
 });
 
 test('database context requires consent, learner-authored text, exact governed model policy and excludes privileged bypasses', async () => {
