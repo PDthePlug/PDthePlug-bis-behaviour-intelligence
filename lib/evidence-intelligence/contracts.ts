@@ -25,6 +25,7 @@ export const EvidenceClassSchema = z.enum([
 ]);
 
 export const SensitivitySchema = z.enum(["P0", "P1", "P2", "P3"]);
+export const SourceNatureSchema = z.enum(["SELF_REPORT", "OBSERVED", "ASSESSED", "MIXED"]);
 
 export const AllowedCompetencySchema = z.object({
   id: z.string().min(1).max(120),
@@ -39,8 +40,10 @@ export const EvidenceContextSchema = z.object({
   semanticFieldId: z.string().min(1).max(200),
   questionLabel: z.string().min(1).max(1200),
   portfolioPurpose: z.string().max(1600).default(""),
+  authoredOutcome: z.string().max(1600).default(""),
   evidenceClass: EvidenceClassSchema,
   sensitivity: SensitivitySchema,
+  sourceNature: SourceNatureSchema,
   mappingStatus: z.enum(["STRUCTURAL", "APPROVED"]),
   stageCeiling: EvidenceStageSchema,
   occurredAt: z.string().datetime().or(z.string().min(1)),
@@ -71,7 +74,7 @@ export const ResponseInterpretationSchema = z.object({
     .max(12),
   contextualQualifiers: z.array(z.string().min(1).max(300)).max(10),
   uncertainties: z.array(z.string().min(1).max(300)).max(10),
-  sourceNature: z.enum(["SELF_REPORT", "OBSERVED", "ASSESSED", "MIXED"]),
+  sourceNature: SourceNatureSchema,
   confidence: z.number().min(0).max(1),
 });
 export type ResponseInterpretation = z.infer<typeof ResponseInterpretationSchema>;
@@ -94,7 +97,7 @@ export const LongitudinalEvidenceItemSchema = z.object({
   stage: EvidenceStageSchema,
   evidenceStrength: z.enum(["INSUFFICIENT", "WEAK", "MODERATE", "STRONG"]),
   confidence: z.number().min(0).max(1),
-  sourceNature: z.enum(["SELF_REPORT", "OBSERVED", "ASSESSED", "MIXED"]),
+  sourceNature: SourceNatureSchema,
   meaningSummary: z.string().min(1).max(700),
   reviewStatus: z.enum(["PROPOSED", "REVIEW_REQUIRED", "REVIEWED", "REJECTED"]),
 });
