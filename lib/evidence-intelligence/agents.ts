@@ -342,10 +342,10 @@ function containsProhibitedOutcomeLanguage(text: string) {
 export async function runProgrammeInsightAgent(
   rawAggregate: ProgrammeAggregate,
 ): Promise<AgentEnvelope<ProgrammeInsight> | null> {
-  const aggregate = ProgrammeAggregateSchema.parse(rawAggregate);
-  if (!programmeInsightInputIsAggregateOnly(aggregate)) {
+  if (!programmeInsightInputIsAggregateOnly(rawAggregate)) {
     throw new Error("Programme Insight Agent accepts aggregate-only input.");
   }
+  const aggregate = ProgrammeAggregateSchema.parse(rawAggregate);
   if (aggregate.participantCount < 5) {
     throw new Error("Programme Insight Agent may not analyse a cohort below the reporting threshold.");
   }
