@@ -4,11 +4,79 @@
 
 ## Purpose
 
-BIS Evidence Intelligence converts eligible learner-authored free text into a governed **proposal about evidence**, not an automatic judgement about a learner.
+BIS Evidence Intelligence converts eligible evidence into governed **proposals about development evidence**, not automatic judgements about learners.
 
-The system exists to solve a specific reporting problem: many important BIS questions are answered in a learner's own words, and those answers cannot legitimately become programme variables through keyword counts or generic sentiment analysis. BIS therefore interprets a response in its authored curriculum context, constrains the interpretation to an approved competency and evidence class, checks the proposed claim independently, and only then allows a human-reviewed evidence workflow to determine whether the claim becomes reportable.
+The system exists because BIS asks many questions in a learner's own words. Those answers cannot legitimately become programme variables through keyword counts, sentiment analysis, task completion or generic AI summaries. BIS therefore separates five things that must never be conflated:
 
-The original response remains immutable and authoritative. AI output never replaces it.
+1. what an authored question means;
+2. which competency that question is relevant to;
+3. which evidence class it can produce;
+4. the highest developmental stage that source could possibly support;
+5. whether the response may be reviewed by a model or aggregated into programme reporting.
+
+The original evidence remains immutable and authoritative. AI output never replaces it.
+
+## Source question evidence contracts
+
+`question_evidence_contracts` is the semantic control plane for the agent system. Contracts contain no learner data and no manuscript wording. They bind the stable Question Intelligence `question_family` hash to:
+
+- Lab code;
+- authored competency ID;
+- evidence class;
+- deterministic stage ceiling;
+- source nature;
+- aggregation policy;
+- model-review policy;
+- claim authority;
+- measurement-validation status;
+- privacy scope;
+- allowed and forbidden inference;
+- source reference and source hash.
+
+### Meaning approval is not measurement validation
+
+`APPROVED_MEANING` means BIS has an approved interpretation of what evidence that question is intended to solicit. It does **not** mean the question is a validated psychometric scale, that its response measures a latent trait, or that the learner has reached the stage ceiling.
+
+All Volume 1 source contracts remain `NOT_VALIDATED` as measurement constructs unless a separate validation programme changes that status.
+
+### Aggregation and model review are independent
+
+A response can be fully understood by BIS while remaining private and excluded from programme aggregation.
+
+- `aggregation_policy` controls whether a structured response may contribute to aggregate reporting.
+- `model_review_policy` controls whether explicitly learner-shared free text may enter facilitator-only model review.
+
+`MODEL_ASSISTED` is no longer treated as an aggregation mode. Current model review requires `FACILITATOR_SHARED_ONLY`.
+
+### Fail-closed default
+
+A question without an approved source contract is automatically:
+
+- `CANDIDATE`;
+- `aggregate_policy = EXCLUDE`;
+- `model_review_policy = DISABLED`.
+
+Compiler heuristics cannot silently activate an uncontracted question.
+
+## Current source coverage
+
+The supplied Volume 1 forensic source covers:
+
+- **10 distinct Lab titles**: ATT, DEC, HAB, INF, LEA, MON, PUR, RES, RSK and TIM;
+- **29 unique Lab/edition pairs**;
+- **4,115 unique source question families** inventoried for contract governance.
+
+The conservative source-contract set currently contains **1,975 approved meaning families**:
+
+| Contract class | Families | Current stage ceiling | Model review |
+| --- | ---: | --- | --- |
+| BASELINE | 136 | NOTICE | Disabled |
+| LEARNING_CHECK | 1,131 | EXPLAIN | Facilitator-shared only |
+| INTERPRETATION / private reflection | 708 | EXPLAIN | Facilitator-shared only |
+
+The remaining **2,140 task or ambiguous source families** are not silently promoted. They remain fail-closed until their assessment meaning, rubric and claim authority are authored.
+
+This is **not** a claim that all 34 BIS catalogue Labs have been contracted. The supplied source covers ten Lab titles. Other catalogue Labs require their canonical source before they can be activated under the same contract process.
 
 ## Five agents
 
@@ -17,7 +85,7 @@ The original response remains immutable and authoritative. AI output never repla
 **Question:** What is the learner communicating in relation to this authored question?
 
 Allowed to:
-- paraphrase the meaning of the response without reproducing learner wording;
+- paraphrase meaning without reproducing learner wording;
 - identify explicit behavioural or reasoning signals supported by the response;
 - identify contextual qualifiers and uncertainty;
 - describe the supplied source nature.
@@ -33,15 +101,15 @@ Not allowed to:
 **Question:** What governed evidence claim, if any, can this interpretation support?
 
 Allowed to:
-- select only from authored competency IDs supplied by BIS;
+- select only authored competency IDs supplied by BIS;
 - retain the authored evidence class;
-- propose a stage no higher than the deterministic stage ceiling;
+- propose a stage no higher than the contract ceiling;
 - propose evidence strength and confidence;
 - return `NOT_SUPPORTED`, `PROPOSED` or `REVIEW_REQUIRED`.
 
 Not allowed to:
 - invent a competency or evidence class;
-- exceed the authored source ceiling;
+- exceed the source ceiling;
 - treat plans, predictions or reflections as proof of behaviour;
 - call self-report strong observed evidence.
 
@@ -49,21 +117,26 @@ BIS deterministically caps `SELF_REPORT` evidence strength at `MODERATE` even if
 
 ### 3. Longitudinal Synthesis Agent
 
-**Question:** What pattern is supported across eligible evidence for one competency over time?
+**Question:** What pattern is supported across human-reviewed evidence for one competency over time?
 
-Allowed to:
-- synthesise multiple already-derived evidence records;
-- distinguish emerging, consistent, inconsistent, regressing and transfer-candidate patterns;
-- identify supporting and contradictory evidence IDs;
-- propose the highest supported stage already present in the source evidence.
+The production adapter is now connected to `bis_agent_reviewed_evidence_history`.
 
-Not allowed to:
-- infer improvement from chronology alone;
-- exceed the strongest source stage;
-- infer transfer without a source record already classified as `TRANSFER`;
-- claim durable change, mastery or programme causation.
+It receives only evidence that is:
+- in the facilitator's assigned active cohort;
+- from an active learner with current `LEARNER_PRODUCT` consent;
+- from the cohort's exact Lab/version enrolment;
+- explicitly shared by the learner in a current evidence submission;
+- covered by the latest source-contract-backed approved mapping;
+- covered by the latest human assessment whose disposition is `REVIEWED`.
 
-This agent is implemented as a governed library component. Its production adapter must consume reviewed/eligible evidence history, not arbitrary raw learner text.
+It receives **no raw learner wording**.
+
+Current stage projection is deliberately conservative:
+- ordinary reviewed self-report enters longitudinal history at `NOTICE`;
+- a `LEARNING_CHECK` may enter at `EXPLAIN` only when it is linked to an authored rubric and the contract permits at least that stage;
+- nothing in the current Volume 1 meaning set can become `APPLY`, `TEST_AND_REVISE` or `TRANSFER` merely because it was reviewed.
+
+The agent still cannot infer improvement from chronology alone, exceed the strongest supplied stage, infer transfer without a source transfer record, or claim mastery/durable change/causation.
 
 ### 4. Quality & Contradiction Agent
 
@@ -79,32 +152,49 @@ Not allowed to:
 - create a stronger claim than the classification it reviews;
 - treat contradiction as a character judgement about the learner.
 
-A contradiction, insufficient evidence, low confidence or scope mismatch forces `REVIEW_REQUIRED`.
+A contradiction, insufficient evidence, low confidence, provenance mismatch or stage overclaim forces `REVIEW_REQUIRED`.
 
 ### 5. Programme Insight Agent
 
-**Question:** What can a programme manager legitimately learn from already-governed aggregate evidence?
+**Question:** What can an authorised programme stakeholder legitimately learn from already-governed aggregate evidence?
 
-Allowed to:
-- translate suppression-safe aggregate competency distributions into concise findings;
-- surface support priorities and limitations;
-- describe change signals using the wording supported by the aggregate input.
+The production adapter is now connected to `bis_agent_programme_aggregate`.
 
-Not allowed to:
-- receive learner responses, learner identities or raw evidence;
-- reconstruct suppressed cells;
-- infer causal programme effects;
-- claim mastery, certification or capability acquisition beyond the supplied evidence contract.
+It receives only:
+- current, active, consented participants with the cohort's exact Lab/version enrolment;
+- current learner-shared submissions;
+- latest human assessments with disposition `REVIEWED`;
+- source-contract-backed approved mappings;
+- competency-level aggregate counts after privacy suppression.
 
-The agent refuses cohorts below the reportable threshold and rejects input containing individual-response or learner-identity fields.
+It receives **no learner IDs, names, emails, evidence IDs, response wording, assessment feedback or P3 content**.
+
+Privacy rules are applied before the model call:
+- fewer than five eligible participants suppresses the programme aggregate;
+- a competency needs at least three reportable participants;
+- if the complementary participant group would contain one or two people, the competency is withheld;
+- if any non-zero stage or evidence-strength cell would contain one or two people, the whole competency is withheld.
+
+This is intentionally stricter than hiding a single unsafe cell because adjacent totals can otherwise reconstruct the withheld count.
 
 ## Runtime flow
 
 ```text
+Canonical Lab source
+        |
+        v
+Question-family evidence contract
+        |
+        +--> uncontracted -> CANDIDATE / EXCLUDE / AI DISABLED
+        |
+        v
+Runtime question + exact Lab/version
+        |
+        v
 Learner-authored response
         |
         v
-Supabase consent + scope + Lab/version + question-policy gate
+Consent + enrolment + explicit share + facilitator scope
         |
         v
 PII minimisation
@@ -124,79 +214,80 @@ PROPOSED / REVIEW_REQUIRED / NOT_SUPPORTED
         v
 Existing human-reviewed BIS evidence workflow
         |
-        +------------------------------+
-        |                              |
-        v                              v
-Longitudinal synthesis          Privacy-safe aggregation
-                                       |
-                                       v
-                              Programme Insight Agent
+        +-------------------------------+
+        |                               |
+        v                               v
+Reviewed-evidence history        Suppression-safe cohort aggregate
+        |                               |
+        v                               v
+Longitudinal Agent (3)           Programme Insight Agent (5)
 ```
 
 ## Model-assisted activation contract
 
-A learner response is not eligible merely because it is text. Every one of the following conditions must be true:
+A learner response is not eligible merely because it is text. Every one of the following must be true:
 
-1. the learner is authenticated and active;
-2. the exact Lab/version enrolment remains eligible;
-3. latest `LEARNER_PRODUCT` consent is `GRANTED`;
-4. the evidence record is active, learner-authored (`LR`), a `RESPONSE`, and `TEXT`;
-5. sensitivity is `P0`, `P1` or `P2`; `P3` is excluded;
-6. the Question Intelligence Registry entry is `ACTIVE`;
-7. the question's `aggregate_policy` is explicitly `MODEL_ASSISTED`;
-8. its answer model is `TEXT`;
-9. an `APPROVED` curriculum evidence mapping exists for that exact Lab/version/semantic field;
-10. the mapping points to a competency in the authored BIS competency framework.
+1. the caller is an authenticated facilitator;
+2. the learner is active;
+3. the exact Lab/version enrolment remains eligible;
+4. latest `LEARNER_PRODUCT` consent is `GRANTED`;
+5. the evidence is active, learner-authored (`LR`), a `RESPONSE`, `TEXT`, and P0-P2;
+6. the learner explicitly shared that evidence in a current, revocable submission assigned to the facilitator;
+7. the Question Intelligence Registry row is `ACTIVE`;
+8. `model_review_policy = FACILITATOR_SHARED_ONLY`;
+9. the answer model is `TEXT`;
+10. the exact Lab/version/semantic field has the current `APPROVED`, contract-backed curriculum mapping;
+11. the competency exists in the authored BIS framework.
 
-A facilitator may access model-assisted interpretation only for evidence the learner explicitly shared in a current, revocable evidence submission assigned to that facilitator. Programme/sponsor roles never receive this raw-text context. System administrators do not receive a new raw-evidence bypass through the agent context RPC.
+Programme/sponsor roles and system administrators do not gain this raw-text review path.
 
 ## Stage ceilings
 
-The model cannot decide how far a source type is capable of evidencing development. BIS applies deterministic ceilings:
+Stage ceilings are properties of the source contract, not model decisions. They answer:
 
-| Authored evidence class | Maximum single-response stage |
-| --- | --- |
-| BASELINE / CONTEXT | NOTICE |
-| PREDICTION / PLAN / LEARNING_CHECK | EXPLAIN |
-| OBSERVATION / OUTCOME | APPLY |
-| INTERPRETATION | TEST_AND_REVISE |
-| TRANSFER | TRANSFER |
-| SUPPORT_SIGNAL | NOTICE |
-| UNCLASSIFIED | NOT_YET_EVIDENCED |
+> What is the strongest kind of evidence this question could legitimately support if the response itself is sufficient and human review supports it?
 
-These ceilings are conservative guardrails, not validation that every response reaches the ceiling.
+A ceiling is **not** evidence that the learner reached that level.
+
+The current activated Volume 1 contracts intentionally stop at:
+- `NOTICE` for baseline self-report;
+- `EXPLAIN` for approved learning checks and private interpretation prompts.
+
+Higher stages require separately authored task/assessment contracts. In particular:
+- a plan is not APPLY;
+- completing an experiment task is not automatically TEST_AND_REVISE;
+- a transfer prompt is not evidence of sustained transfer.
 
 ## Prompt injection and unsafe inference
 
-Learner material is treated as evidence to analyse, never as system instructions. The shared agent policy instructs every model to ignore attempts inside learner text to alter rules, reveal prompts, change scores, invent facts or contact another person.
+Learner material is evidence to analyse, never system instruction. Agent policy requires models to ignore attempts inside learner text to alter rules, reveal prompts, change scores, invent facts or contact another person.
 
 Agents are prohibited from inferring mental-health diagnoses, personality types, protected characteristics, criminality, intelligence, socioeconomic status or family circumstances from learner responses.
 
 ## Privacy and data minimisation
 
-Before model processing, BIS removes common direct identifiers such as email addresses, telephone numbers, URLs and explicit identifier tokens from the text supplied to the model. Model calls use Vercel AI Gateway with `store:false`.
+Before model processing, BIS removes common direct identifiers such as email addresses, telephone numbers, URLs and explicit identifier tokens. Model calls use Vercel AI Gateway with `store:false`.
 
-The API accepts only an `evidenceId`; clients cannot send arbitrary learner text for scoring. The database resolves the eligible response under the signed-in user's access boundary.
+The evidence-review API accepts only an `evidenceId`; clients cannot submit arbitrary learner text for scoring. Supabase resolves eligible text under the facilitator's current learner-share boundary.
 
-Raw learner text is not returned in the Evidence Intelligence API response.
+Raw learner text is not returned in the API response. Agent 3 and Agent 5 never receive raw learner text at all.
 
-## Authority and persistence in v1
+## Authority and persistence
 
-**AI output is currently non-reportable.** The API returns `reportable: false`.
+**All current agent outputs are non-reportable.** APIs return `reportable: false`.
 
-The first version intentionally does **not** add a privileged service-role process that writes AI judgements directly into reportable evidence tables. A browser-supplied AI result would be forgeable, while a service-role shortcut would undermine BIS's existing least-privilege evidence architecture.
+The implementation intentionally does not add a service-role process that writes AI judgements directly into reportable evidence tables. Human review remains the reportable authority.
 
 Therefore:
-- AI interpretation is a proposal;
-- existing learner evidence remains the source record;
-- existing facilitator assessment remains the reportable human review path;
-- durable AI-proposal persistence requires a separately reviewed trusted-server write contract with idempotency, provenance and append-only history.
-
-This choice keeps AI from silently becoming an assessment authority.
+- AI interpretation/classification is a proposal;
+- original learner evidence remains the source record;
+- facilitator assessment remains the human review path;
+- Agent 3 consumes only that reviewed derived evidence;
+- Agent 5 consumes only privacy-suppressed aggregate reviewed evidence.
 
 ## Configuration
 
-Evidence Intelligence is disabled unless all required runtime credentials exist **and**:
+Evidence Intelligence is disabled unless runtime credentials exist **and**:
 
 ```env
 BIS_EVIDENCE_AI_ENABLED=true
@@ -216,19 +307,19 @@ Vercel deployments use `VERCEL_OIDC_TOKEN`; local/non-Vercel runtimes can use `A
 Do not enable the feature globally until all of the following are complete:
 
 - PR161's reporting-scope defects are corrected and regression-tested;
-- each intended free-text question is explicitly reviewed and promoted to `MODEL_ASSISTED` rather than batch-enabled;
-- its competency mapping and evidence class are approved against the canonical Lab source;
-- a representative labelled evaluation set has been created for each question family;
-- model agreement, false-positive overclaim rates and human-review rates are measured;
-- data-processing/privacy review confirms the permitted model-processing scope for learner data;
-- staging verifies consent withdrawal, facilitator switching and Lab-version isolation end to end;
-- the longitudinal adapter is bound to reviewed evidence history;
-- the programme adapter consumes only suppression-safe report aggregates;
+- source contract migrations pass against a clean current schema and a representative existing database;
+- every additional catalogue Lab has its canonical source supplied and contracted before activation;
+- the remaining task/ambiguous families receive authored assessment meaning, rubric and stage authority rather than heuristic promotion;
+- a representative labelled evaluation set exists for each model-reviewed question family;
+- interpretation agreement, false-positive overclaim rates and review rates are measured;
+- privacy/data-processing review confirms permitted model processing for learner data;
+- staging verifies consent withdrawal, facilitator switching, submission revocation and Lab-version isolation end to end;
+- programme suppression is tested against reconstruction attacks;
 - deployment and rollback controls are certified.
 
 ## Evaluation before production
 
-BIS should evaluate these agents against human-labelled examples rather than relying on plausible model prose. Minimum evaluation dimensions should include:
+BIS should evaluate agents against human-labelled examples rather than plausible model prose. Minimum evaluation dimensions include:
 
 - interpretation agreement;
 - competency classification agreement;
@@ -241,4 +332,4 @@ BIS should evaluate these agents against human-labelled examples rather than rel
 - confidence calibration;
 - human-review burden by question family and Lab version.
 
-The target is not for the model to agree with every reviewer. The target is for unsupported high-stage claims and privacy failures to be exceptionally rare, auditable and caught before they reach reporting.
+The target is not perfect model agreement. The target is for unsupported high-stage claims, privacy failures and false programme claims to be rare, auditable and blocked before reporting.
