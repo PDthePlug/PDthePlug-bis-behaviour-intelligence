@@ -78,5 +78,23 @@
       "sha256": "b201a65c95d9cde15adb4ed6da040ca495dbf6153efc787388c89f4792e9f2d2"
     }
   ],
-  "boundary": "The hosted pass used this product source plus the appended P3 migration; the source-hash annotations were added after verification, without changing the tested product files."
+  "boundary": "The hosted pass used this product source plus the appended P3 migration; the source-hash annotations were added after verification, without changing the tested product files.",
+  "repositoryVerification": {
+    "acceptancePassed": 727,
+    "browserPassed": 346,
+    "browserFailed": 0,
+    "existingViewportSkips": 2,
+    "fullVerify": "PASS"
+  },
+  "hostedSqlVerification": {
+    "P3Exclusion": "PASS",
+    "permittedP2Comparison": "PASS",
+    "smallComplementWithholding": "PASS",
+    "currentConsentFourFamilies": "PASS",
+    "wrongRole": "DENIED",
+    "missingAuth": "DENIED",
+    "anonymous": "DENIED",
+    "directPrivateHelper": "DENIED",
+    "temporaryResponseRowsRemaining": 0
+  }
 }
