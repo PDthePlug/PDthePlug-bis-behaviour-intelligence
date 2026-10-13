@@ -25,7 +25,7 @@ The extraction located 300 baseline item occurrences (290 after removing the rep
 
 `app/programme-outcomes-view.tsx` displayed a competency grid on the overview, repeated competency findings in the narrative, and rendered the same competency data again as charts under the programme-context disclosure. Other helper functions returned the same insight array for findings, organisational learning and decisions. Distinct screens often rephrased the same progress facts.
 
-## Implemented change
+## Initial implementation in PR #159
 
 - The facilitator API adds an evidence-class projection built from approved mappings and explicit active/non-private records. It deduplicates evidence IDs, preserves usable dates and ignores private values.
 - The compatibility profile in that endpoint now says NOT_ASSESSED. It cannot transmit the earlier unreviewed ability claim.
@@ -68,7 +68,7 @@ Release requires the repository verification contract and an isolated staging ch
 - BIS Staging was observed INACTIVE. No production learner data was used for testing, and no backend was resumed or changed.
 - Authenticated API-to-database validation and responsive browser verification remain release blockers. Draft code must not be described as deployed or as a fully validated 34-Lab implementation.
 
-## Follow-up: responsive reporting and certification
+## Historical follow-up: responsive reporting and certification
 
 PR #159 was merged on 12 October 2026. Its original verification record above describes that change at submission, not a completed release certification.
 
@@ -77,3 +77,10 @@ The follow-up adds context visibility, immediate learner-switch isolation, unava
 BIS Staging restore was rejected because both available active-project slots are occupied. No production learner data was used and no active application was paused. See `BIS_REPORT_CERTIFICATION.md` for the verification scope and remaining gates. All activity-level mappings and the remaining unpublished Lab measurement bindings remain provisional.
 
 Follow-up review: https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/161 (draft).
+
+
+## Current implementation continuation
+
+PR #161 now includes source measurement-readiness review, canonical comparison coverage in programme results and PDF, API withholding of small paired/complementary samples, and an append-only migration aligning four reporting families with current consent and Lab enrolment scope. Rate bindings remain explicit source work; the read-only audit of 32 canonical candidates found 32 unresolved rate labels. No updated manuscript edition was automatically activated.
+
+The previous presentation failures were traced to assertions predating Pride's PR #152 request to restore numbered cards and the floating Menu. Checks now follow that accepted product contract. The current verification record, including broad browser results and hosted staging limits, is in `BIS_REPORT_CERTIFICATION.md`; the preceding counts describe historical runs only. The latest implementation has 726 passing acceptance tests. No live migration, billing change or production QA operation has occurred.

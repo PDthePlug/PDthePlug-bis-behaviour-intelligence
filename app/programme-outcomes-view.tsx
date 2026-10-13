@@ -117,10 +117,10 @@ export type SponsorOutcome = {
       skillShifts: Array<{
         id: string;
         label: string;
-        pairedParticipants: number;
-        averagePre: number;
-        averagePost: number;
-        averageShift: number;
+        pairedParticipants: number | null;
+        averagePre: number | null;
+        averagePost: number | null;
+        averageShift: number | null;
       }>;
       activity: {
         participantsWithHandbookActivity: number;

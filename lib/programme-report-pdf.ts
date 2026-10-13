@@ -70,10 +70,10 @@ type Outcome = {
       }>;
       skillShifts: Array<{
         label: string;
-        pairedParticipants: number;
-        averagePre: number;
-        averagePost: number;
-        averageShift: number;
+        pairedParticipants: number | null;
+        averagePre: number | null;
+        averagePost: number | null;
+        averageShift: number | null;
       }>;
       activity: {
         participantsWithHandbookActivity: number;
@@ -272,11 +272,19 @@ class ReportDocument {
     this.paragraph(`Interpretation limit: ${insight.boundary}`, { size: 9, color: C.muted, gap: 18 });
   }
   chart(chart: ReportChart) {
-    this.ensure(this.measure(chart.title, WIDTH, 13, "bold") + this.measure(chart.note, WIDTH, 9) + 85);
+    const fmt = (v: number | null | undefined) => v == null ? "Unavailable" : String(Number(v.toFixed(2)));
+    const rowHeight = (row: ReportChart["rows"][number]) => {
+      const values = [row.value, ...(row.secondaryLabel ? [row.secondaryValue] : [])];
+      const basis = row.denominator == null ? chart.unit : `of ${row.denominator} participants`;
+      const detail = `${values.map(fmt).join(" / ")} · ${basis}`;
+      return Math.max(this.measure(row.label, 200, 9, "bold") + this.measure(detail, 200, 8) + 12, 38);
+    };
+    const chartHeight = this.measure(chart.title, WIDTH, 13, "bold") + this.measure(chart.note, WIDTH, 9) + 50
+      + chart.rows.reduce((total, row) => total + rowHeight(row), 0);
+    this.ensure(Math.min(chartHeight, BOTTOM - MARGIN));
     this.paragraph(chart.title, { size: 13, font: "bold" });
     this.paragraph(chart.note, { size: 9, color: C.muted });
     const max = Math.max(1, ...chart.rows.flatMap(row => [row.denominator ?? 0, row.value ?? 0, row.secondaryValue ?? 0]));
-    const fmt = (v: number | null | undefined) => v == null ? "Unavailable" : String(Number(v.toFixed(2)));
     if (chart.rows.some(row => row.secondaryLabel)) this.paragraph("Dark bars: reached the touchpoint · Light bars: activity completed. Values follow that order.", { size: 8, color: C.muted });
     for (const row of chart.rows) {
       const values = [{ value: row.value, color: C.blue }, ...(row.secondaryLabel ? [{ value: row.secondaryValue ?? null, color: C.secondary }] : [])];
@@ -412,6 +420,9 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     if (decision.reviewOutcome) canvas.paragraph(`Recorded review outcome: ${decision.reviewOutcome.toLowerCase().replaceAll("_", " ")}`);
     canvas.paragraph(`Status: ${decision.status === "REVIEWED" ? "Reviewed" : "Awaiting review"}${decision.reviewNote ? ` · ${decision.reviewNote}` : ""}`);
   }
+  // Keep the compact methodology together when it fits on one page, rather
+  // than leaving its final boundary alone on a mostly empty page.
+  canvas.ensure(560);
   canvas.section("Methodology and limitations", "How much information we have", "REPORTING NOTES · Descriptive evidence, reporting coverage and privacy.", false);
   if (unavailable.length) canvas.paragraph(`Where the programme picture is still building: No reportable finding is supplied for ${unavailable.join(", ").toLowerCase()}. Information may be unrecorded, unsupported by this Lab's measures, or withheld for privacy. This is not a zero result.`);
   canvas.paragraph("What this report uses", { font: "bold" });
@@ -420,8 +431,10 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   canvas.paragraph("Learning checks describe participants' own understanding, not test marks, observed behaviour or proof of mastery. Percentages use recorded check responses, not the number of participants; one participant can answer at several sessions. Missing responses do not show whether someone understands. Starting-point and later comparisons use only the paired records supplied by the programme measure.");
   canvas.paragraph("What remains private", { font: "bold" });
   canvas.paragraph("Individual answers, private reflections, personal experiment wording, support messages and Companion conversations are excluded. Small groups and unavailable values stay hidden; unavailable values are not zero. No hidden value is reconstructed by subtraction.");
+  const claimBoundary = report.boundary + " Coverage is not improvement. A reviewed task does not prove newly acquired or lasting capability, and a missing record does not explain a participant's reasons.";
+  canvas.ensure(canvas.measure("What this report does not claim", WIDTH, 10, "bold") + canvas.measure(claimBoundary) + 40);
   canvas.paragraph("What this report does not claim", { font: "bold" });
-  canvas.paragraph(report.boundary + " Coverage is not improvement. A reviewed task does not prove newly acquired or lasting capability, and a missing record does not explain a participant's reasons.");
+  canvas.paragraph(claimBoundary);
   canvas.paragraph(`Report class: ${report.reportClassification.label} · Report model: ${report.modelVersion} · Minimum group: ${report.minimumReportableCohortSize}`, { size: 8, color: C.muted });
   return canvas.finish();
 }
