@@ -10,6 +10,7 @@ import {
   type AgentEnvelope,
   type EvidenceClassification,
   type EvidenceContext,
+  type EvidenceStage,
   type LongitudinalSynthesis,
   type ProgrammeAggregate,
   type ProgrammeInsight,
@@ -72,14 +73,16 @@ export async function runResponseInterpretationAgent(
 Separate explicit evidence from implication. Do not assign a competency stage or score; that belongs to another agent.
 Do not quote the learner. Behavioural signals must describe only what is evidenced in this response.
 If the response is vague, hypothetical, copied, contradictory or not responsive to the question, record that under uncertainties and lower confidence.
-sourceNature must respect the supplied evidence context: do not turn self-report into observation or assessment.`,
+sourceNature is supplied by BIS and is immutable. Return that exact value; never upgrade SELF_REPORT to OBSERVED, ASSESSED or MIXED.`,
     input: {
       labCode: context.labCode,
       labVersion: context.labVersion,
       semanticFieldId: context.semanticFieldId,
       question: context.questionLabel,
       portfolioPurpose: context.portfolioPurpose,
+      authoredOutcome: context.authoredOutcome,
       evidenceClass: context.evidenceClass,
+      sourceNature: context.sourceNature,
       allowedCompetencies: context.allowedCompetencies,
       learnerResponse: context.learnerText,
     },
@@ -88,6 +91,7 @@ sourceNature must respect the supplied evidence context: do not turn self-report
 
   const output = ResponseInterpretationSchema.parse({
     ...result.output,
+    sourceNature: context.sourceNature,
     confidence: confidence(result.output.confidence),
   });
   return {
@@ -118,6 +122,7 @@ A plan, prediction, reflection or self-report is not proof that a behaviour occu
 Use NOT_SUPPORTED when the response does not provide enough evidence.`,
     input: {
       authoredEvidenceClass: context.evidenceClass,
+      sourceNature: context.sourceNature,
       stageCeiling: context.stageCeiling,
       allowedCompetencies: context.allowedCompetencies,
       rubric: context.rubric,
@@ -141,7 +146,7 @@ Use NOT_SUPPORTED when the response does not provide enough evidence.`,
     sensitivity: context.sensitivity,
   });
   const evidenceStrength =
-    interpretation.sourceNature === "SELF_REPORT" && result.output.evidenceStrength === "STRONG"
+    context.sourceNature === "SELF_REPORT" && result.output.evidenceStrength === "STRONG"
       ? "MODERATE"
       : result.output.evidenceStrength;
   const claimStatus =
@@ -196,7 +201,7 @@ export async function runLongitudinalSynthesisAgent(args: {
     };
   }
 
-  const orderedStages = [
+  const orderedStages: EvidenceStage[] = [
     "NOT_YET_EVIDENCED",
     "NOTICE",
     "EXPLAIN",
@@ -204,9 +209,9 @@ export async function runLongitudinalSynthesisAgent(args: {
     "TEST_AND_REVISE",
     "TRANSFER",
   ];
-  const maximumSourceStage = scoped.reduce((highest, item) => {
+  const maximumSourceStage = scoped.reduce<EvidenceStage>((highest, item) => {
     return orderedStages.indexOf(item.stage) > orderedStages.indexOf(highest) ? item.stage : highest;
-  }, "NOT_YET_EVIDENCED" as (typeof orderedStages)[number]);
+  }, "NOT_YET_EVIDENCED");
 
   const result = await callEvidenceAgent({
     agent: "LONGITUDINAL_SYNTHESIS",
@@ -291,6 +296,7 @@ A contradiction is a reason for review, not proof that the learner is unreliable
     input: {
       authoredScope: {
         evidenceClass: context.evidenceClass,
+        sourceNature: context.sourceNature,
         stageCeiling: context.stageCeiling,
         allowedCompetencies: context.allowedCompetencies,
       },
