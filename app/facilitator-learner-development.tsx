@@ -16,6 +16,8 @@ export function FacilitatorLearnerDevelopment({
   learnerId: string;
   displayName: string;
 }) {
+  const expectedKey = `${cohortId}:${learnerId}`;
+  const [loadedKey, setLoadedKey] = useState("");
   const [profile, setProfile] = useState<LearnerDevelopmentProfile | null>(null);
   const [evidence, setEvidence] = useState<DevelopmentEvidence | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,11 +39,14 @@ export function FacilitatorLearnerDevelopment({
         .then(async (response) => {
           const body = await response.json() as { profile?: LearnerDevelopmentProfile; developmentEvidence?: DevelopmentEvidence; error?: string };
           if (!response.ok || !body.profile) throw new Error(body.error ?? "Development snapshot unavailable");
+          if (controller.signal.aborted) return;
+          setLoadedKey(`${cohortId}:${learnerId}`);
           setProfile(body.profile);
           setEvidence(body.developmentEvidence ?? null);
         })
         .catch((reason: unknown) => {
           if (controller.signal.aborted) return;
+          setLoadedKey(`${cohortId}:${learnerId}`);
           setError(reason instanceof Error ? reason.message : "Development snapshot unavailable");
         })
         .finally(() => {
@@ -55,7 +60,7 @@ export function FacilitatorLearnerDevelopment({
     };
   }, [cohortId, learnerId]);
 
-  if (loading) {
+  if (loading || loadedKey !== expectedKey) {
     return (
       <section className="surface-card ops-section facilitator-development-picture" aria-busy="true">
         <div className="section-title">

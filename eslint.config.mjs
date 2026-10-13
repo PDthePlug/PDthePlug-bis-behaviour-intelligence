@@ -13,6 +13,7 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "tests/browser/harness/.next/**",
+    "tests/browser/harness/.next-bis-*/**",
     "tests/browser/harness/next-env.d.ts",
     "test-results/**",
     "playwright-report/**",

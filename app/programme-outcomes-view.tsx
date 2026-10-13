@@ -619,7 +619,7 @@ export function ProgrammeOutcomesView({
         </section>
       ) : null}
 
-      <section hidden={section !== "all" && section !== "overview"} className="outcomes-context">
+      <section hidden={section !== "all" && section !== "evidence"} className="outcomes-context">
         <Metric label="Learners" value={outcome.participantCount} />
         <Metric
           label="Completion"
@@ -628,7 +628,7 @@ export function ProgrammeOutcomesView({
         />
       </section>
 
-      {flow && report.status === "AVAILABLE" ? <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-evidence-flow">
+      {flow && report.status === "AVAILABLE" ? <section hidden={section !== "all" && section !== "evidence"} className="outcomes-evidence-flow">
         <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>
         <div className="journey-activity-strip">
           <Metric label="Responses recorded" value={flow.totals?.recordedResponses ?? "Hidden for privacy"} />

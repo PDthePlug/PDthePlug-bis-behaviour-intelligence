@@ -1,3 +1,4 @@
+import { reportSections } from "./development-evidence.mjs";
 import PDFDocument from "pdfkit";
 import type { ProgrammeEvidenceFlow } from "./programme-evidence-flow";
 import { join } from "node:path";
@@ -188,7 +189,6 @@ const fonts = {
 const PAGE_W = 595.28, PAGE_H = 841.89, MARGIN = 48, WIDTH = PAGE_W - MARGIN * 2;
 const BOTTOM = PAGE_H - 72;
 const C = { ink: "#193038", blue: "#315d82", muted: "#51616b", line: "#dce2e4", pale: "#edf2f5", secondary: "#91aec4" };
-const domainLabels: Record<string, string> = { application: "Real-world practice", engagement: "Learning journey", understanding: "Participant-reported understanding", behaviour: "Behaviour in practice", support: "Human support", capability: "Capability development", coverage: "How much information we have", context: "Programme context", delivery: "What the programme can learn" };
 
 class ReportDocument {
   readonly doc: PDFKit.PDFDocument;
@@ -381,28 +381,19 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     canvas.paragraph("Prepared by P.D. · Applied Commerce®", { color: C.muted });
     return canvas.finish();
   }
-  canvas.section("Executive summary", "What learners are developing", "KEY FINDINGS · Development first, with participation and evidence underneath the interpretation.");
-  const developmentFindings = report.insights.filter(item => item.id.startsWith("competency-evidence-"));
-  const executiveFindings = [...developmentFindings, ...report.insights.filter(item => !item.id.startsWith("competency-evidence-"))].slice(0, 3);
-  for (const item of executiveFindings) canvas.finding(item, true);
-  if (!report.insights.length) canvas.paragraph("No reportable finding is available yet. Review the permitted records and delivery calendar before drawing a conclusion.");
+  const sections = reportSections(report);
+  canvas.section("Executive summary", "What the evidence can support", "Evidence areas and reporting coverage. Findings appear once, with their relevant graphics and limitations.", false);
+  canvas.table(["Evidence area", "Reporting status"], sections.map(section => [section.title, section.insights.length || section.charts.length ? `${section.insights.length} findings · ${section.charts.length} graphics` : "No reportable finding supplied"]));
   canvas.paragraph(report.boundary, { color: C.muted });
-  canvas.section("Development and programme context", "What the evidence supports", "Development charts come first when competency evidence is available. Participation and activity counts remain supporting context rather than a score of the learner.");
-  const developmentCharts = report.charts.filter(item => item.id.startsWith("competency-"));
-  const supportingCharts = report.charts.filter(item => !item.id.startsWith("competency-"));
-  for (const chart of [...developmentCharts, ...supportingCharts]) canvas.chart(chart);
   const unavailable: string[] = [];
-  canvas.page();
-  for (const domain of ["engagement", "understanding", "application", "behaviour", "capability", "support", "context", "coverage", "delivery"]) {
-    const items = report.insights.filter(item => item.domain === domain);
-    if (!items.length) { unavailable.push(domainLabels[domain]); continue; }
+  for (const section of sections) {
+    if (!section.insights.length && !section.charts.length) { unavailable.push(section.title); continue; }
     canvas.y += 18;
-    canvas.ensure(Math.min(150 + canvas.findingHeight(items[0]), BOTTOM - MARGIN));
-    canvas.section(domainLabels[domain], domainLabels[domain], undefined, false);
-    items.forEach(item => canvas.finding(item));
+    canvas.section(section.title, section.title, undefined, false);
+    for (const insight of section.insights) canvas.finding(insight);
+    for (const chart of section.charts) canvas.chart(chart);
   }
-  canvas.section("Programme review", "What may be worth exploring next", "These evidence-linked questions and follow-ups support your team's review. They do not prescribe programme changes and remain separate from your saved decisions.");
-  canvas.table(["Finding and responsible team", "Question or follow-up"], report.insights.map(item => [`${item.title} · ${item.owner}`, `${item.action} Basis: ${item.observation}`]));
+  canvas.section("Programme review", "What the programme can learn", "The evidence-linked questions alongside each finding support your team's review. They do not prescribe programme changes and remain separate from your saved decisions.", false);
   if (report.decisions.length) canvas.section("Programme decisions", "What did the organisation decide to change?", "Recorded team decisions and their next review.");
   else canvas.paragraph("Programme decisions: No programme decision is recorded in this report.", { color: C.muted });
   for (const decision of report.decisions) {
@@ -413,7 +404,7 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     if (decision.reviewOutcome) canvas.paragraph(`Recorded review outcome: ${decision.reviewOutcome.toLowerCase().replaceAll("_", " ")}`);
     canvas.paragraph(`Status: ${decision.status === "REVIEWED" ? "Reviewed" : "Awaiting review"}${decision.reviewNote ? ` · ${decision.reviewNote}` : ""}`);
   }
-  canvas.section("Methodology and limitations", "How to read this report", "REPORTING NOTES · Descriptive evidence, reporting coverage and privacy.");
+  canvas.section("Methodology and limitations", "How much information we have", "REPORTING NOTES · Descriptive evidence, reporting coverage and privacy.");
   if (unavailable.length) canvas.paragraph(`Where the programme picture is still building: No reportable finding is supplied for ${unavailable.join(", ").toLowerCase()}. Information may be unrecorded, unsupported by this Lab's measures, or withheld for privacy. This is not a zero result.`);
   canvas.paragraph("What this report uses", { font: "bold" });
   canvas.paragraph("Authorised group aggregates of recorded programme activity, structured participant check-ins, real-world observations where defined by the Lab, and saved facilitator assessments of currently shared task evidence. The same report model supplies dashboard findings and PDF findings.");

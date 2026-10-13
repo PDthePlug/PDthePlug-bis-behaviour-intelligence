@@ -67,3 +67,11 @@ Release requires the repository verification contract and an isolated staging ch
 - `npm run verify` reached Playwright, but browser execution could not complete because Chromium and headless-shell downloads produced invalid archives. Browser assertions are not certified.
 - BIS Staging was observed INACTIVE. No production learner data was used for testing, and no backend was resumed or changed.
 - Authenticated API-to-database validation and responsive browser verification remain release blockers. Draft code must not be described as deployed or as a fully validated 34-Lab implementation.
+
+## Follow-up: responsive reporting and certification
+
+PR #159 was merged on 12 October 2026. Its original verification record above describes that change at submission, not a completed release certification.
+
+The follow-up adds context visibility, immediate learner-switch isolation, unavailable-count handling, responsive evidence-table containment, full repeat-response partition suppression and a shared, non-repeating institutional PDF structure. The restored implementation passes 712 acceptance tests, lint, TypeScript, source audits, optimized build and 15 learning-package runtime checks. Focused evidence/calculation/PDF tests pass (15). The responsive reporting suite exercises 57 cases; full repository verification is still required.
+
+BIS Staging restore was rejected because both available active-project slots are occupied. No production learner data was used and no active application was paused. See `BIS_REPORT_CERTIFICATION.md` for the verification scope and remaining gates. All activity-level mappings and the remaining unpublished Lab measurement bindings remain provisional.

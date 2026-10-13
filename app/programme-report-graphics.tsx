@@ -1,3 +1,4 @@
+import './programme-report-graphics.css';
 import type { ReportChart } from "@/lib/programme-intelligence.mjs";
 
 export function ProgrammeReportGraphic({ chart }: { chart: ReportChart }) {

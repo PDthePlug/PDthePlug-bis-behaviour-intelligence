@@ -49,3 +49,17 @@ test('every finding and graphic belongs to one reporting section only',()=>{
  assert.equal(ids.length,new Set(ids).size);assert.equal(ids.length,report.insights.length);assert.equal(charts.length,new Set(charts).size);assert.equal(charts.length,report.charts.length);
  assert.ok(sections.find(x=>x.id==='change').charts.some(x=>x.id==='paired-control'));
 });
+
+test('context-only evidence is visible without establishing ability',()=>{
+ const result=buildDevelopmentEvidence({competencies,records:[record('context','CONTEXT')]});
+ assert.equal(result.areas[0].cells.find(x=>x.id==='CONTEXT').count,1);
+ assert.match(result.areas[0].gap,/Only a starting point/);
+});
+test('repeat-response partitions with small, missing or inconsistent cells are hidden in full',()=>{
+ for(const counts of [[8,1,1],[8,null,2],[8,3,0]]) {
+  const report=buildProgrammeReport({participantCount:20,metrics:{change:{repeatOpportunityParticipants:10,improvedLaterResponse:counts[0],sameLaterResponse:counts[1],changedOtherDirection:counts[2]}}});
+  assert.ok(report.charts.find(x=>x.id==='repeat-response').rows.every(x=>x.value===null));
+ }
+ const report=buildProgrammeReport({participantCount:20,metrics:{change:{repeatOpportunityParticipants:10,improvedLaterResponse:4,sameLaterResponse:3,changedOtherDirection:3}}});
+ assert.deepEqual(report.charts.find(x=>x.id==='repeat-response').rows.map(x=>x.value),[4,3,3]);
+});

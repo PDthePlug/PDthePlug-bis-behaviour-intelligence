@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+test.beforeEach(async({page})=>{ await page.route('**/api/facilitator-development?**',r=>r.fulfill({json:{profile:{areas:[]},developmentEvidence:{areas:[],boundary:'Permitted structural evidence only'}}})); });
 const cohort={id:'group',name:'Leap9 reporting fixture',labCode:'SYS',labVersion:'1',status:'ACTIVE',startsOn:null,endsOn:null,memberIds:['learner']};
 const outcome={cohort,participantCount:20,minimumReportableCohortSize:5,suppressed:false,metrics:null,evidenceFlow:{runtimeMode:'DYNAMIC',suppressed:false,minimumReportableCohortSize:5,minimumReportableCellSize:3,participantCount:20,totals:{recordedResponses:24,anchoredMeasures:9,startedExperiment:3,completed:null},stages:[{investigation:7,participants:3,responses:24,suppressed:false},{investigation:8,participants:null,responses:null,suppressed:true}]},learningSummary:{suppressed:false,learningJourney:{days:[{day:1,reached:20,completed:18},{day:2,reached:18,completed:16}],baselineThemes:[],skillShifts:[],activity:{participantsWithHandbookActivity:20,participantsWithStructuredResponses:18,structuredResponsesRecorded:24}}},organisationLearning:null,learningChecks:null,questionPatterns:null,deepAnalysis:null,assessmentSummary:{participants:20,suppressed:false,rubrics:[{rubric_id:'rubric',title:'Systems Transfer Test',sample:3,average_total:4,maximum_total:5}]}};
 const learner={userId:'learner',cohortId:'group',displayName:'Thandi Mokoena',email:'learner@local.invalid',enrolment:{id:'enrolment',status:'ACTIVE',currentInvestigation:7,labVersion:'1',experimentStartedAt:null},experiment:null};
@@ -8,7 +9,7 @@ test('programme report explains findings, preserves unavailable values and has a
  const verify=observe(page);await page.route('**/api/staff',r=>r.fulfill({json:base}));await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
  await expect(page.getByText('3 of 20 participants have a recorded experiment start.',{exact:true})).toBeHidden();await expect(page.getByRole('heading',{name:'Systems Transfer Test',exact:true})).toBeVisible();
  await page.getByText('Progress and programme context',{exact:true}).click();await expect(page.getByText('3 of 20 participants have a recorded experiment start.',{exact:true})).toBeVisible();const graphic=page.locator('figure').filter({has:page.getByRole('heading',{name:'Where participants are in the programme'})});await expect(graphic.locator('.programme-report-bar-row strong').filter({hasText:'Unavailable'})).toBeVisible();await graphic.getByText('View chart values and comparison basis').click();await expect(graphic.getByRole('row',{name:'Experiment start recorded 3 20 participants'})).toBeVisible();
- await page.locator('article').filter({has:page.getByRole('heading',{name:'Participants are beginning their real-world tests',exact:true})}).getByText('What supports this finding?').click();await expect(page.getByText('A recorded start is not proof that an opportunity occurred or that behaviour improved.',{exact:true})).toBeVisible();await expect(page.getByText('Thandi Mokoena')).toHaveCount(0);
+ await page.getByRole('heading',{name:'Participants are beginning their real-world tests',exact:true}).locator('..').getByText('What supports this finding?').click();await expect(page.getByText('A recorded start is not proof that an opportunity occurred or that behaviour improved.',{exact:true})).toBeVisible();await expect(page.getByText('Thandi Mokoena')).toHaveCount(0);
  await page.screenshot({path:`test-results/intelligence-${info.project.name}.png`,fullPage:true});await verify();
 });
 
@@ -96,7 +97,10 @@ test('development leads group views while small stage counts stay hidden', async
  await page.screenshot({path:info.outputPath('facilitator-development.png'),fullPage:true});
  await page.goto('/staff-shell?view=outcomes&section=evidence&group=group');
  const owner=page.locator('.outcomes-competency-picture');await expect(owner).toContainText('Offer another chance to test and review a small plan.');await expect(owner).toContainText('Hidden');
+ await expect(page.locator('.outcomes-context')).toBeVisible();
+ await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
  await expect(page.locator('.outcomes-context')).toBeHidden();
+ await expect(page.locator('.outcomes-competency-picture')).toBeHidden();
  await page.screenshot({path:info.outputPath('programme-development.png'),fullPage:true});
  suppressed=true;await page.reload();await expect(page.locator('.outcomes-competency-picture')).toHaveCount(0);await expect(page.getByText('Development picture is hidden for privacy', {exact:true})).toBeVisible();await verify();
 });
@@ -125,5 +129,27 @@ test('programme paired self-report graphic is visible with its sample and no inf
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
  await expect(page.getByRole('img',{name:'Perceived control: starting point 4, later check-in 6. Self-report, not assessed skill.'})).toBeVisible();
  await expect(page.getByText('10 participants with both check-ins. Same reported measure; self-report, not assessed capability.',{exact:true})).toBeVisible();
+ await verify();
+});
+
+test('learner switching immediately hides previous evidence and ignores a delayed prior request', async ({page})=>{
+ const verify=observe(page);
+ const {buildDevelopmentEvidence}=await import('../../lib/development-evidence.mjs');
+ let releaseBeta:()=>void=()=>{};const betaGate=new Promise<void>(resolve=>{releaseBeta=resolve;});
+ await page.route('**/api/facilitator-development?**',async route=>{
+  const id=new URL(route.request().url()).searchParams.get('learnerId')!;
+  if(id==='beta')await betaGate;
+  const developmentEvidence=buildDevelopmentEvidence({competencies:[{id:'AC-C04',title:`${id} area`}],records:[{id,lab_code:'HAB',lab_version:'1',semantic_field_id:`HAB.${id}`,status:'ACTIVE',sensitivity:'P1',classification_status:'APPROVED',competency:'AC-C04',evidence_class:'CONTEXT',recorded_at:'2026-10-01'}]});
+  await route.fulfill({json:{profile:{areas:[]},developmentEvidence}}).catch(()=>{});
+ });
+ await page.goto('/development-switch');
+ await expect(page.getByRole('rowheader',{name:'alpha area'})).toBeVisible();
+ await page.getByRole('button',{name:'beta',exact:true}).click();
+ await expect(page.getByRole('rowheader',{name:'alpha area'})).toHaveCount(0);
+ await expect(page.getByRole('heading',{name:'Building the learner picture…'})).toBeVisible();
+ await page.getByRole('button',{name:'gamma',exact:true}).click();
+ await expect(page.getByRole('rowheader',{name:'gamma area'})).toBeVisible();releaseBeta();
+ await expect(page.getByRole('rowheader',{name:'beta area'})).toHaveCount(0);
+ await expect(page.getByRole('rowheader',{name:'gamma area'})).toBeVisible();
  await verify();
 });

@@ -20,9 +20,9 @@ test("programme outcomes expose a real PDF export route", async () => {
   assert.match(pdf, /import PDFDocument from "pdfkit"/);
   assert.match(pdf, /buildProgrammeReport/);
   assert.match(pdf, /Executive summary/);
-  assert.match(pdf, /KEY FINDINGS/);
-  assert.match(pdf, /Learning journey/);
-  assert.match(pdf, /Behaviour in practice/);
+  assert.match(pdf, /What the evidence can support/);
+  assert.match(pdf, /reportSections\(report\)/);
+
   assert.match(pdf, /How much information we have/);
   assert.match(pdf, /Programme review/);
   assert.match(pdf, /They do not prescribe programme changes/);
@@ -80,7 +80,7 @@ test("PDF engine includes reusable professional report primitives", async () => 
   assert.match(pdf, /DejaVuSerif-Bold/);
   assert.match(pdf, /Behaviour Intelligence Series/);
   assert.match(pdf, /GROUP-LEVEL REPORT/);
-  assert.match(pdf, /What learners are developing/);
-  assert.match(pdf, /What may be worth exploring next/);
+  assert.match(pdf, /What the evidence can support/);
+  assert.match(pdf, /What the programme can learn/);
 
 });
