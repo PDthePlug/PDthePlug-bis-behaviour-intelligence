@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { withSupabaseRequest } from "@/db";
-import { identityFrom } from "@/lib/bis-access";
+import { getRoles, hasRole, identityFrom } from "@/lib/bis-access";
 import { requestSupabaseClient } from "@/lib/supabase/server";
 import { EvidenceContextSchema } from "@/lib/evidence-intelligence/contracts";
 import { resolveAuthoredCompetency } from "@/lib/evidence-intelligence/competencies";
@@ -64,6 +64,11 @@ async function post(request: Request) {
     return Response.json({ error: "Sign in is required." }, { status: 401, headers });
   }
 
+  const roles = await getRoles(identity);
+  if (!hasRole(roles, "FACILITATOR")) {
+    return Response.json({ error: "Facilitator review access is required." }, { status: 403, headers });
+  }
+
   let input: z.infer<typeof requestSchema>;
   try {
     input = requestSchema.parse(await request.json());
@@ -80,7 +85,7 @@ async function post(request: Request) {
 
   try {
     // The client may supply only an evidence ID. The database resolves raw text and
-    // curriculum context under the signed-in user's consent and access boundary.
+    // curriculum context under the facilitator's current learner-submission boundary.
     const { data, error } = await requestSupabaseClient().rpc("bis_evidence_agent_context", {
       p_evidence_id: input.evidenceId,
     });
@@ -149,7 +154,7 @@ async function post(request: Request) {
         },
         reportable: false,
         basis:
-          "This is a model-assisted evidence proposal, not a human assessment, diagnosis, capability certification or programme outcome. Original evidence remains authoritative; reportable assessment continues through the existing reviewed evidence workflow.",
+          "This is a model-assisted evidence proposal for facilitator review, not a human assessment, diagnosis, capability certification or programme outcome. Original evidence remains authoritative; reportable assessment continues through the existing reviewed evidence workflow.",
       },
       { headers },
     );
