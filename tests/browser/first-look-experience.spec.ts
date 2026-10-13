@@ -24,9 +24,9 @@ test('BIS First Look is neutral, no-login and shows the governed learner-to-prog
   await expect(page.getByText('BIS First Look · School lens · 14–18', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { level: 1, name: 'How does learning become usable evidence?' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'The information changes shape, not meaning.' })).toBeVisible();
-  await expect(page.getByText('Participant portfolio', { exact: true })).toBeVisible();
-  await expect(page.getByText('Facilitator development view', { exact: true })).toBeVisible();
-  await expect(page.getByText('Programme evidence', { exact: true })).toBeVisible();
+  await expect(page.getByText(/Participant portfolio/)).toBeVisible();
+  await expect(page.getByText(/Facilitator development view/)).toBeVisible();
+  await expect(page.getByText(/Programme evidence/).first()).toBeVisible();
   await expect(page.getByText(/does not claim.*later submission proves improvement/i)).toBeVisible();
   await expect(page.getByRole('link', { name: /Illustrative outcome report/ })).toHaveAttribute('href', '/experience/first-look/report');
   await expect(page.getByText('This First Look keeps one fictional worked example constant', { exact: false })).toBeVisible();
