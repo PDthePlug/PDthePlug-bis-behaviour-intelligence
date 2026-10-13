@@ -84,3 +84,8 @@ Follow-up review: https://github.com/PDthePlug/PDthePlug-bis-behaviour-intellige
 PR #161 now includes source measurement-readiness review, canonical comparison coverage in programme results and PDF, API withholding of small paired/complementary samples, and an append-only migration aligning four reporting families with current consent and Lab enrolment scope. Rate bindings remain explicit source work; the read-only audit of 32 canonical candidates found 32 unresolved rate labels. No updated manuscript edition was automatically activated.
 
 The previous presentation failures were traced to assertions predating Pride's PR #152 request to restore numbered cards and the floating Menu. Checks now follow that accepted product contract. The current verification record, including broad browser results and hosted staging limits, is in `BIS_REPORT_CERTIFICATION.md`; the preceding counts describe historical runs only. The latest implementation has 726 passing acceptance tests. No live migration, billing change or production QA operation has occurred.
+
+
+## Hosted implementation continuation
+
+The owner authorised temporarily pausing ThePlugOS and restoring BIS Staging. The three reporting migrations are applied in staging, with real Auth and API checks, hosted rollback scope/privacy tests and actual programme-page checks at all supported widths. The hosted tests found a P3 input exclusion gap and a Volume Audit request-context defect; both are corrected. The results page now reuses its already-authorised initial snapshot while retaining refresh denial handling. ThePlugOS is currently ACTIVE_HEALTHY again. Production is unchanged. Current verification and publication boundaries are recorded in `BIS_REPORT_CERTIFICATION.md`.

@@ -4,6 +4,18 @@ const cohort={id:'group',name:'Leap9 reporting fixture',labCode:'SYS',labVersion
 const outcome={cohort,participantCount:20,minimumReportableCohortSize:5,suppressed:false,metrics:null,evidenceFlow:{runtimeMode:'DYNAMIC',suppressed:false,minimumReportableCohortSize:5,minimumReportableCellSize:3,participantCount:20,totals:{recordedResponses:24,anchoredMeasures:9,startedExperiment:3,completed:null},stages:[{investigation:7,participants:3,responses:24,suppressed:false},{investigation:8,participants:null,responses:null,suppressed:true}]},learningSummary:{suppressed:false,learningJourney:{days:[{day:1,reached:20,completed:18},{day:2,reached:18,completed:16}],baselineThemes:[],skillShifts:[],activity:{participantsWithHandbookActivity:20,participantsWithStructuredResponses:18,structuredResponsesRecorded:24}}},organisationLearning:null,learningChecks:null,questionPatterns:null,deepAnalysis:null,assessmentSummary:{participants:20,suppressed:false,rubrics:[{rubric_id:'rubric',title:'Systems Transfer Test',sample:3,average_total:4,maximum_total:5}]}};
 const learner={userId:'learner',cohortId:'group',displayName:'Thandi Mokoena',email:'learner@local.invalid',enrolment:{id:'enrolment',status:'ACTIVE',currentInvestigation:7,labVersion:'1',experimentStartedAt:null},experiment:null};
 const base={identity:{id:'staff',email:'staff@local.invalid',displayName:'Staff'},roles:['FACILITATOR','PROGRAMME_OWNER'],admin:null,facilitator:{cohorts:[cohort],learners:[learner],notes:[],referrals:[]},sponsor:{cohorts:[outcome]},safeguarding:null};
+test('an authorised initial report renders without a second load and hides results when refresh loses access',async({page})=>{
+ let requests=0;
+ await page.route('**/api/staff',route=>{requests++;return route.fulfill({status:403,json:{error:'Scope withdrawn'}});});
+ await page.goto('/preloaded-operations');
+ await expect(page.getByRole('heading',{name:'Results',exact:true})).toBeVisible();
+ await expect(page.locator('.programme-outcomes select')).toContainText('Already-authorised group');
+ expect(requests).toBe(0);
+ await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+ await expect(page.getByRole('heading',{name:'Operations could not open.'})).toBeVisible();
+ await expect(page.locator('.programme-outcomes')).toHaveCount(0);
+ expect(requests).toBe(1);
+});
 function observe(page:import('@playwright/test').Page){const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',e=>{if(e.type()==='error')errors.push(e.text());});return async()=>{expect(errors).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);};}
 test('programme report explains findings, preserves unavailable values and has accessible chart data',async({page},info)=>{
  const verify=observe(page);await page.route('**/api/staff',r=>r.fulfill({json:base}));await page.goto('/staff-shell?view=outcomes&section=overview&group=group');

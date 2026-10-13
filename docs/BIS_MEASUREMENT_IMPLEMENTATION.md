@@ -22,7 +22,7 @@ The API strips withheld averages before serialization. It withholds all aggregat
 
 Append-only migration `20261013084751_programme_learning_consent_and_comparison_scope.sql` aligns the existing private outcomes, deeper-analysis, learning-summary and organisational-learning functions with current active learners and the latest granted product consent. Response and experiment calculations require a matching, non-withdrawn Lab enrolment and retain the existing Lab version filter. Small baseline and paired complements are withheld in the database.
 
-The public RPC boundary remains security invoker. The existing scoped private functions retain their guarded aggregate responsibilities. The shared membership helper is private and cannot be invoked directly by authenticated or anonymous clients. Original evidence is unchanged. The migration has only been exercised locally; it has not been applied to a live project.
+The public RPC boundary remains security invoker. The existing scoped private functions retain their guarded aggregate responsibilities. The shared membership helper is private and cannot be invoked directly by authenticated or anonymous clients. Original evidence is unchanged. The migration is applied on BIS Staging. Hosted tests found a P3 row could affect a recognised paired measure; append-only migration `20261013111400_programme_learning_private_response_exclusion.sql` now restricts comparison, baseline and response activity inputs to P0, P1 and P2. Local and hosted regressions preserve permitted P2 comparisons and exclude P3 means, themes and counts. Production is unchanged.
 
 ## Accepted presentation contract
 
@@ -32,4 +32,11 @@ PR #152 records Pride's explicit request to restore the centred floating Menu an
 
 Facility-wide pooling needs an explicit organisation/facility boundary and participant deduplication; authorised cohort rows alone do not establish either. Editions and Lab versions must not be pooled by indicator number. Activity-level manuscript mappings, new authored rate bindings, assessment criteria and sustained-transfer capture remain governed source work.
 
-Live deployment requires isolated staging verification of the migration and authenticated API flows. Staging capacity remains unresolved; neither BIS Production nor ThePlugOS was paused for this task.
+Isolated staging verification now passes the real Auth/API/data/browser checks and rollback privacy tests. The owner authorised a temporary ThePlugOS pause to restore BIS Staging; ThePlugOS is currently active and healthy again. Production deployment remains a controlled release step. See `BIS_REPORT_CERTIFICATION.md` for the current final repository gate and `BIS_STAGING_MEASUREMENT_RESULTS.json` for the hosted pass.
+
+
+## Authenticated source audit and first results load
+
+Volume Audit now runs inside the same authenticated request context as the other Content Studio routes. The real read-only Word audit prepared twelve Volume 1 candidates and returned all twelve unresolved rate bindings without staging or publishing them.
+
+The workspace's initial staff request already returns the authorised report data. The results component now uses that response immediately rather than repeating the full request. It continues to refresh on focus and after mutations, and clears results on a denied refresh. This data is held only in the current component instance; no shared cross-user cache is introduced.
