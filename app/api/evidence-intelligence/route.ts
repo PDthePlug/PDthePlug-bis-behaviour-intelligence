@@ -46,6 +46,9 @@ const rpcContextSchema = z
     ]),
     occurredAt: z.string().min(1),
     learnerText: z.string().min(1).max(100_000),
+    contractId: id,
+    allowedInference: z.string().max(2400),
+    forbiddenInference: z.string().max(2400),
     rubric: z
       .object({
         id,
@@ -85,7 +88,8 @@ async function post(request: Request) {
 
   try {
     // The client may supply only an evidence ID. The database resolves raw text and
-    // curriculum context under the facilitator's current learner-submission boundary.
+    // the source-governed curriculum contract under the facilitator's current,
+    // learner-shared submission boundary.
     const { data, error } = await requestSupabaseClient().rpc("bis_evidence_agent_context", {
       p_evidence_id: input.evidenceId,
     });
@@ -130,6 +134,11 @@ async function post(request: Request) {
       {
         schemaVersion: "bis-evidence-intelligence:1",
         evidenceId: source.evidenceId,
+        contract: {
+          id: source.contractId,
+          allowedInference: source.allowedInference,
+          forbiddenInference: source.forbiddenInference,
+        },
         competency: { id: competency.id, title: competency.title },
         disposition: analysis.disposition,
         interpretation: analysis.interpretation?.output ?? null,
@@ -154,7 +163,7 @@ async function post(request: Request) {
         },
         reportable: false,
         basis:
-          "This is a model-assisted evidence proposal for facilitator review, not a human assessment, diagnosis, capability certification or programme outcome. Original evidence remains authoritative; reportable assessment continues through the existing reviewed evidence workflow.",
+          "This is a source-contract-bounded model-assisted evidence proposal for facilitator review, not a human assessment, diagnosis, capability certification or programme outcome. Original evidence remains authoritative; reportable assessment continues through the existing reviewed evidence workflow.",
       },
       { headers },
     );
