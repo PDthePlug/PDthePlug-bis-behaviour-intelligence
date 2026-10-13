@@ -5,6 +5,7 @@ import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/progra
 
 import { reportSections } from "@/lib/development-evidence.mjs";
 import { buildProgrammeReport } from "@/lib/programme-intelligence.mjs";
+import { ProgrammeComparisonCoverage } from "./programme-comparison-coverage";
 import { ProgrammeReportGraphic } from "./programme-report-graphics";
 import "./programme-intelligence.css";
 import { useEffect, useMemo, useState } from "react";
@@ -605,7 +606,8 @@ export function ProgrammeOutcomesView({
           </div>
           {evidenceSections.filter(group => group.id !== "delivery").map(group => <section key={group.id} className="programme-evidence-domain">
             <h3>{group.title}</h3>
-            {group.insights.length || group.charts.length ? <>
+            {group.insights.length || group.charts.length || (group.id === "change" && report.comparisons.length) ? <>
+              {group.id === "change" ? <ProgrammeComparisonCoverage comparisons={report.comparisons} /> : null}
               {group.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
               <div className="outcomes-insight-grid">{group.insights.filter(item => !pendingInsights.includes(item)).map(renderInsight)}</div>
             </> : <p className="outcome-muted">No reportable evidence in this category yet. It may be uncollected, unavailable or withheld for privacy.</p>}
@@ -712,29 +714,11 @@ export function ProgrammeOutcomesView({
                   )}
                 </section> : null}
 
-                {outcome.learningSummary.learningJourney.skillShifts.length ? <section className="surface-card learning-shifts">
-                  <div>
-                    <p className="eyebrow">Growth signals</p>
-                    <h3>Where are group measures moving?</h3>
-                  </div>
-                  {outcome.learningSummary.learningJourney.skillShifts.length ? (
-                    <div className="skill-shift-list">
-                      {outcome.learningSummary.learningJourney.skillShifts.map((shift) => (
-                        <article key={shift.id}>
-                          <strong>{shift.label}</strong>
-                          <div className="shift-values">
-                            <span>{shift.averagePre}</span>
-                            <b>→</b>
-                            <span>{shift.averagePost}</span>
-                            <em>{shift.averageShift > 0 ? "+" : ""}{shift.averageShift}</em>
-                          </div>
-                          <small>{shift.pairedParticipants} learners with both check-ins</small>
-                        </article>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="outcome-muted">Before-and-after group shifts will appear when enough learners have completed both check-ins.</p>
-                  )}
+                {report.comparisons.length ? <section className="surface-card learning-shifts">
+                  <p className="eyebrow">Starting point and later check-in</p>
+                  <h3>Read comparisons with their coverage</h3>
+                  <p>Comparable check-ins appear in the results overview with their sample, chart and interpretation limits. Each measure retains its own sample.</p>
+                  {onSectionChange ? <button type="button" onClick={() => onSectionChange("overview")}>View comparisons</button> : null}
                 </section> : null}
               </div>
             </section>

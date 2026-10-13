@@ -1,3 +1,4 @@
+import { auditMeasurementReadiness } from "../../../lib/measurement-readiness.mjs";
 import { and, asc, desc, eq } from "../../../db/query";
 import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { getDb, withSupabaseRequest } from "../../../db";
@@ -606,6 +607,7 @@ async function postHandler(request: Request) {
               .map((issue) => issue.message)
               .filter(Boolean),
             questionQuality: auditLabQuestionQuality(preparedLab as Record<string, unknown>),
+            measurementReadiness: auditMeasurementReadiness(preparedLab as Record<string, unknown>),
           } : {}),
         };
         await db.update(contentLibraryVersions).set({

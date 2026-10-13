@@ -1,3 +1,4 @@
+import { programmeAggregateScopeMatches, sanitizeLearningComparisons } from "../../../lib/comparison-coverage.mjs";
 import { and, asc, desc, eq, inArray, ne, or } from "../../../db/query";
 import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { getDb, withSupabaseRequest } from "../../../db";
@@ -459,6 +460,18 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
     if (learningChecksResult.error) throw new Error(learningChecksResult.error.message);
     if (questionPatternsResult.error) throw new Error(questionPatternsResult.error.message);
     if (outcomeResult.data) {
+      if (!programmeAggregateScopeMatches(outcomeResult.data, flowResult.data)) {
+        const population = flowResult.data?.participantCount;
+        if (!Number.isInteger(population) || population < 0) throw new Error("Programme reporting scope could not be verified.");
+        // Withholding must apply to the response body, not just the dashboard.
+        // Independent RPC snapshots can disagree after consent/membership changes.
+        cohorts.push({ cohort: outcomeResult.data.cohort, participantCount: population,
+          suppressed: true, minimumReportableCohortSize: Math.max(5, flowResult.data.minimumReportableCohortSize ?? 5),
+          metrics: null, evidenceFlow: null, deepAnalysis: null, learningSummary: null,
+          organisationLearning: null, learningChecks: null, questionPatterns: null,
+          assessmentSummary: null, competencySummary: null, decisionRegister: null });
+        continue;
+      }
       cohorts.push({
         ...outcomeResult.data,
         evidenceFlow: flowResult.data,
@@ -466,7 +479,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
         participantCount: flowResult.data?.participantCount ?? outcomeResult.data.participantCount,
         suppressed: Boolean(outcomeResult.data.suppressed || flowResult.data?.suppressed),
         deepAnalysis: deeperResult.data ?? null,
-        learningSummary: learningResult.data ?? null,
+        learningSummary: sanitizeLearningComparisons(learningResult.data, flowResult.data?.participantCount ?? outcomeResult.data.participantCount, flowResult.data?.minimumReportableCellSize ?? 3),
         organisationLearning: organisationLearningResult.data ?? null,
         learningChecks: learningChecksResult.data ?? null,
         questionPatterns: questionPatternsResult.data ?? null,

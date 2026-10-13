@@ -387,11 +387,17 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   canvas.paragraph(report.boundary, { color: C.muted });
   const unavailable: string[] = [];
   for (const section of sections) {
-    if (!section.insights.length && !section.charts.length) { unavailable.push(section.title); continue; }
+    const hasComparisons = section.id === "change" && report.comparisons.length > 0;
+    if (!section.insights.length && !section.charts.length && !hasComparisons) { unavailable.push(section.title); continue; }
     canvas.y += 18;
     if (section.insights.length) canvas.ensure(Math.min(150 + canvas.findingHeight(section.insights[0]), BOTTOM - MARGIN));
     else canvas.ensure(240);
     canvas.section(section.title, section.title, undefined, false);
+    if (hasComparisons) {
+      canvas.paragraph("Who the comparison represents", { size: 13, font: "bold" });
+      canvas.table(["Measure", "Matched pairs", "Without comparable pair", "Programme participants"], report.comparisons.map(row => [row.label, row.pairedParticipants === null ? "Unavailable" : String(row.pairedParticipants), row.withoutComparablePair === null ? "Unavailable" : String(row.withoutComparablePair), row.cohortParticipants === null ? "Unavailable" : String(row.cohortParticipants)]));
+      canvas.paragraph("Each measure retains its own paired sample. Samples can overlap and must not be added into a unique-learner total. Missing or withheld comparisons do not explain participants' reasons. Counts do not establish growth or programme causation.", { size: 9, color: C.muted });
+    }
     for (const insight of section.insights) canvas.finding(insight);
     for (const chart of section.charts) canvas.chart(chart);
   }

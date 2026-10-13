@@ -153,3 +153,20 @@ test('learner switching immediately hides previous evidence and ignores a delaye
  await expect(page.getByRole('rowheader',{name:'gamma area'})).toBeVisible();
  await verify();
 });
+
+test('paired comparisons show cohort coverage and keep small remainders withheld in every section', async ({page})=>{
+ const verify=observe(page);let pairedParticipants=10;
+ await page.route('**/api/staff',route=>route.fulfill({json:{...base,sponsor:{cohorts:[{...outcome,learningSummary:{...outcome.learningSummary,learningJourney:{...outcome.learningSummary.learningJourney,skillShifts:[{id:'control',label:'Perceived control',pairedParticipants,averagePre:pairedParticipants===19?123456:4,averagePost:pairedParticipants===19?234567:6,averageShift:2}]}}}]}}}));
+ await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ const coverage=page.getByRole('table',{name:'Comparable check-ins within this programme group'});
+ await expect(coverage.getByRole('row',{name:'Perceived control 10 10 20 Comparable self-report'})).toBeVisible();
+ pairedParticipants=19;await page.reload();
+ await expect(coverage.getByRole('row',{name:'Perceived control Unavailable Unavailable 20 Withheld for privacy'})).toBeVisible();
+ await expect(page.getByRole('img',{name:/Perceived control: starting point/})).toHaveCount(0);
+ await expect(page.getByText(/123456|234567/)).toHaveCount(0);
+ await page.goto('/staff-shell?view=outcomes&section=learning&group=group');
+ await expect(page.getByRole('button',{name:'View comparisons',exact:true})).toBeVisible();
+ await expect(page.getByText(/123456|234567/)).toHaveCount(0);
+ await page.getByRole('button',{name:'View comparisons',exact:true}).click();
+ await expect(coverage).toBeVisible();await verify();
+});

@@ -29,3 +29,7 @@ Authenticated API-to-database checks remain blocked. BIS Staging is inactive and
 The manuscript inventory covers ten supplied Lab titles, 30 sections and 29 unique Lab/edition pairs. Its 300 baseline occurrences have reviewed curriculum associations. Activity headings and candidate question lines remain provisional; edition-specific live field binding, authored assessment criteria and sustained-transfer capture are still required. These reporting fixes do not validate all 34 Labs or authorise automatic capability claims.
 
 Main advanced to `cce44f24ce24301f4774689f14bbe3a28ab3e2e2` during verification, adding six partner prospect entry points and PDF routes. GitHub reports this follow-up mergeable; the base comparison changes no reporting files. Combined-head release verification remains a separate gate.
+
+## Implementation continuation
+
+See `BIS_MEASUREMENT_IMPLEMENTATION.md` for comparison coverage, Content Studio readiness review, API payload withholding and the append-only consent/scope migration. The nine presentation failures were traced to tests predating Pride's explicit PR #152 reversion; the actual floating Menu and numbered cards remain unchanged. The corrected checks and new measurement UI passed 15 focused browser cases. Local SQL tests cover all four reporting families and current consent eligibility. The complete regression run is in progress. No migration has been applied to a live database.

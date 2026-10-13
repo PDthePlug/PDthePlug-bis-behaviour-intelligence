@@ -1,3 +1,4 @@
+import { auditMeasurementReadiness } from "../../../../lib/measurement-readiness.mjs";
 import {
   AccessError,
   getRoles,
@@ -105,6 +106,7 @@ export async function POST(request: Request) {
           standardVersion: compiled.standardVersion ?? null,
           editorialStatus: compiled.editorialAudit?.status ?? "REVIEW",
           editorialIssues: compiled.editorialAudit?.issues ?? [],
+          measurementReadiness: auditMeasurementReadiness(compiled as Record<string, unknown>),
           normalizationNotes: compiled.normalizationNotes ?? [],
           investigationCount: compiled.investigations?.length ?? 0,
           promptCount: compiled.investigations?.reduce((sum, item) => sum + (item.prompts?.length ?? 0), 0) ?? 0,
