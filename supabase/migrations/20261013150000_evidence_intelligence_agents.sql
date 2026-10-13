@@ -1,12 +1,12 @@
 -- BIS Evidence Intelligence Agents
 -- AI receives only explicitly eligible learner-authored text. Original evidence remains immutable.
 -- AI proposals are intentionally not persisted by a privileged service-role path in v1; a human-reviewed
--- assessment remains the reportable authority. Sponsor/programme surfaces never receive this RPC.
+-- assessment remains the reportable authority. Sponsor/programme and learner-facing surfaces never receive this RPC.
 
 -- Resolve one eligible free-text learner response for model-assisted interpretation.
--- Access is limited to the learner who owns it or the explicitly assigned facilitator
--- reviewing a current, revocable submission. System administrators and sponsors do not
--- gain a new raw-evidence path through this function.
+-- Access is limited to the explicitly assigned facilitator reviewing a current,
+-- revocable learner evidence submission. Learners, system administrators and sponsors
+-- do not gain a new raw-evidence path through this function.
 create or replace function public.bis_evidence_agent_context(p_evidence_id text)
 returns jsonb
 language plpgsql
@@ -20,11 +20,14 @@ declare
   m public.curriculum_evidence_mappings;
   r public.assessment_rubric_versions;
   v_cohort_id text;
-  v_allowed boolean := false;
   v_stage_ceiling text := 'NOT_YET_EVIDENCED';
 begin
   if auth.uid() is null then
     raise insufficient_privilege using message = 'Sign in is required.';
+  end if;
+
+  if not private.has_staff_role('FACILITATOR') then
+    raise insufficient_privilege using message = 'Facilitator review access is required.';
   end if;
 
   select * into e
@@ -67,24 +70,19 @@ begin
     raise insufficient_privilege using message = 'This evidence is not currently eligible for model-assisted review.';
   end if;
 
-  if e.user_id = private.current_app_user_id() then
-    v_allowed := true;
-  elsif private.has_staff_role('FACILITATOR') then
-    select s.cohort_id into v_cohort_id
-    from public.evidence_submissions s
-    join public.pilot_cohorts c on c.id = s.cohort_id
-    where e.id = any(s.evidence_ids)
-      and s.user_id = e.user_id
-      and c.lab_code = e.lab_code
-      and c.lab_version = e.lab_version
-      and lower(c.facilitator_email) = private.current_email()
-      and private.submission_is_current(s.id)
-    order by s.created_at desc
-    limit 1;
-    v_allowed := v_cohort_id is not null;
-  end if;
+  select s.cohort_id into v_cohort_id
+  from public.evidence_submissions s
+  join public.pilot_cohorts c on c.id = s.cohort_id
+  where e.id = any(s.evidence_ids)
+    and s.user_id = e.user_id
+    and c.lab_code = e.lab_code
+    and c.lab_version = e.lab_version
+    and lower(c.facilitator_email) = private.current_email()
+    and private.submission_is_current(s.id)
+  order by s.created_at desc
+  limit 1;
 
-  if not v_allowed then
+  if v_cohort_id is null then
     raise insufficient_privilege using message = 'This evidence is not available for model-assisted review.';
   end if;
 
@@ -174,4 +172,4 @@ revoke all on function public.bis_evidence_agent_context(text) from public, anon
 grant execute on function public.bis_evidence_agent_context(text) to authenticated;
 
 comment on function public.bis_evidence_agent_context(text) is
-  'Returns one consent-current, version-scoped learner-authored response for explicitly governed MODEL_ASSISTED interpretation. Access is learner-owned or explicit facilitator submission only; sponsors and administrators gain no raw-text path.';
+  'Returns one consent-current, version-scoped learner-authored response for explicitly governed MODEL_ASSISTED facilitator review. Access requires a current learner submission assigned to that facilitator; learner, sponsor and administrator roles gain no raw-text path.';
