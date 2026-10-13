@@ -1,0 +1,100 @@
+{
+  "projectRef": "lbmhkddrkhtmkcvfmumd",
+  "checks": [
+    {
+      "name": "application backend identity",
+      "status": "PASS"
+    },
+    {
+      "name": "real Auth sign-in for four dedicated QA roles",
+      "status": "PASS"
+    },
+    {
+      "name": "scoped sponsor API populations and private-value exclusion",
+      "status": "PASS"
+    },
+    {
+      "name": "facilitator development structural evidence boundary",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong programme export denied",
+      "status": "PASS"
+    },
+    {
+      "name": "authenticated institutional PDF export",
+      "status": "PASS"
+    },
+    {
+      "name": "learner role and anonymous access denied",
+      "status": "PASS"
+    },
+    {
+      "name": "authenticated read-only measurement readiness audit",
+      "status": "PASS"
+    },
+    {
+      "name": "real sponsor page at three viewports",
+      "status": "PASS"
+    }
+  ],
+  "viewports": [
+    {
+      "width": 360,
+      "status": "PASS"
+    },
+    {
+      "width": 430,
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "status": "PASS"
+    }
+  ],
+  "sourceAudit": {
+    "labs": 12,
+    "rateBindingsNeedingReview": 12,
+    "staged": false
+  },
+  "status": "PASS",
+  "observedAt": "2026-10-13T13:09:40.671Z",
+  "sourceBaseCommit": "8eb7e53fbbae0f13ddd31042034c05fa22c9f08f",
+  "verifiedWorkingSourceHashes": [
+    {
+      "path": "app/api/content-studio/volume-audit/route.ts",
+      "sha256": "9b6d05c451feb89e751329ae0a0838ada9ffb6a0c224dc33bdbb61294493b80a"
+    },
+    {
+      "path": "app/operations-view.tsx",
+      "sha256": "40de5e1a409e00b694e5d7313714869dcd7d99cad7446462d08737da650b9a12"
+    },
+    {
+      "path": "app/workspace/staff-workspace-shell.tsx",
+      "sha256": "ae6283bf05aef12c607aa576f9f16ea72352e4ec6f090bdb9ee7d3e2b1620474"
+    },
+    {
+      "path": "supabase/migrations/20261013111400_programme_learning_private_response_exclusion.sql",
+      "sha256": "b201a65c95d9cde15adb4ed6da040ca495dbf6153efc787388c89f4792e9f2d2"
+    }
+  ],
+  "boundary": "The hosted pass used this product source plus the appended P3 migration; the source-hash annotations were added after verification, without changing the tested product files.",
+  "repositoryVerification": {
+    "acceptancePassed": 727,
+    "browserPassed": 346,
+    "browserFailed": 0,
+    "existingViewportSkips": 2,
+    "fullVerify": "PASS"
+  },
+  "hostedSqlVerification": {
+    "P3Exclusion": "PASS",
+    "permittedP2Comparison": "PASS",
+    "smallComplementWithholding": "PASS",
+    "currentConsentFourFamilies": "PASS",
+    "wrongRole": "DENIED",
+    "missingAuth": "DENIED",
+    "anonymous": "DENIED",
+    "directPrivateHelper": "DENIED",
+    "temporaryResponseRowsRemaining": 0
+  }
+}

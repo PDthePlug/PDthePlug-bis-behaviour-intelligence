@@ -204,7 +204,7 @@ test("organisation reporting includes the learning journey beyond the experiment
   for (const label of [
     "Learning journey",
     "Recurring challenges",
-    "Growth signals",
+    "Read comparisons with their coverage",
     "What is changing while the programme is happening?",
     "What can the organisation do with this information?",
   ]) {

@@ -17,7 +17,14 @@ test("library honours offline publication and recovers a failed availability che
   await expect(habit).toContainText("Lab access pending");
   await expect(page.locator("a.bis-module-card").filter({hasText:"Decision Lab™"})).toHaveCount(0);
   await expect(page.locator("a.bis-module-card").filter({hasText:"Money Lab™"})).toHaveCount(0);
-  await expect(page.locator(".bis-module-card-top")).toHaveCount(0);
+  // PR #152 restored numbered cards at Pride's request. Unavailable shelves
+  // remain visible but must never become links to unpublished content.
+  await expect(page.locator(".bis-module-card-top")).toHaveCount(12);
+  await expect(habit.locator(".bis-module-card-top span")).toHaveText("01");
+  const pending = page.locator('article.bis-module-card[data-availability="unavailable"]');
+  await expect(pending).toHaveCount(11);
+  await expect(pending.locator("a[href]")).toHaveCount(0);
+  await expect(pending.locator(".bis-module-card-top svg")).toHaveCount(11);
   await info.attach("learning-library",{body:await page.screenshot({fullPage:true}),contentType:"image/png"});
   await page.goto("/library?mode=lab");
   await expect(page.getByRole("heading",{name:"Lab library."})).toBeVisible();

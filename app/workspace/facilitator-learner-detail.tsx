@@ -66,8 +66,10 @@ function position(learner: ProgressRow) {
 
 function practicePosition(learner: ProgressRow) {
   if (!learner.experiment) return learner.enrolment?.experimentStartedAt ? "Practice started" : "Not started";
-  const opportunities = learner.experiment.opportunityCount ?? 0;
-  const threshold = learner.experiment.minimumEvidenceThreshold ?? 3;
+  const opportunities = learner.experiment.opportunityCount;
+  if (!Number.isInteger(opportunities) || opportunities < 0) return "Observation detail not available";
+  const suppliedThreshold = learner.experiment.minimumEvidenceThreshold;
+  const threshold = suppliedThreshold && Number.isInteger(suppliedThreshold) && suppliedThreshold > 0 ? suppliedThreshold : 3;
   if (opportunities >= threshold) return "Enough situations recorded for review";
   if (opportunities > 0) return `${opportunities} real situation${opportunities === 1 ? "" : "s"} recorded`;
   if (learner.experiment.recordedDays > 0) return "Observations recorded; no matching situation yet";

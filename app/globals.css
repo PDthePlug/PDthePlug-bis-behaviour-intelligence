@@ -625,26 +625,3 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [role="button"]:fo
 .journey-activity-strip strong { overflow-wrap:anywhere; }
 .ops-metrics article strong, .outcomes-context strong { overflow-wrap:anywhere; min-width:0; }
 .participant-detail-metrics strong:has(+ small) { font-size:16px; }
-
-/* Evidence interpretation is shared by facilitator and institutional reports. */
-.development-evidence-picture { color: var(--foreground); }
-.development-evidence-intro, .development-evidence-boundary { max-width: 78ch; line-height: 1.6; }
-.development-evidence-table { overflow-x: auto; margin: 24px 0; border: 1px solid #cbd5e1; border-radius: 10px; }
-.development-evidence-table table { border-collapse: collapse; width: 100%; min-width: 740px; font-size: 13px; }
-.development-evidence-table caption { text-align: left; padding: 16px; font-weight: 650; }
-.development-evidence-table th, .development-evidence-table td { padding: 14px 10px; border-top: 1px solid #cbd5e1; text-align: center; }
-.development-evidence-table th:first-child { text-align: left; min-width: 170px; }
-.development-evidence-table .has-evidence { background: #d6eee5; color: #164c3b; font-weight: 700; }
-.development-evidence-table .no-evidence { background: #f5f6f7; color: #526274; }
-.development-evidence-actions { display: grid; gap: 24px; }
-.development-evidence-actions article { border-bottom: 1px solid #d8dfe5; padding-bottom: 20px; }
-.development-evidence-actions h3 { font-size: 18px; margin-bottom: 10px; }
-.development-evidence-actions p { line-height: 1.6; margin: 8px 0; }
-.development-evidence-actions summary { cursor: pointer; padding: 12px 0; }
-.development-evidence-history { list-style: none; padding: 0; }
-.development-evidence-history li { display: flex; flex-wrap: wrap; gap: 16px; padding: 8px 0 8px 16px; border-left: 3px solid #23785e; }
-.development-evidence-boundary { color: #526274; font-size: 13px; margin-top: 24px; }
-.programme-domain-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
-.programme-domain-nav button { padding: 10px 14px; border: 1px solid #b8c7cd; border-radius: 8px; background: transparent; color: inherit; }
-.programme-domain-nav button[aria-pressed=true] { background: #173f34; color: white; }
-.programme-paired-chart { width: 100%; height: auto; max-height: 250px; }

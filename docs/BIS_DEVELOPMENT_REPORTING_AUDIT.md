@@ -25,7 +25,7 @@ The extraction located 300 baseline item occurrences (290 after removing the rep
 
 `app/programme-outcomes-view.tsx` displayed a competency grid on the overview, repeated competency findings in the narrative, and rendered the same competency data again as charts under the programme-context disclosure. Other helper functions returned the same insight array for findings, organisational learning and decisions. Distinct screens often rephrased the same progress facts.
 
-## Implemented change
+## Initial implementation in PR #159
 
 - The facilitator API adds an evidence-class projection built from approved mappings and explicit active/non-private records. It deduplicates evidence IDs, preserves usable dates and ignores private values.
 - The compatibility profile in that endpoint now says NOT_ASSESSED. It cannot transmit the earlier unreviewed ability claim.
@@ -59,7 +59,7 @@ This is a bounded reporting implementation and forensic inventory, not a validat
 
 Release requires the repository verification contract and an isolated staging check of the authenticated facilitator/cohort routes. Production is not a development backend. A draft pull request is the reviewable release unit until those checks pass.
 
-## Verification recorded for this change
+## Historical verification of PR #159 at submission
 
 - 709 acceptance tests passed, including new evidence-class, privacy, invalid-date, duplicate-record and no-opportunity regressions.
 - Lint and TypeScript passed.
@@ -67,3 +67,25 @@ Release requires the repository verification contract and an isolated staging ch
 - `npm run verify` reached Playwright, but browser execution could not complete because Chromium and headless-shell downloads produced invalid archives. Browser assertions are not certified.
 - BIS Staging was observed INACTIVE. No production learner data was used for testing, and no backend was resumed or changed.
 - Authenticated API-to-database validation and responsive browser verification remain release blockers. Draft code must not be described as deployed or as a fully validated 34-Lab implementation.
+
+## Historical follow-up: responsive reporting and certification
+
+PR #159 was merged on 12 October 2026. Its original verification record above describes that change at submission, not a completed release certification.
+
+The follow-up adds context visibility, immediate learner-switch isolation, unavailable-count handling, responsive evidence-table containment, full repeat-response partition suppression and a shared, non-repeating institutional PDF structure. The restored implementation passes 712 acceptance tests, lint, TypeScript, source audits, optimized build and 15 learning-package runtime checks. Final focused reporting/evidence/calculation/PDF contracts pass (26). All 57 responsive reporting cases passed at 360px, 430px and 1280px in the full verification run. The wider browser run ended with 325 passes, 12 failures and two existing skips. Nine failures reproduce on unchanged main; the remaining three staff-menu assertions expect the deliberately retired overview duplication. The final focused rerun passed all 60 browser cases, including the corrected menu contract. A seven-page fictional PDF specimen was rendered and visually checked. The repository-wide release gate remains red.
+
+BIS Staging restore was rejected because both available active-project slots are occupied. No production learner data was used and no active application was paused. See `BIS_REPORT_CERTIFICATION.md` for the verification scope and remaining gates. All activity-level mappings and the remaining unpublished Lab measurement bindings remain provisional.
+
+Follow-up review: https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/161 (draft).
+
+
+## Current implementation continuation
+
+PR #161 now includes source measurement-readiness review, canonical comparison coverage in programme results and PDF, API withholding of small paired/complementary samples, and an append-only migration aligning four reporting families with current consent and Lab enrolment scope. Rate bindings remain explicit source work; the read-only audit of 32 canonical candidates found 32 unresolved rate labels. No updated manuscript edition was automatically activated.
+
+The previous presentation failures were traced to assertions predating Pride's PR #152 request to restore numbered cards and the floating Menu. Checks now follow that accepted product contract. The current verification record, including broad browser results and hosted staging limits, is in `BIS_REPORT_CERTIFICATION.md`; the preceding counts describe historical runs only. The latest implementation has 726 passing acceptance tests. No live migration, billing change or production QA operation has occurred.
+
+
+## Hosted implementation continuation
+
+The owner authorised temporarily pausing ThePlugOS and restoring BIS Staging. The three reporting migrations are applied in staging, with real Auth and API checks, hosted rollback scope/privacy tests and actual programme-page checks at all supported widths. The hosted tests found a P3 input exclusion gap and a Volume Audit request-context defect; both are corrected. The results page now reuses its already-authorised initial snapshot while retaining refresh denial handling. ThePlugOS is currently ACTIVE_HEALTHY again. Production is unchanged. Current verification and publication boundaries are recorded in `BIS_REPORT_CERTIFICATION.md`.

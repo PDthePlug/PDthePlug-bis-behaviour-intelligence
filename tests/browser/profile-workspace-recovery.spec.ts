@@ -100,11 +100,11 @@ test("Profile keyboard focus stays visible and reading chrome stays opaque acros
         return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
       }).reduce((value, channel, index) => value + channel * [.2126, .7152, .0722][index], 0);
       const outline = getComputedStyle(element), values = [luminance(outline.outlineColor), luminance(getComputedStyle(element.parentElement!).backgroundColor)].sort((a, b) => b - a);
-      return { contrast: (values[0] + .05) / (values[1] + .05), width: parseFloat(outline.outlineWidth), topbar: getComputedStyle(document.querySelector(".canonical-topbar")!).backgroundColor, dock: getComputedStyle(document.querySelector(".canonical-menu-dock")!).backgroundColor };
+      return { contrast: (values[0] + .05) / (values[1] + .05), width: parseFloat(outline.outlineWidth), topbar: getComputedStyle(document.querySelector(".canonical-topbar")!).backgroundColor, menu: getComputedStyle(document.querySelector(".canonical-menu-trigger")!).backgroundColor };
     });
     expect(styles.contrast).toBeGreaterThanOrEqual(3);
     expect(styles.width).toBeGreaterThanOrEqual(2);
     expect(styles.topbar).toMatch(/^rgb\(/);
-    expect(styles.dock).toMatch(/^rgb\(/);
+    expect(styles.menu).toMatch(/^rgb\(/);
   }
 });

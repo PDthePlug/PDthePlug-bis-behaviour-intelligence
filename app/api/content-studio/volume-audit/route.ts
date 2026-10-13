@@ -1,3 +1,4 @@
+import { auditMeasurementReadiness } from "../../../../lib/measurement-readiness.mjs";
 import {
   AccessError,
   getRoles,
@@ -6,7 +7,7 @@ import {
 } from "../../../../lib/bis-access";
 import { customerSafeErrorResponse } from "../../../../lib/api-error-response";
 import { eq } from "../../../../db/query";
-import { getDb } from "../../../../db";
+import { getDb, withSupabaseRequest } from "../../../../db";
 import {
   contentActivationUat,
   contentLibraryItems,
@@ -42,7 +43,7 @@ function safeVersion(value: FormDataEntryValue | null) {
   return version;
 }
 
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   try {
     const identity = await requireSuperUser();
     const form = await request.formData();
@@ -105,6 +106,7 @@ export async function POST(request: Request) {
           standardVersion: compiled.standardVersion ?? null,
           editorialStatus: compiled.editorialAudit?.status ?? "REVIEW",
           editorialIssues: compiled.editorialAudit?.issues ?? [],
+          measurementReadiness: auditMeasurementReadiness(compiled as Record<string, unknown>),
           normalizationNotes: compiled.normalizationNotes ?? [],
           investigationCount: compiled.investigations?.length ?? 0,
           promptCount: compiled.investigations?.reduce((sum, item) => sum + (item.prompts?.length ?? 0), 0) ?? 0,
@@ -261,4 +263,8 @@ export async function POST(request: Request) {
   } catch (error) {
     return errorResponse(error);
   }
+}
+
+export function POST(request: Request) {
+  return withSupabaseRequest(() => postHandler(request));
 }

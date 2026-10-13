@@ -51,3 +51,5 @@ next-env.d.ts
 /tests/browser/harness/next-env.d.ts
 playwright-report-staging/
 test-results-staging/
+
+/tests/browser/harness/.next-bis-*/

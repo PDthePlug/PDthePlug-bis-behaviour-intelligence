@@ -16,7 +16,7 @@ test('shared tables preserve groups, authored examples, geometry and saved answe
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);expect(await controls.nth(0).getAttribute('data-response-group')).toBeTruthy();
 });
 test('Universal outcomes refresh recorded evidence and clear revoked access',async({page})=>{
- let count=24,revoked=false;await page.route('**/api/staff',route=>route.fulfill({status:revoked?403:200,json:revoked?{error:'Programme access revoked'}:outcome(count)}));await page.goto('/outcomes');
+ let count=24,revoked=false;await page.route('**/api/staff',route=>route.fulfill({status:revoked?403:200,json:revoked?{error:'Programme access revoked'}:outcome(count)}));await page.goto('/staff-shell?view=outcomes&section=evidence&group=group');
  await expect(page.getByRole('heading',{name:'From learner evidence to programme results'})).toBeVisible();await expect(page.getByText('24',{exact:true})).toBeVisible();expect(await page.locator('.outcome-question-grid').count()).toBe(0);
  count=30;await page.getByRole('button',{name:'Refresh results'}).click();await expect(page.getByText('30',{exact:true})).toBeVisible();await expect(page.getByRole('link',{name:'Download PDF'})).toHaveAttribute('href',/report=pdf/);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);

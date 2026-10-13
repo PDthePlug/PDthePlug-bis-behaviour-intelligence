@@ -34,18 +34,20 @@ test("source tables explain actual clipping, retain separate column names and sc
   expect(await root.locator(".handbook-table-frame .handbook-table-frame").count()).toBe(0);
 });
 
-test("centred Menu has its own opaque chrome and restores keyboard focus during long reading", async ({ page }, info) => {
+test("floating Menu stays opaque, centred and reachable during long reading", async ({ page }, info) => {
   await page.goto("/reader-hardening");
   const trigger = page.getByRole("button", { name: /Open BIS menu/ });
   const dock = page.getByRole("navigation", { name: "BIS navigation", exact: true });
   await page.locator(".prototype-document").evaluate(element => element.scrollIntoView({ block: "end" }));
-  await expect(dock).toBeVisible();
-  const geometry = await dock.evaluate(element => {
-    const rect = element.getBoundingClientRect();
-    const button = element.querySelector("button")!.getBoundingClientRect();
-    return { background: getComputedStyle(element).backgroundColor, centred: Math.abs((button.left + button.right) / 2 - innerWidth / 2), contained: button.top >= rect.top && button.bottom <= rect.bottom };
+  await expect(dock).toBeAttached();
+  await expect(trigger).toBeVisible();
+  const geometry = await trigger.evaluate(element => {
+    const button = element.getBoundingClientRect();
+    return { background: getComputedStyle(element).backgroundColor, centred: Math.abs((button.left + button.right) / 2 - innerWidth / 2), contained: button.left >= 0 && button.right <= innerWidth && button.top >= 0 && button.bottom <= innerHeight, floating: getComputedStyle(element).position === "fixed" };
   });
-  expect(geometry.background).toBe("rgb(250, 249, 246)");
+  // PR #152 restored the floating trigger, rather than a bottom strip.
+  expect(geometry.background).toMatch(/^rgb\(/);
+  expect(geometry.floating).toBe(true);
   expect(geometry.centred).toBeLessThanOrEqual(1);
   expect(geometry.contained).toBe(true);
   await trigger.focus(); await page.keyboard.press("Enter");

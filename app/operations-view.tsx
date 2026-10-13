@@ -115,7 +115,7 @@ type SafeguardingCase = {
   learner: { userId: string; displayName: string; email: string };
 };
 
-type StaffSnapshot = {
+export type StaffSnapshot = {
   identity: { id: string; email: string; displayName: string };
   roles: string[];
   privacyBoundary: {
@@ -164,9 +164,9 @@ function ProgressStatus({ learner }: { learner: ProgressRow }) {
   return <details className="operator-learner-row"><summary><span><strong>{learner.displayName}</strong><small>{learner.email}</small></span><span>{learner.enrolment ? label(learner.enrolment.status) : "Not started"}<small>Last activity {formatDate(learner.lastActivityAt)}</small></span></summary><div className="operator-learner-detail"><dl><div><dt>Investigation</dt><dd>{learner.enrolment?.currentInvestigation ?? 0} / 9</dd></div><div><dt>Recorded days</dt><dd>{experiment?.recordedDays ?? "Not available"}</dd></div><div><dt>Opportunities</dt><dd>{experiment?.opportunityCount ?? "Not available"}</dd></div></dl>{learner.supportGuidance ? <p className="ops-support-guidance">{learner.supportGuidance}</p> : null}</div></details>;
 }
 
-export function OperationsView({ initialRoles, perspective = "facilitator", section = "all", onSectionChange, cohortId, onCohortChange }: { initialRoles: string[]; perspective?: "facilitator" | "outcomes" | "admin"; section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void }) {
-  const [data, setData] = useState<StaffSnapshot | null>(null);
-  const [loading, setLoading] = useState(true);
+export function OperationsView({ initialRoles, initialSnapshot, perspective = "facilitator", section = "all", onSectionChange, cohortId, onCohortChange }: { initialRoles: string[]; initialSnapshot?: StaffSnapshot; perspective?: "facilitator" | "outcomes" | "admin"; section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void }) {
+  const [data, setData] = useState<StaffSnapshot | null>(initialSnapshot ?? null);
+  const [loading, setLoading] = useState(!initialSnapshot);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -192,11 +192,11 @@ export function OperationsView({ initialRoles, perspective = "facilitator", sect
     }
   }, []);
   useEffect(() => {
-    const timer = setTimeout(() => void load(true), 0);
+    const timer = initialSnapshot ? undefined : setTimeout(() => void load(true), 0);
     const focus = () => void load();
     window.addEventListener("focus", focus);
-    return () => { clearTimeout(timer); window.removeEventListener("focus", focus); };
-  }, [load]);
+    return () => { if (timer !== undefined) clearTimeout(timer); window.removeEventListener("focus", focus); };
+  }, [load, initialSnapshot]);
 
   async function act(payload: Record<string, unknown>) {
     if (writing.current) return false;

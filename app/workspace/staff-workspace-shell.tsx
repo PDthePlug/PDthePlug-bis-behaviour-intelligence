@@ -18,7 +18,7 @@ import {
   Settings2,
 } from "lucide-react";
 import { WorkspaceMenu, type WorkspaceDestination } from "@/components/workspace-menu";
-import { OperationsView } from "../operations-view";
+import { OperationsView, type StaffSnapshot } from "../operations-view";
 import { FacilitatorLearnerDetail } from "./facilitator-learner-detail";
 
 type Perspective = "facilitator" | "outcomes" | "admin";
@@ -26,6 +26,7 @@ type Perspective = "facilitator" | "outcomes" | "admin";
 type StaffSession = {
   identity: { email: string; displayName: string };
   roles: string[];
+  initialSnapshot?: StaffSnapshot;
 };
 
 function canFacilitate(roles: string[]) {
@@ -64,7 +65,7 @@ export function StaffWorkspaceShell() {
           cache: "no-store",
           signal: controller.signal,
         });
-        const payload = await response.json().catch(() => null) as StaffSession | null;
+        const payload = await response.json().catch(() => null) as StaffSnapshot | null;
         if (!response.ok || typeof payload?.identity?.email !== "string" || typeof payload.identity.displayName !== "string" || !Array.isArray(payload.roles) || !payload.roles.every(role => typeof role === "string")) {
           if (controller.signal.aborted) return;
           setError(
@@ -76,7 +77,8 @@ export function StaffWorkspaceShell() {
         }
         if (controller.signal.aborted) return;
         const roles = payload.roles ?? [];
-        setSession({ identity: payload.identity, roles });
+        const complete = ['admin','facilitator','sponsor','safeguarding','privacyBoundary'].every(key => Object.hasOwn(payload,key));
+        setSession({ identity: payload.identity, roles, initialSnapshot: complete ? payload : undefined });
       } catch {
         if (!controller.signal.aborted) {
           setError("We couldn't open the programme workspace. Please try again.");
@@ -229,7 +231,7 @@ export function StaffWorkspaceShell() {
         {selectedLearnerId ? (
           <FacilitatorLearnerDetail learnerId={selectedLearnerId} requestedCohortId={searchParams.get("group") ?? undefined} />
         ) : (
-          <OperationsView initialRoles={session.roles} perspective={perspective} section={section} onSectionChange={section=>changeContext({section})} cohortId={searchParams.get("group")??undefined} onCohortChange={group=>changeContext({group})} />
+          <OperationsView initialRoles={session.roles} initialSnapshot={session.initialSnapshot} perspective={perspective} section={section} onSectionChange={section=>changeContext({section})} cohortId={searchParams.get("group")??undefined} onCohortChange={group=>changeContext({group})} />
         )}
       </main>
       <WorkspaceMenu groups={menuGroups} label="Staff workspace menu" />

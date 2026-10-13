@@ -1,3 +1,4 @@
+import './development-evidence-picture.css';
 import type { DevelopmentEvidence } from '@/lib/development-evidence.mjs';
 
 export function DevelopmentEvidencePicture({ evidence }: { evidence: DevelopmentEvidence }) {

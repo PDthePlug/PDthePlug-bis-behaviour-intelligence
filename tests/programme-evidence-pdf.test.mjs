@@ -8,7 +8,7 @@ import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import {buildProgrammeReport} from '../lib/programme-intelligence.mjs';
 const dir=await mkdtemp(new URL('../.pdf-proof-',import.meta.url));
 const src=await readFile(new URL('../lib/programme-report-pdf.ts',import.meta.url),'utf8');
-const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./programme-intelligence.mjs"',JSON.stringify(new URL('../lib/programme-intelligence.mjs',import.meta.url).href)).replace('"./experience/programme-experience.mjs"',JSON.stringify(new URL('../lib/experience/programme-experience.mjs',import.meta.url).href));
+const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./development-evidence.mjs"',JSON.stringify(new URL('../lib/development-evidence.mjs',import.meta.url).href)).replace('"./programme-intelligence.mjs"',JSON.stringify(new URL('../lib/programme-intelligence.mjs',import.meta.url).href)).replace('"./experience/programme-experience.mjs"',JSON.stringify(new URL('../lib/experience/programme-experience.mjs',import.meta.url).href));
 await writeFile(join(dir,'programme-report-pdf.mjs'),code);
 const {renderProgrammeOutcomePdf}=await import(pathToFileURL(join(dir,'programme-report-pdf.mjs')).href);
 const leap9Source = await readFile(new URL('../lib/experience/leap9-report.ts', import.meta.url), 'utf8');
@@ -21,7 +21,7 @@ const normalise=s=>s.replace(/\s+/g,' ').trim();
 test('Universal report includes executive findings, graphics, actions, Unicode and every canonical insight',async()=>{
  const bytes=await renderProgrammeOutcomePdf(outcome);assert.ok(bytes.length>1000);assert.match(Buffer.from(bytes.slice(0,8)).toString(),/%PDF/);
  const {pdf,text,pages}=await inspect(bytes);
- assert.match(text,/Réfiloë Dlamini/);assert.match(text,/Applied Commerce®/);assert.match(text,/Executive summary/);assert.match(text,/Programme review/);assert.match(text,/24 responses and 9 measures/);assert.match(text,/Unavailable/);
+ assert.match(text,/Réfiloë Dlamini/);assert.match(text,/Applied Commerce®/);assert.match(text,/Executive summary/);assert.match(text,/Programme review/i);assert.match(text,/24 responses and 9 measures/);assert.match(text,/Unavailable/);
  for(const insight of buildProgrammeReport(outcome).insights)for(const key of ['observation','context','interpretation','action','boundary'])assert.ok(normalise(text).includes(normalise(insight[key])),`${insight.id}:${key} absent from PDF`);
  assert.doesNotMatch(text,/Observed adherence|Prediction accuracy|SECRET_PRIVATE/);
  // Actual glyph geometry, rather than source-code snapshots.
@@ -51,5 +51,13 @@ test('Leap9 sponsor report leads with practical meaning from the same fictional 
    for (const item of items) { assert.ok(item.transform[4] >= 47 && item.transform[4] + item.width <= 548, `horizontal clipping: ${item.str}`); assert.ok(item.transform[5] >= 30 && item.transform[5] < 800, `vertical clipping: ${item.str}`); }
  }
  assert.ok(pdf.numPages <= 5);
+ await pdf.cleanup();
+});
+
+test('each institutional finding is printed once',async()=>{
+ const {pdf,text}=await inspect(await renderProgrammeOutcomePdf(outcome));
+ for(const insight of buildProgrammeReport(outcome).insights){
+  assert.equal(normalise(text).split(normalise(insight.observation)).length-1,1,insight.id);
+ }
  await pdf.cleanup();
 });
