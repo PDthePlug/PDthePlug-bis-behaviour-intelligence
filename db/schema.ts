@@ -1,81 +1,43 @@
-import { sql } from "./query";
-import {
-  index,
-  integer,
-  sqliteTable,
-  text,
-  uniqueIndex,
-} from "./table";
+import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-const timestamp = () => text().notNull().default(sql`CURRENT_TIMESTAMP`);
+const timestamp = (name = "created_at") => text(name);
 
-export const learners = sqliteTable("learners", {
-  userId: text("user_id").primaryKey(),
-  authUserId: text("auth_user_id"),
-  email: text("email").notNull(),
-  displayName: text("display_name").notNull(),
-  ageBand: text("age_band").notNull(),
-  deliveryEdition: text("delivery_edition").notNull().default("school"),
-  deliveryContext: text("delivery_context").notNull().default("independent"),
-  mode: text("mode").notNull().default("INDEPENDENT"),
-  language: text("language").notNull().default("en"),
-  timezone: text("timezone").notNull().default("Africa/Johannesburg"),
-  status: text("status").notNull().default("ACTIVE"),
-  appearancePreference: text("appearance_preference").notNull().default("system"),
-  accentPreference: text("accent_preference").notNull().default("bis"),
-  textSizePreference: text("text_size_preference").notNull().default("standard"),
-  readingWidthPreference: text("reading_width_preference").notNull().default("standard"),
-  createdAt: timestamp(),
-  updatedAt: timestamp(),
-});
-
-export const contentReleases = sqliteTable(
-  "content_releases",
+export const learners = sqliteTable(
+  "learners",
   {
-    id: text("id").primaryKey(),
-    handbookId: text("handbook_id").notNull(),
-    labCode: text("lab_code").notNull(),
-    deliveryEdition: text("delivery_edition").notNull(),
-    contentVersion: text("content_version").notNull(),
-    runtimeVersion: text("runtime_version").notNull(),
-    schemaVersion: text("schema_version").notNull(),
-    releaseHash: text("release_hash").notNull(),
-    status: text("status").notNull().default("CONTROLLED"),
-    releasedAt: text("released_at"),
+    userId: text("user_id").primaryKey(),
+    authUserId: text("auth_user_id"),
+    email: text("email").notNull(),
+    displayName: text("display_name").notNull(),
+    ageBand: text("age_band").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
     createdAt: timestamp(),
+    updatedAt: text("updated_at"),
   },
   (table) => [
-    uniqueIndex("uq_content_release_identity").on(
-      table.labCode,
-      table.deliveryEdition,
-      table.contentVersion,
-      table.releaseHash,
-    ),
-    index("idx_content_release_lookup").on(table.labCode, table.deliveryEdition, table.status),
+    uniqueIndex("uq_learners_auth_user_id").on(table.authUserId),
+    uniqueIndex("uq_learners_email").on(table.email),
   ],
 );
-
 
 export const contentLibraryItems = sqliteTable(
   "content_library_items",
   {
     id: text("id").primaryKey(),
-    kind: text("kind").notNull(),
     code: text("code").notNull(),
     slug: text("slug").notNull(),
     title: text("title").notNull(),
-    summary: text("summary").notNull().default(""),
+    kind: text("kind").notNull().default("LAB"),
+    description: text("description"),
     routePath: text("route_path"),
-    linkedLabItemId: text("linked_lab_item_id"),
-    status: text("status").notNull().default("ACTIVE"),
+    status: text("status").notNull().default("DRAFT"),
     createdBy: text("created_by").notNull(),
     createdAt: timestamp(),
-    updatedAt: timestamp(),
+    updatedAt: text("updated_at"),
   },
   (table) => [
-    uniqueIndex("uq_content_library_kind_code").on(table.kind, table.code),
-    uniqueIndex("uq_content_library_kind_slug").on(table.kind, table.slug),
-    index("idx_content_library_items_kind_status").on(table.kind, table.status),
+    uniqueIndex("uq_content_library_item_code").on(table.code),
+    uniqueIndex("uq_content_library_item_slug").on(table.slug),
   ],
 );
 
@@ -85,63 +47,38 @@ export const contentLibraryVersions = sqliteTable(
     id: text("id").primaryKey(),
     itemId: text("item_id").notNull(),
     version: text("version").notNull(),
-    schemaVersion: text("schema_version").notNull().default("1.0"),
-    sourceFormat: text("source_format").notNull().default("BIS_PACKAGE_JSON"),
-    sourceFileName: text("source_file_name"),
-    sourceStoragePath: text("source_storage_path"),
+    sourceType: text("source_type").notNull().default("MANUAL"),
+    sourceName: text("source_name"),
+    sourcePath: text("source_path"),
     sourceHash: text("source_hash"),
-    sourceBytes: integer("source_bytes"),
-    mimeType: text("mime_type"),
-    deliveryEditions: text("delivery_editions").notNull().default('["school","emerging_adult","workplace"]'),
-    manifest: text("manifest").notNull().default("{}"),
-    validationStatus: text("validation_status").notNull().default("PENDING"),
-    runtimeStatus: text("runtime_status").notNull().default("REQUIRES_ADAPTER"),
-    validationReport: text("validation_report").notNull().default("{}"),
+    sourceMetadata: text("source_metadata").notNull().default("{}"),
     status: text("status").notNull().default("DRAFT"),
-    releaseNotes: text("release_notes").notNull().default(""),
-    compilerStatus: text("compiler_status").notNull().default("NOT_COMPILED"),
-    compilerReport: text("compiler_report").notNull().default("{}"),
-    compilerVersion: text("compiler_version"),
-    compiledAt: text("compiled_at"),
-    compiledBy: text("compiled_by"),
-    createdBy: text("created_by"),
-    validatedAt: text("validated_at"),
-    approvedAt: text("approved_at"),
-    approvedBy: text("approved_by"),
-    publishedAt: text("published_at"),
+    runtimeStatus: text("runtime_status").notNull().default("NOT_READY"),
+    validationSummary: text("validation_summary").notNull().default("{}"),
+    createdBy: text("created_by").notNull(),
     createdAt: timestamp(),
-    updatedAt: timestamp(),
+    updatedAt: text("updated_at"),
   },
   (table) => [
-    uniqueIndex("uq_content_library_item_version").on(table.itemId, table.version),
-    index("idx_content_library_versions_item_status").on(table.itemId, table.status),
-    index("idx_content_library_versions_runtime").on(table.runtimeStatus, table.validationStatus),
+    uniqueIndex("uq_content_library_version").on(table.itemId, table.version),
+    index("idx_content_library_version_item_status").on(table.itemId, table.status),
   ],
 );
 
-
-export const contentSourceFiles = sqliteTable(
-  "content_source_files",
+export const contentSourceDocuments = sqliteTable(
+  "content_source_documents",
   {
     id: text("id").primaryKey(),
     versionId: text("version_id").notNull(),
-    itemId: text("item_id").notNull(),
-    sourceKey: text("source_key").notNull(),
-    deliveryEdition: text("delivery_edition"),
-    sourceFormat: text("source_format").notNull(),
-    fileName: text("file_name").notNull(),
+    filename: text("filename").notNull(),
     storagePath: text("storage_path").notNull(),
-    sourceHash: text("source_hash"),
-    sourceBytes: integer("source_bytes").notNull(),
-    mimeType: text("mime_type"),
+    mimeType: text("mime_type").notNull(),
+    byteSize: integer("byte_size").notNull(),
+    sha256: text("sha256").notNull(),
     createdBy: text("created_by").notNull(),
     createdAt: timestamp(),
-    updatedAt: timestamp(),
   },
-  (table) => [
-    uniqueIndex("uq_content_source_file_version_key").on(table.versionId, table.sourceKey),
-    index("idx_content_source_files_item").on(table.itemId, table.versionId),
-  ],
+  (table) => [index("idx_content_source_document_version").on(table.versionId)],
 );
 
 export const contentRuntimeArtifacts = sqliteTable(
@@ -149,40 +86,18 @@ export const contentRuntimeArtifacts = sqliteTable(
   {
     id: text("id").primaryKey(),
     versionId: text("version_id").notNull(),
-    itemId: text("item_id").notNull(),
     artifactKey: text("artifact_key").notNull(),
-    deliveryEdition: text("delivery_edition"),
     storagePath: text("storage_path").notNull(),
     artifactHash: text("artifact_hash").notNull(),
-    artifactBytes: integer("artifact_bytes").notNull(),
-    mimeType: text("mime_type").notNull().default("application/json"),
     compilerVersion: text("compiler_version").notNull(),
+    metadata: text("metadata").notNull().default("{}"),
     createdAt: timestamp(),
   },
   (table) => [
-    uniqueIndex("uq_content_runtime_artifact_key").on(table.versionId, table.artifactKey),
-    index("idx_content_runtime_artifacts_item").on(table.itemId, table.versionId),
+    uniqueIndex("uq_content_runtime_artifact").on(table.versionId, table.artifactKey),
+    index("idx_content_runtime_artifact_version").on(table.versionId),
   ],
 );
-
-export const contentEditionActivations = sqliteTable(
-  "content_edition_activations",
-  {
-    id: text("id").primaryKey(),
-    itemId: text("item_id").notNull(),
-    deliveryEdition: text("delivery_edition").notNull(),
-    versionId: text("version_id").notNull(),
-    status: text("status").notNull().default("ACTIVE"),
-    activatedBy: text("activated_by").notNull(),
-    activatedAt: timestamp(),
-    deactivatedAt: text("deactivated_at"),
-    supersedesActivationId: text("supersedes_activation_id"),
-  },
-  (table) => [
-    index("idx_content_edition_activation_version").on(table.versionId, table.status),
-  ],
-);
-
 
 export const contentRuntimeActivations = sqliteTable(
   "content_runtime_activations",
@@ -191,14 +106,12 @@ export const contentRuntimeActivations = sqliteTable(
     itemId: text("item_id").notNull(),
     versionId: text("version_id").notNull(),
     runtimeMode: text("runtime_mode").notNull().default("DYNAMIC"),
-    status: text("status").notNull().default("ACTIVE"),
     activatedBy: text("activated_by").notNull(),
     activatedAt: timestamp(),
-    deactivatedAt: text("deactivated_at"),
-    supersedesActivationId: text("supersedes_activation_id"),
   },
   (table) => [
-    index("idx_content_runtime_version").on(table.versionId, table.status),
+    uniqueIndex("uq_content_runtime_activation_item").on(table.itemId, table.runtimeMode),
+    index("idx_content_runtime_activation_version").on(table.versionId),
   ],
 );
 
@@ -206,16 +119,12 @@ export const contentActivationUat = sqliteTable(
   "content_activation_uat",
   {
     id: text("id").primaryKey(),
-    versionId: text("version_id").notNull(),
     itemId: text("item_id").notNull(),
-    artifactFingerprint: text("artifact_fingerprint").notNull(),
-    previewedArtifacts: text("previewed_artifacts").notNull().default("[]"),
-    checklist: text("checklist").notNull().default("{}"),
-    notes: text("notes").notNull().default(""),
-    status: text("status").notNull().default("IN_REVIEW"),
+    versionId: text("version_id").notNull(),
+    status: text("status").notNull().default("PENDING"),
     reviewedBy: text("reviewed_by"),
     reviewedAt: text("reviewed_at"),
-    updatedBy: text("updated_by").notNull(),
+    notes: text("notes"),
     createdAt: timestamp(),
     updatedAt: timestamp(),
   },
@@ -224,7 +133,6 @@ export const contentActivationUat = sqliteTable(
     index("idx_content_activation_uat_item").on(table.itemId, table.status),
   ],
 );
-
 
 export const questionAnalysisRegistry = sqliteTable(
   "question_analysis_registry",
@@ -240,6 +148,8 @@ export const questionAnalysisRegistry = sqliteTable(
     answerModel: text("answer_model").notNull(),
     sensitivity: text("sensitivity").notNull().default("P2"),
     aggregatePolicy: text("aggregate_policy").notNull().default("EXCLUDE"),
+    modelReviewPolicy: text("model_review_policy").notNull().default("DISABLED"),
+    contractId: text("contract_id"),
     status: text("status").notNull().default("CANDIDATE"),
     createdAt: timestamp(),
     updatedAt: timestamp(),
@@ -248,9 +158,10 @@ export const questionAnalysisRegistry = sqliteTable(
     uniqueIndex("uq_question_analysis_version_field").on(table.versionId, table.semanticFieldId),
     index("idx_question_analysis_lab").on(table.labCode, table.labVersion, table.status, table.aggregatePolicy),
     index("idx_question_analysis_family").on(table.questionFamily, table.status),
+    index("idx_question_analysis_contract").on(table.contractId, table.status),
+    index("idx_question_analysis_model_review").on(table.labCode, table.labVersion, table.modelReviewPolicy, table.status),
   ],
 );
-
 
 export const consentRecords = sqliteTable(
   "consent_records",
@@ -285,11 +196,7 @@ export const labEnrollments = sqliteTable(
     updatedAt: timestamp(),
   },
   (table) => [
-    uniqueIndex("uq_enrolment_user_lab_version").on(
-      table.userId,
-      table.labCode,
-      table.labVersion,
-    ),
+    uniqueIndex("uq_enrolment_user_lab_version").on(table.userId, table.labCode, table.labVersion),
     index("idx_enrolment_user_id").on(table.userId),
   ],
 );
@@ -550,16 +457,8 @@ export const measurementValues = sqliteTable(
     calculatedAt: timestamp(),
   },
   (table) => [
-    uniqueIndex("uq_measurement_user_experiment_code").on(
-      table.userId,
-      table.experimentId,
-      table.code,
-    ),
-    uniqueIndex("uq_measurement_user_enrolment_code").on(
-      table.userId,
-      table.enrolmentId,
-      table.code,
-    ),
+    uniqueIndex("uq_measurement_user_experiment_code").on(table.userId, table.experimentId, table.code),
+    uniqueIndex("uq_measurement_user_enrolment_code").on(table.userId, table.enrolmentId, table.code),
     index("idx_measurement_user_id").on(table.userId),
     index("idx_measurement_user_lab").on(table.userId, table.labCode, table.labVersion),
   ],
@@ -578,11 +477,7 @@ export const measurementSources = sqliteTable(
     createdAt: timestamp(),
   },
   (table) => [
-    uniqueIndex("uq_measurement_source_role").on(
-      table.measurementId,
-      table.sourceObjectId,
-      table.inputRole,
-    ),
+    uniqueIndex("uq_measurement_source_role").on(table.measurementId, table.sourceObjectId, table.inputRole),
     index("idx_measurement_source_user_id").on(table.userId),
   ],
 );
@@ -590,11 +485,11 @@ export const measurementSources = sqliteTable(
 export const notificationPreferences = sqliteTable("notification_preferences", {
   userId: text("user_id").primaryKey(),
   enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
-  experimentStarted: integer("experiment_started", { mode: "boolean" }).notNull().default(true),
-  dailyObservation: integer("daily_observation", { mode: "boolean" }).notNull().default(true),
-  dayThreeCheckpoint: integer("day_three_checkpoint", { mode: "boolean" }).notNull().default(true),
-  experimentEnding: integer("experiment_ending", { mode: "boolean" }).notNull().default(true),
-  reviewReady: integer("review_ready", { mode: "boolean" }).notNull().default(true),
+  experimentStarted: integer("experiment_started").notNull().default(true),
+  dailyObservation: integer("daily_observation").notNull().default(true),
+  dayThreeCheckpoint: integer("day_three_checkpoint").notNull().default(true),
+  experimentEnding: integer("experiment_ending").notNull().default(true),
+  reviewReady: integer("review_ready").notNull().default(true),
   reminderTime: text("reminder_time").notNull().default("18:00"),
   timezone: text("timezone").notNull().default("Africa/Johannesburg"),
   updatedAt: timestamp(),
@@ -665,12 +560,7 @@ export const roleAssignments = sqliteTable(
     revokedAt: text("revoked_at"),
   },
   (table) => [
-    uniqueIndex("uq_role_principal_scope").on(
-      table.principalEmail,
-      table.role,
-      table.scopeType,
-      table.scopeId,
-    ),
+    uniqueIndex("uq_role_principal_scope").on(table.principalEmail, table.role, table.scopeType, table.scopeId),
     index("idx_role_user_status").on(table.userId, table.status),
     index("idx_role_email_status").on(table.principalEmail, table.status),
   ],
@@ -829,11 +719,7 @@ export const labAssignments = sqliteTable(
     revokedAt: text("revoked_at"),
   },
   (table) => [
-    uniqueIndex("uq_lab_assignment_learner_version").on(
-      table.learnerUserId,
-      table.labCode,
-      table.labVersion,
-    ),
+    uniqueIndex("uq_lab_assignment_learner_version").on(table.learnerUserId, table.labCode, table.labVersion),
     index("idx_lab_assignment_learner_status").on(table.learnerUserId, table.status),
   ],
 );
