@@ -33,6 +33,8 @@ The original evidence remains immutable and authoritative. AI output never repla
 - allowed and forbidden inference;
 - source reference and source hash.
 
+The two Question Intelligence contract columns added by this phase (`model_review_policy` and `contract_id`) are migration-owned in this draft. The application ORM does not query or write them directly; database defaults/triggers and access-safe RPCs are authoritative. This avoids unrelated churn in the central application schema until a product surface actually needs those fields.
+
 ### Meaning approval is not measurement validation
 
 `APPROVED_MEANING` means BIS has an approved interpretation of what evidence that question is intended to solicit. It does **not** mean the question is a validated psychometric scale, that its response measures a latent trait, or that the learner has reached the stage ceiling.
