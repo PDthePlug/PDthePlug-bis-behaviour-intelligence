@@ -1,8 +1,11 @@
 import competencyFramework from "@/content/curriculum/applied-commerce/competency-framework.json";
-import type { z } from "zod";
 import { AllowedCompetencySchema } from "./contracts";
 
-type AllowedCompetency = z.infer<typeof AllowedCompetencySchema>;
+type AllowedCompetency = {
+  id: string;
+  title: string;
+  description: string;
+};
 
 type FrameworkCompetency = {
   id: string;
