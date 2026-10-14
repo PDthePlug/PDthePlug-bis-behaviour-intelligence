@@ -397,6 +397,14 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     }
     canvas.paragraph('Entry questionnaires describe what learners say about themselves; an assessed task demonstrates what they can do in that task. A first comparable review may be after programme entry. Results do not establish permanent mastery or scientific validation.');
   }
+  if (!stories.length) {
+    canvas.paragraph('Why development results are not shown', { size: 13, font: 'bold' });
+    canvas.paragraph(report.status === 'SUPPRESSED'
+      ? `${report.participantCount} learners are included in this reporting population. At least ${report.minimumReportableCohortSize} eligible learners are required, and small results remain hidden. The facilitator’s group list may include learners without current programme consent.`
+      : 'There is not enough assessed work that can be shared safely to show developmental change.');
+    canvas.paragraph('What needs to happen next?', { font: 'bold' });
+    canvas.paragraph('The programme team confirms assessment criteria for this group’s Lab edition. Learners choose work to share from their Evidence Portfolio; a facilitator assesses what it demonstrates. Learners also choose whether those assessed outcomes may contribute to group reporting. Completing activities alone cannot establish development.');
+  }
   canvas.table(["Programme profile", "Reporting context"], [
     ["Programme group", report.profile.name], ["Report classification", report.reportClassification.label],
     ["Lab", `${report.profile.labCode} · ${report.profile.labVersion}`],

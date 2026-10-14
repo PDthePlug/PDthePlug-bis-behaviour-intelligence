@@ -9,6 +9,7 @@ import competencyFramework from "@/content/curriculum/applied-commerce/competenc
 import competencyCrosswalk from "@/content/curriculum/external-frameworks/dbe-basic-education-competency-crosswalk.json";
 import labAncestry from "@/content/curriculum/applied-commerce/lab-ancestry.json";
 import timeCompetencyMap from "@/content/curriculum/time/time-competency-evidence-map.json";
+import { developmentAssessmentReadiness } from "@/lib/development-readiness.mjs";
 
 const headers = { "cache-control": "private, no-store" };
 
@@ -37,10 +38,11 @@ async function getHandler(request: Request) {
     }
 
     const client = requestSupabaseClient();
-    const [{ data, error }, reviewedResult] = await Promise.all([client.rpc(
+    const [{ data, error }, reviewedResult, contractResult] = await Promise.all([client.rpc(
       "bis_facilitator_learner_development_evidence",
       { target_cohort_id: cohortId, target_learner_user_id: learnerId },
-    ), client.rpc("bis_agent_reviewed_evidence_history", { p_cohort: cohortId, p_learner: learnerId, p_competency: null })]);
+    ), client.rpc("bis_agent_reviewed_evidence_history", { p_cohort: cohortId, p_learner: learnerId, p_competency: null }),
+      client.rpc("bis_development_contract_workspace", { p_cohort: cohortId })]);
     if (error) throw new Error("Facilitator development projection failed");
 
     const projection = (data ?? {}) as DevelopmentProjection;
@@ -69,6 +71,7 @@ async function getHandler(request: Request) {
       profile,
       developmentEvidence: buildDevelopmentEvidence({ records, competencies: competencyFramework.competencies }),
       sourceBoundary: projection.boundary ?? null,
+      assessmentReadiness: contractResult.error ? null : developmentAssessmentReadiness(contractResult.data, projection.labCode, projection.labVersion),
       reviewedEvidence: buildReviewedLearnerEvidence(reviewedResult.error ? null : reviewedResult.data, competencyFramework.competencies),
       privacy: {
         structuralOnly: true,
