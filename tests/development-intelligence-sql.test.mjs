@@ -148,3 +148,21 @@ test('source readiness is exact-version governance metadata and not learner atta
  const retired=(await db.query("select bis_development_contract_workspace('group') as result")).rows[0].result;assert.equal(retired.contracts.length,0);assert.equal(retired.coverage[0].approvedFields,0);
  await assert.rejects(db.query("select private.development_safe_partition('[{\"count\":1}]',10)"),/permission denied/);
 });
+
+test('a later self-description cannot erase assessed application in current or calendar reports',async()=>{
+ await db.exec("reset role;update question_evidence_contracts set source_nature='ASSESSED',stage_ceiling='APPLY';update curriculum_evidence_mappings set source_nature='ASSESSED',evidence_class='OBSERVATION';set role authenticated;");
+ const task=await publish({sourceNature:'ASSESSED_TASK',ceiling:'APPLY'});
+ for(let n=1;n<=3;n++)await record(task,n,{stage:'APPLY',criteria:{applies:true},independent:true});
+ await db.exec(`reset role;
+ insert into question_evidence_contracts(id,lab_code,question_family,contract_status,model_review_policy,competency_id,evidence_class,aggregation_policy,privacy_scope,source_nature,stage_ceiling) values('self-source','HAB','QF-SELF','APPROVED_MEANING','FACILITATOR_SHARED_ONLY','AC-C04','BASELINE','EXCLUDE','PRIVATE_BY_DEFAULT','SELF_REPORT','NOTICE');
+ insert into question_analysis_registry select 'self-registry',lab_code,lab_version,'HAB.SELF',status,model_review_policy,answer_model,sensitivity,'self-source','QF-SELF',updated_at,label,aggregate_policy from question_analysis_registry where id='registry';
+ insert into curriculum_evidence_mappings select 'self-mapping','self-registry',lab_code,lab_version,'HAB.SELF',classification_status,'self-source',model_review_policy,competency,created_at,prompt_label,portfolio_purpose,outcome,allowed_inference,forbidden_inference,'BASELINE','NOTICE','SELF_REPORT','QF-SELF' from curriculum_evidence_mappings where id='mapping';set role authenticated;`);
+ const self=await publish({mappingIds:['self-mapping'],sourceNature:'SELF_REPORT',ceiling:'NOTICE',comparisonKey:'self:1'});
+ for(let n=1;n<=3;n++){
+  await db.exec(`reset role;insert into evidence_records select 'self-evidence${n}',user_id,status,sensitivity,source_object_type,provenance,value_type,value,enrolment_id,lab_code,lab_version,'HAB.SELF','2026-10-08' from evidence_records where id='evidence${n}';insert into evidence_submissions values('self-submission${n}','learner${n}','group',array['self-evidence${n}'],null,'2026-10-09');insert into evidence_assessments values('self-assessment${n}','self-submission${n}','rubric','REVIEWED','2026-10-10');insert into development_reporting_permissions values('submission${n}',true,now()),('self-submission${n}',true,now());set role authenticated;`);
+  await record(self,n,{assessmentId:`self-assessment${n}`,stage:'NOTICE',criteria:{recognises:true},requestKey:`self-review${n}`});
+ }
+ const a=(await programme()).competencies[0];assert.equal(a.sourceDistribution.find(x=>x.code==='ASSESSED_TASK').count,3);assert.equal(a.distribution.find(x=>x.code==='APPLY').count,3);assert.equal(a.trajectory.at(-1).assessedApplicationParticipants,3);
+ await db.exec("reset role;update evidence_submissions set revoked_at=now() where id in ('submission1','submission2','submission3');set role authenticated;");
+ const after=(await programme()).competencies[0];assert.equal(after.sourceDistribution.find(x=>x.code==='SELF_REPORT').count,3);assert.equal(after.trajectory.at(-1).assessedApplicationParticipants,0);
+});

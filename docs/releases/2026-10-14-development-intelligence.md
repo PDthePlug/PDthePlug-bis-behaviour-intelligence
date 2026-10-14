@@ -33,7 +33,7 @@ All 34 catalogue titles appear in source-readiness governance. Exact-version cov
 
 ## Verification and release
 
-Focused model/native SQL checks: 29 passed. Populated browser/PDF journeys: 15 passed at 360px, 430px and 1280px. The final full `npm run verify` and exact-head CI remain mandatory before merge. Populated PDF pages were visually inspected, including the development-first executive page and missing-cell trajectory layout.
+Focused model/native SQL checks: 30 passed. Populated browser/PDF journeys: 18 distinct checks passed at 360px, 430px and 1280px. The local build/acceptance/source gates passed; its browser process stalled after 69 checks and was interrupted. The complete exact-head CI `npm run verify` remains mandatory before merge. Populated PDF pages were visually inspected, including the development-first executive page and missing-cell trajectory layout.
 
 Three append-only migrations add longitudinal reporting, evidence-basis comparison and assessed-task precedence. All three were applied to staging. Hosted rollback SQL verified source publication, actual human review, separate permission, revocation, new baseline/source/trajectory partitions, source readiness, retirement, small cells and sponsor denial. The synthetic fixtures were rolled back. Existing authenticated API boundaries are unchanged; this release's new hosted checks use database role/JWT assertions rather than new password-session fixtures.
 
