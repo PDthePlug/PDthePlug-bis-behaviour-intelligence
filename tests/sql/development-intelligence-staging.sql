@@ -74,6 +74,9 @@ begin
   perform set_config('request.jwt.claims',jsonb_build_object('sub',staff.id,'role','authenticated','email',staff.email)::text,true);execute 'set local role authenticated';
   result=public.bis_development_programme_report(c.id);
   if not exists(select 1 from jsonb_array_elements(result->'competencies') r where r->>'competencyId'='AC-C04' and exists(select 1 from jsonb_array_elements(r->'distribution') x where x->>'code'='EXPLAIN' and (x->>'count')::int=3)) then raise exception 'Permitted stage distribution missing';end if;
+  if result->>'assessmentCount'<>'3' then raise exception 'New reportable assessment count missing';end if;
+  if not exists(select 1 from jsonb_array_elements(result->'competencies') r where r->>'assessedGrowthParticipants'='0' and exists(select 1 from jsonb_array_elements(r->'sourceDistribution') x where x->>'code'='SELF_REPORT' and x->>'count'='3') and exists(select 1 from jsonb_array_elements(r->'baselineDistribution') x where x->>'code'='EXPLAIN' and x->>'count'='3') and r->>'alignmentParticipants'='0' and jsonb_typeof(r->'trajectory')='array') then raise exception 'Evidence basis, first review, alignment or dated trajectory missing';end if;
+  if jsonb_typeof(public.bis_development_contract_workspace(c.id)->'coverage')<>'array' then raise exception 'Source readiness coverage unavailable to assigned facilitator';end if;
   if result::text like '%'||first_user||'%' or result::text like '%QA-PRIVATE-REVIEWED-WORDING%' then raise exception 'Individual detail reached aggregate';end if;
   execute 'reset role';
   update public.evidence_submissions set revoked_at=now() where id=first_submission;

@@ -1,5 +1,6 @@
 import { mkdir } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
+import {buildDevelopmentIntelligence} from '../../lib/development-intelligence.mjs';
 
 const initialProfile = {
   identity: { email: "browser.learner@example.test", displayName: "Browser Learner" },
@@ -183,7 +184,7 @@ test("My BIS opens with growth first and keeps Lab evidence collapsed until requ
   });
 
   await page.route("**/api/evidence-portfolio", async route => route.fulfill({ json: { labs: [{ enrolmentId: "enrolment", labCode: "HAB", labVersion: "4.5.2", title: "Habit Lab", status: "COMPLETED", startedAt: "2026-10-01T10:00:00Z", completedAt: "2026-10-05T10:00:00Z", anchors: [{ id: "EXPERIMENT", label: "Real-world test", status: "RECORDED", lastRecordedAt: "2026-10-05T10:00:00Z" }], metrics: [{ code: "HAB.BEI06", label: "Observed adherence", value: "71%", provenanceStatus: "VERIFIED" }], intelligence: { nextAction: { label: "Revisit your evidence and transfer plan" } } }] } }));
-  await page.route("**/api/development-intelligence?**", async route => {const view=new URL(route.request().url()).searchParams.get("view"); await route.fulfill({json:view==="permission"?{allowed:false}:{headline:"Development evidenced in reviewed tasks.",areas:[{competencyId:"AC-C04",title:"Behaviour change and self-management",stageLabel:"Applies",strength:"LIMITED",sourceNature:"ASSESSED_TASK",independentApplicationDays:1,priority:"Review practical follow-through.",nextStep:"Test the next authored task.",baselineLevel:null,baselineLabel:null,level:3,trend:"INSUFFICIENT_HISTORY",timeline:[],transfer:false,followup:false,alignment:null,boundary:"One reviewed task is not sustained capability."}],boundary:"Human reviewed evidence; no personality label."}});});
+  await page.route("**/api/development-intelligence?**", async route => {const view=new URL(route.request().url()).searchParams.get("view"); await route.fulfill({json:view==="permission"?{allowed:false}:buildDevelopmentIntelligence([{id:'reviewed',competencyId:'AC-C04',stage:'APPLY',at:'2026-10-05',comparisonKey:'authored-criteria:1',authorityId:'fixture-authored-task',reviewStatus:'REVIEWED',sourceNature:'ASSESSED_TASK',labCode:'HAB',context:'SCHOOL',independent:true,followUpDays:7,perceptionLevel:null}],[{id:'AC-C04',title:'Behaviour change and self-management'}])});});
   await page.goto("/portfolio");
   await expect(page.getByRole("heading", { name: "Your growth, evidence and feedback", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Your growth", exact: true })).toBeVisible();
@@ -214,3 +215,7 @@ test("My BIS opens with growth first and keeps Lab evidence collapsed until requ
   await expect(page.locator("#my-bis-record-evidence")).toBeFocused();
   await expectNoHorizontalOverflow(page);
 });
+
+ test('malformed development responses remain unavailable and recover on retry without crashing the portfolio',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await profileService(page);await page.route('**/api/evidence-portfolio',r=>r.fulfill({json:{labs:[]}}));let broken=true;await page.route('**/api/development-intelligence?**',r=>r.fulfill({json:broken?{modelVersion:'bis-development-intelligence:2',headline:'Incomplete response',areas:[{title:'Incomplete'}]}:buildDevelopmentIntelligence([],[])}));await page.goto('/portfolio');await expect(page.getByRole('heading',{name:'Development evidence is unavailable',exact:true})).toBeVisible();broken=false;await page.getByRole('button',{name:'Retry development profile'}).click();await expect(page.getByRole('heading',{name:'Your growth',exact:true})).toBeVisible();await expect(page.getByText('Development outcomes will appear after learner-shared work has been assessed against approved criteria.',{exact:true})).toBeVisible();expect(errors).toEqual([]);
+ });
