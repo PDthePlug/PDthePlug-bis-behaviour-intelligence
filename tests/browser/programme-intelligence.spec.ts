@@ -272,12 +272,19 @@ test('live-shaped group with 21 members and one eligible learner explains readin
  await expect(next.getByRole('link',{name:'Open shared evidence review →'})).toHaveAttribute('href','/workspace?view=facilitator&section=review&group=group');
  await expect(next.getByRole('link',{name:'See a completed fictional learner report →'})).toHaveAttribute('href','/experience/development-system?scenario=habit-decision&audience=facilitator');
  await next.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('live-shaped-group-readiness.png')});
+ await next.getByRole('link',{name:'See a completed fictional learner report →'}).click();
+ await expect(page.getByRole('heading',{name:'Development strengths and next support',exact:true})).toBeVisible();
+ await expect(page.locator('.development-fingerprint')).toBeVisible();
+ await page.goBack();await expect(page.getByText(/21 learners are on the group list. 1 learner has current programme consent/)).toBeVisible();
  for(const section of ['overview','learning','evidence']){
   await page.goto(`/staff-shell?view=outcomes&section=${section}&group=group`);
   await expect(page.getByRole('region',{name:'Reporting population'}).getByText(/1 learner has current programme consent/)).toBeVisible();
   await expect(page.getByRole('link',{name:'See a completed fictional programme report →'})).toBeVisible();
   await expect(page.getByRole('meter')).toHaveCount(0);
  }
+ await page.getByRole('link',{name:'See a completed fictional programme report →'}).click();
+ await expect(page.getByRole('table',{name:'Most frequent reviewed stage among learners with reviewed evidence, per capability and group'})).toBeVisible();
+ await page.goBack();await expect(page.getByRole('region',{name:'Reporting population'}).getByText(/1 learner has current programme consent/)).toBeVisible();
  await verify();
 });
 
