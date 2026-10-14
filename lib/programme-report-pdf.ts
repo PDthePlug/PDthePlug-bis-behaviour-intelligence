@@ -1,4 +1,6 @@
 import { reportSections } from "./development-evidence.mjs";
+import { buildDevelopmentStory } from "./development-story.mjs";
+import type { ProgrammeDevelopment } from "./development-intelligence.mjs";
 import PDFDocument from "pdfkit";
 import type { ProgrammeEvidenceFlow } from "./programme-evidence-flow";
 import { join } from "node:path";
@@ -15,6 +17,7 @@ type Outcome = {
     startsOn: string | null;
     endsOn: string | null;
   };
+  developmentIntelligence?: ProgrammeDevelopment | null;
   participantCount: number;
   suppressed: boolean;
   minimumReportableCohortSize: number;
@@ -355,17 +358,44 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   const canvas = new ReportDocument(report, options.illustrative === true, generatedAt);
   canvas.section("Behaviour Intelligence Series™", "BIS Development Outcomes", report.profile.name);
   if (options.illustrative) canvas.paragraph("ILLUSTRATIVE SIMULATION - FICTIONAL DATA - NOT MEASURED PROGRAMME RESULTS", { font: "bold", color: C.blue });
-  if(report.status==='AVAILABLE'&&report.developmentExecutive.status==='AVAILABLE'){
-    const executive=report.developmentExecutive;
-    canvas.paragraph(`${report.participantCount} participating learners · ${executive.assessmentCount??'Unavailable'} reportable development assessments`,{font:'bold'});
-    canvas.paragraph(`Exposure: ${report.period.startsOn??'Start date unavailable'} to ${report.period.endsOn??'Current programme'}`);
-    canvas.paragraph('Strongest supported assessed growth',{size:13,font:'bold'});
-    if(executive.growth.length)canvas.table(['Development capability','Higher comparable assessed stage'],executive.growth.map(a=>[a.title,`${a.count} / ${report.participantCount} learners; ${a.paired} all-basis comparable histories`]));
-    else canvas.paragraph('No privacy-reportable assessed-task growth ranking is available. Self-report remains separate.');
-    canvas.paragraph('Where support and follow-up are needed',{font:'bold'});
-    canvas.table(['Capability','Practice and transfer evidence'],executive.priorities.map(a=>[a.title,`${a.understanding} recognition/explanation · ${a.missing} without comparable history · ${a.transfer} transfer · ${a.followup} follow-up`]));
-    canvas.paragraph(`Recommended next action: ${executive.nextAction}`,{font:'bold'});
-    canvas.paragraph(executive.evidenceLimit,{size:9,color:C.muted});
+  const development=outcome.developmentIntelligence;
+  const stories=report.status==='AVAILABLE'&&development?.status==='AVAILABLE'&&development.cohortId===outcome.cohort.id&&development.participantCount===outcome.participantCount?development.areas.map(area=>buildDevelopmentStory(area,outcome.participantCount)):[];
+  if(stories.length){
+    const priority=[...stories].sort((a,b)=>b.explained-a.explained)[0];
+    canvas.paragraph(`${report.participantCount} participating learners · ${report.developmentExecutive.assessmentCount??'Unavailable'} reportable development assessments`,{font:'bold'});
+    canvas.paragraph(`Programme period: ${report.period.startsOn??'Start date unavailable'} to ${report.period.endsOn??'Current programme'}`);
+    canvas.paragraph('Who were learners at the start?',{size:13,font:'bold'});
+    const entry=report.insights.find(item=>item.id.startsWith('baseline-'));
+    canvas.paragraph(entry?`${entry.title}: ${entry.observation} This is learners’ own account.`:stories[0].startingPoint);
+    canvas.paragraph('What changed?',{size:13,font:'bold'});
+    canvas.paragraph(stories[0].title,{font:'bold'});
+    canvas.paragraph(stories[0].summary,{font:'bold'});
+    canvas.paragraph('What still needs support?',{size:13,font:'bold'});
+    canvas.paragraph(`${priority.title}: ${priority.explained} of ${report.participantCount} learners currently recognise or explain the idea. Check practical use with these learners.`);
+    canvas.paragraph('What we recommend next',{size:13,font:'bold'});
+    canvas.paragraph(priority.recommendation);
+    canvas.paragraph('How strong is the evidence?',{font:'bold'});
+    canvas.paragraph(`${stories[0].strong} of ${report.participantCount} learners have repeated assessed work and independent application on at least three days. ${stories[0].transfer}`);
+    canvas.paragraph('What does this tell us about BIS?',{font:'bold'});
+    canvas.paragraph(priority.effectiveness,{size:9,color:C.muted});
+    canvas.section('Development picture','Starting points, practical use and support','Each capability has its own evidence. Counts overlap and must not be added into a unique learner total.');
+    for(const story of stories){
+      canvas.ensure(210);
+      canvas.paragraph(story.title,{size:13,font:'bold'});
+      canvas.paragraph(story.change);
+      canvas.paragraph(story.startingPoint);
+      canvas.paragraph(story.practice);
+      canvas.paragraph(story.transfer);
+      canvas.paragraph(`Next practice: ${story.recommendation}`);
+      canvas.table(['Change in comparable reviews','Learners'],story.changeRows.map(row=>[row.label,`${row.count} / ${report.participantCount}`]));
+    }
+    canvas.section('Evidence notes','How we reached these conclusions','Private reflections and individual answers are excluded. The detailed evidence appendix follows the summary.');
+    for(const story of stories){
+      canvas.paragraph(story.title,{font:'bold'});
+      canvas.paragraph(story.confidence);
+      canvas.paragraph(story.alignment);
+    }
+    canvas.paragraph('Entry questionnaires describe what learners say about themselves; an assessed task demonstrates what they can do in that task. A first comparable review may be after programme entry. Results do not establish permanent mastery or scientific validation.');
   }
   canvas.table(["Programme profile", "Reporting context"], [
     ["Programme group", report.profile.name], ["Report classification", report.reportClassification.label],
@@ -412,7 +442,7 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     return canvas.finish();
   }
   const sections = reportSections(report);
-  canvas.section("Executive summary", "What the evidence can support", "Evidence areas and reporting coverage. Findings appear once, with their relevant graphics and limitations.", false);
+  canvas.section("Executive summary", stories.length ? "Detailed evidence appendix" : "What the evidence can support", "Use this section to inspect the findings, charts and their limits. Programme participation is reported separately from development.", stories.length > 0);
   canvas.table(["Evidence area", "Reporting status"], sections.map(section => [section.title, section.insights.length || section.charts.length ? `${section.insights.length} findings · ${section.charts.length} graphics` : "No reportable finding supplied"]));
   canvas.paragraph(report.boundary, { color: C.muted });
   const unavailable: string[] = [];

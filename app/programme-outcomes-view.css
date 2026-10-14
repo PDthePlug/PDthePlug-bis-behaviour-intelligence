@@ -1085,3 +1085,5 @@
   .outcomes-question-patterns{padding:20px 18px}
   .question-pattern-grid{grid-template-columns:1fr}
 }
+/* Let readers reach the findings before the report controls dominate the page. */
+.outcomes-hero{align-items:start;gap:16px}.outcomes-hero-actions{display:flex;flex-wrap:wrap;align-items:end}.outcomes-cohort-picker{flex:1;min-width:0;padding:12px}.outcomes-hero-actions .outcomes-pdf-link{flex:1;white-space:nowrap}.outcomes-hero h1{font-size:clamp(30px,4vw,44px)}
