@@ -9,7 +9,7 @@ import {buildProgrammeReport} from '../lib/programme-intelligence.mjs';
 import {buildDevelopmentScenario} from '../lib/experience/development-scenario.mjs';
 const dir=await mkdtemp(new URL('../.pdf-proof-',import.meta.url));
 const src=await readFile(new URL('../lib/programme-report-pdf.ts',import.meta.url),'utf8');
-const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./development-evidence.mjs"',JSON.stringify(new URL('../lib/development-evidence.mjs',import.meta.url).href)).replace('"./programme-intelligence.mjs"',JSON.stringify(new URL('../lib/programme-intelligence.mjs',import.meta.url).href)).replace('"./experience/programme-experience.mjs"',JSON.stringify(new URL('../lib/experience/programme-experience.mjs',import.meta.url).href));
+const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./development-story.mjs"',JSON.stringify(new URL('../lib/development-story.mjs',import.meta.url).href)).replace('"./development-evidence.mjs"',JSON.stringify(new URL('../lib/development-evidence.mjs',import.meta.url).href)).replace('"./programme-intelligence.mjs"',JSON.stringify(new URL('../lib/programme-intelligence.mjs',import.meta.url).href)).replace('"./experience/programme-experience.mjs"',JSON.stringify(new URL('../lib/experience/programme-experience.mjs',import.meta.url).href));
 await writeFile(join(dir,'programme-report-pdf.mjs'),code);
 const {renderProgrammeOutcomePdf}=await import(pathToFileURL(join(dir,'programme-report-pdf.mjs')).href);
 const leap9Source = await readFile(new URL('../lib/experience/leap9-report.ts', import.meta.url), 'utf8');
@@ -68,6 +68,9 @@ test('completed fictional Habit and Decision PDFs contain every shared chart, ex
   const outcome=buildDevelopmentScenario(scenario).outcomes[0];
   const {pdf,text,pages}=await inspect(await renderProgrammeOutcomePdf(outcome,new Date('2026-10-14'),{illustrative:true}));
   assert.match(text,/BIS Development Outcomes/);assert.match(text,/24 participating learners/);
+  const opening=normalise(pages[0].map(item=>item.str).join(' '));
+  for(const heading of ['Who were learners at the start?','What changed?','What still needs support?','What we recommend next','How strong is the evidence?','What does this tell us about BIS?'])assert.ok(opening.includes(heading),`Missing opening answer: ${heading}`);
+  assert.match(opening,/Behaviour change and self-management/);assert.match(opening,/15 of 24/);assert.match(opening,/6 of 24/);assert.doesNotMatch(opening,/Report model|source-comparable|all-basis/);
   assert.ok(normalise(text).includes(`${outcome.developmentIntelligence.assessmentCount} reportable development assessments`));
   for(const chart of buildProgrammeReport(outcome).charts){if(chart.kind==='trajectory')assert.ok(pages.some(items=>normalise(items.map(i=>i.str).join(' ')).includes(normalise(chart.title))&&items.some(i=>i.str.includes('Calendar month'))),`Separated trajectory title/plot: ${chart.id}`);assert.ok(normalise(text).includes(normalise(chart.title)),`Missing chart ${chart.id}`);for(const row of chart.rows)assert.ok(normalise(text).includes(normalise(row.label)),`Missing row ${chart.id}:${row.label}`);}
   assert.doesNotMatch(text,/fictional-learner-|Naledi|takeover-20261007|LEAP9-DEMO/);

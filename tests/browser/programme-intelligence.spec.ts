@@ -19,6 +19,7 @@ test('an authorised initial report renders without a second load and hides resul
 function observe(page:import('@playwright/test').Page){const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',e=>{if(e.type()==='error')errors.push(e.text());});return async()=>{expect(errors).toEqual([]);expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);};}
 test('programme report explains findings, preserves unavailable values and has accessible chart data',async({page},info)=>{
  const verify=observe(page);await page.route('**/api/staff',r=>r.fulfill({json:base}));await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await page.getByText('How we reached these conclusions · full evidence report',{exact:true}).click();
  await expect(page.getByText('3 of 20 participants have a recorded experiment start.',{exact:true})).toBeHidden();await expect(page.getByRole('heading',{name:'Systems Transfer Test',exact:true})).toBeVisible();
  await page.getByText('Progress and programme context',{exact:true}).click();await expect(page.getByText('3 of 20 participants have a recorded experiment start.',{exact:true})).toBeVisible();const graphic=page.locator('figure').filter({has:page.getByRole('heading',{name:'Where participants are in the programme'})});await expect(graphic.locator('.programme-report-bar-row strong').filter({hasText:'Unavailable'})).toBeVisible();await graphic.getByText('View chart values and comparison basis').click();await expect(graphic.getByRole('row',{name:'Experiment start recorded 3 20 participants'})).toBeVisible();
  await page.getByRole('heading',{name:'Participants are beginning their real-world tests',exact:true}).locator('..').getByText('What supports this finding?').click();await expect(page.getByText('A recorded start is not proof that an opportunity occurred or that behaviour improved.',{exact:true})).toBeVisible();await expect(page.getByText('Thandi Mokoena')).toHaveCount(0);
@@ -111,6 +112,7 @@ test('development leads group views while small stage counts stay hidden', async
  const owner=page.locator('.outcomes-competency-picture');await expect(owner).toContainText('Offer another chance to test and review a small plan.');await expect(owner).toContainText('Hidden');
  await expect(page.locator('.outcomes-context')).toBeVisible();
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await page.getByText('How we reached these conclusions · full evidence report',{exact:true}).click();
  await expect(page.locator('.outcomes-context')).toBeHidden();
  await expect(page.locator('.outcomes-competency-picture')).toBeHidden();
  await page.screenshot({path:info.outputPath('programme-development.png'),fullPage:true});
@@ -139,6 +141,7 @@ test('programme paired self-report graphic is visible with its sample and no inf
  const withPair={...outcome,learningSummary:{...outcome.learningSummary,learningJourney:{...outcome.learningSummary.learningJourney,skillShifts:[{id:'control',label:'Perceived control',pairedParticipants:10,averagePre:4,averagePost:6}]}}};
  await page.route('**/api/staff',r=>r.fulfill({json:{...base,sponsor:{cohorts:[withPair]}}}));
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await page.getByText('How we reached these conclusions · full evidence report',{exact:true}).click();
  await expect(page.getByRole('img',{name:'Perceived control: starting point 4, later check-in 6. Self-report, not assessed skill.'})).toBeVisible();
  await expect(page.getByText('10 participants with both check-ins. Same reported measure; self-report, not assessed capability.',{exact:true})).toBeVisible();
  await verify();
@@ -170,9 +173,10 @@ test('paired comparisons show cohort coverage and keep small remainders withheld
  const verify=observe(page);let pairedParticipants=10;
  await page.route('**/api/staff',route=>route.fulfill({json:{...base,sponsor:{cohorts:[{...outcome,learningSummary:{...outcome.learningSummary,learningJourney:{...outcome.learningSummary.learningJourney,skillShifts:[{id:'control',label:'Perceived control',pairedParticipants,averagePre:pairedParticipants===19?123456:4,averagePost:pairedParticipants===19?234567:6,averageShift:2}]}}}]}}}));
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await page.getByText('How we reached these conclusions · full evidence report',{exact:true}).click();
  const coverage=page.getByRole('table',{name:'Comparable check-ins within this programme group'});
  await expect(coverage.getByRole('row',{name:'Perceived control 10 10 20 Comparable self-report'})).toBeVisible();
- pairedParticipants=19;await page.reload();
+ pairedParticipants=19;await page.reload();await page.getByText('How we reached these conclusions · full evidence report',{exact:true}).click();
  await expect(coverage.getByRole('row',{name:'Perceived control Unavailable Unavailable 20 Withheld for privacy'})).toBeVisible();
  await expect(page.getByRole('img',{name:/Perceived control: starting point/})).toHaveCount(0);
  await expect(page.getByText(/123456|234567/)).toHaveCount(0);
@@ -188,6 +192,7 @@ test('reviewed task coverage appears once, preserves its denominator and support
  const reviewedDevelopment={status:'AVAILABLE',cohortId:'group',participantCount:20,evidenceBasis:'HUMAN_REVIEWED_TASK_COVERAGE',boundary:'Human review confirms shared work was reviewed; it does not establish acquired skill or transfer.',competencies:[{competencyId:'AC-C04',title:'Self-management',reviewedParticipants:6,denominator:20,achievementStatus:'NOT_ASSESSED'}]};
  await page.route('**/api/staff',r=>r.fulfill({json:{...base,sponsor:{cohorts:[{...outcome,reviewedDevelopment}]}}}));
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await page.getByText('How we reached these conclusions · full evidence report',{exact:true}).click();
  await expect(page.getByRole('heading',{name:'Self-management: shared work reviewed',exact:true})).toHaveCount(1);
  await expect(page.getByText('6 of 20 participants have current human-reviewed work in this development area.',{exact:true})).toBeVisible();
  const graphic=page.locator('figure').filter({has:page.getByRole('heading',{name:'Self-management: reviewed task coverage',exact:true})});

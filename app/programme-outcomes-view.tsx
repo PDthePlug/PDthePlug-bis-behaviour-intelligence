@@ -551,7 +551,6 @@ export function ProgrammeOutcomesView({
               ))}
             </select>
             <small>{dateRange(outcome)}</small>
-            <details className="programme-publication-details"><summary>Programme details</summary><p>{outcome.cohort.name} · {dateRange(outcome)}</p></details>
           </div>
           <a className="outcomes-pdf-link" href={reportHref ?? ("/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id))}>
             <Download aria-hidden="true" /> Download PDF
@@ -606,7 +605,8 @@ export function ProgrammeOutcomesView({
       ) : null}
 
       {report.status === "AVAILABLE" ? (
-        <section hidden={section !== "all" && section !== "overview"} className="outcomes-insights">
+        <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-insights">
+          <details open={section === "evidence"}><summary>How we reached these conclusions · full evidence report</summary>
           <div className="outcomes-section-heading">
             <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
             <Lightbulb />
@@ -619,6 +619,7 @@ export function ProgrammeOutcomesView({
               <div className="outcomes-insight-grid">{group.insights.filter(item => !pendingInsights.includes(item)).map(renderInsight)}</div>
             </> : <p className="outcome-muted">No reportable evidence in this category yet. It may be uncollected, unavailable or withheld for privacy.</p>}
           </section>)}
+          </details>
           {pendingInsights.length ? <EvidenceDisclosure title="Evidence still developing"><div className="outcomes-insight-grid">{pendingInsights.map(renderInsight)}</div></EvidenceDisclosure> : null}
           <EvidenceDisclosure title="Progress and programme context">
             {evidenceSections.find(group => group.id === "delivery")?.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
@@ -725,7 +726,7 @@ export function ProgrammeOutcomesView({
                   <p className="eyebrow">Starting point and later check-in</p>
                   <h3>Read comparisons with their coverage</h3>
                   <p>Comparable check-ins appear in the results overview with their sample, chart and interpretation limits. Each measure retains its own sample.</p>
-                  {onSectionChange ? <button type="button" onClick={() => onSectionChange("overview")}>View comparisons</button> : null}
+                  {onSectionChange ? <button type="button" onClick={() => onSectionChange("evidence")}>View comparisons</button> : null}
                 </section> : null}
               </div>
             </section>

@@ -6,7 +6,10 @@ test('completed programme reports share fictional evidence across four audiences
  page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))liveRequests.push(r.url());});
  await page.goto('/experience/development-system');
  await expect(page.getByRole('heading',{name:'BIS development outcomes',exact:true})).toBeVisible();
- await expect(page.getByText('864 fictional assessments',{exact:true})).toBeVisible();
+ await expect(page.getByText('864 fictional assessments across 2 completed Labs.',{exact:true})).toBeHidden();
+ await expect(page.getByRole('heading',{name:'What changed?',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'What we recommend next',exact:true})).toBeVisible();
+ await expect(page.locator('.programme-report-graphic').first()).toBeHidden();
  await expect(page.getByRole('button',{name:'Plan a programme intervention'})).toHaveCount(0);
  await expect(page.getByRole('combobox',{name:'Fictional learner',exact:true})).toHaveCount(0);
  await expect(page.locator('.programme-report-graphic')).not.toHaveCount(0);
@@ -21,7 +24,8 @@ test('completed programme reports share fictional evidence across four audiences
  await expect(page.getByRole('heading',{name:'Development strengths and next support'})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Next support priorities'})).toBeVisible();
  await page.getByRole('combobox',{name:'Fictional learner',exact:true}).selectOption('fictional-learner-10');
- await expect(page.getByText('Understanding without reviewed independent application',{exact:true}).first()).toBeVisible();
+ await expect(page.getByText('Move from explaining the idea to trying it in a practical situation.',{exact:false}).first()).toBeVisible();
+ await expect(page.locator('.development-trajectory').first()).toBeHidden();
  await page.screenshot({path:testInfo.outputPath('facilitator.png'),fullPage:false});
  await page.getByRole('combobox',{name:'Reporting audience',exact:true}).selectOption('learner');
  await page.getByRole('combobox',{name:'Fictional learner',exact:true}).selectOption('fictional-learner-1');
@@ -31,7 +35,7 @@ test('completed programme reports share fictional evidence across four audiences
  await expect(page.locator('.development-trajectory').first()).toBeVisible();
  await page.getByRole('combobox',{name:'Programme snapshot',exact:true}).selectOption('habit');
  await expect(page.locator('.development-intelligence-area')).toHaveCount(3);
- await expect(page.getByText('432 fictional assessments',{exact:true})).toBeVisible();
+ await page.getByText('About this example',{exact:true}).click();await expect(page.getByText('432 fictional assessments across 1 completed Lab.',{exact:true})).toBeVisible();
  await page.reload();await expect(page.getByRole('combobox',{name:'Programme snapshot',exact:true})).toHaveValue('habit');
  await expect(page.getByRole('heading',{name:'Your growth',exact:true})).toBeVisible();
  await page.screenshot({path:testInfo.outputPath('learner.png'),fullPage:false});
@@ -52,7 +56,7 @@ test('school intervention and review persist locally without creating programme 
  const writes:string[]=[];page.on('request',r=>{if(r.method()==='POST')writes.push(r.url());});
  await page.goto('/experience/development-system?audience=school');
  await page.getByRole('button',{name:'Plan a programme intervention'}).click();
- await expect(page.getByLabel('What did your team decide?')).toHaveValue(/Prioritise approved practical tasks/);
+ await expect(page.getByLabel('What did your team decide?')).toHaveValue(/Offer a practical opportunity/);
  await page.getByLabel('What do we expect to observe next?').fill('Independent practice on three recorded evidence days.');
  await page.getByLabel('Who will own this?').fill('Fictional facilitator');
  await page.getByLabel('Review date',{exact:true}).fill('2026-10-21');
@@ -68,5 +72,26 @@ test('school intervention and review persist locally without creating programme 
  await expect(page.getByRole('button',{name:'Plan a programme intervention'})).toHaveCount(0);
  await page.getByRole('button',{name:'Clear my example decisions'}).click();
  await expect(page.getByRole('status')).toContainText('cleared');expect(writes).toEqual([]);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('an educator can identify change, practical support and evidence without opening measurement details',async({page})=>{
+ await page.goto('/experience/development-system?audience=school');
+ const report=page.locator('.development-report-story');
+ await expect(report.getByRole('heading',{name:'Who were learners at the start?',exact:true})).toBeVisible();
+ await expect(report.getByText('12 of 24 respondents reported this often or always.',{exact:false})).toBeVisible();
+ await expect(report.getByText('15 of 24 learners showed a higher level in a later assessed task.',{exact:false}).first()).toBeVisible();
+ await expect(report.getByText('6 of 24 learners currently recognise or explain it. Check practical use with these learners.',{exact:true})).toBeVisible();
+ await expect(report.getByText(/6 of 24 learners have assessed evidence of adapting/).first()).toBeVisible();
+ await expect(report.getByText(/18 of 24 learners have repeated assessed work/)).toBeVisible();
+ await expect(page.getByText('All-basis comparable histories:',{exact:false})).toHaveCount(0);
+ await report.getByLabel('Capability',{exact:true}).selectOption('AC-C06');
+ await expect(report.getByText('Considering options, consequences and trade-offs before deciding.',{exact:true})).toBeVisible();
+ const how=report.getByText('How we reached this conclusion',{exact:true});await how.focus();await page.keyboard.press('Enter');
+ await expect(report.getByText(/This describes how much evidence we have, not scientific certainty/)).toBeVisible();
+ await page.getByRole('combobox',{name:'Reporting audience',exact:true}).selectOption('partner');
+ await expect(page.getByRole('heading',{name:'What does this tell us about BIS?',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Plan a programme intervention'})).toHaveCount(0);
+ await page.goBack();await expect(page.getByRole('combobox',{name:'Reporting audience',exact:true})).toHaveValue('school');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
