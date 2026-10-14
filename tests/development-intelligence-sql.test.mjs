@@ -36,6 +36,7 @@ await db.exec(await readFile(new URL('20261014061000_current_development_contrac
 await db.exec(await readFile(new URL('20261014062000_development_staff_identity.sql',root),'utf8'));
 await db.exec(await readFile(new URL('20261014063000_development_transfer_followup.sql',root),'utf8'));
 await db.exec(await readFile(new URL('20261014065000_development_source_privacy.sql',root),'utf8'));
+await db.exec(await readFile(new URL('20261014066000_development_transfer_scope.sql',root),'utf8'));
 test.after(()=>db.close());
 test.beforeEach(async()=>{
  await db.exec(`reset role;truncate development_reviews,development_reporting_permissions,development_task_contracts,learners,pilot_cohorts,cohort_members,lab_enrollments,consent_records,evidence_records,evidence_submissions,evidence_assessments,assessment_rubric_versions,question_analysis_registry,curriculum_evidence_mappings,question_evidence_contracts;
@@ -103,6 +104,9 @@ test('transfer requires independent use, an earlier separate evidence anchor and
  const transfer=await publish({mappingIds:['transfer-mapping'],ceiling:'TRANSFER',sourceNature:'ASSESSED_TASK'}),payload={assessmentId:'transfer-assessment',stage:'TRANSFER',criteria:{applies:true,adapts:true,differentContext:true},context:'HOME',requestKey:'transfer-review',independent:true};
  await assert.rejects(record(transfer,1,{...payload,independent:false}),/independent application/);await assert.rejects(record(transfer,1,{...payload,context:'SCHOOL'}),/different recorded context/);await record(transfer,1,payload);
  const facts=(await db.query("select bis_development_learner_report('learner1','group') as result")).rows[0].result;assert.equal(facts.length,2);assert.equal(facts[1].stage,'TRANSFER');
+ await db.exec("reset role;insert into pilot_cohorts values('other','ACTIVE','HAB','1','facilitator@fixture.invalid');insert into cohort_members values('other-member','other','learner1','ACTIVE');insert into evidence_submissions values('other-submission','learner1','other',array['transfer-evidence'],null,'2026-10-03');insert into evidence_assessments values('other-assessment','other-submission','rubric','REVIEWED','2026-10-04');set role authenticated;");
+ await assert.rejects(record(transfer,1,{...payload,assessmentId:'other-assessment',requestKey:'other-review'}),/different recorded context/);
+
 });
 
 test('baseline source import supplies recognition criteria without fabricating reviews or permission',async()=>{
