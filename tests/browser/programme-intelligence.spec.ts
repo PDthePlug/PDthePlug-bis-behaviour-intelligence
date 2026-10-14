@@ -217,3 +217,45 @@ test('reviewed learner evidence clears on switching and late responses cannot re
  await expect(page.getByRole('heading',{name:'Reviewed beta',exact:true})).toHaveCount(0);
  await expect(page.getByRole('heading',{name:'Reviewed gamma',exact:true})).toBeVisible();await verify();
 });
+
+test('actual facilitator participant workflow shows development bars and selectable dated charts from permitted reviews',async({page},info)=>{
+ const verify=observe(page);
+ const {buildDevelopmentIntelligence}=await import('../../lib/development-intelligence.mjs');
+ const {buildDevelopmentScenario,scenarioDefinitions}=await import('../../lib/experience/development-scenario.mjs');
+ const example=buildDevelopmentScenario();let unavailable=false;
+ await page.route('**/api/staff',route=>route.fulfill({json:base}));
+ await page.route('**/api/development-intelligence?**',route=>{
+  const url=new URL(route.request().url());
+  expect(url.searchParams.get('cohortId')).toBe('group');expect(url.searchParams.get('learnerId')).toBe('learner');
+  return route.fulfill({json:buildDevelopmentIntelligence(unavailable?[]:example.learners[9].facts,scenarioDefinitions,'facilitator')});
+ });
+ await page.goto('/staff-shell?view=facilitator&section=participants&group=group&learner=learner');
+ await expect(page.getByRole('heading',{name:'Where to support Thandi Mokoena next'})).toBeVisible();
+ const profile=page.locator('.development-fingerprint');await expect(profile).toBeVisible();await expect(profile.locator('.development-fingerprint-row')).toHaveCount(5);
+ const history=page.getByRole('region',{name:'Development over time'});await expect(history.getByRole('img',{name:/Behaviour change and self-management: Reviewed capability over time/})).toBeVisible();
+ await page.getByLabel('Capability over time',{exact:true}).selectOption('AC-C06');
+ await expect(history.getByRole('img',{name:/Decision and judgement: Reviewed capability over time/})).toBeVisible();
+ await history.getByText('View dated trajectory values',{exact:true}).focus();await page.keyboard.press('Enter');await expect(history.getByRole('cell',{name:'2026-10-11',exact:true})).toBeVisible();
+ await page.reload();await expect(profile).toBeVisible();await profile.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('actual-facilitator-bars.png')});
+ unavailable=true;await page.getByRole('button',{name:'Refresh development profile',exact:true}).click();
+ await expect(profile).toHaveCount(0);await expect(history).toHaveCount(0);await expect(page.getByText('Development outcomes will appear after learner-shared work has been assessed against approved criteria.',{exact:true})).toBeVisible();
+ await verify();
+});
+
+test('actual programme outcomes show capability bars, change distribution and authorised group heatmap',async({page},info)=>{
+ const verify=observe(page);
+ const {completeDevelopmentOutcome}=await import('./harness/development-complete-fixture');
+ const outcomes=['Grade 8','Grade 9'].map((name,index)=>({...completeDevelopmentOutcome,cohort:{...completeDevelopmentOutcome.cohort,id:index?'grade9':'group',name},developmentIntelligence:{...completeDevelopmentOutcome.developmentIntelligence!,cohortId:index?'grade9':'group'}}));
+ await page.route('**/api/staff',route=>route.fulfill({json:{...base,sponsor:{cohorts:outcomes}}}));
+ await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ const story=page.locator('.development-report-story');await expect(story).toBeVisible();
+ await expect(story.getByRole('meter',{name:'Can explain it: first review',exact:true})).toHaveAttribute('value','13');
+ await expect(story.getByRole('meter',{name:'Can explain it: latest',exact:true})).toHaveAttribute('value','3');
+ await expect(story.getByRole('meter',{name:'Higher later result',exact:true})).toHaveAttribute('value','6');
+ const heatmap=story.getByRole('table',{name:'Most frequent reviewed stage among learners with reviewed evidence, per capability and group'});
+ await expect(heatmap.getByRole('columnheader',{name:'Grade 8',exact:true})).toBeVisible();await expect(heatmap.getByRole('columnheader',{name:'Grade 9',exact:true})).toBeVisible();
+ await expect(heatmap.getByRole('cell',{name:'Tests and improves the approach (6 / 20)',exact:true})).toHaveCount(2);
+ await page.getByLabel('Group',{exact:true}).selectOption('grade9');await expect(story.getByText(/Grade 9 · 20 participating learners/)).toBeVisible();
+ await story.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('actual-outcomes-bars.png')});
+ await verify();
+});

@@ -1,6 +1,6 @@
 "use client";
 import {usePlatform} from "@/components/platform-context";
-import {useEffect,useState} from 'react';
+import {useEffect,useId,useState} from 'react';
 import type {DevelopmentIntelligence} from '@/lib/development-intelligence.mjs';
 import './development-intelligence.css';
 import {DevelopmentTrajectory} from './development-trajectory';
@@ -10,6 +10,8 @@ const validDate=(value:unknown)=>typeof value==='string'&&Number.isFinite(Date.p
 export function DevelopmentIntelligencePanel({cohortId,learnerId,audience='learner'}:{cohortId?:string;learnerId?:string;audience?:'learner'|'facilitator'}){
  const {request}=usePlatform();
  const [refresh,setRefresh]=useState(0);
+ const [visualCompetency,setVisualCompetency]=useState('');
+ const visualId=useId();
  const key=`${refresh}:${cohortId??''}:${learnerId??''}:${audience}`;
  const [snapshot,setSnapshot]=useState<{key:string;data:DevelopmentIntelligence|null;error:boolean}|null>(null);
  useEffect(()=>{const controller=new AbortController();
@@ -24,11 +26,14 @@ export function DevelopmentIntelligencePanel({cohortId,learnerId,audience='learn
  const areas=audience==='facilitator'?[...report.areas].sort((a,b)=>Number(b.watchIndicators.includes('Understanding without reviewed independent application'))-Number(a.watchIndicators.includes('Understanding without reviewed independent application'))||b.watchIndicators.length-a.watchIndicators.length):report.areas;
  const focus=areas.find(a=>a.sourceNature==='SELF_REPORT'||a.level<=2||a.trend==='LOWER_REVIEWED_STAGE'||!a.repeatedApplication)??areas[0];
  const focusStory=focus?learnerDevelopmentStory(focus):null;
+ const visualArea=areas.find(area=>area.competencyId===visualCompetency)??focus;
  return <section className="development-intelligence"><p className="eyebrow">{audience==='learner'?'My development portfolio':'Learner development intelligence'}</p><h2>{audience==='learner'?'Your growth':'Development strengths and next support'}</h2>
  {!areas.length?<p>{report.headline}</p>:<>
  <p className="development-report-lead">{audience==='learner'?'See what your work shows about how you are changing, and choose your next practice.':'Use the assessed work to decide what support to offer next. Private reflections are excluded.'}</p>
  <section className="development-support-focus"><h3>{audience==='learner'?'Your next step':'Next support priorities'}</h3><p><strong>{focus?.title}</strong> · {focusStory?.focus}</p><p>{focusStory?.next}</p>{audience==='facilitator'?<p>Agree one manageable practice with the learner, what evidence they are comfortable sharing, and a date to review it together.</p>:null}</section>
- {audience==='facilitator'?<section><h3>Strengths to build on</h3>{areas.some(a=>a.sourceNature==='ASSESSED_TASK'&&a.level>=3)?<ul>{areas.filter(a=>a.sourceNature==='ASSESSED_TASK'&&a.level>=3).map(a=><li key={a.competencyId}><strong>{a.title}</strong>: {stageMeaning(a.stage).toLowerCase()}. {a.repeatedApplication?'Independent application is evidenced on at least three days.':'Consistency needs more evidence.'}</li>)}</ul>:<p>A practical assessment is needed before describing demonstrated strengths.</p>}</section>:<DevelopmentFingerprint areas={report.areas}/>}
+ {audience==='facilitator'?<section><h3>Strengths to build on</h3>{areas.some(a=>a.sourceNature==='ASSESSED_TASK'&&a.level>=3)?<ul>{areas.filter(a=>a.sourceNature==='ASSESSED_TASK'&&a.level>=3).map(a=><li key={a.competencyId}><strong>{a.title}</strong>: {stageMeaning(a.stage).toLowerCase()}. {a.repeatedApplication?'Independent application is evidenced on at least three days.':'Consistency needs more evidence.'}</li>)}</ul>:<p>A practical assessment is needed before describing demonstrated strengths.</p>}</section>:null}
+ <DevelopmentFingerprint areas={report.areas} audience={audience}/>
+ {audience==='facilitator'&&visualArea?<section className="facilitator-development-visuals" aria-label="Development over time"><h3>How the evidence changed over time</h3><label htmlFor={visualId}>Capability over time</label><select id={visualId} value={visualArea.competencyId} onChange={event=>setVisualCompetency(event.target.value)}>{areas.map(area=><option key={area.competencyId} value={area.competencyId}>{area.title}</option>)}</select><DevelopmentTrajectory key={`${key}:${visualArea.competencyId}`} title={visualArea.title} points={visualArea.timeline} currentFamily={visualArea.currentComparisonKey}/></section>:null}
  <h3>{audience==='learner'?'What your work shows':'Evidence for the support conversation'}</h3>
  {areas.map((area,index)=>{const story=learnerDevelopmentStory(area);return <article key={area.competencyId} className="development-intelligence-area"><h3>{area.title}</h3><p>{capabilityMeaning(area.competencyId)}</p><p><strong>{story.summary}</strong></p><p>{story.change}</p>
  {audience==='facilitator'?<p><strong>Support focus:</strong> {story.focus}</p>:null}
