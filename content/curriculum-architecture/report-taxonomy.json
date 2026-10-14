@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "principle": "A BIS report is an evidence-backed interpretation of learning and change, not a dashboard of scores.",
+  "reportClasses": [
+    {
+      "code": "ATT",
+      "name": "Attainment",
+      "answers": "What can the learner now explain, reason through or do?",
+      "minimumEvidence": [
+        "authored response or artefact",
+        "concept/application check"
+      ],
+      "output": "concepts demonstrated, concepts still developing"
+    },
+    {
+      "code": "BEH",
+      "name": "Behavioural Change",
+      "answers": "What changed in observed or recorded behaviour?",
+      "minimumEvidence": [
+        "pre/starting evidence",
+        "post/later evidence",
+        "field/application evidence where defined"
+      ],
+      "output": "pattern changed, pattern persisted, barrier/adjustment"
+    },
+    {
+      "code": "CMP",
+      "name": "Competency Progression",
+      "answers": "What capability is becoming more reliable?",
+      "minimumEvidence": [
+        "at least two evidence types or two time-separated observations",
+        "clear mapping from evidence to competency"
+      ],
+      "output": "competency statement + supporting evidence + confidence"
+    },
+    {
+      "code": "TRF",
+      "name": "Transfer",
+      "answers": "Can the learner use the capability in a new context?",
+      "minimumEvidence": [
+        "new-context task",
+        "learner application",
+        "transfer result"
+      ],
+      "output": "transfer demonstrated / emerging / not yet demonstrated"
+    },
+    {
+      "code": "PTH",
+      "name": "Pathway / Readiness",
+      "answers": "What should the learner learn or do next?",
+      "minimumEvidence": [
+        "identified strength or gap",
+        "current evidence",
+        "next-context requirement"
+      ],
+      "output": "next action, next concept, next Lab/learning bridge"
+    },
+    {
+      "code": "POR",
+      "name": "Portfolio Narrative",
+      "answers": "What is the learner's growth story?",
+      "minimumEvidence": [
+        "selected artefacts across time",
+        "learner reflection",
+        "evidence-linked interpretation"
+      ],
+      "output": "growth, progress, turning points, remaining edge"
+    },
+    {
+      "code": "ORG",
+      "name": "Programme / Group Outcome",
+      "answers": "What is changing across a cohort or programme?",
+      "minimumEvidence": [
+        "aggregated evidence meeting reporting thresholds",
+        "suppressed small cells where necessary"
+      ],
+      "output": "aggregate progression, completion, evidence quality, pathway demand"
+    }
+  ],
+  "evidenceStates": [
+    {
+      "code": "NONE",
+      "meaning": "No usable evidence for the claim."
+    },
+    {
+      "code": "LIMITED",
+      "meaning": "Some evidence exists but is too narrow for a strong interpretation."
+    },
+    {
+      "code": "REPEATED",
+      "meaning": "The same pattern is supported across multiple observations or occasions."
+    },
+    {
+      "code": "TRIANGULATED",
+      "meaning": "More than one independent evidence source supports the interpretation."
+    },
+    {
+      "code": "TRANSFERRED",
+      "meaning": "The capability is demonstrated in a new context."
+    }
+  ],
+  "rules": [
+    "Never convert a self-rating directly into a competency claim.",
+    "Never treat adherence, completion or a percentage as the competency itself.",
+    "Never infer growth when the evidence window, opportunity count or source quality makes the comparison invalid.",
+    "Keep observation, interpretation and recommendation separate.",
+    "Every narrative claim in a portfolio/report must retain provenance to the evidence that supports it.",
+    "A missing or no-opportunity state is evidence about the experiment context, not automatic failure.",
+    "Where evidence is insufficient, report the limitation rather than filling the gap with model inference."
+  ]
+}

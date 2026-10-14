@@ -1,0 +1,666 @@
+{
+  "schemaVersion": "1.0",
+  "status": "working-canonical-architecture",
+  "sourceBasis": {
+    "grades": [
+      "Grade 8",
+      "Grade 9 revised learner book",
+      "Grade 10",
+      "Grade 11",
+      "Grade 12"
+    ],
+    "note": "Ancestry records are source-derived where the Applied Commerce books explicitly teach the concept; where a Lab synthesises several strands, the entry records the strongest recurring ancestry rather than claiming a one-to-one source statement."
+  },
+  "gradeArc": [
+    {
+      "grade": 8,
+      "role": "foundation",
+      "theme": "Foundations of Commerce",
+      "anchors": [
+        "values",
+        "work",
+        "money identity",
+        "earning",
+        "saving",
+        "planning",
+        "habits",
+        "compound growth",
+        "self-observation"
+      ]
+    },
+    {
+      "grade": 9,
+      "role": "deepening",
+      "theme": "Work, Value & Enterprise",
+      "anchors": [
+        "enterprise",
+        "skills",
+        "customers",
+        "pricing",
+        "money flows",
+        "value chains",
+        "community",
+        "habits",
+        "growth mindset",
+        "decision making",
+        "digital habits",
+        "project execution"
+      ]
+    },
+    {
+      "grade": 10,
+      "role": "widening",
+      "theme": "Managing and Scaling",
+      "anchors": [
+        "value creation",
+        "business structures",
+        "marketing",
+        "systems",
+        "PESTLE",
+        "Porter's Five Forces",
+        "saving vs investing",
+        "risk",
+        "compound interest",
+        "debt",
+        "credit",
+        "tax",
+        "retirement",
+        "insurance",
+        "estate planning",
+        "financial independence"
+      ]
+    },
+    {
+      "grade": 11,
+      "role": "architecting",
+      "theme": "Leadership and Legacy",
+      "anchors": [
+        "leverage",
+        "time leverage",
+        "people leverage",
+        "systems",
+        "technology",
+        "knowledge",
+        "leadership",
+        "communication",
+        "ethics",
+        "wealth building",
+        "protection",
+        "legacy"
+      ]
+    },
+    {
+      "grade": 12,
+      "role": "integration",
+      "theme": "Wealth Creation and Impact",
+      "anchors": [
+        "transition",
+        "career and income",
+        "networking",
+        "personal brand",
+        "risk and protection",
+        "insurance",
+        "estate",
+        "digital security",
+        "launch",
+        "legacy",
+        "life integration"
+      ]
+    }
+  ],
+  "labs": [
+    [
+      "HAB",
+      "Habit Lab™",
+      1,
+      [
+        "G8: habit planning and 21-day commitment",
+        "G9: habits, identity, tiny habits, environment design, 21-day tracker"
+      ],
+      [
+        "self-regulation",
+        "pattern recognition",
+        "action"
+      ],
+      "behavioural foundation"
+    ],
+    [
+      "DEC",
+      "Decision Lab™",
+      2,
+      [
+        "G8: values and choice under pressure",
+        "G9: decision making, peer pressure, digital habits",
+        "G10: strategic choices under systems and risk"
+      ],
+      [
+        "decision reasoning",
+        "agency",
+        "self-regulation"
+      ],
+      "choice architecture"
+    ],
+    [
+      "MON",
+      "Money Lab™",
+      3,
+      [
+        "G8: money identity, saving, earning, spending",
+        "G9: money flows, supply/value chains, income vs wealth",
+        "G10: investing, debt, credit, compound interest",
+        "G11: wealth architecture",
+        "G12: wealth and launch integration"
+      ],
+      [
+        "financial reasoning",
+        "resource stewardship",
+        "agency"
+      ],
+      "financial behaviour"
+    ],
+    [
+      "IDN",
+      "Identity Lab™",
+      4,
+      [
+        "G8: values and identity",
+        "G9: habits as architecture of identity",
+        "G11: leadership identity and legacy"
+      ],
+      [
+        "self-awareness",
+        "identity reflection",
+        "agency"
+      ],
+      "identity and becoming"
+    ],
+    [
+      "ATT",
+      "Attention Lab™",
+      5,
+      [
+        "G8: noticing and observation",
+        "G9: time audit, digital habits, procrastination",
+        "G10: systems and productivity"
+      ],
+      [
+        "attention regulation",
+        "observation",
+        "self-regulation"
+      ],
+      "attention as behaviour"
+    ],
+    [
+      "TIM",
+      "Time Lab™",
+      6,
+      [
+        "G8: planning and serving the future self",
+        "G9: time audit, Priority Matrix, time management",
+        "G11: time leverage and delegation",
+        "G12: launch timelines and execution"
+      ],
+      [
+        "self-management",
+        "planning",
+        "attention regulation",
+        "transfer"
+      ],
+      "time as an applied investigation"
+    ],
+    [
+      "RSK",
+      "Risk Lab™",
+      7,
+      [
+        "G9: online safety and protection",
+        "G10: risk, insurance, tax, retirement, estate planning",
+        "G12: risk and protection, fraud and digital security"
+      ],
+      [
+        "risk reasoning",
+        "protective action",
+        "decision reasoning"
+      ],
+      "risk and protection"
+    ],
+    [
+      "TRU",
+      "Trust Lab™",
+      8,
+      [
+        "G9: enterprise is relationship; community and partnership",
+        "G11: leadership, influence, trust, hard conversations"
+      ],
+      [
+        "social intelligence",
+        "relationship judgment",
+        "communication"
+      ],
+      "social reliability"
+    ],
+    [
+      "ILF",
+      "Influence Lab™",
+      9,
+      [
+        "G9: peer pressure and power in value chains",
+        "G11: leadership, communication, people leverage"
+      ],
+      [
+        "social intelligence",
+        "influence",
+        "communication"
+      ],
+      "influence and power"
+    ],
+    [
+      "LED",
+      "Leadership Lab™",
+      10,
+      [
+        "G9: initiative and enterprise agency",
+        "G11: leadership philosophy, teams, communication, ethics",
+        "G12: operator/launcher responsibility"
+      ],
+      [
+        "leadership",
+        "ethical judgment",
+        "social intelligence"
+      ],
+      "leadership identity"
+    ],
+    [
+      "PUR",
+      "Purpose Lab™",
+      11,
+      [
+        "G8: values and future planning",
+        "G9: path forward and values under pressure",
+        "G11: legacy and life design",
+        "G12: purpose, launch and integration"
+      ],
+      [
+        "future orientation",
+        "values reasoning",
+        "agency"
+      ],
+      "purpose and direction"
+    ],
+    [
+      "RES",
+      "Resilience Lab™",
+      12,
+      [
+        "G9: resilience, grit, failure as tuition, restart",
+        "G10: system failure and adaptation",
+        "G11: anti-delusion and shadow management"
+      ],
+      [
+        "recovery",
+        "adaptation",
+        "persistence"
+      ],
+      "recovery and persistence"
+    ],
+    [
+      "CAR",
+      "Career Lab™",
+      13,
+      [
+        "G9: skills inventory, work forms, Path Forward",
+        "G11: post-matric vision and leadership/wealth architecture",
+        "G12: career launch, CVs, interviews, networking, personal brand"
+      ],
+      [
+        "career reasoning",
+        "planning",
+        "communication",
+        "transfer"
+      ],
+      "career readiness"
+    ],
+    [
+      "LAU",
+      "Launch Lab™",
+      14,
+      [
+        "G9: enterprise execution and Path Forward",
+        "G10: financial independence and life design",
+        "G12: transition + career + protection → launch"
+      ],
+      [
+        "execution",
+        "agency",
+        "planning"
+      ],
+      "readiness to act"
+    ],
+    [
+      "FAI",
+      "Failure Lab™",
+      15,
+      [
+        "G9: failure as tuition, resilience, grit, restart",
+        "G10: systems can fail; diagnose and rebuild",
+        "G11: shadows and anti-delusion clauses"
+      ],
+      [
+        "learning from failure",
+        "adaptation",
+        "self-regulation"
+      ],
+      "failure literacy"
+    ],
+    [
+      "GRO",
+      "Growth Mindset Lab™",
+      16,
+      [
+        "G9: growth mindset, 'yet', self-discipline and change",
+        "G11: compound learning and knowledge systems"
+      ],
+      [
+        "learning agency",
+        "self-regulation",
+        "reflection"
+      ],
+      "growth orientation"
+    ],
+    [
+      "GRI",
+      "Grit Lab™",
+      17,
+      [
+        "G9: grit, perseverance, repeated recommitment",
+        "G10: sustained execution and scaling"
+      ],
+      [
+        "persistence",
+        "goal regulation",
+        "recovery"
+      ],
+      "persistence under difficulty"
+    ],
+    [
+      "ENT",
+      "Entrepreneurship Lab™",
+      18,
+      [
+        "G9: enterprise mindset, mini-business, customers, pricing, social entrepreneurship",
+        "G10: value creation, business structures, marketing, scaling"
+      ],
+      [
+        "value creation",
+        "initiative",
+        "customer reasoning"
+      ],
+      "enterprise creation"
+    ],
+    [
+      "NEG",
+      "Negotiation Lab™",
+      19,
+      [
+        "G9: pricing, power in value chains, first asks and partnerships",
+        "G11: leadership, hard conversations, people leverage"
+      ],
+      [
+        "communication",
+        "influence",
+        "decision reasoning"
+      ],
+      "advocacy and exchange"
+    ],
+    [
+      "TEM",
+      "Team Lab™",
+      20,
+      [
+        "G10: business structures and people systems",
+        "G11: teams, delegation, people leverage, leadership"
+      ],
+      [
+        "collaboration",
+        "social intelligence",
+        "responsibility"
+      ],
+      "collective performance"
+    ],
+    [
+      "ETH",
+      "Ethics Lab™",
+      21,
+      [
+        "G8: values under pressure",
+        "G9: fairness, power and community enterprise",
+        "G10: ethics in systems and finance",
+        "G11: leadership ethics and legacy"
+      ],
+      [
+        "ethical judgment",
+        "ownership",
+        "social intelligence"
+      ],
+      "ethical agency"
+    ],
+    [
+      "FUT",
+      "Future Self Lab™",
+      22,
+      [
+        "G8: planning and future self",
+        "G9: future letters and Path Forward",
+        "G10: life design",
+        "G12: launch timeline and legacy"
+      ],
+      [
+        "future orientation",
+        "planning",
+        "identity"
+      ],
+      "future-oriented agency"
+    ],
+    [
+      "OPP",
+      "Opportunity Lab™",
+      23,
+      [
+        "G9: problems as signals, customer needs, enterprise",
+        "G10: value creation and innovation",
+        "G11: leverage points"
+      ],
+      [
+        "opportunity recognition",
+        "problem framing",
+        "initiative"
+      ],
+      "opportunity recognition"
+    ],
+    [
+      "COM",
+      "Communication Lab™",
+      24,
+      [
+        "G9: presentations, first ask scripts, partnership",
+        "G10: marketing and customer communication",
+        "G11: leadership communication"
+      ],
+      [
+        "communication",
+        "listening",
+        "influence"
+      ],
+      "communication competence"
+    ],
+    [
+      "SYS",
+      "Systems Thinking™ Lab",
+      25,
+      [
+        "G9: money flows, supply/value chains, community mapping",
+        "G10: systems, PESTLE, Porter's Five Forces",
+        "G11: systems leverage",
+        "G12: life integration"
+      ],
+      [
+        "systems reasoning",
+        "pattern recognition",
+        "consequence thinking"
+      ],
+      "systems reasoning"
+    ],
+    [
+      "LTT",
+      "Long-Term Thinking™ Lab",
+      26,
+      [
+        "G8: compounding and planning",
+        "G10: investing, retirement and long-term protection",
+        "G11: 10-Year Wealth Plan",
+        "G12: legacy and launch timeline"
+      ],
+      [
+        "future orientation",
+        "second-order reasoning",
+        "planning"
+      ],
+      "long-horizon reasoning"
+    ],
+    [
+      "ECO",
+      "Economics for Humans™ Lab",
+      27,
+      [
+        "G8: money as stored value and household choices",
+        "G9: money flows, supply/value chains and incentives",
+        "G10: investment, debt, credit and systems",
+        "G11: wealth building"
+      ],
+      [
+        "economic reasoning",
+        "systems reasoning",
+        "decision reasoning"
+      ],
+      "economic literacy"
+    ],
+    [
+      "CUS",
+      "Customer Thinking™ Lab",
+      28,
+      [
+        "G9: customer value, observation, pricing and enterprise",
+        "G10: marketing and value creation"
+      ],
+      [
+        "customer empathy",
+        "observation",
+        "value reasoning"
+      ],
+      "customer/value reasoning"
+    ],
+    [
+      "INN",
+      "Innovation Thinking™ Lab",
+      29,
+      [
+        "G9: needs assessment, project design, problem solving",
+        "G10: value creation and business model design",
+        "G11: leverage and system design"
+      ],
+      [
+        "problem solving",
+        "creative reasoning",
+        "experimentation"
+      ],
+      "innovation"
+    ],
+    [
+      "AST",
+      "Asset Thinking™ Lab",
+      30,
+      [
+        "G8: skills as assets, earning experiments",
+        "G9: skill inventory and compound skill",
+        "G10: assets, investing and value creation",
+        "G11: leverage and wealth"
+      ],
+      [
+        "asset recognition",
+        "resource reasoning",
+        "leverage"
+      ],
+      "asset and resource thinking"
+    ],
+    [
+      "FIP",
+      "Financial Philosophy™ Lab",
+      31,
+      [
+        "G8: money identity, saving, earning and planning",
+        "G9: money flows and value",
+        "G10: investing, debt, tax, retirement, insurance, financial independence",
+        "G11: wealth architecture",
+        "G12: wealth, protection and launch"
+      ],
+      [
+        "financial reasoning",
+        "values reasoning",
+        "risk reasoning"
+      ],
+      "financial philosophy"
+    ],
+    [
+      "PEF",
+      "Personal Effectiveness™ Lab",
+      32,
+      [
+        "G8: planning, habits and self-management",
+        "G9: time management, procrastination, self-discipline",
+        "G10: systems and execution",
+        "G11: time/knowledge leverage"
+      ],
+      [
+        "self-management",
+        "execution",
+        "reflection"
+      ],
+      "personal effectiveness"
+    ],
+    [
+      "TSK",
+      "Transferable Skills™ Lab",
+      33,
+      [
+        "G8: skills inventory and learning habits",
+        "G9: skills, enterprise and project execution",
+        "G11: knowledge leverage and teaching",
+        "G12: career launch and durable capability"
+      ],
+      [
+        "transfer",
+        "communication",
+        "problem solving",
+        "learning agency"
+      ],
+      "transferable capability"
+    ],
+    [
+      "MET",
+      "Meta-Learning™ Lab",
+      34,
+      [
+        "G8: reflection, planning and learning habits",
+        "G9: learning journey and evidence of growth",
+        "G11: knowledge system — capture, review, connect, apply, teach",
+        "G12: integration and evidence of becoming"
+      ],
+      [
+        "metacognition",
+        "transfer",
+        "self-awareness"
+      ],
+      "learning how to learn"
+    ]
+  ]
+}
