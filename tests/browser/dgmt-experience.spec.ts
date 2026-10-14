@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('DGMT first view covers the full journey with evidence privacy and persistence', async ({ page }, testInfo) => {
+test('DGMT first view covers the full development-intelligence journey with evidence privacy and persistence', async ({ page }, testInfo) => {
   const errors: string[] = [];
   const writes: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -8,83 +8,97 @@ test('DGMT first view covers the full journey with evidence privacy and persiste
   page.on('response', response => { if (response.status() >= 400 && response.url().includes('/experience/')) errors.push(`${response.status()} ${response.url()}`); });
   page.on('request', request => { if (['POST', 'PATCH', 'PUT', 'DELETE'].includes(request.method())) writes.push(request.url()); });
   const checkLayout = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+
   await page.goto('/experience/dgmt');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('From learning to action.');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('See development become evidence.');
   await expect(page.getByRole('link', { name: 'DGMT × BIS Programme Experience home' })).toBeVisible();
+  await expect(page.getByText('Development Intelligence Experience', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Choose a role and explore' })).toBeVisible();
+  await expect(page.getByText('My Development Portfolio', { exact: true })).toBeVisible();
+  await expect(page.getByText('Learner Development Intelligence', { exact: true })).toBeVisible();
   await checkLayout();
   await page.screenshot({ path: testInfo.outputPath('dgmt-welcome.png'), fullPage: true });
-  await page.getByRole('button', { name: 'Begin with Naledi' }).click();
+
+  await page.getByRole('button', { name: 'Try Naledi’s journey' }).click();
+  await expect(page).toHaveURL(/#participant$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Participant journey');
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
   await page.getByLabel('What tends to start the pattern?').fill('After the fictional commute');
   await page.getByLabel('How much control does Naledi report').selectOption('3');
+  await page.getByLabel('What smaller response will Naledi try instead?').fill('Complete one field first');
   await page.reload();
   await expect(page.getByLabel('What tends to start the pattern?')).toHaveValue('After the fictional commute');
-  await page.getByLabel('What smaller response will Naledi try instead?').fill('');
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
-  await expect(page).toHaveURL(/#participant$/);
-  await expect(page.getByLabel('What smaller response will Naledi try instead?')).toBeFocused();
-  await page.getByLabel('What smaller response will Naledi try instead?').fill('Complete one field first');
-  await checkLayout();
-  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+
+  await expect(page).toHaveURL(/#practice$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Practice & evidence');
   await page.getByLabel('There was no opportunity', { exact: true }).check();
-  await expect(page.getByText(/in 3 of 5 opportunities/)).toBeVisible();
   await page.getByLabel('What does Naledi think the experiment revealed?').fill('PRIVATE_FICTIONAL_REFLECTION');
   await checkLayout();
-  await page.getByRole('button', { name: 'See the facilitator view' }).click();
+  await page.getByRole('button', { name: 'See how evidence is governed' }).click();
+
+  await expect(page).toHaveURL(/#review$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Human review');
   await expect(page.getByText('PRIVATE_FICTIONAL_REFLECTION', { exact: true })).toHaveCount(0);
-  await expect(page.getByRole('table')).toBeVisible();
-  await expect(page.getByRole('row', { name: /Naledi Mokoena/ })).toContainText('6 opportunities');
-  await expect(page.getByText('5 opportunities · 3 smaller responses used')).toBeVisible();
+  await expect(page.getByText('Naledi’s reflection stays private.', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Return to sharing choice' }).click();
-  await page.getByLabel('Share evidence summary with facilitator', { exact: false }).check();
+
+  await expect(page).toHaveURL(/#practice$/);
+  await page.getByLabel('Share this practice evidence with facilitator', { exact: false }).check();
   await page.getByLabel('Ask for human support', { exact: false }).check();
-  await page.getByRole('button', { name: 'See the facilitator view' }).click();
+  await page.getByRole('button', { name: 'See how evidence is governed' }).click();
   await expect(page.getByText('PRIVATE_FICTIONAL_REFLECTION', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Record illustrative review', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: 'Acknowledge support request', exact: true }).click();
   await page.getByLabel('Facilitator review note').fill('Review of the fictional shared record');
   await page.getByRole('button', { name: 'Record illustrative review', exact: true }).click();
   await page.reload();
   await expect(page.getByRole('button', { name: 'Illustrative review recorded', exact: true })).toBeDisabled();
+  await expect(page.getByLabel('Facilitator review note')).toHaveValue('Review of the fictional shared record');
   await checkLayout();
+
+  await page.getByRole('button', { name: 'Open the development portfolio' }).click();
+  await expect(page).toHaveURL(/#portfolio$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Development portfolio');
+  await expect(page.getByText('Repeated independent application', { exact: true })).toBeVisible();
+  await expect(page.getByText('Contextual transfer', { exact: true })).toBeVisible();
+
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
-  await expect(page.getByText(/rated her control 3 points higher/)).toBeVisible();
-  await expect(page.getByText('Review of the fictional shared record', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Back', exact: true }).click();
-  await page.getByRole('button', { name: 'Back', exact: true }).click();
-  await page.getByLabel('What does Naledi think the experiment revealed?').fill('REVISED_PRIVATE_REFLECTION');
-  await page.getByRole('button', { name: 'See the facilitator view' }).click();
-  await expect(page.getByLabel('Facilitator review note')).toHaveValue('');
-  await page.getByRole('button', { name: 'Back', exact: true }).click();
-  await page.getByLabel('Share evidence summary with facilitator', { exact: false }).uncheck();
-  await page.getByLabel('Ask for human support', { exact: false }).uncheck();
-  await page.getByRole('button', { name: 'See the facilitator view' }).click();
-  await expect(page.getByText('REVISED_PRIVATE_REFLECTION', { exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /acknowledge support request/i })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await expect(page).toHaveURL(/#facilitator$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Facilitator intelligence');
+  await expect(page.getByRole('table')).toBeVisible();
+  await expect(page.getByRole('row', { name: /Naledi Mokoena/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Acknowledge support request', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Support request acknowledged', exact: true })).toBeDisabled();
+
+  await page.getByRole('button', { name: 'See the cohort picture' }).click();
+  await expect(page).toHaveURL(/#cohort$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Cohort development');
+  await expect(page.getByText('Where should the programme focus support?', { exact: true })).toBeVisible();
   await checkLayout();
-  await page.getByRole('button', { name: 'See programme outcomes' }).click();
+
+  await page.getByRole('button', { name: 'See partner outcomes' }).click();
+  await expect(page).toHaveURL(/#outcomes$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Programme outcomes');
-  await expect(page.getByText('REVISED_PRIVATE_REFLECTION', { exact: true })).toHaveCount(0);
-  await expect(page.getByText('5 of 12 participants', { exact: false })).toBeVisible();
-  await page.getByText('How BIS supports programme delivery', { exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Prepare a programme', exact: true })).toBeVisible();
+  await expect(page.getByText('PRIVATE_FICTIONAL_REFLECTION', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('6 / 20', { exact: true })).toBeVisible();
+  await expect(page.getByText('AI attainment decisions', { exact: true })).toBeVisible();
+  await expect(page.getByText('Global learner maturity score', { exact: true })).toBeVisible();
   await checkLayout();
   await page.screenshot({ path: testInfo.outputPath('dgmt-outcomes.png'), fullPage: true });
+
   const download = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Download illustrative report' }).click();
+  await page.getByRole('link', { name: 'Download Habit evidence sample' }).click();
   expect((await download).suggestedFilename()).toBe('DGMT-BIS-Illustrative-Outcome-Report.pdf');
-  await page.goBack();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Evidence profile');
+
   if (testInfo.project.name !== 'desktop') await page.getByRole('button', { name: 'Experience map', exact: true }).click();
   await page.getByRole('button', { name: 'Restart experience', exact: true }).click();
   await page.getByRole('button', { name: 'Keep exploring', exact: true }).click();
-  await expect(page.getByText('REVISED_PRIVATE_REFLECTION', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Programme outcomes');
   await page.getByRole('button', { name: 'Restart experience', exact: true }).click();
   await page.getByRole('button', { name: 'Clear and restart', exact: true }).click();
-  await page.getByRole('button', { name: 'Begin with Naledi' }).click();
+  await page.getByRole('button', { name: 'Try Naledi’s journey' }).click();
   await expect(page.getByLabel('What tends to start the pattern?')).toHaveValue('After arriving home from the taxi rank');
+
   expect(errors).toEqual([]);
   expect(writes).toEqual([]);
 });
@@ -104,7 +118,7 @@ test('DGMT storage stays separate from Leap9 and recovers when unavailable', asy
   await page.getByLabel('What tends to start the pattern?').fill('An unsaved fictional cue');
   await expect(page.getByRole('status')).toContainText('could not be kept after refresh');
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Real-world test');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Practice & evidence');
 });
 
 test('short video plays with captions and the DGMT report contains only fixed aggregates', async ({ page, request }) => {
