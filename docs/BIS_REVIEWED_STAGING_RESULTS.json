@@ -18,7 +18,7 @@
       "status": "PASS"
     },
     {
-      "name": "real development API resolves authorised human profiles, programme evidence and authored contract workspace",
+      "name": "real development API resolves authorised human profiles, programme evidence, authored contract workspace and owned learner export",
       "status": "PASS"
     },
     {

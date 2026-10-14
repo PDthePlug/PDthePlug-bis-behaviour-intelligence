@@ -40,7 +40,8 @@ try{
  assert.equal(humanProfile.modelVersion,'bis-development-intelligence:1');assert.ok(Array.isArray(humanProfile.areas));assert.doesNotMatch(JSON.stringify(humanProfile),/PRIVATE-HARDENING-REFLECTION|SYNTHETIC-HARDENING-EVIDENCE/);
  const humanProgramme=await sponsor.request(`/api/development-intelligence?view=programme&cohortId=${encodeURIComponent(group.cohort.id)}`);assert.notEqual(humanProgramme.status,'SUPPRESSED');assert.equal(humanProgramme.participantCount,20);
  const contracts=await facilitator.request(`/api/development-intelligence?view=contracts&cohortId=${encodeURIComponent(group.cohort.id)}`);assert.ok(Array.isArray(contracts.contracts));
- record('real development API resolves authorised human profiles, programme evidence and authored contract workspace');
+ const ownReport=await learner.request('/api/evidence-engine?view=learnerReport');assert.equal(ownReport.developmentIntelligence.modelVersion,'bis-development-intelligence:1');assert.ok(Array.isArray(ownReport.developmentIntelligence.areas));
+ record('real development API resolves authorised human profiles, programme evidence, authored contract workspace and owned learner export');
  const sponsorState=output+'.sponsor.private.json',learnerState=output+'.learner.private.json';
  await sponsor.browserState(sponsorState);await learner.browserState(learnerState);
  browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage']});
