@@ -556,6 +556,7 @@ export function ProgrammeOutcomesView({
           <a className="outcomes-pdf-link" href={reportHref ?? ("/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id))}>
             <Download aria-hidden="true" /> Download PDF
           </a>
+          {!reportHref?<a href="/experience/development-system">Explore a fictional completed programme</a>:null}
         </div>
       </section>
 

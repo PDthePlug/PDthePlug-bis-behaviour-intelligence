@@ -6,6 +6,7 @@ export async function proxy(request: NextRequest) {
   // Live programme routes retain the existing authentication and role checks.
   if ([
     "/explore",
+    "/experience/development-system", "/experience/development-system/report",
     "/experience/leap9", "/experience/leap9/v2", "/experience/leap9/report",
     "/experience/dgmt", "/experience/dgmt/report",
     "/experience/dgmt-overview.mp4", "/experience/dgmt-overview.vtt",

@@ -6,6 +6,7 @@ import {pathToFileURL} from 'node:url';
 import ts from 'typescript';
 import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import {buildProgrammeReport} from '../lib/programme-intelligence.mjs';
+import {buildDevelopmentScenario} from '../lib/experience/development-scenario.mjs';
 const dir=await mkdtemp(new URL('../.pdf-proof-',import.meta.url));
 const src=await readFile(new URL('../lib/programme-report-pdf.ts',import.meta.url),'utf8');
 const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./development-evidence.mjs"',JSON.stringify(new URL('../lib/development-evidence.mjs',import.meta.url).href)).replace('"./programme-intelligence.mjs"',JSON.stringify(new URL('../lib/programme-intelligence.mjs',import.meta.url).href)).replace('"./experience/programme-experience.mjs"',JSON.stringify(new URL('../lib/experience/programme-experience.mjs',import.meta.url).href));
@@ -60,4 +61,17 @@ test('each institutional finding is printed once',async()=>{
   assert.equal(normalise(text).split(normalise(insight.observation)).length-1,1,insight.id);
  }
  await pdf.cleanup();
+});
+
+test('completed fictional Habit and Decision PDFs contain every shared chart, exact values and readable page geometry',async()=>{
+ for(const scenario of ['habit','habit-decision']){
+  const outcome=buildDevelopmentScenario(scenario).outcomes[0];
+  const {pdf,text,pages}=await inspect(await renderProgrammeOutcomePdf(outcome,new Date('2026-10-14'),{illustrative:true}));
+  assert.match(text,/BIS Development Outcomes/);assert.match(text,/24 participating learners/);
+  assert.ok(normalise(text).includes(`${outcome.developmentIntelligence.assessmentCount} reportable development assessments`));
+  for(const chart of buildProgrammeReport(outcome).charts){if(chart.kind==='trajectory')assert.ok(pages.some(items=>normalise(items.map(i=>i.str).join(' ')).includes(normalise(chart.title))&&items.some(i=>i.str.includes('Calendar month'))),`Separated trajectory title/plot: ${chart.id}`);assert.ok(normalise(text).includes(normalise(chart.title)),`Missing chart ${chart.id}`);for(const row of chart.rows)assert.ok(normalise(text).includes(normalise(row.label)),`Missing row ${chart.id}:${row.label}`);}
+  assert.doesNotMatch(text,/fictional-learner-|Naledi|takeover-20261007|LEAP9-DEMO/);
+  for(const items of pages){assert.ok(items.some(i=>i.str.includes('ILLUSTRATIVE SIMULATION')));for(const item of items){assert.ok(item.transform[4]>=47&&item.transform[4]+item.width<=548,`horizontal clipping: ${item.str}`);assert.ok(item.transform[5]>=30&&item.transform[5]<800,`vertical clipping: ${item.str}`);}}
+  await pdf.cleanup();
+ }
 });
