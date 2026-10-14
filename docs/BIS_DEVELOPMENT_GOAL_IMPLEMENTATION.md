@@ -1,46 +1,55 @@
-# BIS development reporting implementation — 14 October 2026
+# BIS Development Intelligence System — PR #162
 
-## Delivered in PR #162
+## Product workflow
 
-The draft now includes the released PR #161 changes and connects current human-reviewed task metadata to the facilitator development view and the shared institutional dashboard/PDF report model. It retains the separate participation, baseline, practice, task-review, support and delivery sections. It does not turn record presence, a review disposition, a rubric link or a question's potential ceiling into an attained competency stage.
+The reporting engine now follows evidence → reviewed capability → comparable change → independent application → contextual transfer. Completion remains programme implementation context. The Applied Commerce authored competency framework defines the domains and progression stages; no arbitrary psychological dimensions or global learner score were introduced.
 
-Three append-only corrections address defects found during takeover:
+| Audience | Product and purpose | Delivered evidence |
+|---|---|---|
+| Learner | My Development Portfolio: how my evidence is changing | First comparable/current stage bars, longitudinal task/context history, coverage strength, independent application, transfer, source-defined follow-up, optional compatible self-perception comparison and next practice |
+| Facilitator | Learner Development Intelligence: how to support this learner | Authorised cohort-scoped reviewed profile, contextual priorities, insight/application gap, task review and structural evidence; no private reflection wording |
+| School / programme | Cohort Development Report: where to focus support | Capability heatmap across authorised groups, current stage and change distributions, missing comparable history and intervention priorities |
+| Partner / funder | Programme Outcomes & Impact Report: what development is evidenced | Cohort exposure, comparable stage change, application/transfer/follow-up, next intervention, evidence limits and the shared dashboard/PDF report model |
 
-- `20261013172000_reporting_exact_cohort_and_release_scope.sql`: support counts belong to the selected cohort; handbook progress must match the exact enrolled content release; comparison candidates must be authorised, meet current-consent population thresholds and share the same explicit content releases. An unresolved release cannot be inferred from a Lab code.
-- `20261013172100_reviewed_evidence_authority_and_permissions.sql`: guarded private adapter execution is granted so public invoker wrappers function; reviewed evidence requires the current approved contract, latest mapping and active exact-version registry; programme aggregation requires explicit source and runtime permission. Current reviews carry no attained stage or calibrated confidence.
-- `20261014040000_question_contract_retirement_integrity.sql`: explicit retirement remains retired through write triggers and refresh; retired rows cannot append a new approved mapping; direct contract-table access remains denied.
+The school and partner views have distinct purposes within the authorised results workspace. They do not add overlapping cohort counts into an invented institution-wide unique population.
 
-Contract-derived allowed and forbidden inference now reaches all three response-review agents. The programme agent also rejects small cells, reconstructable complements and incomplete partitions before any model call. Model proposals remain non-reportable and the feature remains disabled.
+## Governing assessment meaning
 
-## Staging state
+Administrators approve current source mappings first, then immutable development assessment contracts for one exact Lab/version and competency. Contracts bind selected fields, source reference/fingerprint, comparison family, evidence basis, supported stage ceiling, optional authored follow-up window and optional compatible 0–5 perception field. The existing authored rubric workflow remains authoritative for scored task evidence.
 
-BIS Staging (`lbmhkddrkhtmkcvfmumd`) contains all 1,975 approved-meaning contracts from the ten supplied Lab titles. Seventy runtime question rows currently match those families and have contract-backed mappings. These are semantic approvals, not psychometric validation or achievement assessments.
+A facilitator first records a current human REVIEWED assessment of explicitly learner-shared work, then verifies the supported development stage against its source criteria. REVIEWED disposition, a rubric link, an AI proposal, field completion and the potential ceiling alone never establish attainment.
 
-All seeded source contracts retain `aggregation_policy=EXCLUDE` and private-by-default scope. Sharing a response with a facilitator cannot authorise programme aggregation. The institutional reviewed layer therefore reports only separately aggregate-permitted contracts; current empty coverage is an honest evidence limitation.
+Existing source-approved baseline meanings supply recognition criteria only. This import creates no learner review, achieved stage or reporting permission. Other tasks can be configured through source mapping, authored rubric and development contract governance; unknown or ambiguous meanings remain non-reportable until approved.
 
-Original data counts are unchanged after migrations and rollback testing: 40 learners, 2,725 responses, 2,725 evidence records, one submission and one assessment. No QA-only contract remains. No curriculum activation, learner answer or assessment result was rewritten.
+## Longitudinal rules
 
-## Verification
+- Original evidence timestamps govern chronology; regrading the same evidence set replaces its current interpretation and cannot generate another developmental touchpoint.
+- First/current change compares only the same approved comparison family. Different criteria remain in the history with an explicit non-comparable label.
+- A lower current reviewed stage calls for reviewing conditions and evidence; it is not automatically labelled lost capability.
+- Repeated independent application means reviewed application on at least three distinct original evidence days. This is a transparent coverage convention, not a validated persistence threshold.
+- Transfer requires independent use, separate earlier application evidence in a different recorded context, earlier original evidence time and the same comparison family.
+- Follow-up is measured from the first reviewed independent application, not the first recognition or explanation. The interval must be defined in the authored contract.
+- Coverage strength is limited for one comparable review, moderate for repeated comparable reviews, and strong only for assessed tasks with at least three reviews and three independent application days. Mixed/self-report evidence cannot become strong task evidence. Strength is not a psychometric validity or reliability score.
+- Perception comparison is optional, source-defined and restricted to the identical 0–5 stage scale. Existing 1–10 self-ratings are never silently transformed into reviewed behaviour scores.
 
-- Focused browser suite: 45 passes across 360px, 430px and 1280px. Includes keyboard-accessible chart values, non-repeated reviewed findings and immediate learner-switch isolation with a delayed prior request.
-- Focused database/model suite: 23 passes, including actual migration execution, latest-review authority, retired contracts, revocation, consent/enrolment/role denial, aggregation exclusion and small-cell/complement withholding.
-- Hosted rollback SQL: the existing P3/consent/comparison suite and the new real-trigger reviewed-evidence suite both pass. Fixtures roll back, including original evidence and synthetic meaning contracts.
-- Eight real Auth/API/browser staging checks pass, including source identity, three QA roles, programme/facilitator metadata, role denials, institutional PDF and the real results page at all three widths. See `BIS_REVIEWED_STAGING_RESULTS.json`.
-- Security Advisor retains the two existing warning categories (four legacy public definer functions and leaked-password protection). The new public adapters are invoker functions, anonymous execution is denied, and no new error-level finding remains.
+## Privacy and source validity
 
-`npm run verify` passed lint (one pre-existing unused-variable warning), TypeScript, 757 acceptance checks, canonical source audits, the optimized build, all 15 retained serverless learning-package checks and 352 browser tests with zero failures and two existing viewport-conditional skips. After the retirement regression was added, the final acceptance run passed all 759 tests. No timeout was increased or test removed to obtain these results.
+Learners separately permit or revoke aggregate use of derived development outcomes. Permission does not expose their words to schools/funders and does not override the existing raw-response aggregation exclusion. Original reflections and P3 evidence remain private.
 
-## Release boundary
+Only current consent, active membership, eligible exact-version enrolment, a current share, the latest human assessment and current source/mapping authority contribute. Source retirement, supersession, withdrawal and share revocation invalidate reports immediately. Staff without learner profiles use their authenticated actor ID; a null learner identity never grants individual access.
 
-PR #161 is live on production from 13 October 2026. PR #162 and its Evidence Intelligence migrations remain staging-only; the model is disabled. This document certifies the deterministic reporting and permission paths described above, not model quality or all 34 Labs.
+Direct table access and anonymous RPC execution are denied. Individual facilitator reports require the assigned cohort. Funders cannot access individual profiles. Aggregate partitions include learners without reviewed evidence, with minimum cohort five and cell/complement three. Suppression occurs before serialization. Historical rows remain auditable rather than being rewritten.
 
-## What still prevents the full goal
+## Source coverage and limits
 
-1. The supplied newer manuscript covers ten Lab titles, not the full 34-title catalogue. Remaining titles require their canonical source and version/edition bindings.
-2. The 2,140 task/ambiguous families need authored assessment meaning, criteria and claim authority. A semantic ceiling does not say which response achieved it.
-3. Opportunity-based rate definitions require exact numerical numerator/denominator bindings; day counts cannot substitute for eligible opportunities. Legacy and new editions are not automatically comparable.
-4. Acquired capability, repeated independent behaviour and sustained transfer need reviewed achievement/observation rules and follow-up evidence, rather than completion or self-report alone.
-5. Model activation requires labelled evaluation, privacy/data-processing certification and confidence/overclaim checks. Draft model proposals cannot establish programme outcomes.
-6. Facility-wide reporting needs a governed facility boundary and unique-participant deduplication. Authorised cohort counts must not be added as unique people.
+The supplied newer manuscript provides 1,975 approved-meaning families across ten Lab titles and 29 editions. Seventy current runtime questions match those approved baseline families. The 34-title catalogue and governance workflow are supported, but all 34 titles do not yet have approved achievement criteria. The 2,140 previously ambiguous task families remain subject to authored source review.
 
-These are explicit evidence and source dependencies. The implementation fails closed at each one rather than generating unsupported developmental claims.
+The software can now collect and report legitimate development assessments; release cannot create historical growth or transfer where no reviewed evidence exists. Measurement validation, scientific attribution of BIS impact, calibrated AI interpretation and source equivalence across editions remain separate evidence programmes. AI stays disabled.
+
+## Verification and release
+
+Release checks are recorded in `BIS_REVIEWED_STAGING_RESULTS.json`. The new SQL suite executes source approval, human stage assessment, owner permission, programme distribution, revocation, source retirement and sponsor denial against real staging triggers inside a rollback transaction. Additional regressions cover null staff identity, current criteria, evidence reuse and independent second-context transfer.
+
+The browser workflow tests assessment criteria, supported stages, save/re-entry, optional reporting permission, permission revocation and the learner profile at 360, 430 and 1280 pixels. Real Auth/API checks cover learner/facilitator/funder boundaries, source workspace, programme snapshot, institutional PDF and the real results page at all three widths.
+
+Production release is pending the full verification gate and expected-head merge. Production is never used for QA fixtures. Deployment and migration results will replace this pending status once verified.

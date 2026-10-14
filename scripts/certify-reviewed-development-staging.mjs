@@ -36,15 +36,21 @@ try{
  assert.equal(development.privacy.privateResponseValuesIncluded,false);assert.equal(development.privacy.p3EvidenceIncluded,false);assert.ok(development.reviewedEvidence);
  assert.notEqual(development.reviewedEvidence.status,'UNAVAILABLE');assert.doesNotMatch(JSON.stringify(development),/PRIVATE-HARDENING-REFLECTION|SYNTHETIC-HARDENING-EVIDENCE/);
  record('facilitator endpoint resolves reviewed metadata without model calls or wording');
+ const humanProfile=await facilitator.request(`/api/development-intelligence?view=learner&cohortId=${encodeURIComponent(group.cohort.id)}&learnerId=${encodeURIComponent(learner.account.id)}`);
+ assert.equal(humanProfile.modelVersion,'bis-development-intelligence:1');assert.ok(Array.isArray(humanProfile.areas));assert.doesNotMatch(JSON.stringify(humanProfile),/PRIVATE-HARDENING-REFLECTION|SYNTHETIC-HARDENING-EVIDENCE/);
+ const humanProgramme=await sponsor.request(`/api/development-intelligence?view=programme&cohortId=${encodeURIComponent(group.cohort.id)}`);assert.notEqual(humanProgramme.status,'SUPPRESSED');assert.equal(humanProgramme.participantCount,20);
+ const contracts=await facilitator.request(`/api/development-intelligence?view=contracts&cohortId=${encodeURIComponent(group.cohort.id)}`);assert.ok(Array.isArray(contracts.contracts));
+ record('real development API resolves authorised human profiles, programme evidence and authored contract workspace');
  const sponsorState=output+'.sponsor.private.json',learnerState=output+'.learner.private.json';
  await sponsor.browserState(sponsorState);await learner.browserState(learnerState);
  browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,args:['--no-sandbox','--disable-dev-shm-usage']});
  const context=await browser.newContext({storageState:JSON.parse(await readFile(sponsorState,'utf8'))});
- const denied=await context.request.get(`${base}/api/facilitator-development?cohortId=${encodeURIComponent(group.cohort.id)}&learnerId=${encodeURIComponent(learner.account.id)}`);assert.equal(denied.status(),403);record('sponsor cannot access learner review metadata');
+ const denied=await context.request.get(`${base}/api/facilitator-development?cohortId=${encodeURIComponent(group.cohort.id)}&learnerId=${encodeURIComponent(learner.account.id)}`);assert.equal(denied.status(),403);assert.equal((await context.request.get(`${base}/api/development-intelligence?view=learner&cohortId=${encodeURIComponent(group.cohort.id)}&learnerId=${encodeURIComponent(learner.account.id)}`)).status(),403);record('sponsor cannot access learner review metadata or development facts');
  const pdf=await context.request.get(`${base}/api/staff?report=pdf&cohortId=${encodeURIComponent(group.cohort.id)}`);assert.equal(pdf.status(),200);assert.match(pdf.headers()['content-type'],/application\/pdf/);assert.equal((await pdf.body()).subarray(0,4).toString(),'%PDF');record('real institutional PDF uses the same report snapshot');
  const learnerContext=await browser.newContext({storageState:JSON.parse(await readFile(learnerState,'utf8'))});
  assert.equal((await learnerContext.request.get(`${base}/api/facilitator-development?cohortId=${encodeURIComponent(group.cohort.id)}&learnerId=${encodeURIComponent(learner.account.id)}`)).status(),403);
- const anon=await browser.newContext();assert.equal((await anon.request.get(base+'/api/staff')).status(),401);record('learner-role and anonymous reporting access denied');
+ assert.equal((await learnerContext.request.get(base+'/api/development-intelligence?view=learner')).status(),200);
+ const anon=await browser.newContext();assert.equal((await anon.request.get(base+'/api/staff')).status(),401);assert.equal((await anon.request.get(base+'/api/development-intelligence')).status(),401);record('learner-role and anonymous reporting access denied');
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  for(const width of [360,430,1280]){
   await page.setViewportSize({width,height:900});await page.goto(base+'/workspace?view=outcomes&section=overview');await expect(page.locator('.programme-outcomes')).toBeVisible({timeout:45_000});await expect(page.getByRole('heading',{name:'Results',exact:true})).toBeVisible();

@@ -1,4 +1,6 @@
 "use client";
+import { DevelopmentReportingPermission } from "../development-review-controls";
+import { DevelopmentIntelligencePanel } from "../development-intelligence-panel";
 import { usePlatform } from "@/components/platform-context";
 
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +14,6 @@ import {
   type AssessmentWorkspace,
 } from "@/lib/evidence-engine";
 import type { EvidencePortfolioLab } from "@/lib/evidence-portfolio.mjs";
-import type { LearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
 import { explainPortfolioMeasures } from "@/lib/evidence-portfolio.mjs";
 import { PlatformLink as Link } from "@/components/platform-context";
 import { BIS_MODULES } from "@/lib/bis-catalogue";
@@ -85,7 +86,6 @@ export function PortfolioWorkspace() {
   const timeline = useEvidenceData<Timeline>(query);
   const sharing = useEvidenceData<AssessmentWorkspace>("view=learnerWorkspace");
   const overview = useEvidenceData<{ labs: EvidencePortfolioLab[] }>("", "/api/evidence-portfolio");
-  const development = useEvidenceData<{ profile: LearnerDevelopmentProfile }>("view=developmentProfile");
   const extra = older.query === query ? older.records : [];
   const records = [...(timeline.data?.records ?? []), ...extra];
   const hasMore = older.query === query ? older.hasMore : (timeline.data?.records.length ?? 0) === 60;
@@ -276,68 +276,20 @@ export function PortfolioWorkspace() {
         <button
           className="secondary"
           type="button"
-          disabled={timeline.loading || sharing.loading || development.loading}
+          disabled={timeline.loading || sharing.loading}
           onClick={() => {
             setOlder({ query: "", records: [], hasMore: true });
             resetSelection();
             void timeline.load();
             void sharing.load();
             void overview.load();
-            void development.load();
           }}
         >
           Refresh
         </button>
       </div>
 
-      <EvidenceState {...development} retry={() => void development.load()} />
-      {development.data ? (
-        <section id="my-bis-growth" className="portfolio-growth" aria-labelledby="my-bis-growth-heading">
-          <div className="portfolio-section-heading">
-            <div>
-              <p className="eyebrow">Living development picture</p>
-              <h2 id="my-bis-growth-heading">{development.data.profile.heading}</h2>
-            </div>
-          </div>
-          <p className="portfolio-growth-intro">{development.data.profile.summary}</p>
-          {development.data.profile.areas.length ? (
-            <div className="portfolio-growth-grid">
-              {development.data.profile.areas.map((area) => (
-                <article className="portfolio-growth-card" key={area.competencyId}>
-                  <div className="portfolio-growth-card-head">
-                    <div>
-                      <h3>{area.title}</h3>
-                      <span className={area.reportable ? "portfolio-stage is-evidenced" : "portfolio-stage"}>{area.stageLabel}</span>
-                    </div>
-                    {area.sourceLabs.length ? <small>Seen in {area.sourceLabs.map(labTitle).join(", ")}</small> : null}
-                  </div>
-                  <p>{area.summary}</p>
-                  {area.nextStep ? <p className="portfolio-growth-next"><strong>Practise next:</strong> {area.nextStep}</p> : null}
-                  <details className="portfolio-growth-framework">
-                    <summary>What supports this picture</summary>
-                    <p>{area.growth}</p>
-                    <p>{area.evidenceCount} recorded evidence {area.evidenceCount === 1 ? "item" : "items"} support this area.</p>
-                    <a href="#my-bis-evidence">View your evidence</a>
-                  </details>
-                  {area.externalFrameworkAreas.length ? (
-                    <details className="portfolio-growth-framework">
-                      <summary>Related curriculum competencies</summary>
-                      <p>{area.externalFrameworkAreas.join(" · ")}</p>
-                      <small>These competencies relate to your work; they do not certify achievement.</small>
-                    </details>
-                  ) : null}
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className="evidence-empty">
-              <h3>Your growth picture starts with your work</h3>
-              <p>Keep completing your programme activities. Your profile will show what you can demonstrate when there is enough recorded work to support it.</p>
-            </div>
-          )}
-          <p className="evidence-meta portfolio-growth-boundary">{development.data.profile.boundary}</p>
-        </section>
-      ) : null}
+      <section id="my-bis-growth"><DevelopmentIntelligencePanel audience="learner" /></section>
 
       <section id="my-bis-journey" className="portfolio-personal-area" aria-labelledby="my-bis-journey-heading">
         <p className="eyebrow">My Journey</p><h2 id="my-bis-journey-heading">Your learning in motion</h2>
@@ -599,6 +551,7 @@ export function PortfolioWorkspace() {
                     ? "Available for group review"
                     : "Access inactive or evidence revised"}
               </p>
+              <DevelopmentReportingPermission key={submission.id} submissionId={submission.id} disabled={Boolean(submission.revoked_at)||!submission.current} />
               {!submission.revoked_at ? (
                 <button
                   className="secondary"

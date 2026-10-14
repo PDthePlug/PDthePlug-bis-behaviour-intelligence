@@ -1,4 +1,5 @@
 "use client";
+import {CohortDevelopmentReport} from "./cohort-development-report";
 import { AssessmentReports } from "./assessment-reports";
 import { EvidenceDisclosure } from "./evidence-disclosure";
 import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
@@ -40,6 +41,7 @@ export type SponsorOutcome = {
   minimumReportableCohortSize: number;
   evidenceFlow?: ProgrammeEvidenceFlow | null;
   assessmentSummary?: import("@/lib/evidence-engine").AssessmentReport["cohorts"][number] | null;
+  developmentIntelligence?: ReturnType<typeof import("@/lib/development-intelligence.mjs").developmentProgrammeFindings> | null;
   reviewedDevelopment?: import("@/lib/reviewed-development.mjs").ReviewedProgrammeEvidence | null;
   competencySummary?: null | {
     status: "AVAILABLE" | "SUPPRESSED";
@@ -555,6 +557,8 @@ export function ProgrammeOutcomesView({
           </a>
         </div>
       </section>
+
+      <div hidden={section!=="all"&&section!=="overview"}><CohortDevelopmentReport outcomes={data.cohorts} selected={outcome}/></div>
 
       {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
         <section hidden={section !== "evidence"} className="outcomes-competency-picture">

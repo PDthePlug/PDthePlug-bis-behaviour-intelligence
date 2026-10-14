@@ -1,3 +1,4 @@
+import { developmentProgrammeFindings } from "@/lib/development-intelligence.mjs";
 import { sanitizeReviewedProgrammeEvidence } from "@/lib/reviewed-development.mjs";
 import { programmeAggregateScopeMatches, sanitizeLearningComparisons } from "../../../lib/comparison-coverage.mjs";
 import { and, asc, desc, eq, inArray, ne, or } from "../../../db/query";
@@ -436,7 +437,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, assessmentResult, competencyResult, reviewedResult, decisions] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, assessmentResult, competencyResult, reviewedResult, developmentResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
@@ -447,6 +448,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       client.rpc("bis_assessment_report", { p_cohort: cohortId }),
       client.rpc("bis_cohort_competency_summary", { target_cohort_id: cohortId }),
       client.rpc("bis_agent_programme_aggregate", { p_cohort: cohortId }),
+      client.rpc("bis_development_programme_report", { p_cohort: cohortId }),
       db
         .select()
         .from(programmeDecisions)
@@ -471,7 +473,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
           suppressed: true, minimumReportableCohortSize: Math.max(5, flowResult.data.minimumReportableCohortSize ?? 5),
           metrics: null, evidenceFlow: null, deepAnalysis: null, learningSummary: null,
           organisationLearning: null, learningChecks: null, questionPatterns: null,
-          assessmentSummary: null, competencySummary: null, reviewedDevelopment: null, decisionRegister: null });
+          assessmentSummary: null, competencySummary: null, reviewedDevelopment: null, developmentIntelligence: null, decisionRegister: null });
         continue;
       }
       cohorts.push({
@@ -491,6 +493,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
               competencies: competencyFramework.competencies,
               externalCrosswalk: competencyCrosswalk,
             }),
+        developmentIntelligence: developmentResult.error||developmentResult.data?.participantCount!==(flowResult.data?.participantCount??outcomeResult.data.participantCount)?null:developmentProgrammeFindings(developmentResult.data,competencyFramework.competencies),
         reviewedDevelopment: sanitizeReviewedProgrammeEvidence(reviewedResult.error ? null : reviewedResult.data, {
           cohortId, participantCount: flowResult.data?.participantCount ?? outcomeResult.data.participantCount,
           competencies: competencyFramework.competencies,

@@ -1,5 +1,6 @@
 "use client";
 
+import { DevelopmentIntelligencePanel } from "./development-intelligence-panel";
 import { useEffect, useState } from "react";
 import { Compass, ShieldCheck } from "lucide-react";
 import type { LearnerDevelopmentProfile } from "@/lib/development-profile.mjs";
@@ -88,6 +89,7 @@ export function FacilitatorLearnerDevelopment({
   return (
     <section className="surface-card ops-section facilitator-development-picture">
       <div className="section-title"><div><p className="eyebrow">Learner development</p><h2>Where to support {displayName} next</h2></div><Compass /></div>
+      <DevelopmentIntelligencePanel cohortId={cohortId} learnerId={learnerId} audience="facilitator" />
       {evidence ? <DevelopmentEvidencePicture evidence={evidence} /> : <EvidenceDisclosure title="Evidence detail is not available yet"><p>The permitted evidence map could not be loaded. A submitted answer does not establish a demonstrated skill.</p></EvidenceDisclosure>}
 
       {reviewed?.areas.length ? <section className="development-evidence-actions" aria-label="Human-reviewed task evidence">

@@ -1,6 +1,6 @@
 # BIS Evidence Intelligence Agents
 
-**Status:** Draft PR #162, rebased by merging the released PR #161. The contracts and guarded adapters are installed on BIS Staging. The model feature remains off; no Evidence Intelligence migration or model activation has been applied to production. See `BIS_DEVELOPMENT_GOAL_IMPLEMENTATION.md` for the current validation record.
+**Status:** PR #162 includes governed human assessment and the Development Intelligence reporting workflow. Human assessments are authoritative; AI remains disabled and non-reportable. See `BIS_DEVELOPMENT_GOAL_IMPLEMENTATION.md` for source coverage, verification and release status.
 
 ## Purpose
 
