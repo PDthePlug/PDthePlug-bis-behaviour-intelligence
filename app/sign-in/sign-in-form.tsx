@@ -202,6 +202,7 @@ export function SignInForm({ next, initialError = "" }: { next: string; initialE
         <h2>{mode === "signin" ? "Every habit tells a story." : "Create your BIS account."}</h2>
         <p>{mode === "signin" ? "Let's discover yours." : "Create an account to begin your learning programme."}</p>
         <Link className="auth-explore-link" href="/explore">Explore BIS without an account <ArrowRight size={16} /></Link>
+        <Link className="auth-explore-link" href="/experience/development-system">See a completed programme’s development reports <ArrowRight size={16} /></Link>
         <div className="auth-mode" role="tablist" aria-label="Account action">
           <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "active" : ""} onClick={() => changeMode("signin")}>Sign in</button>
           <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "active" : ""} onClick={() => changeMode("signup")}>Create account</button>

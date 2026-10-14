@@ -279,8 +279,9 @@ class ReportDocument {
       const detail = `${values.map(fmt).join(" / ")} · ${basis}`;
       return Math.max(this.measure(row.label, 200, 9, "bold") + this.measure(detail, 200, 8) + 12, 38);
     };
-    const chartHeight = this.measure(chart.title, WIDTH, 13, "bold") + this.measure(chart.note, WIDTH, 9) + 50
-      + chart.rows.reduce((total, row) => total + rowHeight(row), 0);
+    const trajectoryRowHeight=(cells:string[],header=false)=>Math.max(...cells.map((cell,i)=>this.measure(cell,WIDTH*(i===0?.36:.64)-16,9,header?'bold':'body')))+16;
+    const bodyHeight=chart.kind==='trajectory'?145+trajectoryRowHeight(['Calendar month','Assessed application participants'],true)+chart.rows.reduce((n,row)=>n+trajectoryRowHeight([row.label,`${fmt(row.value)} / ${row.denominator??'Unavailable'}`]),0)+32:34+chart.rows.reduce((total,row)=>total+rowHeight(row),0);
+    const chartHeight = this.measure(chart.title, WIDTH, 13, "bold") + this.measure(chart.note, WIDTH, 9) + 16 + bodyHeight;
     this.ensure(Math.min(chartHeight, BOTTOM - MARGIN));
     this.paragraph(chart.title, { size: 13, font: "bold" });
     this.paragraph(chart.note, { size: 9, color: C.muted });
