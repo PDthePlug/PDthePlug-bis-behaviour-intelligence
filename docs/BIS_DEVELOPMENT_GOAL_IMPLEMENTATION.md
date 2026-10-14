@@ -52,4 +52,6 @@ Release checks are recorded in `BIS_REVIEWED_STAGING_RESULTS.json`. The new SQL 
 
 The browser workflow tests assessment criteria, supported stages, save/re-entry, optional reporting permission, permission revocation and the learner profile at 360, 430 and 1280 pixels. Real Auth/API checks cover learner/facilitator/funder boundaries, source workspace, programme snapshot, institutional PDF and the real results page at all three widths.
 
-Production release is pending the full verification gate and expected-head merge. Production is never used for QA fixtures. Deployment and migration results will replace this pending status once verified.
+The authoritative release gate is `npm run verify`. The exact merged commit, production migration results and deployment are tracked in [PR #162](https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/162). Production is never used for QA fixtures.
+
+Existing Security Advisor warnings remain unchanged: four legacy exposed definer functions ([remediation](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)) and leaked-password protection ([remediation](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)). New public development RPCs use invoker wrappers; internal current-fact helpers deny direct execution.
