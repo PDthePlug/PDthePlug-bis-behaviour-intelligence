@@ -22,7 +22,7 @@ The API strips withheld averages before serialization. It withholds all aggregat
 
 Append-only migration `20261013084751_programme_learning_consent_and_comparison_scope.sql` aligns the existing private outcomes, deeper-analysis, learning-summary and organisational-learning functions with current active learners and the latest granted product consent. Response and experiment calculations require a matching, non-withdrawn Lab enrolment and retain the existing Lab version filter. Small baseline and paired complements are withheld in the database.
 
-The public RPC boundary remains security invoker. The existing scoped private functions retain their guarded aggregate responsibilities. The shared membership helper is private and cannot be invoked directly by authenticated or anonymous clients. Original evidence is unchanged. The migration is applied on BIS Staging. Hosted tests found a P3 row could affect a recognised paired measure; append-only migration `20261013111400_programme_learning_private_response_exclusion.sql` now restricts comparison, baseline and response activity inputs to P0, P1 and P2. Local and hosted regressions preserve permitted P2 comparisons and exclude P3 means, themes and counts. Production is unchanged.
+The public RPC boundary remains security invoker. The existing scoped private functions retain their guarded aggregate responsibilities. The shared membership helper is private and cannot be invoked directly by authenticated or anonymous clients. Original evidence is unchanged. The migration is applied on BIS Staging. Hosted tests found a P3 row could affect a recognised paired measure; append-only migration `20261013111400_programme_learning_private_response_exclusion.sql` now restricts comparison, baseline and response activity inputs to P0, P1 and P2. Local and hosted regressions preserve permitted P2 comparisons and exclude P3 means, themes and counts. Both reviewed reporting migrations were applied to production for PR #161 on 13 October 2026.
 
 ## Accepted presentation contract
 
@@ -32,7 +32,7 @@ PR #152 records Pride's explicit request to restore the centred floating Menu an
 
 Facility-wide pooling needs an explicit organisation/facility boundary and participant deduplication; authorised cohort rows alone do not establish either. Editions and Lab versions must not be pooled by indicator number. Activity-level manuscript mappings, new authored rate bindings, assessment criteria and sustained-transfer capture remain governed source work.
 
-Isolated staging verification now passes the real Auth/API/data/browser checks and rollback privacy tests. The owner authorised a temporary ThePlugOS pause to restore BIS Staging; ThePlugOS is currently active and healthy again. Production deployment remains a controlled release step. See `BIS_REPORT_CERTIFICATION.md` for the current final repository gate and `BIS_STAGING_MEASUREMENT_RESULTS.json` for the hosted pass.
+Isolated staging verification now passes the real Auth/API/data/browser checks and rollback privacy tests. The owner authorised a temporary ThePlugOS pause to restore BIS Staging; ThePlugOS is currently active and healthy again. PR #161 was released to production after its controlled release checks. See `BIS_REPORT_CERTIFICATION.md` for the current final repository gate and `BIS_STAGING_MEASUREMENT_RESULTS.json` for the hosted pass.
 
 
 ## Authenticated source audit and first results load

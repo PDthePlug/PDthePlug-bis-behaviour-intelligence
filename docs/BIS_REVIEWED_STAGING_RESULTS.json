@@ -1,0 +1,56 @@
+{
+  "projectRef": "lbmhkddrkhtmkcvfmumd",
+  "checks": [
+    {
+      "name": "application backend identity",
+      "status": "PASS"
+    },
+    {
+      "name": "real authentication for three dedicated QA roles",
+      "status": "PASS"
+    },
+    {
+      "name": "programme snapshot includes exact-scope reviewed coverage without private wording",
+      "status": "PASS"
+    },
+    {
+      "name": "facilitator endpoint resolves reviewed metadata without model calls or wording",
+      "status": "PASS"
+    },
+    {
+      "name": "real development API resolves authorised human profiles, programme evidence, authored contract workspace and owned learner export",
+      "status": "PASS"
+    },
+    {
+      "name": "sponsor cannot access learner review metadata or development facts",
+      "status": "PASS"
+    },
+    {
+      "name": "real institutional PDF uses the same report snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "learner-role and anonymous reporting access denied",
+      "status": "PASS"
+    },
+    {
+      "name": "real programme route at 360, 430 and 1280 pixels without overflow or page errors",
+      "status": "PASS"
+    }
+  ],
+  "viewports": [
+    {
+      "width": 360,
+      "status": "PASS"
+    },
+    {
+      "width": 430,
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "status": "PASS"
+    }
+  ],
+  "modelEnabled": false
+}

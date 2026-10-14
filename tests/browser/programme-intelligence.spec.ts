@@ -9,7 +9,7 @@ test('an authorised initial report renders without a second load and hides resul
  await page.route('**/api/staff',route=>{requests++;return route.fulfill({status:403,json:{error:'Scope withdrawn'}});});
  await page.goto('/preloaded-operations');
  await expect(page.getByRole('heading',{name:'Results',exact:true})).toBeVisible();
- await expect(page.locator('.programme-outcomes select')).toContainText('Already-authorised group');
+ await expect(page.getByRole('combobox',{name:'Group',exact:true})).toContainText('Already-authorised group');
  expect(requests).toBe(0);
  await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
  await expect(page.getByRole('heading',{name:'Operations could not open.'})).toBeVisible();
@@ -181,4 +181,34 @@ test('paired comparisons show cohort coverage and keep small remainders withheld
  await expect(page.getByText(/123456|234567/)).toHaveCount(0);
  await page.getByRole('button',{name:'View comparisons',exact:true}).click();
  await expect(coverage).toBeVisible();await verify();
+});
+
+test('reviewed task coverage appears once, preserves its denominator and supports keyboard chart inspection',async({page})=>{
+ const verify=observe(page);
+ const reviewedDevelopment={status:'AVAILABLE',cohortId:'group',participantCount:20,evidenceBasis:'HUMAN_REVIEWED_TASK_COVERAGE',boundary:'Human review confirms shared work was reviewed; it does not establish acquired skill or transfer.',competencies:[{competencyId:'AC-C04',title:'Self-management',reviewedParticipants:6,denominator:20,achievementStatus:'NOT_ASSESSED'}]};
+ await page.route('**/api/staff',r=>r.fulfill({json:{...base,sponsor:{cohorts:[{...outcome,reviewedDevelopment}]}}}));
+ await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
+ await expect(page.getByRole('heading',{name:'Self-management: shared work reviewed',exact:true})).toHaveCount(1);
+ await expect(page.getByText('6 of 20 participants have current human-reviewed work in this development area.',{exact:true})).toBeVisible();
+ const graphic=page.locator('figure').filter({has:page.getByRole('heading',{name:'Self-management: reviewed task coverage',exact:true})});
+ await graphic.getByText('View chart values and comparison basis').focus();await page.keyboard.press('Enter');
+ await expect(graphic.getByRole('row',{name:'Participants with reviewed work 6 20 participants'})).toBeVisible();
+ await page.getByRole('heading',{name:'Self-management: shared work reviewed',exact:true}).locator('..').getByText('What supports this finding?').click();
+ await expect(page.getByText(reviewedDevelopment.boundary,{exact:true})).toBeVisible();
+ await verify();
+});
+
+test('reviewed learner evidence clears on switching and late responses cannot restore the previous learner',async({page})=>{
+ const verify=observe(page);
+ let releaseBeta:()=>void=()=>{};const betaGate=new Promise<void>(resolve=>{releaseBeta=resolve;});
+ await page.route('**/api/facilitator-development?**',async route=>{
+  const id=new URL(route.request().url()).searchParams.get('learnerId')!;if(id==='beta')await betaGate;
+  const reviewedEvidence={status:'AVAILABLE',boundary:'Review does not establish a stage.',areas:[{competencyId:'AC-C04',title:`Reviewed ${id}`,reviewedRecords:2,firstEvidenceAt:'2026-10-01T00:00:00Z',latestEvidenceAt:'2026-10-02T00:00:00Z',nextStep:'Agree the next authored practice.'}]};
+  await route.fulfill({json:{profile:{areas:[]},developmentEvidence:{areas:[],boundary:'Structural evidence only.'},reviewedEvidence}}).catch(()=>{});
+ });
+ await page.goto('/development-switch');await expect(page.getByRole('heading',{name:'Reviewed alpha',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'beta',exact:true}).click();await expect(page.getByRole('heading',{name:'Reviewed alpha',exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'gamma',exact:true}).click();await expect(page.getByRole('heading',{name:'Reviewed gamma',exact:true})).toBeVisible();releaseBeta();
+ await expect(page.getByRole('heading',{name:'Reviewed beta',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('heading',{name:'Reviewed gamma',exact:true})).toBeVisible();await verify();
 });

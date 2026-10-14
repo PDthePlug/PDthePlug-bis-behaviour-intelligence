@@ -1,0 +1,8 @@
+"use client";
+import "../../../../../app/evidence-engine.css";
+import {DevelopmentContractGovernance} from '../../../../../app/development-contract-governance';
+import {CohortDevelopmentReport} from '../../../../../app/cohort-development-report';
+import type {SponsorOutcome} from '../../../../../app/programme-outcomes-view';
+const area={competencyId:'AC-C04',title:'Behaviour change and self-management',distribution:[{code:'EXPLAIN',count:3},{code:'NOT_YET_EVIDENCED',count:17}],changeDistribution:[{code:'HIGHER_REVIEWED_STAGE',count:3},{code:'NO_REVIEWED_EVIDENCE',count:17}],strengthDistribution:[{code:'MODERATE',count:3},{code:'NO_REVIEWED_EVIDENCE',count:17}],transferParticipants:3,repeatedApplicationParticipants:3,followupParticipants:0,alignmentParticipants:0};
+const outcome={cohort:{id:'grade8',name:'Grade 8',labCode:'HAB',labVersion:'1',startsOn:'2026-10-01',endsOn:null},participantCount:20,developmentIntelligence:{status:'AVAILABLE',cohortId:'grade8',participantCount:20,areas:[area]}} as SponsorOutcome;
+export default function Page(){return <main className="evidence-workspace assessment-console"><DevelopmentContractGovernance mappings={[{id:'mapping',lab_code:'HAB',lab_version:'1',semantic_field_id:'HAB.EXPLAIN',prompt_label:'Explain the behaviour pattern',evidence_class:'LEARNING_CHECK',portfolio_purpose:'Explain',outcome:'Conceptual reasoning',competency:'AC-C04',classification_status:'APPROVED',source_reference:'Canonical task',created_at:'2026-10-01'}]}/><CohortDevelopmentReport outcomes={[outcome,{...outcome,cohort:{...outcome.cohort,id:'grade9',name:'Grade 9'},developmentIntelligence:{...outcome.developmentIntelligence!,cohortId:'grade9'}}]} selected={outcome}/></main>;}

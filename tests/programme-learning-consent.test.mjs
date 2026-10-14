@@ -6,16 +6,17 @@ create function private.can_view_sponsor_cohort(text) returns boolean language s
 grant usage on schema auth,private to authenticated;grant execute on function auth.uid(),private.can_view_sponsor_cohort(text) to authenticated;`);
 const base=await readFile(new URL('20260909000000_bis_production.sql',root),'utf8');
 for(const table of ['learners','consent_records','lab_enrollments','responses','pilot_cohorts','cohort_members','hypotheses','experiments','experiment_events','measurement_values','safeguarding_cases'])await db.exec(base.match(new RegExp(`create table public\\.${table} \\([\\s\\S]*?\\n\\);`,'i'))[0]);
-await db.exec("alter table responses add column lab_code text not null default 'HAB';alter table responses add column privacy_class text not null default 'P2';alter table experiments add column lab_code text not null default 'HAB';create table handbook_progress(user_id text,lab_code text,semantic_step_id text,status text);");
+await db.exec("alter table responses add column lab_code text not null default 'HAB';alter table responses add column privacy_class text not null default 'P2';alter table experiments add column lab_code text not null default 'HAB';alter table lab_enrollments add column content_release_id text;create table handbook_progress(user_id text,lab_code text,semantic_step_id text,status text,content_release_id text);");
 const migration=(await readdir(root)).find(name=>name.endsWith('_programme_learning_consent_and_comparison_scope.sql'));assert.ok(migration);
 await db.exec(await readFile(new URL(migration,root),'utf8'));
 const privacyMigration=(await readdir(root)).find(name=>name.endsWith('_programme_learning_private_response_exclusion.sql'));assert.ok(privacyMigration);
 await db.exec(await readFile(new URL(privacyMigration,root),'utf8'));
+await db.exec(await readFile(new URL('20261013172000_reporting_exact_cohort_and_release_scope.sql',root),'utf8'));
 await db.exec("create table experiment_checkpoints(id text,user_id text,experiment_id text,status text,decision text,plan_changed boolean,created_at timestamptz,recorded_at timestamptz);" );
 for(const name of ['sponsor_cohort_learning_summary','sponsor_cohort_outcomes','sponsor_cohort_deeper_analysis','sponsor_cohort_organisational_learning']) await db.exec(`create function public.${name}(target_cohort_id text) returns jsonb language sql stable security invoker set search_path='' as $$select private.${name}(target_cohort_id)$$; revoke all on function public.${name}(text) from public,anon;grant execute on function public.${name}(text) to authenticated;`);
 test.after(()=>db.close());
 test.beforeEach(async()=>{
- await db.exec(`reset role;truncate responses,handbook_progress,cohort_members,pilot_cohorts,lab_enrollments,consent_records,learners cascade;
+ await db.exec(`reset role;truncate safeguarding_cases,responses,handbook_progress,cohort_members,pilot_cohorts,lab_enrollments,consent_records,learners cascade;
  set test.uid='${owner}';set test.role='PROGRAMME_OWNER';set test.scope='group';
  insert into pilot_cohorts(id,name,lab_code,lab_version,facilitator_email,created_by) values('group','Consent fixture','HAB','1','staff@fixture.invalid','staff');`);
  for(let n=1;n<=10;n++){
@@ -74,4 +75,27 @@ test('all legacy reporting families use the same current consenting population',
   const result=(await db.query(`select ${name}('group') as result`)).rows[0].result;assert.equal(result.participantCount,9,name);assert.equal(result.suppressed,false,name);
   await db.exec("set test.scope='other';");await assert.rejects(db.query(`select ${name}('group')`),/access/);await db.exec("set test.scope='group';");
  }
+});
+
+
+test('support aggregates cannot inherit a learner request from another cohort',async()=>{
+ const names=['sponsor_cohort_outcomes','sponsor_cohort_organisational_learning'];
+ const before=await Promise.all(names.map(async name=>(await db.query(`select ${name}('group') as result`)).rows[0].result));
+ await db.exec("reset role;insert into pilot_cohorts(id,name,lab_code,lab_version,facilitator_email,created_by) values('other','Other group','HAB','1','other@fixture.invalid','staff');insert into safeguarding_cases(id,learner_user_id,learner_email,cohort_id,source_type,category,summary,opened_by,opened_by_email) values('foreign-support','learner1','learner1@fixture.invalid','other','LEARNER_REQUEST','SUPPORT','Synthetic request','staff','staff@fixture.invalid');set role authenticated;");
+ for(let i=0;i<names.length;i++)assert.deepEqual((await db.query(`select ${names[i]}('group') as result`)).rows[0].result,before[i],names[i]);
+});
+
+test('handbook activity belongs to the exact enrolled content release',async()=>{
+ await db.exec("reset role;update lab_enrollments set content_release_id='current-release';insert into handbook_progress(user_id,lab_code,semantic_step_id,status,content_release_id) values('learner1','HAB','HAB.PROGRAMME.DAY1','COMPLETED','older-release');set role authenticated;");
+ let report=await summary();assert.equal(report.learningJourney.activity.participantsWithHandbookActivity,0);assert.equal(report.learningJourney.days[0].reached,0);
+ let org=(await db.query("select sponsor_cohort_organisational_learning('group') as result")).rows[0].result;assert.equal(org.transition.activeInLearning,0);
+ await db.exec("reset role;insert into handbook_progress(user_id,lab_code,semantic_step_id,status,content_release_id) values('learner1','HAB','HAB.PROGRAMME.DAY1','COMPLETED','current-release');set role authenticated;");
+ report=await summary();assert.equal(report.learningJourney.activity.participantsWithHandbookActivity,1);assert.equal(report.learningJourney.days[0].reached,1);
+ org=(await db.query("select sponsor_cohort_organisational_learning('group') as result")).rows[0].result;assert.equal(org.transition.activeInLearning,1);
+});
+
+test('comparison discovery cannot reveal unauthorised cohorts with the same Lab/version',async()=>{
+ await db.exec("reset role;insert into pilot_cohorts(id,name,lab_code,lab_version,facilitator_email,created_by) values('foreign','Unauthorised fixture','HAB','1','other@fixture.invalid','staff');set role authenticated;");
+ const result=(await db.query("select sponsor_cohort_organisational_learning('group') as result")).rows[0].result;
+ assert.equal(result.comparison.comparableCohorts,0);
 });

@@ -1,6 +1,6 @@
 # BIS measurement implementation and certification
 
-Status: **Staging certified and ready for review in PR #161. Production is unchanged.** Review: https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/161. Verification includes main `cce44f24ce24301f4774689f14bbe3a28ab3e2e2` and the reporting continuation from merged PR #159.
+Status: **PR #161 released to production on 13 October 2026.** Review: https://github.com/PDthePlug/PDthePlug-bis-behaviour-intelligence/pull/161. Verification includes main `cce44f24ce24301f4774689f14bbe3a28ab3e2e2` and the reporting continuation from merged PR #159.
 
 ## Result
 
@@ -33,7 +33,7 @@ The hosted pass exposed and corrected two runtime defects: missing authenticated
 
 Security Advisor reports the same two existing warning categories: four older publicly exposed authenticated security-definer functions, and disabled leaked-password protection. Neither category was introduced by these migrations; there are no error-level or new advisor findings. References: [function-execution advisory](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) and [password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). New reporting public RPCs remain security invoker, anonymous execution is denied, and the private membership helper is not directly executable by authenticated clients.
 
-The final combined-head `npm run verify` passed: 727 acceptance tests, 346 browser passes, zero failures and two existing viewport-conditional skips. Browser execution took 15.0 minutes. Lint, TypeScript, source audits, optimized build and all 15 serverless learning-package checks passed. Production activation remains a separate controlled operation after this verification and review.
+The final combined-head `npm run verify` passed: 727 acceptance tests, 346 browser passes, zero failures and two existing viewport-conditional skips. Browser execution took 15.0 minutes. Lint, TypeScript, source audits, optimized build and all 15 serverless learning-package checks passed. Production activation completed after explicit approval; see `BIS_MEASUREMENT_RELEASE.md`. Later PR #162 changes require their own certification.
 
 The newer manuscript inventory covers ten supplied Lab titles, 30 sections and 29 unique Lab/edition pairs. All 300 baseline occurrences have reviewed curriculum relevance associations, which are not validated scales. Activity-level mapping, edition-specific runtime binding, authored assessment criteria, equivalent comparison scales and sustained-transfer capture remain source governance work. The 34-title catalogue, 32 canonical source candidates and supplied manuscript sample are different scopes.
 
