@@ -433,10 +433,11 @@ export function ProgrammeOutcomesView({
   reportHref,
   saving = false,
   act = async () => false,
-  section = "all", onSectionChange, cohortId, onCohortChange,
+  section = "all", onSectionChange, cohortId, onCohortChange,reportPurpose='school',
 }: {
   data: SponsorSnapshot;
   reportHref?: string;
+  reportPurpose?:'school'|'partner';
   saving?: boolean;
   act?: StaffAction;
   section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void;
@@ -558,7 +559,7 @@ export function ProgrammeOutcomesView({
         </div>
       </section>
 
-      <div hidden={section!=="all"&&section!=="overview"}><CohortDevelopmentReport outcomes={data.cohorts} selected={outcome}/></div>
+      <div hidden={section!=="all"&&section!=="overview"}><CohortDevelopmentReport key={outcome.cohort.id} outcomes={data.cohorts} selected={outcome} initialPurpose={reportPurpose} onPlan={reportPurpose==='school'&&decisionRegister?.canManage&&onSectionChange?(title,evidence,action)=>{setDecisionSignal('OTHER');setDecisionTitle(title);setDecisionEvidence(evidence.slice(0,1200));setDecisionText(action);setFocusDecision(true);onSectionChange('decisions');}:undefined}/></div>
 
       {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
         <section hidden={section !== "evidence"} className="outcomes-competency-picture">

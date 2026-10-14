@@ -37,10 +37,10 @@ try{
  assert.notEqual(development.reviewedEvidence.status,'UNAVAILABLE');assert.doesNotMatch(JSON.stringify(development),/PRIVATE-HARDENING-REFLECTION|SYNTHETIC-HARDENING-EVIDENCE/);
  record('facilitator endpoint resolves reviewed metadata without model calls or wording');
  const humanProfile=await facilitator.request(`/api/development-intelligence?view=learner&cohortId=${encodeURIComponent(group.cohort.id)}&learnerId=${encodeURIComponent(learner.account.id)}`);
- assert.equal(humanProfile.modelVersion,'bis-development-intelligence:1');assert.ok(Array.isArray(humanProfile.areas));assert.doesNotMatch(JSON.stringify(humanProfile),/PRIVATE-HARDENING-REFLECTION|SYNTHETIC-HARDENING-EVIDENCE/);
+ assert.equal(humanProfile.modelVersion,'bis-development-intelligence:2');assert.ok(Array.isArray(humanProfile.areas));assert.doesNotMatch(JSON.stringify(humanProfile),/PRIVATE-HARDENING-REFLECTION|SYNTHETIC-HARDENING-EVIDENCE/);
  const humanProgramme=await sponsor.request(`/api/development-intelligence?view=programme&cohortId=${encodeURIComponent(group.cohort.id)}`);assert.notEqual(humanProgramme.status,'SUPPRESSED');assert.equal(humanProgramme.participantCount,20);
  const contracts=await facilitator.request(`/api/development-intelligence?view=contracts&cohortId=${encodeURIComponent(group.cohort.id)}`);assert.ok(Array.isArray(contracts.contracts));
- const ownReport=await learner.request('/api/evidence-engine?view=learnerReport');assert.equal(ownReport.developmentIntelligence.modelVersion,'bis-development-intelligence:1');assert.ok(Array.isArray(ownReport.developmentIntelligence.areas));
+ const ownReport=await learner.request('/api/evidence-engine?view=learnerReport');assert.equal(ownReport.developmentIntelligence.modelVersion,'bis-development-intelligence:2');assert.ok(Array.isArray(ownReport.developmentIntelligence.areas));
  record('real development API resolves authorised human profiles, programme evidence, authored contract workspace and owned learner export');
  const sponsorState=output+'.sponsor.private.json',learnerState=output+'.learner.private.json';
  await sponsor.browserState(sponsorState);await learner.browserState(learnerState);

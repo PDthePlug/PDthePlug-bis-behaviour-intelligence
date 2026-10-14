@@ -240,7 +240,7 @@ export function OperationsView({ initialRoles, initialSnapshot, perspective = "f
       <div className="page-wrap operations-view sponsor-perspective">{refreshControl}
         {error && <div className="error-banner ops-error"><span>{error}</span><button onClick={() => setError("")} aria-label="Dismiss error"><X /></button></div>}
         {data.sponsor ? (
-          <ProgrammeOutcomesView data={data.sponsor} saving={saving} act={act} section={section} onSectionChange={onSectionChange} cohortId={cohortId} onCohortChange={onCohortChange} />
+          <ProgrammeOutcomesView data={data.sponsor} saving={saving} act={act} section={section} onSectionChange={onSectionChange} cohortId={cohortId} onCohortChange={onCohortChange} reportPurpose={data.roles.includes('SPONSOR_VIEWER')&&!data.roles.includes('PROGRAMME_OWNER')?'partner':'school'} />
         ) : (
           <div className="ops-empty surface-card">
             <LockKeyhole />

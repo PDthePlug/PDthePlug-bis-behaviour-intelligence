@@ -285,6 +285,15 @@ class ReportDocument {
     this.paragraph(chart.title, { size: 13, font: "bold" });
     this.paragraph(chart.note, { size: 9, color: C.muted });
     const max = Math.max(1, ...chart.rows.flatMap(row => [row.denominator ?? 0, row.value ?? 0, row.secondaryValue ?? 0]));
+    if(chart.kind==='trajectory'){
+      this.ensure(160);const top=this.y,plotX=MARGIN+30,plotWidth=WIDTH-45;
+      const x=(i:number)=>plotX+plotWidth*i/Math.max(1,chart.rows.length-1),y=(v:number)=>top+105-85*v/max;
+      this.doc.moveTo(plotX,top+105).lineTo(plotX+plotWidth,top+105).strokeColor(C.pale).lineWidth(1).stroke();
+      this.doc.font('body').fontSize(8).fillColor(C.muted).text('0',MARGIN,top+100,{width:25}).text(String(max),MARGIN,top+15,{width:25});
+      chart.rows.forEach((row,i)=>{if(row.value===null)return;const prior=chart.rows[i-1];if(prior&&prior.value!==null)this.doc.moveTo(x(i-1),y(prior.value)).lineTo(x(i),y(row.value)).strokeColor(C.blue).lineWidth(2).stroke();this.doc.circle(x(i),y(row.value),3).fill(C.blue);});
+      this.doc.font('body').fontSize(8).fillColor(C.muted).text(chart.rows[0]?.label??'',plotX,top+118,{width:100}).text(chart.rows.at(-1)?.label??'',plotX+plotWidth-100,top+118,{width:100,align:'right'});
+      this.y=top+145;this.table(['Calendar month','Assessed application participants'],chart.rows.map(row=>[row.label,`${fmt(row.value)} / ${row.denominator??'Unavailable'}`]));this.y+=14;return;
+    }
     if (chart.rows.some(row => row.secondaryLabel)) this.paragraph("Dark bars: reached the touchpoint · Light bars: activity completed. Values follow that order.", { size: 8, color: C.muted });
     for (const row of chart.rows) {
       const values = [{ value: row.value, color: C.blue }, ...(row.secondaryLabel ? [{ value: row.secondaryValue ?? null, color: C.secondary }] : [])];
@@ -343,8 +352,20 @@ class ReportDocument {
 export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date(), options: { illustrative?: boolean; leap9Experience?: boolean; experienceOrganisation?: "Leap9" | "DGMT" } = {}) {
   const report = buildProgrammeReport(outcome);
   const canvas = new ReportDocument(report, options.illustrative === true, generatedAt);
-  canvas.section("Behaviour Intelligence Series™", "Programme Results Report", report.profile.name);
+  canvas.section("Behaviour Intelligence Series™", "BIS Development Outcomes", report.profile.name);
   if (options.illustrative) canvas.paragraph("ILLUSTRATIVE SIMULATION - FICTIONAL DATA - NOT MEASURED PROGRAMME RESULTS", { font: "bold", color: C.blue });
+  if(report.status==='AVAILABLE'&&report.developmentExecutive.status==='AVAILABLE'){
+    const executive=report.developmentExecutive;
+    canvas.paragraph(`${report.participantCount} participating learners · ${executive.assessmentCount??'Unavailable'} reportable development assessments`,{font:'bold'});
+    canvas.paragraph(`Exposure: ${report.period.startsOn??'Start date unavailable'} to ${report.period.endsOn??'Current programme'}`);
+    canvas.paragraph('Strongest supported assessed growth',{size:13,font:'bold'});
+    if(executive.growth.length)canvas.table(['Development capability','Higher comparable assessed stage'],executive.growth.map(a=>[a.title,`${a.count} / ${report.participantCount} learners; ${a.paired} all-basis comparable histories`]));
+    else canvas.paragraph('No privacy-reportable assessed-task growth ranking is available. Self-report remains separate.');
+    canvas.paragraph('Where support and follow-up are needed',{font:'bold'});
+    canvas.table(['Capability','Practice and transfer evidence'],executive.priorities.map(a=>[a.title,`${a.understanding} recognition/explanation · ${a.missing} without comparable history · ${a.transfer} transfer · ${a.followup} follow-up`]));
+    canvas.paragraph(`Recommended next action: ${executive.nextAction}`,{font:'bold'});
+    canvas.paragraph(executive.evidenceLimit,{size:9,color:C.muted});
+  }
   canvas.table(["Programme profile", "Reporting context"], [
     ["Programme group", report.profile.name], ["Report classification", report.reportClassification.label],
     ["Lab", `${report.profile.labCode} · ${report.profile.labVersion}`],

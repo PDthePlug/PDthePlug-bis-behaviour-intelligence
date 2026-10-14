@@ -12,7 +12,7 @@ create function private.has_staff_role(text) returns boolean language sql as $$s
 create function private.can_view_competency_cohort(text) returns boolean language sql as $$select auth.uid()='${owner}'::uuid and $1=current_setting('test.scope',true) and current_setting('test.role',true) in ('FACILITATOR','PROGRAMME_OWNER')$$;
 grant usage on schema private,auth to authenticated;
 create table learners(user_id text primary key,status text);
-create table pilot_cohorts(id text primary key,status text,lab_code text,lab_version text,facilitator_email text);
+create table pilot_cohorts(id text primary key,status text,lab_code text,lab_version text,facilitator_email text,starts_on date,ends_on date);
 create table cohort_members(id text,cohort_id text,learner_user_id text,status text);
 create table lab_enrollments(id text,user_id text,lab_code text,lab_version text,status text);
 create table consent_records(id text,user_id text,consent_type text,status text,created_at timestamptz);
@@ -38,6 +38,9 @@ await db.exec(await readFile(new URL('20261014063000_development_transfer_follow
 await db.exec(await readFile(new URL('20261014065000_development_source_privacy.sql',root),'utf8'));
 await db.exec(await readFile(new URL('20261014066000_development_transfer_scope.sql',root),'utf8'));
 await db.exec(await readFile(new URL('20261014067000_development_evidence_basis.sql',root),'utf8'));
+await db.exec(await readFile(new URL('20261014081324_development_reporting_longitudinal.sql',root),'utf8'));
+await db.exec(await readFile(new URL('20261014085309_development_evidence_basis_comparisons.sql',root),'utf8'));
+await db.exec(await readFile(new URL('20261014091329_development_latest_assessed_context.sql',root),'utf8'));
 test.after(()=>db.close());
 test.beforeEach(async()=>{
  await db.exec(`reset role;truncate development_reviews,development_reporting_permissions,development_task_contracts,learners,pilot_cohorts,cohort_members,lab_enrollments,consent_records,evidence_records,evidence_submissions,evidence_assessments,assessment_rubric_versions,question_analysis_registry,curriculum_evidence_mappings,question_evidence_contracts;
@@ -119,3 +122,29 @@ test('baseline source import supplies recognition criteria without fabricating r
 });
 
 test('an authored rubric cannot upgrade a source-defined self-report to assessed-task evidence',async()=>{await assert.rejects(publish({sourceNature:'ASSESSED_TASK'}),/Self-reported or mixed/);});
+
+test('dated alignment and aggregate baselines retain assessed-task basis, complete partitions and source privacy',async()=>{
+ await db.exec("reset role;update question_evidence_contracts set source_nature='ASSESSED';update curriculum_evidence_mappings set source_nature='ASSESSED';update question_analysis_registry set answer_model='INTEGER';update evidence_records set value='5',value_type='INTEGER';set role authenticated;");
+ const contract=await publish({perceptionField:'HAB.TEST',sourceNature:'ASSESSED_TASK'});
+ for(let n=1;n<=3;n++){
+  await record(contract,n);
+  await db.exec(`reset role;insert into evidence_records select 'later-evidence${n}',user_id,status,sensitivity,source_object_type,provenance,'INTEGER','2',enrolment_id,lab_code,lab_version,semantic_field_id,'2026-10-08' from evidence_records where id='evidence${n}';insert into evidence_submissions values('later-submission${n}','learner${n}','group',array['later-evidence${n}'],null,'2026-10-09');insert into evidence_assessments values('later-assessment${n}','later-submission${n}','rubric','REVIEWED','2026-10-10');set role authenticated;`);
+  await record(contract,n,{assessmentId:`later-assessment${n}`,requestKey:`later-review${n}`});
+ }
+ await db.exec("reset role;create or replace function private.current_app_user_id() returns text language sql as $$select current_setting('test.learner')$$;set role authenticated;");
+ for(let n=1;n<=3;n++)await db.exec(`set test.learner='learner${n}';select bis_development_reporting_permission('submission${n}',true);select bis_development_reporting_permission('later-submission${n}',true);`);
+ await db.exec("reset role;create or replace function private.current_app_user_id() returns text language sql as $$select auth.uid()::text$$;set role authenticated;");
+ const r=(await db.query("select bis_development_programme_report('group') as result")).rows[0].result,a=r.competencies[0];
+ assert.equal(r.assessmentCount,6);assert.equal(a.assessedGrowthParticipants,0);assert.equal(a.sourceDistribution.find(x=>x.code==='ASSESSED_TASK').count,3);assert.equal(a.baselineDistribution.find(x=>x.code==='EXPLAIN').count,3);assert.equal(a.alignmentChangeDistribution.find(x=>x.code==='SMALLER_GAP').count,3);assert.equal(a.alignmentDistribution.find(x=>x.code==='SAME_STAGE').count,3);assert.ok(a.trajectory.every(x=>x.assessedApplicationParticipants===0));
+ assert.doesNotMatch(JSON.stringify(r),/learner1|later-evidence|SECRET/);
+ await db.exec('set test.role=\'PROGRAMME_OWNER\';');await assert.rejects(db.query("select bis_development_learner_report('learner1','group')"),/not assigned/);
+});
+
+test('source readiness is exact-version governance metadata and not learner attainment',async()=>{
+ await publish();await assert.rejects(db.query('select bis_development_contract_workspace(null)'),/access is required/);
+ const workspace=(await db.query("select bis_development_contract_workspace('group') as result")).rows[0].result;
+ assert.equal(workspace.coverage[0].labCode,'HAB');assert.equal(workspace.coverage[0].labVersion,'1');assert.equal(workspace.coverage[0].approvedFields,1);assert.equal(workspace.coverage[0].applicationContracts,0);assert.equal(workspace.coverage[0].transferContracts,0);assert.doesNotMatch(JSON.stringify(workspace.coverage),/learner1|SECRET/);
+ await db.exec("reset role;update question_analysis_registry set status='RETIRED';set role authenticated;");
+ const retired=(await db.query("select bis_development_contract_workspace('group') as result")).rows[0].result;assert.equal(retired.contracts.length,0);assert.equal(retired.coverage[0].approvedFields,0);
+ await assert.rejects(db.query("select private.development_safe_partition('[{\"count\":1}]',10)"),/permission denied/);
+});
