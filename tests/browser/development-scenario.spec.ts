@@ -10,9 +10,11 @@ test('completed programme reports share fictional evidence across four audiences
  await expect(page.getByRole('button',{name:'Plan a programme intervention'})).toHaveCount(0);
  await expect(page.getByRole('combobox',{name:'Fictional learner',exact:true})).toHaveCount(0);
  await expect(page.locator('.programme-report-graphic')).not.toHaveCount(0);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.screenshot({path:testInfo.outputPath('partner.png'),fullPage:false});
  await page.getByRole('combobox',{name:'Reporting audience',exact:true}).selectOption('school');
  await expect(page.getByRole('table',{name:'Most frequent reviewed stage among learners with reviewed evidence, per capability and group'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.getByRole('combobox',{name:'Group',exact:true}).selectOption('fictional-development-habit-decision-a');
  await expect(page.getByText(/12 participating learners/).first()).toBeVisible();
  await page.getByRole('combobox',{name:'Reporting audience',exact:true}).selectOption('facilitator');
