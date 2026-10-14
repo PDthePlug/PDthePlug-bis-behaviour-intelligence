@@ -35,6 +35,7 @@ test('completing the same programme does not force the same outcome or manufactu
  for(const code of ['HIGHER_REVIEWED_STAGE','SAME_REVIEWED_STAGE','LOWER_REVIEWED_STAGE'])assert.ok(a.changeDistribution.some(r=>r.code===code&&r.count>=3));
  assert.ok(a.transferParticipants>0&&a.transferParticipants<24);assert.ok(a.repeatedApplicationParticipants>0&&a.repeatedApplicationParticipants<24);
  assert.ok(a.strengthDistribution.some(r=>r.code==='MODERATE'&&r.count>0));
+ assert.equal(a.trajectory[0].assessedApplicationParticipants,9);assert.equal(a.trajectory.at(-1).assessedApplicationParticipants,18);
  const profile=buildDevelopmentIntelligence(data.learners[0].facts,scenarioDefinitions);
  const common=profile.areas.find(a=>a.competencyId==='AC-C03');
  assert.deepEqual(common.sourceLabs,['HAB','DEC']);assert.equal(new Set(common.timeline.filter(t=>t.sourceNature==='ASSESSED_TASK').map(t=>t.comparisonKey)).size,1);
