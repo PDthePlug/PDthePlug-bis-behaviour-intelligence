@@ -53,3 +53,13 @@ test('facilitator brief suggests a check-in from authorised progress, without a 
  const brief=buildFacilitatorBrief([learner,{...learner,userId:'other',enrolment:{status:'COMPLETED',currentInvestigation:9}}]);
  assert.equal(brief.actions.length,1);assert.equal(brief.actions[0].userId,'learner');assert.match(brief.actions[0].action,/planned date/);assert.match(brief.actions[0].boundary,/do not establish ability/);assert.equal(brief.chart.rows.reduce((n,r)=>n+r.value,0),2);
 });
+
+test('development appendix does not describe higher self-reports as demonstrated task improvement',()=>{
+ const area={competencyId:'AC-C04',title:'Self-management',distribution:[{code:'EXPLAIN',count:20}],changeDistribution:[{code:'HIGHER_REVIEWED_STAGE',count:20}],strengthDistribution:[{code:'MODERATE',count:20}],sourceDistribution:[{code:'SELF_REPORT',count:20}],transferParticipants:0,repeatedApplicationParticipants:0,followupParticipants:0,alignmentParticipants:0,assessedGrowthParticipants:0};
+ const input={...fixture,developmentIntelligence:{status:'AVAILABLE',cohortId:'group',participantCount:20,areas:[area]}};
+ const report=buildProgrammeReport(input);
+ assert.match(report.insights.find(i=>i.id==='competency-assessed-AC-C04').observation,/0 of 20/);
+ assert.match(report.charts.find(c=>c.id==='competency-assessed-AC-C04').note,/may include both/);
+ const unavailable=buildProgrammeReport({...input,developmentIntelligence:{...input.developmentIntelligence,areas:[{...area,assessedGrowthParticipants:null}]}});
+ assert.match(unavailable.insights.find(i=>i.id==='competency-assessed-AC-C04').observation,/not available/);
+});
