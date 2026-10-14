@@ -1,3 +1,4 @@
+import { buildReviewedLearnerEvidence } from "@/lib/reviewed-development.mjs";
 import { withSupabaseRequest } from "@/db";
 import { customerSafeErrorResponse } from "@/lib/api-error-response";
 import { getRoles, identityFrom, requireAnyRole } from "@/lib/bis-access";
@@ -35,10 +36,11 @@ async function getHandler(request: Request) {
       return Response.json({ error: "Choose a learner from an assigned programme group." }, { status: 400, headers });
     }
 
-    const { data, error } = await requestSupabaseClient().rpc(
+    const client = requestSupabaseClient();
+    const [{ data, error }, reviewedResult] = await Promise.all([client.rpc(
       "bis_facilitator_learner_development_evidence",
       { target_cohort_id: cohortId, target_learner_user_id: learnerId },
-    );
+    ), client.rpc("bis_agent_reviewed_evidence_history", { p_cohort: cohortId, p_learner: learnerId, p_competency: null })]);
     if (error) throw new Error("Facilitator development projection failed");
 
     const projection = (data ?? {}) as DevelopmentProjection;
@@ -67,6 +69,7 @@ async function getHandler(request: Request) {
       profile,
       developmentEvidence: buildDevelopmentEvidence({ records, competencies: competencyFramework.competencies }),
       sourceBoundary: projection.boundary ?? null,
+      reviewedEvidence: buildReviewedLearnerEvidence(reviewedResult.error ? null : reviewedResult.data, competencyFramework.competencies),
       privacy: {
         structuralOnly: true,
         privateResponseValuesIncluded: false,

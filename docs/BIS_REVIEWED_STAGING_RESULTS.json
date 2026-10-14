@@ -1,0 +1,87 @@
+{
+  "projectRef": "lbmhkddrkhtmkcvfmumd",
+  "checks": [
+    {
+      "name": "application backend identity",
+      "status": "PASS"
+    },
+    {
+      "name": "real authentication for three dedicated QA roles",
+      "status": "PASS"
+    },
+    {
+      "name": "programme snapshot includes exact-scope reviewed coverage without private wording",
+      "status": "PASS"
+    },
+    {
+      "name": "facilitator endpoint resolves reviewed metadata without model calls or wording",
+      "status": "PASS"
+    },
+    {
+      "name": "sponsor cannot access learner review metadata",
+      "status": "PASS"
+    },
+    {
+      "name": "real institutional PDF uses the same report snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "learner-role and anonymous reporting access denied",
+      "status": "PASS"
+    },
+    {
+      "name": "real programme route at 360, 430 and 1280 pixels without overflow or page errors",
+      "status": "PASS"
+    }
+  ],
+  "viewports": [
+    {
+      "width": 360,
+      "status": "PASS"
+    },
+    {
+      "width": 430,
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "status": "PASS"
+    }
+  ],
+  "modelEnabled": false,
+  "status": "PASS",
+  "observedAt": "2026-10-14",
+  "repositoryVerification": {
+    "fullVerifyAcceptancePassed": 757,
+    "finalAcceptancePassed": 759,
+    "browserPassed": 352,
+    "browserFailed": 0,
+    "existingBrowserSkips": 2,
+    "focusedDatabaseAndModelPassed": 23,
+    "retainedServerlessLearningPackages": 15
+  },
+  "dataIntegrity": {
+    "learners": 40,
+    "responses": 2725,
+    "evidenceRecords": 2725,
+    "submissions": 1,
+    "assessments": 1,
+    "qaOnlyContractsRemaining": 0,
+    "sourceMeaningContracts": 1975,
+    "activeContractedRuntimeQuestions": 70
+  },
+  "sourceHashes": [
+    {
+      "path": "supabase/migrations/20261013172000_reporting_exact_cohort_and_release_scope.sql",
+      "sha256": "c0cbdc38dff47756e662aa811947de965e4d6959345f3b920bd5c99f9488b2ec"
+    },
+    {
+      "path": "supabase/migrations/20261013172100_reviewed_evidence_authority_and_permissions.sql",
+      "sha256": "5002f05c37b1fc2ae471b63d66395ba5138d81cc9ecb0e0dd0205a3e1d4bc53d"
+    },
+    {
+      "path": "supabase/migrations/20261014040000_question_contract_retirement_integrity.sql",
+      "sha256": "85454417b2936c17f9c1d465038bed5e36c814058dc71c3f518b5af223b374d8"
+    }
+  ]
+}

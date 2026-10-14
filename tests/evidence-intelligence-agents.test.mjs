@@ -245,3 +245,14 @@ test('Agent 5 adapter suppresses small and reconstructable competency cells befo
   assert.match(route, /runProgrammeInsightAgent/);
   assert.match(route, /reportable:\s*false/);
 });
+
+test('programme model input withholds small cells, complements and inconsistent partitions before any gateway call', async () => {
+ const {programmeAggregateIsPrivacySafe}=await import('../lib/evidence-intelligence/core.mjs');
+ const valid={participantCount:10,competencies:[{reportableParticipants:7,stageDistribution:{NOT_YET_EVIDENCED:7},evidenceStrengthDistribution:{WEAK:7}}]};
+ assert.equal(programmeAggregateIsPrivacySafe(valid),true);
+ for(const item of [{...valid.competencies[0],reportableParticipants:9},{...valid.competencies[0],stageDistribution:{NOTICE:5,EXPLAIN:2}},{...valid.competencies[0],evidenceStrengthDistribution:{WEAK:6}}])assert.equal(programmeAggregateIsPrivacySafe({...valid,competencies:[item]}),false);
+ const agents=await readFile(new URL('lib/evidence-intelligence/agents.ts',root),'utf8');
+ assert.match(agents,/programmeAggregateIsPrivacySafe\(aggregate\)/);
+ assert.match(agents,/allowedInference: context\.allowedInference/);
+ assert.match(agents,/forbiddenInference: context\.forbiddenInference/);
+});

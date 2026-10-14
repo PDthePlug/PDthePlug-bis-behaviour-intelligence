@@ -40,6 +40,7 @@ export type SponsorOutcome = {
   minimumReportableCohortSize: number;
   evidenceFlow?: ProgrammeEvidenceFlow | null;
   assessmentSummary?: import("@/lib/evidence-engine").AssessmentReport["cohorts"][number] | null;
+  reviewedDevelopment?: import("@/lib/reviewed-development.mjs").ReviewedProgrammeEvidence | null;
   competencySummary?: null | {
     status: "AVAILABLE" | "SUPPRESSED";
     participantCount: number;

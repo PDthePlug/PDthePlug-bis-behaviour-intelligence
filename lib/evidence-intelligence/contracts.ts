@@ -46,6 +46,8 @@ export const EvidenceContextSchema = z.object({
   sourceNature: SourceNatureSchema,
   mappingStatus: z.enum(["STRUCTURAL", "APPROVED"]),
   stageCeiling: EvidenceStageSchema,
+  allowedInference: z.string().max(2400).default(""),
+  forbiddenInference: z.string().max(2400).default(""),
   occurredAt: z.string().datetime().or(z.string().min(1)),
   learnerText: z.string().min(1).max(6000),
   allowedCompetencies: z.array(AllowedCompetencySchema).max(30),

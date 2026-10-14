@@ -1,6 +1,6 @@
 # BIS Evidence Intelligence Agents
 
-**Status:** Draft implementation, feature-gated off by default. Not deployed or release-certified.
+**Status:** Draft PR #162, rebased by merging the released PR #161. The contracts and guarded adapters are installed on BIS Staging. The model feature remains off; no Evidence Intelligence migration or model activation has been applied to production. See `BIS_DEVELOPMENT_GOAL_IMPLEMENTATION.md` for the current validation record.
 
 ## Purpose
 
@@ -135,10 +135,7 @@ It receives only evidence that is:
 
 It receives **no raw learner wording**.
 
-Current stage projection is deliberately conservative:
-- ordinary reviewed self-report enters longitudinal history at `NOTICE`;
-- a `LEARNING_CHECK` may enter at `EXPLAIN` only when it is linked to an authored rubric and the contract permits at least that stage;
-- nothing in the current Volume 1 meaning set can become `APPLY`, `TEST_AND_REVISE` or `TRANSFER` merely because it was reviewed.
+Reviewed history records task-review coverage. All current records use `NOT_YET_EVIDENCED` as the achievement stage and confidence `0`: no authored achievement rule or confidence calibration is supplied. A rubric link or REVIEWED disposition does not establish NOTICE, EXPLAIN or any higher attained competency stage. The source ceiling remains a separate maximum potential claim for a reviewed response, not an attained stage.
 
 The agent still cannot infer improvement from chronology alone, exceed the strongest supplied stage, infer transfer without a source transfer record, or claim mastery/durable change/causation.
 
@@ -168,7 +165,7 @@ It receives only:
 - current, active, consented participants with the cohort's exact Lab/version enrolment;
 - current learner-shared submissions;
 - latest human assessments with disposition `REVIEWED`;
-- source-contract-backed approved mappings;
+- source-contract-backed approved mappings, current active registry records, and explicit source and runtime aggregation permission;
 - competency-level aggregate counts after privacy suppression.
 
 It receives **no learner IDs, names, emails, evidence IDs, response wording, assessment feedback or P3 content**.
@@ -337,3 +334,18 @@ BIS should evaluate agents against human-labelled examples rather than plausible
 - human-review burden by question family and Lab version.
 
 The target is not perfect model agreement. The target is for unsupported high-stage claims, privacy failures and false programme claims to be rare, auditable and blocked before reporting.
+
+
+## Connected deterministic reports
+
+The facilitator development API now includes a derived human-review summary, without learner wording, review feedback, evidence IDs or model calls. The learner switch key and abort handling protect both structural and reviewed layers.
+
+The staff snapshot requests the reviewed aggregate independently of the model feature. It validates the exact cohort/population, authored competency IDs, complete distributions, small cells and complements before serialization. The shared programme report model produces reviewed task coverage charts, interpretation boundaries and next-practice suggestions; the PDF uses that same model. Each finding is assigned to one report section.
+
+All seeded Volume 1 contracts currently have `aggregation_policy=EXCLUDE` and `privacy_scope=PRIVATE_BY_DEFAULT`. Explicit facilitator sharing does not override these settings. Therefore current programme reviewed-task aggregation remains empty unless separate authorised aggregate-capable contracts exist. Empty or withheld evidence is never treated as zero capability.
+
+## Retirement and adapter execution
+
+Public adapter RPCs remain SECURITY INVOKER with anonymous execution denied. Their guarded private implementations have authenticated EXECUTE so the wrappers actually function; the implementation itself checks identity, role and current scope. Direct contract-table grants remain revoked, with an explicit deny policy.
+
+The current source contract, latest approved mapping and active registry must agree. Retired contracts and explicitly retired registry rows cannot enter the reviewed adapters. Contract refresh preserves explicit retirement. Original responses, assessments and source evidence are not rewritten.

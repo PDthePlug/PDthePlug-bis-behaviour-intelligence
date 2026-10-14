@@ -25,6 +25,7 @@ import {
   minimiseLearnerText,
   normaliseConfidence,
   programmeInsightInputIsAggregateOnly,
+  programmeAggregateIsPrivacySafe,
   sensitivityMayReachModel,
 } from "./core.mjs";
 
@@ -81,6 +82,8 @@ sourceNature is supplied by BIS and is immutable. Return that exact value; never
       question: context.questionLabel,
       portfolioPurpose: context.portfolioPurpose,
       authoredOutcome: context.authoredOutcome,
+      allowedInference: context.allowedInference,
+      forbiddenInference: context.forbiddenInference,
       evidenceClass: context.evidenceClass,
       sourceNature: context.sourceNature,
       allowedCompetencies: context.allowedCompetencies,
@@ -129,6 +132,8 @@ A plan, prediction, reflection or self-report is not proof that a behaviour occu
 Use NOT_SUPPORTED when the response does not provide enough evidence.`,
     input: {
       authoredEvidenceClass: context.evidenceClass,
+      allowedInference: context.allowedInference,
+      forbiddenInference: context.forbiddenInference,
       sourceNature: context.sourceNature,
       stageCeiling: context.stageCeiling,
       allowedCompetencies: context.allowedCompetencies,
@@ -319,6 +324,8 @@ A contradiction is a reason for review, not proof that the learner is unreliable
     input: {
       authoredScope: {
         evidenceClass: context.evidenceClass,
+        allowedInference: context.allowedInference,
+        forbiddenInference: context.forbiddenInference,
         sourceNature: context.sourceNature,
         stageCeiling: context.stageCeiling,
         allowedCompetencies: context.allowedCompetencies,
@@ -369,8 +376,8 @@ export async function runProgrammeInsightAgent(
     throw new Error("Programme Insight Agent accepts aggregate-only input.");
   }
   const aggregate = ProgrammeAggregateSchema.parse(rawAggregate);
-  if (aggregate.participantCount < 5) {
-    throw new Error("Programme Insight Agent may not analyse a cohort below the reporting threshold.");
+  if (!programmeAggregateIsPrivacySafe(aggregate)) {
+    throw new Error("Programme Insight Agent requires safe whole distributions and participant complements.");
   }
 
   const result = await callEvidenceAgent({

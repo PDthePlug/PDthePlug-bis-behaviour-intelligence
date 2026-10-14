@@ -122,6 +122,8 @@ async function post(request: Request) {
       sourceNature: source.sourceNature,
       mappingStatus: source.mappingStatus,
       stageCeiling: source.stageCeiling,
+      allowedInference: source.allowedInference,
+      forbiddenInference: source.forbiddenInference,
       occurredAt: source.occurredAt,
       learnerText: source.learnerText.slice(0, 6000),
       allowedCompetencies: [competency],

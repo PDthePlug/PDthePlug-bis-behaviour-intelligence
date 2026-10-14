@@ -77,7 +77,7 @@ async function post(request: Request) {
           : null,
         reportable: false,
         basis:
-          "Longitudinal synthesis uses only current, consented, learner-shared evidence whose latest human assessment is REVIEWED. Current source contracts conservatively support NOTICE and rubric-linked LEARNING_CHECK evidence up to EXPLAIN; this output is not mastery, diagnosis, transfer certification or causal programme evidence.",
+          "Longitudinal synthesis uses only current, consented, learner-shared evidence whose latest human assessment is REVIEWED. Human review and rubric linkage do not establish an achievement stage; this output is not mastery, diagnosis, transfer certification or causal programme evidence.",
       },
       { headers },
     );
