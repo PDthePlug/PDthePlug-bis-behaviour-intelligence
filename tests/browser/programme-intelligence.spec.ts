@@ -9,7 +9,7 @@ test('an authorised initial report renders without a second load and hides resul
  await page.route('**/api/staff',route=>{requests++;return route.fulfill({status:403,json:{error:'Scope withdrawn'}});});
  await page.goto('/preloaded-operations');
  await expect(page.getByRole('heading',{name:'Results',exact:true})).toBeVisible();
- await expect(page.locator('.programme-outcomes select')).toContainText('Already-authorised group');
+ await expect(page.getByRole('combobox',{name:'Group',exact:true})).toContainText('Already-authorised group');
  expect(requests).toBe(0);
  await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
  await expect(page.getByRole('heading',{name:'Operations could not open.'})).toBeVisible();
