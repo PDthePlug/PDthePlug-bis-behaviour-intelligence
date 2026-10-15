@@ -10,6 +10,11 @@ test('an authorised initial report renders without a second load and hides resul
  await page.goto('/preloaded-operations');
  await expect(page.getByRole('heading',{name:'Results',exact:true})).toBeVisible();
  await expect(page.getByRole('combobox',{name:'Group',exact:true})).toContainText('Already-authorised group');
+ // Server-rendered headings can be visible before React attaches the focus
+ // listener. Exercise a real state change before simulating a return to the tab.
+ await page.getByText('Report purpose and evidence notes',{exact:true}).click();
+ await page.getByLabel('Reporting purpose').selectOption('partner');
+ await expect(page.getByRole('heading',{name:'BIS development outcomes',exact:true})).toBeVisible();
  expect(requests).toBe(0);
  await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
  await expect(page.getByRole('heading',{name:'Operations could not open.'})).toBeVisible();
