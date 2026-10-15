@@ -8,6 +8,8 @@ import type { ReviewedLearnerEvidence } from "@/lib/reviewed-development.mjs";
 import type { DevelopmentEvidence } from "@/lib/development-evidence.mjs";
 import { DevelopmentEvidencePicture } from "./development-evidence-picture";
 import { EvidenceDisclosure } from "./evidence-disclosure";
+import { DevelopmentReportingNextSteps } from "./development-reporting-next-steps";
+import type { DevelopmentAssessmentReadiness } from "@/lib/development-readiness.mjs";
 
 export function FacilitatorLearnerDevelopment({
   cohortId,
@@ -25,6 +27,8 @@ export function FacilitatorLearnerDevelopment({
   const [reviewed, setReviewed] = useState<ReviewedLearnerEvidence | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [readiness, setReadiness] = useState<DevelopmentAssessmentReadiness | null>(null);
+  const [consentRequired, setConsentRequired] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -34,6 +38,8 @@ export function FacilitatorLearnerDevelopment({
       setProfile(null);
       setEvidence(null);
       setReviewed(null);
+      setReadiness(null);
+      setConsentRequired(false);
 
       void fetch(`/api/facilitator-development?cohortId=${encodeURIComponent(cohortId)}&learnerId=${encodeURIComponent(learnerId)}`, {
         signal: controller.signal,
@@ -41,13 +47,15 @@ export function FacilitatorLearnerDevelopment({
         credentials: "same-origin",
       })
         .then(async (response) => {
-          const body = await response.json() as { profile?: LearnerDevelopmentProfile; developmentEvidence?: DevelopmentEvidence; reviewedEvidence?: ReviewedLearnerEvidence; error?: string };
+          const body = await response.json() as { status?: string; assessmentReadiness?: DevelopmentAssessmentReadiness | null; profile?: LearnerDevelopmentProfile; developmentEvidence?: DevelopmentEvidence; reviewedEvidence?: ReviewedLearnerEvidence; error?: string };
           if (!response.ok || !body.profile) throw new Error(body.error ?? "Development snapshot unavailable");
           if (controller.signal.aborted) return;
           setLoadedKey(`${cohortId}:${learnerId}`);
           setProfile(body.profile);
           setEvidence(body.developmentEvidence ?? null);
           setReviewed(body.reviewedEvidence ?? null);
+          setReadiness(body.assessmentReadiness ?? null);
+          setConsentRequired(body.status === "CONSENT_REQUIRED");
         })
         .catch((reason: unknown) => {
           if (controller.signal.aborted) return;
@@ -72,7 +80,7 @@ export function FacilitatorLearnerDevelopment({
           <div><p className="eyebrow">Development snapshot</p><h2>Building the learner picture…</h2></div>
           <Compass />
         </div>
-        <p className="ops-helper">BIS is organising privacy-safe mapped evidence into the same development model used in the learner portfolio.</p>
+        <p className="ops-helper">Checking the work this learner has chosen to share and the assessments available.</p>
       </section>
     );
   }
@@ -80,7 +88,7 @@ export function FacilitatorLearnerDevelopment({
   if (error || !profile) {
     return (
       <EvidenceDisclosure title="Development snapshot is not available yet">
-        <p>{error || "BIS could not build this development picture from the permitted records."}</p>
+        <p>{error || "BIS could not load the shared work and assessments for this learner."}</p>
         <p>Operational progress remains available above. Private learner responses are never used as a fallback.</p>
       </EvidenceDisclosure>
     );
@@ -89,8 +97,10 @@ export function FacilitatorLearnerDevelopment({
   return (
     <section className="surface-card ops-section facilitator-development-picture">
       <div className="section-title"><div><p className="eyebrow">Learner development</p><h2>Where to support {displayName} next</h2></div><Compass /></div>
+      {consentRequired ? <section role="status"><h3>Programme consent is needed first</h3><p>This learner has not granted current programme consent. Ask them to review their consent choices when they sign in. Development evidence stays unavailable unless they choose to consent.</p></section> : null}
+      {!consentRequired ? <>
       <DevelopmentIntelligencePanel cohortId={cohortId} learnerId={learnerId} audience="facilitator" />
-      {evidence ? <DevelopmentEvidencePicture evidence={evidence} /> : <EvidenceDisclosure title="Evidence detail is not available yet"><p>The permitted evidence map could not be loaded. A submitted answer does not establish a demonstrated skill.</p></EvidenceDisclosure>}
+      {evidence?.areas.length ? <DevelopmentEvidencePicture evidence={evidence} /> : null}
 
       {reviewed?.areas.length ? <section className="development-evidence-actions" aria-label="Human-reviewed task evidence">
         <h3>What has been reviewed</h3>
@@ -103,15 +113,17 @@ export function FacilitatorLearnerDevelopment({
           </details>
         </article>)}
       </section> : <EvidenceDisclosure title="Reviewed task evidence is not available yet">
-        <p>Current learner-shared work needs an eligible human review and approved evidence meaning before it appears here.</p>
+        <p>There is no reviewed work to show yet. Open shared evidence review to check what the learner has chosen to share.</p>
       </EvidenceDisclosure>}
+      </> : null}
+      {consentRequired || !reviewed?.areas.length || !readiness?.practicalUse ? <DevelopmentReportingNextSteps cohortId={cohortId} readiness={readiness} /> : null}
 
       <div className="ops-boundary compact">
         <ShieldCheck />
         <div>
-          <strong>Portfolio meaning without private content</strong>
-          <p>Learning, practice, reviewed capability and transfer are different evidence claims.</p>
-          <p>The facilitator receives structural evidence and the coverage of current, learner-shared human reviews. Reflection wording, hypotheses, experiment notes, Companion conversations and P3 evidence remain private.</p>
+          <strong>What you can see here</strong>
+          <p>Understanding an idea, using it in practice and using it in another setting need different evidence.</p>
+          <p>You can see shared work and recorded assessments. Private reflections, hypotheses, experiment notes and Companion conversations stay private.</p>
         </div>
       </div>
     </section>

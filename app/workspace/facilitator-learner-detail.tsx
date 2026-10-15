@@ -159,7 +159,7 @@ export function FacilitatorLearnerDetail({ learnerId, requestedCohortId }: { lea
 
         <div className="ops-boundary compact">
           <ShieldCheck />
-          <div><strong>Development is evidence, not a label</strong><p>The learner detail view shows evidence-supported development stages and structural programme context. It does not expose private reflections or turn missing evidence into a judgement about ability, motivation or potential.</p></div>
+          <div><strong>How to read this report</strong><p>Look at what the learner has demonstrated and where more practice may help. Private reflections are excluded. Missing evidence does not tell us what a learner can or cannot do.</p></div>
         </div>
       </div>
     </div>

@@ -630,7 +630,7 @@ export function ProgrammeOutcomesView({
       ) : null}
 
       <section hidden={section !== "all" && section !== "evidence"} className="outcomes-context">
-        <Metric label="Learners" value={outcome.participantCount} />
+        <Metric label="Learners included in reporting" value={outcome.participantCount} detail="Current programme consent; the group list may be larger" />
         <Metric
           label="Completion"
           value={metrics ? percent(metrics.completionContext.completionRate) : flow?.totals?.completed === null || flow?.totals?.completed === undefined ? "Unavailable" : `${flow.totals.completed} completed`}
@@ -651,12 +651,15 @@ export function ProgrammeOutcomesView({
       </section> : null}
 
       {report.status === "SUPPRESSED" ? (
-        <EvidenceDisclosure title="Group results are not available yet">
+        <section className="development-intelligence" aria-label="Reporting population">
+          <h2>Group results are not available yet</h2>
           <p>
-            This group has {outcome.participantCount} learner{outcome.participantCount === 1 ? "" : "s"}.
-            Results appear from {outcome.minimumReportableCohortSize} learners so no group pattern can point back to one person.
+            {outcome.participantCount} learner{outcome.participantCount === 1 ? " has" : "s have"} current programme consent and {outcome.participantCount === 1 ? "is" : "are"} included in this report.
+            Results appear from {outcome.minimumReportableCohortSize} eligible learners so no group pattern can point back to one person.
           </p>
-        </EvidenceDisclosure>
+          <p>The facilitator’s group list can be larger. Learners also choose which assessed outcomes may contribute to group reporting.</p>
+          {section !== 'all' && section !== 'overview' ? <p><a href="/experience/development-system?scenario=habit-decision&audience=school">See a completed fictional programme report →</a></p> : null}
+        </section>
       ) : (
         <>
           {outcome.learningSummary?.learningJourney ? (

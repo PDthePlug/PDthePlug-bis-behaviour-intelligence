@@ -39,6 +39,7 @@ import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib
 import competencyFramework from "@/content/curriculum/applied-commerce/competency-framework.json";
 import competencyCrosswalk from "@/content/curriculum/external-frameworks/dbe-basic-education-competency-crosswalk.json";
 import { decorateCohortCompetencySummary } from "@/lib/development-profile.mjs";
+import { developmentAssessmentReadiness } from "@/lib/development-readiness.mjs";
 
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -336,7 +337,7 @@ async function facilitatorSnapshot(identity: Identity) {
     .where(inArray(facilitatorNotes.cohortId, cohortIds))
     .orderBy(desc(facilitatorNotes.createdAt));
   const client = requestSupabaseClient();
-  const [learningCheckEntries, competencyEntries] = await Promise.all([
+  const [learningCheckEntries, competencyEntries, readinessEntries] = await Promise.all([
     Promise.all(
       cohorts.map(async (cohort) => {
         const result = await client.rpc("facilitator_cohort_learning_checks", { target_cohort_id: cohort.id });
@@ -356,9 +357,14 @@ async function facilitatorSnapshot(identity: Identity) {
         return [cohort.id, summary] as const;
       }),
     ),
+    Promise.all(cohorts.map(async cohort => {
+      const result = await client.rpc("bis_development_contract_workspace", { p_cohort: cohort.id });
+      return [cohort.id, result.error ? null : developmentAssessmentReadiness(result.data, cohort.labCode, cohort.labVersion)] as const;
+    })),
   ]);
   const learningChecks = new Map(learningCheckEntries);
   const competencySummaries = new Map(competencyEntries);
+  const assessmentReadiness = new Map(readinessEntries);
 
   const referrals = await db
     .select({
@@ -381,6 +387,7 @@ async function facilitatorSnapshot(identity: Identity) {
       memberIds: members.filter((member) => member.cohortId === cohort.id).map((member) => member.learnerUserId),
       learningChecks: learningChecks.get(cohort.id) ?? null,
       competencySummary: competencySummaries.get(cohort.id) ?? null,
+      assessmentReadiness: assessmentReadiness.get(cohort.id) ?? null,
     })),
     learners: progress,
     notes,

@@ -10,6 +10,11 @@ test('an authorised initial report renders without a second load and hides resul
  await page.goto('/preloaded-operations');
  await expect(page.getByRole('heading',{name:'Results',exact:true})).toBeVisible();
  await expect(page.getByRole('combobox',{name:'Group',exact:true})).toContainText('Already-authorised group');
+ // Server-rendered headings can be visible before React attaches the focus
+ // listener. Exercise a real state change before simulating a return to the tab.
+ await page.getByText('Report purpose and evidence notes',{exact:true}).click();
+ await page.getByLabel('Reporting purpose').selectOption('partner');
+ await expect(page.getByRole('heading',{name:'BIS development outcomes',exact:true})).toBeVisible();
  expect(requests).toBe(0);
  await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
  await expect(page.getByRole('heading',{name:'Operations could not open.'})).toBeVisible();
@@ -67,15 +72,13 @@ test('facilitator groups missing observations into one keyboard accessible check
  await page.goBack(); await expect(summary).toBeVisible(); await verify();
 });
 
-test('privacy-limited reports keep explanation collapsed without exposing results', async ({ page }) => {
+test('privacy-limited reports explain eligibility visibly without exposing results', async ({ page }) => {
  const verify = observe(page);
  await page.route('**/api/staff', r => r.fulfill({ json: { ...base, sponsor: { cohorts: [{ ...outcome, participantCount: 2, suppressed: true }] } } }));
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
  const summary = page.getByText('Group results are not available yet', { exact: true });
  await expect(summary).toBeVisible();
- await expect(page.getByText(/This group has 2 learners/)).toBeHidden();
- await summary.focus(); await page.keyboard.press('Enter');
- await expect(page.getByText(/This group has 2 learners/)).toBeVisible();
+ await expect(page.getByRole('region',{name:'Reporting population'}).getByText(/2 learners have current programme consent/)).toBeVisible();
  await expect(page.getByRole('heading', { name: 'Systems Transfer Test', exact: true })).toHaveCount(0);
  await expect(page.getByText('Thandi Mokoena')).toHaveCount(0); await verify();
 });
@@ -258,4 +261,47 @@ test('actual programme outcomes show capability bars, change distribution and au
  await page.getByLabel('Group',{exact:true}).selectOption('grade9');await expect(story.getByText(/Grade 9 · 20 participating learners/)).toBeVisible();
  await story.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('actual-outcomes-bars.png')});
  await verify();
+});
+
+test('live-shaped group with 21 members and one eligible learner explains readiness and links to review',async({page},info)=>{
+ const verify=observe(page);
+ const members=Array.from({length:21},(_,i)=>({...learner,userId:`learner-${i}`,displayName:`Example learner ${i+1}`}));
+ const restricted={...cohort,labCode:'HAB',labVersion:'4.5.2',memberIds:members.map(l=>l.userId),competencySummary:{status:'SUPPRESSED',participantCount:1,competencies:[],boundary:'Small groups hidden.'},assessmentReadiness:{learnerReport:false,practicalUse:false,transfer:false}};
+ await page.route('**/api/staff',r=>r.fulfill({json:{...base,facilitator:{...base.facilitator,cohorts:[restricted],learners:members},sponsor:{cohorts:[{...outcome,cohort:restricted,participantCount:1,suppressed:true,competencySummary:null,developmentIntelligence:null}]}}}));
+ await page.route('**/api/class-operations?**',r=>r.fulfill({json:{sessions:[],attendance:[]}}));
+ await page.goto('/staff-shell?view=facilitator&section=cohort&group=group');
+ await expect(page.getByText('21 learners on the group list',{exact:false})).toBeVisible();
+ await expect(page.getByText(/21 learners are on the group list. 1 learner has current programme consent/)).toBeVisible();
+ const next=page.getByRole('region',{name:'Prepare development reporting'});
+ await expect(next.getByText(/approve assessment criteria for this group’s Lab edition/)).toBeVisible();
+ await expect(next.getByRole('link',{name:'Open shared evidence review →'})).toHaveAttribute('href','/workspace?view=facilitator&section=review&group=group');
+ await expect(next.getByRole('link',{name:'See a completed fictional learner report →'})).toHaveAttribute('href','/experience/development-system?scenario=habit-decision&audience=facilitator');
+ await next.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('live-shaped-group-readiness.png')});
+ await next.getByRole('link',{name:'See a completed fictional learner report →'}).click();
+ await expect(page.getByRole('heading',{name:'Development strengths and next support',exact:true})).toBeVisible();
+ await expect(page.locator('.development-fingerprint')).toBeVisible();
+ await page.goBack();await expect(page.getByText(/21 learners are on the group list. 1 learner has current programme consent/)).toBeVisible();
+ for(const section of ['overview','learning','evidence']){
+  await page.goto(`/staff-shell?view=outcomes&section=${section}&group=group`);
+  await expect(page.getByRole('region',{name:'Reporting population'}).getByText(/1 learner has current programme consent/)).toBeVisible();
+  await expect(page.getByRole('link',{name:'See a completed fictional programme report →'})).toBeVisible();
+  await expect(page.getByRole('meter')).toHaveCount(0);
+ }
+ await page.getByRole('link',{name:'See a completed fictional programme report →'}).click();
+ await expect(page.getByRole('table',{name:'Most frequent reviewed stage among learners with reviewed evidence, per capability and group'})).toBeVisible();
+ await page.goBack();await expect(page.getByRole('region',{name:'Reporting population'}).getByText(/1 learner has current programme consent/)).toBeVisible();
+ await verify();
+});
+
+test('learner missing consent receives an actionable boundary without loading a development report',async({page})=>{
+ const verify=observe(page);let developmentRequests=0;
+ await page.route('**/api/staff',r=>r.fulfill({json:base}));
+ await page.route('**/api/facilitator-development?**',r=>r.fulfill({json:{status:'CONSENT_REQUIRED',profile:{areas:[]},developmentEvidence:{areas:[]},assessmentReadiness:{learnerReport:false,practicalUse:false,transfer:false}}}));
+ await page.route('**/api/development-intelligence?**',r=>{developmentRequests++;return r.fulfill({status:403,json:{error:'Consent required'}});});
+ await page.goto('/staff-shell?view=facilitator&section=participants&group=group&learner=learner');
+ await expect(page.getByRole('heading',{name:'Programme consent is needed first'})).toBeVisible();
+ await expect(page.getByRole('region',{name:'Prepare development reporting'})).toBeVisible();
+ await expect(page.locator('.development-fingerprint')).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Refresh development profile'})).toHaveCount(0);
+ expect(developmentRequests).toBe(0);await verify();
 });

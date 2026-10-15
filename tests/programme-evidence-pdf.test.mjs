@@ -32,6 +32,15 @@ test('Universal report includes executive findings, graphics, actions, Unicode a
 test('suppressed report withholds all findings and totals before any cover rendering',async()=>{
  const {pdf,text}=await inspect(await renderProgrammeOutcomePdf({...outcome,participantCount:4,evidenceFlow:{...outcome.evidenceFlow,totals:{...outcome.evidenceFlow.totals,recordedResponses:987654}}}));assert.match(text,/Report withheld/);assert.doesNotMatch(text,/987654|24 responses|Programme review|recorded experiment start/);await pdf.cleanup();
 });
+
+test('empty live report explains reporting eligibility and assessment steps in the export',async()=>{
+ const {pdf,text}=await inspect(await renderProgrammeOutcomePdf({...outcome,participantCount:1,suppressed:true}));
+ assert.match(text,/Why development results are not shown/);
+ assert.match(text,/facilitator’s group list may include learners without current programme consent/);
+ assert.match(text,/Learners choose work to share from their Evidence Portfolio/);
+ assert.match(text,/Completing activities alone cannot establish development/);
+ await pdf.cleanup();
+});
 test('illustrative status repeats on every page and long decisions paginate with table headers',async()=>{
  const long={...outcome,decisionRegister:{decisions:Array.from({length:14},(_,i)=>({sourceTitle:`Decision ${i+1}`,decisionText:'Review the conditions and follow up with the facilitator. '.repeat(12),expectedOutcome:'A reportable observation next time.',ownerLabel:'Programme team',reviewOn:null,status:'OPEN',reviewOutcome:null,reviewNote:null}))}};
  const {pdf,text,pages}=await inspect(await renderProgrammeOutcomePdf(long,new Date('2026-10-05'),{illustrative:true}));assert.match(text,/Decision 14/);
