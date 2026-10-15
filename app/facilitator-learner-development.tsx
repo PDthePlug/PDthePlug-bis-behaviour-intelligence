@@ -88,7 +88,7 @@ export function FacilitatorLearnerDevelopment({
   if (error || !profile) {
     return (
       <EvidenceDisclosure title="Development snapshot is not available yet">
-        <p>{error || "BIS could not build this development picture from the permitted records."}</p>
+        <p>{error || "BIS could not load the shared work and assessments for this learner."}</p>
         <p>Operational progress remains available above. Private learner responses are never used as a fallback.</p>
       </EvidenceDisclosure>
     );
@@ -113,7 +113,7 @@ export function FacilitatorLearnerDevelopment({
           </details>
         </article>)}
       </section> : <EvidenceDisclosure title="Reviewed task evidence is not available yet">
-        <p>Current learner-shared work needs an eligible human review and approved evidence meaning before it appears here.</p>
+        <p>There is no reviewed work to show yet. Open shared evidence review to check what the learner has chosen to share.</p>
       </EvidenceDisclosure>}
       </> : null}
       {consentRequired || !reviewed?.areas.length || !readiness?.practicalUse ? <DevelopmentReportingNextSteps cohortId={cohortId} readiness={readiness} /> : null}
@@ -121,9 +121,9 @@ export function FacilitatorLearnerDevelopment({
       <div className="ops-boundary compact">
         <ShieldCheck />
         <div>
-          <strong>Portfolio meaning without private content</strong>
-          <p>Learning, practice, reviewed capability and transfer are different evidence claims.</p>
-          <p>The facilitator receives structural evidence and the coverage of current, learner-shared human reviews. Reflection wording, hypotheses, experiment notes, Companion conversations and P3 evidence remain private.</p>
+          <strong>What you can see here</strong>
+          <p>Understanding an idea, using it in practice and using it in another setting need different evidence.</p>
+          <p>You can see shared work and recorded assessments. Private reflections, hypotheses, experiment notes and Companion conversations stay private.</p>
         </div>
       </div>
     </section>
