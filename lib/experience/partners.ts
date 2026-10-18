@@ -1,6 +1,10 @@
 // Each public experience owns its practice state and report. Never derive these
 // boundaries from a visitor-controlled query string or a live organisation.
 export const experiencePartners = {
+  firstlook: {
+    organisation: 'Your organisation', path: '/experience/first-look',
+    storageKey: 'bis.programme-experience.firstlook.v2', reportPath: '/experience/first-look/report',
+  },
   leap9: {
     organisation: 'Leap9', path: '/experience/leap9/v2',
     storageKey: 'bis.programme-experience.leap9.v2', reportPath: '/experience/leap9/report',
