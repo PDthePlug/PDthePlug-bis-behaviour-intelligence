@@ -192,7 +192,7 @@ export function FirstLookClient() {
         <p className="first-look-eyebrow">From first look to real use</p>
         <h2>Would this answer a useful question in your programme?</h2>
         <p>A pilot can be bounded around one cohort, one behavioural question and a clearly agreed evidence boundary.</p>
-        <a href="mailto:?subject=BIS%20pilot%20discussion">Discuss a pilot <ArrowRight size={17} aria-hidden="true" /></a>
+        <a href="mailto:pdmpofu@gmail.com?subject=BIS%20pilot%20discussion">Discuss a pilot <ArrowRight size={17} aria-hidden="true" /></a>
       </section>
     </div>
   );

@@ -60,3 +60,15 @@ test('DGMT findings reuse the fixed evidence with an appropriate partner context
   assert.match(findings[0].action, /DGMT/);
   assert.match(findings[2].limit, /does not certify competence/);
 });
+
+test('partner findings preserve evidence and never borrow another organisation identity', () => {
+  const baseline = sponsorFindings().map(item => item.observation);
+  for (const organisation of ['Vodacom Foundation', 'Sasol Foundation', 'Primestars', 'JA South Africa', 'Momentum Group Foundation', 'Standard Bank Tutuwa Community Foundation', 'BIS First Look']) {
+    const findings = sponsorFindings(illustrativeCohort, organisation);
+    assert.deepEqual(findings.map(item => item.observation), baseline);
+    assert.ok(findings.every(item => !/DGMT|Leap9/.test(item.action)));
+    const label = organisation === 'BIS First Look' ? 'The programme team' : organisation;
+    assert.ok(findings[0].action.includes(label));
+    assert.ok(findings[1].action.includes(label));
+  }
+});

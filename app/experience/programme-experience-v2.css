@@ -478,10 +478,10 @@
   .experience-v2-metric:nth-child(3){border-right:0}
 }
 @media(max-width:640px){
-  .experience-v2-topbar{padding-block:14px;align-items:flex-start}
+  .experience-v2-topbar{padding-block:14px;align-items:flex-start;flex-direction:column;gap:10px}
   .experience-v2-brand strong{font-size:20px}
   .experience-v2-brand small{max-width:210px}
-  .experience-v2-topbar-meta{display:none}
+  .experience-v2-topbar-meta{display:flex;justify-content:flex-start}
   .experience-v2-shell{padding-inline:12px;gap:12px}
   .experience-v2-canvas{border-inline:0}
   .experience-v2-page-header{padding:30px 20px 24px}

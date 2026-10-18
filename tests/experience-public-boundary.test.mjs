@@ -34,3 +34,20 @@ test('the fictional DGMT journey, report and video bypass session refresh precis
   }
   assert.deepEqual(calls, ['/experience', '/explore/admin', '/api/explore', '/experience/dgmt/admin', '/experience/dgmt/report/private', '/api/staff', '/profile']);
 });
+
+test('outreach and First Look routes bypass sessions only at their exact public boundaries', async () => {
+  const before = calls.length;
+  for (const partner of ['vodacom', 'sasol', 'primestars', 'jasa', 'momentum', 'tutuwa', 'first-look']) {
+    const root = '/experience/' + partner;
+    for (const path of [root + (partner === 'first-look' ? '' : '/v2'), root + '/report']) {
+      const response = await proxy(new NextRequest('https://bis.example' + path));
+      assert.equal(response.headers.get('x-middleware-next'), '1');
+      assert.equal(response.headers.get('cache-control'), 'no-store');
+      assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow');
+    }
+    for (const path of [root + '/admin', root + '/report/private', root + '/v2/private']) {
+      assert.equal(await (await proxy(new NextRequest('https://bis.example' + path))).text(), 'session boundary');
+    }
+  }
+  assert.equal(calls.length - before, 21);
+});
