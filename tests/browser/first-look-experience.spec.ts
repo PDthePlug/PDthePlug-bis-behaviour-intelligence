@@ -27,6 +27,7 @@ test('BIS First Look is neutral, no-login and enters the shared programme experi
   await expect(page.getByRole('link', { name: 'Your organisation × BIS Programme Experience home' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 1, name: 'See development become evidence.' })).toBeVisible();
   await expect(page.getByText(/DGMT/i)).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Discuss a pilot' })).toHaveAttribute('href', 'mailto:pdmpofu@gmail.com?subject=BIS%20pilot%20discussion');
   await checkLayout();
 
   await page.getByRole('button', { name: 'Switch context', exact: false }).click();
