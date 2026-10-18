@@ -174,3 +174,16 @@ test("the operator can publish, take offline, restore, and recover from a failed
   await expect(page.getByText("Live: v1.1", { exact: true })).toBeVisible();
   expect(actions.at(-1)).toBe("republishVersion");
 });
+
+test('Content Studio distinguishes registered calculations from a rate needing authored bindings', async ({page})=>{
+ const state=structuredClone(snapshot);
+ const item=state.items[0];item.kind='LAB';item.id='content:lab:TRU';item.title='Trust Lab';
+ const entry=item.versions[0];entry.itemId=item.id;
+ Object.assign(entry.compilerReport,{runtimeProfile:'UNIVERSAL_V2',measurementReadiness:{modelVersion:'bis-measurement-readiness:1',status:'REVIEW',calculationCount:3,projectionCount:2,issues:[{code:'RATE_BINDING_REQUIRED',message:'Experiment Adherence Rate: bind the authored numerator, denominator and calculation before reporting this as a rate.'}],boundary:'Source bindings do not assess capability or permit access to private answers.'}});
+ await page.route('**/api/content-studio',route=>route.fulfill({json:state}));await page.goto('/content-studio');
+ const summary=page.getByText('What this Lab can calculate',{exact:true});await expect(summary).toBeVisible();await summary.focus();await page.keyboard.press('Enter');
+ await expect(page.getByText('3 calculations have registered inputs; 2 fields reuse earlier answers.',{exact:true})).toBeVisible();
+ await expect(page.getByText(/bind the authored numerator, denominator and calculation/)).toBeVisible();
+ await expect(page.getByText(/Source bindings do not assess capability/)).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+});

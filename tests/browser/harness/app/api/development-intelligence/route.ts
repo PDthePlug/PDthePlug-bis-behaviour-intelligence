@@ -1,0 +1,2 @@
+// Closed harness default; individual workflow tests supply their own reviewed fixtures.
+export async function GET(r:Request){const view=new URL(r.url).searchParams.get('view');return Response.json(view==='contracts'?{contracts:[]}:view==='permission'?{allowed:false}:{status:'AWAITING_REVIEWED_EVIDENCE',areas:[],headline:'Development outcomes will appear after learner-shared work has been assessed against approved criteria.',boundary:'Human-reviewed task evidence; no diagnosis or causal claim.'});}

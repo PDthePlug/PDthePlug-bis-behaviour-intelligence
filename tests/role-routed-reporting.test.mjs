@@ -49,13 +49,11 @@ test("programme PDF renderer is a structured institutional report and excludes p
   const pdf = await source("lib/programme-report-pdf.ts");
   assert.match(pdf, /import PDFDocument from "pdfkit"/);
   assert.match(pdf, /Executive summary/);
-  assert.match(pdf, /KEY FINDINGS/);
-  assert.match(pdf, /Learning journey/);
-  assert.match(pdf, /Behaviour in practice/);
+  assert.match(pdf, /What the evidence can support/);
+  assert.match(pdf, /reportSections\(report\)/);
+
   assert.match(pdf, /buildProgrammeReport/);
   assert.match(pdf, /How much information we have/);
-  assert.match(pdf, /Human support/);
-  assert.match(pdf, /Development and programme context/);
   assert.match(pdf, /Programme review/);
   assert.match(pdf, /They do not prescribe programme changes/);
   assert.match(pdf, /What remains private/);

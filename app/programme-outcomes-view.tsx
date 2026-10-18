@@ -1,9 +1,12 @@
 "use client";
+import {CohortDevelopmentReport} from "./cohort-development-report";
 import { AssessmentReports } from "./assessment-reports";
 import { EvidenceDisclosure } from "./evidence-disclosure";
 import { EVIDENCE_STAGE_LABELS, type ProgrammeEvidenceFlow } from "../lib/programme-evidence-flow";
 
+import { reportSections } from "@/lib/development-evidence.mjs";
 import { buildProgrammeReport } from "@/lib/programme-intelligence.mjs";
+import { ProgrammeComparisonCoverage } from "./programme-comparison-coverage";
 import { ProgrammeReportGraphic } from "./programme-report-graphics";
 import "./programme-intelligence.css";
 import { useEffect, useMemo, useState } from "react";
@@ -38,6 +41,8 @@ export type SponsorOutcome = {
   minimumReportableCohortSize: number;
   evidenceFlow?: ProgrammeEvidenceFlow | null;
   assessmentSummary?: import("@/lib/evidence-engine").AssessmentReport["cohorts"][number] | null;
+  developmentIntelligence?: ReturnType<typeof import("@/lib/development-intelligence.mjs").developmentProgrammeFindings> | null;
+  reviewedDevelopment?: import("@/lib/reviewed-development.mjs").ReviewedProgrammeEvidence | null;
   competencySummary?: null | {
     status: "AVAILABLE" | "SUPPRESSED";
     participantCount: number;
@@ -115,10 +120,10 @@ export type SponsorOutcome = {
       skillShifts: Array<{
         id: string;
         label: string;
-        pairedParticipants: number;
-        averagePre: number;
-        averagePost: number;
-        averageShift: number;
+        pairedParticipants: number | null;
+        averagePre: number | null;
+        averagePost: number | null;
+        averageShift: number | null;
       }>;
       activity: {
         participantsWithHandbookActivity: number;
@@ -428,10 +433,11 @@ export function ProgrammeOutcomesView({
   reportHref,
   saving = false,
   act = async () => false,
-  section = "all", onSectionChange, cohortId, onCohortChange,
+  section = "all", onSectionChange, cohortId, onCohortChange,reportPurpose='school',
 }: {
   data: SponsorSnapshot;
   reportHref?: string;
+  reportPurpose?:'school'|'partner';
   saving?: boolean;
   act?: StaffAction;
   section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void;
@@ -471,8 +477,8 @@ export function ProgrammeOutcomesView({
   const metrics = flow?.runtimeMode === "DYNAMIC" ? null : outcome.metrics;
   const decisionRegister = outcome.decisionRegister;
   const report = buildProgrammeReport(outcome);
+  const evidenceSections = reportSections(report);
   const pendingInsights = report.insights.filter(insight => insight.evidence.sample === 0 || insight.id === "practice-unavailable" || (insight.id === "evidence-coverage" && flow?.totals?.recordedResponses === 0 && flow?.totals?.anchoredMeasures === 0) || (insight.id === "next-programme" && outcome.organisationLearning?.comparison?.baselineOnly));
-  const currentInsights = report.insights.filter(insight => !pendingInsights.includes(insight));
   const renderInsight = (insight: (typeof report.insights)[number]) => <article key={insight.id}>
     <h3>{insight.title}</h3><p>{insight.observation}</p><p>{insight.interpretation}</p>
     <p className="programme-insight-action"><strong>Suggested next step</strong><br />{insight.action}</p>
@@ -545,21 +551,23 @@ export function ProgrammeOutcomesView({
               ))}
             </select>
             <small>{dateRange(outcome)}</small>
-            <details className="programme-publication-details"><summary>Programme details</summary><p>{outcome.cohort.name} · {dateRange(outcome)}</p></details>
           </div>
           <a className="outcomes-pdf-link" href={reportHref ?? ("/api/staff?report=pdf&cohortId=" + encodeURIComponent(outcome.cohort.id))}>
             <Download aria-hidden="true" /> Download PDF
           </a>
+          {!reportHref?<a href="/experience/development-system">Explore a fictional completed programme</a>:null}
         </div>
       </section>
 
+      <div hidden={section!=="all"&&section!=="overview"}><CohortDevelopmentReport key={outcome.cohort.id} outcomes={data.cohorts} selected={outcome} initialPurpose={reportPurpose} onPlan={reportPurpose==='school'&&decisionRegister?.canManage&&onSectionChange?(title,evidence,action)=>{setDecisionSignal('OTHER');setDecisionTitle(title);setDecisionEvidence(evidence.slice(0,1200));setDecisionText(action);setFocusDecision(true);onSectionChange('decisions');}:undefined}/></div>
+
       {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
-        <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-competency-picture">
+        <section hidden={section !== "evidence"} className="outcomes-competency-picture">
           <div className="outcomes-section-heading">
             <div>
               <p className="eyebrow">Development picture</p>
               <h2>What learners are developing</h2>
-              <p>See the capabilities learners can demonstrate in programme tasks and the practice to offer next.</p>
+              <p>See which development areas have recorded work and what review or practice to offer next.</p>
             </div>
             <Compass />
           </div>
@@ -576,7 +584,7 @@ export function ProgrammeOutcomesView({
                   ? "Some mapped development evidence is present, but the contributing count is hidden for privacy."
                   : competency.reportableParticipants === 0
                     ? "There is not enough recorded work to describe development in this area yet."
-                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have enough recorded work to describe their current development in this area.`}</p>
+                    : `${competency.reportableParticipants} of ${outcome.participantCount} learners have work mapped to this development area. Task quality is reported separately.`}</p>
                 {visibleStages.length ? <div className="outcomes-competency-stages" aria-label={`${competency.title} evidence stages`}>
                   {competency.distribution.map((stage) => <span key={stage.code} className={(stage.count ?? 0) > 0 ? "is-active" : ""}>
                     <b>{stage.label}</b>
@@ -597,22 +605,32 @@ export function ProgrammeOutcomesView({
       ) : null}
 
       {report.status === "AVAILABLE" ? (
-        <section hidden={section !== "all" && section !== "overview"} className="outcomes-insights">
+        <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-insights">
+          <details open={section === "evidence"}><summary>How we reached these conclusions · full evidence report</summary>
           <div className="outcomes-section-heading">
             <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
             <Lightbulb />
           </div>
-          {currentInsights.length ? <div className="outcomes-insight-grid">{currentInsights.map(renderInsight)}</div> : null}
+          {evidenceSections.filter(group => group.id !== "delivery").map(group => <section key={group.id} className="programme-evidence-domain">
+            <h3>{group.title}</h3>
+            {group.insights.length || group.charts.length || (group.id === "change" && report.comparisons.length) ? <>
+              {group.id === "change" ? <ProgrammeComparisonCoverage comparisons={report.comparisons} /> : null}
+              {group.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
+              <div className="outcomes-insight-grid">{group.insights.filter(item => !pendingInsights.includes(item)).map(renderInsight)}</div>
+            </> : <p className="outcome-muted">No reportable evidence in this category yet. It may be uncollected, unavailable or withheld for privacy.</p>}
+          </section>)}
+          </details>
           {pendingInsights.length ? <EvidenceDisclosure title="Evidence still developing"><div className="outcomes-insight-grid">{pendingInsights.map(renderInsight)}</div></EvidenceDisclosure> : null}
           <EvidenceDisclosure title="Progress and programme context">
-            {report.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
+            {evidenceSections.find(group => group.id === "delivery")?.charts.map(chart => <ProgrammeReportGraphic key={chart.id} chart={chart} />)}
+            <div className="outcomes-insight-grid">{evidenceSections.find(group => group.id === "delivery")?.insights.filter(item => !pendingInsights.includes(item)).map(renderInsight)}</div>
             <p>{report.boundary}</p>
           </EvidenceDisclosure>
         </section>
       ) : null}
 
-      <section hidden={section !== "all" && section !== "overview"} className="outcomes-context">
-        <Metric label="Learners" value={outcome.participantCount} />
+      <section hidden={section !== "all" && section !== "evidence"} className="outcomes-context">
+        <Metric label="Learners included in reporting" value={outcome.participantCount} detail="Current programme consent; the group list may be larger" />
         <Metric
           label="Completion"
           value={metrics ? percent(metrics.completionContext.completionRate) : flow?.totals?.completed === null || flow?.totals?.completed === undefined ? "Unavailable" : `${flow.totals.completed} completed`}
@@ -620,7 +638,7 @@ export function ProgrammeOutcomesView({
         />
       </section>
 
-      {flow && report.status === "AVAILABLE" ? <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-evidence-flow">
+      {flow && report.status === "AVAILABLE" ? <section hidden={section !== "all" && section !== "evidence"} className="outcomes-evidence-flow">
         <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>
         <div className="journey-activity-strip">
           <Metric label="Responses recorded" value={flow.totals?.recordedResponses ?? "Hidden for privacy"} />
@@ -633,12 +651,15 @@ export function ProgrammeOutcomesView({
       </section> : null}
 
       {report.status === "SUPPRESSED" ? (
-        <EvidenceDisclosure title="Group results are not available yet">
+        <section className="development-intelligence" aria-label="Reporting population">
+          <h2>Group results are not available yet</h2>
           <p>
-            This group has {outcome.participantCount} learner{outcome.participantCount === 1 ? "" : "s"}.
-            Results appear from {outcome.minimumReportableCohortSize} learners so no group pattern can point back to one person.
+            {outcome.participantCount} learner{outcome.participantCount === 1 ? " has" : "s have"} current programme consent and {outcome.participantCount === 1 ? "is" : "are"} included in this report.
+            Results appear from {outcome.minimumReportableCohortSize} eligible learners so no group pattern can point back to one person.
           </p>
-        </EvidenceDisclosure>
+          <p>The facilitator’s group list can be larger. Learners also choose which assessed outcomes may contribute to group reporting.</p>
+          {section !== 'all' && section !== 'overview' ? <p><a href="/experience/development-system?scenario=habit-decision&audience=school">See a completed fictional programme report →</a></p> : null}
+        </section>
       ) : (
         <>
           {outcome.learningSummary?.learningJourney ? (
@@ -704,29 +725,11 @@ export function ProgrammeOutcomesView({
                   )}
                 </section> : null}
 
-                {outcome.learningSummary.learningJourney.skillShifts.length ? <section className="surface-card learning-shifts">
-                  <div>
-                    <p className="eyebrow">Growth signals</p>
-                    <h3>Where are group measures moving?</h3>
-                  </div>
-                  {outcome.learningSummary.learningJourney.skillShifts.length ? (
-                    <div className="skill-shift-list">
-                      {outcome.learningSummary.learningJourney.skillShifts.map((shift) => (
-                        <article key={shift.id}>
-                          <strong>{shift.label}</strong>
-                          <div className="shift-values">
-                            <span>{shift.averagePre}</span>
-                            <b>→</b>
-                            <span>{shift.averagePost}</span>
-                            <em>{shift.averageShift > 0 ? "+" : ""}{shift.averageShift}</em>
-                          </div>
-                          <small>{shift.pairedParticipants} learners with both check-ins</small>
-                        </article>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="outcome-muted">Before-and-after group shifts will appear when enough learners have completed both check-ins.</p>
-                  )}
+                {report.comparisons.length ? <section className="surface-card learning-shifts">
+                  <p className="eyebrow">Starting point and later check-in</p>
+                  <h3>Read comparisons with their coverage</h3>
+                  <p>Comparable check-ins appear in the results overview with their sample, chart and interpretation limits. Each measure retains its own sample.</p>
+                  {onSectionChange ? <button type="button" onClick={() => onSectionChange("evidence")}>View comparisons</button> : null}
                 </section> : null}
               </div>
             </section>

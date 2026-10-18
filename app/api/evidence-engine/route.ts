@@ -1,3 +1,4 @@
+import {buildDevelopmentIntelligence, type DevelopmentFact} from "@/lib/development-intelligence.mjs";
 import { z } from "zod";
 import { withSupabaseRequest } from "@/db";
 import { getRoles, identityFrom } from "@/lib/bis-access";
@@ -78,10 +79,11 @@ async function get(request: Request) {
     before=batch.at(-1)!.occurred_at;beforeId=batch.at(-1)!.id;
     if(page===999)throw new Error("Report capacity exceeded");
    }
-   const [assessment,portfolio]=await Promise.all([rpc("bis_assessment_workspace",{p_cohort:null}),learnerEvidencePortfolio(identity.id)]);
+   const [assessment,portfolio,developmentFacts]=await Promise.all([rpc("bis_assessment_workspace",{p_cohort:null}),learnerEvidencePortfolio(identity.id),rpc("bis_development_learner_report",{p_learner:identity.id,p_cohort:null})]);
+   const developmentIntelligence=buildDevelopmentIntelligence(developmentFacts as DevelopmentFact[],competencyFramework.competencies,"learner");
    const calculationHistory:unknown[]=[];
    for(let from=0;;from+=500){const {data,error}=await requestSupabaseClient().from("measurement_history").select("*").order("recorded_at",{ascending:false}).order("id",{ascending:false}).range(from,from+499);if(error)throw error;calculationHistory.push(...data);if(data.length<500)break;}
-   return Response.json({schemaVersion:"BIS-EVIDENCE-1",generatedAt:new Date().toISOString(),learner:{displayName:identity.displayName},recordCount:records.length,originalEvidence:records,calculationHistory,assessment:{...(assessment as AssessmentWorkspace),submissions:(assessment as AssessmentWorkspace).submissions.filter(s=>s.user_id===identity.id)},derivedLabPortfolio:portfolio,basis:"Original records and revision history are separate from derived measures and human reviews. Recorded history does not by itself demonstrate capability or behavioural change."},{headers:{...headers,"content-disposition":'attachment; filename="bis-learner-evidence-report.json"'}});
+   return Response.json({schemaVersion:"BIS-EVIDENCE-1",generatedAt:new Date().toISOString(),learner:{displayName:identity.displayName},recordCount:records.length,originalEvidence:records,calculationHistory,assessment:{...(assessment as AssessmentWorkspace),submissions:(assessment as AssessmentWorkspace).submissions.filter(s=>s.user_id===identity.id)},derivedLabPortfolio:portfolio,developmentIntelligence,basis:"Original records and revision history are separate from derived measures and human reviews. Recorded history does not by itself demonstrate capability or behavioural change."},{headers:{...headers,"content-disposition":'attachment; filename="bis-learner-evidence-report.json"'}});
   }
   if(view==="learnerWorkspace") {
    const workspace=await rpc("bis_assessment_workspace",{p_cohort:null}) as AssessmentWorkspace;

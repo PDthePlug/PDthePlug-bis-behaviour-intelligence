@@ -101,6 +101,7 @@ export function PlatformExplorer({ content }: { content: Content }) {
       <p className="eyebrow">Explore BIS</p><h1>See what you can do.</h1><p>Choose a view. Try the platform with an example Habit programme.</p>
       <div className="explore-role-grid">{roles.map(item => <button key={item.id} onClick={() => navigate(item.id, item.screen)}><item.icon size={28} /><span>{item.label}</span><h2>{item.action}</h2><p>{item.result}</p><strong>Explore <ArrowRight size={18} /></strong></button>)}</div>
       <p className="explore-example-note">Use fictional examples. Your practice stays in this browser tab.</p>
+      <p><Link href="/experience/development-system">See development reports after a completed Habit and Decision programme</Link></p>
     </main> : <>
       <section className="explore-toolbar"><div><p className="eyebrow">Explore as</p><label htmlFor="explore-role" className="sr-only">Choose your view</label><select id="explore-role" value={role} onChange={event => navigate(event.target.value as Role, tabs[event.target.value as Role][0][0])}>{roles.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div>
         <nav aria-label="Explore workspace">{tabs[role].map(([id, label]) => <button key={id} aria-current={screen === id ? "page" : undefined} onClick={() => navigate(role, id)}>{label}</button>)}</nav>

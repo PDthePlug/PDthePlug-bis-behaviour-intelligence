@@ -1,4 +1,6 @@
 "use client";
+import { DevelopmentReportingNextSteps } from "./development-reporting-next-steps";
+import type { DevelopmentAssessmentReadiness } from "@/lib/development-readiness.mjs";
 import { usePlatform } from "@/components/platform-context";
 import { usePlatformRouter as useRouter } from "@/components/platform-context";
 
@@ -68,6 +70,7 @@ type Cohort = {
   startsOn: string | null;
   endsOn: string | null;
   memberIds?: string[];
+  assessmentReadiness?: DevelopmentAssessmentReadiness | null;
   learningChecks?: null | {
     participantCount: number;
     signalsRecorded: number;
@@ -308,7 +311,7 @@ export function FacilitatorWorkspace({
       {section === "cohort" ? (
         <div className="ops-stack">
           <section className="ops-cohort-banner">
-            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>{moduleDefinition?.title ?? "Programme Lab"} · {participants.length} learners</p><details className="programme-publication-details"><summary>Programme details</summary><p>{cohort.name} · {participants.length} learners</p></details></div>
+            <div><p className="eyebrow">Active group</p><h2>{cohort.name}</h2><p>{moduleDefinition?.title ?? "Programme Lab"} · {participants.length} learners on the group list</p><details className="programme-publication-details"><summary>Programme details</summary><p>{cohort.name} · {participants.length} learners</p></details></div>
             <div className="facilitator-cohort-actions">
               <Badge variant="outline">{label(cohort.status)}</Badge>
               <Link
@@ -324,8 +327,8 @@ export function FacilitatorWorkspace({
               <div className="section-title">
                 <div>
                   <p className="eyebrow">Development picture</p>
-                  <h2>What this group is learning to do</h2>
-                  <p>See what the group can currently demonstrate and where another practice opportunity could help.</p>
+                  <h2>Development evidence to review</h2>
+                  <p>See the work recorded for each development area and where review or practice could help.</p>
                 </div>
                 <Compass />
               </div>
@@ -342,8 +345,8 @@ export function FacilitatorWorkspace({
                       ? "The group has some evidence in this area, but the count is hidden for privacy."
                       : competency.reportableParticipants === 0
                         ? "There is not enough recorded work to describe group development here yet."
-                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} currently have enough recorded work to describe development in this area.`}</p>
-                    <div className="facilitator-competency-stages" aria-label={`${competency.title} development stages`}>
+                        : `${competency.reportableParticipants} learner${competency.reportableParticipants === 1 ? "" : "s"} have work mapped to this area; this is not an assessment of capability.`}</p>
+                    <div className="facilitator-competency-stages" aria-label={`${competency.title} recorded evidence`}>
                       {competency.distribution.map(stage => <span key={stage.code}><b>{stage.label}</b><small>{stage.suppressed ? "Hidden for privacy" : stage.count ?? "Unavailable"}</small></span>)}
                     </div>
                     {competency.externalFrameworkAreas.length ? <small>Related curriculum areas: {competency.externalFrameworkAreas.join(" · ")}</small> : null}
@@ -354,10 +357,14 @@ export function FacilitatorWorkspace({
               <p className="ops-helper">{competencySummary.boundary}</p>
             </section>
           ) : competencySummary?.status === "SUPPRESSED" ? (
-            <EvidenceDisclosure title="Development picture will appear as the group grows">
-              <p>Group competency patterns are hidden until the minimum privacy threshold is met. Individual support can still use the learner’s permitted progress records.</p>
-            </EvidenceDisclosure>
+            <section className="surface-card ops-section facilitator-development-picture">
+              <h2>Why group development results are not shown</h2>
+              <p>{participants.length} learners are on the group list. {competencySummary.participantCount} learner{competencySummary.participantCount === 1 ? " has" : "s have"} current programme consent and {competencySummary.participantCount === 1 ? "is" : "are"} included in the reporting population.</p>
+              <p>Group patterns need at least five eligible learners to protect privacy. A name on the group list or a completed Lab does not establish development.</p>
+              <DevelopmentReportingNextSteps cohortId={cohort.id} readiness={cohort.assessmentReadiness} />
+            </section>
           ) : null}
+          {competencySummary?.status !== "SUPPRESSED" && cohort.assessmentReadiness && !cohort.assessmentReadiness.practicalUse ? <section className="surface-card ops-section"><DevelopmentReportingNextSteps cohortId={cohort.id} readiness={cohort.assessmentReadiness} /></section> : null}
           <section className="programme-intelligence-section">
             <p className="eyebrow">Your next session</p><h2>Where a check-in could help</h2>
             <p>These suggestions use recorded progress and observation counts. Ask participants what support would be useful; the records do not explain their reasons.</p>

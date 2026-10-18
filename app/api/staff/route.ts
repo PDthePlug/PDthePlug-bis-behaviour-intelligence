@@ -1,3 +1,6 @@
+import { developmentProgrammeFindings } from "@/lib/development-intelligence.mjs";
+import { sanitizeReviewedProgrammeEvidence } from "@/lib/reviewed-development.mjs";
+import { programmeAggregateScopeMatches, sanitizeLearningComparisons } from "../../../lib/comparison-coverage.mjs";
 import { and, asc, desc, eq, inArray, ne, or } from "../../../db/query";
 import { customerSafeErrorResponse } from "../../../lib/api-error-response";
 import { getDb, withSupabaseRequest } from "../../../db";
@@ -36,6 +39,7 @@ import { programmeReportFilename, renderProgrammeOutcomePdf } from "../../../lib
 import competencyFramework from "@/content/curriculum/applied-commerce/competency-framework.json";
 import competencyCrosswalk from "@/content/curriculum/external-frameworks/dbe-basic-education-competency-crosswalk.json";
 import { decorateCohortCompetencySummary } from "@/lib/development-profile.mjs";
+import { developmentAssessmentReadiness } from "@/lib/development-readiness.mjs";
 
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -333,7 +337,7 @@ async function facilitatorSnapshot(identity: Identity) {
     .where(inArray(facilitatorNotes.cohortId, cohortIds))
     .orderBy(desc(facilitatorNotes.createdAt));
   const client = requestSupabaseClient();
-  const [learningCheckEntries, competencyEntries] = await Promise.all([
+  const [learningCheckEntries, competencyEntries, readinessEntries] = await Promise.all([
     Promise.all(
       cohorts.map(async (cohort) => {
         const result = await client.rpc("facilitator_cohort_learning_checks", { target_cohort_id: cohort.id });
@@ -353,9 +357,14 @@ async function facilitatorSnapshot(identity: Identity) {
         return [cohort.id, summary] as const;
       }),
     ),
+    Promise.all(cohorts.map(async cohort => {
+      const result = await client.rpc("bis_development_contract_workspace", { p_cohort: cohort.id });
+      return [cohort.id, result.error ? null : developmentAssessmentReadiness(result.data, cohort.labCode, cohort.labVersion)] as const;
+    })),
   ]);
   const learningChecks = new Map(learningCheckEntries);
   const competencySummaries = new Map(competencyEntries);
+  const assessmentReadiness = new Map(readinessEntries);
 
   const referrals = await db
     .select({
@@ -378,6 +387,7 @@ async function facilitatorSnapshot(identity: Identity) {
       memberIds: members.filter((member) => member.cohortId === cohort.id).map((member) => member.learnerUserId),
       learningChecks: learningChecks.get(cohort.id) ?? null,
       competencySummary: competencySummaries.get(cohort.id) ?? null,
+      assessmentReadiness: assessmentReadiness.get(cohort.id) ?? null,
     })),
     learners: progress,
     notes,
@@ -434,7 +444,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
   const client = requestSupabaseClient();
   const cohorts = [];
   for (const cohortId of cohortIds) {
-    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, assessmentResult, competencyResult, decisions] = await Promise.all([
+    const [outcomeResult, deeperResult, learningResult, organisationLearningResult, learningChecksResult, questionPatternsResult, flowResult, assessmentResult, competencyResult, reviewedResult, developmentResult, decisions] = await Promise.all([
       client.rpc("sponsor_cohort_outcomes", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_deeper_analysis", { target_cohort_id: cohortId }),
       client.rpc("sponsor_cohort_learning_summary", { target_cohort_id: cohortId }),
@@ -444,6 +454,8 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
       client.rpc("sponsor_cohort_evidence_flow", { target_cohort_id: cohortId }),
       client.rpc("bis_assessment_report", { p_cohort: cohortId }),
       client.rpc("bis_cohort_competency_summary", { target_cohort_id: cohortId }),
+      client.rpc("bis_agent_programme_aggregate", { p_cohort: cohortId }),
+      client.rpc("bis_development_programme_report", { p_cohort: cohortId }),
       db
         .select()
         .from(programmeDecisions)
@@ -459,6 +471,18 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
     if (learningChecksResult.error) throw new Error(learningChecksResult.error.message);
     if (questionPatternsResult.error) throw new Error(questionPatternsResult.error.message);
     if (outcomeResult.data) {
+      if (!programmeAggregateScopeMatches(outcomeResult.data, flowResult.data)) {
+        const population = flowResult.data?.participantCount;
+        if (!Number.isInteger(population) || population < 0) throw new Error("Programme reporting scope could not be verified.");
+        // Withholding must apply to the response body, not just the dashboard.
+        // Independent RPC snapshots can disagree after consent/membership changes.
+        cohorts.push({ cohort: outcomeResult.data.cohort, participantCount: population,
+          suppressed: true, minimumReportableCohortSize: Math.max(5, flowResult.data.minimumReportableCohortSize ?? 5),
+          metrics: null, evidenceFlow: null, deepAnalysis: null, learningSummary: null,
+          organisationLearning: null, learningChecks: null, questionPatterns: null,
+          assessmentSummary: null, competencySummary: null, reviewedDevelopment: null, developmentIntelligence: null, decisionRegister: null });
+        continue;
+      }
       cohorts.push({
         ...outcomeResult.data,
         evidenceFlow: flowResult.data,
@@ -466,7 +490,7 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
         participantCount: flowResult.data?.participantCount ?? outcomeResult.data.participantCount,
         suppressed: Boolean(outcomeResult.data.suppressed || flowResult.data?.suppressed),
         deepAnalysis: deeperResult.data ?? null,
-        learningSummary: learningResult.data ?? null,
+        learningSummary: sanitizeLearningComparisons(learningResult.data, flowResult.data?.participantCount ?? outcomeResult.data.participantCount, flowResult.data?.minimumReportableCellSize ?? 3),
         organisationLearning: organisationLearningResult.data ?? null,
         learningChecks: learningChecksResult.data ?? null,
         questionPatterns: questionPatternsResult.data ?? null,
@@ -476,6 +500,11 @@ async function sponsorSnapshot(identity: Identity, roles: string[]) {
               competencies: competencyFramework.competencies,
               externalCrosswalk: competencyCrosswalk,
             }),
+        developmentIntelligence: developmentResult.error||developmentResult.data?.participantCount!==(flowResult.data?.participantCount??outcomeResult.data.participantCount)?null:developmentProgrammeFindings(developmentResult.data,competencyFramework.competencies),
+        reviewedDevelopment: sanitizeReviewedProgrammeEvidence(reviewedResult.error ? null : reviewedResult.data, {
+          cohortId, participantCount: flowResult.data?.participantCount ?? outcomeResult.data.participantCount,
+          competencies: competencyFramework.competencies,
+        }),
         decisionRegister: {
           canManage: await canManageProgrammeCohort(identity, roles, cohortId),
           decisions,

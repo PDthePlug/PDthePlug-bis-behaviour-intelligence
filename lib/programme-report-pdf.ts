@@ -1,3 +1,6 @@
+import { reportSections } from "./development-evidence.mjs";
+import { buildDevelopmentStory } from "./development-story.mjs";
+import type { ProgrammeDevelopment } from "./development-intelligence.mjs";
 import PDFDocument from "pdfkit";
 import type { ProgrammeEvidenceFlow } from "./programme-evidence-flow";
 import { join } from "node:path";
@@ -14,6 +17,7 @@ type Outcome = {
     startsOn: string | null;
     endsOn: string | null;
   };
+  developmentIntelligence?: ProgrammeDevelopment | null;
   participantCount: number;
   suppressed: boolean;
   minimumReportableCohortSize: number;
@@ -69,10 +73,10 @@ type Outcome = {
       }>;
       skillShifts: Array<{
         label: string;
-        pairedParticipants: number;
-        averagePre: number;
-        averagePost: number;
-        averageShift: number;
+        pairedParticipants: number | null;
+        averagePre: number | null;
+        averagePost: number | null;
+        averageShift: number | null;
       }>;
       activity: {
         participantsWithHandbookActivity: number;
@@ -188,7 +192,6 @@ const fonts = {
 const PAGE_W = 595.28, PAGE_H = 841.89, MARGIN = 48, WIDTH = PAGE_W - MARGIN * 2;
 const BOTTOM = PAGE_H - 72;
 const C = { ink: "#193038", blue: "#315d82", muted: "#51616b", line: "#dce2e4", pale: "#edf2f5", secondary: "#91aec4" };
-const domainLabels: Record<string, string> = { application: "Real-world practice", engagement: "Learning journey", understanding: "Participant-reported understanding", behaviour: "Behaviour in practice", support: "Human support", capability: "Capability development", coverage: "How much information we have", context: "Programme context", delivery: "What the programme can learn" };
 
 class ReportDocument {
   readonly doc: PDFKit.PDFDocument;
@@ -272,11 +275,29 @@ class ReportDocument {
     this.paragraph(`Interpretation limit: ${insight.boundary}`, { size: 9, color: C.muted, gap: 18 });
   }
   chart(chart: ReportChart) {
-    this.ensure(this.measure(chart.title, WIDTH, 13, "bold") + this.measure(chart.note, WIDTH, 9) + 85);
+    const fmt = (v: number | null | undefined) => v == null ? "Unavailable" : String(Number(v.toFixed(2)));
+    const rowHeight = (row: ReportChart["rows"][number]) => {
+      const values = [row.value, ...(row.secondaryLabel ? [row.secondaryValue] : [])];
+      const basis = row.denominator == null ? chart.unit : `of ${row.denominator} participants`;
+      const detail = `${values.map(fmt).join(" / ")} · ${basis}`;
+      return Math.max(this.measure(row.label, 200, 9, "bold") + this.measure(detail, 200, 8) + 12, 38);
+    };
+    const trajectoryRowHeight=(cells:string[],header=false)=>Math.max(...cells.map((cell,i)=>this.measure(cell,WIDTH*(i===0?.36:.64)-16,9,header?'bold':'body')))+16;
+    const bodyHeight=chart.kind==='trajectory'?145+trajectoryRowHeight(['Calendar month','Assessed application participants'],true)+chart.rows.reduce((n,row)=>n+trajectoryRowHeight([row.label,`${fmt(row.value)} / ${row.denominator??'Unavailable'}`]),0)+32:34+chart.rows.reduce((total,row)=>total+rowHeight(row),0);
+    const chartHeight = this.measure(chart.title, WIDTH, 13, "bold") + this.measure(chart.note, WIDTH, 9) + 16 + bodyHeight;
+    this.ensure(Math.min(chartHeight, BOTTOM - MARGIN));
     this.paragraph(chart.title, { size: 13, font: "bold" });
     this.paragraph(chart.note, { size: 9, color: C.muted });
     const max = Math.max(1, ...chart.rows.flatMap(row => [row.denominator ?? 0, row.value ?? 0, row.secondaryValue ?? 0]));
-    const fmt = (v: number | null | undefined) => v == null ? "Unavailable" : String(Number(v.toFixed(2)));
+    if(chart.kind==='trajectory'){
+      this.ensure(160);const top=this.y,plotX=MARGIN+30,plotWidth=WIDTH-45;
+      const x=(i:number)=>plotX+plotWidth*i/Math.max(1,chart.rows.length-1),y=(v:number)=>top+105-85*v/max;
+      this.doc.moveTo(plotX,top+105).lineTo(plotX+plotWidth,top+105).strokeColor(C.pale).lineWidth(1).stroke();
+      this.doc.font('body').fontSize(8).fillColor(C.muted).text('0',MARGIN,top+100,{width:25}).text(String(max),MARGIN,top+15,{width:25});
+      chart.rows.forEach((row,i)=>{if(row.value===null)return;const prior=chart.rows[i-1];if(prior&&prior.value!==null)this.doc.moveTo(x(i-1),y(prior.value)).lineTo(x(i),y(row.value)).strokeColor(C.blue).lineWidth(2).stroke();this.doc.circle(x(i),y(row.value),3).fill(C.blue);});
+      this.doc.font('body').fontSize(8).fillColor(C.muted).text(chart.rows[0]?.label??'',plotX,top+118,{width:100}).text(chart.rows.at(-1)?.label??'',plotX+plotWidth-100,top+118,{width:100,align:'right'});
+      this.y=top+145;this.table(['Calendar month','Assessed application participants'],chart.rows.map(row=>[row.label,`${fmt(row.value)} / ${row.denominator??'Unavailable'}`]));this.y+=14;return;
+    }
     if (chart.rows.some(row => row.secondaryLabel)) this.paragraph("Dark bars: reached the touchpoint · Light bars: activity completed. Values follow that order.", { size: 8, color: C.muted });
     for (const row of chart.rows) {
       const values = [{ value: row.value, color: C.blue }, ...(row.secondaryLabel ? [{ value: row.secondaryValue ?? null, color: C.secondary }] : [])];
@@ -335,8 +356,55 @@ class ReportDocument {
 export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = new Date(), options: { illustrative?: boolean; leap9Experience?: boolean; experienceOrganisation?: "Leap9" | "DGMT" } = {}) {
   const report = buildProgrammeReport(outcome);
   const canvas = new ReportDocument(report, options.illustrative === true, generatedAt);
-  canvas.section("Behaviour Intelligence Series™", "Programme Results Report", report.profile.name);
+  canvas.section("Behaviour Intelligence Series™", "BIS Development Outcomes", report.profile.name);
   if (options.illustrative) canvas.paragraph("ILLUSTRATIVE SIMULATION - FICTIONAL DATA - NOT MEASURED PROGRAMME RESULTS", { font: "bold", color: C.blue });
+  const development=outcome.developmentIntelligence;
+  const stories=report.status==='AVAILABLE'&&development?.status==='AVAILABLE'&&development.cohortId===outcome.cohort.id&&development.participantCount===outcome.participantCount?development.areas.map(area=>buildDevelopmentStory(area,outcome.participantCount)):[];
+  if(stories.length){
+    const priority=[...stories].sort((a,b)=>b.explained-a.explained)[0];
+    canvas.paragraph(`${report.participantCount} participating learners · ${report.developmentExecutive.assessmentCount??'Unavailable'} reportable development assessments`,{font:'bold'});
+    canvas.paragraph(`Programme period: ${report.period.startsOn??'Start date unavailable'} to ${report.period.endsOn??'Current programme'}`);
+    canvas.paragraph('Who were learners at the start?',{size:13,font:'bold'});
+    const entry=report.insights.find(item=>item.id.startsWith('baseline-'));
+    canvas.paragraph(entry?`${entry.title}: ${entry.observation} This is learners’ own account.`:stories[0].startingPoint);
+    canvas.paragraph('What changed?',{size:13,font:'bold'});
+    canvas.paragraph(stories[0].title,{font:'bold'});
+    canvas.paragraph(stories[0].summary,{font:'bold'});
+    canvas.paragraph('What still needs support?',{size:13,font:'bold'});
+    canvas.paragraph(`${priority.title}: ${priority.explained} of ${report.participantCount} learners currently recognise or explain the idea. Check practical use with these learners.`);
+    canvas.paragraph('What we recommend next',{size:13,font:'bold'});
+    canvas.paragraph(priority.recommendation);
+    canvas.paragraph('How strong is the evidence?',{font:'bold'});
+    canvas.paragraph(`${stories[0].strong} of ${report.participantCount} learners have repeated assessed work and independent application on at least three days. ${stories[0].transfer}`);
+    canvas.paragraph('What does this tell us about BIS?',{font:'bold'});
+    canvas.paragraph(priority.effectiveness,{size:9,color:C.muted});
+    canvas.section('Development picture','Starting points, practical use and support','Each capability has its own evidence. Counts overlap and must not be added into a unique learner total.');
+    for(const story of stories){
+      canvas.ensure(210);
+      canvas.paragraph(story.title,{size:13,font:'bold'});
+      canvas.paragraph(story.change);
+      canvas.paragraph(story.startingPoint);
+      canvas.paragraph(story.practice);
+      canvas.paragraph(story.transfer);
+      canvas.paragraph(`Next practice: ${story.recommendation}`);
+      canvas.table(['Change in comparable reviews','Learners'],story.changeRows.map(row=>[row.label,`${row.count} / ${report.participantCount}`]));
+    }
+    canvas.section('Evidence notes','How we reached these conclusions','Private reflections and individual answers are excluded. The detailed evidence appendix follows the summary.');
+    for(const story of stories){
+      canvas.paragraph(story.title,{font:'bold'});
+      canvas.paragraph(story.confidence);
+      canvas.paragraph(story.alignment);
+    }
+    canvas.paragraph('Entry questionnaires describe what learners say about themselves; an assessed task demonstrates what they can do in that task. A first comparable review may be after programme entry. Results do not establish permanent mastery or scientific validation.');
+  }
+  if (!stories.length) {
+    canvas.paragraph('Why development results are not shown', { size: 13, font: 'bold' });
+    canvas.paragraph(report.status === 'SUPPRESSED'
+      ? `${report.participantCount} learners are included in this reporting population. At least ${report.minimumReportableCohortSize} eligible learners are required, and small results remain hidden. The facilitator’s group list may include learners without current programme consent.`
+      : 'There is not enough assessed work that can be shared safely to show developmental change.');
+    canvas.paragraph('What needs to happen next?', { font: 'bold' });
+    canvas.paragraph('The programme team confirms assessment criteria for this group’s Lab edition. Learners choose work to share from their Evidence Portfolio; a facilitator assesses what it demonstrates. Learners also choose whether those assessed outcomes may contribute to group reporting. Completing activities alone cannot establish development.');
+  }
   canvas.table(["Programme profile", "Reporting context"], [
     ["Programme group", report.profile.name], ["Report classification", report.reportClassification.label],
     ["Lab", `${report.profile.labCode} · ${report.profile.labVersion}`],
@@ -381,29 +449,28 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     canvas.paragraph("Prepared by P.D. · Applied Commerce®", { color: C.muted });
     return canvas.finish();
   }
-  canvas.section("Executive summary", "What learners are developing", "KEY FINDINGS · Development first, with participation and evidence underneath the interpretation.");
-  const developmentFindings = report.insights.filter(item => item.id.startsWith("competency-evidence-"));
-  const executiveFindings = [...developmentFindings, ...report.insights.filter(item => !item.id.startsWith("competency-evidence-"))].slice(0, 3);
-  for (const item of executiveFindings) canvas.finding(item, true);
-  if (!report.insights.length) canvas.paragraph("No reportable finding is available yet. Review the permitted records and delivery calendar before drawing a conclusion.");
+  const sections = reportSections(report);
+  canvas.section("Executive summary", stories.length ? "Detailed evidence appendix" : "What the evidence can support", "Use this section to inspect the findings, charts and their limits. Programme participation is reported separately from development.", stories.length > 0);
+  canvas.table(["Evidence area", "Reporting status"], sections.map(section => [section.title, section.insights.length || section.charts.length ? `${section.insights.length} findings · ${section.charts.length} graphics` : "No reportable finding supplied"]));
   canvas.paragraph(report.boundary, { color: C.muted });
-  canvas.section("Development and programme context", "What the evidence supports", "Development charts come first when competency evidence is available. Participation and activity counts remain supporting context rather than a score of the learner.");
-  const developmentCharts = report.charts.filter(item => item.id.startsWith("competency-"));
-  const supportingCharts = report.charts.filter(item => !item.id.startsWith("competency-"));
-  for (const chart of [...developmentCharts, ...supportingCharts]) canvas.chart(chart);
   const unavailable: string[] = [];
-  canvas.page();
-  for (const domain of ["engagement", "understanding", "application", "behaviour", "capability", "support", "context", "coverage", "delivery"]) {
-    const items = report.insights.filter(item => item.domain === domain);
-    if (!items.length) { unavailable.push(domainLabels[domain]); continue; }
+  for (const section of sections) {
+    const hasComparisons = section.id === "change" && report.comparisons.length > 0;
+    if (!section.insights.length && !section.charts.length && !hasComparisons) { unavailable.push(section.title); continue; }
     canvas.y += 18;
-    canvas.ensure(Math.min(150 + canvas.findingHeight(items[0]), BOTTOM - MARGIN));
-    canvas.section(domainLabels[domain], domainLabels[domain], undefined, false);
-    items.forEach(item => canvas.finding(item));
+    if (section.insights.length) canvas.ensure(Math.min(150 + canvas.findingHeight(section.insights[0]), BOTTOM - MARGIN));
+    else canvas.ensure(240);
+    canvas.section(section.title, section.title, undefined, false);
+    if (hasComparisons) {
+      canvas.paragraph("Who the comparison represents", { size: 13, font: "bold" });
+      canvas.table(["Measure", "Matched pairs", "Without comparable pair", "Programme participants"], report.comparisons.map(row => [row.label, row.pairedParticipants === null ? "Unavailable" : String(row.pairedParticipants), row.withoutComparablePair === null ? "Unavailable" : String(row.withoutComparablePair), row.cohortParticipants === null ? "Unavailable" : String(row.cohortParticipants)]));
+      canvas.paragraph("Each measure retains its own paired sample. Samples can overlap and must not be added into a unique-learner total. Missing or withheld comparisons do not explain participants' reasons. Counts do not establish growth or programme causation.", { size: 9, color: C.muted });
+    }
+    for (const insight of section.insights) canvas.finding(insight);
+    for (const chart of section.charts) canvas.chart(chart);
   }
-  canvas.section("Programme review", "What may be worth exploring next", "These evidence-linked questions and follow-ups support your team's review. They do not prescribe programme changes and remain separate from your saved decisions.");
-  canvas.table(["Finding and responsible team", "Question or follow-up"], report.insights.map(item => [`${item.title} · ${item.owner}`, `${item.action} Basis: ${item.observation}`]));
-  if (report.decisions.length) canvas.section("Programme decisions", "What did the organisation decide to change?", "Recorded team decisions and their next review.");
+  canvas.section("Programme review", "What the programme can learn", "The evidence-linked questions alongside each finding support your team's review. They do not prescribe programme changes and remain separate from your saved decisions.", false);
+  if (report.decisions.length) canvas.section("Programme decisions", "What did the organisation decide to change?", "Recorded team decisions and their next review.", false);
   else canvas.paragraph("Programme decisions: No programme decision is recorded in this report.", { color: C.muted });
   for (const decision of report.decisions) {
     canvas.ensure(80); canvas.paragraph(decision.title, { font: "bold" });
@@ -413,7 +480,10 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
     if (decision.reviewOutcome) canvas.paragraph(`Recorded review outcome: ${decision.reviewOutcome.toLowerCase().replaceAll("_", " ")}`);
     canvas.paragraph(`Status: ${decision.status === "REVIEWED" ? "Reviewed" : "Awaiting review"}${decision.reviewNote ? ` · ${decision.reviewNote}` : ""}`);
   }
-  canvas.section("Methodology and limitations", "How to read this report", "REPORTING NOTES · Descriptive evidence, reporting coverage and privacy.");
+  // Keep the compact methodology together when it fits on one page, rather
+  // than leaving its final boundary alone on a mostly empty page.
+  canvas.ensure(560);
+  canvas.section("Methodology and limitations", "How much information we have", "REPORTING NOTES · Descriptive evidence, reporting coverage and privacy.", false);
   if (unavailable.length) canvas.paragraph(`Where the programme picture is still building: No reportable finding is supplied for ${unavailable.join(", ").toLowerCase()}. Information may be unrecorded, unsupported by this Lab's measures, or withheld for privacy. This is not a zero result.`);
   canvas.paragraph("What this report uses", { font: "bold" });
   canvas.paragraph("Authorised group aggregates of recorded programme activity, structured participant check-ins, real-world observations where defined by the Lab, and saved facilitator assessments of currently shared task evidence. The same report model supplies dashboard findings and PDF findings.");
@@ -421,8 +491,10 @@ export async function renderProgrammeOutcomePdf(outcome: Outcome, generatedAt = 
   canvas.paragraph("Learning checks describe participants' own understanding, not test marks, observed behaviour or proof of mastery. Percentages use recorded check responses, not the number of participants; one participant can answer at several sessions. Missing responses do not show whether someone understands. Starting-point and later comparisons use only the paired records supplied by the programme measure.");
   canvas.paragraph("What remains private", { font: "bold" });
   canvas.paragraph("Individual answers, private reflections, personal experiment wording, support messages and Companion conversations are excluded. Small groups and unavailable values stay hidden; unavailable values are not zero. No hidden value is reconstructed by subtraction.");
+  const claimBoundary = report.boundary + " Coverage is not improvement. A reviewed task does not prove newly acquired or lasting capability, and a missing record does not explain a participant's reasons.";
+  canvas.ensure(canvas.measure("What this report does not claim", WIDTH, 10, "bold") + canvas.measure(claimBoundary) + 40);
   canvas.paragraph("What this report does not claim", { font: "bold" });
-  canvas.paragraph(report.boundary + " Coverage is not improvement. A reviewed task does not prove newly acquired or lasting capability, and a missing record does not explain a participant's reasons.");
+  canvas.paragraph(claimBoundary);
   canvas.paragraph(`Report class: ${report.reportClassification.label} · Report model: ${report.modelVersion} · Minimum group: ${report.minimumReportableCohortSize}`, { size: 8, color: C.muted });
   return canvas.finish();
 }

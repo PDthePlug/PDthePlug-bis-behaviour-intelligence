@@ -1,12 +1,29 @@
+import './programme-report-graphics.css';
 import type { ReportChart } from "@/lib/programme-intelligence.mjs";
 
 export function ProgrammeReportGraphic({ chart }: { chart: ReportChart }) {
   const maximum = Math.max(1, ...chart.rows.flatMap(row => [row.denominator ?? 0, row.value ?? 0, row.secondaryValue ?? 0]));
+  const paired = chart.id.startsWith("paired-") && !chart.id.startsWith('paired-development-') && chart.rows.length === 2 && chart.rows.every(row => row.value !== null);
+  const tx=(index:number)=>55+510*index/Math.max(1,chart.rows.length-1);
+  const ty=(value:number)=>115-85*value/maximum;
+  const segments:Array<Array<{index:number;value:number}>>=[];
+  chart.rows.forEach((row,index)=>{if(row.value===null){segments.push([]);return;}if(!segments.length)segments.push([]);segments.at(-1)!.push({index,value:row.value});});
+  const lower = Math.min(0, ...chart.rows.map(row => row.value ?? 0));
+  const upper = Math.max(1, ...chart.rows.map(row => row.value ?? 0));
+  const x = (value: number) => 55 + 510 * (value - lower) / (upper - lower);
   const hasSecondary = chart.rows.some(row => row.secondaryLabel);
   return <figure className="programme-report-graphic">
     <figcaption><h3>{chart.title}</h3><p>{chart.note}</p></figcaption>
     {hasSecondary ? <p className="programme-report-legend">Dark bars: reached the touchpoint · Light bars: activity completed. Values follow that order.</p> : null}
-    <div className="programme-report-bars" aria-hidden="true">
+    {chart.kind==='trajectory'?<svg className="programme-paired-chart" viewBox="0 0 620 150" role="img" aria-label={`${chart.title}. Monthly participant counts; missing or withheld values break the line. Exact values are in the chart table.`}><line x1="55" x2="565" y1="115" y2="115" stroke="#b9c8c4"/><text x="40" y="119" textAnchor="end" fill="currentColor" fontSize="12">0</text><text x="40" y="34" textAnchor="end" fill="currentColor" fontSize="12">{maximum}</text>{segments.filter(s=>s.length).map((segment,i)=><g key={i}><polyline points={segment.map(p=>`${tx(p.index)},${ty(p.value)}`).join(' ')} fill="none" stroke="#286953" strokeWidth="3"/>{segment.map(p=><circle key={p.index} cx={tx(p.index)} cy={ty(p.value)} r="4" fill="#286953"><title>{`${chart.rows[p.index].label}: ${p.value}`}</title></circle>)}</g>)}<text x="55" y="142" fill="currentColor" fontSize="12">{chart.rows[0]?.label}</text><text x="565" y="142" textAnchor="end" fill="currentColor" fontSize="12">{chart.rows.at(-1)?.label}</text></svg>:paired ? <svg className="programme-paired-chart" viewBox="0 0 620 150" role="img" aria-label={`${chart.title}: starting point ${chart.rows[0].value}, later check-in ${chart.rows[1].value}. Self-report, not assessed skill.`}>
+      <line x1="55" y1="80" x2="565" y2="80" stroke="#b9c8c4" strokeWidth="2" />
+      <line x1={x(chart.rows[0].value!)} y1="80" x2={x(chart.rows[1].value!)} y2="80" stroke="#286953" strokeWidth="5" />
+      <circle cx={x(chart.rows[0].value!)} cy="80" r="8" fill="white" stroke="#286953" strokeWidth="3" />
+      <circle cx={x(chart.rows[1].value!)} cy="80" r="8" fill="#286953" />
+      <text x={x(chart.rows[0].value!)} y="40" textAnchor="middle" fontSize="14" fill="currentColor">Before {chart.rows[0].value}</text>
+      <text x={x(chart.rows[1].value!)} y="116" textAnchor="middle" fontSize="14" fill="currentColor">Later {chart.rows[1].value}</text>
+      <text x="55" y="140" textAnchor="middle" fontSize="11" fill="currentColor">{lower}</text><text x="565" y="140" textAnchor="middle" fontSize="11" fill="currentColor">{upper}</text>
+    </svg> : <div className="programme-report-bars" aria-hidden="true">
       {chart.rows.map((row, index) => <div className="programme-report-bar-row" key={`${row.label}-${index}`}>
         <span>{row.label}</span>
         <div className="programme-report-bar-tracks">
@@ -15,7 +32,7 @@ export function ProgrammeReportGraphic({ chart }: { chart: ReportChart }) {
         </div>
         <strong>{row.value === null ? "Unavailable" : row.value}{row.secondaryLabel ? ` / ${row.secondaryValue ?? "Unavailable"}` : ""}</strong>
       </div>)}
-    </div>
+    </div>}
     <details><summary>View chart values and comparison basis</summary>
       <div className="programme-report-table"><table><caption>{chart.title} · {chart.unit}</caption>
         <thead><tr><th scope="col">Measure</th><th scope="col">Recorded</th>{hasSecondary ? <th scope="col">Activity completed</th> : null}<th scope="col">Comparison group</th></tr></thead>

@@ -96,6 +96,7 @@ type ContentVersion = {
     standardVersion?: string | null;
     editorialStatus?: "PASS" | "REVIEW" | "BLOCKED" | null;
     editorialWarnings?: string[];
+    measurementReadiness?: import("@/lib/measurement-readiness.mjs").MeasurementReadiness;
     questionQuality?: {
       totalPrompts: number;
       learnerInputs: number;
@@ -184,6 +185,7 @@ type VolumeAuditResult = {
     compileStatus: "COMPILED" | "BLOCKED";
     standardVersion: string | null;
     editorialStatus: "PASS" | "REVIEW" | "BLOCKED";
+    measurementReadiness?: import("@/lib/measurement-readiness.mjs").MeasurementReadiness;
     editorialIssues: Array<{ code?: string; severity?: string; investigation?: number; message?: string }>;
     normalizationNotes: Array<{ message?: string }>;
     investigationCount: number;
@@ -765,6 +767,7 @@ export function ContentStudio() {
                     {lab.sourceWarnings.length ? (
                       <ul>{lab.sourceWarnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
                     ) : null}
+                    {lab.measurementReadiness ? <details className="content-editorial-review"><summary>What this Lab can calculate</summary><p>{lab.measurementReadiness.calculationCount} calculations have registered inputs; {lab.measurementReadiness.projectionCount} fields reuse earlier answers.</p><ul>{lab.measurementReadiness.issues.map((issue,index) => <li key={`${issue.code}-${index}`}>{issue.message}</li>)}</ul><p>{lab.measurementReadiness.boundary}</p></details> : null}
                     {lab.editorialIssues.length ? (
                       <div className="volume-audit-issues">
                         {lab.editorialIssues.slice(0, 6).map((issue, index) => (
@@ -1136,6 +1139,15 @@ export function ContentStudio() {
                                 <small>No repeated wording or unusually dense investigation was detected.</small>
                               )}
                             </div>
+                          ) : null}
+
+                          {entry.compilerStatus === "COMPILED" && entry.compilerReport.measurementReadiness ? (
+                            <details className="content-editorial-review content-measurement-readiness">
+                              <summary>What this Lab can calculate</summary>
+                              <p>{entry.compilerReport.measurementReadiness.calculationCount} calculations have registered inputs; {entry.compilerReport.measurementReadiness.projectionCount} fields reuse earlier answers.</p>
+                              {entry.compilerReport.measurementReadiness.issues.length ? <><strong>Measurement bindings need review</strong><ul>{entry.compilerReport.measurementReadiness.issues.map((issue, index) => <li key={`${issue.code}-${index}`}>{issue.message}</li>)}</ul></> : <p>No unresolved calculation binding was found.</p>}
+                              <p>{entry.compilerReport.measurementReadiness.boundary}</p>
+                            </details>
                           ) : null}
 
                           {entry.compilerStatus === "COMPILED" && entry.compilerReport.editorialWarnings?.length ? (

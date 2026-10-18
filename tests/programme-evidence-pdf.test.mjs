@@ -6,9 +6,10 @@ import {pathToFileURL} from 'node:url';
 import ts from 'typescript';
 import {getDocument} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import {buildProgrammeReport} from '../lib/programme-intelligence.mjs';
+import {buildDevelopmentScenario} from '../lib/experience/development-scenario.mjs';
 const dir=await mkdtemp(new URL('../.pdf-proof-',import.meta.url));
 const src=await readFile(new URL('../lib/programme-report-pdf.ts',import.meta.url),'utf8');
-const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./programme-intelligence.mjs"',JSON.stringify(new URL('../lib/programme-intelligence.mjs',import.meta.url).href)).replace('"./experience/programme-experience.mjs"',JSON.stringify(new URL('../lib/experience/programme-experience.mjs',import.meta.url).href));
+const code=ts.transpileModule(src,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText.replace('"./development-story.mjs"',JSON.stringify(new URL('../lib/development-story.mjs',import.meta.url).href)).replace('"./development-evidence.mjs"',JSON.stringify(new URL('../lib/development-evidence.mjs',import.meta.url).href)).replace('"./programme-intelligence.mjs"',JSON.stringify(new URL('../lib/programme-intelligence.mjs',import.meta.url).href)).replace('"./experience/programme-experience.mjs"',JSON.stringify(new URL('../lib/experience/programme-experience.mjs',import.meta.url).href));
 await writeFile(join(dir,'programme-report-pdf.mjs'),code);
 const {renderProgrammeOutcomePdf}=await import(pathToFileURL(join(dir,'programme-report-pdf.mjs')).href);
 const leap9Source = await readFile(new URL('../lib/experience/leap9-report.ts', import.meta.url), 'utf8');
@@ -21,7 +22,7 @@ const normalise=s=>s.replace(/\s+/g,' ').trim();
 test('Universal report includes executive findings, graphics, actions, Unicode and every canonical insight',async()=>{
  const bytes=await renderProgrammeOutcomePdf(outcome);assert.ok(bytes.length>1000);assert.match(Buffer.from(bytes.slice(0,8)).toString(),/%PDF/);
  const {pdf,text,pages}=await inspect(bytes);
- assert.match(text,/Réfiloë Dlamini/);assert.match(text,/Applied Commerce®/);assert.match(text,/Executive summary/);assert.match(text,/Programme review/);assert.match(text,/24 responses and 9 measures/);assert.match(text,/Unavailable/);
+ assert.match(text,/Réfiloë Dlamini/);assert.match(text,/Applied Commerce®/);assert.match(text,/Executive summary/);assert.match(text,/Programme review/i);assert.match(text,/24 responses and 9 measures/);assert.match(text,/Unavailable/);
  for(const insight of buildProgrammeReport(outcome).insights)for(const key of ['observation','context','interpretation','action','boundary'])assert.ok(normalise(text).includes(normalise(insight[key])),`${insight.id}:${key} absent from PDF`);
  assert.doesNotMatch(text,/Observed adherence|Prediction accuracy|SECRET_PRIVATE/);
  // Actual glyph geometry, rather than source-code snapshots.
@@ -30,6 +31,15 @@ test('Universal report includes executive findings, graphics, actions, Unicode a
 });
 test('suppressed report withholds all findings and totals before any cover rendering',async()=>{
  const {pdf,text}=await inspect(await renderProgrammeOutcomePdf({...outcome,participantCount:4,evidenceFlow:{...outcome.evidenceFlow,totals:{...outcome.evidenceFlow.totals,recordedResponses:987654}}}));assert.match(text,/Report withheld/);assert.doesNotMatch(text,/987654|24 responses|Programme review|recorded experiment start/);await pdf.cleanup();
+});
+
+test('empty live report explains reporting eligibility and assessment steps in the export',async()=>{
+ const {pdf,text}=await inspect(await renderProgrammeOutcomePdf({...outcome,participantCount:1,suppressed:true}));
+ assert.match(text,/Why development results are not shown/);
+ assert.match(text,/facilitator’s group list may include learners without current programme consent/);
+ assert.match(text,/Learners choose work to share from their Evidence Portfolio/);
+ assert.match(text,/Completing activities alone cannot establish development/);
+ await pdf.cleanup();
 });
 test('illustrative status repeats on every page and long decisions paginate with table headers',async()=>{
  const long={...outcome,decisionRegister:{decisions:Array.from({length:14},(_,i)=>({sourceTitle:`Decision ${i+1}`,decisionText:'Review the conditions and follow up with the facilitator. '.repeat(12),expectedOutcome:'A reportable observation next time.',ownerLabel:'Programme team',reviewOn:null,status:'OPEN',reviewOutcome:null,reviewNote:null}))}};
@@ -52,4 +62,28 @@ test('Leap9 sponsor report leads with practical meaning from the same fictional 
  }
  assert.ok(pdf.numPages <= 5);
  await pdf.cleanup();
+});
+
+test('each institutional finding is printed once',async()=>{
+ const {pdf,text}=await inspect(await renderProgrammeOutcomePdf(outcome));
+ for(const insight of buildProgrammeReport(outcome).insights){
+  assert.equal(normalise(text).split(normalise(insight.observation)).length-1,1,insight.id);
+ }
+ await pdf.cleanup();
+});
+
+test('completed fictional Habit and Decision PDFs contain every shared chart, exact values and readable page geometry',async()=>{
+ for(const scenario of ['habit','habit-decision']){
+  const outcome=buildDevelopmentScenario(scenario).outcomes[0];
+  const {pdf,text,pages}=await inspect(await renderProgrammeOutcomePdf(outcome,new Date('2026-10-14'),{illustrative:true}));
+  assert.match(text,/BIS Development Outcomes/);assert.match(text,/24 participating learners/);
+  const opening=normalise(pages[0].map(item=>item.str).join(' '));
+  for(const heading of ['Who were learners at the start?','What changed?','What still needs support?','What we recommend next','How strong is the evidence?','What does this tell us about BIS?'])assert.ok(opening.includes(heading),`Missing opening answer: ${heading}`);
+  assert.match(opening,/Behaviour change and self-management/);assert.match(opening,/15 of 24/);assert.match(opening,/6 of 24/);assert.doesNotMatch(opening,/Report model|source-comparable|all-basis/);
+  assert.ok(normalise(text).includes(`${outcome.developmentIntelligence.assessmentCount} reportable development assessments`));
+  for(const chart of buildProgrammeReport(outcome).charts){if(chart.kind==='trajectory')assert.ok(pages.some(items=>normalise(items.map(i=>i.str).join(' ')).includes(normalise(chart.title))&&items.some(i=>i.str.includes('Calendar month'))),`Separated trajectory title/plot: ${chart.id}`);assert.ok(normalise(text).includes(normalise(chart.title)),`Missing chart ${chart.id}`);for(const row of chart.rows)assert.ok(normalise(text).includes(normalise(row.label)),`Missing row ${chart.id}:${row.label}`);}
+  assert.doesNotMatch(text,/fictional-learner-|Naledi|takeover-20261007|LEAP9-DEMO/);
+  for(const items of pages){assert.ok(items.some(i=>i.str.includes('ILLUSTRATIVE SIMULATION')));for(const item of items){assert.ok(item.transform[4]>=47&&item.transform[4]+item.width<=548,`horizontal clipping: ${item.str}`);assert.ok(item.transform[5]>=30&&item.transform[5]<800,`vertical clipping: ${item.str}`);}}
+  await pdf.cleanup();
+ }
 });
