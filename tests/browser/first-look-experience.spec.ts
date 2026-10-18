@@ -25,7 +25,7 @@ test('BIS First Look is neutral, no-login and enters the shared programme experi
   await expect(page.getByRole('heading', { level: 1, name: 'How does learning become behaviour?' })).toBeVisible();
   await expect(page.getByText('This First Look keeps one fictional worked example constant', { exact: false })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Your organisation × BIS Programme Experience home' })).toBeVisible();
-  await expect(page.getByRole('heading', { level: 1, name: 'See the programme move.' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'See development become evidence.' })).toBeVisible();
   await expect(page.getByText(/DGMT/i)).toHaveCount(0);
   await checkLayout();
 
@@ -43,7 +43,7 @@ test('BIS First Look is neutral, no-login and enters the shared programme experi
 test('First Look practice and context storage stay isolated from DGMT and Leap9', async ({ page }) => {
   await page.goto('/experience/first-look');
   await page.getByRole('button', { name: /Emerging Adult/ }).click();
-  await page.getByRole('button', { name: 'Begin with Naledi' }).click();
+  await page.getByRole('button', { name: 'Follow one participant' }).click();
   await page.getByLabel('What tends to start the pattern?').fill('First Look practice only');
 
   await page.goto('/experience/dgmt#participant');

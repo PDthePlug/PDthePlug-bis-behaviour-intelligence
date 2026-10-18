@@ -9,6 +9,13 @@ export async function proxy(request: NextRequest) {
     "/experience/development-system", "/experience/development-system/report",
     "/experience/leap9", "/experience/leap9/v2", "/experience/leap9/report",
     "/experience/dgmt", "/experience/dgmt/report",
+    "/experience/first-look", "/experience/first-look/report",
+    "/experience/vodacom/v2", "/experience/vodacom/report",
+    "/experience/sasol/v2", "/experience/sasol/report",
+    "/experience/primestars/v2", "/experience/primestars/report",
+    "/experience/jasa/v2", "/experience/jasa/report",
+    "/experience/momentum/v2", "/experience/momentum/report",
+    "/experience/tutuwa/v2", "/experience/tutuwa/report",
     "/experience/dgmt-overview.mp4", "/experience/dgmt-overview.vtt",
   ].includes(request.nextUrl.pathname)) {
     const response = NextResponse.next();
