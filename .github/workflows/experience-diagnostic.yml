@@ -1,0 +1,32 @@
+name: BIS focused experience verification
+on:
+  push:
+    branches: ["diagnostics/experience-v2-release-check"]
+permissions:
+  contents: read
+jobs:
+  experience-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://bis-ci.invalid
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_not_a_credential
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify the actual experience regressions on all configured viewports
+        run: npx playwright test tests/browser/first-look-experience.spec.ts tests/browser/dgmt-experience.spec.ts tests/browser/programme-experience-v2.spec.ts tests/browser/outreach-experiences.spec.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: focused-experience-evidence
+          path: |
+            playwright-report/
+            test-results/
