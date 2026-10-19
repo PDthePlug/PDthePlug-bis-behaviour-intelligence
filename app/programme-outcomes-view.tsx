@@ -560,7 +560,7 @@ export function ProgrammeOutcomesView({
         </div>
       </section>
 
-      <div hidden={section!=="all"&&section!=="overview"&&section!=="evidence"}><CohortDevelopmentReport key={`${outcome.cohort.id}-${section==='evidence'?'evidence':'overview'}`} outcomes={data.cohorts} selected={outcome} initialPurpose={reportPurpose} view={section==='evidence'?'evidence':'overview'} onPlan={reportPurpose==='school'&&decisionRegister?.canManage&&onSectionChange?(title,evidence,action)=>{setDecisionSignal('OTHER');setDecisionTitle(title);setDecisionEvidence(evidence.slice(0,1200));setDecisionText(action);setFocusDecision(true);onSectionChange('decisions');}:undefined}/></div>
+      <div hidden={(section!=="all"&&section!=="overview"&&section!=="evidence")||(section==="evidence"&&report.status==="SUPPRESSED")}><CohortDevelopmentReport key={`${outcome.cohort.id}-${section==='evidence'?'evidence':'overview'}`} outcomes={data.cohorts} selected={outcome} initialPurpose={reportPurpose} view={section==='evidence'?'evidence':'overview'} onPlan={reportPurpose==='school'&&decisionRegister?.canManage&&onSectionChange?(title,evidence,action)=>{setDecisionSignal('OTHER');setDecisionTitle(title);setDecisionEvidence(evidence.slice(0,1200));setDecisionText(action);setFocusDecision(true);onSectionChange('decisions');}:undefined}/></div>
 
       {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
         <section hidden={section !== "evidence"} className="outcomes-competency-picture">

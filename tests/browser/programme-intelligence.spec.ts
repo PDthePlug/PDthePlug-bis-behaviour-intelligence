@@ -293,6 +293,7 @@ test('live-shaped group with 21 members and one eligible learner explains readin
   await expect(page.getByRole('meter')).toHaveCount(0);
  }
  await page.getByRole('link',{name:'See a completed fictional programme report →'}).click();
+ await page.getByText('Compare groups and plan class support',{exact:true}).click();
  await expect(page.getByRole('table',{name:'Most frequent reviewed stage among learners with reviewed evidence, per capability and group'})).toBeVisible();
  await page.goBack();await expect(page.getByRole('region',{name:'Reporting population'}).getByText(/1 learner has current programme consent/)).toBeVisible();
  await verify();
