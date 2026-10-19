@@ -13,7 +13,7 @@ export function DevelopmentReportingNextSteps({ cohortId, readiness }: {
         ? 'Criteria are available for learners’ own accounts. The programme team still needs to approve practical assessment criteria before BIS can report demonstrated behaviour.'
         : !readiness.transfer
           ? 'Practical assessment criteria are available. Criteria for assessing use in another setting are still needed before BIS can report transfer.'
-          : 'Practical-use and transfer criteria are available. Results depend on the work learners choose to share and the assessments that follow.'}</p>
+          : 'Practical-use and transfer criteria are available for the configured capabilities. Check what each task assesses; this does not certify every capability in the profile. Results depend on the work learners choose to share and the assessments that follow.'}</p>
       : <p>Ask the programme team to check that assessment criteria are ready for this group’s Lab edition.</p>}
     <ol>
       <li><strong>Learner:</strong> complete programme consent, then choose work to share from the Evidence Portfolio. Private answers are not shared automatically.</li>

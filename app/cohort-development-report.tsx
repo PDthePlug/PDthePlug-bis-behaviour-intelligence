@@ -1,4 +1,5 @@
 "use client";
+import {CohortCapabilityOverview} from './capability-acquisition';
 import {useId,useState} from 'react';
 import {DEVELOPMENT_STAGES} from '@/lib/development-intelligence.mjs';
 import {buildDevelopmentExecutive} from '@/lib/development-executive.mjs';
@@ -25,10 +26,11 @@ export function CohortDevelopmentReport({outcomes,selected,initialPurpose='schoo
  <p>{selected.cohort.name} · {n} {n===1?'learner':'participating learners'} · {selected.cohort.startsOn??'Start date unavailable'} to {selected.cohort.endsOn??'Current programme'}.</p>
  {!areas.length?<><h3>We cannot describe development yet</h3>
  {selected.suppressed?<p>This report includes {n} learner{n===1?'':'s'} with current programme consent. Results need at least {selected.minimumReportableCohortSize} eligible learners, and small results remain hidden. The facilitator’s group list can include learners who are not yet included in reporting.</p>:<p>There is not enough assessed work that can be shared safely to show what changed.</p>}
- <h3>What needs to happen next?</h3><ol><li>The programme team confirms assessment criteria for this group’s Lab edition.</li><li>Learners choose practical work to share from their Evidence Portfolio; a facilitator assesses what it demonstrates.</li><li>Learners choose whether those assessed outcomes may contribute to group reporting. BIS then reports the results that meet the privacy requirements.</li></ol>
+ <h3>What needs to happen next?</h3><ol><li>The programme team checks which capabilities have approved assessment tasks in this programme.</li><li>Learners choose practical work to share from their Evidence Portfolio; a facilitator assesses what it demonstrates.</li><li>Learners choose whether those assessed outcomes may contribute to group reporting. BIS then reports the results that meet the privacy requirements.</li></ol>
  <p>Completing activities alone cannot tell us how learners developed.</p>
  <p><a href="/experience/development-system?scenario=habit-decision&audience=school">See a completed fictional programme report →</a></p><p>The example uses invented learners and evidence. It does not add results to this group.</p></>:<>
  <p className="development-report-lead">{audience==='school'?`${priority.story.explained} of ${n} learners currently recognise or explain ${priority.area.title.toLowerCase()}. ${priority.story.explained?'Help them turn that understanding into practical use.':'Check independent use in other settings next.'}`:story?.summary}</p>
+ <CohortCapabilityOverview areas={areas} participants={n} audience={audience}/>
  <section><h3>Who were learners at the start?</h3>{entryFindings.length?<><ul>{entryFindings.map(f=><li key={f.id}><strong>{f.title}</strong>: {f.observation}</li>)}</ul><p>These are learners’ own accounts at entry. Practical task results are shown separately below.</p></>:<p>Entry information is not available in this report. The first comparable reviews below show an early point we can compare, which may be after entry.</p>}</section>
  <div className="development-executive-grid">
  <section><h3>What changed?</h3>{executive.growth.length?<ul>{executive.growth.map(a=><li key={a.title}><strong>{a.title}</strong><br/>{a.count} of {n} learners showed a higher level in a later assessed task.</li>)}</ul>:<p>More comparable assessed work is needed before we can describe improvement.</p>}</section>
