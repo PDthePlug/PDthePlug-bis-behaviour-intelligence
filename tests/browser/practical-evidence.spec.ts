@@ -64,7 +64,7 @@ test('dated practice, explicit sharing, refresh and checked human review keep ev
   await expect(shareButton).toBeDisabled();
   await page.getByRole('checkbox', { name: /I choose to share this plan/ }).check();
   await shareButton.click();
-  await expect(page.getByRole('alert')).toContainText('No work was shared.');
+  await expect(page.locator('.practical-evidence').getByRole('alert')).toContainText('No work was shared.');
   await expect(page.getByLabel('Work or observation record')).toHaveValue('An observable fictional performance trace.');
   await shareButton.click();
   await expect(page.getByText('This work has been shared for review.', { exact: false })).toBeVisible();
