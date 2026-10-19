@@ -70,6 +70,24 @@ begin
  if not exists(select 1 from jsonb_array_elements(report->'competencies') c where c->>'competencyId'='AC-C03' and c->>'transferParticipants'='3' and c->>'assessedGrowthParticipants'='3') then raise exception 'Three permitted verified transfers and comparable changes missing: %',report;end if;
  if report::text like '%QA-PRACTICE-PRIVATE%' or report::text like '%'||first_user||'%' then raise exception 'Individual work reached programme aggregate';end if;
  execute 'reset role';
+ -- Withdrawing only aggregate permission leaves the learner profile available,
+ -- but removes the transfer contribution derived from that first-context work.
+ for base_submission in select a.submission_id from development_practice_attempts a join development_practice_plans p on p.id=a.plan_id join development_practice_tasks t on t.id=p.task_id where p.user_id=first_user and p.cohort_id=cohort.id and t.stage in ('APPLY','TEST_AND_REVISE') loop
+  select email into actor_email from auth.users where id::text=first_user;
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',first_user,'role','authenticated','email',actor_email)::text,true);execute 'set local role authenticated';
+  perform public.bis_development_reporting_permission(base_submission.submission_id,false);execute 'reset role';
+ end loop;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',staff.id,'role','authenticated','email',staff.email)::text,true);execute 'set local role authenticated';
+ result=public.bis_development_learner_report(first_user,cohort.id);
+ if not exists(select 1 from jsonb_array_elements(result) r where r->>'stage'='TRANSFER' and r->>'competencyId'='AC-C03') then raise exception 'Programme permission incorrectly hid the individual profile';end if;
+ report=public.bis_development_programme_report(cohort.id);
+ if exists(select 1 from jsonb_array_elements(report->'competencies') r where r->>'competencyId'='AC-C03') then raise exception 'A transfer derived from excluded work reached programme reporting';end if;
+ execute 'reset role';
+ for base_submission in select a.submission_id from development_practice_attempts a join development_practice_plans p on p.id=a.plan_id join development_practice_tasks t on t.id=p.task_id where p.user_id=first_user and p.cohort_id=cohort.id and t.stage in ('APPLY','TEST_AND_REVISE') loop
+  perform set_config('request.jwt.claims',jsonb_build_object('sub',first_user,'role','authenticated','email',actor_email)::text,true);execute 'set local role authenticated';
+  perform public.bis_development_reporting_permission(base_submission.submission_id,true);execute 'reset role';
+ end loop;
+
  if (select count(distinct private.development_comparison_key(contract_id)) from development_practice_tasks where lab_code in (cohort.lab_code,'RSK'))<>1 then raise exception 'Equivalent pack criteria failed to accumulate across Labs';end if;
  select u.id,u.email into strict person from auth.users u join cohort_members m on m.learner_user_id=u.id::text where m.cohort_id=cohort.id and m.status='ACTIVE' and u.id::text<>first_user and u.email like 'fullscope-20261006-%@bis-staging.example.invalid' order by u.email limit 1;
  perform set_config('request.jwt.claims',jsonb_build_object('sub',person.id,'role','authenticated','email',person.email)::text,true);execute 'set local role authenticated';
