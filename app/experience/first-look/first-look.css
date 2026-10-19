@@ -67,6 +67,7 @@
   text-wrap:balance;
 }
 .first-look-lead{max-width:820px;margin:24px 0 0;color:var(--fl-copy);font-size:clamp(18px,2.2vw,23px);line-height:1.58}
+.first-look-report-boundary{max-width:820px;margin:18px 0 0;color:var(--fl-muted);font-size:13px;line-height:1.65}
 .first-look-chain{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:34px}
 .first-look-chain span{padding:9px 12px;border:1px solid var(--fl-line);border-radius:999px;background:#fff;color:var(--fl-ink);font-size:12px;font-weight:800}
 .first-look-chain i{color:var(--fl-rust);font-style:normal;font-weight:800}
@@ -123,6 +124,9 @@
 .first-look-pilot-cta{max-width:920px;margin:0 auto;padding:72px 24px 88px;text-align:center}
 .first-look-pilot-cta p:not(.first-look-eyebrow){max-width:660px;margin:16px auto 0;color:var(--fl-muted)}
 .first-look-pilot-cta a{margin-top:24px}
+.first-look-pilot-cta .first-look-pilot-contact{font-size:13px;line-height:1.65}
+.first-look-pilot-contact span{white-space:nowrap}
+.first-look-pilot-cta .first-look-gmail{margin-top:12px;background:transparent;color:var(--fl-green-deep);text-decoration:underline;text-underline-offset:4px}
 @media (max-width:900px){
   .first-look-context-grid{grid-template-columns:1fr}
   .first-look-context-card{min-height:230px}
