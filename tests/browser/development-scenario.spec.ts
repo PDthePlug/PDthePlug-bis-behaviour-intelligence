@@ -4,7 +4,7 @@ test('completed programme reports share fictional evidence across four audiences
  const errors:string[]=[],liveRequests:string[]=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))liveRequests.push(r.url());});
- await page.goto('/experience/development-system');
+ await page.goto('/experience/development-system?audience=partner');
  await expect(page.getByRole('heading',{name:'BIS development outcomes',exact:true})).toBeVisible();
  await expect(page.getByText('864 fictional assessments across 2 completed Labs.',{exact:true})).toBeHidden();
  await expect(page.getByRole('heading',{name:'What changed?',exact:true})).toBeVisible();
@@ -16,6 +16,7 @@ test('completed programme reports share fictional evidence across four audiences
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.screenshot({path:testInfo.outputPath('partner.png'),fullPage:false});
  await page.getByRole('combobox',{name:'Reporting audience',exact:true}).selectOption('school');
+ await page.getByText('Compare groups and plan class support',{exact:true}).click();
  await expect(page.getByRole('table',{name:'Most frequent reviewed stage among learners with reviewed evidence, per capability and group'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.getByRole('combobox',{name:'Group',exact:true}).selectOption('fictional-development-habit-decision-a');
@@ -43,8 +44,11 @@ test('completed programme reports share fictional evidence across four audiences
  await page.getByRole('button',{name:'Learning & implementation',exact:true}).click();
  await expect(page.getByRole('heading',{name:'What is showing up across the group?'})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Where did learners feel clear, and where did they want more support?'})).toBeVisible();
- await page.getByRole('button',{name:'Evidence & application',exact:true}).click();
+ await page.getByText('Participation and activity records',{exact:true}).click();
  await expect(page.getByRole('heading',{name:'From learner evidence to programme results'})).toBeVisible();
+ await page.getByRole('button',{name:'Evidence & application',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'See the evidence for one capability',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'From learner evidence to programme results'})).toBeHidden();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  const pdf=await request.get('/experience/development-system/report?scenario=habit');expect(pdf.status()).toBe(200);expect(pdf.headers()['content-type']).toBe('application/pdf');expect((await pdf.body()).subarray(0,4).toString()).toBe('%PDF');
  expect((await request.get('/experience/development-system/report?scenario=production')).status()).toBe(400);
@@ -80,9 +84,13 @@ test('an educator can identify change, practical support and evidence without op
  const report=page.locator('.development-report-story');
  await expect(report.getByRole('heading',{name:'Who were learners at the start?',exact:true})).toBeVisible();
  await expect(report.getByText('12 of 24 respondents reported this often or always.',{exact:false})).toBeVisible();
- await expect(report.getByText('15 of 24 learners showed a higher level in a later assessed task.',{exact:false}).first()).toBeVisible();
+ await expect(report.getByRole('table',{name:'What is changing and where to offer support · 24 learners'}).getByText('15 of 24',{exact:true})).toHaveCount(5);
  await expect(report.getByText('6 of 24 learners currently recognise or explain it. Check practical use with these learners.',{exact:true})).toBeVisible();
+ await expect(report.getByText(/6 of 24 learners have assessed evidence of adapting/).first()).toBeHidden();
+ await report.getByText('Explore the evidence for a capability',{exact:true}).click();
  await expect(report.getByText(/6 of 24 learners have assessed evidence of adapting/).first()).toBeVisible();
+ await expect(report.getByText(/18 of 24 learners have repeated assessed work/)).toBeHidden();
+ await report.getByText('How much work supports this finding?',{exact:true}).click();
  await expect(report.getByText(/18 of 24 learners have repeated assessed work/)).toBeVisible();
  await expect(page.getByText('All-basis comparable histories:',{exact:false})).toHaveCount(0);
  await report.getByLabel('Capability',{exact:true}).selectOption('AC-C06');
@@ -94,4 +102,42 @@ test('an educator can identify change, practical support and evidence without op
  await expect(page.getByRole('button',{name:'Plan a programme intervention'})).toHaveCount(0);
  await page.goBack();await expect(page.getByRole('combobox',{name:'Reporting audience',exact:true})).toHaveValue('school');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+
+test('a teacher opens a short school report and explores one capability without a technical chart dump',async({page},info)=>{
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('/experience/development-system');
+ await expect(page.getByRole('combobox',{name:'Reporting audience',exact:true})).toHaveValue('school');
+ await expect(page.getByRole('heading',{name:'Where to focus developmental support',exact:true})).toBeVisible();
+ const summary=page.getByRole('table',{name:'What is changing and where to offer support · 24 learners'});
+ await expect(summary).toBeVisible();await expect(summary.getByRole('row')).toHaveCount(6);
+ await expect(summary.getByRole('meter',{name:'Decision and judgement: learners showing assessed improvement'})).toHaveAttribute('value','15');
+ await expect(page.getByRole('table',{name:'Development distribution · available privacy-safe results'})).toBeHidden();
+ await expect(page.getByRole('region',{name:'Explore a capability'})).toBeHidden();
+ await expect(page.getByRole('heading',{name:'Where should the school focus?',exact:true})).toBeHidden();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:info.outputPath('teacher-capability-summary.png'),fullPage:true});
+ await page.getByRole('button',{name:'Evidence & application',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'See the evidence for one capability',exact:true})).toBeVisible();
+ await expect(page.locator('.programme-report-graphic:visible')).toHaveCount(0);
+ await expect(page.getByRole('heading',{name:'What should the teacher do next?',exact:true})).toBeVisible();
+ const capability=page.getByRole('region',{name:'Explore a capability'});
+ await capability.getByLabel('Capability',{exact:true}).selectOption('AC-C06');
+ await expect(capability.getByText('Considering options, consequences and trade-offs before deciding.',{exact:true})).toBeVisible();
+ await expect(capability.getByText('Understanding behaviour patterns and practising deliberate changes.',{exact:true})).toHaveCount(0);
+ await expect(capability.getByRole('meter',{name:'Higher later result',exact:true})).toHaveAttribute('value','15');
+ await expect(page.getByRole('heading',{name:'From learner evidence to programme results'})).toBeHidden();
+ const visible=await page.locator('#scenario-report').innerText();
+ expect(visible).not.toMatch(/scientific confidence|calibrated scientific|not a paired growth estimate|compatible source-approved scales/);
+ await page.screenshot({path:info.outputPath('teacher-one-capability.png'),fullPage:true});
+ const technical=page.getByText('How we reached these conclusions · full evidence report',{exact:true});
+ await technical.focus();await page.keyboard.press('Enter');
+ await expect(page.getByRole('heading',{name:'What the group evidence is telling us',exact:true})).toBeVisible();
+ await expect(page.locator('.programme-report-graphic:visible').first()).toBeVisible();
+ await technical.click();await expect(page.locator('.programme-report-graphic:visible')).toHaveCount(0);
+ await page.reload();await expect(page.getByRole('heading',{name:'See the evidence for one capability',exact:true})).toBeVisible();
+ await expect(page.locator('.programme-report-graphic:visible')).toHaveCount(0);
+ await page.goBack();await expect(page.getByRole('heading',{name:'Where to focus developmental support',exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });

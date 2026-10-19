@@ -113,6 +113,9 @@ test('development leads group views while small stage counts stay hidden', async
  await page.screenshot({path:info.outputPath('facilitator-development.png'),fullPage:true});
  await page.goto('/staff-shell?view=outcomes&section=evidence&group=group');
  const owner=page.locator('.outcomes-competency-picture');await expect(owner).toContainText('Offer another chance to test and review a small plan.');await expect(owner).toContainText('Hidden');
+ await expect(page.locator('.outcomes-context')).toBeHidden();
+ await page.goto('/staff-shell?view=outcomes&section=learning&group=group');
+ await page.getByText('Participation and activity records',{exact:true}).click();
  await expect(page.locator('.outcomes-context')).toBeVisible();
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
  await page.getByText('How we reached these conclusions · full evidence report',{exact:true}).click();
@@ -252,6 +255,8 @@ test('actual programme outcomes show capability bars, change distribution and au
  await page.route('**/api/staff',route=>route.fulfill({json:{...base,sponsor:{cohorts:outcomes}}}));
  await page.goto('/staff-shell?view=outcomes&section=overview&group=group');
  const story=page.locator('.development-report-story');await expect(story).toBeVisible();
+ await story.getByText('Explore the evidence for a capability',{exact:true}).click();
+ await story.getByText('Compare groups and plan class support',{exact:true}).click();
  await expect(story.getByRole('meter',{name:'Can explain it: first review',exact:true})).toHaveAttribute('value','13');
  await expect(story.getByRole('meter',{name:'Can explain it: latest',exact:true})).toHaveAttribute('value','3');
  await expect(story.getByRole('meter',{name:'Higher later result',exact:true})).toHaveAttribute('value','6');
@@ -288,6 +293,7 @@ test('live-shaped group with 21 members and one eligible learner explains readin
   await expect(page.getByRole('meter')).toHaveCount(0);
  }
  await page.getByRole('link',{name:'See a completed fictional programme report →'}).click();
+ await page.getByText('Compare groups and plan class support',{exact:true}).click();
  await expect(page.getByRole('table',{name:'Most frequent reviewed stage among learners with reviewed evidence, per capability and group'})).toBeVisible();
  await page.goBack();await expect(page.getByRole('region',{name:'Reporting population'}).getByText(/1 learner has current programme consent/)).toBeVisible();
  await verify();

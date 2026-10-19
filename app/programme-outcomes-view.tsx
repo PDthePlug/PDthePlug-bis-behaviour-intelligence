@@ -442,6 +442,7 @@ export function ProgrammeOutcomesView({
   act?: StaffAction;
   section?: string; onSectionChange?: (section: string) => void; cohortId?: string; onCohortChange?: (id: string) => void;
 }) {
+  const [evidenceOpen,setEvidenceOpen]=useState(false);
   const [selectedId, setSelectedId] = useState(data.cohorts[0]?.cohort.id ?? "");
   const [decisionSignal, setDecisionSignal] = useState("PROGRAMME_TRANSITION");
   const [decisionTitle, setDecisionTitle] = useState("");
@@ -559,7 +560,7 @@ export function ProgrammeOutcomesView({
         </div>
       </section>
 
-      <div hidden={section!=="all"&&section!=="overview"}><CohortDevelopmentReport key={outcome.cohort.id} outcomes={data.cohorts} selected={outcome} initialPurpose={reportPurpose} onPlan={reportPurpose==='school'&&decisionRegister?.canManage&&onSectionChange?(title,evidence,action)=>{setDecisionSignal('OTHER');setDecisionTitle(title);setDecisionEvidence(evidence.slice(0,1200));setDecisionText(action);setFocusDecision(true);onSectionChange('decisions');}:undefined}/></div>
+      <div hidden={(section!=="all"&&section!=="overview"&&section!=="evidence")||(section==="evidence"&&report.status==="SUPPRESSED")}><CohortDevelopmentReport key={`${outcome.cohort.id}-${section==='evidence'?'evidence':'overview'}`} outcomes={data.cohorts} selected={outcome} initialPurpose={reportPurpose} view={section==='evidence'?'evidence':'overview'} onPlan={reportPurpose==='school'&&decisionRegister?.canManage&&onSectionChange?(title,evidence,action)=>{setDecisionSignal('OTHER');setDecisionTitle(title);setDecisionEvidence(evidence.slice(0,1200));setDecisionText(action);setFocusDecision(true);onSectionChange('decisions');}:undefined}/></div>
 
       {outcome.competencySummary?.status === "AVAILABLE" && outcome.competencySummary.competencies.length ? (
         <section hidden={section !== "evidence"} className="outcomes-competency-picture">
@@ -606,7 +607,7 @@ export function ProgrammeOutcomesView({
 
       {report.status === "AVAILABLE" ? (
         <section hidden={section !== "all" && section !== "overview" && section !== "evidence"} className="outcomes-insights">
-          <details open={section === "evidence"}><summary>How we reached these conclusions · full evidence report</summary>
+          <details open={evidenceOpen} onToggle={event=>setEvidenceOpen(event.currentTarget.open)}><summary>How we reached these conclusions · full evidence report</summary><p>Optional detail for programme reviewers: all charts, exact values and measurement notes. The capability view above gives the findings and next steps in plain language.</p>
           <div className="outcomes-section-heading">
             <div><p className="eyebrow">What stands out</p><h2>What the group evidence is telling us</h2></div>
             <Lightbulb />
@@ -629,7 +630,8 @@ export function ProgrammeOutcomesView({
         </section>
       ) : null}
 
-      <section hidden={section !== "all" && section !== "evidence"} className="outcomes-context">
+      <details hidden={section !== "all" && section !== "learning"}><summary>Participation and activity records</summary>
+      <section className="outcomes-context">
         <Metric label="Learners included in reporting" value={outcome.participantCount} detail="Current programme consent; the group list may be larger" />
         <Metric
           label="Completion"
@@ -638,7 +640,7 @@ export function ProgrammeOutcomesView({
         />
       </section>
 
-      {flow && report.status === "AVAILABLE" ? <section hidden={section !== "all" && section !== "evidence"} className="outcomes-evidence-flow">
+      {flow && report.status === "AVAILABLE" ? <section className="outcomes-evidence-flow">
         <div className="outcomes-section-heading"><div><p className="eyebrow">Recorded evidence</p><h2>From learner evidence to programme results</h2></div></div>
         <div className="journey-activity-strip">
           <Metric label="Responses recorded" value={flow.totals?.recordedResponses ?? "Hidden for privacy"} />
@@ -649,6 +651,8 @@ export function ProgrammeOutcomesView({
         <div className="journey-days">{flow.stages.map(stage => <article key={stage.investigation}><span>{EVIDENCE_STAGE_LABELS[stage.investigation]}</span><strong className={stage.suppressed ? "outcome-metric-status" : undefined}>{stage.suppressed ? "Hidden" : stage.participants}</strong><small>learners · {stage.suppressed ? "small group" : `${stage.responses} responses`}</small></article>)}</div>
         <p>{flow.privacyNote}</p>
       </section> : null}
+
+      </details>
 
       {report.status === "SUPPRESSED" ? (
         <section className="development-intelligence" aria-label="Reporting population">
@@ -729,7 +733,7 @@ export function ProgrammeOutcomesView({
                   <p className="eyebrow">Starting point and later check-in</p>
                   <h3>Read comparisons with their coverage</h3>
                   <p>Comparable check-ins appear in the results overview with their sample, chart and interpretation limits. Each measure retains its own sample.</p>
-                  {onSectionChange ? <button type="button" onClick={() => onSectionChange("evidence")}>View comparisons</button> : null}
+                  {onSectionChange ? <button type="button" onClick={() => {setEvidenceOpen(true);onSectionChange("evidence");}}>View comparisons</button> : null}
                 </section> : null}
               </div>
             </section>
