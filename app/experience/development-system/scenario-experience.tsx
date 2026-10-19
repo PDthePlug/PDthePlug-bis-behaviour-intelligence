@@ -23,7 +23,7 @@ export function DevelopmentScenarioExperience(){
  const params=useSearchParams(),router=useRouter();
  const [navigating,startNavigation]=useTransition();
  const scenario=params.get('scenario')==='habit'?'habit':'habit-decision';
- const audience:Audience=audiences.some(([id])=>id===params.get('audience'))?params.get('audience') as Audience:'partner';
+ const audience:Audience=audiences.some(([id])=>id===params.get('audience'))?params.get('audience') as Audience:'school';
  const section=sections.some(([id])=>id===params.get('section'))?params.get('section')!:'overview';
  const data=useMemo(()=>buildDevelopmentScenario(scenario),[scenario]);
  const learner=data.learners.find(l=>l.id===params.get('learner'))??data.learners[audience==='facilitator'?9:0];
