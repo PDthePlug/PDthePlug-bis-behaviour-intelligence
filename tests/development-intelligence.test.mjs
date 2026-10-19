@@ -1,5 +1,6 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
 import {buildDevelopmentIntelligence,developmentProgrammeFindings} from '../lib/development-intelligence.mjs';
+import {buildDevelopmentStory} from '../lib/development-story.mjs';
 import {buildDevelopmentExecutive} from '../lib/development-executive.mjs';
 const definitions=[{id:'AC-C04',title:'Behaviour change and self-management'}];
 const fact=(id,stage,at,extra={})=>({id,competencyId:'AC-C04',stage,at,comparisonKey:'criteria:1',authorityId:'authored-contract',reviewStatus:'REVIEWED',sourceNature:'ASSESSED_TASK',labCode:'HAB',context:'SCHOOL',independent:true,followUpDays:7,perceptionLevel:null,...extra});
@@ -31,3 +32,11 @@ test('self-report on a compatible numerical scale is not a demonstrated-behaviou
 test('later self-description preserves dated assessed-task history without inventing decline',()=>{const a=buildDevelopmentIntelligence([fact('task','APPLY','2026-10-01',{taskTitle:'Authored practice'}),fact('self','NOTICE','2026-10-05',{sourceNature:'SELF_REPORT',evidencePhase:'BASELINE'})],definitions).areas[0];assert.equal(a.stage,'APPLY');assert.equal(a.sourceNature,'ASSESSED_TASK');assert.equal(a.trend,'INSUFFICIENT_HISTORY');assert.equal(a.timeline.length,2);assert.equal(a.sourceBaseline.stageLabel,'Notices');assert.deepEqual(a.nextActivities,[{title:'Authored practice',labCode:'HAB',ceiling:'APPLY',repeat:true}]);});
 
 test('reported application and transfer remain self-report without demonstrating independent behaviour',()=>{const a=buildDevelopmentIntelligence([fact('self1','APPLY','2026-10-01',{sourceNature:'SELF_REPORT'}),fact('self2','TEST_AND_REVISE','2026-10-04',{sourceNature:'SELF_REPORT'}),fact('self3','TRANSFER','2026-10-12',{sourceNature:'SELF_REPORT',context:'HOME'})],definitions).areas[0];assert.equal(a.sourceNature,'SELF_REPORT');assert.equal(a.independentApplicationDays,0);assert.equal(a.repeatedApplication,false);assert.equal(a.transfer,false);assert.equal(a.followup,false);assert.equal(a.applicationSpanDays,null);assert.equal(a.alignment,null);});
+
+test('partial assessed coverage reports practical use without turning missing or reported work into performance',()=>{
+ const a={...row,distribution:[{code:'APPLY',count:3},{code:'NOT_YET_EVIDENCED',count:7}],sourceDistribution:[{code:'ASSESSED_TASK',count:3},{code:'NO_REVIEWED_EVIDENCE',count:7}]};
+ const story=buildDevelopmentStory(a,10);assert.equal(story.allTasks,true);assert.match(story.practice,/3 of 10 learners apply/);
+ assert.equal(buildDevelopmentStory({...a,sourceDistribution:[{code:'ASSESSED_TASK',count:3},{code:'SELF_REPORT',count:7}]},10).allTasks,false);
+ assert.equal(buildDevelopmentStory({...a,sourceDistribution:null},10).allTasks,false);
+ assert.equal(buildDevelopmentStory({...a,distribution:[{code:'APPLY',count:6},{code:'NOT_YET_EVIDENCED',count:4}]},10).allTasks,false);
+});
