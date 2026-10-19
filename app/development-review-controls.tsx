@@ -1,5 +1,6 @@
 "use client";
 import {usePlatform} from "@/components/platform-context";
+import {PracticalEvidenceReview} from './practical-evidence-review';
 import {useEffect,useState} from 'react';
 import {DEVELOPMENT_CRITERIA,DEVELOPMENT_STAGES} from '@/lib/development-intelligence.mjs';
 import type {EvidenceSubmission} from '@/lib/evidence-engine';
@@ -12,6 +13,7 @@ export function DevelopmentReviewControl({submission,cohortId}:{submission:Evide
  useEffect(()=>{const c=new AbortController();void request('/api/development-intelligence?view=contracts&cohortId='+encodeURIComponent(cohortId),{cache:'no-store',signal:c.signal}).then(async r=>{if(!r.ok)throw Error('Unavailable');const b=await r.json();if(!c.signal.aborted)setContracts(b.contracts??[]);}).catch(()=>{if(!c.signal.aborted)setContracts([]);});return()=>c.abort();},[cohortId,request]);
  const applicable=contracts.filter(c=>submission.evidence.every(e=>c.semantic_field_ids.includes(e.semantic_field_id))),contract=applicable.find(c=>c.id===contractId),latest=submission.reviews[0],required=DEVELOPMENT_CRITERIA[stage]??[];
  if(!latest||latest.disposition!=='REVIEWED')return null;
+ if(submission.evidence.some(e=>['PRACTICE_PLAN','PRACTICE_ATTEMPT'].includes(e.source_object_type)))return <PracticalEvidenceReview key={`${submission.id}:${latest.id}`} submission={submission}/>;
  const ready=contract&&required.every(k=>criteria[k])&&!saving;
  return <section className="development-intelligence"><h3>Assess development demonstrated in this task</h3><p>A completed review is separate from a demonstrated capability. Confirm the approved stage criteria against the selected evidence.</p>
  {!applicable.length?<p>No approved development criteria match this shared task yet. The source owner can approve them in assessment governance.</p>:<form className="evidence-form" onSubmit={async e=>{e.preventDefault();setSaving(true);setMessage('');try{const r=await request('/api/development-intelligence',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'review',assessmentId:latest.id,contractId,stage,criteria,context,independent,requestKey})});if(!r.ok)throw Error('Check source criteria, context and the latest human review before saving.');setMessage('Development evidence saved. The profiles and permitted programme reports now use this assessment.');setKey(crypto.randomUUID());}catch(e){setMessage(e instanceof Error?e.message:'Review unavailable.');}finally{setSaving(false);}}}>

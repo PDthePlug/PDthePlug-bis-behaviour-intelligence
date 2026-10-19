@@ -234,12 +234,12 @@ test('actual facilitator participant workflow shows development bars and selecta
  });
  await page.goto('/staff-shell?view=facilitator&section=participants&group=group&learner=learner');
  await expect(page.getByRole('heading',{name:'Where to support Thandi Mokoena next'})).toBeVisible();
- const profile=page.locator('.development-fingerprint');await expect(profile).toBeVisible();await expect(profile.locator('.development-fingerprint-row')).toHaveCount(5);
+ const profile=page.locator('.development-fingerprint');await expect(page.getByRole('heading',{name:'Support decisions by capability',exact:true})).toBeVisible();await expect(profile).toBeHidden();await page.getByText('View capability profile and acquisition',{exact:true}).click();await expect(profile).toBeVisible();await expect(profile.locator('.development-fingerprint-row')).toHaveCount(5);
  const history=page.getByRole('region',{name:'Development over time'});await expect(history.getByRole('img',{name:/Behaviour change and self-management: Reviewed capability over time/})).toBeVisible();
  await page.getByLabel('Capability over time',{exact:true}).selectOption('AC-C06');
  await expect(history.getByRole('img',{name:/Decision and judgement: Reviewed capability over time/})).toBeVisible();
  await history.getByText('View dated trajectory values',{exact:true}).focus();await page.keyboard.press('Enter');await expect(history.getByRole('cell',{name:'2026-10-11',exact:true})).toBeVisible();
- await page.reload();await expect(profile).toBeVisible();await profile.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('actual-facilitator-bars.png')});
+ await page.reload();await expect(page.getByRole('heading',{name:'Support decisions by capability',exact:true})).toBeVisible();await page.getByText('View capability profile and acquisition',{exact:true}).click();await expect(profile).toBeVisible();await profile.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('actual-facilitator-bars.png')});
  unavailable=true;await page.getByRole('button',{name:'Refresh development profile',exact:true}).click();
  await expect(profile).toHaveCount(0);await expect(history).toHaveCount(0);await expect(page.getByText('Development outcomes will appear after learner-shared work has been assessed against approved criteria.',{exact:true})).toBeVisible();
  await verify();
@@ -279,7 +279,7 @@ test('live-shaped group with 21 members and one eligible learner explains readin
  await next.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('live-shaped-group-readiness.png')});
  await next.getByRole('link',{name:'See a completed fictional learner report →'}).click();
  await expect(page.getByRole('heading',{name:'Development strengths and next support',exact:true})).toBeVisible();
- await expect(page.locator('.development-fingerprint')).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Support decisions by capability',exact:true})).toBeVisible();await expect(page.locator('.development-fingerprint')).toBeHidden();await page.getByText('View capability profile and acquisition',{exact:true}).click();await expect(page.locator('.development-fingerprint')).toBeVisible();
  await page.goBack();await expect(page.getByText(/21 learners are on the group list. 1 learner has current programme consent/)).toBeVisible();
  for(const section of ['overview','learning','evidence']){
   await page.goto(`/staff-shell?view=outcomes&section=${section}&group=group`);

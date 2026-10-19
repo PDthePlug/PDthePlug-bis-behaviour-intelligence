@@ -25,7 +25,7 @@ test('completed programme reports share fictional evidence across four audiences
  await expect(page.getByRole('heading',{name:'Next support priorities'})).toBeVisible();
  await page.getByRole('combobox',{name:'Fictional learner',exact:true}).selectOption('fictional-learner-10');
  await expect(page.getByText('Move from explaining the idea to trying it in a practical situation.',{exact:false}).first()).toBeVisible();
- await expect(page.locator('.development-fingerprint')).toBeVisible();await expect(page.getByRole('region',{name:'Development over time'}).locator('.development-trajectory')).toBeVisible();await expect(page.locator('.development-intelligence-area .development-trajectory').first()).toBeHidden();
+ await expect(page.getByRole('heading',{name:'Support decisions by capability',exact:true})).toBeVisible();await expect(page.locator('.development-fingerprint')).toBeHidden();await page.getByText('View capability profile and acquisition',{exact:true}).click();await expect(page.locator('.development-fingerprint')).toBeVisible();await expect(page.getByRole('region',{name:'Development over time'}).locator('.development-trajectory')).toBeVisible();await expect(page.locator('.development-intelligence-area .development-trajectory').first()).toBeHidden();
  await page.screenshot({path:testInfo.outputPath('facilitator.png'),fullPage:false});
  await page.getByRole('combobox',{name:'Reporting audience',exact:true}).selectOption('learner');
  await page.getByRole('combobox',{name:'Fictional learner',exact:true}).selectOption('fictional-learner-1');

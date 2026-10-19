@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "bis-practical-assessment:1",
+  "title": "BIS applied investigation assessment",
+  "version": "1.0",
+  "competencyId": "AC-C03",
+  "scope": "Optional, learner-selected practical evidence of evidence and accurate thinking. This supplements the private investigation; it does not assess personality, require disclosure or alter the nine Lab stages or ten learning touchpoints.",
+  "sourceBasis": [
+    "Applied Commerce Competency Framework AC-C03 and progression model APPLY, TEST_AND_REVISE and TRANSFER",
+    "BIS canonical Behaviour Contract, Experiment, Evidence Review and Profile architecture",
+    "Volume 1 Bis handbooks: field application, adjusting the experiment, mapping a second pattern and identifying what stayed the same or changed"
+  ],
+  "boundary": "A learner account stays an account. A facilitator must inspect the shared work and record the basis for verifying practical use. Simulations can demonstrate reasoning under stated conditions, but cannot establish independent real-world action or transfer. No score is a diagnosis, permanent mastery judgement or proof of programme causation.",
+  "tasks": [
+    {
+      "stage": "APPLY",
+      "title": "Use the investigation method",
+      "instruction": "Use the method from this Lab in one suitable situation. Save your prediction or plan before the test. Afterwards, show the work, a checkable trace or the action your facilitator can observe. Record what actually happened and what remains uncertain. A situation that did not occur is valid missing opportunity evidence; it is not a failed performance.",
+      "criteria": [{"id":"applies","label":"The checked work shows the learner using the investigation method in the recorded situation, rather than only saying they intended to use it."}],
+      "fields": [{"key":"prediction","evidenceClass":"PREDICTION"},{"key":"observation","evidenceClass":"OBSERVATION"},{"key":"interpretation","evidenceClass":"INTERPRETATION"}]
+    },
+    {
+      "stage": "TEST_AND_REVISE",
+      "title": "Test and adjust the method",
+      "instruction": "Save a prediction or test plan first. Use a suitable opportunity to record what happened. Compare the evidence with the prediction and show a justified adjustment to the method. Keep a missed opportunity, an unchanged result or an unsuccessful attempt visible; none should be replaced by an invented success.",
+      "criteria": [{"id":"predicts","label":"A dated prediction or plan was saved before the observation."},{"id":"observes","label":"The checked work contains an observation from a suitable opportunity."},{"id":"interprets","label":"The learner compares that observation with the prediction and states limits."},{"id":"revises","label":"The learner shows a justified adjustment based on that comparison."}],
+      "fields": [{"key":"prediction","evidenceClass":"PREDICTION"},{"key":"observation","evidenceClass":"OBSERVATION"},{"key":"interpretation","evidenceClass":"INTERPRETATION"}]
+    },
+    {
+      "stage": "TRANSFER",
+      "title": "Use the method in another context",
+      "instruction": "After an earlier application has been reviewed, choose a meaningfully different context. Save the new plan, adapt the method and show distinct work or a checkable trace of its use. Explain what carried over, what changed and what remains uncertain. Naming another context or describing a future intention is not demonstrated transfer.",
+      "criteria": [{"id":"applies","label":"The checked evidence shows independent use of the method in the new context."},{"id":"adapts","label":"The learner shows and explains the adaptation required in that context."},{"id":"differentContext","label":"Distinct earlier reviewed application and later evidence from a different context are both present."}],
+      "fields": [{"key":"prediction","evidenceClass":"PREDICTION"},{"key":"observation","evidenceClass":"TRANSFER"},{"key":"interpretation","evidenceClass":"INTERPRETATION"}]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 "use client";
 import { DevelopmentReportingPermission } from "../development-review-controls";
+import { PracticalEvidence } from "../practical-evidence";
 import { DevelopmentIntelligencePanel } from "../development-intelligence-panel";
 import { usePlatform } from "@/components/platform-context";
 
@@ -457,6 +458,7 @@ export function PortfolioWorkspace() {
       </section>
 
       <section id="my-bis-work" className="portfolio-personal-area" aria-labelledby="my-bis-work-heading">
+        <PracticalEvidence />
         <p className="eyebrow">My Work</p><h2 id="my-bis-work-heading">What you have made and recorded</h2>
         <p className="evidence-meta">Your saved responses and tasks. History filters apply here too.</p>
         {timeline.data && !records.some(record => record.status === "ACTIVE") ? <p>Your saved work will appear as you complete programme activities.</p> : null}
