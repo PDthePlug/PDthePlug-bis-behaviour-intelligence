@@ -13,6 +13,7 @@ test('BIS First Look is neutral, no-login and enters the shared programme experi
   await page.goto('/experience/first-look');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('See what happens after learning.');
   await expect(page.getByText('No account required', { exact: true })).toBeVisible();
+  await expect(page.getByText('Live reports depend on the evidence recorded', { exact: false })).toBeVisible();
   await expect(page.getByRole('button', { name: /School/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Emerging Adult/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Workplace/ })).toBeVisible();
@@ -27,15 +28,51 @@ test('BIS First Look is neutral, no-login and enters the shared programme experi
   await expect(page.getByRole('link', { name: 'Your organisation × BIS Programme Experience home' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 1, name: 'See development become evidence.' })).toBeVisible();
   await expect(page.getByText(/DGMT/i)).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Discuss a pilot' })).toHaveAttribute('href', 'mailto:pdmpofu@gmail.com?subject=BIS%20pilot%20discussion');
+  await page.getByRole('button', { name: 'Follow one participant' }).click();
+  await page.getByLabel('What tends to start the pattern?').fill('PRIVATE_PILOT_ENQUIRY_CANARY');
+  const checkPilotEnquiry = async (lens: string) => {
+    const link = page.getByRole('link', { name: 'Discuss a pilot', exact: true });
+    await link.scrollIntoViewIfNeeded();
+    await expect(link).toBeVisible();
+    const mailto = new URL((await link.getAttribute('href'))!);
+    expect(mailto.protocol).toBe('mailto:');
+    expect(mailto.pathname).toBe('pdmpofu@gmail.com');
+    expect(mailto.searchParams.get('subject')).toBe(`BIS pilot enquiry — ${lens}`);
+    const body = mailto.searchParams.get('body')!;
+    expect(body).toContain(`through the ${lens} lens`);
+    expect(body).toContain('The programme question that caught my attention:');
+    expect(body).toContain('Organisation / programme:');
+    expect(body).toContain('Proposed cohort and approximate size:');
+    expect(body).toContain('The question we want the pilot to answer:');
+    expect(body).not.toContain('PRIVATE_PILOT_ENQUIRY_CANARY');
+    expect(body).not.toContain('Naledi');
+    const gmailLink = page.getByRole('link', { name: 'Open in Gmail', exact: true });
+    await expect(gmailLink).toBeVisible();
+    const gmail = new URL((await gmailLink.getAttribute('href'))!);
+    expect(gmail.origin).toBe('https://mail.google.com');
+    expect(gmail.searchParams.get('to')).toBe('pdmpofu@gmail.com');
+    expect(gmail.searchParams.get('su')).toBe(mailto.searchParams.get('subject'));
+    expect(gmail.searchParams.get('body')).toBe(body);
+    await expect(gmailLink).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(page.getByText('pdmpofu@gmail.com', { exact: true })).toBeVisible();
+  };
+  await checkPilotEnquiry('School');
   await checkLayout();
 
   await page.getByRole('button', { name: 'Switch context', exact: false }).click();
   await page.getByRole('button', { name: /Workplace/ }).click();
   await expect(page.getByText('BIS First Look · Workplace lens · 25+', { exact: true })).toBeVisible();
   await expect(page.getByText('Can development move beyond attendance and self-report', { exact: false })).toBeVisible();
+  await checkPilotEnquiry('Workplace');
   await checkLayout();
   await page.screenshot({ path: testInfo.outputPath('first-look-workplace.png'), fullPage: true });
+
+  await page.getByRole('button', { name: 'Switch context', exact: false }).click();
+  await page.getByRole('button', { name: /Emerging Adult/ }).click();
+  await checkPilotEnquiry('Emerging Adult');
+  await page.reload();
+  await checkPilotEnquiry('Emerging Adult');
+  await checkLayout();
 
   expect(errors).toEqual([]);
   expect(writes).toEqual([]);

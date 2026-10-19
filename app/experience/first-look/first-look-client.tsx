@@ -113,6 +113,7 @@ export function FirstLookClient() {
               Programmes can create insight, confidence and intention. BIS makes the next part visible: what people notice,
               practise, test, struggle with, ask for help with and carry into real life.
             </p>
+            <p className="first-look-report-boundary">Live reports depend on the evidence recorded and permitted for that programme. Practice and transfer claims need approved tasks and human review; private reflections stay private. The examples here are fictional.</p>
             <div className="first-look-chain" aria-label="BIS evidence journey">
               <span>Learn</span><i aria-hidden="true">→</i><span>Practice</span><i aria-hidden="true">→</i><span>Evidence</span><i aria-hidden="true">→</i><span>Human support</span><i aria-hidden="true">→</i><span>Programme insight</span>
             </div>
@@ -158,6 +159,25 @@ export function FirstLookClient() {
 
   const context = contexts.find((item) => item.id === selected)!;
   const Icon = context.icon;
+  const pilotRecipient = 'pdmpofu@gmail.com';
+  const pilotSubject = `BIS pilot enquiry — ${context.label}`;
+  const pilotBody = [
+    'Hello P.D.,',
+    '',
+    `I explored BIS First Look through the ${context.label} lens (${context.age}) and would like to discuss a pilot.`,
+    '',
+    `The programme question that caught my attention: ${context.programmeQuestion}`,
+    '',
+    'My name and role: ',
+    'Organisation / programme: ',
+    'Proposed cohort and approximate size: ',
+    'The question we want the pilot to answer: ',
+    'Preferred timing for a short scoping conversation: ',
+    '',
+    'First Look: https://www.bisportal.online/experience/first-look',
+  ].join('\r\n');
+  const pilotMailto = `mailto:${pilotRecipient}?subject=${encodeURIComponent(pilotSubject)}&body=${encodeURIComponent(pilotBody)}`;
+  const pilotGmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(pilotRecipient)}&su=${encodeURIComponent(pilotSubject)}&body=${encodeURIComponent(pilotBody)}`;
 
   return (
     <div className="first-look-selected">
@@ -192,7 +212,9 @@ export function FirstLookClient() {
         <p className="first-look-eyebrow">From first look to real use</p>
         <h2>Would this answer a useful question in your programme?</h2>
         <p>A pilot can be bounded around one cohort, one behavioural question and a clearly agreed evidence boundary.</p>
-        <a href="mailto:pdmpofu@gmail.com?subject=BIS%20pilot%20discussion">Discuss a pilot <ArrowRight size={17} aria-hidden="true" /></a>
+        <a href={pilotMailto}>Discuss a pilot <ArrowRight size={17} aria-hidden="true" /></a>
+        <p className="first-look-pilot-contact">Email P.D. at <span>{pilotRecipient}</span>. Your email opens with the selected lens and a short enquiry template. Please leave out private learner information.</p>
+        <a className="first-look-gmail" href={pilotGmail} target="_blank" rel="noopener noreferrer">Open in Gmail <ArrowRight size={17} aria-hidden="true" /></a>
       </section>
     </div>
   );
