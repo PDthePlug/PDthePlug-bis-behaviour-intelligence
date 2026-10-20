@@ -177,7 +177,6 @@ export function FirstLookClient() {
     'First Look: https://www.bisportal.online/experience/first-look',
   ].join('\r\n');
   const pilotMailto = `mailto:${pilotRecipient}?subject=${encodeURIComponent(pilotSubject)}&body=${encodeURIComponent(pilotBody)}`;
-  const pilotGmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(pilotRecipient)}&su=${encodeURIComponent(pilotSubject)}&body=${encodeURIComponent(pilotBody)}`;
 
   return (
     <div className="first-look-selected">
@@ -213,8 +212,6 @@ export function FirstLookClient() {
         <h2>Would this answer a useful question in your programme?</h2>
         <p>A pilot can be bounded around one cohort, one behavioural question and a clearly agreed evidence boundary.</p>
         <a href={pilotMailto}>Discuss a pilot <ArrowRight size={17} aria-hidden="true" /></a>
-        <p className="first-look-pilot-contact">Email P.D. at <span>{pilotRecipient}</span>. Your email opens with the selected lens and a short enquiry template. Please leave out private learner information.</p>
-        <a className="first-look-gmail" href={pilotGmail} target="_blank" rel="noopener noreferrer">Open in Gmail <ArrowRight size={17} aria-hidden="true" /></a>
       </section>
     </div>
   );

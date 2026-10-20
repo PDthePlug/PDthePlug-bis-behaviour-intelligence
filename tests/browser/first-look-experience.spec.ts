@@ -46,15 +46,9 @@ test('BIS First Look is neutral, no-login and enters the shared programme experi
     expect(body).toContain('The question we want the pilot to answer:');
     expect(body).not.toContain('PRIVATE_PILOT_ENQUIRY_CANARY');
     expect(body).not.toContain('Naledi');
-    const gmailLink = page.getByRole('link', { name: 'Open in Gmail', exact: true });
-    await expect(gmailLink).toBeVisible();
-    const gmail = new URL((await gmailLink.getAttribute('href'))!);
-    expect(gmail.origin).toBe('https://mail.google.com');
-    expect(gmail.searchParams.get('to')).toBe('pdmpofu@gmail.com');
-    expect(gmail.searchParams.get('su')).toBe(mailto.searchParams.get('subject'));
-    expect(gmail.searchParams.get('body')).toBe(body);
-    await expect(gmailLink).toHaveAttribute('rel', 'noopener noreferrer');
-    await expect(page.getByText('pdmpofu@gmail.com', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Open in Gmail', exact: true })).toHaveCount(0);
+    await expect(page.getByText('Your email opens with the selected lens', { exact: false })).toHaveCount(0);
+    await expect(page.getByText('pdmpofu@gmail.com', { exact: true })).toHaveCount(0);
   };
   await checkPilotEnquiry('School');
   await checkLayout();

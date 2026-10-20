@@ -124,9 +124,6 @@
 .first-look-pilot-cta{max-width:920px;margin:0 auto;padding:72px 24px 88px;text-align:center}
 .first-look-pilot-cta p:not(.first-look-eyebrow){max-width:660px;margin:16px auto 0;color:var(--fl-muted)}
 .first-look-pilot-cta a{margin-top:24px}
-.first-look-pilot-cta .first-look-pilot-contact{font-size:13px;line-height:1.65}
-.first-look-pilot-contact span{white-space:nowrap}
-.first-look-pilot-cta .first-look-gmail{margin-top:12px;background:transparent;color:var(--fl-green-deep);text-decoration:underline;text-underline-offset:4px}
 @media (max-width:900px){
   .first-look-context-grid{grid-template-columns:1fr}
   .first-look-context-card{min-height:230px}
