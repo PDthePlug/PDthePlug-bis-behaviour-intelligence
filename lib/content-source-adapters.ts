@@ -226,9 +226,9 @@ function handbookQuestionPrompts(value: string) {
   return [before];
 }
 
-function handbookOption(value: string) {
-  const match = value.replace(/\s+/g, " ").trim().match(/^☐\s*(.+)$/u);
-  return match?.[1]?.trim() || "";
+function handbookOptions(value: string) {
+  if (!/^☐/u.test(value.trim())) return [];
+  return [...value.matchAll(/☐\s*([^☐]+)/gu)].map(match => match[1].trim()).filter(Boolean);
 }
 
 function inlineCheckboxGroup(value: string) {
@@ -250,6 +250,7 @@ function handbookFieldCue(value: string) {
   if (/^my (?:minimum )?risk check\b.*:\s*$/i.test(text)) return false;
   if (/^📌\s*carry forward/i.test(text) || /^📖|^💭|^✍️|^✅|^🏠|^📂|^🔎|^⚡|^🔬|^🎯|^🧪|^📊|^🤝/u.test(text)) return false;
   if (/_{3,}/.test(text) || /\.{5,}/.test(text)) return true;
+  if (/:\s*\S/.test(text)) return false;
   if (/^(?:my|what i|what they|i will count|what the|who i|where i|how i|why i|one thing|the .* i|original|revised|effective from|signed|date|from me|observation|interpretation|risk context|intended protection position|actual protection position|protection gap|protective action|observed protection state|action relationship|protection coverage relationship|trade-off \/ constraint)\b.*:\s*$/i.test(text)) return true;
   if (/^(confidence|my rating|shift|observation days completed|missing \/ unrecorded days|eligible target opportunities observed|checks initiated|risk check initiation rate|full checks completed|full risk check completion rate|minimum checks completed|opportunity coverage|completed risk checks|usable events for prediction testing|protection criterion occurred in these events|observed protection criterion rate|predicted protection criterion rate|difference|protection criterion prediction accuracy)\s*:/i.test(text)) return true;
   if (/^(the protection pattern i want to investigate|why i chose this one|my intended protection position|my recurring protective opportunity|my protective action|my observable protection criterion|i will count the protection criterion as occurred when|my working risk equation|my target condition|my check-in person|my restart plan|my revision signal|what i noticed|what i collected|who i asked|what they said|where i will keep my tracker|what i can now do|who i showed|the most important thing learned)\s*:/i.test(text)) return true;
@@ -309,9 +310,9 @@ function handbookChoice(sourceKey: string, prompt: string, options: string[]) {
 function multiLineCheckboxGroup(block: SourceBlock) {
   const lines = block.lines ?? [];
   if (lines.length < 2) return null;
-  const options = lines.map(handbookOption);
-  if (options.some((option) => !option)) return null;
-  return options;
+  const options = lines.map(handbookOptions);
+  if (options.some(option => !option.length)) return null;
+  return options.flat();
 }
 
 function namedInlineChoice(value: string) {
@@ -368,7 +369,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     }
 
     if (!inAnswers) {
-      const blockChoices = multiLineCheckboxGroup(block);
+      const blockChoices = block.kind === "table" ? null : multiLineCheckboxGroup(block);
       if (blockChoices) {
         const previous = blocks[index - 1]?.text.replace(/\s+/g, " ").trim() || "";
         const prompt = /journey continues/i.test(previous) ? "Choose your next Lab" : previous || "Choose one";
@@ -377,7 +378,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         continue;
       }
 
-      const inlineChoices = (!block.lines || block.lines.length <= 1)
+      const inlineChoices = block.kind !== "table" && (!block.lines || block.lines.length <= 1)
         ? inlineCheckboxGroup(text) ?? namedInlineChoice(text)
         : null;
       if (inlineChoices) {
@@ -387,9 +388,29 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         continue;
       }
 
-      if (block.tableRows?.length && block.responseColumns?.length) {
-        const header = block.tableRows[0];
-        const rows = block.tableRows.slice(1);
+      const tableRows = block.tableRows;
+      const ratingOptions = tableRows?.[0]?.slice(1) ?? [];
+      const ratingTable = !block.complexTable && ratingOptions.length === 5
+        && ratingOptions.every((option, optionIndex) => option.trim().toLowerCase() === ["never", "rarely", "sometimes", "often", "always"][optionIndex])
+        && tableRows?.slice(1).every(row => row.length === 6 && row.slice(1).every(cell => /^(?:☐|\s)*$/u.test(cell)));
+      if (ratingTable && tableRows && tableRows.length > 1) {
+        html.push('<table class="handbook-table handbook-response-table handbook-rating-table"><thead><tr>' +
+          '<th scope="col">' + escapeHtml(tableRows[0][0]) + '</th><th scope="col">How often?</th>' +
+          '</tr></thead><tbody>' + tableRows.slice(1).map(row => {
+            const prompt = row[0];
+            return '<tr><th scope="row">' + escapeHtml(prompt) + '</th><td data-label="How often?">' +
+              handbookChoice(nextSourceKey(prompt), prompt, ratingOptions) + '</td></tr>';
+          }).join('') + '</tbody></table>');
+        continue;
+      }
+
+      const tableCellOptions = (cell: string) => [...cell.matchAll(/☐\s*([^☐]+)/gu)].map(match => match[1].trim()).filter(Boolean);
+      const checkboxTable = tableRows?.slice(1).some(row => row.some(cell => tableCellOptions(cell).length >= 2));
+      const trackerTable = /^(?:day|week)$/i.test(tableRows?.[0]?.[0] ?? "")
+        && tableRows?.[0]?.some(header => /^date$/i.test(header));
+      if (tableRows?.length && !block.complexTable && (block.responseColumns?.length || block.answerColumn !== undefined || checkboxTable || trackerTable)) {
+        const header = tableRows[0];
+        const rows = tableRows.slice(1);
         html.push(
           '<table class="handbook-table handbook-response-table"><thead><tr>' +
           header.map((cell) => '<th scope="col">' + escapeHtml(cell) + "</th>").join("") +
@@ -399,11 +420,15 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
             return "<tr>" + row.map((cell, cellIndex) => {
               const label = header[cellIndex] ?? "";
               const spec = block.responseColumns?.find((candidate) => candidate.index === cellIndex);
-              if (spec && (spec.type === "CATEGORICAL" || !cell.replace(/[_—–.\s-]+/g, ""))) {
+              const options = tableCellOptions(cell);
+              const blankResponse = authoredBlankCell(cell) && (spec || cellIndex === block.answerColumn || (trackerTable && cellIndex > 0));
+              if (options.length >= 2 || spec?.type === "CATEGORICAL" || blankResponse) {
                 const prompt = rowLabel + " — " + label;
-                const control = spec.type === "CATEGORICAL"
-                  ? handbookChoice(nextSourceKey(prompt), prompt, spec.options ?? [])
-                  : handbookTextarea(nextSourceKey(prompt), prompt);
+                const control = options.length >= 2 || spec?.type === "CATEGORICAL"
+                  ? handbookChoice(nextSourceKey(prompt), prompt, options.length >= 2 ? options : spec?.options ?? [])
+                  : /^date$/i.test(label)
+                    ? handbookShortControl(nextSourceKey(prompt), prompt + ":")
+                    : handbookTextarea(nextSourceKey(prompt), prompt);
                 return '<td data-label="' + escapeHtml(label) + '">' + control + "</td>";
               }
               return '<td data-label="' + escapeHtml(label) + '">' + escapeHtml(cell) + "</td>";
@@ -444,9 +469,9 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         const optionRows: string[] = [];
         let cursor = index + 1;
         while (cursor < blocks.length) {
-          const option = handbookOption(blocks[cursor].text);
-          if (!option) break;
-          optionRows.push(option);
+          const options = handbookOptions(blocks[cursor].text);
+          if (!options.length) break;
+          optionRows.push(...options);
           cursor += 1;
         }
 
@@ -461,6 +486,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         const secondNextText = blocks[index + 2]?.text.replace(/\s+/g, " ").trim() || "";
         const hasAuthoredFieldImmediatelyAfter = questions.length === 1 && (
           handbookFieldCue(nextText)
+          || /^your answer\s*:?$/i.test(nextText)
           || (/^1\s*[–—-]\s*2\b/.test(nextText) && handbookFieldCue(secondNextText))
         );
         if (!hasAuthoredFieldImmediatelyAfter) {
@@ -491,9 +517,14 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
 
       if (handbookFieldCue(text)) {
         html.push(handbookBlockHtml(block));
+        // A printed label followed by a writing line is one authored response.
+        // Let the writing line provide its control instead of asking twice.
+        if (/^[_\.\s]{3,}$/.test(blocks[index + 1]?.text ?? "")) continue;
         const stripped = text.replace(/_{3,}.*$/, "").replace(/\s+/g, " ").trim();
-        const previousQuestion = handbookQuestionPrompts(blocks[index - 1]?.lines?.join("\n") || blocks[index - 1]?.text || "")[0] || "";
-        const label = stripped || previousQuestion || text;
+        const previousPrompt = blocks.slice(Math.max(0, index - 3), index).reverse()
+          .map(previous => previous.text.replace(/\s+/g, " ").trim())
+          .find(previous => !/^your answer\s*:?$/i.test(previous) && !/^[_\.\s]{3,}$/.test(previous)) || "";
+        const label = stripped || previousPrompt || text;
         const sourceKey = nextSourceKey(label);
         const short = /_{3,}|\/\s*(?:7|10|100)\b|%\s*$|^(?:date|signed|effective from day|confidence|my rating|shift)\s*:/i.test(text);
         html.push(short ? handbookShortControl(sourceKey, label, text) : handbookTextarea(sourceKey, label));

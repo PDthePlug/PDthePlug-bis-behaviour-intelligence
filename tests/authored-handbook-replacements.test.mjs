@@ -39,6 +39,20 @@ for (const entry of manifest.editions) test(`${entry.code}/${entry.edition}: sou
     assert.ok(ids.every(id => !oldIds.has(id)), "Replacement questions cannot inherit answers from the old manuscript.");
   }
   assert.match(html, /data-privacy-class="P3"/);
+  const welcome = programme.treatment.pages[0].html;
+  const baseline = [...welcome.matchAll(/<table\b[\s\S]*?<\/table>/g)].map(match => match[0]).find(table => table.includes('handbook-rating-table'));
+  assert.ok(baseline, "The authored behaviour profile retains its table relationship.");
+  const ratings = [...baseline.matchAll(/<select\b[\s\S]*?<\/select>/g)];
+  assert.equal(ratings.length, 10, "Each behaviour has its own frequency response.");
+  for (const [select] of ratings) assert.deepEqual([...select.matchAll(/<option(?: value="([^"]*)")?>/g)].map(match => match[1] ?? ""), ["", "Never", "Rarely", "Sometimes", "Often", "Always"]);
+  for (const [select] of html.matchAll(/<select\b[\s\S]*?<\/select>/g)) {
+    assert.doesNotMatch(select, /☐/, "Inline authored choices are separate options, never one concatenated checkbox string.");
+    assert.doesNotMatch(select, /<option value="[^\"]*\|/, "Table cells cannot become dropdown options containing table separators or neighbouring row labels.");
+  }
+  const responseTables = [...html.matchAll(/<table class="handbook-table handbook-response-table">[\s\S]*?<\/table>/g)].map(match => match[0]);
+  assert.ok(responseTables.some(table => table.includes('type="date"')), "Authored experiment trackers accept dates.");
+  assert.ok(responseTables.some(table => table.includes('What to record') && table.includes('<select')), "Observation entries retain their own checkbox choices.");
+  for (const table of responseTables) assert.doesNotMatch(table, /☐/, "Authored response choices become usable controls within their own table cell.");
   const day3 = programme.treatment.pages.find(page => page.key === "Day 3");
   assert.equal(day3.labHandoff.source, "AUTHORED");
   if (["CAR", "LCH"].includes(entry.code)) {
@@ -51,6 +65,18 @@ for (const entry of manifest.editions) test(`${entry.code}/${entry.edition}: sou
     assert.match(programme.treatment.pages.find(page => page.key === "Day 10").html, /Continue the experiment until you have completed 30 calendar days/);
     assert.match(programme.treatment.pages.at(-1).html, /Finishing the ten teaching touchpoints alone does not award this certificate/);
   } else assert.equal(programme.experimentSchedule, undefined);
+});
+
+test("authored writing lines provide one response and inline options remain separate", async () => {
+  const content = pageKeys.map(key => `${key.toUpperCase()}\n\n${key === "Day 1" ? "Seeing evidence\n\nWhat did you notice?\n\nYour answer:\n\n___________\n\nMy next action:\n\n___________\n\nWhich response fits?\n\n☐ One ☐ Two ☐ Three\n\nWhat I noticed: The example was already answered." : "Read this authored example."}`).join("\n\n");
+  const source = await tools.adaptLearningSource(Buffer.from(content), "MARKDOWN", "HAB", "test", "school", { title: "Habit Lab Learning Module", slug: "habit" });
+  const page = JSON.parse(Buffer.from(source).toString()).treatment.pages.find(page => page.key === "Day 1");
+  assert.equal((page.html.match(/<(?:input|select|textarea)\b/g) ?? []).length, 3, "One control per writing line plus one choice prompt; answered narrative has none.");
+  assert.match(page.html, /aria-label="What did you notice\?"/);
+  assert.match(page.html, /aria-label="My next action:"/);
+  assert.match(page.html, /value="One"/);
+  assert.match(page.html, /value="Two"/);
+  assert.match(page.html, /value="Three"/);
 });
 
 test("combined DOCX selection cannot deliver the first handbook to a different Lab or edition", async () => {
