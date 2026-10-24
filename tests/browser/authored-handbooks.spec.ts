@@ -35,6 +35,14 @@ for (const code of ["HAB", "DEC", "LDR", "CAR", "LCH", "FAI"]) {
       });
       await page.goto(`/authored-handbooks?code=${code}`);
       await expect(page).toHaveURL(/page=1/);
+      const rating = page.locator('table.handbook-response-table select[data-field-id]').first();
+      await expect(rating.locator("option")).toHaveText(["Choose…", "Never", "Rarely", "Sometimes", "Often", "Always"]);
+      await rating.selectOption("Often");
+      await expect.poll(() => Object.keys(responses).length).toBeGreaterThan(0);
+      await page.reload();
+      await expect(rating).toHaveValue("Often");
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      await page.screenshot({ path: info.outputPath(`${code}-${edition}-baseline.png`), fullPage: true });
       await page.getByRole("button", { name: "Complete & continue", exact: true }).click();
       await expect(page).toHaveURL(/page=2/);
       const answer = page.locator('.prototype-document textarea[data-field-id]').first();

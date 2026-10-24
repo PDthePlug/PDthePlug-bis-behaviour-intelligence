@@ -39,6 +39,19 @@ for (const entry of manifest.editions) test(`${entry.code}/${entry.edition}: sou
     assert.ok(ids.every(id => !oldIds.has(id)), "Replacement questions cannot inherit answers from the old manuscript.");
   }
   assert.match(html, /data-privacy-class="P3"/);
+  const welcome = programme.treatment.pages[0].html;
+  const baseline = [...welcome.matchAll(/<table\b[\s\S]*?<\/table>/g)].map(match => match[0]).find(table => table.includes('<th scope="col">Never</th>'));
+  assert.ok(baseline, "The authored behaviour profile retains its table relationship.");
+  const ratings = [...baseline.matchAll(/<select\b[\s\S]*?<\/select>/g)];
+  assert.equal(ratings.length, 10, "Each behaviour has its own frequency response.");
+  for (const [select] of ratings) assert.deepEqual([...select.matchAll(/<option(?: value="([^"]*)")?>/g)].map(match => match[1] ?? ""), ["", "Never", "Rarely", "Sometimes", "Often", "Always"]);
+  for (const [select] of html.matchAll(/<select\b[\s\S]*?<\/select>/g)) {
+    assert.doesNotMatch(select, /<option value="[^\"]*\|/, "Table cells cannot become dropdown options containing table separators or neighbouring row labels.");
+  }
+  const responseTables = [...html.matchAll(/<table class="handbook-table handbook-response-table">[\s\S]*?<\/table>/g)].map(match => match[0]);
+  assert.ok(responseTables.some(table => table.includes('type="date"')), "Authored experiment trackers accept dates.");
+  assert.ok(responseTables.some(table => table.includes('What to record') && table.includes('<select')), "Observation entries retain their own checkbox choices.");
+  for (const table of responseTables) assert.doesNotMatch(table, /☐/, "Authored response choices become usable controls within their own table cell.");
   const day3 = programme.treatment.pages.find(page => page.key === "Day 3");
   assert.equal(day3.labHandoff.source, "AUTHORED");
   if (["CAR", "LCH"].includes(entry.code)) {
