@@ -19,6 +19,8 @@ for (const code of ["HAB", "DEC", "LDR", "CAR", "LCH", "FAI"]) {
       page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
       await page.route("**/api/**", async route => {
         const url = new URL(route.request().url());
+        // This journey verifies handbook delivery independently of Lab publication.
+        if (url.pathname === "/api/lab-runtime") return route.fulfill({ json: { runtimeMode: null, roles: [] } });
         if (url.pathname === "/api/runtime-content") return route.fulfill({ json: { payload: programme } });
         if (url.pathname === "/api/learning") {
           if (route.request().method() === "POST") {
