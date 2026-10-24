@@ -45,7 +45,7 @@ for (const code of ["HAB", "DEC", "LDR", "CAR", "LCH", "FAI"]) {
       await page.screenshot({ path: info.outputPath(`${code}-${edition}-baseline.png`), fullPage: true });
       await page.getByRole("button", { name: "Complete & continue", exact: true }).click();
       await expect(page).toHaveURL(/page=2/);
-      const answer = page.locator('.prototype-document textarea[data-field-id]').first();
+      const answer = page.locator('.prototype-document :is(textarea,input[type="text"])[data-field-id]').first();
       await expect(answer).toBeVisible();
       const fieldId = await answer.getAttribute("data-field-id");
       await answer.fill("A synthetic observation tied to the original authored question.");
