@@ -394,12 +394,12 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         && ratingOptions.every((option, optionIndex) => option.trim().toLowerCase() === ["never", "rarely", "sometimes", "often", "always"][optionIndex])
         && tableRows?.slice(1).every(row => row.length === 6 && row.slice(1).every(cell => /^(?:☐|\s)*$/u.test(cell)));
       if (ratingTable && tableRows && tableRows.length > 1) {
-        html.push('<table class="handbook-table handbook-response-table"><thead><tr>' +
-          tableRows[0].map(cell => '<th scope="col">' + escapeHtml(cell) + '</th>').join('') +
+        html.push('<table class="handbook-table handbook-response-table handbook-rating-table"><thead><tr>' +
+          '<th scope="col">' + escapeHtml(tableRows[0][0]) + '</th><th scope="col">How often?</th>' +
           '</tr></thead><tbody>' + tableRows.slice(1).map(row => {
             const prompt = row[0];
-            return '<tr><th scope="row">' + escapeHtml(prompt) + '</th><td colspan="5" data-label="' +
-              escapeHtml(ratingOptions.join(' / ')) + '">' + handbookChoice(nextSourceKey(prompt), prompt, ratingOptions) + '</td></tr>';
+            return '<tr><th scope="row">' + escapeHtml(prompt) + '</th><td data-label="How often?">' +
+              handbookChoice(nextSourceKey(prompt), prompt, ratingOptions) + '</td></tr>';
           }).join('') + '</tbody></table>');
         continue;
       }

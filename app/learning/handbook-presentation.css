@@ -85,6 +85,10 @@
   line-height: 1.6;
 }
 .prototype-player .prototype-document table.handbook-wide-table {min-width: 620px;}
+.canonical-shell .prototype-player .prototype-document table.handbook-rating-table {min-width: 0; table-layout: fixed;}
+.canonical-shell .prototype-player .prototype-document .handbook-rating-table tr > :first-child {width: 54%;}
+.canonical-shell .prototype-player .prototype-document .handbook-rating-table :is(th,td) {padding: 12px 10px; min-width: 0;}
+.canonical-shell .prototype-player .prototype-document .handbook-rating-table select.response {width: 100%; min-width: 0; padding: 10px 6px;}
 .prototype-player .prototype-document thead {display: table-header-group; position: static; width: auto; height: auto; clip: auto; clip-path: none; overflow: visible; white-space: normal;}
 .prototype-player .prototype-document tbody {display: table-row-group;}
 .prototype-player .prototype-document tr {display: table-row; margin: 0; border: 0;}

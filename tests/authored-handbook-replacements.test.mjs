@@ -40,7 +40,7 @@ for (const entry of manifest.editions) test(`${entry.code}/${entry.edition}: sou
   }
   assert.match(html, /data-privacy-class="P3"/);
   const welcome = programme.treatment.pages[0].html;
-  const baseline = [...welcome.matchAll(/<table\b[\s\S]*?<\/table>/g)].map(match => match[0]).find(table => table.includes('<th scope="col">Never</th>'));
+  const baseline = [...welcome.matchAll(/<table\b[\s\S]*?<\/table>/g)].map(match => match[0]).find(table => table.includes('handbook-rating-table'));
   assert.ok(baseline, "The authored behaviour profile retains its table relationship.");
   const ratings = [...baseline.matchAll(/<select\b[\s\S]*?<\/select>/g)];
   assert.equal(ratings.length, 10, "Each behaviour has its own frequency response.");

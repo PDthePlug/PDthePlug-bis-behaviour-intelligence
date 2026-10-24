@@ -38,9 +38,14 @@ for (const code of ["HAB", "DEC", "LDR", "CAR", "LCH", "FAI"]) {
       const rating = page.locator('table.handbook-response-table select[data-field-id]').first();
       await expect(rating.locator("option")).toHaveText(["Choose…", "Never", "Rarely", "Sometimes", "Often", "Always"]);
       await rating.selectOption("Often");
-      await expect.poll(() => Object.keys(responses).length).toBeGreaterThan(0);
+      const ratingId = await rating.getAttribute("data-field-id");
+      await expect.poll(() => (responses[ratingId!] as { value?: string })?.value).toBe("Often");
       await page.reload();
       await expect(rating).toHaveValue("Often");
+      const ratingBox = await rating.boundingBox();
+      expect(ratingBox).not.toBeNull();
+      expect(ratingBox!.x).toBeGreaterThanOrEqual(0);
+      expect(ratingBox!.x + ratingBox!.width).toBeLessThanOrEqual(page.viewportSize()!.width + 1);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
       await page.screenshot({ path: info.outputPath(`${code}-${edition}-baseline.png`), fullPage: true });
       await page.getByRole("button", { name: "Complete & continue", exact: true }).click();
@@ -49,7 +54,7 @@ for (const code of ["HAB", "DEC", "LDR", "CAR", "LCH", "FAI"]) {
       await expect(answer).toBeVisible();
       const fieldId = await answer.getAttribute("data-field-id");
       await answer.fill("A synthetic observation tied to the original authored question.");
-      await expect.poll(() => Object.keys(responses).length).toBeGreaterThan(0);
+      await expect.poll(() => (responses[fieldId!] as { value?: string })?.value).toBe("A synthetic observation tied to the original authored question.");
       await page.reload();
       await expect(page.locator(`[data-field-id="${fieldId}"]`)).toHaveValue("A synthetic observation tied to the original authored question.");
       await page.getByRole("button", { name: "Complete & continue", exact: true }).click();
