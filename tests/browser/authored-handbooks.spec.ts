@@ -50,6 +50,15 @@ for (const code of ["HAB", "DEC", "LDR", "CAR", "LCH", "FAI"]) {
       await page.screenshot({ path: info.outputPath(`${code}-${edition}-baseline.png`), fullPage: true });
       await page.getByRole("button", { name: "Complete & continue", exact: true }).click();
       await expect(page).toHaveURL(/page=2/);
+      const declaredIds = programme.treatment.pages[1].document.fields.map((field: { id: string }) => field.id).sort();
+      await expect.poll(async () => (await page.locator('.prototype-document :is(input,textarea,select)[data-field-id]').evaluateAll(fields => fields.map(field => field.getAttribute("data-field-id")).sort()))).toEqual(declaredIds);
+      if (code === "HAB" && edition === "school") {
+        await expect(page.getByText("Why does this happen?", { exact: true })).toBeVisible();
+        await expect(page.getByRole("textbox", { name: /Why does this happen/ })).toHaveCount(0);
+        expect(await page.locator(".prototype-document").innerText()).not.toMatch(/_{4,}/);
+        await expect(page.getByText("Tick the one that is a repeated behaviour, not a label.", { exact: true })).toHaveCount(1);
+        await expect(page.locator('[data-field-id$=".PART.2"]')).toHaveCount(0);
+      }
       const answer = page.locator('.prototype-document :is(textarea,input[type="text"])[data-field-id]').first();
       await expect(answer).toBeVisible();
       const fieldId = await answer.getAttribute("data-field-id");
@@ -71,3 +80,23 @@ for (const code of ["HAB", "DEC", "LDR", "CAR", "LCH", "FAI"]) {
     });
   }
 }
+
+test("authored handbook metrics reuse the Universal Lab evidence without asking for the value again", async ({ page }) => {
+  const saved = await loadPreparedLearningSource("HAB", "school");
+  const programme = JSON.parse((await tools.compileLearningEdition(saved.bytes, "HAB", saved.sourceVersion, "school")).content);
+  const field = programme.treatment.pages.find((page: { key: string }) => page.key === "Day 10").document.fields.find((field: { valueKey: string }) => field.valueKey === "adherence rate");
+  expect(field).toBeTruthy();
+  await page.route("**/api/**", route => {
+    const url = new URL(route.request().url());
+    if (url.pathname === "/api/lab-runtime") return route.fulfill({ json: { runtimeMode: "DYNAMIC", roles: [] } });
+    if (url.pathname === "/api/runtime-content") return route.fulfill({ json: { payload: programme } });
+    if (url.pathname === "/api/universal-lab") return route.fulfill({ json: { runtimeMode: "DYNAMIC", definition: { identity: { code: "HAB" }, computedFields: [{ id: "HAB.ADHERENCE", label: "Adherence Rate" }] }, measurements: { "HAB.ADHERENCE": { status: "VALUE", value: 75 } }, programmeHandoff: { experimentStarted: true, evidenceDaysRecorded: 7, currentDay: 7, totalDays: 7, reviewReady: true } } });
+    if (url.pathname === "/api/learning") return route.fulfill({ json: { profile: { displayName: "Synthetic learner", deliveryEdition: "school" }, releases: [{ id: "replacement", labCode: "HAB", status: "PUBLISHED" }], progress: [], workbookResponses: {} } });
+    return route.fulfill({ json: { roles: [] } });
+  });
+  await page.goto("/authored-handbooks?code=HAB&page=12");
+  await expect(page.locator(`output[data-field-id="${field.id}"]`)).toHaveText("75");
+  await expect(page.locator(`:is(input,textarea)[data-field-id="${field.id}"]`)).toHaveCount(0);
+  await page.reload();
+  await expect(page.locator(`output[data-field-id="${field.id}"]`)).toHaveText("75");
+});

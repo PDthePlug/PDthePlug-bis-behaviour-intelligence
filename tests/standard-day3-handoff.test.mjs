@@ -116,5 +116,5 @@ test("legacy Decision and Money Day 3 platform preambles are removed before lear
   assert.match(player, /stripLegacyDayThreePlatformPreamble/);
   assert.match(player, /EXISTING\\s\+BIS\\s\+LAB\\s\+PLATFORM/);
   assert.match(player, /DAY 3 OF 10/);
-  assert.match(player, /const html = stripLegacyDayThreePlatformPreamble\(page\.html\)/);
+  assert.match(player, /page\.document\?\.html \?\? stripLegacyDayThreePlatformPreamble\(page\.html\)/);
 });

@@ -258,11 +258,6 @@ function handbookFieldCue(value: string) {
   return false;
 }
 
-function handbookImperativePrompt(value: string) {
-  const text = value.replace(/\s+/g, " ").trim();
-  return /^(?:write down|record)\b.{4,500}[.!]?$/i.test(text) ? text : "";
-}
-
 function handbookShortControl(sourceKey: string, label: string, raw = label) {
   const lower = (label + " " + raw).toLowerCase();
   const attrs = [
@@ -330,6 +325,8 @@ function handbookBlockHtml(block: SourceBlock) {
 function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: string) {
   const html: string[] = [];
   let inAnswers = false;
+  let inWrittenCheck = false;
+  let inWrittenActivity = false;
   const occurrences = new Map<string, number>();
   const nextSourceKey = (prompt: string) => {
     const normalized = prompt.replace(/\s+/g, " ").trim();
@@ -342,6 +339,10 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     const block = blocks[index];
     const text = block.text.replace(/\s+/g, " ").trim();
     if (!text) continue;
+    if (block.heading) {
+      inWrittenCheck = /^(?:✅\s*)?(?:final\s+)?(?:quick check|checkpoint|stop\s*&\s*check)\b/i.test(text);
+      inWrittenActivity = /^(?:✍️?|💭|⚡)\s*(?:activity|your turn|pause and reflect|one quiet minute|micro-execution)\b/i.test(text);
+    }
 
     if (key === "Day 3" && block.heading && authoredDayThreePartB(text)) {
       // An explicit Part B heading is an authored programme boundary, not a
@@ -360,11 +361,13 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
     }
 
     if (/^(answers?|suggested answers?)\s*:?$/i.test(text)) {
+      if (inAnswers) html.push("</details>");
       inAnswers = true;
-      html.push(handbookBlockHtml(block));
+      html.push('<details class="checkpoint-answer-panel"><summary>' + escapeHtml(text) + '</summary>');
       continue;
     }
     if (inAnswers && (block.heading || strictProgrammePageKey(text) || /^📌\s*carry forward|^⚡|^📂|^🏠|^✅/u.test(text))) {
+      html.push("</details>");
       inAnswers = false;
     }
 
@@ -373,7 +376,6 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
       if (blockChoices) {
         const previous = blocks[index - 1]?.text.replace(/\s+/g, " ").trim() || "";
         const prompt = /journey continues/i.test(previous) ? "Choose your next Lab" : previous || "Choose one";
-        html.push("<p>" + escapeHtml(prompt) + "</p>");
         html.push(handbookChoice(nextSourceKey(prompt), prompt, blockChoices));
         continue;
       }
@@ -475,51 +477,56 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
           cursor += 1;
         }
 
-        html.push(handbookBlockHtml(block));
         if (questions.length === 1 && optionRows.length) {
+          html.push(handbookBlockHtml(block));
           html.push(handbookChoice(nextSourceKey(questions[0]), questions[0], optionRows));
           index = cursor - 1;
           continue;
         }
 
-        const nextText = blocks[index + 1]?.text.replace(/\s+/g, " ").trim() || "";
-        const secondNextText = blocks[index + 2]?.text.replace(/\s+/g, " ").trim() || "";
-        const hasAuthoredFieldImmediatelyAfter = questions.length === 1 && (
-          handbookFieldCue(nextText)
-          || /^your answer\s*:?$/i.test(nextText)
+        const nextText = blocks[index + 1]?.text.trim() ?? "";
+        const secondNextText = blocks[index + 2]?.text.trim() ?? "";
+        const authoredResponseFollows = questions.length === 1 && (
+          handbookFieldCue(nextText) || /^your answer\s*:?$/i.test(nextText)
           || (/^1\s*[–—-]\s*2\b/.test(nextText) && handbookFieldCue(secondNextText))
         );
-        if (!hasAuthoredFieldImmediatelyAfter) {
+        // A numbered question within the authored learning check explicitly asks
+        // for a response, even when the print layout omits individual writing lines.
+        if ((inWrittenActivity || (inWrittenCheck && /^\d+[.)]\s/.test(text))) && !authoredResponseFollows) {
           for (const question of questions) {
-            const sourceKey = nextSourceKey(question);
-            if (questions.length > 1) {
-              html.push('<label class="compiled-workbook-question"><span>' + escapeHtml(question) + "</span>" + handbookTextarea(sourceKey, question) + "</label>");
-            } else {
-              html.push(handbookTextarea(sourceKey, question));
-            }
+            html.push('<label class="compiled-workbook-question"><span>' + escapeHtml(question) + '</span>' + handbookTextarea(nextSourceKey(question), question) + '</label>');
           }
+          continue;
         }
+        // Retire the former inference field without reassigning its stored key
+        // to a later genuine question with the same wording. This is identity
+        // compatibility only; it emits no response or learner-facing markup.
+        if (!authoredResponseFollows) for (const question of questions) nextSourceKey(question);
+        html.push(handbookBlockHtml(block));
+
+        // A question mark in explanatory prose is not a declaration of an answer.
+        // Explicit writing lines/labels and choice rows below own response placement.
         continue;
       }
 
-      const imperative = block.heading ? "" : handbookImperativePrompt(text);
-      if (imperative) {
+      if (!block.heading && /^(?:write down|record)\b.{4,500}[.!]?$/i.test(text)) {
+        const sourceKey = nextSourceKey(text);
         html.push(handbookBlockHtml(block));
-        html.push(handbookTextarea(nextSourceKey(imperative), imperative));
+        if (inWrittenActivity && !handbookFieldCue(blocks[index + 1]?.text ?? "")) html.push(handbookTextarea(sourceKey, text));
         continue;
       }
 
       if (/^Dear Future Me,?$/i.test(text)) {
         html.push(handbookBlockHtml(block));
         html.push(handbookTextarea(nextSourceKey("Letter to My Future Self"), "Letter to My Future Self"));
+        while (/^[_\.\s]{3,}$/.test(blocks[index + 1]?.text ?? "")) index += 1;
         continue;
       }
 
       if (handbookFieldCue(text)) {
-        html.push(handbookBlockHtml(block));
         // A printed label followed by a writing line is one authored response.
         // Let the writing line provide its control instead of asking twice.
-        if (/^[_\.\s]{3,}$/.test(blocks[index + 1]?.text ?? "")) continue;
+        if (/^[_\.\s]{3,}$/.test(blocks[index + 1]?.text ?? "")) { html.push(handbookBlockHtml(block)); continue; }
         const stripped = text.replace(/_{3,}.*$/, "").replace(/\s+/g, " ").trim();
         const previousPrompt = blocks.slice(Math.max(0, index - 3), index).reverse()
           .map(previous => previous.text.replace(/\s+/g, " ").trim())
@@ -527,6 +534,9 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
         const label = stripped || previousPrompt || text;
         const sourceKey = nextSourceKey(label);
         const short = /_{3,}|\/\s*(?:7|10|100)\b|%\s*$|^(?:date|signed|effective from day|confidence|my rating|shift)\s*:/i.test(text);
+        if (!/^[_\.\s]{3,}$/.test(text)) {
+          html.push('<p>' + escapeHtml(text.replace(/_{3,}|\.{5,}/g, "").trim()) + '</p>');
+        }
         html.push(short ? handbookShortControl(sourceKey, label, text) : handbookTextarea(sourceKey, label));
         continue;
       }
@@ -534,6 +544,7 @@ function renderHandbookPage(blocks: SourceBlock[], key: PageKey, pageLabel: stri
 
     html.push(handbookBlockHtml(block));
   }
+  if (inAnswers) html.push("</details>");
   return html.join("\n").trim();
 }
 
@@ -1582,6 +1593,7 @@ function encodedPackage(
   return new TextEncoder().encode(JSON.stringify({
     kind: "LEARNING_MODULE",
     schemaVersion: "2.0",
+    renderingModel: "UNIVERSAL_AUTHORED",
     identity: {
       code,
       version,
@@ -1591,7 +1603,7 @@ function encodedPackage(
       handbookId: metadata.slug + "-volume-1",
     },
     edition,
-    runtimeVersion: "programme-player-3",
+    runtimeVersion: "universal-authored-document-1",
     sourceTrace: {
       authority,
       prototype: authority,

@@ -22,6 +22,8 @@ import { prepareUniversalLabPresentation } from "@/lib/universal-lab-presentatio
 import { learnerHeadingHtml, learnerHeadingText } from "@/lib/learner-heading-presentation.mjs";
 import { learnerCalculationContexts } from "@/lib/learner-calculation-context.mjs";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
+import { UniversalContentDocument } from "@/components/learning/universal-content-document";
+import { UniversalResponseControl } from "@/components/learning/universal-response-control";
 import { EvidenceImages } from "@/components/evidence/evidence-images";
 
 type Snapshot = {
@@ -57,15 +59,6 @@ function valueOf(snapshot: Snapshot, id: string) {
   return String(value);
 }
 
-function multiValues(value: string) {
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed.map(String) : [];
-  } catch {
-    return value ? value.split("|").map((item) => item.trim()).filter(Boolean) : [];
-  }
-}
-
 const investigationEvidenceGuidance: Record<number, string> = {
   1: "Capture your first view before the pattern is explained. You will have evidence to compare later.",
   2: "Use a recent, specific example so you can see the pattern in real life.",
@@ -91,7 +84,6 @@ function UniversalPrompt({
   onValue: (value: string) => void;
   onPass: (value: boolean) => void;
 }) {
-  const selected = prompt.type === "MULTI_SELECT" ? new Set(multiValues(value)) : new Set<string>();
   const group = prompt.group
     && prompt.group !== "BIS Laboratory Standard"
     && !/^(?:BEI|TEI)-\d{2}\b/i.test(prompt.group)
@@ -99,8 +91,6 @@ function UniversalPrompt({
     && !/^(?:investigate|evidence challenge|map your evidence|reflection|respond|think|predict|commit|evidence point|pause reflection|your response)$/i.test(prompt.group.replace(/^[^a-z]+/i, "").trim())
       ? prompt.group
       : null;
-  const categorical = prompt.type === "CATEGORICAL" && (prompt.options?.length ?? 0) > 0;
-  const booleanChoices = prompt.type === "BOOLEAN";
   const integerMin = Number(prompt.min);
   const integerMax = Number(prompt.max);
   const compactField =
@@ -159,96 +149,13 @@ function UniversalPrompt({
         ) : (
           <>
             <div className={`prompt-controls ${passed ? "is-passed" : ""}`}>
-              {ratingScale ? (
-                <div className="universal-rating-scale" role="group" aria-label={prompt.label}>
-                  <div className="universal-rating-options">
-                    {Array.from(
-                      { length: integerMax - integerMin + 1 },
-                      (_, index) => integerMin + index,
-                    ).map((option) => (
-                      <button
-                        type="button"
-                        key={option}
-                        className={value === String(option) ? "selected" : ""}
-                        aria-pressed={value === String(option)}
-                        disabled={passed}
-                        onClick={() => onValue(String(option))}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="universal-rating-anchors">
-                    <span>{integerMin} · {/confidence|confident/i.test(`${prompt.label} ${prompt.prompt}`) ? "Not confident" : "Lower"}</span>
-                    <span>{integerMax} · {/confidence|confident/i.test(`${prompt.label} ${prompt.prompt}`) ? "Very confident" : "Higher"}</span>
-                  </div>
-                </div>
-              ) : prompt.type === "INTEGER" ? (
-                <Input
-                  aria-labelledby={titleId}
-                  aria-describedby={help ? helpId : undefined}
-                  step={1}
-                  type="number"
-                  min={prompt.min}
-                  max={prompt.max}
-                  disabled={passed}
-                  value={value}
-                  onChange={(event) => onValue(event.target.value)}
-                />
-              ) : prompt.type === "DATE" ? (
-                <Input aria-labelledby={titleId} aria-describedby={help ? helpId : undefined} type="date" disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} />
-              ) : booleanChoices ? (
-                <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
-                  {(prompt.allowNoOpportunity ? ["Yes", "No", "No opportunity"] : ["Yes", "No"]).map((option) => (
-                    <button
-                      type="button"
-                      key={option}
-                      className={value === option ? "selected" : ""}
-                      aria-pressed={value === option}
-                      disabled={passed}
-                      onClick={() => onValue(option)}
-                    >
-                      <span>{value === option ? <Check /> : null}</span>
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              ) : categorical ? (
-                <div className="answer-list universal-choice-list" role="group" aria-label={prompt.label}>
-                  {(prompt.options ?? []).map((option) => (
-                    <button
-                      type="button"
-                      key={option}
-                      className={value === option ? "selected" : ""}
-                      aria-pressed={value === option}
-                      disabled={passed}
-                      onClick={() => onValue(option)}
-                    >
-                      <span>{value === option ? <Check /> : null}</span>
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              ) : prompt.type === "MULTI_SELECT" ? (
-                <div className="universal-multi-select">
-                  {(prompt.options ?? []).map((option) => (
-                    <label key={option}>
-                      <Checkbox
-                        disabled={passed}
-                        checked={selected.has(option)}
-                        onCheckedChange={(checked) => {
-                          const next = new Set(selected);
-                          if (checked === true) next.add(option); else next.delete(option);
-                          onValue(JSON.stringify([...next]));
-                        }}
-                      />
-                      <span>{option}</span>
-                    </label>
-                  ))}
-                </div>
-              ) : (
-                <Textarea aria-labelledby={titleId} aria-describedby={help ? helpId : undefined} rows={3} disabled={passed} value={value} onChange={(event) => onValue(event.target.value)} placeholder={prompt.placeholder ?? "Write your response here…"} />
-              )}
+              <UniversalResponseControl
+                prompt={ratingScale ? { ...prompt, controlRole: "RATING" } : prompt}
+                value={value}
+                disabled={passed}
+                onValue={onValue}
+                attributes={{ "aria-labelledby": titleId, ...(help ? { "aria-describedby": helpId } : {}) }}
+              />
             </div>
           </>
         )}
@@ -495,11 +402,6 @@ function UniversalEvidenceTable({
                   }
 
                   const isPassed = passed.has(prompt.id);
-                  const categoricalOptions = prompt.type === "BOOLEAN"
-                    ? (prompt.allowNoOpportunity ? ["Yes", "No", "No opportunity"] : ["Yes", "No"])
-                    : prompt.type === "CATEGORICAL"
-                      ? (prompt.options ?? [])
-                      : [];
                   return (
                     <td data-prompt-id={prompt.id} key={columnIndex} data-label={header} className={`universal-table-response ${isPassed ? "passed" : ""}`}>
                       <label className="universal-table-field">
@@ -508,38 +410,11 @@ function UniversalEvidenceTable({
                           <span className="universal-computed-value">{values[prompt.id] || "Waiting for the source evidence"}</span>
                         ) : isPassed ? (
                           <small>Passed</small>
-                        ) : prompt.type === "DATE" ? (
-                          <Input
-                            type="date"
-                            value={values[prompt.id] ?? ""}
-                            onChange={(event) => onValue(prompt.id, event.target.value)}
-                            aria-label={prompt.prompt}
-                          />
-                        ) : prompt.type === "INTEGER" && prompt.controlRole === "RATING" ? (
-                          <span className="universal-rating-options" role="group" aria-label={prompt.prompt}>
-                            {Array.from({ length: Number(prompt.max) - Number(prompt.min) + 1 }, (_, index) => Number(prompt.min) + index).map((option) => (
-                              <button type="button" key={option} aria-pressed={values[prompt.id] === String(option)} className={values[prompt.id] === String(option) ? "selected" : ""} onClick={() => onValue(prompt.id, String(option))}>{option}</button>
-                            ))}
-                          </span>
-                        ) : prompt.type === "INTEGER" ? (
-                          <Input type="number" min={prompt.min} max={prompt.max} step={1} value={values[prompt.id] ?? ""} onChange={(event) => onValue(prompt.id, event.target.value)} aria-label={prompt.prompt} />
-                        ) : categoricalOptions.length ? (
-                          <Select disabled={isPassed} value={values[prompt.id] ?? ""} onValueChange={(value) => onValue(prompt.id, value)}>
-                            <SelectTrigger aria-label={prompt.prompt}><SelectValue placeholder="Choose" /></SelectTrigger>
-                            <SelectContent>
-                              {categoricalOptions.map((option) => (
-                                <SelectItem key={option} value={option}>{option}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
                         ) : (
-                          <Textarea
-                            rows={2}
-                            value={values[prompt.id] ?? ""}
-                            onChange={(event) => onValue(prompt.id, event.target.value)}
-                            placeholder={prompt.placeholder ?? "Type your response…"}
-                            aria-label={prompt.prompt}
-                          />
+                          <UniversalResponseControl prompt={{ ...prompt, label: prompt.prompt }} compact
+                            value={values[prompt.id] ?? ""} disabled={isPassed}
+                            onValue={value => onValue(prompt.id, value)} />
+
                         )}
                       </label>
                       {!prompt.readOnly ? <label className="universal-table-pass">
@@ -864,7 +739,7 @@ function UniversalInvestigationForm({
     if (isExperimentInvestigation && !previewMode) {
       return [
         ...blocks.flatMap((block, index) => block.type === "HTML" && block.visibility !== "AFTER_EXPERIMENT" ? [(
-          <article key={`instructions-${index}`} className="imported-lab-content" dangerouslySetInnerHTML={{ __html: learnerHeadingHtml(block.html) }} />
+          <UniversalContentDocument as="article" key={`instructions-${index}`} className="imported-lab-content" html={learnerHeadingHtml(block.html)} />
         )] : []),
         <section key="daily-entry" className="universal-daily-entry" aria-label="Current experiment evidence">
           <h2>Record one real moment</h2>
@@ -887,10 +762,10 @@ function UniversalInvestigationForm({
           continue;
         }
         nodes.push(
-          <article
+          <UniversalContentDocument as="article"
             key={`content-${index}`}
             className="imported-lab-content"
-            dangerouslySetInnerHTML={{ __html: learnerHeadingHtml(block.html) }}
+            html={learnerHeadingHtml(block.html)}
           />,
         );
         continue;
@@ -1022,7 +897,7 @@ function UniversalInvestigationForm({
       ) : null}
       {investigation.blocks?.length ? renderedBlocks : (
         <>
-          {investigation.introHtml ? <article className="story-card" dangerouslySetInnerHTML={{ __html: learnerHeadingHtml(investigation.introHtml) }} /> : null}
+          {investigation.introHtml ? <UniversalContentDocument as="article" className="story-card" html={learnerHeadingHtml(investigation.introHtml)} /> : null}
           {investigation.prompts.map(renderPrompt)}
         </>
       )}

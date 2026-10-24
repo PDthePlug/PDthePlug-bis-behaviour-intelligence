@@ -28,6 +28,14 @@ for (const entry of manifest.editions) test(`${entry.code}/${entry.edition}: sou
   assert.ok(programme.sourceTrace.authority.includes(entry.sourceSha256));
   assert.ok(programme.sourceTrace.authority.includes(entry.sourceId));
   assert.equal(programme.handbookId, `${entry.slug}-lab-volume-${entry.volume}`);
+  assert.equal(programme.runtimeVersion, "universal-authored-document-1");
+  for (const page of programme.treatment.pages) {
+    assert.equal(page.document.schemaVersion, "universal-authored-document-1");
+    const declaredIds = [...page.html.matchAll(/data-field-id="([^"]+)"/g)].map(match => match[1]);
+    assert.deepEqual(page.document.fields.map(field => field.id), declaredIds);
+    assert.deepEqual([...page.document.html.matchAll(/data-universal-response-slot="([^"]+)"/g)].map(match => match[1]), declaredIds);
+    assert.doesNotMatch(page.document.html, /<(?:input|textarea|select)\b/, "Only registered slots reach the shared player, never a second inferred form.");
+  }
   const html = programme.treatment.pages.map(page => page.html).join("\n");
   const ids = [...html.matchAll(/data-field-id="([^"]+)"/g)].map(match => match[1]);
   assert.equal(ids.length, entry.fields);
