@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { loadContentTools } from "./lib/load-content-tools.mjs";
+import { spawnSync } from "node:child_process";
 
 const manifestUrl = new URL("../content/learning-sources/manifest.json", import.meta.url);
 const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
@@ -150,3 +151,6 @@ try {
 } finally {
   await tools.dispose();
 }
+// The combined owner-supplied manuscripts use the same adapter and compiler.
+const replacementAudit = spawnSync(process.execPath, ["scripts/prepare-authored-handbooks.mjs", "--check"], { stdio: "inherit" });
+if (replacementAudit.status !== 0) throw new Error("Authored handbook replacement audit failed.");

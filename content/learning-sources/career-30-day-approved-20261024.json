@@ -1,0 +1,264 @@
+{
+  "revision": "career-30-day-after-touchpoints-20261024",
+  "authorisation": "Owner instruction on 24 October 2026: make Career a 30-day experiment that continues beyond the ten touchpoints.",
+  "code": "CAR",
+  "experimentSchedule": {
+    "durationDays": 30,
+    "startsAfterProgrammeDay": 3,
+    "interimReviewProgrammeDays": [
+      8,
+      9,
+      10
+    ],
+    "finalReviewAfterExperimentDay": 30,
+    "continuesAfterTouchpoints": true,
+    "observationWindows": [
+      {
+        "window": 1,
+        "startDay": 1,
+        "endDay": 7
+      },
+      {
+        "window": 2,
+        "startDay": 8,
+        "endDay": 14
+      },
+      {
+        "window": 3,
+        "startDay": 15,
+        "endDay": 21
+      },
+      {
+        "window": 4,
+        "startDay": 22,
+        "endDay": 30
+      }
+    ]
+  },
+  "replacements": {
+    "Welcome": [
+      [
+        "Your 30-day experiment runs from Day 3 (after the session) to Day 8 (before the session).",
+        "Your 30-day experiment begins after the Day 3 touchpoint. It continues beyond the ten teaching touchpoints until you have completed 30 calendar days. Days 8–10 review the evidence collected so far; your final experiment review happens after Day 30."
+      ],
+      [
+        "Wait — let me correct that. In the Career Lab, the experiment runs for 30 days. Let me re-check.",
+        ""
+      ],
+      [
+        "The Lab workbook says: \"Phase A: The Investigation (90-Minute Workshop)\" and \"Phase B: The 30-Day Experiment.\"",
+        ""
+      ],
+      [
+        "So the experiment is 30 days, not 7. But the Handbook has 10 days of teaching. The tracker in the Lab workbook has 4 weeks (4 entries). So the 30-day experiment runs alongside the 10-day handbook.",
+        ""
+      ],
+      [
+        "Let me revise:",
+        ""
+      ],
+      [
+        "Your 30-day experiment runs from Day 3 (after the session) through the following four weeks.",
+        "Use four recording windows: Days 1–7, 8–14, 15–21, and 22–30. The final window includes the remaining two days. Finishing the ten touchpoints does not finish the experiment."
+      ]
+    ],
+    "Day 6": [
+      [
+        "You're currently in Week 2 of your 30-day experiment.",
+        "Your 30-day experiment is still running. Work with the evidence you have collected so far."
+      ],
+      [
+        "Bring your tracker (Weeks 1–4 complete)",
+        "Bring your tracker with the evidence recorded so far"
+      ],
+      [
+        "Bring your commitment to the final week of the experiment",
+        "Bring your commitment to keep recording until the end of Day 30"
+      ],
+      [
+        "It's the last full week of your 30-day experiment. You'll capture the final week of evidence and prepare to read what it shows.",
+        "At the next touchpoint, practise recording honestly and prepare to review your evidence so far. Your experiment continues after that review until Day 30."
+      ],
+      [
+        "You've been running your experiment for four weeks.",
+        "Your 30-day experiment is still running. Review only the evidence recorded so far."
+      ],
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ],
+    "Day 7": [
+      [
+        "Final Field Application",
+        "Field Application and Continuation"
+      ],
+      [
+        "Know why the last week is not for proving",
+        "Know why an observation period is not for proving"
+      ],
+      [
+        "Capture the final week of evidence honestly",
+        "Capture the evidence available so far honestly"
+      ],
+      [
+        "Your tracker (Weeks 1–3 complete)",
+        "Your tracker with the entries recorded so far"
+      ],
+      [
+        "THIS WEEK IS THE LAST FULL WEEK OF YOUR EXPERIMENT.",
+        "YOUR EXPERIMENT CONTINUES UNTIL DAY 30."
+      ],
+      [
+        "You have been running your experiment for four weeks.",
+        "You are still collecting evidence in your 30-day experiment."
+      ],
+      [
+        "This is the last full week.",
+        "Your final week comes later. For now, use the same honest recording method."
+      ],
+      [
+        "Tomorrow, you won't be recording anything. You'll be reading.",
+        "At the next touchpoint, you will review the evidence recorded so far. Keep recording afterwards until Day 30."
+      ],
+      [
+        "You'll look at your tracker as a whole — all four weeks at once.",
+        "You'll look at the entries you have recorded so far. Review all four weeks and the remaining two days after Day 30."
+      ],
+      [
+        "Mindset — What did the last week teach you?",
+        "Mindset — What has your evidence taught you so far?"
+      ],
+      [
+        "Behaviour — What did you do on the final week?",
+        "Behaviour — What did you do during your most recent observation period?"
+      ],
+      [
+        "5. A reading day. You'll look at the whole month. You'll count what happened. Not to judge it — to see it.",
+        "5. An interim reading day. Count what you have recorded so far, then keep collecting evidence until Day 30."
+      ],
+      [
+        "Bring your complete tracker (Weeks 1–4)",
+        "Bring the tracker entries you have recorded so far"
+      ],
+      [
+        "You've been running your experiment for four weeks.",
+        "Your 30-day experiment is still running. Review only the evidence recorded so far."
+      ],
+      [
+        "Look at your whole tracker — all four weeks.",
+        "Look at all the tracker entries you have recorded so far."
+      ],
+      [
+        "You named an employability pattern. You mapped it. You designed an experiment. You ran it for four weeks. You read the evidence.",
+        "You named an employability pattern, mapped it, and designed an experiment. Your 30-day experiment is still running."
+      ],
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ],
+    "Day 8": [
+      [
+        "You've finished your experiment.",
+        "Your experiment is still running. Today is an interim evidence review. The final review happens after Day 30."
+      ],
+      [
+        "You've been running your experiment for four weeks.",
+        "Your 30-day experiment is still running. Review only the evidence recorded so far."
+      ],
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ],
+    "Day 9": [
+      [
+        "Bring your completed tracker",
+        "Bring your tracker with the evidence recorded so far"
+      ],
+      [
+        "You'll pull everything together into one page — your Career Investigation Profile. You'll write a letter to your future self. And you'll receive your Career Investigation Certificate.",
+        "You'll prepare your Career Investigation Profile using your evidence so far and write to your future self. Your experiment continues until Day 30. Complete the final review before the Career Investigation Certificate can be awarded."
+      ],
+      [
+        "You've been running your experiment for four weeks.",
+        "Your 30-day experiment is still running. Review only the evidence recorded so far."
+      ],
+      [
+        "You named an employability pattern. You mapped it. You designed an experiment. You ran it for four weeks. You read the evidence.",
+        "You named an employability pattern, mapped it, and designed an experiment. You are reviewing the evidence collected so far while the 30-day experiment continues."
+      ],
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ],
+    "Day 10": [
+      [
+        "Receive your Career Investigation Certificate",
+        "Plan your final review and certificate after Day 30"
+      ],
+      [
+        "TODAY IS THE FINAL DAY.",
+        "TODAY IS THE FINAL TEACHING TOUCHPOINT. KEEP RECORDING UNTIL DAY 30."
+      ],
+      [
+        "This is your last Today's Insight for this Lab.",
+        "This is your last Today's Insight for the ten teaching touchpoints. Your 30-day experiment continues."
+      ],
+      [
+        "2. What did the experiment show?",
+        "2. What has the experiment shown so far?"
+      ],
+      [
+        "You have completed Career Lab.",
+        "You have completed the ten Career Lab teaching touchpoints. Continue the experiment until you have completed 30 calendar days, then carry out your final evidence review."
+      ],
+      [
+        "One completed investigation.",
+        "One investigation still in progress."
+      ],
+      [
+        "You've been running your experiment for four weeks.",
+        "Your 30-day experiment is still running. Review only the evidence recorded so far."
+      ],
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ],
+    "Day 3": [
+      [
+        "Use this page across the next four weeks. One entry per week. Only the first eligible employability moment each week counts.",
+        "Use this tracker across 30 calendar days. Keep four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Record the first eligible employability moment in each window. A window with no opportunity is not a failed attempt. The final window includes Days 29 and 30."
+      ]
+    ],
+    "Day 4": [
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ],
+    "Day 5": [
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ],
+    "Weekend": [
+      [
+        "Four weeks. Four possible opportunities. One per week.",
+        "Thirty days. Four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Use the first eligible moment in each window."
+      ]
+    ]
+  },
+  "notes": {
+    "Day 3": "Your 30-day field experiment starts after this touchpoint and continues after the ten teaching touchpoints. Use four recording windows: Days 1–7, 8–14, 15–21, and 22–30. Record the first eligible moment in each window, or a no-opportunity result. The final window includes Days 29 and 30.",
+    "Day 7": "The story below looks ahead to the end of a month. Your own experiment is still running. Use this touchpoint to practise how you will close it honestly after Day 30.",
+    "Day 8": "Interim review: use only the evidence you have recorded so far. Keep the number of recorded weeks separate from the 30-day experiment length. Do not count future weeks, missing records, or no-opportunity periods as completed practice.",
+    "Day 9": "Explore where else you could apply the method while your first experiment continues. A transfer plan is not evidence that transfer has happened.",
+    "Day 10": "After these ten touchpoints, keep your tracker available and continue recording until the end of Day 30. Finish all four recording windows, including Days 29–30 in the final window. After Day 30, return to the Evidence Review method from Day 8 using the complete record. Compare your prediction with what happened, note any missing or no-opportunity periods, and update your Career Investigation Profile. The ten-touchpoint reflection is an interim reflection; it does not confirm experiment completion.",
+    "Certificate": "Certificate template for the final follow-up: complete this only after all 30 calendar days and the final evidence review. Finishing the ten teaching touchpoints alone does not award this certificate."
+  }
+}

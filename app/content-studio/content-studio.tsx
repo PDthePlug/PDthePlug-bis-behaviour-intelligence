@@ -23,6 +23,8 @@ import {
   Upload,
 } from "lucide-react";
 import { BIS_MODULES } from "@/lib/bis-catalogue";
+import authoredHandbooks from "@/content/learning-prepared/handbooks-20261024/manifest.json";
+import { prepareHandbookReplacements } from "@/lib/prepare-handbook-replacements.mjs";
 import { BisMark } from "@/components/brand/bis-mark";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -244,6 +246,7 @@ export function ContentStudio() {
   const [selectedKind, setSelectedKind] = useState<ContentKind>("LEARNING_MODULE");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [preparingHandbooks, setPreparingHandbooks] = useState(false);
   const [uploadingKey, setUploadingKey] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -431,6 +434,50 @@ export function ContentStudio() {
     setSummary("");
     setLinkedLabItemId("");
     setCreateOpen(false);
+  }
+
+  async function prepareSavedHandbooks(all = false) {
+    if (!data || preparingHandbooks) return;
+    setPreparingHandbooks(true);
+    setError("");
+    try {
+      const editions = authoredHandbooks.editions.filter(entry => all || entry.code === selected?.code);
+      const results = await prepareHandbookReplacements({
+        items: data.items, editions, onProgress: setMessage,
+        createDraft: async item => {
+          const version = nextContentVersion(item.versions.map(entry => entry.version));
+          const result = await act({ action: "createVersion", itemId: item.id, version,
+            schemaVersion: "2.0", sourceFormat: "BIS_PACKAGE_JSON",
+            releaseNotes: "Complete authored handbook replacement from the owner-supplied October 2026 manuscripts." });
+          const draft = result?.items.find(entry => entry.id === item.id)?.versions.find(entry => entry.version === version);
+          if (!draft) throw new Error("The replacement update could not be created.");
+          return draft;
+        },
+        loadSource: async (draft, edition) => {
+          const response = await fetch(`/api/content-studio/authored-learning?versionId=${encodeURIComponent(draft.id)}&edition=${edition.edition}`, { cache: "no-store" });
+          if (!response.ok) throw new Error("The saved handbook could not be opened.");
+          return new Uint8Array(await response.arrayBuffer());
+        },
+        saveSource: async (draft, edition, bytes) => {
+          const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new Uint8Array(bytes))))
+            .map(value => value.toString(16).padStart(2, "0")).join("");
+          const storagePath = `sources/${draft.id}/${edition.edition}/${hash}.json`;
+          const upload = await client.storage.from(CONTENT_STUDIO_BUCKET).upload(storagePath, bytes,
+            { contentType: "application/json", cacheControl: "0", upsert: false });
+          if (upload.error) throw new Error("The replacement handbook could not be saved.");
+          const attached = await act({ action: "attachSource", versionId: draft.id, sourceKey: edition.edition,
+            deliveryEdition: edition.edition, sourceFileName: `${edition.code}-${edition.edition}-${hash}.json`,
+            sourceStoragePath: storagePath, sourceBytes: bytes.byteLength, mimeType: "application/json", sourceFormat: "BIS_PACKAGE_JSON" });
+          if (!attached) throw new Error("The replacement handbook could not be attached. The new update can be retried.");
+        },
+        compile: async draft => {
+          if (!await act({ action: "compileVersion", versionId: draft.id })) throw new Error("The replacement preview could not be prepared.");
+        },
+      });
+      setMessage(`Prepared ${results.reduce((sum, entry) => sum + entry.editions.length, 0)} replacement editions. Open each preview and complete the final check, then publish.`);
+    } catch (cause) {
+      setError(clientResponseMessage(cause, "The replacement handbooks could not be prepared. Please try again."));
+    } finally { setPreparingHandbooks(false); }
   }
 
   async function createVersion(copyFromVersionId?: string) {
@@ -670,6 +717,9 @@ export function ContentStudio() {
           <div><strong>BIS Content Studio</strong><small>Publishing workspace</small></div>
         </Link>
         <div className="content-studio-header-actions">
+          <Button variant="outline" disabled={saving || preparingHandbooks} onClick={() => void prepareSavedHandbooks(true)}>
+            {preparingHandbooks ? <LoaderCircle className="spin" /> : <BookOpen />} Prepare all replacement handbooks
+          </Button>
           <Button asChild variant="outline"><Link href="/workspace?view=admin"><ArrowLeft /> Administration</Link></Button>
           <Button variant="outline" onClick={() => setVolumeAuditOpen((value) => !value)}><ClipboardCheck /> Audit a volume</Button>
           <Button variant="outline" onClick={() => setCreateOpen((value) => !value)}><Plus /> Add something new</Button>
@@ -863,6 +913,15 @@ export function ContentStudio() {
                 </div>
                 <span className="content-detail-mark">{selected.kind === "LAB" ? <FlaskConical /> : <BookOpen />}</span>
               </header>
+
+              {selected.kind === "LEARNING_MODULE" && authoredHandbooks.editions.some(entry => entry.code === selected.code) ? (
+                <section className="content-studio-card">
+                  <h3>Replace with the supplied handbook</h3>
+                  <p>The saved manuscript supplies {authoredHandbooks.editions.filter(entry => entry.code === selected.code).length} editions for this title. Prepare a complete replacement, review it, then publish.</p>
+                  {["CAR", "LCH"].includes(selected.code) ? <p>This handbook has a 30-day field experiment that continues after the ten teaching touchpoints. The final review follows Day 30.</p> : null}
+                  <Button disabled={saving || preparingHandbooks} onClick={() => void prepareSavedHandbooks()}><BookOpen /> Prepare replacement handbook</Button>
+                </section>
+              ) : null}
 
               <section className="content-studio-card content-publish-panel">
                 <div className="content-studio-section-title">

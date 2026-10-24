@@ -98,7 +98,7 @@
       "code": "RSK",
       "slug": "risk",
       "title": "Risk Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -110,7 +110,7 @@
       "code": "TRU",
       "slug": "trust",
       "title": "Trust Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -122,7 +122,7 @@
       "code": "INF",
       "slug": "influence",
       "title": "Influence Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -134,7 +134,7 @@
       "code": "LDR",
       "slug": "leadership",
       "title": "Leadership Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -146,7 +146,7 @@
       "code": "PUR",
       "slug": "purpose",
       "title": "Purpose Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -158,7 +158,7 @@
       "code": "RES",
       "slug": "resilience",
       "title": "Resilience Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -170,7 +170,7 @@
       "code": "CAR",
       "slug": "career",
       "title": "Career Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -182,7 +182,7 @@
       "code": "LCH",
       "slug": "launch",
       "title": "Launch Lab™",
-      "learningStatus": "catalogued",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "source_ready",
       "labHref": null
@@ -194,7 +194,7 @@
       "code": "FAI",
       "slug": "failure",
       "title": "Failure Lab™",
-      "learningStatus": "planned",
+      "learningStatus": "source_ready",
       "learningHref": null,
       "labStatus": "planned",
       "labHref": null
