@@ -121,7 +121,8 @@ test("Universal runtime uses continuous digital prompt controls without workbook
   const runtime = await source("app/labs/[code]/universal-runtime-lab.tsx");
   assert.doesNotMatch(runtime, /String\(index\)\.padStart\(2, "0"\)/);
   assert.doesNotMatch(runtime, /className="prompt-number"/);
-  assert.match(runtime, /answer-list universal-choice-list/);
+  assert.match(runtime, /UniversalResponseControl/);
+  assert.match(await source("components/learning/universal-response-control.tsx"), /answer-list universal-choice-list/);
   assert.match(runtime, /prepareUniversalLabPresentation/);
   assert.match(runtime, /You can choose “Prefer not to answer” for any question/);
   assert.doesNotMatch(runtime, /grounded in the BIS source workbook/i);
@@ -401,7 +402,8 @@ test("Universal table renderer supports matrix choice cells and table selects", 
   assert.match(compiler, /kind: "CHOICE"/);
   assert.match(runtime, /cell\.kind === "CHOICE"/);
   assert.match(runtime, /role="radio"/);
-  assert.match(runtime, /categoricalOptions/);
+  assert.match(runtime, /UniversalResponseControl/);
+  assert.match(await source("components/learning/universal-response-control.tsx"), /SelectItem/);
 });
 
 

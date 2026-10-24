@@ -185,7 +185,7 @@ test("Content Studio records editorial decisions and still blocks structural Lab
   assert.match(ui, /BIS laboratory sequence checked/);
   assert.match(ui, /Preparation notes to check/);
   assert.match(compiler, /applyHabitLabStandard/);
-  assert.match(compiler, /bis-content-compiler-8/);
+  assert.match(compiler, /bis-content-compiler-9/);
 });
 
 

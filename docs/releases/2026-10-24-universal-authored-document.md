@@ -1,0 +1,17 @@
+# Universal authored-content rendering
+
+The previous handbook pipeline interpreted answer intent twice: the source adapter created controls, then ProgrammePlayer enhanced the delivered HTML by inferring more questions, splitting prompts and converting remaining print blanks. The production screenshots show the result: a narrative “Why does this happen?” became a question, writing lines remained above inputs, and choice instructions repeated.
+
+New source imports declare `renderingModel: UNIVERSAL_AUTHORED`. Every new learning compilation in Compiler 9 uses the Universal document contract, including JSON imports; operators cannot accidentally select the old inference renderer. Compiler 9 produces an immutable Universal document for each programme position: narrative HTML contains response slots, and a separate field registry specifies each slot's semantic ID, source key, privacy class, label, control type and options. Compilation rejects unbound, duplicated and forged slots. Narrative punctuation never creates a runtime response.
+
+Both Universal Lab and handbook delivery use `UniversalContentDocument` for authored reading content and `UniversalResponseControl` for the shared prompt/response controls. ProgrammePlayer keeps the ten-touchpoint programme navigation and Day 3 handoff; Universal Lab keeps its nine investigation stages and calendar-owned evidence lifecycle. New handbook documents bypass `enhanceHandbookDocument` and its mutation observer entirely. That older path remains solely for previously published, immutable artifacts while replacement versions undergo review.
+
+The import rules recognize source-owned writing lines, answer labels, choices, relational table cells, numbered learning checks and explicitly authored writing activities. A printed line and its task become one digital answer location. Suggested answers remain authored content behind a disclosure. Question wording is printed once. Exact compiled value-family keys can reuse the connected Universal Lab's known evidence values as read-only outputs, including a later “My Adherence Rate” reference, without another manual answer.
+
+All 44 supplied editions (36 Volume 1 and eight partial Volume 2) are regenerated together. They retain 572 programme positions, their source manuscript hashes, private source-owned response identities and the approved Career/Launch thirty-day schedules. The original DOCX files are unchanged. An audit against the prior prepared corpus confirmed that all 17,945 retained source controls keep their previous field IDs and labels. Retired inference fields reserve their former ordinal identities so they cannot supply saved answers to a later genuine question. Missing Faith Workplace content is not invented.
+
+## Validation and release boundary
+
+Regression coverage uses the real Habit manuscript behind the reported screenshots, audits every supplied edition's slot/field agreement and covers invalid bindings and delivery sanitization. Browser journeys cover response saving, refresh, Back, mobile table bounds, unchanged source learning checks and reuse of a Universal Lab measure without an editable duplicate.
+
+This change does not mutate learner answers, progress, enrolments or production activation records. Existing released artifacts retain their original hash and runtime compatibility. The new compiled artifacts require fresh Content Studio preview/UAT and explicit publication; previous artifact approvals must not be reused. Publication remains paused while the common renderer is verified.

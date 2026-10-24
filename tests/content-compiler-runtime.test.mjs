@@ -153,7 +153,8 @@ test("structured Lab documents can be manufactured into nine-investigation runti
   assert.match(adapters, /Day " \+ day/);
   assert.match(compiler, /MULTI_SELECT/);
   assert.match(compiler, /UniversalLabRenderBlock/);
-  assert.match(runner, /universal-multi-select/);
+  assert.match(runner, /UniversalResponseControl/);
+  assert.match(await source("components/learning/universal-response-control.tsx"), /universal-multi-select/);
   assert.match(runner, /investigation\.blocks/);
   assert.match(studioCss, /content-source-slot>\.content-paste-box/);
   assert.match(studioCss, /width:100%/);

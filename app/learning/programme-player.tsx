@@ -2,6 +2,9 @@
 import { usePlatformRouter as useRouter } from "@/components/platform-context";
 import { usePlatform } from "@/components/platform-context";
 
+import { UniversalContentDocument } from "@/components/learning/universal-content-document";
+import type { UniversalAuthoredField } from "@/lib/universal-authored-document.mjs";
+import { authoredValueKey } from "@/lib/universal-response-value.mjs";
 import { BisMark } from "@/components/brand/bis-mark";
 import { EditionLanguageScope } from "@/components/learning/school-language-scope";
 
@@ -255,7 +258,7 @@ function stripLegacyDayThreePlatformPreamble(html: string) {
 }
 
 function splitDayThree(page: ProgrammePage) {
-  const html = stripLegacyDayThreePlatformPreamble(page.html);
+  const html = page.document?.html ?? stripLegacyDayThreePlatformPreamble(page.html);
 
   if (page.labHandoff?.startMarker && page.labHandoff?.endMarker) {
     const start = html.indexOf(page.labHandoff.startMarker);
@@ -526,7 +529,7 @@ export function ProgrammePlayer({
   const experimentDay =
     programmeHandoff?.currentDay
     || currentExperimentDay(activeModuleRuntime?.experiment ?? null);
-  const experimentTotalDays = programmeHandoff?.totalDays || 7;
+  const experimentTotalDays = programmeHandoff?.totalDays || programme?.experimentSchedule?.durationDays || 7;
   const experimentRecordedDays =
     programmeHandoff?.evidenceDaysRecorded
     ?? new Set(activeModuleRuntime?.events.map((event) => event.dayNumber) ?? []).size;
@@ -871,7 +874,7 @@ export function ProgrammePlayer({
   }, []);
 
   const restoreHandbookInteractions = useCallback(() => {
-    if (!page || section !== "learn" || learnMode !== "reader") return;
+    if (!page || page.document || section !== "learn" || learnMode !== "reader") return;
     const documentRoot = documentRef.current;
     if (!documentRoot) return;
 
@@ -948,7 +951,7 @@ export function ProgrammePlayer({
   }, [restoreHandbookInteractions]);
 
   useEffect(() => {
-    if (!page || section !== "learn" || learnMode !== "reader") return;
+    if (!page || page.document || section !== "learn" || learnMode !== "reader") return;
     const documentRoot = documentRef.current;
     if (!documentRoot || typeof MutationObserver === "undefined") return;
     const stopTableObservation = observeHandbookTables(documentRoot);
@@ -975,7 +978,7 @@ export function ProgrammePlayer({
   }, [saveDirtyResponses, saveState]);
 
   function onDocumentInput(event: FormEvent<HTMLElement>) {
-    if (facilitatorMode) return;
+    if (facilitatorMode || page?.document) return;
     const target = event.target;
     if (
       !(target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement || target instanceof HTMLSelectElement) ||
@@ -1004,6 +1007,24 @@ export function ProgrammePlayer({
     });
     setDrafts((current) => ({ ...current, [target.dataset.fieldId!]: value }));
     setSaveState("dirty");
+  }
+
+  function onAuthoredResponse(field: UniversalAuthoredField, value: string) {
+    if (facilitatorMode || field.readOnly || field.purpose === "FORMAL_LAB_REFERENCE" || !page) return;
+    setDrafts(current => ({ ...current, [field.id]: value }));
+    if (previewMode) return;
+    queue.current.edit({ semanticFieldId: field.id, semanticStepId: page.id, sourceFieldKey: field.sourceKey,
+      value, purpose: field.purpose, privacyClass: field.privacyClass });
+    setSaveState("dirty");
+  }
+
+  function renderAuthoredContent(html: string) {
+    if (!page?.document) return <div dangerouslySetInnerHTML={{ __html: html }} />;
+    const values = Object.fromEntries(page.document.fields.map(field => [field.id,
+      facilitatorMode ? "" : drafts[field.id] ?? snapshot?.workbookResponses?.[field.id]?.value ?? ""]));
+    const evidenceValues = facilitatorMode ? {} : Object.fromEntries(knownValues.flatMap(entry => entry.labels.map(label => [authoredValueKey(label), entry.value])));
+    return <UniversalContentDocument document={page.document} html={html} values={values}
+      evidenceValues={evidenceValues} onValue={onAuthoredResponse} disabled={facilitatorMode} />;
   }
 
   function openToday() {
@@ -1468,7 +1489,7 @@ export function ProgrammePlayer({
             <article key={page.id} ref={documentRef} className="prototype-document learner-document-body" onInput={onDocumentInput} onChange={onDocumentInput}>
               {dayThree ? (
                 <>
-                  <div dangerouslySetInnerHTML={{ __html: dayThree.intro }} />
+                  {renderAuthoredContent(dayThree.intro)}
                   <ProgrammeLabHandoff
                     title={moduleLabTitle}
                     href={moduleLabHref}
@@ -1483,7 +1504,7 @@ export function ProgrammePlayer({
                         ? `Use this as your learning reference while you work through ${moduleLabTitle}.`
                         : "The practical Lab connects at this point. Continue with today’s learning material here until digital Lab access is enabled."}
                     </p>
-                    <div dangerouslySetInnerHTML={{ __html: dayThree.reference }} />
+                    {renderAuthoredContent(dayThree.reference)}
                   </details>
                   {!labHandoffComplete ? (
                     <section className="prototype-after-lab">
@@ -1502,7 +1523,7 @@ export function ProgrammePlayer({
                       </div>
                     </section>
                   ) : (
-                    <div dangerouslySetInnerHTML={{ __html: dayThree.tail }} />
+                    renderAuthoredContent(dayThree.tail)
                   )}
                 </>
               ) : isLabHandoffDay ? (
@@ -1514,10 +1535,10 @@ export function ProgrammePlayer({
                     isHabit={moduleCode === "HAB"}
                     habitPhaseAComplete={labExperimentStarted}
                   />
-                  <div dangerouslySetInnerHTML={{ __html: page.html }} />
+                  {renderAuthoredContent(page.document?.html ?? page.html)}
                 </>
               ) : (
-                <div dangerouslySetInnerHTML={{ __html: page.html }} />
+                renderAuthoredContent(page.document?.html ?? page.html)
               )}
             </article>
             </fieldset>

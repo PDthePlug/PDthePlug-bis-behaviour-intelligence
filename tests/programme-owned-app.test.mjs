@@ -175,7 +175,7 @@ test("Programme Player discovers active source-backed Universal Labs without bes
 test("Programme experiment status is authored-window aware instead of assuming seven days", async () => {
   const player = await source("app/learning/programme-player.tsx");
 
-  assert.match(player, /const experimentTotalDays = programmeHandoff\?\.totalDays \|\| 7/);
+  assert.match(player, /const experimentTotalDays = programmeHandoff\?\.totalDays \|\| programme\?\.experimentSchedule\?\.durationDays \|\| 7/);
   assert.match(player, /const experimentRecordedDays =/);
   assert.match(player, /programmeHandoff\?\.evidenceDaysRecorded/);
   assert.match(player, /Experiment Day \{experimentDay\} of \{experimentTotalDays\}/);

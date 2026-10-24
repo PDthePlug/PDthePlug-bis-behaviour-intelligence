@@ -1,3 +1,5 @@
+import type { UniversalAuthoredDocumentDefinition } from "./universal-authored-document.mjs";
+
 export type ProgrammePhase =
   | "ORIENTATION"
   | "LEARN"
@@ -17,6 +19,7 @@ export type ProgrammePage = {
   programmeDay: number | null;
   experimentPosition: string | null;
   html: string;
+  document?: UniversalAuthoredDocumentDefinition;
   labHandoff?: {
     startMarker: string;
     endMarker: string;

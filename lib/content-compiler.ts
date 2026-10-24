@@ -1,3 +1,4 @@
+import { compileUniversalAuthoredDocument } from "./universal-authored-document.mjs";
 import { applyDigitalLabBaseline } from "./digital-lab-baseline.mjs";
 import { sanitizeContentHtml } from "./content-html.mjs";
 import { DELIVERY_EDITIONS, type DeliveryEdition } from "./learning-foundation";
@@ -14,7 +15,7 @@ import {
 import { sha256Hex } from "./content-studio";
 import { prepareUniversalLabPresentation } from "./universal-lab-presentation.mjs";
 
-export const CONTENT_COMPILER_VERSION = "bis-content-compiler-8";
+export const CONTENT_COMPILER_VERSION = "bis-content-compiler-9";
 export const LEARNING_EDITION_KEYS = [...DELIVERY_EDITIONS] as const;
 
 export type RuntimeArtifact = {
@@ -36,6 +37,7 @@ export type LearningEditionSource = {
     observationWindows?: Array<{ window: number; startDay: number; endDay: number }>;
   };
   kind?: string;
+  renderingModel?: "UNIVERSAL_AUTHORED";
   schemaVersion?: string;
   identity?: {
     code?: string;
@@ -396,6 +398,7 @@ export async function compileLearningEdition(
       programmeDay: typeof page.programmeDay === "number" ? page.programmeDay : programmeDay(key),
       experimentPosition: page.experimentPosition == null ? null : String(page.experimentPosition),
       html,
+      document: compileUniversalAuthoredDocument(html, { pageKey: key, pageTitle: text(page.label) || key }),
       ...(handoff
         ? { labHandoff: {
             startMarker: handoff.startMarker,
@@ -433,7 +436,7 @@ export async function compileLearningEdition(
     title,
     subtitle: text(identity?.subtitle) || text(source.subtitle) || "Behaviour Intelligence learning module",
     contentVersion: expectedVersion,
-    runtimeVersion: "programme-player-3",
+    runtimeVersion: "universal-authored-document-1",
     ...(source.experimentSchedule ? { experimentSchedule: source.experimentSchedule } : {}),
     sourceTrace: {
       authority: text(source.sourceTrace?.authority) || "BIS Content Studio",
