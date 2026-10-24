@@ -1,6 +1,7 @@
 import { readDocxTable } from "./docx-table.mjs";
 import { inflateRawSync, inflateSync } from "node:zlib";
 import type { ContentSourceFormat } from "./content-studio";
+import { createHash } from "node:crypto";
 import type { DeliveryEdition } from "./learning-foundation";
 import { inspectLabSourceCapabilities } from "./lab-factory-capabilities.mjs";
 
@@ -1574,6 +1575,82 @@ function encodedPackage(
   }));
 }
 
+const handbookEditionNames: Record<string, DeliveryEdition> = {
+  "School Edition": "school",
+  "Emerging Adult Edition": "emerging_adult",
+  "Workplace Edition": "workplace",
+};
+
+function learningDocxSections(blocks: SourceBlock[]) {
+  const starts = blocks.flatMap((block, index) => {
+    const edition = handbookEditionNames[blocks[index + 1]?.text];
+    return block.heading && /^[A-Z][A-Z &'-]+ LAB™$/.test(block.text) && edition
+      ? [{ index, title: block.text, edition }]
+      : [];
+  });
+  return starts.map((section, index) => {
+    const selected = blocks.slice(section.index, starts[index + 1]?.index ?? blocks.length);
+    const ids = [...new Set(selected.flatMap(block =>
+      [...block.text.matchAll(/\b[A-Z]{2,12}-LM-[\d.]+-(?:EA|WK|S|W)\b/g)].map(match => match[0]),
+    ))];
+    if (ids.length > 1 || (!ids.length && starts.length > 1)) throw new Error(`${section.title}/${section.edition}: expected one authored handbook identity.`);
+    return { ...section, sourceId: ids[0] ?? "", blocks: selected };
+  });
+}
+
+function selectLearningDocxSection(blocks: SourceBlock[], code: string, edition: DeliveryEdition, title: string) {
+  const sections = learningDocxSections(blocks);
+  if (!sections.length) return blocks; // Existing single-edition documents remain supported.
+  if (sections.length === 1 && !sections[0].sourceId) return blocks;
+  const expectedTitle = title.replace(/\s+Learning Module$/i, "").replace(/™/g, "").trim().toUpperCase();
+  const selected = sections.filter(section => section.edition === edition
+    && (section.sourceId.startsWith(`${code}-LM-`) || section.title.replace(/™/g, "") === expectedTitle));
+  if (selected.length !== 1) throw new Error(`${code}/${edition}: select exactly one matching authored handbook; found ${selected.length}.`);
+  return selected[0].blocks;
+}
+
+/** Split a combined manuscript once, then use the ordinary handbook renderer. */
+export async function adaptLearningVolumeSource(
+  bytes: Uint8Array,
+  modules: Array<{ code: string; title: string; slug: string }>,
+  runtimeVersion: string,
+  options: { partial?: boolean; volume?: number } = {},
+) {
+  const sections = learningDocxSections(docxBlocks(bytes));
+  if (!sections.length) throw new Error("No titled handbook editions were found in the combined manuscript.");
+  const seen = new Set<string>();
+  const sourceHash = createHash("sha256").update(bytes).digest("hex");
+  const results = [];
+  for (const section of sections) {
+    if (!section.sourceId) throw new Error(`${section.title}: the combined intake needs an authored source identity.`);
+    const handbook = modules.find(item => item.title.toUpperCase() === section.title);
+    if (!handbook) throw new Error(`No existing BIS shelf matches ${section.title}.`);
+    const key = `${handbook.code}:${section.edition}`;
+    if (seen.has(key)) throw new Error(`Duplicate authored handbook ${key}; resolve it before importing.`);
+    seen.add(key);
+    const sectionHash = createHash("sha256").update(JSON.stringify(section.blocks.map(block => block.text))).digest("hex");
+    const packageBytes = encodedPackage(handbook.code, runtimeVersion, section.edition, handbook,
+      pagesFromBlocks(section.blocks, key),
+      `Volume ${options.volume ?? 1} DOCX sha256:${sourceHash}; ${section.sourceId}; section sha256:${sectionHash}`,
+      programmeSourceSubtitle(section.blocks, handbook, section.edition));
+    const sourcePackage = JSON.parse(new TextDecoder().decode(packageBytes));
+    sourcePackage.identity.handbookId = `${handbook.slug}-lab-volume-${options.volume ?? 1}`;
+    // A wholesale replacement must not restore an old answer under a new task.
+    // This source-owned prefix stays stable across recompiles and version copies.
+    for (const page of sourcePackage.treatment.pages) {
+      page.html = page.html.replace(/data-source-key="([^"]+)"/g,
+        (_: string, key: string) => `data-source-key="source-${sourceHash.slice(0, 12)}-${key}"`);
+    }
+    results.push({ code: handbook.code, slug: handbook.slug, title: handbook.title, edition: section.edition,
+      sourceId: section.sourceId, sourceHash, sectionHash, sourceBlocks: section.blocks.length,
+      packageBytes: new TextEncoder().encode(JSON.stringify(sourcePackage)) });
+  }
+  if (!options.partial) for (const handbook of modules) for (const edition of ["school", "emerging_adult", "workplace"]) {
+    if (!seen.has(`${handbook.code}:${edition}`)) throw new Error(`Missing authored handbook ${handbook.code}/${edition}.`);
+  }
+  return results;
+}
+
 export async function adaptLearningSource(
   bytes: Uint8Array,
   sourceFormat: ContentSourceFormat,
@@ -1585,7 +1662,7 @@ export async function adaptLearningSource(
   if (sourceFormat === "BIS_PACKAGE_JSON") return bytes;
 
   if (sourceFormat === "DOCX") {
-    const blocks = docxBlocks(bytes);
+    const blocks = selectLearningDocxSection(docxBlocks(bytes), code, edition, metadata.title);
     return encodedPackage(
       code,
       version,

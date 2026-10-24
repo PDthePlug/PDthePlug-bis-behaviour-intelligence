@@ -447,7 +447,10 @@ export function ProgrammePlayer({
         const requestedIndex = Number.isInteger(requestedPage) && requestedPage >= 1
           ? Math.min(loaded.treatment.pages.length - 1, requestedPage - 1)
           : -1;
-        const latest = learning.progress.find((item) => item.labCode === moduleCode);
+        const currentRelease = learning.releases.find((item) => item.labCode === moduleCode && item.contentVersion === loaded.contentVersion);
+        const latest = currentRelease
+          ? learning.progress.find((item) => item.labCode === moduleCode && item.contentReleaseId === currentRelease.id)
+          : undefined;
         const progressIndex = latest
           ? loaded.treatment.pages.findIndex((item) => item.id === latest.semanticStepId)
           : -1;

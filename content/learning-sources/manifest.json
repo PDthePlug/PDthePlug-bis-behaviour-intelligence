@@ -40,5 +40,34 @@
       ],
       "slug": "time"
     }
+  ],
+  "collections": [
+    {
+      "id": "volume-1-handbooks-20261024",
+      "volume": 1,
+      "sourcePath": "content/learning-sources/volume-1-handbooks-20261024.docx",
+      "sourceFormat": "DOCX",
+      "uploadedName": "BIS Volume 1 workbooks3 editions.docx",
+      "uploadedBytes": 2422008,
+      "uploadedSha256": "7a2947d5765487ad5bca84fbb0dd67e393c15781b071ea0b79e5ac927d6d5e21",
+      "preparedManifest": "content/learning-prepared/handbooks-20261024/manifest.json",
+      "status": "SOURCE_READY",
+      "modules": 12,
+      "editions": 36
+    },
+    {
+      "id": "volume-2-handbooks-20261024",
+      "volume": 2,
+      "sourcePath": "content/learning-sources/volume-2-handbooks-20261024.docx",
+      "sourceFormat": "DOCX",
+      "uploadedName": "BIS HANDBOOKS Volume 2.docx",
+      "uploadedBytes": 552122,
+      "uploadedSha256": "03797c06863595474decd8022ead4a8e22585742268fa9206aced10c7a39117f",
+      "status": "SOURCE_READY",
+      "partial": true,
+      "modules": 3,
+      "editions": 8,
+      "preparedManifest": "content/learning-prepared/handbooks-20261024/manifest.json"
+    }
   ]
 }

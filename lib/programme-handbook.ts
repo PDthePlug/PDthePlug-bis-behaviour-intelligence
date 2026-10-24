@@ -24,6 +24,14 @@ export type ProgrammePage = {
 };
 
 export type HabitProgramme = {
+  experimentSchedule?: {
+    durationDays: number;
+    startsAfterProgrammeDay: number;
+    interimReviewProgrammeDays: number[];
+    finalReviewAfterExperimentDay: number;
+    continuesAfterTouchpoints: boolean;
+    observationWindows?: Array<{ window: number; startDay: number; endDay: number }>;
+  };
   schemaVersion: "2.0";
   handbookId: string;
   labCode: string;

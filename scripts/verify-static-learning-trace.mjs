@@ -3,3 +3,8 @@ import { readFile } from "node:fs/promises";
 const manifest=JSON.parse(await readFile(".next/server/app/api/runtime-content/route.js.nft.json","utf8"));
 for(const slug of ["habit","decision","money","identity","attention"])for(const edition of ["school","emerging_adult","workplace"])assert.ok(manifest.files.some(file=>file.endsWith(`/public/handbooks/v1/${slug}-${edition}.json.gz.b64`)),`${slug}/${edition} missing from the serverless artifact`);
 console.log("Verified all 15 retained learning packages in the serverless runtime artifact.");
+const replacements = JSON.parse(await readFile("content/learning-prepared/handbooks-20261024/manifest.json", "utf8"));
+const savedSourceTrace = JSON.parse(await readFile(".next/server/app/api/content-studio/authored-learning/route.js.nft.json", "utf8"));
+for (const entry of replacements.editions) assert.ok(savedSourceTrace.files.some(file => file.endsWith(`/content/learning-prepared/handbooks-20261024/${entry.asset}`)), `${entry.code}/${entry.edition} missing from saved-source serverless artifact`);
+assert.ok(savedSourceTrace.files.some(file => file.endsWith("/content/learning-prepared/handbooks-20261024/manifest.json")));
+console.log(`Verified all ${replacements.editions.length} replacement handbook sources in the serverless runtime artifact.`);

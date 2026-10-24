@@ -65,7 +65,9 @@ test("non-live Labs distinguish source-ready material from explicitly pending so
   assert.equal(catalogue.modules.filter((item) => item.labStatus === "planned").length, 1);
   const failure = catalogue.modules.find((item) => item.code === "FAI");
   assert.equal(failure?.labStatus, "planned");
-  assert.equal(failure?.learningStatus, "planned");
+  // Partial Volume 2 now supplies Failure handbooks, independently of its Lab workbook.
+  assert.equal(failure?.learningStatus, "source_ready");
+  assert.equal(failure?.learningHref, null);
   assert.equal(failure?.labHref, null);
   for (const item of catalogue.modules.filter((item) => item.labStatus === "source_ready")) {
     assert.equal(item.labHref, null, `${item.code} must not claim a digital route before runtime activation`);

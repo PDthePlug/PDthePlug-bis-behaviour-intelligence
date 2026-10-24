@@ -27,6 +27,14 @@ export type RuntimeArtifact = {
 };
 
 export type LearningEditionSource = {
+  experimentSchedule?: {
+    durationDays: number;
+    startsAfterProgrammeDay: number;
+    interimReviewProgrammeDays: number[];
+    finalReviewAfterExperimentDay: number;
+    continuesAfterTouchpoints: boolean;
+    observationWindows?: Array<{ window: number; startDay: number; endDay: number }>;
+  };
   kind?: string;
   schemaVersion?: string;
   identity?: {
@@ -334,6 +342,24 @@ export async function compileLearningEdition(
   if (code !== expectedCode) throw new Error(`${edition}: package code ${code || "missing"} does not match ${expectedCode}.`);
   if (version !== expectedVersion) throw new Error(`${edition}: package version ${version || "missing"} does not match ${expectedVersion}.`);
   if (source.edition && source.edition !== edition) throw new Error(`${edition}: uploaded package identifies itself as ${source.edition}.`);
+  if (source.experimentSchedule) {
+    const schedule = source.experimentSchedule;
+    if (!Number.isInteger(schedule.durationDays) || schedule.durationDays < 1 || schedule.durationDays > 365
+      || !Number.isInteger(schedule.startsAfterProgrammeDay) || schedule.startsAfterProgrammeDay < 1 || schedule.startsAfterProgrammeDay > 10
+      || schedule.finalReviewAfterExperimentDay !== schedule.durationDays
+      || !Array.isArray(schedule.interimReviewProgrammeDays)
+      || schedule.interimReviewProgrammeDays.some(day => !Number.isInteger(day) || day < 1 || day > 10)) {
+      throw new Error(`${edition}: the authored experiment schedule is inconsistent.`);
+    }
+    let previousEnd = 0;
+    for (const window of schedule.observationWindows ?? []) {
+      if (!Number.isInteger(window.startDay) || !Number.isInteger(window.endDay) || window.startDay !== previousEnd + 1 || window.endDay < window.startDay) {
+        throw new Error(`${edition}: experiment recording windows must cover consecutive calendar days.`);
+      }
+      previousEnd = window.endDay;
+    }
+    if (schedule.observationWindows?.length && previousEnd !== schedule.durationDays) throw new Error(`${edition}: recording windows must cover the full experiment.`);
+  }
 
   const treatment = object(source.treatment);
   const rawPages = Array.isArray(treatment?.pages)
@@ -408,6 +434,7 @@ export async function compileLearningEdition(
     subtitle: text(identity?.subtitle) || text(source.subtitle) || "Behaviour Intelligence learning module",
     contentVersion: expectedVersion,
     runtimeVersion: "programme-player-3",
+    ...(source.experimentSchedule ? { experimentSchedule: source.experimentSchedule } : {}),
     sourceTrace: {
       authority: text(source.sourceTrace?.authority) || "BIS Content Studio",
       prototype: text(source.sourceTrace?.prototype) || "Edition source package",
